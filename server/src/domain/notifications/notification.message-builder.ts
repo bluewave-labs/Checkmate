@@ -1,5 +1,4 @@
 import type { Monitor } from "@/domain/monitors/monitor.type.js";
-import type { DockerStatusPayload, HardwareStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 import type { MonitorActionDecision } from "@/worker/worker.interface.js";
 import type {
 	NotificationMessage,
@@ -9,15 +8,11 @@ import type {
 	NotificationContent,
 } from "@/domain/notifications/notification.type.js";
 import { describeContainerBreach, findContainerBreaches } from "@/domain/docker/docker-alert.js";
+import type { Check } from "@/domain/checks/check.type.js";
 
 export interface INotificationMessageBuilder {
-	buildMessage(
-		monitor: Monitor,
-		monitorStatusResponse: MonitorStatusResponse,
-		decision: MonitorActionDecision,
-		clientHost: string
-	): NotificationMessage;
-	extractThresholdBreaches(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): ThresholdBreach[];
+	buildMessage(monitor: Monitor, check: Check, decision: MonitorActionDecision, clientHost: string): NotificationMessage;
+	extractThresholdBreaches(monitor: Monitor, check: Check): ThresholdBreach[];
 }
 
 const SERVICE_NAME = "NotificationMessageBuilder";
@@ -25,15 +20,10 @@ const SERVICE_NAME = "NotificationMessageBuilder";
 export class NotificationMessageBuilder implements INotificationMessageBuilder {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	buildMessage(
-		monitor: Monitor,
-		monitorStatusResponse: MonitorStatusResponse,
-		decision: MonitorActionDecision,
-		clientHost: string
-	): NotificationMessage {
+	buildMessage(monitor: Monitor, check: Check, decision: MonitorActionDecision, clientHost: string): NotificationMessage {
 		const type = this.determineNotificationType(decision, monitor);
 		const severity = this.determineSeverity(type);
-		const content = this.buildContent(type, monitor, monitorStatusResponse);
+		const content = this.buildContent(type, monitor, check);
 
 		return {
 			type,
@@ -92,18 +82,18 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		}
 	}
 
-	private buildContent(type: NotificationType, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): NotificationContent {
+	private buildContent(type: NotificationType, monitor: Monitor, check: Check): NotificationContent {
 		switch (type) {
 			case "monitor_down":
-				return this.buildMonitorDownContent(monitor, monitorStatusResponse);
+				return this.buildMonitorDownContent(monitor, check);
 			case "monitor_up":
 				return this.buildMonitorUpContent(monitor);
 			case "threshold_breach":
-				return this.buildThresholdBreachContent(monitor, monitorStatusResponse as MonitorStatusResponse<HardwareStatusPayload>);
+				return this.buildThresholdBreachContent(monitor, check);
 			case "threshold_resolved":
 				return this.buildThresholdResolvedContent(monitor);
 			case "container_breach":
-				return this.buildContainerBreachContent(monitor, monitorStatusResponse as MonitorStatusResponse<DockerStatusPayload>);
+				return this.buildContainerBreachContent(monitor, check);
 			case "container_resolved":
 				return this.buildContainersRecoveredContent(monitor);
 			default:
@@ -111,19 +101,19 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		}
 	}
 
-	private buildMonitorDownContent(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): NotificationContent {
+	private buildMonitorDownContent(monitor: Monitor, check: Check): NotificationContent {
 		const title = `Monitor Down: ${monitor.name}`;
 		const summary = `Monitor "${monitor.name}" is currently down and unreachable.`;
 		const details = [`URL: ${monitor.url}`, `Status: Down`, `Type: ${monitor.type}`];
 
 		// Add response code if available
-		if (monitorStatusResponse.code) {
-			details.push(`Response Code: ${monitorStatusResponse.code}`);
+		if (check.statusCode) {
+			details.push(`Response Code: ${check.statusCode}`);
 		}
 
 		// Add error message if available
-		if (monitorStatusResponse.message) {
-			details.push(`Error: ${monitorStatusResponse.message}`);
+		if (check.message) {
+			details.push(`Error: ${check.message}`);
 		}
 
 		return {
@@ -147,12 +137,12 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		};
 	}
 
-	private buildThresholdBreachContent(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse<HardwareStatusPayload>): NotificationContent {
+	private buildThresholdBreachContent(monitor: Monitor, check: Check): NotificationContent {
 		const title = `Threshold Exceeded: ${monitor.name}`;
 		const summary = `Monitor "${monitor.name}" has exceeded one or more thresholds.`;
 		const details = [`URL: ${monitor.url}`, `Status: Threshold exceeded`, `Type: ${monitor.type}`];
 
-		const thresholds = this.extractThresholdBreaches(monitor, monitorStatusResponse);
+		const thresholds = this.extractThresholdBreaches(monitor, check);
 
 		return {
 			title,
@@ -176,9 +166,8 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		};
 	}
 
-	private buildContainerBreachContent(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse<DockerStatusPayload>): NotificationContent {
-		const payload = monitorStatusResponse.payload;
-		const containers = payload && typeof payload !== "string" ? payload.containers : [];
+	private buildContainerBreachContent(monitor: Monitor, check: Check): NotificationContent {
+		const containers = check.containers ?? [];
 		const breaches = findContainerBreaches(monitor, containers);
 		const title = `Container Alert: ${monitor.name}`;
 		const summary = `${breaches.length} container(s) on "${monitor.name}" need attention.`;
@@ -202,25 +191,17 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		};
 	}
 
-	public extractThresholdBreaches(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse<HardwareStatusPayload>): ThresholdBreach[] {
+	public extractThresholdBreaches(monitor: Monitor, check: Check): ThresholdBreach[] {
 		const breaches: ThresholdBreach[] = [];
 
 		// Check if this is a hardware monitor with threshold data
-		if (monitor.type !== "hardware" || !monitorStatusResponse.payload || typeof monitorStatusResponse.payload === "string") {
-			return breaches;
-		}
-
-		// Cast to HardwareStatusPayload type
-		const payload = monitorStatusResponse.payload;
-		const hardware = payload.data;
-
-		if (!hardware) {
+		if (monitor.type !== "hardware") {
 			return breaches;
 		}
 
 		// Note: usage_percent values in hardware payload are decimals (0-1)
-		if (monitor.cpuAlertThreshold !== undefined && monitor.cpuAlertThreshold !== null && hardware.cpu?.usage_percent !== undefined) {
-			const cpuUsageDecimal = hardware.cpu.usage_percent;
+		if (monitor.cpuAlertThreshold !== undefined && monitor.cpuAlertThreshold !== null && check.cpu?.usage_percent !== undefined) {
+			const cpuUsageDecimal = check.cpu.usage_percent;
 			const cpuPercent = cpuUsageDecimal * 100;
 			const threshold = monitor.cpuAlertThreshold;
 			if (cpuPercent > threshold) {
@@ -235,8 +216,8 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		}
 
 		// Memory threshold breach
-		if (monitor.memoryAlertThreshold !== undefined && monitor.memoryAlertThreshold !== null && hardware.memory?.usage_percent !== undefined) {
-			const memoryUsageDecimal = hardware.memory.usage_percent;
+		if (monitor.memoryAlertThreshold !== undefined && monitor.memoryAlertThreshold !== null && check.memory?.usage_percent !== undefined) {
+			const memoryUsageDecimal = check.memory.usage_percent;
 			const memoryPercent = memoryUsageDecimal * 100;
 			const threshold = monitor.memoryAlertThreshold;
 			if (memoryPercent > threshold) {
@@ -251,10 +232,10 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		}
 
 		// Disk threshold breach
-		if (monitor.diskAlertThreshold !== undefined && monitor.diskAlertThreshold !== null && Array.isArray(hardware.disk)) {
+		if (monitor.diskAlertThreshold !== undefined && monitor.diskAlertThreshold !== null && Array.isArray(check.disk)) {
 			// Find the highest disk usage
 			let maxDiskUsageDecimal = 0;
-			for (const disk of hardware.disk) {
+			for (const disk of check.disk) {
 				if (disk.usage_percent !== undefined && disk.usage_percent > maxDiskUsageDecimal) {
 					maxDiskUsageDecimal = disk.usage_percent;
 				}
@@ -273,9 +254,9 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		}
 
 		// Temperature threshold breach
-		if (monitor.tempAlertThreshold !== undefined && monitor.tempAlertThreshold !== null && hardware.cpu?.temperature) {
+		if (monitor.tempAlertThreshold !== undefined && monitor.tempAlertThreshold !== null && check.cpu?.temperature) {
 			// Temperature is an array in cpu.temperature
-			const temps = Array.isArray(hardware.cpu.temperature) ? hardware.cpu.temperature : [hardware.cpu.temperature];
+			const temps = Array.isArray(check.cpu.temperature) ? check.cpu.temperature : [check.cpu.temperature];
 			const maxTemp = Math.max(...temps.filter((t: number) => !isNaN(t)));
 			const threshold = monitor.tempAlertThreshold;
 			if (maxTemp > threshold) {

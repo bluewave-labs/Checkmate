@@ -8,6 +8,6 @@ export class NotificationReactor implements IMonitorReactor {
 
 	react = async (evaluation: MonitorEvaluation) => {
 		if (!evaluation.decision.shouldSendNotification) return;
-		await this.notificationService.handleNotifications(evaluation.monitor, evaluation.status, evaluation.decision);
+		await this.notificationService.handleNotifications(evaluation.monitor, evaluation.check, evaluation.decision);
 	};
 }

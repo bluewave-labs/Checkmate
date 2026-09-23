@@ -1,6 +1,6 @@
 const SERVICE_NAME = "incidentService";
 import type { Monitor } from "@/domain/monitors/monitor.type.js";
-import type { DockerStatusPayload, MonitorStatusResponse } from "@/types/network.js";
+import type { Check } from "@/domain/checks/check.type.js";
 import { AppError } from "@/utils/AppError.js";
 import { getDateForRange } from "@/utils/dataUtils.js";
 import type { IIncidentsRepository } from "@/domain/incidents/incident.repository.interface.js";
@@ -15,12 +15,7 @@ import { DateRange } from "@/types/query.js";
 import { describeContainerBreach, findContainerBreaches } from "@/domain/docker/docker-alert.js";
 
 export interface IIncidentService {
-	handleIncident(
-		monitor: Monitor,
-		code: number,
-		decision: MonitorActionDecision,
-		monitorStatusResponse?: MonitorStatusResponse
-	): Promise<Incident | null>;
+	handleIncident(monitor: Monitor, decision: MonitorActionDecision, check: Check): Promise<Incident | null>;
 	resolveIncident(incidentId: string, userId: string, teamId: string, comment?: string, userEmail?: string): Promise<Incident>;
 	getIncidentsByTeam(
 		teamId: string,
@@ -59,12 +54,7 @@ export class IncidentService implements IIncidentService {
 		this.notificationMessageBuilder = notificationMessageBuilder;
 	}
 
-	handleIncident = async (
-		monitor: Monitor,
-		code: number,
-		decision: MonitorActionDecision,
-		monitorStatusResponse?: MonitorStatusResponse
-	): Promise<Incident | null> => {
+	handleIncident = async (monitor: Monitor, decision: MonitorActionDecision, check: Check): Promise<Incident | null> => {
 		if (!decision.shouldCreateIncident && !decision.shouldResolveIncident) {
 			return null;
 		}
@@ -75,13 +65,13 @@ export class IncidentService implements IIncidentService {
 			if (activeIncident) {
 				return activeIncident;
 			} else {
-				let statusCode = code;
+				let statusCode = check.statusCode;
 				let message: string | undefined;
 
 				// For threshold breaches, use 9999 status code and build descriptive message
 				if (decision.incidentReason === "threshold_breach") {
 					statusCode = 9999;
-					message = this.buildThresholdBreachMessage(monitor, monitorStatusResponse);
+					message = this.buildThresholdBreachMessage(monitor, check);
 				}
 
 				const incident = {
@@ -106,18 +96,14 @@ export class IncidentService implements IIncidentService {
 		return await this.incidentsRepository.updateById(activeIncident.id, activeIncident.teamId, activeIncident);
 	};
 
-	private buildThresholdBreachMessage(monitor: Monitor, monitorStatusResponse?: MonitorStatusResponse): string {
+	private buildThresholdBreachMessage(monitor: Monitor, check: Check): string {
 		if (monitor.type === "docker") {
-			const containers = (monitorStatusResponse?.payload as DockerStatusPayload | undefined)?.containers ?? [];
+			const containers = check.containers ?? [];
 			const breaches = findContainerBreaches(monitor, containers);
 			return breaches.length > 0 ? breaches.map(describeContainerBreach).join(", ") : "Container alert";
 		}
 
-		if (!monitorStatusResponse) {
-			return "Threshold breach detected";
-		}
-
-		const breaches = this.notificationMessageBuilder.extractThresholdBreaches(monitor, monitorStatusResponse);
+		const breaches = this.notificationMessageBuilder.extractThresholdBreaches(monitor, check);
 
 		if (breaches.length === 0) {
 			return "Threshold breach detected";

@@ -2,18 +2,7 @@ import { IMonitorStatsRepository } from "@/domain/monitor-stats/monitor-stats.re
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import type { Check, CheckDiskInfo } from "@/domain/checks/check.type.js";
 import { MonitorStatuses, type Monitor, type MonitorStatus } from "@/domain/monitors/monitor.type.js";
-import type {
-	DockerStatusPayload,
-	GameStatusPayload,
-	GrpcStatusPayload,
-	HardwareStatusPayload,
-	HttpStatusPayload,
-	MonitorStatusResponse,
-	PageSpeedStatusPayload,
-	PingStatusPayload,
-	PortStatusPayload,
-	StatusChangeResult,
-} from "@/types/network.js";
+import type { StatusChangeResult } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger.js";
 import type { HardwareStatusMetrics } from "@/types/network.js";
@@ -29,22 +18,8 @@ type HardwareBreaches = Record<HardwareMetricKey, boolean>;
 type HardwareCounters = Record<HardwareMetricKey, number>;
 
 export interface IStatusService {
-	updateRunningStats(monitor: Monitor, networkResponse: MonitorStatusResponse): Promise<boolean>;
-	updateMonitorStatus(
-		statusResponse: MonitorStatusResponse<
-			| PingStatusPayload
-			| HttpStatusPayload
-			| PageSpeedStatusPayload
-			| HardwareStatusPayload
-			| DockerStatusPayload
-			| PortStatusPayload
-			| GameStatusPayload
-			| GrpcStatusPayload
-			| undefined
-		>,
-		check: Check,
-		monitor: Monitor
-	): Promise<StatusChangeResult>;
+	updateRunningStats(check: Check, monitor: Monitor): Promise<boolean>;
+	updateMonitorStatus(check: Check, monitor: Monitor): Promise<StatusChangeResult>;
 }
 
 export class StatusService implements IStatusService {
@@ -59,11 +34,11 @@ export class StatusService implements IStatusService {
 		this.monitorStatsRepository = monitorStatsRepository;
 	}
 
-	async updateRunningStats(monitor: Monitor, networkResponse: MonitorStatusResponse) {
+	async updateRunningStats(check: Check, monitor: Monitor) {
 		try {
 			await this.monitorStatsRepository.updateByMonitorId(monitor.id, {
-				status: networkResponse.status === true,
-				responseTime: networkResponse.responseTime ?? 0,
+				status: check.status === true,
+				responseTime: check.responseTime ?? 0,
 				now: Date.now(),
 			});
 			return true;
@@ -78,8 +53,8 @@ export class StatusService implements IStatusService {
 		}
 	}
 
-	private tryUpdateRunningStats = async (monitor: Monitor, statusResponse: MonitorStatusResponse) => {
-		const statsOk = await this.updateRunningStats(monitor, statusResponse);
+	private tryUpdateRunningStats = async (check: Check, monitor: Monitor) => {
+		const statsOk = await this.updateRunningStats(check, monitor);
 		if (!statsOk) {
 			this.logger.warn({
 				service: SERVICE_NAME,
@@ -180,26 +155,12 @@ export class StatusService implements IStatusService {
 		return { nextStatus, transitioned };
 	};
 
-	updateMonitorStatus = async (
-		statusResponse: MonitorStatusResponse<
-			| PingStatusPayload
-			| HttpStatusPayload
-			| PageSpeedStatusPayload
-			| HardwareStatusPayload
-			| DockerStatusPayload
-			| PortStatusPayload
-			| GameStatusPayload
-			| GrpcStatusPayload
-			| undefined
-		>,
-		check: Check,
-		monitor: Monitor
-	): Promise<StatusChangeResult> => {
+	updateMonitorStatus = async (check: Check, monitor: Monitor): Promise<StatusChangeResult> => {
 		try {
-			const { status, code } = statusResponse;
+			const { status, statusCode } = check;
 
 			// Update running stats
-			await this.tryUpdateRunningStats(monitor, statusResponse);
+			await this.tryUpdateRunningStats(check, monitor);
 
 			const prevStatus = monitor.status;
 			const checkSnapshot = toCheckSnapshot(check);
@@ -240,7 +201,7 @@ export class StatusService implements IStatusService {
 					monitor: updated,
 					statusChanged,
 					prevStatus,
-					code,
+					code: statusCode,
 					timestamp: Date.now(),
 				};
 			}
@@ -253,14 +214,13 @@ export class StatusService implements IStatusService {
 				statusChanged = true;
 			}
 
-			// Evaluate hardware threshold breaches (only for hardware monitors with metrics payload)
+			// Evaluate hardware threshold breaches
 			let thresholdBreaches: HardwareBreaches | undefined;
-			const hardwarePayload = statusResponse.payload as HardwareStatusPayload | undefined;
-			if (monitor.type === "hardware" && hardwarePayload?.data) {
+			if (monitor.type === "hardware") {
 				const hardware = this.computeHardwareStatus({
 					currentStatus: newStatus,
 					reachabilityDown: newStatus === "down",
-					metrics: hardwarePayload.data,
+					metrics: check,
 					thresholds: {
 						cpu: monitor.cpuAlertThreshold,
 						memory: monitor.memoryAlertThreshold,
@@ -286,9 +246,8 @@ export class StatusService implements IStatusService {
 				}
 			}
 
-			const dockerPayload = statusResponse.payload as DockerStatusPayload | undefined;
-			if (monitor.type === "docker" && dockerPayload?.containers) {
-				const breaches = findContainerBreaches(monitor, dockerPayload.containers);
+			if (monitor.type === "docker" && check.containers) {
+				const breaches = findContainerBreaches(monitor, check.containers);
 				const docker = this.computeDockerStatus({
 					currentStatus: newStatus,
 					reachabilityDown: newStatus === "down",
@@ -317,7 +276,7 @@ export class StatusService implements IStatusService {
 				monitor: updated,
 				statusChanged,
 				prevStatus,
-				code,
+				code: statusCode,
 				timestamp: new Date().getTime(),
 				thresholdBreaches,
 			};
