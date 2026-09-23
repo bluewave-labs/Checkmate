@@ -154,7 +154,7 @@ describe("TeamsProvider", () => {
 			expect(card.actions).toHaveLength(1);
 			expect(card.actions[0].type).toBe("Action.OpenUrl");
 			expect(card.actions[0].title).toBe("View Incident");
-			expect(card.actions[0].url).toContain("/incidents/inc-1");
+			expect(card.actions[0].url).toBe("https://app.example.com/incidents/mon-1");
 		});
 
 		it("omits actions when no incident is present", async () => {

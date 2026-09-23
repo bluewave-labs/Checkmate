@@ -3,7 +3,7 @@ import { CheckService } from "../../../src/domain/checks/check.service.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import type { IChecksRepository } from "../../../src/domain/checks/check.repository.interface.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
-import type { MonitorStatusResponse, HardwareStatusPayload, PageSpeedStatusPayload } from "../../../src/types/network.ts";
+import type { MonitorStatusResponse, HardwareStatusPayload, PageSpeedStatusPayload, DockerStatusPayload } from "../../../src/types/network.ts";
 import { NotificationMessageBuilder } from "../../../src/domain/notifications/notification.message-builder.ts";
 import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 
@@ -356,6 +356,34 @@ describe("CheckService", () => {
 			expect(fromRaw).toHaveLength(1);
 			expect(fromRaw[0].metric).toBe("cpu");
 			expect(fromRebuilt).toEqual(fromRaw);
+		});
+
+		it("docker: preserves payload.containers and payload.summary verbatim", () => {
+			const { service } = createService();
+			const payload: DockerStatusPayload = {
+				containers: [
+					{ id: "1", name: "db", image: "postgres:16", state: "exited", status: "Exited (1) 2 minutes ago", health: "none", exitCode: 1 },
+					{ id: "2", name: "api", image: "api:latest", state: "running", status: "Up 3 hours (unhealthy)", health: "unhealthy", restartCount: 2 },
+				],
+				summary: { total: 2, running: 1, stopped: 1, unhealthy: 1 },
+			};
+			const status = makeStatusResponse({ type: "docker", status: true, payload } as any);
+
+			const rebuilt = service.toStatusResponse(service.toCheck(status)!);
+
+			const roundtripped = rebuilt.payload as DockerStatusPayload;
+			expect(roundtripped.containers).toEqual(payload.containers);
+			expect(roundtripped.summary).toEqual(payload.summary);
+			expect(roundtripped.containers[0].exitCode).toBe(1);
+		});
+
+		it("docker: leaves payload undefined for a failed check with no containers", () => {
+			const { service } = createService();
+			const status = makeStatusResponse({ type: "docker", status: false, code: 5000, message: "connect ECONNREFUSED", payload: null } as any);
+
+			const rebuilt = service.toStatusResponse(service.toCheck(status)!);
+
+			expect(rebuilt.payload).toBeUndefined();
 		});
 	});
 

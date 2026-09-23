@@ -468,6 +468,8 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			geoCheckLocations: doc.geoCheckLocations ?? [],
 			geoCheckInterval: doc.geoCheckInterval ?? 300000,
 			dockerLogsEnabled: doc.dockerLogsEnabled ?? false,
+			dockerAlertOnStopped: doc.dockerAlertOnStopped ?? false,
+			dockerAlertOnUnhealthy: doc.dockerAlertOnUnhealthy ?? false,
 			dockerTlsCa: doc.dockerTlsCa ?? undefined,
 			dockerTlsCert: doc.dockerTlsCert ?? undefined,
 			dockerTlsKeySet: doc.dockerTlsKeySet ?? false,

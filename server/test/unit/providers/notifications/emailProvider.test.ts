@@ -115,6 +115,18 @@ describe("EmailProvider", () => {
 			expect(emailService.sendEmail).toHaveBeenCalledWith(expect.anything(), "Monitor Test Monitor thresholds resolved", expect.anything());
 		});
 
+		it("builds correct subject for container_breach", async () => {
+			const { provider, emailService } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessage({ type: "container_breach" }));
+			expect(emailService.sendEmail).toHaveBeenCalledWith(expect.anything(), "Monitor Test Monitor container alert", expect.anything());
+		});
+
+		it("builds correct subject for container_resolved", async () => {
+			const { provider, emailService } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessage({ type: "container_resolved" }));
+			expect(emailService.sendEmail).toHaveBeenCalledWith(expect.anything(), "Monitor Test Monitor containers recovered", expect.anything());
+		});
+
 		it("builds default subject for unknown type", async () => {
 			const { provider, emailService } = createProvider();
 			await provider.sendMessage(makeNotification() as any, makeMessage({ type: "test" }));

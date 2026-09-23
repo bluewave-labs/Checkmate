@@ -85,6 +85,8 @@ export const getMonitorDefaults = (
 				dockerTlsKey: "",
 				dockerTlsKeySet: data?.dockerTlsKeySet ?? false,
 				dockerLogsEnabled: data?.dockerLogsEnabled ?? false,
+				dockerAlertOnStopped: data?.dockerAlertOnStopped ?? false,
+				dockerAlertOnUnhealthy: data?.dockerAlertOnUnhealthy ?? false,
 			};
 			break;
 		case "game":

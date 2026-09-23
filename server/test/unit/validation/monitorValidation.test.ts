@@ -247,6 +247,20 @@ describe("monitorValidation — strategy gating", () => {
 			expect(parsed.monitors[0].dockerLogsEnabled).toBe(false);
 		});
 
+		it("defaults the docker alert switches to false on imported docker monitors", () => {
+			const parsed = importMonitorsBodyValidation.parse({
+				monitors: [
+					{
+						name: "Imported Docker",
+						type: "docker",
+						url: "unix:///var/run/docker.sock",
+					},
+				],
+			});
+			expect(parsed.monitors[0].dockerAlertOnStopped).toBe(false);
+			expect(parsed.monitors[0].dockerAlertOnUnhealthy).toBe(false);
+		});
+
 		it("rejects strategy on imported non-pagespeed monitors", () => {
 			expect(() =>
 				importMonitorsBodyValidation.parse({
@@ -815,6 +829,46 @@ describe("monitorValidation — Docker TLS credentials", () => {
 			expect(parsed.monitors[0]).not.toHaveProperty("dockerTlsCa");
 			expect(parsed.monitors[0]).not.toHaveProperty("dockerTlsCert");
 			expect(parsed.monitors[0]).not.toHaveProperty("dockerTlsKey");
+		});
+	});
+});
+
+describe("monitorValidation — docker alert switches", () => {
+	describe("createMonitorBodyValidation", () => {
+		it("retains dockerAlertOnStopped and dockerAlertOnUnhealthy on a docker monitor", () => {
+			const parsed = createMonitorBodyValidation.parse({
+				name: "Docker host",
+				type: "docker",
+				url: "unix:///var/run/docker.sock",
+				dockerAlertOnStopped: true,
+				dockerAlertOnUnhealthy: true,
+			});
+
+			expect(parsed.dockerAlertOnStopped).toBe(true);
+			expect(parsed.dockerAlertOnUnhealthy).toBe(true);
+		});
+
+		it("leaves the switches undefined when omitted", () => {
+			const parsed = createMonitorBodyValidation.parse({
+				name: "Docker host",
+				type: "docker",
+				url: "unix:///var/run/docker.sock",
+			});
+
+			expect(parsed.dockerAlertOnStopped).toBeUndefined();
+			expect(parsed.dockerAlertOnUnhealthy).toBeUndefined();
+		});
+	});
+
+	describe("editMonitorBodyValidation", () => {
+		it("retains dockerAlertOnStopped and dockerAlertOnUnhealthy on edits", () => {
+			const parsed = editMonitorBodyValidation.parse({
+				dockerAlertOnStopped: true,
+				dockerAlertOnUnhealthy: false,
+			});
+
+			expect(parsed.dockerAlertOnStopped).toBe(true);
+			expect(parsed.dockerAlertOnUnhealthy).toBe(false);
 		});
 	});
 });

@@ -19,6 +19,7 @@ import { ILogger } from "@/utils/logger.js";
 import type { HardwareStatusMetrics } from "@/types/network.js";
 import { MAX_RECENT_CHECKS } from "@/domain/monitors/monitor.type.js";
 import { toCheckSnapshot } from "@/domain/checks/check.snapshot.js";
+import { findContainerBreaches } from "@/domain/docker/docker-alert.js";
 
 const SERVICE_NAME = "StatusService";
 const HARDWARE_ALERT_COUNTER_START = 5;
@@ -162,6 +163,23 @@ export class StatusService implements IStatusService {
 		return { nextStatus, transitioned, breaches, nextCounters };
 	};
 
+	private computeDockerStatus = (params: { currentStatus: MonitorStatus; reachabilityDown: boolean; breaching: boolean }) => {
+		const { currentStatus, reachabilityDown, breaching } = params;
+		let nextStatus: MonitorStatus = currentStatus;
+		let transitioned = false;
+
+		if (!reachabilityDown) {
+			if (breaching && currentStatus !== "breached") {
+				nextStatus = "breached";
+				transitioned = true;
+			} else if (!breaching && currentStatus === "breached") {
+				nextStatus = "up";
+				transitioned = true;
+			}
+		}
+		return { nextStatus, transitioned };
+	};
+
 	updateMonitorStatus = async (
 		statusResponse: MonitorStatusResponse<
 			| PingStatusPayload
@@ -264,6 +282,20 @@ export class StatusService implements IStatusService {
 				thresholdBreaches = hardware.breaches;
 				if (hardware.transitioned) {
 					newStatus = hardware.nextStatus;
+					statusChanged = true;
+				}
+			}
+
+			const dockerPayload = statusResponse.payload as DockerStatusPayload | undefined;
+			if (monitor.type === "docker" && dockerPayload?.containers) {
+				const breaches = findContainerBreaches(monitor, dockerPayload.containers);
+				const docker = this.computeDockerStatus({
+					currentStatus: newStatus,
+					reachabilityDown: newStatus === "down",
+					breaching: breaches.length > 0,
+				});
+				if (docker.transitioned) {
+					newStatus = docker.nextStatus;
 					statusChanged = true;
 				}
 			}

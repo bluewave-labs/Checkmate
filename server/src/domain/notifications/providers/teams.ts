@@ -2,7 +2,7 @@ const SERVICE_NAME = "TeamsProvider";
 import type { Notification } from "@/domain/notifications/notification.type.js";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
-import { getTestMessage } from "@/domain/notifications/providers/utils.js";
+import { getTestMessage, incidentUrl } from "@/domain/notifications/providers/utils.js";
 import got, { HTTPError } from "got";
 
 // Types for Adaptive Card elements
@@ -254,7 +254,7 @@ export class TeamsProvider extends NotificationProvider {
 			actions.push({
 				type: "Action.OpenUrl",
 				title: "View Incident",
-				url: `${message.clientHost}/incidents/${message.content.incident.id}`,
+				url: incidentUrl(message),
 			});
 		}
 

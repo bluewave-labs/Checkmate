@@ -307,6 +307,14 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: Boolean,
 			default: false,
 		},
+		dockerAlertOnStopped: {
+			type: Boolean,
+			default: false,
+		},
+		dockerAlertOnUnhealthy: {
+			type: Boolean,
+			default: false,
+		},
 		dockerTlsCa: {
 			type: String,
 		},

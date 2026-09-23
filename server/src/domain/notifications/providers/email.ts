@@ -92,6 +92,10 @@ export class EmailProvider extends NotificationProvider {
 				return `Monitor ${message.monitor.name} threshold exceeded`;
 			case "threshold_resolved":
 				return `Monitor ${message.monitor.name} thresholds resolved`;
+			case "container_breach":
+				return `Monitor ${message.monitor.name} container alert`;
+			case "container_resolved":
+				return `Monitor ${message.monitor.name} containers recovered`;
 			default:
 				return `Alert: ${message.monitor.name}`;
 		}

@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach } from "@jest/globals";
 import { NotificationMessageBuilder } from "../../../src/domain/notifications/notification.message-builder.ts";
 import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
-import type { MonitorStatusResponse, HardwareStatusPayload } from "../../../src/types/network.ts";
+import type { MonitorStatusResponse, HardwareStatusPayload, DockerStatusPayload } from "../../../src/types/network.ts";
 import type { MonitorActionDecision } from "../../../src/worker/worker.interface.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -50,6 +50,29 @@ const makeHardwarePayload = (overrides?: Partial<HardwareStatusPayload["data"]>)
 			...overrides,
 		},
 	}) as HardwareStatusPayload;
+
+const makeDockerPayload = (containers: Partial<DockerStatusPayload["containers"][number]>[]): DockerStatusPayload => ({
+	containers: containers.map((container, index) => ({
+		id: `container-${index}`,
+		name: `container-${index}`,
+		image: "nginx:latest",
+		state: "running",
+		status: "Up 3 hours",
+		health: "none",
+		...container,
+	})),
+	summary: { total: containers.length, running: 0, stopped: 0, unhealthy: 0 },
+});
+
+const makeDockerMonitor = (overrides?: Partial<Monitor>): Monitor =>
+	makeMonitor({
+		type: "docker",
+		status: "breached",
+		url: "unix:///var/run/docker.sock",
+		dockerAlertOnStopped: true,
+		dockerAlertOnUnhealthy: true,
+		...overrides,
+	});
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 
@@ -123,7 +146,7 @@ describe("NotificationMessageBuilder", () => {
 
 		it("builds a threshold_resolved message for hardware monitor recovering", () => {
 			const monitor = makeMonitor({ status: "up", type: "hardware" });
-			const decision = makeDecision({ notificationReason: "status_change" });
+			const decision = makeDecision({ notificationReason: "threshold_resolved" });
 
 			const msg = builder.buildMessage(monitor, makeStatusResponse(), decision, "https://app.example.com");
 
@@ -163,13 +186,46 @@ describe("NotificationMessageBuilder", () => {
 			expect(msg.type).toBe("threshold_breach");
 		});
 
-		it("returns threshold_resolved for hardware monitor with status_change and up", () => {
+		it("returns threshold_resolved for hardware monitor with threshold_resolved reason", () => {
+			const monitor = makeMonitor({ status: "up", type: "hardware" });
+			const decision = makeDecision({ notificationReason: "threshold_resolved" });
+
+			const msg = builder.buildMessage(monitor, makeStatusResponse(), decision, "");
+
+			expect(msg.type).toBe("threshold_resolved");
+		});
+
+		it("returns monitor_up for hardware monitor recovering from down with status_change", () => {
 			const monitor = makeMonitor({ status: "up", type: "hardware" });
 			const decision = makeDecision({ notificationReason: "status_change" });
 
 			const msg = builder.buildMessage(monitor, makeStatusResponse(), decision, "");
 
-			expect(msg.type).toBe("threshold_resolved");
+			expect(msg.type).toBe("monitor_up");
+		});
+
+		it("returns container_breach for docker monitor with threshold_breach reason", () => {
+			const decision = makeDecision({ notificationReason: "threshold_breach" });
+
+			const msg = builder.buildMessage(makeDockerMonitor(), makeStatusResponse(), decision, "");
+
+			expect(msg.type).toBe("container_breach");
+		});
+
+		it("returns container_resolved for docker monitor with threshold_resolved reason", () => {
+			const decision = makeDecision({ notificationReason: "threshold_resolved" });
+
+			const msg = builder.buildMessage(makeDockerMonitor({ status: "up" }), makeStatusResponse(), decision, "");
+
+			expect(msg.type).toBe("container_resolved");
+		});
+
+		it("returns monitor_down for docker monitor that is down regardless of reason", () => {
+			const decision = makeDecision({ notificationReason: "threshold_breach" });
+
+			const msg = builder.buildMessage(makeDockerMonitor({ status: "down" }), makeStatusResponse(), decision, "");
+
+			expect(msg.type).toBe("monitor_down");
 		});
 
 		it("returns monitor_up for non-hardware monitor with status up", () => {
@@ -223,7 +279,22 @@ describe("NotificationMessageBuilder", () => {
 			const msg = builder.buildMessage(
 				makeMonitor({ status: "up", type: "hardware" }),
 				makeStatusResponse(),
-				makeDecision({ notificationReason: "status_change" }),
+				makeDecision({ notificationReason: "threshold_resolved" }),
+				""
+			);
+			expect(msg.severity).toBe("success");
+		});
+
+		it("returns warning for container_breach", () => {
+			const msg = builder.buildMessage(makeDockerMonitor(), makeStatusResponse(), makeDecision({ notificationReason: "threshold_breach" }), "");
+			expect(msg.severity).toBe("warning");
+		});
+
+		it("returns success for container_resolved", () => {
+			const msg = builder.buildMessage(
+				makeDockerMonitor({ status: "up" }),
+				makeStatusResponse(),
+				makeDecision({ notificationReason: "threshold_resolved" }),
 				""
 			);
 			expect(msg.severity).toBe("success");
@@ -311,10 +382,67 @@ describe("NotificationMessageBuilder", () => {
 		describe("threshold_resolved", () => {
 			it("includes resolved details", () => {
 				const monitor = makeMonitor({ status: "up", type: "hardware" });
-				const msg = builder.buildMessage(monitor, makeStatusResponse(), makeDecision(), "");
+				const msg = builder.buildMessage(monitor, makeStatusResponse(), makeDecision({ notificationReason: "threshold_resolved" }), "");
 
 				expect(msg.content.title).toBe("Thresholds Resolved: Test Monitor");
 				expect(msg.content.summary).toBe('Monitor "Test Monitor" thresholds have returned to normal.');
+				expect(msg.content.details).toContain("Status: Up");
+			});
+		});
+
+		describe("container_breach", () => {
+			it("lists one detail line per breaching container", () => {
+				const response = makeStatusResponse({
+					type: "docker",
+					status: true,
+					payload: makeDockerPayload([{ name: "db", state: "exited", exitCode: 1 }, { name: "api", health: "unhealthy" }, { name: "web" }]),
+				} as any);
+
+				const msg = builder.buildMessage(makeDockerMonitor(), response, makeDecision({ notificationReason: "threshold_breach" }), "");
+
+				expect(msg.content.title).toBe("Container Alert: Test Monitor");
+				expect(msg.content.summary).toBe('2 container(s) on "Test Monitor" need attention.');
+				expect(msg.content.details).toEqual(["URL: unix:///var/run/docker.sock", "Type: docker", "db: stopped (exit code 1)", "api: unhealthy"]);
+				expect(msg.content.thresholds).toBeUndefined();
+			});
+
+			it("only lists containers matching an enabled switch", () => {
+				const response = makeStatusResponse({
+					type: "docker",
+					status: true,
+					payload: makeDockerPayload([
+						{ name: "db", state: "exited", exitCode: 1 },
+						{ name: "api", health: "unhealthy" },
+					]),
+				} as any);
+				const monitor = makeDockerMonitor({ dockerAlertOnStopped: false });
+
+				const msg = builder.buildMessage(monitor, response, makeDecision({ notificationReason: "threshold_breach" }), "");
+
+				expect(msg.content.details).toEqual(["URL: unix:///var/run/docker.sock", "Type: docker", "api: unhealthy"]);
+			});
+
+			it("lists no containers when the payload is an error string", () => {
+				const response = makeStatusResponse({ type: "docker", status: false, payload: "connect ECONNREFUSED" } as any);
+
+				const msg = builder.buildMessage(makeDockerMonitor(), response, makeDecision({ notificationReason: "threshold_breach" }), "");
+
+				expect(msg.content.summary).toBe('0 container(s) on "Test Monitor" need attention.');
+				expect(msg.content.details).toEqual(["URL: unix:///var/run/docker.sock", "Type: docker"]);
+			});
+		});
+
+		describe("container_resolved", () => {
+			it("includes recovered details", () => {
+				const msg = builder.buildMessage(
+					makeDockerMonitor({ status: "up" }),
+					makeStatusResponse(),
+					makeDecision({ notificationReason: "threshold_resolved" }),
+					""
+				);
+
+				expect(msg.content.title).toBe("Containers Recovered: Test Monitor");
+				expect(msg.content.summary).toBe('All containers on "Test Monitor" are back to normal.');
 				expect(msg.content.details).toContain("Status: Up");
 			});
 		});

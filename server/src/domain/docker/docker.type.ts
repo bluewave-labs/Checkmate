@@ -55,6 +55,7 @@ export interface DockerContainerInfo {
 	startedAt?: string; // ISO date
 	ports?: DockerContainerPort[];
 	mounts?: DockerContainerMount[];
+	exitCode?: number;
 }
 
 export interface DockerContainerSummary {

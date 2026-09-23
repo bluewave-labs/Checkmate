@@ -1,6 +1,6 @@
 const SERVICE_NAME = "incidentService";
 import type { Monitor } from "@/domain/monitors/monitor.type.js";
-import type { MonitorStatusResponse } from "@/types/network.js";
+import type { DockerStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import { getDateForRange } from "@/utils/dataUtils.js";
 import type { IIncidentsRepository } from "@/domain/incidents/incident.repository.interface.js";
@@ -12,6 +12,7 @@ import type { MonitorActionDecision } from "@/worker/worker.interface.js";
 import type { INotificationMessageBuilder } from "@/domain/notifications/notification.message-builder.js";
 import type { ILogger } from "@/utils/logger.js";
 import { DateRange } from "@/types/query.js";
+import { describeContainerBreach, findContainerBreaches } from "@/domain/docker/docker-alert.js";
 
 export interface IIncidentService {
 	handleIncident(
@@ -106,6 +107,12 @@ export class IncidentService implements IIncidentService {
 	};
 
 	private buildThresholdBreachMessage(monitor: Monitor, monitorStatusResponse?: MonitorStatusResponse): string {
+		if (monitor.type === "docker") {
+			const containers = (monitorStatusResponse?.payload as DockerStatusPayload | undefined)?.containers ?? [];
+			const breaches = findContainerBreaches(monitor, containers);
+			return breaches.length > 0 ? breaches.map(describeContainerBreach).join(", ") : "Container alert";
+		}
+
 		if (!monitorStatusResponse) {
 			return "Threshold breach detected";
 		}
