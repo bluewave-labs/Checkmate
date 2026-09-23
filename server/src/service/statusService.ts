@@ -172,8 +172,10 @@ export class StatusService implements IStatusService {
 			if (breaching && currentStatus !== "breached") {
 				nextStatus = "breached";
 				transitioned = true;
-			} else if (!breaching && currentStatus === "breached") nextStatus = "up";
-			transitioned = true;
+			} else if (!breaching && currentStatus === "breached") {
+				nextStatus = "up";
+				transitioned = true;
+			}
 		}
 		return { nextStatus, transitioned };
 	};

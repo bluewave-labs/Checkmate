@@ -150,7 +150,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 	private healthFromStatus = (status: string): DockerHealthStatus => {
 		const match = HEALTH_STATUS.exec(status);
 		if (!match) return "none";
-		return match[1] === "health: starting" ? "starting" : match[1];
+		return match[1] === "health: starting" ? "starting" : (match[1] as DockerHealthStatus);
 	};
 
 	private toContainerSummary(containers: DockerContainerInfo[]): DockerContainerSummary {

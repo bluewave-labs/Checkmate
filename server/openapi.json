@@ -466,6 +466,12 @@
 					"dockerLogsEnabled": {
 						"type": "boolean"
 					},
+					"dockerAlertOnStopped": {
+						"type": "boolean"
+					},
+					"dockerAlertOnUnhealthy": {
+						"type": "boolean"
+					},
 					"dockerTlsCa": {
 						"type": "string"
 					},
@@ -523,6 +529,8 @@
 					"geoCheckLocations",
 					"geoCheckInterval",
 					"dockerLogsEnabled",
+					"dockerAlertOnStopped",
+					"dockerAlertOnUnhealthy",
 					"teamId",
 					"userId",
 					"createdAt",
@@ -694,6 +702,12 @@
 									"dockerLogsEnabled": {
 										"type": "boolean"
 									},
+									"dockerAlertOnStopped": {
+										"type": "boolean"
+									},
+									"dockerAlertOnUnhealthy": {
+										"type": "boolean"
+									},
 									"dockerTlsCa": {
 										"type": "string"
 									},
@@ -753,6 +767,8 @@
 									"geoCheckLocations",
 									"geoCheckInterval",
 									"dockerLogsEnabled",
+									"dockerAlertOnStopped",
+									"dockerAlertOnUnhealthy",
 									"teamId",
 									"userId",
 									"createdAt",
@@ -7186,6 +7202,12 @@
 														"dockerLogsEnabled": {
 															"type": "boolean"
 														},
+														"dockerAlertOnStopped": {
+															"type": "boolean"
+														},
+														"dockerAlertOnUnhealthy": {
+															"type": "boolean"
+														},
 														"dockerTlsCa": {
 															"type": "string"
 														},
@@ -7245,6 +7267,8 @@
 														"geoCheckLocations",
 														"geoCheckInterval",
 														"dockerLogsEnabled",
+														"dockerAlertOnStopped",
+														"dockerAlertOnUnhealthy",
 														"teamId",
 														"userId",
 														"createdAt",
@@ -7761,6 +7785,12 @@
 														"dockerLogsEnabled": {
 															"type": "boolean"
 														},
+														"dockerAlertOnStopped": {
+															"type": "boolean"
+														},
+														"dockerAlertOnUnhealthy": {
+															"type": "boolean"
+														},
 														"dockerTlsCa": {
 															"type": "string"
 														},
@@ -7820,6 +7850,8 @@
 														"geoCheckLocations",
 														"geoCheckInterval",
 														"dockerLogsEnabled",
+														"dockerAlertOnStopped",
+														"dockerAlertOnUnhealthy",
 														"teamId",
 														"userId",
 														"createdAt",
@@ -9308,6 +9340,12 @@
 									"dockerLogsEnabled": {
 										"type": "boolean"
 									},
+									"dockerAlertOnStopped": {
+										"type": "boolean"
+									},
+									"dockerAlertOnUnhealthy": {
+										"type": "boolean"
+									},
 									"dockerTlsCa": {
 										"anyOf": [
 											{
@@ -10033,6 +10071,14 @@
 													"type": "boolean",
 													"default": false
 												},
+												"dockerAlertOnStopped": {
+													"type": "boolean",
+													"default": false
+												},
+												"dockerAlertOnUnhealthy": {
+													"type": "boolean",
+													"default": false
+												},
 												"dnsServer": {
 													"type": "string",
 													"minLength": 1
@@ -10598,6 +10644,12 @@
 										"minimum": 300000
 									},
 									"dockerLogsEnabled": {
+										"type": "boolean"
+									},
+									"dockerAlertOnStopped": {
+										"type": "boolean"
+									},
+									"dockerAlertOnUnhealthy": {
 										"type": "boolean"
 									},
 									"dockerTlsCa": {
