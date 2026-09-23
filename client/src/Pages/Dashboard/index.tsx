@@ -15,7 +15,7 @@ import type { RootState, AppDispatch } from "@/store";
 
 import { MonitorStatusCard } from "@/Pages/Dashboard/components/cards/MonitorStatusCard";
 import { CurrentlyDownCard } from "@/Pages/Dashboard/components/cards/CurrentlyDownCard";
-import { LowestUptimeCard } from "@/Pages/Dashboard/components/cards/LowestUptimeCard";
+import { UptimeCard } from "@/Pages/Dashboard/components/cards/UptimeCard";
 import { MonitorsByTypeCard } from "@/Pages/Dashboard/components/cards/MonitorsByTypeCard";
 import { EditCardsModal } from "@/Pages/Dashboard/components/EditCardsModal";
 import { type DashboardCardKey, dashboardCardKeys } from "@/Types/Dashboard";
@@ -51,7 +51,7 @@ const Dashboard = () => {
 	const cardComponents: Record<DashboardCardKey, ReactNode> = {
 		monitorStatus: <MonitorStatusCard summary={summary} />,
 		currentlyDown: <CurrentlyDownCard monitors={monitors ?? []} />,
-		lowestUptime: <LowestUptimeCard monitors={monitors ?? []} />,
+		uptime: <UptimeCard monitors={monitors ?? []} />,
 		monitorsByType: <MonitorsByTypeCard monitorsByType={monitorsByType} />,
 	};
 

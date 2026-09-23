@@ -4,9 +4,8 @@ import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { DashboardCard } from "@/Pages/Dashboard/components/DashboardCard";
 import { Dot } from "@/Components/design-elements";
-import { getStatusColor } from "@/Utils/MonitorUtils";
 import { typographyLevels } from "@/Utils/Theme/Palette";
-import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
+import { LAYOUT } from "@/Utils/Theme/constants";
 import type { Monitor } from "@/Types/Monitor";
 
 interface CurrentlyDownCardProps {
@@ -32,7 +31,7 @@ export const CurrentlyDownCard = ({ monitors }: CurrentlyDownCardProps) => {
 					{t("pages.dashboard.currentlyDown.empty")}
 				</Typography>
 			) : (
-				<Stack gap={theme.spacing(SPACING.SM)}>
+				<Stack gap={theme.spacing(LAYOUT.SM)}>
 					{downMonitors.map((monitor) => (
 						<Stack
 							key={monitor.id}
@@ -40,7 +39,7 @@ export const CurrentlyDownCard = ({ monitors }: CurrentlyDownCardProps) => {
 							alignItems="center"
 							gap={theme.spacing(LAYOUT.XS)}
 						>
-							<Dot color={getStatusColor(monitor.status, theme)} />
+							<Dot color={theme.palette.error.main} />
 							<Typography
 								fontSize={typographyLevels.m}
 								color={theme.palette.text.primary}

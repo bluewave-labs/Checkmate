@@ -1925,8 +1925,11 @@
 			"cards": {
 				"monitorStatus": "Monitor status",
 				"currentlyDown": "Currently down",
-				"lowestUptime": "Lowest uptime",
+				"uptime": "Monitor uptime",
 				"monitorsByType": "Monitors by type"
+			},
+			"uptimeCard": {
+				"toggleSortOrder": "Toggle sort order"
 			},
 			"currentlyDown": {
 				"empty": "No monitors are down at this moment."
