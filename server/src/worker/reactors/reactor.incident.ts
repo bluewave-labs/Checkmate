@@ -8,6 +8,6 @@ export class IncidentReactor implements IMonitorReactor {
 	constructor(private incidentService: IIncidentService) {}
 
 	react = async (evaluation: MonitorEvaluation) => {
-		await this.incidentService.handleIncident(evaluation.monitor, evaluation.statusChange.code, evaluation.decision, evaluation.check);
+		await this.incidentService.handleIncident(evaluation.monitor, evaluation.decision, evaluation.check);
 	};
 }

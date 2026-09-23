@@ -15,7 +15,7 @@ import { DateRange } from "@/types/query.js";
 import { describeContainerBreach, findContainerBreaches } from "@/domain/docker/docker-alert.js";
 
 export interface IIncidentService {
-	handleIncident(monitor: Monitor, code: number, decision: MonitorActionDecision, check: Check): Promise<Incident | null>;
+	handleIncident(monitor: Monitor, decision: MonitorActionDecision, check: Check): Promise<Incident | null>;
 	resolveIncident(incidentId: string, userId: string, teamId: string, comment?: string, userEmail?: string): Promise<Incident>;
 	getIncidentsByTeam(
 		teamId: string,
@@ -54,7 +54,7 @@ export class IncidentService implements IIncidentService {
 		this.notificationMessageBuilder = notificationMessageBuilder;
 	}
 
-	handleIncident = async (monitor: Monitor, code: number, decision: MonitorActionDecision, check: Check): Promise<Incident | null> => {
+	handleIncident = async (monitor: Monitor, decision: MonitorActionDecision, check: Check): Promise<Incident | null> => {
 		if (!decision.shouldCreateIncident && !decision.shouldResolveIncident) {
 			return null;
 		}
@@ -65,7 +65,7 @@ export class IncidentService implements IIncidentService {
 			if (activeIncident) {
 				return activeIncident;
 			} else {
-				let statusCode = code;
+				let statusCode = check.statusCode;
 				let message: string | undefined;
 
 				// For threshold breaches, use 9999 status code and build descriptive message
