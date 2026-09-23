@@ -140,19 +140,15 @@ export const useMonitorListController = (config: MonitorListConfig) => {
 		setPage(0);
 	};
 
-	const setSortField = useCallback(
-		(value: string) => {
-			dispatch(setTableSortField({ value, table: config.rowsPerPageTable }));
-		},
-		[config.rowsPerPageTable, dispatch]
-	);
+	const setSortField = (value: string) => {
+		dispatch(setTableSortField({ value, table: config.rowsPerPageTable }));
+		setPage(0);
+	};
 
-	const setSortOrder = useCallback(
-		(value: "asc" | "desc") => {
-			dispatch(setTableSortOrder({ value, table: config.rowsPerPageTable }));
-		},
-		[config.rowsPerPageTable, dispatch]
-	);
+	const setSortOrder = (value: "asc" | "desc") => {
+		dispatch(setTableSortOrder({ value, table: config.rowsPerPageTable }));
+		setPage(0);
+	};
 
 	// Check for active filters
 	const hasActiveFilters = Boolean(
