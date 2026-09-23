@@ -827,6 +827,18 @@
 						}
 					}
 				},
+				"dockerAlerts": {
+					"title": "Container alerts",
+					"description": "Mark this host as breached while any container on it is stopped or failing its health check, and notify on the change. Containers that exit with code 0 do not count as stopped. Capture does not report exit codes, so on Capture hosts every stopped container counts.",
+					"option": {
+						"onStopped": {
+							"label": "Alert when a container is stopped"
+						},
+						"onUnhealthy": {
+							"label": "Alert when a container is unhealthy"
+						}
+					}
+				},
 				"stats": {
 					"title": "Monitor history",
 					"description": "Clear all monitoring history and statistics for your team. This action is irreversible.",
