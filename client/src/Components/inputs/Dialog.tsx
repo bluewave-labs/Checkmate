@@ -21,6 +21,7 @@ export const DialogInput = ({
 	loading = false,
 	cancelText,
 	confirmText,
+	confirmDisabled = false,
 	children,
 	maxWidth,
 	fullWidth = false,
@@ -35,6 +36,7 @@ export const DialogInput = ({
 	loading?: boolean;
 	cancelText?: string;
 	confirmText?: string;
+	confirmDisabled?: boolean;
 	children?: ReactNode;
 	maxWidth?: DialogProps["maxWidth"];
 	fullWidth?: boolean;
@@ -104,6 +106,7 @@ export const DialogInput = ({
 						variant="contained"
 						color={confirmColor}
 						onClick={onConfirm}
+						disabled={confirmDisabled}
 					>
 						{confirmText ?? t("common.buttons.confirm")}
 					</Button>
