@@ -102,7 +102,10 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	private pageOptions = (config: TeamQueryConfig) => {
 		const { page = 0, rowsPerPage = 0, field = "createdAt", order = "desc" } = config ?? {};
 		const direction: 1 | -1 = order === "asc" ? 1 : -1;
-		const sort: Record<string, 1 | -1> = field === "createdAt" ? { createdAt: direction } : { [field]: direction, createdAt: 1 };
+		const sort: Record<string, 1 | -1> = { [field]: direction };
+		if (field !== "createdAt") {
+			sort.createdAt = 1;
+		}
 		return { sort, skip: Math.max(page, 0) * rowsPerPage, limit: rowsPerPage };
 	};
 
