@@ -6,7 +6,7 @@ metadata:
 spec:
   scaleTargetRef:
     name: checkmate-worker
-  minReplicaCount: {{ .Values.worker.autoscaling.minReplicaCount }} # floor: never 0 — a cold gap stops checks
+  minReplicaCount: {{ .Values.worker.autoscaling.minReplicaCount }}
   maxReplicaCount: {{ .Values.worker.autoscaling.maxReplicaCount }}
   cooldownPeriod: {{ .Values.worker.autoscaling.cooldownPeriod }}
   advanced:
@@ -19,12 +19,11 @@ spec:
       metadata:
         dbName: {{ .Values.worker.autoscaling.mongo.dbName | quote }}
         collection: {{ .Values.worker.autoscaling.mongo.collection | quote }}
-        # The Phase 2 countDueBacklog predicate, time-relativized with $$NOW (epoch-ms via $toLong):
         query: >-
           { "type": "check", "isActive": true,
             "$expr": { "$lte": ["$nextScheduledAt", { "$toLong": "$$NOW" }] },
             "$or": [ { "lockedUntil": null },
                      { "$expr": { "$lt": ["$lockedUntil", { "$toLong": "$$NOW" }] } } ] }
         queryValue: {{ .Values.worker.autoscaling.backlogPerReplica | quote }}
-        connectionStringFromEnv: DB_CONNECTION_STRING # resolved from the worker's checkmate-secrets
+        connectionStringFromEnv: DB_CONNECTION_STRING
 {{- end }}
