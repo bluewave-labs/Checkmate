@@ -3,7 +3,7 @@ import got from "got";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
 import type { AlertMatrixPayload, Notification } from "@/domain/notifications/notification.type.js";
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
-import { getTestMessage } from "@/domain/notifications/providers/utils.js";
+import { getTestMessage, incidentUrl } from "@/domain/notifications/providers/utils.js";
 import { randomUUID } from "crypto";
 
 export class MatrixProvider extends NotificationProvider {
@@ -172,10 +172,10 @@ export class MatrixProvider extends NotificationProvider {
 
 		// Incident link (if incident exists)
 		if (message.content.incident) {
-			const incidentUrl = `${message.clientHost}/infrastructure/${message.monitor.id}`;
+			const url = incidentUrl(message);
 			plainLines.push("");
-			plainLines.push(`View Incident: ${incidentUrl}`);
-			htmlLines.push(`<p><a href="${this.escapeHtml(incidentUrl)}">View Incident</a></p>`);
+			plainLines.push(`View Incident: ${url}`);
+			htmlLines.push(`<p><a href="${this.escapeHtml(url)}">View Incident</a></p>`);
 		}
 
 		// Footer with timestamp

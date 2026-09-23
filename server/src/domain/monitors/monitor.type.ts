@@ -51,6 +51,22 @@ export const UptimeDetailsSupportedTypes = ["http", "ping", "port", "game", "grp
 export type UptimeDetailsSupportedType = (typeof UptimeDetailsSupportedTypes)[number];
 export const supportsUptimeDetails = (type: MonitorType): type is UptimeDetailsSupportedType => UptimeDetailsSupportedTypes.some((t) => t === type);
 
+const MonitorPaths: Record<MonitorType, string> = {
+	http: "uptime",
+	port: "uptime",
+	ping: "uptime",
+	game: "uptime",
+	grpc: "uptime",
+	websocket: "uptime",
+	dns: "uptime",
+	unknown: "uptime",
+	docker: "docker/host",
+	hardware: "infrastructure",
+	pagespeed: "pagespeed",
+};
+
+export const getMonitorPath = (type: MonitorType): string => MonitorPaths[type];
+
 // Types whose check leaves the instance, and whose failure to reach the target can therefore be the instance's
 // own loss of egress. A hardware check is an ordinary outbound HTTP request to the Capture agent, so it counts
 // however far away the agent is. `unknown` is excluded because no request is made for it.

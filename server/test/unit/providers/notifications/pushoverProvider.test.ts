@@ -99,6 +99,12 @@ describe("PushoverProvider", () => {
 			expect(mockGotPost.mock.calls[0][1].form.message).toContain("View Incident");
 		});
 
+		it("links the incident to the monitor's incidents page", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessageWithIncident());
+			expect(mockGotPost.mock.calls[0][1].form.message).toContain("View Incident: https://app.example.com/incidents/mon-1");
+		});
+
 		it("omits optional sections when not present", async () => {
 			const { provider } = createProvider();
 			const msg = makeMessage();

@@ -2,7 +2,7 @@ const SERVICE_NAME = "PushoverProvider";
 import type { Notification } from "@/domain/notifications/notification.type.js";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
-import { getTestMessage } from "@/domain/notifications/providers/utils.js";
+import { getTestMessage, incidentUrl } from "@/domain/notifications/providers/utils.js";
 import got from "got";
 
 export class PushoverProvider extends NotificationProvider {
@@ -101,7 +101,7 @@ export class PushoverProvider extends NotificationProvider {
 
 		if (message.content.incident) {
 			lines.push("");
-			lines.push(`View Incident: ${message.clientHost}/incidents/${message.monitor.id}`);
+			lines.push(`View Incident: ${incidentUrl(message)}`);
 		}
 
 		return lines.join("\n");

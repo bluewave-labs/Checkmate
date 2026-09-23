@@ -1,7 +1,7 @@
 const SERVICE_NAME = "SignalgridProvider";
 import type { Notification, NotificationMessage, NotificationSeverity } from "@/domain/notifications/notification.type.js";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
-import { getTestMessage } from "@/domain/notifications/providers/utils.js";
+import { getTestMessage, incidentUrl } from "@/domain/notifications/providers/utils.js";
 import got from "got";
 
 export class SignalgridProvider extends NotificationProvider {
@@ -115,7 +115,7 @@ export class SignalgridProvider extends NotificationProvider {
 
 		if (message.content.incident) {
 			lines.push("");
-			lines.push(`View Incident: ${message.clientHost}/incidents/${message.monitor.id}`);
+			lines.push(`View Incident: ${incidentUrl(message)}`);
 		}
 
 		return lines.join("\n");

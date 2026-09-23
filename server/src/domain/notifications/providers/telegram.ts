@@ -2,7 +2,7 @@ const SERVICE_NAME = "TelegramProvider";
 import type { Notification } from "@/domain/notifications/notification.type.js";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
-import { getTestMessage } from "@/domain/notifications/providers/utils.js";
+import { getTestMessage, incidentUrl } from "@/domain/notifications/providers/utils.js";
 import got from "got";
 
 export class TelegramProvider extends NotificationProvider {
@@ -101,7 +101,7 @@ export class TelegramProvider extends NotificationProvider {
 
 		if (message.content.incident) {
 			lines.push("");
-			lines.push(`<a href="${message.clientHost}/incidents/${message.monitor.id}">View Incident</a>`);
+			lines.push(`<a href="${incidentUrl(message)}">View Incident</a>`);
 		}
 
 		return lines.join("\n");
