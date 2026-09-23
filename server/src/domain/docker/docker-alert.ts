@@ -43,5 +43,5 @@ export const describeContainerBreach = (breach: DockerContainerBreach): string =
 	if (breach.exitCode === undefined) {
 		return `${breach.name}: stopped`;
 	}
-	return `${breach.name} stopped (exit code ${breach.exitCode})`;
+	return `${breach.name}: stopped (exit code ${breach.exitCode})`;
 };

@@ -107,14 +107,14 @@ export class IncidentService implements IIncidentService {
 	};
 
 	private buildThresholdBreachMessage(monitor: Monitor, monitorStatusResponse?: MonitorStatusResponse): string {
-		if (!monitorStatusResponse) {
-			return "Threshold breach detected";
-		}
-
 		if (monitor.type === "docker") {
 			const containers = (monitorStatusResponse?.payload as DockerStatusPayload | undefined)?.containers ?? [];
 			const breaches = findContainerBreaches(monitor, containers);
 			return breaches.length > 0 ? breaches.map(describeContainerBreach).join(", ") : "Container alert";
+		}
+
+		if (!monitorStatusResponse) {
+			return "Threshold breach detected";
 		}
 
 		const breaches = this.notificationMessageBuilder.extractThresholdBreaches(monitor, monitorStatusResponse);

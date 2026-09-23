@@ -286,7 +286,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 			info.health = this.toHealthStatus(inspectResult.value.State?.Health?.Status);
 			info.ports = this.toPorts(inspectResult.value.NetworkSettings?.Ports);
 			info.mounts = this.toMounts(inspectResult.value.Mounts);
-			info.exitCode = inspectResult.value.State.ExitCode;
+			info.exitCode = inspectResult.value.State?.ExitCode;
 		} else {
 			info.exitCode = this.exitCodeFromStatus(summary.Status);
 			info.health = this.healthFromStatus(summary.Status);
