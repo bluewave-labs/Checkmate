@@ -135,6 +135,17 @@ export class CheckService implements ICheckService {
 		return check;
 	};
 
+	private toPayload = (check: Check): HardwareStatusPayload | DockerStatusPayload | undefined => {
+		switch (check.metadata.type) {
+			case "hardware":
+				return { data: { cpu: check.cpu, memory: check.memory, disk: check.disk, host: check.host, net: check.net } } as HardwareStatusPayload;
+			case "docker":
+				return check.containers ? { containers: check.containers, summary: check.containerSummary } : undefined;
+			default:
+				return undefined;
+		}
+	};
+
 	toStatusResponse = (check: Check) => {
 		const statusResponse: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]> = {
 			monitorId: check.metadata.monitorId,
@@ -145,10 +156,7 @@ export class CheckService implements ICheckService {
 			message: check.message,
 			responseTime: check.responseTime,
 			// re-nest hardware metrics so updateMonitorStatus / extractThresholdBreaches see payload.data
-			payload:
-				check.metadata.type === "hardware"
-					? ({ data: { cpu: check.cpu, memory: check.memory, disk: check.disk, host: check.host, net: check.net } } as HardwareStatusPayload)
-					: undefined,
+			payload: this.toPayload(check),
 		};
 		return statusResponse;
 	};

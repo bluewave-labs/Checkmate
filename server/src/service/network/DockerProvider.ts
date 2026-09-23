@@ -42,6 +42,8 @@ const DOCKER_LOG_TRUNCATION_MARKER = " …[truncated]";
 const DOCKER_LOG_TS_REGEX = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{1,9}))?Z /;
 const DOCKER_TLS_DEFAULT_PORT = 2376;
 const CAPTURE_FATAL_ERROR_METRICS = new Set(["docker.client", "docker.container.list"]);
+const EXITED_STATUS = /^Exited \((\d+)\)/;
+const HEALTH_STATUS = /\((healthy|unhealthy|health: starting)\)$/;
 
 export interface DockerError extends Error {
 	statusCode?: number;
@@ -139,6 +141,17 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 	private toHealthStatus(status: string | undefined): DockerHealthStatus {
 		return status && (DockerHealthStatuses as readonly string[]).includes(status) ? (status as DockerHealthStatus) : "none";
 	}
+
+	private exitCodeFromStatus = (status: string): number | undefined => {
+		const match = EXITED_STATUS.exec(status);
+		return match ? Number(match[1]) : undefined;
+	};
+
+	private healthFromStatus = (status: string): DockerHealthStatus => {
+		const match = HEALTH_STATUS.exec(status);
+		if (!match) return "none";
+		return match[1] === "health: starting" ? "starting" : match[1];
+	};
 
 	private toContainerSummary(containers: DockerContainerInfo[]): DockerContainerSummary {
 		return {
@@ -273,7 +286,10 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 			info.health = this.toHealthStatus(inspectResult.value.State?.Health?.Status);
 			info.ports = this.toPorts(inspectResult.value.NetworkSettings?.Ports);
 			info.mounts = this.toMounts(inspectResult.value.Mounts);
+			info.exitCode = inspectResult.value.State.ExitCode;
 		} else {
+			info.exitCode = this.exitCodeFromStatus(summary.Status);
+			info.health = this.healthFromStatus(summary.Status);
 			this.logger.warn({
 				message: `Failed to inspect container ${info.name}`,
 				service: SERVICE_NAME,

@@ -134,6 +134,8 @@ export interface Monitor {
 	geoCheckLocations?: GeoContinent[];
 	geoCheckInterval?: number;
 	dockerLogsEnabled?: boolean;
+	dockerAlertOnStopped?: boolean;
+	dockerAlertOnUnhealthy?: boolean;
 	dockerTlsCa?: string;
 	dockerTlsCert?: string;
 	// EncryptionService ciphertext. Normally excluded
