@@ -11,6 +11,7 @@ import { LAYOUT } from "@/Utils/Theme/constants";
 import { runtimeConfig } from "@/Utils/runtimeConfig";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { RoleSelectField } from "./RoleSelectField";
+import { DurationSelectField } from "./DurationSelectField";
 
 const CLIENT_HOST = runtimeConfig.clientHost || import.meta.env.VITE_APP_CLIENT_HOST;
 
@@ -21,11 +22,13 @@ interface InviteResponse {
 interface InviteTeamMemberDialogProps {
 	open: boolean;
 	onClose: () => void;
+	onSuccess?: () => void;
 }
 
 export const InviteTeamMemberDialog = ({
 	open,
 	onClose,
+	onSuccess,
 }: InviteTeamMemberDialogProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -54,12 +57,14 @@ export const InviteTeamMemberDialog = ({
 			const token = result.data.token;
 			const link = `${CLIENT_HOST || window.location.origin}/register/${token}`;
 			setInviteLink(link);
+			onSuccess?.();
 		}
 	};
 
 	const handleSendInvite = async (data: InviteFormData) => {
 		const result = await sendInvite("/invite/send", data);
 		if (result?.success) {
+			onSuccess?.();
 			handleClose();
 		}
 	};
@@ -102,6 +107,7 @@ export const InviteTeamMemberDialog = ({
 					/>
 
 					<RoleSelectField />
+					<DurationSelectField />
 					{inviteLink && (
 						<>
 							<Typography variant="body2">

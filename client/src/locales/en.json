@@ -398,6 +398,39 @@
 						"placeholder": "Select a role"
 					},
 					"linkLabel": "Invite link"
+				},
+				"invites": {
+					"title": "Pending invites",
+					"fallback": "No pending invites",
+					"table": {
+						"headers": {
+							"status": "Status",
+							"expires": "Expires"
+						}
+					},
+					"status": {
+						"pending": "Pending",
+						"expired": "Expired"
+					},
+					"actions": {
+						"changeDuration": "Change duration"
+					},
+					"durationLabel": "Expires in",
+					"durations": {
+						"oneHour": "1 hour",
+						"oneDay": "24 hours",
+						"threeDays": "3 days",
+						"oneWeek": "7 days",
+						"thirtyDays": "30 days"
+					},
+					"changeDuration": {
+						"title": "Change invite duration",
+						"description": "Choose how much longer the invite for {{email}} should stay valid."
+					},
+					"delete": {
+						"title": "Delete invite",
+						"description": "The invite for {{email}} will be revoked and its link will stop working. This cannot be undone."
+					}
 				}
 			},
 			"header": {

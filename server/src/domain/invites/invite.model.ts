@@ -18,7 +18,7 @@ const InviteSchema = new Schema<InviteDocument>(
 		teamId: { type: Schema.Types.ObjectId, ref: "Team", immutable: true, required: true },
 		role: { type: [String], required: true, default: ["user"] },
 		token: { type: String, required: true },
-		expiry: { type: Date, default: Date.now, expires: 3600 },
+		expiry: { type: Date, required: true, index: { expires: 0 } },
 	},
 	{ timestamps: true }
 );

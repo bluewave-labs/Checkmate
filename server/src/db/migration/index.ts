@@ -11,6 +11,7 @@ import { recomputeResponseTimeFromTimings } from "./0009_recomputeResponseTimeFr
 import { slimRecentChecks } from "./0010_slimRecentChecks.js";
 import { backfillMonitorProxyMode } from "./0011_backfillMonitorProxyMode.js";
 import { migrateDockerMonitorUrls } from "./0012_migrateDockerMonitorUrls.js";
+import { convertInviteExpiryToAbsoluteTtl } from "./0013_convertInviteExpiryToAbsoluteTtl.js";
 import type { ILogger } from "@/utils/logger.js";
 
 type MigrationEntry = {
@@ -31,6 +32,7 @@ const migrations: MigrationEntry[] = [
 	{ name: "0010_slimRecentChecks", execute: slimRecentChecks },
 	{ name: "0011_backfillMonitorProxyMode", execute: backfillMonitorProxyMode },
 	{ name: "0012_migrateDockerMonitorUrls", execute: migrateDockerMonitorUrls },
+	{ name: "0013_convertInviteExpiryToAbsoluteTtl", execute: convertInviteExpiryToAbsoluteTtl },
 ];
 
 const runMigrations = async (logger: ILogger) => {
