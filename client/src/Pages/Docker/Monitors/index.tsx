@@ -19,6 +19,7 @@ const DockerMonitorsPage = () => {
 			controller={c}
 			bulkActions
 			showTypeFilter={false}
+			summaryProps={{ showBreached: true }}
 		>
 			<DockerMonitorsTable
 				monitors={c.monitors || []}
