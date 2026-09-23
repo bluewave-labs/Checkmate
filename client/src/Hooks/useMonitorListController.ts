@@ -1,4 +1,9 @@
-import { setRowsPerPage, type TableName } from "@/Features/UI/uiSlice";
+import {
+	setRowsPerPage,
+	setTableSortField,
+	setTableSortOrder,
+	type TableName,
+} from "@/Features/UI/uiSlice";
 import { useDelete, useGet } from "@/Hooks/UseApi";
 import { useBulkMonitorActions } from "@/Hooks/useBulkMonitorActions";
 import useDebounce from "@/Hooks/useDebounce";
@@ -24,10 +29,12 @@ interface MonitorListConfig {
 
 export const useMonitorListController = (config: MonitorListConfig) => {
 	const dispatch = useDispatch();
-	const rowsPerPage = useSelector(
-		(state: RootState) =>
-			state.ui?.[config.rowsPerPageTable]?.rowsPerPage ?? config.rowsPerPageDefault
+	const tableState = useSelector(
+		(state: RootState) => state.ui?.[config.rowsPerPageTable]
 	);
+	const rowsPerPage = tableState?.rowsPerPage ?? config.rowsPerPageDefault;
+	const sortField = tableState?.sortField ?? config.initialSortField ?? "";
+	const sortOrder = tableState?.sortOrder ?? "asc";
 
 	// Filter states
 	const [selectedTypes, setSelectedTypes] = useState<MonitorType[]>([]);
@@ -36,8 +43,6 @@ export const useMonitorListController = (config: MonitorListConfig) => {
 	const [selectedTags, setSelectedTags] = useState<string[]>([]);
 	const [page, setPage] = useState<number>(0);
 	const [search, setSearch] = useState<string>("");
-	const [sortField, setSortField] = useState<string>(config.initialSortField ?? "");
-	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
 	const debouncedSearch = useDebounce<string>(search, 300);
 
@@ -134,6 +139,20 @@ export const useMonitorListController = (config: MonitorListConfig) => {
 		dispatch(setRowsPerPage({ value, table: config.rowsPerPageTable }));
 		setPage(0);
 	};
+
+	const setSortField = useCallback(
+		(value: string) => {
+			dispatch(setTableSortField({ value, table: config.rowsPerPageTable }));
+		},
+		[config.rowsPerPageTable, dispatch]
+	);
+
+	const setSortOrder = useCallback(
+		(value: "asc" | "desc") => {
+			dispatch(setTableSortOrder({ value, table: config.rowsPerPageTable }));
+		},
+		[config.rowsPerPageTable, dispatch]
+	);
 
 	// Check for active filters
 	const hasActiveFilters = Boolean(

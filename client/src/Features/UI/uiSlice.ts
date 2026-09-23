@@ -15,6 +15,8 @@ type TableName =
 
 interface TableState {
 	rowsPerPage: number;
+	sortField?: string;
+	sortOrder?: "asc" | "desc";
 }
 
 interface SidebarState {
@@ -94,6 +96,20 @@ const uiSlice = createSlice({
 			const { table, value } = action.payload;
 			state[table].rowsPerPage = value;
 		},
+		setTableSortField: (
+			state,
+			action: PayloadAction<{ table: TableName; value: string }>
+		) => {
+			const { table, value } = action.payload;
+			state[table].sortField = value;
+		},
+		setTableSortOrder: (
+			state,
+			action: PayloadAction<{ table: TableName; value: "asc" | "desc" }>
+		) => {
+			const { table, value } = action.payload;
+			state[table].sortOrder = value;
+		},
 		toggleSidebar: (state) => {
 			state.sidebar.collapsed = !state.sidebar.collapsed;
 		},
@@ -131,6 +147,8 @@ export type { UIState, ThemeMode, ChartType, TableName };
 export default uiSlice.reducer;
 export const {
 	setRowsPerPage,
+	setTableSortField,
+	setTableSortOrder,
 	toggleSidebar,
 	setCollapsed,
 	setMode,

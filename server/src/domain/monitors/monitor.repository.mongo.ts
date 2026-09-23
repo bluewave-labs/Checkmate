@@ -101,7 +101,9 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 
 	private pageOptions = (config: TeamQueryConfig) => {
 		const { page = 0, rowsPerPage = 0, field = "createdAt", order = "desc" } = config ?? {};
-		return { sort: { [field]: order === "asc" ? 1 : -1 } as const, skip: Math.max(page, 0) * rowsPerPage, limit: rowsPerPage };
+		const direction: 1 | -1 = order === "asc" ? 1 : -1;
+		const sort: Record<string, 1 | -1> = field === "createdAt" ? { createdAt: direction } : { [field]: direction, createdAt: 1 };
+		return { sort, skip: Math.max(page, 0) * rowsPerPage, limit: rowsPerPage };
 	};
 
 	findByTeamId = async (teamId: string, config: TeamQueryConfig, options?: { includeRecentChecks?: boolean }): Promise<Monitor[]> => {
