@@ -110,7 +110,7 @@ describe("IncidentService", () => {
 	describe("handleIncident", () => {
 		it("returns null when neither create nor resolve is requested", async () => {
 			const { service } = createService();
-			const result = await service.handleIncident(makeMonitor(), 200, makeDecision(), makeCheck());
+			const result = await service.handleIncident(makeMonitor(), makeDecision(), makeCheck());
 			expect(result).toBeNull();
 		});
 
@@ -121,9 +121,8 @@ describe("IncidentService", () => {
 
 			const result = await service.handleIncident(
 				makeMonitor(),
-				500,
 				makeDecision({ shouldCreateIncident: true, incidentReason: "status_down" }),
-				makeCheck()
+				makeCheck({ statusCode: 500 })
 			);
 
 			expect(result).toBe(existing);
@@ -138,9 +137,8 @@ describe("IncidentService", () => {
 
 			const result = await service.handleIncident(
 				makeMonitor(),
-				500,
 				makeDecision({ shouldCreateIncident: true, incidentReason: "status_down" }),
-				makeCheck()
+				makeCheck({ statusCode: 500 })
 			);
 
 			expect(result).toBe(created);
@@ -166,7 +164,7 @@ describe("IncidentService", () => {
 			const monitor = makeMonitor({ type: "hardware" });
 			const check = makeCheck({ metadata: { monitorId: "mon-1", teamId: "team-1", type: "hardware" }, cpu: { usage_percent: 0.95 } });
 			const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
-			await service.handleIncident(monitor, 200, decision, check);
+			await service.handleIncident(monitor, decision, check);
 
 			expect(notificationMessageBuilder.extractThresholdBreaches).toHaveBeenCalledWith(monitor, check);
 			expect(incidentsRepository.create).toHaveBeenCalledWith(
@@ -185,7 +183,7 @@ describe("IncidentService", () => {
 			(notificationMessageBuilder.extractThresholdBreaches as jest.Mock).mockReturnValue([]);
 
 			const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
-			await service.handleIncident(makeMonitor(), 200, decision, makeCheck());
+			await service.handleIncident(makeMonitor(), decision, makeCheck());
 
 			expect(incidentsRepository.create).toHaveBeenCalledWith(expect.objectContaining({ message: "Threshold breach detected" }));
 		});
@@ -207,7 +205,7 @@ describe("IncidentService", () => {
 				containerSummary: { total: 3, running: 2, stopped: 1, unhealthy: 1 },
 			});
 			const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
-			await service.handleIncident(monitor, 200, decision, check);
+			await service.handleIncident(monitor, decision, check);
 
 			expect(incidentsRepository.create).toHaveBeenCalledWith(
 				expect.objectContaining({ statusCode: 9999, message: "db: stopped (exit code 1), api: unhealthy" })
@@ -226,7 +224,7 @@ describe("IncidentService", () => {
 			]);
 
 			const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
-			await service.handleIncident(makeMonitor(), 200, decision, makeCheck());
+			await service.handleIncident(makeMonitor(), decision, makeCheck());
 
 			expect(incidentsRepository.create).toHaveBeenCalledWith(
 				expect.objectContaining({ message: "CPU: 95% (threshold: 80%), MEMORY: 90% (threshold: 80%)" })
@@ -240,7 +238,7 @@ describe("IncidentService", () => {
 			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(active);
 			(incidentsRepository.updateById as jest.Mock).mockResolvedValue(resolved);
 
-			const result = await service.handleIncident(makeMonitor(), 200, makeDecision({ shouldResolveIncident: true }), makeCheck());
+			const result = await service.handleIncident(makeMonitor(), makeDecision({ shouldResolveIncident: true }), makeCheck());
 
 			expect(result).toBe(resolved);
 			expect(incidentsRepository.updateById).toHaveBeenCalledWith(
@@ -254,7 +252,7 @@ describe("IncidentService", () => {
 			const { service, incidentsRepository } = createService();
 			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(null);
 
-			const result = await service.handleIncident(makeMonitor(), 200, makeDecision({ shouldResolveIncident: true }), makeCheck());
+			const result = await service.handleIncident(makeMonitor(), makeDecision({ shouldResolveIncident: true }), makeCheck());
 
 			expect(result).toBeNull();
 		});
