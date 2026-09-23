@@ -92,7 +92,6 @@ const createPipeline = (overrides?: Record<string, any>) => {
 		},
 		checkService: {
 			toCheck: jest.fn<any>().mockReturnValue({ id: "check-1" }),
-			toStatusResponse: jest.fn<any>().mockReturnValue({ monitorId: "m1", status: true, code: 200, message: "OK" }),
 			createChecks: jest.fn<any>().mockResolvedValue([]),
 		},
 		networkService: { requestStatus: jest.fn<any>().mockResolvedValue({ monitorId: "m1", status: true, code: 200, message: "OK" }) },
@@ -624,7 +623,7 @@ describe("WorkerPipeline", () => {
 		it("loads the row's pending checks, dispatches each, and pulls its id after dispatch", async () => {
 			const job = makeEvaluateJob("c1");
 			const { pipeline, deps } = createPipeline({
-				checksRepository: { findUnevaluatedByMonitorId: jest.fn<any>().mockResolvedValue([{ id: "c1" }]) },
+				checksRepository: { findUnevaluatedByMonitorId: jest.fn<any>().mockResolvedValue([makeCheck({ id: "c1" })]) },
 			});
 
 			await pipeline.handleEvaluate(job);
@@ -661,7 +660,9 @@ describe("WorkerPipeline", () => {
 		it("stops applying checks once the lease is lost so a second claimer does not double-apply", async () => {
 			const job = makeEvaluateJob("c1", "c2", "c3");
 			const { pipeline, deps } = createPipeline({
-				checksRepository: { findUnevaluatedByMonitorId: jest.fn<any>().mockResolvedValue([{ id: "c1" }, { id: "c2" }, { id: "c3" }]) },
+				checksRepository: {
+					findUnevaluatedByMonitorId: jest.fn<any>().mockResolvedValue([makeCheck({ id: "c1" }), makeCheck({ id: "c2" }), makeCheck({ id: "c3" })]),
+				},
 				jobsRepository: {
 					upsertEvaluate: jest.fn<any>(),
 					pullEvaluated: jest.fn<any>().mockResolvedValueOnce(true).mockResolvedValueOnce(false), // lease lost after c2
@@ -679,7 +680,7 @@ describe("WorkerPipeline", () => {
 		it("pulls ids whose check no longer exists so they do not sit on the row forever", async () => {
 			const job = makeEvaluateJob("c1", "c-gone");
 			const { pipeline, deps } = createPipeline({
-				checksRepository: { findUnevaluatedByMonitorId: jest.fn<any>().mockResolvedValue([{ id: "c1" }]) }, // c-gone was cleaned up
+				checksRepository: { findUnevaluatedByMonitorId: jest.fn<any>().mockResolvedValue([makeCheck({ id: "c1" })]) }, // c-gone was cleaned up
 			});
 
 			await pipeline.handleEvaluate(job);
@@ -695,7 +696,7 @@ describe("WorkerPipeline", () => {
 			const postWriteMonitor = makeMonitor({ status: "down" }); // what updateStatusWindowAndChecks would return after check c1
 			const { pipeline, deps } = createPipeline({
 				monitorsRepository: { findByIdLean: jest.fn<any>().mockResolvedValue(initialMonitor), updateById: jest.fn<any>() },
-				checksRepository: { findUnevaluatedByMonitorId: jest.fn<any>().mockResolvedValue([{ id: "c1" }, { id: "c2" }]) },
+				checksRepository: { findUnevaluatedByMonitorId: jest.fn<any>().mockResolvedValue([makeCheck({ id: "c1" }), makeCheck({ id: "c2" })]) },
 				statusService: { updateMonitorStatus: jest.fn<any>().mockResolvedValue(makeStatusChange({ monitor: postWriteMonitor })) },
 			});
 
@@ -705,36 +706,33 @@ describe("WorkerPipeline", () => {
 			expect(deps.monitorsRepository.findByIdLean).toHaveBeenCalledTimes(1);
 			expect(deps.statusService.updateMonitorStatus).toHaveBeenCalledTimes(2);
 			// First check evaluates against the freshly-read monitor; the second against the post-write monitor from the first
-			expect(deps.statusService.updateMonitorStatus.mock.calls[0][2]).toBe(initialMonitor);
-			expect(deps.statusService.updateMonitorStatus.mock.calls[1][2]).toBe(postWriteMonitor);
+			expect(deps.statusService.updateMonitorStatus.mock.calls[0][1]).toBe(initialMonitor);
+			expect(deps.statusService.updateMonitorStatus.mock.calls[1][1]).toBe(postWriteMonitor);
 		});
 	});
 
 	describe("evaluateCheck", () => {
-		it("threads status, check, and monitor through to the status service", async () => {
+		it("threads check and monitor through to the status service", async () => {
 			const { pipeline, deps } = createPipeline();
-			const status = { monitorId: "m1", status: true, code: 200, message: "OK" } as any;
-			const check = { id: "check-1" } as any;
+			const check = makeCheck({ status: true, statusCode: 200, message: "OK" });
 			const monitor = makeMonitor({ status: "up" });
 
-			await pipeline.evaluateCheck(status, check, monitor);
+			await pipeline.evaluateCheck(check, monitor);
 
-			expect(deps.statusService.updateMonitorStatus).toHaveBeenCalledWith(status, check, monitor);
+			expect(deps.statusService.updateMonitorStatus).toHaveBeenCalledWith(check, monitor);
 		});
 
 		it("returns an evaluation that opens an incident on a down transition", async () => {
-			const status = { monitorId: "m1", status: false, code: 500, message: "Error" } as any;
-			const check = { id: "check-1" } as any;
+			const check = makeCheck({ status: false, statusCode: 500, message: "Error" });
 			const statusChange = makeStatusChange({ monitor: makeMonitor({ status: "down" }), statusChanged: true, prevStatus: "up", code: 500 });
 			const { pipeline } = createPipeline({
 				statusService: { updateMonitorStatus: jest.fn<any>().mockResolvedValue(statusChange) },
 			});
 
-			const result = await pipeline.evaluateCheck(status, check, makeMonitor());
+			const result = await pipeline.evaluateCheck(check, makeMonitor());
 
 			expect(result).toMatchObject({
 				monitor: statusChange.monitor,
-				status,
 				check,
 				statusChange,
 				decision: expect.objectContaining({
@@ -746,22 +744,20 @@ describe("WorkerPipeline", () => {
 		});
 
 		it("returns an evaluation that resolves an incident on recovery", async () => {
-			const status = { monitorId: "m1", status: true, code: 200, message: "OK" } as any;
 			const statusChange = makeStatusChange({ monitor: makeMonitor({ status: "up" }), statusChanged: true, prevStatus: "down" });
 			const { pipeline } = createPipeline({
 				statusService: { updateMonitorStatus: jest.fn<any>().mockResolvedValue(statusChange) },
 			});
 
-			const result = await pipeline.evaluateCheck(status, { id: "check-1" } as any, makeMonitor({ status: "down" }));
+			const result = await pipeline.evaluateCheck(makeCheck({ status: true, statusCode: 200, message: "OK" }), makeMonitor({ status: "down" }));
 
 			expect(result.decision).toMatchObject({ shouldResolveIncident: true, shouldSendNotification: true });
 		});
 
 		it("produces a no-op decision when status did not change", async () => {
-			const status = { monitorId: "m1", status: true, code: 200, message: "OK" } as any;
 			const { pipeline } = createPipeline();
 
-			const result = await pipeline.evaluateCheck(status, { id: "check-1" } as any, makeMonitor());
+			const result = await pipeline.evaluateCheck(makeCheck({ status: true, statusCode: 200, message: "OK" }), makeMonitor());
 
 			expect(result.decision).toMatchObject({
 				shouldCreateIncident: false,
@@ -773,12 +769,11 @@ describe("WorkerPipeline", () => {
 		// ── degraded egress ───────────────────────────────────────────────────
 
 		it("short-circuits a check flagged with degraded egress without touching monitor status", async () => {
-			const status = { monitorId: "m1", status: false, code: 500, message: "Error" } as any;
-			const check = { id: "check-1", egressStatus: "degraded" } as any;
+			const check = makeCheck({ status: false, statusCode: 500, message: "Error", egressStatus: "degraded" });
 			const monitor = makeMonitor({ status: "up" });
 			const { pipeline, deps } = createPipeline();
 
-			const result = await pipeline.evaluateCheck(status, check, monitor);
+			const result = await pipeline.evaluateCheck(check, monitor);
 
 			expect(deps.statusService.updateMonitorStatus).not.toHaveBeenCalled();
 			expect(result.monitor).toBe(monitor);
@@ -795,13 +790,12 @@ describe("WorkerPipeline", () => {
 		});
 
 		it("evaluates a check flagged with egress ok as normal", async () => {
-			const status = { monitorId: "m1", status: false, code: 500, message: "Error" } as any;
-			const check = { id: "check-1", egressStatus: "ok" } as any;
+			const check = makeCheck({ status: false, statusCode: 500, message: "Error", egressStatus: "ok" });
 			const { pipeline, deps } = createPipeline();
 
-			await pipeline.evaluateCheck(status, check, makeMonitor());
+			await pipeline.evaluateCheck(check, makeMonitor());
 
-			expect(deps.statusService.updateMonitorStatus).toHaveBeenCalledWith(status, check, expect.anything());
+			expect(deps.statusService.updateMonitorStatus).toHaveBeenCalledWith(check, expect.anything());
 		});
 	});
 
@@ -812,11 +806,7 @@ describe("WorkerPipeline", () => {
 			const { pipeline } = createPipeline({
 				statusService: { updateMonitorStatus: jest.fn<any>().mockResolvedValue(statusChange) },
 			});
-			const result = await pipeline.evaluateCheck(
-				{ monitorId: "m1", status: true, code: 200, message: "OK" } as any,
-				{ id: "check-1" } as any,
-				makeMonitor()
-			);
+			const result = await pipeline.evaluateCheck(makeCheck({ status: true, statusCode: 200, message: "OK" }), makeMonitor());
 			return result.decision;
 		};
 

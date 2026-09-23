@@ -1,7 +1,7 @@
 import { Monitor } from "@/domain/monitors/monitor.type.js";
 import { Check } from "@/domain/checks/check.type.js";
 import { Job, JobType } from "@/domain/jobs/job.type.js";
-import { MonitorPayloadMap, MonitorStatusResponse, StatusChangeResult } from "@/types/network.js";
+import { StatusChangeResult } from "@/types/network.js";
 import { QueueWorker } from "@/domain/queue-workers/queue-worker.type.js";
 import type { QueueMode } from "@/domain/app-settings/app-settings.type.js";
 
@@ -23,7 +23,6 @@ export interface MonitorActionDecision {
 
 export type MonitorEvaluation = {
 	monitor: Monitor;
-	status: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>; // raw result from networkService.requestStatus
 	check: Check;
 	statusChange: StatusChangeResult; // from statusService.updateMonitorStatus
 	decision: MonitorActionDecision;

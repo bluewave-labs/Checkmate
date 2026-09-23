@@ -240,8 +240,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 
 		let current = monitor;
 		for (const check of checks) {
-			const status = this.deps.checkService.toStatusResponse(check);
-			const evaluation = await this.evaluateCheck(status, check, current);
+			const evaluation = await this.evaluateCheck(check, current);
 			await this.deps.dispatcher.dispatch(evaluation); // Handle incidents and notifications
 			const leaseHeld = await this.deps.jobsRepository.pullEvaluated(job.id, [check.id]);
 			if (!leaseHeld) {
@@ -272,7 +271,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 	// A check taken while the instance had no outbound connectivity says nothing about the target.
 	// It is left out of the status window, running stats and monitor status entirely, so that no incident
 	// opens for it and no spurious "resolved"/"up" fires once egress returns.
-	private skipDegradedEgressCheck = (status: MonitorStatusResponse, check: Check, monitor: Monitor): MonitorEvaluation => {
+	private skipDegradedEgressCheck = (check: Check, monitor: Monitor): MonitorEvaluation => {
 		this.deps.logger.debug({
 			message: `Skipping evaluation of check ${check.id} for monitor ${monitor.id}: instance egress was degraded`,
 			service: SERVICE_NAME,
@@ -287,22 +286,21 @@ export class WorkerPipeline implements IWorkerPipeline {
 		};
 		return {
 			monitor,
-			status,
 			check,
-			statusChange: { monitor, statusChanged: false, prevStatus: monitor.status, code: status.code, timestamp: Date.now() },
+			statusChange: { monitor, statusChanged: false, prevStatus: monitor.status, code: check.statusCode, timestamp: Date.now() },
 			decision,
 		};
 	};
 
-	evaluateCheck = async (status: MonitorStatusResponse, check: Check, monitor: Monitor): Promise<MonitorEvaluation> => {
+	evaluateCheck = async (check: Check, monitor: Monitor): Promise<MonitorEvaluation> => {
 		if (check.egressStatus === "degraded") {
-			return this.skipDegradedEgressCheck(status, check, monitor);
+			return this.skipDegradedEgressCheck(check, monitor);
 		}
 
-		const statusChange = await this.deps.statusService.updateMonitorStatus(status, check, monitor);
+		const statusChange = await this.deps.statusService.updateMonitorStatus(check, monitor);
 
 		const decision = this.decide(statusChange);
-		return { monitor: statusChange.monitor, status, check, statusChange, decision };
+		return { monitor: statusChange.monitor, check, statusChange, decision };
 	};
 
 	private decide = (statusChange: StatusChangeResult): MonitorActionDecision => {

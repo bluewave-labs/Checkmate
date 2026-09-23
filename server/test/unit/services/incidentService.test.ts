@@ -8,6 +8,7 @@ import type { INotificationMessageBuilder } from "../../../src/domain/notificati
 import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { Incident } from "../../../src/domain/incidents/incident.type.ts";
 import type { MonitorActionDecision } from "../../../src/worker/worker.interface.ts";
+import type { Check } from "../../../src/domain/checks/check.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -79,6 +80,19 @@ const makeIncident = (overrides?: Partial<Incident>): Incident =>
 		...overrides,
 	}) as Incident;
 
+const makeCheck = (overrides?: Partial<Check>): Check =>
+	({
+		id: "check-1",
+		metadata: { monitorId: "mon-1", teamId: "team-1", type: "http" },
+		status: true,
+		statusCode: 200,
+		responseTime: 100,
+		message: "OK",
+		createdAt: "2026-01-01T00:00:00.000Z",
+		updatedAt: "2026-01-01T00:00:00.000Z",
+		...overrides,
+	}) as Check;
+
 const makeDecision = (overrides?: Partial<MonitorActionDecision>): MonitorActionDecision => ({
 	shouldCreateIncident: false,
 	shouldResolveIncident: false,
@@ -96,7 +110,7 @@ describe("IncidentService", () => {
 	describe("handleIncident", () => {
 		it("returns null when neither create nor resolve is requested", async () => {
 			const { service } = createService();
-			const result = await service.handleIncident(makeMonitor(), 200, makeDecision());
+			const result = await service.handleIncident(makeMonitor(), 200, makeDecision(), makeCheck());
 			expect(result).toBeNull();
 		});
 
@@ -105,7 +119,12 @@ describe("IncidentService", () => {
 			const { service, incidentsRepository } = createService();
 			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(existing);
 
-			const result = await service.handleIncident(makeMonitor(), 500, makeDecision({ shouldCreateIncident: true, incidentReason: "status_down" }));
+			const result = await service.handleIncident(
+				makeMonitor(),
+				500,
+				makeDecision({ shouldCreateIncident: true, incidentReason: "status_down" }),
+				makeCheck()
+			);
 
 			expect(result).toBe(existing);
 			expect(incidentsRepository.create).not.toHaveBeenCalled();
@@ -117,7 +136,12 @@ describe("IncidentService", () => {
 			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(null);
 			(incidentsRepository.create as jest.Mock).mockResolvedValue(created);
 
-			const result = await service.handleIncident(makeMonitor(), 500, makeDecision({ shouldCreateIncident: true, incidentReason: "status_down" }));
+			const result = await service.handleIncident(
+				makeMonitor(),
+				500,
+				makeDecision({ shouldCreateIncident: true, incidentReason: "status_down" }),
+				makeCheck()
+			);
 
 			expect(result).toBe(created);
 			expect(incidentsRepository.create).toHaveBeenCalledWith(
@@ -139,27 +163,18 @@ describe("IncidentService", () => {
 				{ metric: "cpu", formattedValue: "95%", threshold: 80, unit: "%" },
 			]);
 
+			const monitor = makeMonitor({ type: "hardware" });
+			const check = makeCheck({ metadata: { monitorId: "mon-1", teamId: "team-1", type: "hardware" }, cpu: { usage_percent: 0.95 } });
 			const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
-			await service.handleIncident(makeMonitor(), 200, decision, { monitorId: "mon-1" } as any);
+			await service.handleIncident(monitor, 200, decision, check);
 
+			expect(notificationMessageBuilder.extractThresholdBreaches).toHaveBeenCalledWith(monitor, check);
 			expect(incidentsRepository.create).toHaveBeenCalledWith(
 				expect.objectContaining({
 					statusCode: 9999,
 					message: "CPU: 95% (threshold: 80%)",
 				})
 			);
-		});
-
-		it("uses fallback message when monitorStatusResponse is undefined for threshold_breach", async () => {
-			const created = makeIncident();
-			const { service, incidentsRepository } = createService();
-			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(null);
-			(incidentsRepository.create as jest.Mock).mockResolvedValue(created);
-
-			const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
-			await service.handleIncident(makeMonitor(), 200, decision, undefined);
-
-			expect(incidentsRepository.create).toHaveBeenCalledWith(expect.objectContaining({ message: "Threshold breach detected" }));
 		});
 
 		it("uses fallback message when extractThresholdBreaches returns empty array", async () => {
@@ -170,7 +185,7 @@ describe("IncidentService", () => {
 			(notificationMessageBuilder.extractThresholdBreaches as jest.Mock).mockReturnValue([]);
 
 			const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
-			await service.handleIncident(makeMonitor(), 200, decision, { monitorId: "mon-1" } as any);
+			await service.handleIncident(makeMonitor(), 200, decision, makeCheck());
 
 			expect(incidentsRepository.create).toHaveBeenCalledWith(expect.objectContaining({ message: "Threshold breach detected" }));
 		});
@@ -182,37 +197,22 @@ describe("IncidentService", () => {
 			(incidentsRepository.create as jest.Mock).mockResolvedValue(created);
 
 			const monitor = makeMonitor({ type: "docker", status: "breached", dockerAlertOnStopped: true, dockerAlertOnUnhealthy: true });
-			const response = {
-				monitorId: "mon-1",
-				payload: {
-					containers: [
-						{ id: "1", name: "db", image: "postgres", state: "exited", status: "Exited (1)", health: "none", exitCode: 1 },
-						{ id: "2", name: "api", image: "api", state: "running", status: "Up", health: "unhealthy" },
-						{ id: "3", name: "web", image: "nginx", state: "running", status: "Up", health: "healthy" },
-					],
-					summary: { total: 3, running: 2, stopped: 1, unhealthy: 1 },
-				},
-			} as any;
+			const check = makeCheck({
+				metadata: { monitorId: "mon-1", teamId: "team-1", type: "docker" },
+				containers: [
+					{ id: "1", name: "db", image: "postgres", state: "exited", status: "Exited (1)", health: "none", exitCode: 1 },
+					{ id: "2", name: "api", image: "api", state: "running", status: "Up", health: "unhealthy" },
+					{ id: "3", name: "web", image: "nginx", state: "running", status: "Up", health: "healthy" },
+				],
+				containerSummary: { total: 3, running: 2, stopped: 1, unhealthy: 1 },
+			});
 			const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
-			await service.handleIncident(monitor, 200, decision, response);
+			await service.handleIncident(monitor, 200, decision, check);
 
 			expect(incidentsRepository.create).toHaveBeenCalledWith(
 				expect.objectContaining({ statusCode: 9999, message: "db: stopped (exit code 1), api: unhealthy" })
 			);
 			expect(notificationMessageBuilder.extractThresholdBreaches).not.toHaveBeenCalled();
-		});
-
-		it("uses the container fallback message for docker incidents with no response", async () => {
-			const created = makeIncident();
-			const { service, incidentsRepository } = createService();
-			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(null);
-			(incidentsRepository.create as jest.Mock).mockResolvedValue(created);
-
-			const monitor = makeMonitor({ type: "docker", status: "breached", dockerAlertOnStopped: true });
-			const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
-			await service.handleIncident(monitor, 200, decision, undefined);
-
-			expect(incidentsRepository.create).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 9999, message: "Container alert" }));
 		});
 
 		it("joins multiple threshold breaches with commas", async () => {
@@ -226,7 +226,7 @@ describe("IncidentService", () => {
 			]);
 
 			const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
-			await service.handleIncident(makeMonitor(), 200, decision, { monitorId: "mon-1" } as any);
+			await service.handleIncident(makeMonitor(), 200, decision, makeCheck());
 
 			expect(incidentsRepository.create).toHaveBeenCalledWith(
 				expect.objectContaining({ message: "CPU: 95% (threshold: 80%), MEMORY: 90% (threshold: 80%)" })
@@ -240,7 +240,7 @@ describe("IncidentService", () => {
 			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(active);
 			(incidentsRepository.updateById as jest.Mock).mockResolvedValue(resolved);
 
-			const result = await service.handleIncident(makeMonitor(), 200, makeDecision({ shouldResolveIncident: true }));
+			const result = await service.handleIncident(makeMonitor(), 200, makeDecision({ shouldResolveIncident: true }), makeCheck());
 
 			expect(result).toBe(resolved);
 			expect(incidentsRepository.updateById).toHaveBeenCalledWith(
@@ -254,7 +254,7 @@ describe("IncidentService", () => {
 			const { service, incidentsRepository } = createService();
 			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(null);
 
-			const result = await service.handleIncident(makeMonitor(), 200, makeDecision({ shouldResolveIncident: true }));
+			const result = await service.handleIncident(makeMonitor(), 200, makeDecision({ shouldResolveIncident: true }), makeCheck());
 
 			expect(result).toBeNull();
 		});
