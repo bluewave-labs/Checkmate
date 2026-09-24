@@ -131,92 +131,86 @@ const makeExistingStats = (overrides?: Record<string, unknown>) => ({
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("StatusService", () => {
-	// ── updateRunningStats ───────────────────────────────────────────────────
+	// ── running stats (via updateMonitorStatus) ──────────────────────────────
 
-	describe("updateRunningStats", () => {
-		// The service now delegates the entire running-stats computation to the repository's
-		// atomic `updateByMonitorId`, so the service-level tests only verify forwarding and error
-		// handling. The math (running average, uptimePercentage, timeOfLastFailure state machine)
-		// is a repository-level concern and is exercised by the repository tests.
+	describe("running stats", () => {
+		// The service delegates the running-stats computation to the repository's atomic `updateByMonitorId`,
+		// so these cases only verify what is forwarded and that a failure never blocks the status update.
+		// The math (running average, uptimePercentage, timeOfLastFailure) is exercised by the repository tests.
+
+		const run = async (check: Check) => {
+			const monitor = makeMonitor();
+			const deps = createService();
+			(deps.monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(deps.monitorStatsRepository.updateByMonitorId as jest.Mock).mockResolvedValue({});
+			const result = await deps.service.updateMonitorStatus(check, monitor);
+			return { ...deps, result };
+		};
 
 		it("forwards a successful check to updateByMonitorId", async () => {
-			const { service, monitorStatsRepository } = createService();
-			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockResolvedValue({});
+			const { monitorStatsRepository } = await run(makeCheck({ responseTime: 50 }));
 
-			const result = await service.updateRunningStats(makeCheck({ responseTime: 50 }), makeMonitor());
-
-			expect(result).toBe(true);
 			expect(monitorStatsRepository.updateByMonitorId).toHaveBeenCalledWith(
 				"mon-1",
-				expect.objectContaining({
-					status: true,
-					responseTime: 50,
-					now: expect.any(Number),
-				})
+				expect.objectContaining({ status: true, responseTime: 50, now: expect.any(Number) })
 			);
 		});
 
 		it("forwards a failed check to updateByMonitorId", async () => {
-			const { service, monitorStatsRepository } = createService();
-			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockResolvedValue({});
+			const { monitorStatsRepository } = await run(makeCheck({ status: false, responseTime: 100 }));
 
-			const result = await service.updateRunningStats(makeCheck({ status: false, responseTime: 100 }), makeMonitor());
-
-			expect(result).toBe(true);
 			expect(monitorStatsRepository.updateByMonitorId).toHaveBeenCalledWith("mon-1", expect.objectContaining({ status: false, responseTime: 100 }));
 		});
 
 		it("passes 0 when responseTime is undefined", async () => {
-			const { service, monitorStatsRepository } = createService();
-			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockResolvedValue({});
-
-			await service.updateRunningStats(makeCheck({ responseTime: undefined as any }), makeMonitor());
+			const { monitorStatsRepository } = await run(makeCheck({ responseTime: undefined as any }));
 
 			expect(monitorStatsRepository.updateByMonitorId).toHaveBeenCalledWith("mon-1", expect.objectContaining({ responseTime: 0 }));
 		});
 
 		it("forwards responseTime of 0 as 0 (falsy but defined)", async () => {
-			const { service, monitorStatsRepository } = createService();
-			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockResolvedValue({});
-
-			await service.updateRunningStats(makeCheck({ responseTime: 0 }), makeMonitor());
+			const { monitorStatsRepository } = await run(makeCheck({ responseTime: 0 }));
 
 			expect(monitorStatsRepository.updateByMonitorId).toHaveBeenCalledWith("mon-1", expect.objectContaining({ responseTime: 0 }));
 		});
 
 		it("coerces a non-true status to false (e.g. undefined)", async () => {
-			const { service, monitorStatsRepository } = createService();
-			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockResolvedValue({});
-
-			await service.updateRunningStats(makeCheck({ status: undefined as any }), makeMonitor());
+			const { monitorStatsRepository } = await run(makeCheck({ status: undefined as any }));
 
 			expect(monitorStatsRepository.updateByMonitorId).toHaveBeenCalledWith("mon-1", expect.objectContaining({ status: false }));
 		});
 
-		it("returns false and logs error when updateByMonitorId throws", async () => {
-			const { service, logger, monitorStatsRepository } = createService();
-			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockRejectedValue(new Error("db write failed"));
+		it("warns once and still updates the status when updateByMonitorId throws", async () => {
+			const monitor = makeMonitor({ statusWindow: [true, true, true, true], statusWindowSize: 5, status: "up" });
+			const { service, logger, monitorsRepository, monitorStatsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockRejectedValue(new Error("stats db down"));
 
-			const result = await service.updateRunningStats(makeCheck(), makeMonitor());
+			const result = await service.updateMonitorStatus(makeCheck({ status: true }), monitor);
 
-			expect(result).toBe(false);
-			expect(logger.error).toHaveBeenCalledWith(
+			expect(result.monitor.status).toBe("up");
+			expect(monitorsRepository.updateStatusWindowAndChecks).toHaveBeenCalledTimes(1);
+			expect(logger.warn).toHaveBeenCalledTimes(1);
+			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
 					service: "StatusService",
-					method: "updateRunningStats",
-					message: "db write failed",
+					method: "tryUpdateRunningStats",
+					message: "stats db down",
+					stack: expect.any(String),
 				})
 			);
+			expect(logger.error).not.toHaveBeenCalled();
 		});
 
-		it("logs error with 'Unknown error' for non-Error exceptions", async () => {
-			const { service, logger, monitorStatsRepository } = createService();
+		it("warns with 'Unknown error' for non-Error rejections", async () => {
+			const monitor = makeMonitor();
+			const { service, logger, monitorsRepository, monitorStatsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
 			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockRejectedValue("string error");
 
-			const result = await service.updateRunningStats(makeCheck(), makeMonitor());
+			await service.updateMonitorStatus(makeCheck(), monitor);
 
-			expect(result).toBe(false);
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error", stack: undefined }));
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error", stack: undefined }));
 		});
 	});
 
@@ -638,37 +632,6 @@ describe("StatusService", () => {
 
 			expect(result.statusChanged).toBe(false);
 			expect(result.monitor.status).toBe("down");
-		});
-
-		it("logs a warning but still succeeds when running-stats update fails mid-flight", async () => {
-			const monitor = makeMonitor({ statusWindow: [true, true, true, true], statusWindowSize: 5, status: "up" });
-			const { service, logger, monitorsRepository, monitorStatsRepository } = createService();
-			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
-			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
-			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockRejectedValue(new Error("stats db down"));
-
-			const result = await service.updateMonitorStatus(makeCheck({ status: true }), monitor);
-
-			expect(result.monitor.status).toBe("up");
-			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					service: "StatusService",
-					method: "updateMonitorStatus",
-					message: expect.stringContaining("Stats update failed"),
-				})
-			);
-		});
-
-		it("returns code and timestamp in result", async () => {
-			const monitor = makeMonitor({ statusWindow: [true, true, true, true], statusWindowSize: 5 });
-			const { service, monitorsRepository } = createService();
-			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
-			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
-
-			const result = await service.updateMonitorStatus(makeCheck({ statusCode: 201 }), monitor);
-
-			expect(result.code).toBe(201);
-			expect(result.timestamp).toBeGreaterThan(0);
 		});
 
 		// ── Hardware threshold breach tests ──────────────────────────────────

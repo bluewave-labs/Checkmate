@@ -39,7 +39,7 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 			clientHost,
 			metadata: {
 				teamId: monitor.teamId,
-				notificationReason: decision.notificationReason || "status_change",
+				notificationReason: decision.notificationReason,
 			},
 		};
 	}
