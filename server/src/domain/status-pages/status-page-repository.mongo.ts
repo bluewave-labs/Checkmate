@@ -36,6 +36,7 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 			companyName: doc.companyName,
 			url: doc.url,
 			customDomain: doc.customDomain ?? null,
+			embedAllowedOrigins: doc.embedAllowedOrigins ?? [],
 			timezone: doc.timezone ?? undefined,
 			color: doc.color,
 			monitors: this.mapIdArray(doc.monitors),

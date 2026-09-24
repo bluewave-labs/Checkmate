@@ -10,8 +10,36 @@ import { cssReferencesExternalResource } from "@/Utils/customCss";
 // field definitions.
 export const statusPageStepRegistry = z.registry<{ step: number }>();
 
-const statusPageHostnameRegex =
-	/^(?=.{1,253}$)([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}$/;
+const statusPageHostnamePattern =
+	"([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,63}";
+
+const statusPageHostnameRegex = new RegExp(`^(?=.{1,253}$)${statusPageHostnamePattern}$`);
+
+// An embedding origin: scheme + host + optional port, no path. The host may be
+// a hostname, localhost, an IPv4 address, or a bracketed IPv6 address. Kept in
+// sync with isEmbedOrigin in server/src/api/validation/shared.ts.
+const statusPageOriginShapeRegex =
+	/^https?:\/\/([^\s/?#:[\]]+|\[[^\s/?#[\]]+\])(?::\d{1,5})?$/;
+
+const isStatusPageOrigin = (value: string): boolean => {
+	const host = statusPageOriginShapeRegex.exec(value)?.[1];
+	if (host === undefined) return false;
+	if (host.startsWith("[")) return z.ipv6().safeParse(host.slice(1, -1)).success;
+	return (
+		host === "localhost" ||
+		z.ipv4().safeParse(host).success ||
+		statusPageHostnameRegex.test(host)
+	);
+};
+
+const MAX_EMBED_ALLOWED_ORIGINS = 20;
+
+// One origin per line (or comma-separated); blanks are dropped.
+export const splitEmbedAllowedOrigins = (raw: string | undefined): string[] =>
+	(raw ?? "")
+		.split(/[\n,]/)
+		.map((origin) => origin.trim())
+		.filter((origin) => origin.length > 0);
 
 const normalizeCustomDomainInput = (raw: string | null): string | null => {
 	if (raw === null) {
@@ -45,6 +73,16 @@ export const statusPageSchema = z.object({
 		.transform(normalizeCustomDomainInput)
 		.refine((domain) => domain === null || statusPageHostnameRegex.test(domain), {
 			message: "Enter a valid domain name (e.g. status.example.com)",
+		}),
+	embedAllowedOrigins: z
+		.string()
+		.optional()
+		.refine((raw) => splitEmbedAllowedOrigins(raw).length <= MAX_EMBED_ALLOWED_ORIGINS, {
+			message: `At most ${MAX_EMBED_ALLOWED_ORIGINS} embedding origins are allowed`,
+		})
+		.refine((raw) => splitEmbedAllowedOrigins(raw).every(isStatusPageOrigin), {
+			message:
+				"Each origin must be a scheme and host with no path (e.g. https://dashboard.example.com)",
 		}),
 	timezone: z.string().optional(),
 	type: z
