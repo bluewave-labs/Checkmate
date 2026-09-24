@@ -10,6 +10,8 @@ import { InMemoryMonitorsRepository } from "./InMemoryMonitorsRepository.ts";
 import { InMemoryIncidentsRepository } from "./InMemoryIncidentsRepository.ts";
 import { createMockLogger } from "./createMockLogger.ts";
 import type { Monitor } from "../../src/domain/monitors/monitor.type.ts";
+import type { Check } from "../../src/domain/checks/check.type.ts";
+import type { MonitorActionDecision } from "../../src/worker/worker.interface.ts";
 import type { MonitorStatusResponse } from "../../src/types/network.ts";
 import type { MaintenanceWindow } from "../../src/domain/maintenance-windows/maintenance-window.type.ts";
 import type { EgressStatus } from "../../src/domain/egress/egress.type.ts";
@@ -117,7 +119,13 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 		nextEgressStatus = status;
 	};
 
-	const notificationReactor = new NotificationReactor(notificationsService as any);
+	// The real NotificationsService ignores decisions with shouldSendNotification false; the stub is reached only for
+	// the ones it would act on, so tests can assert on handleNotifications calls as "notifications sent".
+	const guardedNotificationsService = {
+		handleNotifications: (monitor: Monitor, check: Check, decision: MonitorActionDecision) =>
+			decision.shouldSendNotification ? notificationsService.handleNotifications(monitor, check, decision) : Promise.resolve(false),
+	};
+	const notificationReactor = new NotificationReactor(guardedNotificationsService as any);
 	const incidentReactor = new IncidentReactor(incidentService as any);
 	const reactorDispatcher = new ReactorDispatcher(logger, [notificationReactor, incidentReactor]);
 

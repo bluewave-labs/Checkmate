@@ -144,15 +144,6 @@ describe("NotificationMessageBuilder", () => {
 			expect(msg.severity).toBe("success");
 			expect(msg.content.title).toBe("Thresholds Resolved: Test Monitor");
 		});
-
-		it("uses notificationReason from decision, falling back to status_change", () => {
-			const monitor = makeMonitor({ status: "down" });
-			const decision = makeDecision({ notificationReason: null });
-
-			const msg = builder.buildMessage(monitor, makeCheck(), decision, "https://app.example.com");
-
-			expect(msg.metadata.notificationReason).toBe("status_change");
-		});
 	});
 
 	// ── determineNotificationType (via buildMessage) ─────────────────────

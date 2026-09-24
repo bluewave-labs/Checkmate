@@ -64,8 +64,6 @@ const makeStatusChange = (overrides: Partial<StatusChangeResult> & { status?: st
 		monitor: { id: "m1", status } as any,
 		statusChanged: false,
 		prevStatus: "up",
-		code: 200,
-		timestamp: 0,
 		...rest,
 	} as StatusChangeResult;
 };
@@ -706,7 +704,7 @@ describe("WorkerPipeline", () => {
 
 		it("returns an evaluation that opens an incident on a down transition", async () => {
 			const check = makeCheck({ status: false, statusCode: 500, message: "Error" });
-			const statusChange = makeStatusChange({ monitor: makeMonitor({ status: "down" }), statusChanged: true, prevStatus: "up", code: 500 });
+			const statusChange = makeStatusChange({ monitor: makeMonitor({ status: "down" }), statusChanged: true, prevStatus: "up" });
 			const { pipeline } = createPipeline({
 				statusService: { updateMonitorStatus: jest.fn<any>().mockResolvedValue(statusChange) },
 			});
@@ -802,7 +800,7 @@ describe("WorkerPipeline", () => {
 		});
 
 		it("creates incident and notifies when monitor goes down", async () => {
-			const decision = await decide(makeStatusChange({ status: "down", statusChanged: true, prevStatus: "up", code: 500 }));
+			const decision = await decide(makeStatusChange({ status: "down", statusChanged: true, prevStatus: "up" }));
 			expect(decision).toMatchObject({
 				shouldCreateIncident: true,
 				shouldSendNotification: true,
@@ -854,7 +852,7 @@ describe("WorkerPipeline", () => {
 
 		it("leaves threshold breaches off a down decision even when the status change carries them", async () => {
 			const thresholdBreaches = { cpu: true, memory: false, disk: false, temp: false };
-			const decision = await decide(makeStatusChange({ status: "down", statusChanged: true, prevStatus: "up", code: 500, thresholdBreaches }));
+			const decision = await decide(makeStatusChange({ status: "down", statusChanged: true, prevStatus: "up", thresholdBreaches }));
 			expect(decision).not.toHaveProperty("thresholdBreaches");
 		});
 
@@ -876,8 +874,8 @@ describe("WorkerPipeline", () => {
 		it("starts every decision clean after a transition on the same pipeline", async () => {
 			const updateMonitorStatus = jest
 				.fn<any>()
-				.mockResolvedValueOnce(makeStatusChange({ status: "down", statusChanged: true, prevStatus: "up", code: 500 }))
-				.mockResolvedValueOnce(makeStatusChange({ status: "down", statusChanged: false, prevStatus: "down", code: 500 }));
+				.mockResolvedValueOnce(makeStatusChange({ status: "down", statusChanged: true, prevStatus: "up" }))
+				.mockResolvedValueOnce(makeStatusChange({ status: "down", statusChanged: false, prevStatus: "down" }));
 			const { pipeline } = createPipeline({ statusService: { updateMonitorStatus } });
 			const failing = makeCheck({ status: false, statusCode: 500, message: "Error" });
 
