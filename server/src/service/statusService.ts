@@ -188,79 +188,62 @@ export class StatusService implements IStatusService {
 				statusChanged = newStatus === "down";
 			}
 
-			// Not enough data points yet — record the check and return
-			if (projectedWindow.length < monitor.statusWindowSize) {
-				const updated = await this.monitorsRepository.updateStatusWindowAndChecks(
-					monitor.id,
-					monitor.teamId,
-					check.status,
-					checkSnapshot,
-					monitor.statusWindowSize,
-					MAX_RECENT_CHECKS,
-					patch
-				);
-
-				return {
-					monitor: updated,
-					statusChanged,
-					prevStatus,
-				};
-			}
-
-			// First evaluate reachability status changes, which apply to all monitor types
-			// and take precedence over hardware breaches.
-			const reachabilityResult = this.computeReachability(newStatus, projectedWindow, monitor.statusWindowThreshold);
-			if (reachabilityResult.transitioned) {
-				newStatus = reachabilityResult.nextStatus;
-				statusChanged = true;
-			}
-
-			// Evaluate hardware threshold breaches
 			let thresholdBreaches: HardwareBreaches | undefined;
-			if (monitor.type === "hardware") {
-				const hardware = this.computeHardwareStatus({
-					currentStatus: newStatus,
-					reachabilityDown: newStatus === "down",
-					metrics: check,
-					thresholds: {
-						cpu: monitor.cpuAlertThreshold,
-						memory: monitor.memoryAlertThreshold,
-						disk: monitor.diskAlertThreshold,
-						temp: monitor.tempAlertThreshold,
-					},
-					counters: {
-						cpu: monitor.cpuAlertCounter,
-						memory: monitor.memoryAlertCounter,
-						disk: monitor.diskAlertCounter,
-						temp: monitor.tempAlertCounter,
-					},
-				});
 
-				patch.cpuAlertCounter = hardware.nextCounters.cpu;
-				patch.memoryAlertCounter = hardware.nextCounters.memory;
-				patch.diskAlertCounter = hardware.nextCounters.disk;
-				patch.tempAlertCounter = hardware.nextCounters.temp;
-				thresholdBreaches = hardware.breaches;
-				if (hardware.transitioned) {
-					newStatus = hardware.nextStatus;
+			if (projectedWindow.length >= monitor.statusWindowSize) {
+				// First evaluate reachability status changes, which apply to all monitor types
+				// and take precedence over hardware breaches.
+				const reachabilityResult = this.computeReachability(newStatus, projectedWindow, monitor.statusWindowThreshold);
+				if (reachabilityResult.transitioned) {
+					newStatus = reachabilityResult.nextStatus;
 					statusChanged = true;
 				}
-			}
 
-			if (monitor.type === "docker" && check.containers) {
-				const breaches = findContainerBreaches(monitor, check.containers);
-				const docker = this.computeDockerStatus({
-					currentStatus: newStatus,
-					reachabilityDown: newStatus === "down",
-					breaching: breaches.length > 0,
-				});
-				if (docker.transitioned) {
-					newStatus = docker.nextStatus;
-					statusChanged = true;
+				// Evaluate hardware threshold breaches
+				if (monitor.type === "hardware") {
+					const hardware = this.computeHardwareStatus({
+						currentStatus: newStatus,
+						reachabilityDown: newStatus === "down",
+						metrics: check,
+						thresholds: {
+							cpu: monitor.cpuAlertThreshold,
+							memory: monitor.memoryAlertThreshold,
+							disk: monitor.diskAlertThreshold,
+							temp: monitor.tempAlertThreshold,
+						},
+						counters: {
+							cpu: monitor.cpuAlertCounter,
+							memory: monitor.memoryAlertCounter,
+							disk: monitor.diskAlertCounter,
+							temp: monitor.tempAlertCounter,
+						},
+					});
+
+					patch.cpuAlertCounter = hardware.nextCounters.cpu;
+					patch.memoryAlertCounter = hardware.nextCounters.memory;
+					patch.diskAlertCounter = hardware.nextCounters.disk;
+					patch.tempAlertCounter = hardware.nextCounters.temp;
+					thresholdBreaches = hardware.breaches;
+					if (hardware.transitioned) {
+						newStatus = hardware.nextStatus;
+						statusChanged = true;
+					}
 				}
-			}
 
-			patch.status = newStatus;
+				if (monitor.type === "docker" && check.containers) {
+					const breaches = findContainerBreaches(monitor, check.containers);
+					const docker = this.computeDockerStatus({
+						currentStatus: newStatus,
+						reachabilityDown: newStatus === "down",
+						breaching: breaches.length > 0,
+					});
+					if (docker.transitioned) {
+						newStatus = docker.nextStatus;
+						statusChanged = true;
+					}
+				}
+				patch.status = newStatus;
+			}
 
 			// Single atomic write: push arrays + set status/counters
 			const updated = await this.monitorsRepository.updateStatusWindowAndChecks(
