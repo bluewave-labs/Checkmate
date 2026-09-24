@@ -1936,7 +1936,15 @@
 			},
 			"cards": {
 				"monitorStatus": "Monitor status",
+				"currentlyDown": "Currently down",
+				"uptime": "Monitor uptime",
 				"monitorsByType": "Monitors by type"
+			},
+			"uptimeCard": {
+				"toggleSortOrder": "Toggle sort order"
+			},
+			"currentlyDown": {
+				"empty": "No monitors are down at this moment."
 			},
 			"header": {
 				"title": "Dashboard",
@@ -1944,8 +1952,11 @@
 			},
 			"editCards": "Edit cards",
 			"editCardsModal": {
-				"title": "Edit cards",
+				"title": "Dashboard cards",
 				"description": "Select the cards to display on your dashboard.",
+				"groups": {
+					"uptime": "Uptime"
+				},
 				"done": "Done"
 			}
 		}

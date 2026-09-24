@@ -1,4 +1,8 @@
-import { dashboardCardKeys, type DashboardCardKey } from "@/Types/Dashboard";
+import {
+	dashboardCardKeys,
+	type DashboardCardKey,
+	type DashboardSortOrder,
+} from "@/Types/Dashboard";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 type ThemeMode = "light" | "dark";
@@ -38,6 +42,7 @@ interface UIState {
 	starPromptOpen: boolean;
 	chartType: ChartType;
 	dashboardVisibleCards: DashboardCardKey[];
+	dashboardUptimeSortOrder: DashboardSortOrder;
 }
 
 const initialMode: ThemeMode = window?.matchMedia?.("(prefers-color-scheme: dark)")
@@ -78,6 +83,7 @@ const initialState: UIState = {
 	starPromptOpen: true,
 	chartType: "histogram",
 	dashboardVisibleCards: [...dashboardCardKeys],
+	dashboardUptimeSortOrder: "ascending",
 };
 
 const uiSlice = createSlice({
@@ -124,6 +130,9 @@ const uiSlice = createSlice({
 		setDashboardVisibleCards: (state, action: PayloadAction<DashboardCardKey[]>) => {
 			state.dashboardVisibleCards = action.payload;
 		},
+		setDashboardUptimeSortOrder: (state, action: PayloadAction<DashboardSortOrder>) => {
+			state.dashboardUptimeSortOrder = action.payload;
+		},
 	},
 });
 
@@ -141,4 +150,5 @@ export const {
 	setStarPromptOpen,
 	setChartType,
 	setDashboardVisibleCards,
+	setDashboardUptimeSortOrder,
 } = uiSlice.actions;

@@ -14,6 +14,8 @@ import { setDashboardVisibleCards } from "@/Features/UI/uiSlice";
 import type { RootState, AppDispatch } from "@/store";
 
 import { MonitorStatusCard } from "@/Pages/Dashboard/components/cards/MonitorStatusCard";
+import { CurrentlyDownCard } from "@/Pages/Dashboard/components/cards/CurrentlyDownCard";
+import { UptimeCard } from "@/Pages/Dashboard/components/cards/UptimeCard";
 import { MonitorsByTypeCard } from "@/Pages/Dashboard/components/cards/MonitorsByTypeCard";
 import { EditCardsModal } from "@/Pages/Dashboard/components/EditCardsModal";
 import { type DashboardCardKey, dashboardCardKeys } from "@/Types/Dashboard";
@@ -48,6 +50,8 @@ const Dashboard = () => {
 
 	const cardComponents: Record<DashboardCardKey, ReactNode> = {
 		monitorStatus: <MonitorStatusCard summary={summary} />,
+		currentlyDown: <CurrentlyDownCard monitors={monitors ?? []} />,
+		uptime: <UptimeCard monitors={monitors ?? []} />,
 		monitorsByType: <MonitorsByTypeCard monitorsByType={monitorsByType} />,
 	};
 
