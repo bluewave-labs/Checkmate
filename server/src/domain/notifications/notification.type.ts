@@ -1,3 +1,5 @@
+import { HardwareMetricKey } from "@/domain/monitors/monitor.type.js";
+
 export const NotificationChannels = [
 	"email",
 	"slack",
@@ -85,7 +87,7 @@ export interface MonitorInfo {
 }
 
 export interface ThresholdBreach {
-	metric: "cpu" | "memory" | "disk" | "temp";
+	metric: HardwareMetricKey;
 	currentValue: number;
 	threshold: number;
 	unit: string;

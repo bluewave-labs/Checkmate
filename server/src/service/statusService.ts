@@ -1,7 +1,14 @@
 import { IMonitorStatsRepository } from "@/domain/monitor-stats/monitor-stats.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import type { Check, CheckDiskInfo } from "@/domain/checks/check.type.js";
-import { MonitorStatuses, type Monitor, type MonitorStatus } from "@/domain/monitors/monitor.type.js";
+import {
+	HardwareBreaches,
+	HardwareCounters,
+	HardwareMetricKeys,
+	MonitorStatuses,
+	type Monitor,
+	type MonitorStatus,
+} from "@/domain/monitors/monitor.type.js";
 import type { StatusChangeResult } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger.js";
@@ -12,10 +19,6 @@ import { findContainerBreaches } from "@/domain/docker/docker-alert.js";
 
 const SERVICE_NAME = "StatusService";
 const HARDWARE_ALERT_COUNTER_START = 5;
-const HARDWARE_METRIC_KEYS = ["cpu", "memory", "disk", "temp"] as const;
-type HardwareMetricKey = (typeof HARDWARE_METRIC_KEYS)[number];
-type HardwareBreaches = Record<HardwareMetricKey, boolean>;
-type HardwareCounters = Record<HardwareMetricKey, number>;
 
 export interface IStatusService {
 	updateRunningStats(check: Check, monitor: Monitor): Promise<boolean>;
@@ -111,7 +114,7 @@ export class StatusService implements IStatusService {
 
 		// Update counters: decrement (floored at 0) if breached, reset to start otherwise.
 		const nextCounters = { ...counters };
-		for (const key of HARDWARE_METRIC_KEYS) {
+		for (const key of HardwareMetricKeys) {
 			nextCounters[key] = breaches[key] ? Math.max(0, counters[key] - 1) : HARDWARE_ALERT_COUNTER_START;
 		}
 
@@ -123,8 +126,8 @@ export class StatusService implements IStatusService {
 		if (!reachabilityDown) {
 			// A counter can only reach zero via the decrement path, which only runs when that
 			// metric is currently breaching — so anyCounterZero already implies anyBreached.
-			const anyCounterZero = HARDWARE_METRIC_KEYS.some((k) => nextCounters[k] === 0);
-			const allNormal = HARDWARE_METRIC_KEYS.every((k) => !breaches[k]);
+			const anyCounterZero = HardwareMetricKeys.some((k) => nextCounters[k] === 0);
+			const allNormal = HardwareMetricKeys.every((k) => !breaches[k]);
 
 			if (anyCounterZero && currentStatus !== "breached") {
 				nextStatus = "breached";
