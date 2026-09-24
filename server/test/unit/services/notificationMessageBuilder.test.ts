@@ -627,4 +627,51 @@ describe("NotificationMessageBuilder", () => {
 			});
 		});
 	});
+
+	// ── buildThresholdBreachMessage ─────────────────────────────────────────
+
+	describe("buildThresholdBreachMessage", () => {
+		const none: HardwareBreaches = { cpu: false, memory: false, disk: false, temp: false };
+		const hardwareMonitor = () => makeMonitor({ type: "hardware", cpuAlertThreshold: 80, memoryAlertThreshold: 80 });
+
+		it("describes a single flagged metric", () => {
+			const check = makeCheck({ cpu: { usage_percent: 0.95, temperature: [50] } });
+
+			const message = builder.buildThresholdBreachMessage(hardwareMonitor(), check, { ...none, cpu: true });
+
+			expect(message).toBe("CPU: 95.0% (threshold: 80%)");
+		});
+
+		it("joins several flagged metrics with a comma", () => {
+			const check = makeCheck({ cpu: { usage_percent: 0.95, temperature: [50] }, memory: { usage_percent: 0.9 } });
+
+			const message = builder.buildThresholdBreachMessage(hardwareMonitor(), check, { ...none, cpu: true, memory: true });
+
+			expect(message).toBe("CPU: 95.0% (threshold: 80%), MEMORY: 90.0% (threshold: 80%)");
+		});
+
+		it("falls back when no metric is flagged", () => {
+			const check = makeCheck({ cpu: { usage_percent: 0.95, temperature: [50] } });
+
+			expect(builder.buildThresholdBreachMessage(hardwareMonitor(), check, none)).toBe("Threshold breach detected");
+			expect(builder.buildThresholdBreachMessage(hardwareMonitor(), check, undefined)).toBe("Threshold breach detected");
+		});
+
+		it("lists the breaching containers for a docker monitor", () => {
+			const check = makeCheck({
+				status: true,
+				containers: makeContainers([{ name: "db", state: "exited", exitCode: 1 }, { name: "api", health: "unhealthy" }, { name: "web" }]),
+			});
+
+			const message = builder.buildThresholdBreachMessage(makeDockerMonitor(), check, undefined);
+
+			expect(message).toBe("db: stopped (exit code 1), api: unhealthy");
+		});
+
+		it("falls back when no container is breaching", () => {
+			const check = makeCheck({ status: true, containers: makeContainers([{ name: "web" }]) });
+
+			expect(builder.buildThresholdBreachMessage(makeDockerMonitor(), check, undefined)).toBe("Container alert");
+		});
+	});
 });

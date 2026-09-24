@@ -33,7 +33,7 @@ const createSettingsService = (clientHost = "https://app.example.com") => ({
 
 const createMessageBuilder = () => ({
 	buildMessage: jest.fn().mockReturnValue({ type: "monitor_down", content: { title: "Down" } }),
-	extractThresholdBreaches: jest.fn(),
+	buildThresholdBreachMessage: jest.fn(),
 });
 
 const createService = (overrides?: Record<string, unknown>) => {
