@@ -12,7 +12,7 @@ import type { Check } from "@/domain/checks/check.type.js";
 
 export interface INotificationMessageBuilder {
 	buildMessage(monitor: Monitor, check: Check, decision: MonitorActionDecision, clientHost: string): NotificationMessage;
-	extractThresholdBreaches(monitor: Monitor, check: Check, thresholdBreaches: HardwareBreaches | undefined): ThresholdBreach[];
+	buildThresholdBreachMessage(monitor: Monitor, check: Check, thresholdBreaches: HardwareBreaches | undefined): string;
 }
 
 const SERVICE_NAME = "NotificationMessageBuilder";
@@ -167,11 +167,10 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 	}
 
 	private buildContainerBreachContent(monitor: Monitor, check: Check): NotificationContent {
-		const containers = check.containers ?? [];
-		const breaches = findContainerBreaches(monitor, containers);
+		const lines = this.describeContainerBreaches(monitor, check);
 		const title = `Container Alert: ${monitor.name}`;
-		const summary = `${breaches.length} container(s) on "${monitor.name}" need attention.`;
-		const details = [`URL: ${monitor.url}`, `Type: ${monitor.type}`, ...breaches.map(describeContainerBreach)];
+		const summary = `${lines.length} container(s) on "${monitor.name}" need attention.`;
+		const details = [`URL: ${monitor.url}`, `Type: ${monitor.type}`, ...lines];
 		return { title, summary, details, timestamp: new Date() };
 	}
 
@@ -212,7 +211,7 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		}
 	}
 
-	public extractThresholdBreaches(monitor: Monitor, check: Check, thresholdBreaches: HardwareBreaches | undefined): ThresholdBreach[] {
+	private extractThresholdBreaches(monitor: Monitor, check: Check, thresholdBreaches: HardwareBreaches | undefined): ThresholdBreach[] {
 		const breaches: ThresholdBreach[] = [];
 
 		// Check if this is a hardware monitor with threshold data
@@ -226,5 +225,22 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		}
 
 		return breaches;
+	}
+
+	private describeContainerBreaches(monitor: Monitor, check: Check): string[] {
+		return findContainerBreaches(monitor, check.containers ?? []).map(describeContainerBreach);
+	}
+
+	public buildThresholdBreachMessage(monitor: Monitor, check: Check, thresholdBreaches: HardwareBreaches | undefined): string {
+		if (monitor.type === "docker") {
+			const lines = this.describeContainerBreaches(monitor, check);
+			return lines.length > 0 ? lines.join(", ") : "Container alert";
+		}
+
+		const breaches = this.extractThresholdBreaches(monitor, check, thresholdBreaches);
+		if (breaches.length === 0) {
+			return "Threshold breach detected";
+		}
+		return breaches.map((b) => `${b.metric.toUpperCase()}: ${b.formattedValue} (threshold: ${b.threshold}${b.unit})`).join(", ");
 	}
 }

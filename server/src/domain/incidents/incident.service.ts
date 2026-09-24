@@ -1,4 +1,3 @@
-const SERVICE_NAME = "incidentService";
 import type { Monitor } from "@/domain/monitors/monitor.type.js";
 import type { Check } from "@/domain/checks/check.type.js";
 import { AppError } from "@/utils/AppError.js";
@@ -12,8 +11,8 @@ import type { MonitorActionDecision } from "@/worker/worker.interface.js";
 import type { INotificationMessageBuilder } from "@/domain/notifications/notification.message-builder.js";
 import type { ILogger } from "@/utils/logger.js";
 import { DateRange } from "@/types/query.js";
-import { describeContainerBreach, findContainerBreaches } from "@/domain/docker/docker-alert.js";
 
+const SERVICE_NAME = "incidentService";
 export interface IIncidentService {
 	handleIncident(monitor: Monitor, decision: MonitorActionDecision, check: Check): Promise<Incident | null>;
 	resolveIncident(incidentId: string, userId: string, teamId: string, comment?: string, userEmail?: string): Promise<Incident>;
@@ -71,7 +70,7 @@ export class IncidentService implements IIncidentService {
 				// For threshold breaches, use 9999 status code and build descriptive message
 				if (decision.incidentReason === "threshold_breach") {
 					statusCode = 9999;
-					message = this.buildThresholdBreachMessage(monitor, check, decision);
+					message = this.notificationMessageBuilder.buildThresholdBreachMessage(monitor, check, decision.thresholdBreaches);
 				}
 
 				const incident = {
@@ -95,22 +94,6 @@ export class IncidentService implements IIncidentService {
 		activeIncident.resolutionType = "automatic";
 		return await this.incidentsRepository.updateById(activeIncident.id, activeIncident.teamId, activeIncident);
 	};
-
-	private buildThresholdBreachMessage(monitor: Monitor, check: Check, decision: MonitorActionDecision): string {
-		if (monitor.type === "docker") {
-			const containers = check.containers ?? [];
-			const breaches = findContainerBreaches(monitor, containers);
-			return breaches.length > 0 ? breaches.map(describeContainerBreach).join(", ") : "Container alert";
-		}
-
-		const breaches = this.notificationMessageBuilder.extractThresholdBreaches(monitor, check, decision.thresholdBreaches);
-
-		if (breaches.length === 0) {
-			return "Threshold breach detected";
-		}
-
-		return breaches.map((b) => `${b.metric.toUpperCase()}: ${b.formattedValue} (threshold: ${b.threshold}${b.unit})`).join(", ");
-	}
 
 	resolveIncident = async (incidentId: string, userId: string, teamId: string, comment?: string, userEmail?: string) => {
 		try {
