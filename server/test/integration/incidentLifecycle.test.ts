@@ -55,7 +55,7 @@ describe("Incident lifecycle (integration)", () => {
 		repo = new InMemoryIncidentsRepository();
 		monitorsRepo = { findById: jest.fn() } as unknown as jest.Mocked<IMonitorsRepository>;
 		usersRepo = { findById: jest.fn() } as unknown as jest.Mocked<IUsersRepository>;
-		messageBuilder = { extractThresholdBreaches: jest.fn() } as unknown as jest.Mocked<INotificationMessageBuilder>;
+		messageBuilder = { buildThresholdBreachMessage: jest.fn() } as unknown as jest.Mocked<INotificationMessageBuilder>;
 		service = new IncidentService(createMockLogger() as any, repo, monitorsRepo, usersRepo, messageBuilder);
 	});
 
@@ -152,10 +152,7 @@ describe("Incident lifecycle (integration)", () => {
 
 	it("creates a threshold breach incident with statusCode 9999 and descriptive message", async () => {
 		const monitor = makeMonitor({ status: "breached", type: "hardware" });
-		(messageBuilder.extractThresholdBreaches as jest.Mock).mockReturnValue([
-			{ metric: "cpu", formattedValue: "92%", threshold: 80, unit: "%" },
-			{ metric: "memory", formattedValue: "88%", threshold: 85, unit: "%" },
-		]);
+		(messageBuilder.buildThresholdBreachMessage as jest.Mock).mockReturnValue("CPU: 92% (threshold: 80%), MEMORY: 88% (threshold: 85%)");
 		const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
 
 		const incident = await service.handleIncident(monitor, decision, makeCheck(200));
