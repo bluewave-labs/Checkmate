@@ -21,7 +21,6 @@ const SERVICE_NAME = "StatusService";
 const HARDWARE_ALERT_COUNTER_START = 5;
 
 export interface IStatusService {
-	updateRunningStats(check: Check, monitor: Monitor): Promise<boolean>;
 	updateMonitorStatus(check: Check, monitor: Monitor): Promise<StatusChangeResult>;
 }
 
@@ -37,32 +36,19 @@ export class StatusService implements IStatusService {
 		this.monitorStatsRepository = monitorStatsRepository;
 	}
 
-	async updateRunningStats(check: Check, monitor: Monitor) {
+	private tryUpdateRunningStats = async (check: Check, monitor: Monitor) => {
 		try {
 			await this.monitorStatsRepository.updateByMonitorId(monitor.id, {
 				status: check.status === true,
 				responseTime: check.responseTime ?? 0,
 				now: Date.now(),
 			});
-			return true;
 		} catch (error: unknown) {
-			this.logger.error({
-				service: SERVICE_NAME,
-				message: error instanceof Error ? error.message : "Unknown error",
-				method: "updateRunningStats",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-			return false;
-		}
-	}
-
-	private tryUpdateRunningStats = async (check: Check, monitor: Monitor) => {
-		const statsOk = await this.updateRunningStats(check, monitor);
-		if (!statsOk) {
 			this.logger.warn({
 				service: SERVICE_NAME,
-				method: "updateMonitorStatus",
-				message: `Stats update failed for monitor ${monitor.id}`,
+				message: error instanceof Error ? error.message : "Unknown error",
+				method: "tryUpdateRunningStats",
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 		}
 	};
