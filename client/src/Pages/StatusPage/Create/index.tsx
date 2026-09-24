@@ -35,6 +35,7 @@ import { FormMultiSelectField } from "@/Components/inputs/forms/FormMultiSelectF
 import { FormAutocompleteField } from "@/Components/inputs/forms/FormAutoCompleteField";
 import { FormCheckboxField } from "@/Components/inputs/forms/FormCheckboxField";
 import { FormColorField } from "@/Components/inputs/forms/FormColorField";
+import { StatusPageLivePreview } from "./Components/StatusPageLivePreview";
 
 const ThemePickerField = () => {
 	const { field: themeField } = useController<StatusPageFormData, "theme">({
@@ -393,6 +394,12 @@ const CreateStatusPage = () => {
 								)}
 							/>
 						}
+					/>
+				)}
+				{showStep(1) && (
+					<StatusPageLivePreview
+						form={form}
+						monitors={monitors}
 					/>
 				)}
 				{showStep(1) && (
