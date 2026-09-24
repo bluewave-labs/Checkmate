@@ -1,6 +1,6 @@
 import { describe, expect, it, beforeEach } from "@jest/globals";
 import { NotificationMessageBuilder } from "../../../src/domain/notifications/notification.message-builder.ts";
-import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
+import type { HardwareBreaches, Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { Check } from "../../../src/domain/checks/check.type.ts";
 import type { DockerContainerInfo } from "../../../src/domain/docker/docker.type.ts";
 import type { MonitorActionDecision } from "../../../src/worker/worker.interface.ts";
@@ -119,7 +119,10 @@ describe("NotificationMessageBuilder", () => {
 
 		it("builds a threshold_breach message", () => {
 			const monitor = makeMonitor({ status: "up", type: "hardware", cpuAlertThreshold: 80 });
-			const decision = makeDecision({ notificationReason: "threshold_breach" });
+			const decision = makeDecision({
+				notificationReason: "threshold_breach",
+				thresholdBreaches: { cpu: true, memory: false, disk: false, temp: false },
+			});
 			const check = makeCheck({ cpu: { usage_percent: 0.9, temperature: [50] } });
 
 			const msg = builder.buildMessage(monitor, check, decision, "https://app.example.com");
@@ -346,21 +349,26 @@ describe("NotificationMessageBuilder", () => {
 		});
 
 		describe("threshold_breach", () => {
-			it("includes threshold breaches in content", () => {
+			it("includes the breaches flagged on the decision in content", () => {
+				const monitor = makeMonitor({ status: "up", type: "hardware", cpuAlertThreshold: 80 });
+				const check = makeCheck({ cpu: { usage_percent: 0.9, temperature: [50] } });
+				const decision = makeDecision({
+					notificationReason: "threshold_breach",
+					thresholdBreaches: { cpu: true, memory: false, disk: false, temp: false },
+				});
+
+				const msg = builder.buildMessage(monitor, check, decision, "");
+
+				expect(msg.content.thresholds).toEqual([expect.objectContaining({ metric: "cpu", currentValue: 90, threshold: 80 })]);
+			});
+
+			it("leaves thresholds empty when the decision carries no breaches", () => {
 				const monitor = makeMonitor({ status: "up", type: "hardware", cpuAlertThreshold: 80 });
 				const check = makeCheck({ cpu: { usage_percent: 0.9, temperature: [50] } });
 
 				const msg = builder.buildMessage(monitor, check, makeDecision({ notificationReason: "threshold_breach" }), "");
 
-				expect(msg.content.thresholds).toEqual(
-					expect.arrayContaining([
-						expect.objectContaining({
-							metric: "cpu",
-							currentValue: 90,
-							threshold: 80,
-						}),
-					])
-				);
+				expect(msg.content.thresholds).toEqual([]);
 			});
 		});
 
@@ -480,346 +488,151 @@ describe("NotificationMessageBuilder", () => {
 	// ── extractThresholdBreaches ─────────────────────────────────────────
 
 	describe("extractThresholdBreaches", () => {
-		it("returns empty array for non-hardware monitor", () => {
-			const monitor = makeMonitor({ type: "http" });
-			const check = makeCheck({ cpu: { usage_percent: 0.99 } });
-
-			const breaches = builder.extractThresholdBreaches(monitor, check);
-
-			expect(breaches).toEqual([]);
-		});
-
-		it("returns empty array when the check carries no hardware data", () => {
-			const monitor = makeMonitor({
+		const none: HardwareBreaches = { cpu: false, memory: false, disk: false, temp: false };
+		const hardwareMonitor = (overrides?: Partial<Monitor>) =>
+			makeMonitor({
 				type: "hardware",
 				cpuAlertThreshold: 80,
-				memoryAlertThreshold: 80,
-				diskAlertThreshold: 80,
-				tempAlertThreshold: 80,
+				memoryAlertThreshold: 70,
+				diskAlertThreshold: 85,
+				tempAlertThreshold: 65,
+				...overrides,
 			});
-			const check = makeCheck();
 
-			const breaches = builder.extractThresholdBreaches(monitor, check);
+		it("returns empty when no breaches are supplied", () => {
+			const check = makeCheck({ cpu: { usage_percent: 0.99, temperature: [99] } });
 
-			expect(breaches).toEqual([]);
+			expect(builder.extractThresholdBreaches(hardwareMonitor(), check, undefined)).toEqual([]);
 		});
 
-		// ── CPU ──────────────────────────────────────────────────────────
+		it("returns empty when every flag is false, whatever the check says", () => {
+			const check = makeCheck({
+				cpu: { usage_percent: 0.99, temperature: [99] },
+				memory: { usage_percent: 0.99 },
+				disk: [{ usage_percent: 0.99 }],
+			});
 
-		describe("cpu threshold", () => {
-			it("detects CPU breach when usage exceeds threshold", () => {
-				const monitor = makeMonitor({ type: "hardware", cpuAlertThreshold: 80 });
+			expect(builder.extractThresholdBreaches(hardwareMonitor(), check, none)).toEqual([]);
+		});
+
+		it("returns empty for a non-hardware monitor even when flags are set", () => {
+			const check = makeCheck({ cpu: { usage_percent: 0.99 } });
+
+			expect(builder.extractThresholdBreaches(makeMonitor({ type: "http" }), check, { ...none, cpu: true })).toEqual([]);
+		});
+
+		// The flags are the verdict. The builder formats what it is told is breaching and never re-runs the comparison.
+		it("reports a flagged metric without re-testing it against the threshold", () => {
+			const check = makeCheck({ cpu: { usage_percent: 0.5, temperature: [50] } });
+
+			const breaches = builder.extractThresholdBreaches(hardwareMonitor(), check, { ...none, cpu: true });
+
+			expect(breaches).toEqual([{ metric: "cpu", currentValue: 50, threshold: 80, unit: "%", formattedValue: "50.0%" }]);
+		});
+
+		describe("cpu", () => {
+			it("formats cpu usage as a percentage when flagged", () => {
 				const check = makeCheck({ cpu: { usage_percent: 0.9, temperature: [50] } });
 
-				const breaches = builder.extractThresholdBreaches(monitor, check);
+				const breaches = builder.extractThresholdBreaches(hardwareMonitor(), check, { ...none, cpu: true });
 
-				expect(breaches).toContainEqual(
-					expect.objectContaining({
-						metric: "cpu",
-						currentValue: 90,
-						threshold: 80,
-						unit: "%",
-						formattedValue: "90.0%",
-					})
-				);
+				expect(breaches).toEqual([{ metric: "cpu", currentValue: 90, threshold: 80, unit: "%", formattedValue: "90.0%" }]);
 			});
 
-			it("does not report CPU breach when usage is below threshold", () => {
-				const monitor = makeMonitor({ type: "hardware", cpuAlertThreshold: 80 });
-				const check = makeCheck({ cpu: { usage_percent: 0.5, temperature: [50] } });
+			it("ignores cpu when not flagged", () => {
+				const check = makeCheck({ cpu: { usage_percent: 0.9, temperature: [50] } });
 
-				const breaches = builder.extractThresholdBreaches(monitor, check);
-
-				expect(breaches.find((b) => b.metric === "cpu")).toBeUndefined();
-			});
-
-			it("skips CPU check when cpuAlertThreshold is undefined", () => {
-				const monitor = makeMonitor({ type: "hardware", cpuAlertThreshold: undefined });
-				const check = makeCheck({ cpu: { usage_percent: 0.99 } });
-
-				const breaches = builder.extractThresholdBreaches(monitor, check);
-
-				expect(breaches.find((b) => b.metric === "cpu")).toBeUndefined();
-			});
-
-			it("skips CPU check when cpuAlertThreshold is null", () => {
-				const monitor = makeMonitor({ type: "hardware", cpuAlertThreshold: null as any });
-				const check = makeCheck({ cpu: { usage_percent: 0.99 } });
-
-				const breaches = builder.extractThresholdBreaches(monitor, check);
-
-				expect(breaches.find((b) => b.metric === "cpu")).toBeUndefined();
-			});
-
-			it("skips CPU check when cpu usage_percent is undefined", () => {
-				const monitor = makeMonitor({ type: "hardware", cpuAlertThreshold: 80 });
-				const check = makeCheck({ cpu: { usage_percent: undefined } });
-
-				const breaches = builder.extractThresholdBreaches(monitor, check);
-
-				expect(breaches.find((b) => b.metric === "cpu")).toBeUndefined();
-			});
-
-			it("skips CPU check when cpu object is undefined", () => {
-				const monitor = makeMonitor({ type: "hardware", cpuAlertThreshold: 80 });
-				const check = makeCheck({ cpu: undefined });
-
-				const breaches = builder.extractThresholdBreaches(monitor, check);
+				const breaches = builder.extractThresholdBreaches(hardwareMonitor(), check, { ...none, memory: true });
 
 				expect(breaches.find((b) => b.metric === "cpu")).toBeUndefined();
 			});
 		});
 
-		// ── Memory ───────────────────────────────────────────────────────
-
-		describe("memory threshold", () => {
-			it("detects memory breach when usage exceeds threshold", () => {
-				const monitor = makeMonitor({ type: "hardware", memoryAlertThreshold: 70 });
+		describe("memory", () => {
+			it("formats memory usage as a percentage when flagged", () => {
 				const check = makeCheck({ memory: { usage_percent: 0.85 } });
 
-				const breaches = builder.extractThresholdBreaches(monitor, check);
+				const breaches = builder.extractThresholdBreaches(hardwareMonitor(), check, { ...none, memory: true });
 
-				expect(breaches).toContainEqual(
-					expect.objectContaining({
-						metric: "memory",
-						currentValue: 85,
-						threshold: 70,
-						unit: "%",
-						formattedValue: "85.0%",
-					})
-				);
+				expect(breaches).toEqual([{ metric: "memory", currentValue: 85, threshold: 70, unit: "%", formattedValue: "85.0%" }]);
 			});
 
-			it("does not report memory breach when usage is below threshold", () => {
-				const monitor = makeMonitor({ type: "hardware", memoryAlertThreshold: 90 });
-				const check = makeCheck({ memory: { usage_percent: 0.5 } });
+			it("ignores memory when not flagged", () => {
+				const check = makeCheck({ memory: { usage_percent: 0.85 } });
 
-				const breaches = builder.extractThresholdBreaches(monitor, check);
-
-				expect(breaches.find((b) => b.metric === "memory")).toBeUndefined();
-			});
-
-			it("skips memory check when memoryAlertThreshold is undefined", () => {
-				const monitor = makeMonitor({ type: "hardware", memoryAlertThreshold: undefined });
-				const check = makeCheck({ memory: { usage_percent: 0.99 } });
-
-				const breaches = builder.extractThresholdBreaches(monitor, check);
-
-				expect(breaches.find((b) => b.metric === "memory")).toBeUndefined();
-			});
-
-			it("skips memory check when memoryAlertThreshold is null", () => {
-				const monitor = makeMonitor({ type: "hardware", memoryAlertThreshold: null as any });
-				const check = makeCheck({ memory: { usage_percent: 0.99 } });
-
-				const breaches = builder.extractThresholdBreaches(monitor, check);
-
-				expect(breaches.find((b) => b.metric === "memory")).toBeUndefined();
-			});
-
-			it("skips memory check when memory usage_percent is undefined", () => {
-				const monitor = makeMonitor({ type: "hardware", memoryAlertThreshold: 70 });
-				const check = makeCheck({ memory: { usage_percent: undefined } });
-
-				const breaches = builder.extractThresholdBreaches(monitor, check);
-
-				expect(breaches.find((b) => b.metric === "memory")).toBeUndefined();
-			});
-
-			it("skips memory check when memory object is undefined", () => {
-				const monitor = makeMonitor({ type: "hardware", memoryAlertThreshold: 70 });
-				const check = makeCheck({ memory: undefined });
-
-				const breaches = builder.extractThresholdBreaches(monitor, check);
+				const breaches = builder.extractThresholdBreaches(hardwareMonitor(), check, { ...none, cpu: true });
 
 				expect(breaches.find((b) => b.metric === "memory")).toBeUndefined();
 			});
 		});
 
-		// ── Disk ─────────────────────────────────────────────────────────
-
-		describe("disk threshold", () => {
-			it("detects disk breach using highest usage across multiple disks", () => {
-				const monitor = makeMonitor({ type: "hardware", diskAlertThreshold: 80 });
+		describe("disk", () => {
+			it("formats the highest usage across disks when flagged", () => {
 				const check = makeCheck({ disk: [{ usage_percent: 0.5 }, { usage_percent: 0.95 }, { usage_percent: 0.7 }] });
 
-				const breaches = builder.extractThresholdBreaches(monitor, check);
+				const breaches = builder.extractThresholdBreaches(hardwareMonitor(), check, { ...none, disk: true });
 
-				expect(breaches).toContainEqual(
-					expect.objectContaining({
-						metric: "disk",
-						currentValue: 95,
-						threshold: 80,
-						formattedValue: "95.0%",
-					})
-				);
+				expect(breaches).toEqual([{ metric: "disk", currentValue: 95, threshold: 85, unit: "%", formattedValue: "95.0%" }]);
 			});
 
-			it("does not report disk breach when all disks are below threshold", () => {
-				const monitor = makeMonitor({ type: "hardware", diskAlertThreshold: 90 });
-				const check = makeCheck({ disk: [{ usage_percent: 0.5 }, { usage_percent: 0.6 }] });
-
-				const breaches = builder.extractThresholdBreaches(monitor, check);
-
-				expect(breaches.find((b) => b.metric === "disk")).toBeUndefined();
-			});
-
-			it("skips disk check when diskAlertThreshold is undefined", () => {
-				const monitor = makeMonitor({ type: "hardware", diskAlertThreshold: undefined });
-				const check = makeCheck({ disk: [{ usage_percent: 0.99 }] });
-
-				const breaches = builder.extractThresholdBreaches(monitor, check);
-
-				expect(breaches.find((b) => b.metric === "disk")).toBeUndefined();
-			});
-
-			it("skips disk check when diskAlertThreshold is null", () => {
-				const monitor = makeMonitor({ type: "hardware", diskAlertThreshold: null as any });
-				const check = makeCheck({ disk: [{ usage_percent: 0.99 }] });
-
-				const breaches = builder.extractThresholdBreaches(monitor, check);
-
-				expect(breaches.find((b) => b.metric === "disk")).toBeUndefined();
-			});
-
-			it("skips disk check when disk is not an array", () => {
-				const monitor = makeMonitor({ type: "hardware", diskAlertThreshold: 80 });
-				const check = makeCheck({ disk: "not-an-array" as any });
-
-				const breaches = builder.extractThresholdBreaches(monitor, check);
-
-				expect(breaches.find((b) => b.metric === "disk")).toBeUndefined();
-			});
-
-			it("skips disks with undefined usage_percent", () => {
-				const monitor = makeMonitor({ type: "hardware", diskAlertThreshold: 50 });
+			it("treats a disk with no usage figure as zero when finding the highest", () => {
 				const check = makeCheck({ disk: [{ usage_percent: undefined }, { usage_percent: 0.3 }] });
 
-				const breaches = builder.extractThresholdBreaches(monitor, check);
+				const breaches = builder.extractThresholdBreaches(hardwareMonitor(), check, { ...none, disk: true });
+
+				expect(breaches).toEqual([expect.objectContaining({ metric: "disk", currentValue: 30 })]);
+			});
+
+			it("ignores disk when not flagged", () => {
+				const check = makeCheck({ disk: [{ usage_percent: 0.95 }] });
+
+				const breaches = builder.extractThresholdBreaches(hardwareMonitor(), check, { ...none, temp: true });
 
 				expect(breaches.find((b) => b.metric === "disk")).toBeUndefined();
 			});
 		});
 
-		// ── Temperature ──────────────────────────────────────────────────
-
-		describe("temperature threshold", () => {
-			it("detects temperature breach from array of temperatures", () => {
-				const monitor = makeMonitor({ type: "hardware", tempAlertThreshold: 70 });
+		describe("temperature", () => {
+			it("formats the highest core temperature when flagged", () => {
 				const check = makeCheck({ cpu: { usage_percent: 0.5, temperature: [65, 75, 68] } });
 
-				const breaches = builder.extractThresholdBreaches(monitor, check);
+				const breaches = builder.extractThresholdBreaches(hardwareMonitor(), check, { ...none, temp: true });
 
-				expect(breaches).toContainEqual(
-					expect.objectContaining({
-						metric: "temp",
-						currentValue: 75,
-						threshold: 70,
-						unit: "°C",
-						formattedValue: "75.0°C",
-					})
-				);
+				expect(breaches).toEqual([{ metric: "temp", currentValue: 75, threshold: 65, unit: "°C", formattedValue: "75.0°C" }]);
 			});
 
-			it("handles single temperature value (non-array)", () => {
-				const monitor = makeMonitor({ type: "hardware", tempAlertThreshold: 70 });
-				const check = makeCheck({ cpu: { usage_percent: 0.5, temperature: 80 as any } });
-
-				const breaches = builder.extractThresholdBreaches(monitor, check);
-
-				expect(breaches).toContainEqual(
-					expect.objectContaining({
-						metric: "temp",
-						currentValue: 80,
-						threshold: 70,
-					})
-				);
-			});
-
-			it("does not report temperature breach when below threshold", () => {
-				const monitor = makeMonitor({ type: "hardware", tempAlertThreshold: 80 });
-				const check = makeCheck({ cpu: { usage_percent: 0.5, temperature: [60, 65] } });
-
-				const breaches = builder.extractThresholdBreaches(monitor, check);
-
-				expect(breaches.find((b) => b.metric === "temp")).toBeUndefined();
-			});
-
-			// A temperature exactly AT the threshold must not report a breach here, matching
-			// StatusService.computeHardwareStatus's own strict `>` comparison (cpu/memory/disk
-			// already agree with this file on `>`; temp alone used to diverge with `>=`, so an
-			// incident-driving check at exactly the threshold never fired but the notification
-			// content for a breach some OTHER metric triggered could still list temp as breaching).
-			it("does not report temperature breach when exactly at threshold", () => {
-				const monitor = makeMonitor({ type: "hardware", tempAlertThreshold: 80 });
-				const check = makeCheck({ cpu: { usage_percent: 0.5, temperature: [80] } });
-
-				const breaches = builder.extractThresholdBreaches(monitor, check);
-
-				expect(breaches.find((b) => b.metric === "temp")).toBeUndefined();
-			});
-
-			it("skips temperature check when tempAlertThreshold is undefined", () => {
-				const monitor = makeMonitor({ type: "hardware", tempAlertThreshold: undefined });
+			it("ignores temperature when not flagged", () => {
 				const check = makeCheck({ cpu: { usage_percent: 0.5, temperature: [99] } });
 
-				const breaches = builder.extractThresholdBreaches(monitor, check);
-
-				expect(breaches.find((b) => b.metric === "temp")).toBeUndefined();
-			});
-
-			it("skips temperature check when tempAlertThreshold is null", () => {
-				const monitor = makeMonitor({ type: "hardware", tempAlertThreshold: null as any });
-				const check = makeCheck({ cpu: { usage_percent: 0.5, temperature: [99] } });
-
-				const breaches = builder.extractThresholdBreaches(monitor, check);
-
-				expect(breaches.find((b) => b.metric === "temp")).toBeUndefined();
-			});
-
-			it("skips temperature check when cpu.temperature is falsy", () => {
-				const monitor = makeMonitor({ type: "hardware", tempAlertThreshold: 70 });
-				const check = makeCheck({ cpu: { usage_percent: 0.5, temperature: null as any } });
-
-				const breaches = builder.extractThresholdBreaches(monitor, check);
-
-				expect(breaches.find((b) => b.metric === "temp")).toBeUndefined();
-			});
-
-			it("skips temperature check when cpu object is undefined", () => {
-				const monitor = makeMonitor({ type: "hardware", tempAlertThreshold: 70 });
-				const check = makeCheck({ cpu: undefined });
-
-				const breaches = builder.extractThresholdBreaches(monitor, check);
+				const breaches = builder.extractThresholdBreaches(hardwareMonitor(), check, { ...none, cpu: true });
 
 				expect(breaches.find((b) => b.metric === "temp")).toBeUndefined();
 			});
 		});
 
-		// ── Combined ─────────────────────────────────────────────────────
-
-		describe("combined thresholds", () => {
-			it("detects multiple breaches simultaneously", () => {
-				const monitor = makeMonitor({
-					type: "hardware",
-					cpuAlertThreshold: 80,
-					memoryAlertThreshold: 70,
-					diskAlertThreshold: 85,
-					tempAlertThreshold: 65,
-				});
+		describe("combined", () => {
+			it("reports every flagged metric in cpu, memory, disk, temp order", () => {
 				const check = makeCheck({
 					cpu: { usage_percent: 0.9, temperature: [70] },
 					memory: { usage_percent: 0.85 },
 					disk: [{ usage_percent: 0.95 }],
 				});
 
-				const breaches = builder.extractThresholdBreaches(monitor, check);
+				const breaches = builder.extractThresholdBreaches(hardwareMonitor(), check, { cpu: true, memory: true, disk: true, temp: true });
 
-				const metrics = breaches.map((b) => b.metric);
-				expect(metrics).toContain("cpu");
-				expect(metrics).toContain("memory");
-				expect(metrics).toContain("disk");
-				expect(metrics).toContain("temp");
+				expect(breaches.map((b) => b.metric)).toEqual(["cpu", "memory", "disk", "temp"]);
+			});
+
+			it("reports only the flagged subset", () => {
+				const check = makeCheck({
+					cpu: { usage_percent: 0.9, temperature: [70] },
+					memory: { usage_percent: 0.85 },
+					disk: [{ usage_percent: 0.95 }],
+				});
+
+				const breaches = builder.extractThresholdBreaches(hardwareMonitor(), check, { ...none, memory: true, temp: true });
+
+				expect(breaches.map((b) => b.metric)).toEqual(["memory", "temp"]);
 			});
 		});
 	});

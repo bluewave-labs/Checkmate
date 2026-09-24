@@ -163,10 +163,11 @@ describe("IncidentService", () => {
 
 			const monitor = makeMonitor({ type: "hardware" });
 			const check = makeCheck({ metadata: { monitorId: "mon-1", teamId: "team-1", type: "hardware" }, cpu: { usage_percent: 0.95 } });
-			const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
+			const thresholdBreaches = { cpu: true, memory: false, disk: false, temp: false };
+			const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach", thresholdBreaches });
 			await service.handleIncident(monitor, decision, check);
 
-			expect(notificationMessageBuilder.extractThresholdBreaches).toHaveBeenCalledWith(monitor, check);
+			expect(notificationMessageBuilder.extractThresholdBreaches).toHaveBeenCalledWith(monitor, check, thresholdBreaches);
 			expect(incidentsRepository.create).toHaveBeenCalledWith(
 				expect.objectContaining({
 					statusCode: 9999,
