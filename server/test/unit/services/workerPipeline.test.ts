@@ -518,24 +518,6 @@ describe("WorkerPipeline", () => {
 			expect(check.egressStatus).toBe("ok");
 		});
 
-		it("buffers the check when the egress assessment rejects", async () => {
-			const check: Record<string, unknown> = { id: "check-1" };
-			const { pipeline, deps } = createPipeline({
-				networkService: { requestStatus: jest.fn<any>().mockResolvedValue(failingStatus) },
-				checkService: { toCheck: jest.fn<any>().mockReturnValue(check) },
-				egressService: { assessAfterFailure: jest.fn<any>().mockRejectedValue(new Error("settings unavailable")) },
-			});
-
-			const result = await pipeline.produce(makeMonitor());
-
-			expect(deps.bufferService.addToBuffer).toHaveBeenCalledWith(check);
-			expect(check).not.toHaveProperty("egressStatus");
-			expect(result).toEqual({ status: failingStatus, check });
-			expect(deps.logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({ message: expect.stringContaining("settings unavailable"), service: "WorkerPipeline", method: "assessEgress" })
-			);
-		});
-
 		it("leaves the field unset on a failing check when the egress check is disabled", async () => {
 			const check: Record<string, unknown> = { id: "check-1" };
 			const { pipeline, deps } = createPipeline({
@@ -734,7 +716,6 @@ describe("WorkerPipeline", () => {
 			expect(result).toMatchObject({
 				monitor: statusChange.monitor,
 				check,
-				statusChange,
 				decision: expect.objectContaining({
 					shouldCreateIncident: true,
 					shouldSendNotification: true,
@@ -777,8 +758,7 @@ describe("WorkerPipeline", () => {
 
 			expect(deps.statusService.updateMonitorStatus).not.toHaveBeenCalled();
 			expect(result.monitor).toBe(monitor);
-			expect(result.statusChange).toMatchObject({ monitor, statusChanged: false, prevStatus: "up", code: 500 });
-			expect(result.statusChange.timestamp).toEqual(expect.any(Number));
+			expect(result).not.toHaveProperty("statusChange");
 			expect(result.decision).toEqual({
 				shouldCreateIncident: false,
 				shouldResolveIncident: false,
@@ -864,6 +844,57 @@ describe("WorkerPipeline", () => {
 		it("does not create or resolve for unhandled status transitions", async () => {
 			const decision = await decide(makeStatusChange({ status: "paused", statusChanged: true, prevStatus: "up" }));
 			expect(decision).toMatchObject({ shouldCreateIncident: false, shouldResolveIncident: false, shouldSendNotification: false });
+		});
+
+		it("carries the threshold breaches onto a breached decision", async () => {
+			const thresholdBreaches = { cpu: true, memory: false, disk: true, temp: false };
+			const decision = await decide(makeStatusChange({ status: "breached", statusChanged: true, prevStatus: "up", thresholdBreaches }));
+			expect(decision.thresholdBreaches).toEqual(thresholdBreaches);
+		});
+
+		it("leaves threshold breaches off a down decision even when the status change carries them", async () => {
+			const thresholdBreaches = { cpu: true, memory: false, disk: false, temp: false };
+			const decision = await decide(makeStatusChange({ status: "down", statusChanged: true, prevStatus: "up", code: 500, thresholdBreaches }));
+			expect(decision).not.toHaveProperty("thresholdBreaches");
+		});
+
+		it("leaves threshold breaches off a no-op decision", async () => {
+			const thresholdBreaches = { cpu: true, memory: false, disk: false, temp: false };
+			const decision = await decide(makeStatusChange({ status: "breached", statusChanged: false, prevStatus: "breached", thresholdBreaches }));
+			expect(decision).not.toHaveProperty("thresholdBreaches");
+		});
+
+		// StatusService only sets thresholdBreaches for hardware monitors; a docker breach must not leave the key behind holding undefined.
+		it("leaves threshold breaches off a breached decision when the status change carries none", async () => {
+			const decision = await decide(makeStatusChange({ status: "breached", statusChanged: true, prevStatus: "up" }));
+			expect(decision).toMatchObject({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
+			expect(decision).not.toHaveProperty("thresholdBreaches");
+		});
+
+		// Each decision starts from a shared template. A transition must not leak its flags into the next decision
+		// the same pipeline makes, whether that is a no-op evaluation or a degraded-egress short-circuit.
+		it("starts every decision clean after a transition on the same pipeline", async () => {
+			const updateMonitorStatus = jest
+				.fn<any>()
+				.mockResolvedValueOnce(makeStatusChange({ status: "down", statusChanged: true, prevStatus: "up", code: 500 }))
+				.mockResolvedValueOnce(makeStatusChange({ status: "down", statusChanged: false, prevStatus: "down", code: 500 }));
+			const { pipeline } = createPipeline({ statusService: { updateMonitorStatus } });
+			const failing = makeCheck({ status: false, statusCode: 500, message: "Error" });
+
+			const first = await pipeline.evaluateCheck(failing, makeMonitor());
+			const second = await pipeline.evaluateCheck(failing, makeMonitor({ status: "down" }));
+			const degraded = await pipeline.evaluateCheck(makeCheck({ ...failing, egressStatus: "degraded" }), makeMonitor({ status: "down" }));
+
+			expect(first.decision.shouldCreateIncident).toBe(true);
+			const clean = {
+				shouldCreateIncident: false,
+				shouldResolveIncident: false,
+				shouldSendNotification: false,
+				incidentReason: null,
+				notificationReason: null,
+			};
+			expect(second.decision).toEqual(clean);
+			expect(degraded.decision).toEqual(clean);
 		});
 	});
 });

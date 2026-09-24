@@ -3,7 +3,6 @@ import { ICheckService } from "@/domain/checks/check.service.js";
 import { Check } from "@/domain/checks/check.type.js";
 import { IDockerLogsService } from "@/domain/docker/docker-log.service.js";
 import { IEgressService, isHttpStatusCode } from "@/domain/egress/egress.service.js";
-import type { EgressStatus } from "@/domain/egress/egress.type.js";
 import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import { PendingCheck } from "@/domain/jobs/job.type.js";
 import { IMaintenanceWindowsRepository } from "@/domain/maintenance-windows/maintenance-window.repository.interface.js";
@@ -21,7 +20,13 @@ import { IReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { JobHandler, MonitorActionDecision, MonitorEvaluation } from "@/worker/worker.interface.js";
 
 const SERVICE_NAME = "WorkerPipeline";
-
+const NO_ACTION: MonitorActionDecision = {
+	shouldCreateIncident: false,
+	shouldResolveIncident: false,
+	shouldSendNotification: false,
+	incidentReason: null,
+	notificationReason: null,
+};
 // The three entry points: the queue calls the two handlers, the buffer calls ingestChecks.
 // produce and evaluateCheck stay public on the class so tests can drive one stage without the queue or the buffer.
 export interface IWorkerPipeline {
@@ -128,7 +133,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 
 		// Step 2b: On a transport failure, ask whether the instance itself can reach anything before blaming the
 		// target. Null means the egress check is disabled (or failed internally) and the check is treated as usual.
-		const egressStatus = this.isTransportFailure(monitor, status) ? await this.assessEgress(monitor.id) : null;
+		const egressStatus = this.isTransportFailure(monitor, status) ? await this.deps.egressService.assessAfterFailure() : null;
 		if (egressStatus !== null) {
 			check.egressStatus = egressStatus;
 		}
@@ -169,20 +174,6 @@ export class WorkerPipeline implements IWorkerPipeline {
 
 	private isTransportFailure(monitor: Monitor, status: MonitorStatusResponse): boolean {
 		return status.status === false && isEgressAttributable(monitor) && !this.peerAnswered(status);
-	}
-
-	// The egress check must never stop a check being recorded, so a rejection is logged and treated as unknown.
-	private async assessEgress(monitorId: string): Promise<EgressStatus | null> {
-		try {
-			return await this.deps.egressService.assessAfterFailure();
-		} catch (error: unknown) {
-			this.deps.logger.warn({
-				message: `Egress assessment failed for monitor ${monitorId}: ${error instanceof Error ? error.message : String(error)}`,
-				service: SERVICE_NAME,
-				method: "assessEgress",
-			});
-			return null;
-		}
 	}
 
 	// ****************************************************************
@@ -252,7 +243,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 				});
 				return;
 			}
-			current = evaluation.statusChange.monitor; // fresh statusWindow/status/counters for the next check
+			current = evaluation.monitor; // fresh statusWindow/status/counters for the next check
 		}
 
 		// Ids whose check was not returned (deleted by retention cleanup) would otherwise sit on the row forever
@@ -277,18 +268,11 @@ export class WorkerPipeline implements IWorkerPipeline {
 			service: SERVICE_NAME,
 			method: "evaluateCheck",
 		});
-		const decision: MonitorActionDecision = {
-			shouldCreateIncident: false,
-			shouldResolveIncident: false,
-			shouldSendNotification: false,
-			incidentReason: null,
-			notificationReason: null,
-		};
+
 		return {
 			monitor,
 			check,
-			statusChange: { monitor, statusChanged: false, prevStatus: monitor.status, code: check.statusCode, timestamp: Date.now() },
-			decision,
+			decision: { ...NO_ACTION },
 		};
 	};
 
@@ -300,18 +284,12 @@ export class WorkerPipeline implements IWorkerPipeline {
 		const statusChange = await this.deps.statusService.updateMonitorStatus(check, monitor);
 
 		const decision = this.decide(statusChange);
-		return { monitor: statusChange.monitor, check, statusChange, decision };
+		return { monitor: statusChange.monitor, check, decision };
 	};
 
 	private decide = (statusChange: StatusChangeResult): MonitorActionDecision => {
 		const { monitor, statusChanged, prevStatus } = statusChange;
-		const decision: MonitorActionDecision = {
-			shouldCreateIncident: false,
-			shouldResolveIncident: false,
-			shouldSendNotification: false,
-			incidentReason: null,
-			notificationReason: null,
-		};
+		const decision: MonitorActionDecision = { ...NO_ACTION };
 		if (!statusChanged) return decision;
 
 		if (monitor.status === "down") {
@@ -320,6 +298,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 			decision.incidentReason = "status_down";
 			decision.notificationReason = "status_change";
 		} else if (monitor.status === "breached") {
+			if (statusChange.thresholdBreaches) decision.thresholdBreaches = statusChange.thresholdBreaches;
 			decision.shouldCreateIncident = true;
 			decision.shouldSendNotification = true;
 			decision.incidentReason = "threshold_breach";

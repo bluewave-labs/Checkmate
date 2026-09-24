@@ -71,7 +71,7 @@ export class IncidentService implements IIncidentService {
 				// For threshold breaches, use 9999 status code and build descriptive message
 				if (decision.incidentReason === "threshold_breach") {
 					statusCode = 9999;
-					message = this.buildThresholdBreachMessage(monitor, check);
+					message = this.buildThresholdBreachMessage(monitor, check, decision);
 				}
 
 				const incident = {
@@ -96,14 +96,14 @@ export class IncidentService implements IIncidentService {
 		return await this.incidentsRepository.updateById(activeIncident.id, activeIncident.teamId, activeIncident);
 	};
 
-	private buildThresholdBreachMessage(monitor: Monitor, check: Check): string {
+	private buildThresholdBreachMessage(monitor: Monitor, check: Check, decision: MonitorActionDecision): string {
 		if (monitor.type === "docker") {
 			const containers = check.containers ?? [];
 			const breaches = findContainerBreaches(monitor, containers);
 			return breaches.length > 0 ? breaches.map(describeContainerBreach).join(", ") : "Container alert";
 		}
 
-		const breaches = this.notificationMessageBuilder.extractThresholdBreaches(monitor, check);
+		const breaches = this.notificationMessageBuilder.extractThresholdBreaches(monitor, check, decision.thresholdBreaches);
 
 		if (breaches.length === 0) {
 			return "Threshold breach detected";

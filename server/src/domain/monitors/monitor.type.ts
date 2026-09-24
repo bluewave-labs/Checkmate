@@ -240,3 +240,8 @@ export type GamesMap = Record<string, Game>;
 export type MonitorScheduleFields = Pick<Monitor, "id" | "type" | "isActive" | "interval" | "geoCheckEnabled" | "geoCheckInterval">;
 
 export type DockerContainerLogsResult = DockerLogPage;
+
+export const HardwareMetricKeys = ["cpu", "memory", "disk", "temp"] as const;
+export type HardwareMetricKey = (typeof HardwareMetricKeys)[number];
+export type HardwareBreaches = Record<HardwareMetricKey, boolean>;
+export type HardwareCounters = Record<HardwareMetricKey, number>;
