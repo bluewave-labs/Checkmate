@@ -182,8 +182,6 @@ export type StatusChangeResult = {
 	monitor: Monitor;
 	statusChanged: boolean;
 	prevStatus: MonitorStatus;
-	code: number;
-	timestamp: number;
 	thresholdBreaches?: HardwareBreaches;
 };
 

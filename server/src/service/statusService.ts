@@ -160,7 +160,7 @@ export class StatusService implements IStatusService {
 
 	updateMonitorStatus = async (check: Check, monitor: Monitor): Promise<StatusChangeResult> => {
 		try {
-			const { status, statusCode } = check;
+			const { status } = check;
 
 			// Update running stats
 			await this.tryUpdateRunningStats(check, monitor);
@@ -204,8 +204,6 @@ export class StatusService implements IStatusService {
 					monitor: updated,
 					statusChanged,
 					prevStatus,
-					code: statusCode,
-					timestamp: Date.now(),
 				};
 			}
 
@@ -279,8 +277,6 @@ export class StatusService implements IStatusService {
 				monitor: updated,
 				statusChanged,
 				prevStatus,
-				code: statusCode,
-				timestamp: new Date().getTime(),
 				thresholdBreaches,
 			};
 		} catch (error: unknown) {
