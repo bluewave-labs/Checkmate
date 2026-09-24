@@ -1,4 +1,4 @@
-import { HardwareMetricKey } from "@/domain/monitors/monitor.type.js";
+import type { HardwareMetricKey } from "@/domain/monitors/monitor.type.js";
 
 export const NotificationChannels = [
 	"email",

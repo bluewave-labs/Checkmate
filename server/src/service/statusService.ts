@@ -2,10 +2,10 @@ import { IMonitorStatsRepository } from "@/domain/monitor-stats/monitor-stats.re
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import type { Check, CheckDiskInfo } from "@/domain/checks/check.type.js";
 import {
-	HardwareBreaches,
-	HardwareCounters,
 	HardwareMetricKeys,
 	MonitorStatuses,
+	type HardwareBreaches,
+	type HardwareCounters,
 	type Monitor,
 	type MonitorStatus,
 } from "@/domain/monitors/monitor.type.js";

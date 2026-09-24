@@ -298,7 +298,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 			decision.incidentReason = "status_down";
 			decision.notificationReason = "status_change";
 		} else if (monitor.status === "breached") {
-			decision.thresholdBreaches = statusChange.thresholdBreaches;
+			if (statusChange.thresholdBreaches) decision.thresholdBreaches = statusChange.thresholdBreaches;
 			decision.shouldCreateIncident = true;
 			decision.shouldSendNotification = true;
 			decision.incidentReason = "threshold_breach";

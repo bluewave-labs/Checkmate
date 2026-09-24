@@ -864,6 +864,13 @@ describe("WorkerPipeline", () => {
 			expect(decision).not.toHaveProperty("thresholdBreaches");
 		});
 
+		// StatusService only sets thresholdBreaches for hardware monitors; a docker breach must not leave the key behind holding undefined.
+		it("leaves threshold breaches off a breached decision when the status change carries none", async () => {
+			const decision = await decide(makeStatusChange({ status: "breached", statusChanged: true, prevStatus: "up" }));
+			expect(decision).toMatchObject({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
+			expect(decision).not.toHaveProperty("thresholdBreaches");
+		});
+
 		// Each decision starts from a shared template. A transition must not leak its flags into the next decision
 		// the same pipeline makes, whether that is a no-op evaluation or a degraded-egress short-circuit.
 		it("starts every decision clean after a transition on the same pipeline", async () => {
