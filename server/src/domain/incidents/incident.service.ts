@@ -54,45 +54,35 @@ export class IncidentService implements IIncidentService {
 	}
 
 	handleIncident = async (monitor: Monitor, decision: MonitorActionDecision, check: Check): Promise<Incident | null> => {
-		if (!decision.shouldCreateIncident && !decision.shouldResolveIncident) {
-			return null;
-		}
+		const { transition } = decision;
+		if (transition === null) return null;
 
 		const activeIncident = await this.incidentsRepository.findActiveByMonitorId(monitor.id, monitor.teamId);
 
-		if (decision.shouldCreateIncident) {
-			if (activeIncident) {
-				return activeIncident;
-			} else {
-				let statusCode = check.statusCode;
-				let message: string | undefined;
-
-				// For threshold breaches, use 9999 status code and build descriptive message
-				if (decision.incidentReason === "threshold_breach") {
-					statusCode = 9999;
-					message = this.notificationMessageBuilder.buildThresholdBreachMessage(monitor, check, decision.thresholdBreaches);
-				}
-
-				const incident = {
+		switch (transition) {
+			case "status_down":
+			case "threshold_breach": {
+				if (activeIncident) return activeIncident;
+				// A threshold breach has no HTTP status
+				const isBreach = transition === "threshold_breach";
+				return await this.incidentsRepository.create({
 					monitorId: monitor.id,
 					teamId: monitor.teamId,
 					startTime: Date.now().toString(),
 					status: true,
-					statusCode,
-					message,
-				};
-				return await this.incidentsRepository.create(incident);
+					statusCode: isBreach ? 9999 : check.statusCode,
+					message: isBreach ? this.notificationMessageBuilder.buildThresholdBreachMessage(monitor, check, decision.thresholdBreaches) : undefined,
+				});
+			}
+			case "status_up":
+			case "threshold_resolved": {
+				if (!activeIncident) return null;
+				activeIncident.status = false;
+				activeIncident.endTime = Date.now().toString();
+				activeIncident.resolutionType = "automatic";
+				return await this.incidentsRepository.updateById(activeIncident.id, activeIncident.teamId, activeIncident);
 			}
 		}
-
-		if (!decision.shouldResolveIncident || !activeIncident) {
-			return null;
-		}
-
-		activeIncident.status = false;
-		activeIncident.endTime = Date.now().toString();
-		activeIncident.resolutionType = "automatic";
-		return await this.incidentsRepository.updateById(activeIncident.id, activeIncident.teamId, activeIncident);
 	};
 
 	resolveIncident = async (incidentId: string, userId: string, teamId: string, comment?: string, userEmail?: string) => {

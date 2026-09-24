@@ -115,9 +115,7 @@ export class NotificationsService implements INotificationsService {
 	};
 
 	handleNotifications = async (monitor: Monitor, check: Check, decision: MonitorActionDecision) => {
-		if (!decision.shouldSendNotification) {
-			return false;
-		}
+		if (decision.transition === null) return false;
 
 		// Send notifications based on decision
 		return await this.sendNotifications(monitor, check, decision);

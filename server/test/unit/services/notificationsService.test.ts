@@ -122,11 +122,7 @@ const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 	}) as Monitor;
 
 const makeDecision = (overrides?: Partial<MonitorActionDecision>): MonitorActionDecision => ({
-	shouldCreateIncident: false,
-	shouldResolveIncident: false,
-	shouldSendNotification: true,
-	incidentReason: null,
-	notificationReason: "status_change",
+	transition: "status_down",
 	...overrides,
 });
 
@@ -148,9 +144,9 @@ describe("NotificationsService", () => {
 	// ── handleNotifications ───────────────────────────────────────────────────
 
 	describe("handleNotifications", () => {
-		it("returns false when shouldSendNotification is false", async () => {
+		it("returns false when there is no transition", async () => {
 			const { service } = createService();
-			const result = await service.handleNotifications(makeMonitor(), makeCheck(), makeDecision({ shouldSendNotification: false }));
+			const result = await service.handleNotifications(makeMonitor(), makeCheck(), makeDecision({ transition: null }));
 			expect(result).toBe(false);
 		});
 

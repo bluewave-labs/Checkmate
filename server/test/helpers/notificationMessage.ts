@@ -21,7 +21,7 @@ export const makeMessage = (overrides?: Partial<NotificationMessage>): Notificat
 		timestamp: new Date("2025-01-01T00:00:00Z"),
 	},
 	clientHost: "https://app.example.com",
-	metadata: { teamId: "team-1", notificationReason: "status_change" },
+	metadata: { teamId: "team-1" },
 	...overrides,
 });
 
