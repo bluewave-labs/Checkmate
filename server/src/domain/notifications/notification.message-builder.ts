@@ -1,4 +1,4 @@
-import type { Monitor } from "@/domain/monitors/monitor.type.js";
+import { HardwareMetricKeys, type HardwareBreaches, type HardwareMetricKey, type Monitor } from "@/domain/monitors/monitor.type.js";
 import type { MonitorActionDecision } from "@/worker/worker.interface.js";
 import type {
 	NotificationMessage,
@@ -12,7 +12,7 @@ import type { Check } from "@/domain/checks/check.type.js";
 
 export interface INotificationMessageBuilder {
 	buildMessage(monitor: Monitor, check: Check, decision: MonitorActionDecision, clientHost: string): NotificationMessage;
-	extractThresholdBreaches(monitor: Monitor, check: Check): ThresholdBreach[];
+	extractThresholdBreaches(monitor: Monitor, check: Check, thresholdBreaches: HardwareBreaches | undefined): ThresholdBreach[];
 }
 
 const SERVICE_NAME = "NotificationMessageBuilder";
@@ -23,7 +23,7 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 	buildMessage(monitor: Monitor, check: Check, decision: MonitorActionDecision, clientHost: string): NotificationMessage {
 		const type = this.determineNotificationType(decision, monitor);
 		const severity = this.determineSeverity(type);
-		const content = this.buildContent(type, monitor, check);
+		const content = this.buildContent(type, monitor, check, decision);
 
 		return {
 			type,
@@ -82,14 +82,14 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		}
 	}
 
-	private buildContent(type: NotificationType, monitor: Monitor, check: Check): NotificationContent {
+	private buildContent(type: NotificationType, monitor: Monitor, check: Check, decision: MonitorActionDecision): NotificationContent {
 		switch (type) {
 			case "monitor_down":
 				return this.buildMonitorDownContent(monitor, check);
 			case "monitor_up":
 				return this.buildMonitorUpContent(monitor);
 			case "threshold_breach":
-				return this.buildThresholdBreachContent(monitor, check);
+				return this.buildThresholdBreachContent(monitor, check, decision.thresholdBreaches);
 			case "threshold_resolved":
 				return this.buildThresholdResolvedContent(monitor);
 			case "container_breach":
@@ -137,12 +137,12 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		};
 	}
 
-	private buildThresholdBreachContent(monitor: Monitor, check: Check): NotificationContent {
+	private buildThresholdBreachContent(monitor: Monitor, check: Check, thresholdBreaches: HardwareBreaches | undefined): NotificationContent {
 		const title = `Threshold Exceeded: ${monitor.name}`;
 		const summary = `Monitor "${monitor.name}" has exceeded one or more thresholds.`;
 		const details = [`URL: ${monitor.url}`, `Status: Threshold exceeded`, `Type: ${monitor.type}`];
 
-		const thresholds = this.extractThresholdBreaches(monitor, check);
+		const thresholds = this.extractThresholdBreaches(monitor, check, thresholdBreaches);
 
 		return {
 			title,
@@ -191,83 +191,38 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		};
 	}
 
-	public extractThresholdBreaches(monitor: Monitor, check: Check): ThresholdBreach[] {
+	private describeBreach(metric: HardwareMetricKey, monitor: Monitor, check: Check): ThresholdBreach {
+		switch (metric) {
+			case "cpu": {
+				const currentValue = (check.cpu?.usage_percent ?? 0) * 100;
+				return { metric, currentValue, threshold: monitor.cpuAlertThreshold, unit: "%", formattedValue: `${currentValue.toFixed(1)}%` };
+			}
+			case "memory": {
+				const currentValue = (check.memory?.usage_percent ?? 0) * 100;
+				return { metric, currentValue, threshold: monitor.memoryAlertThreshold, unit: "%", formattedValue: `${currentValue.toFixed(1)}%` };
+			}
+			case "disk": {
+				const currentValue = Math.max(0, ...(check.disk ?? []).map((disk) => disk?.usage_percent ?? 0)) * 100;
+				return { metric, currentValue, threshold: monitor.diskAlertThreshold, unit: "%", formattedValue: `${currentValue.toFixed(1)}%` };
+			}
+			case "temp": {
+				const currentValue = Math.max(0, ...(check.cpu?.temperature ?? []));
+				return { metric, currentValue, threshold: monitor.tempAlertThreshold, unit: "°C", formattedValue: `${currentValue.toFixed(1)}°C` };
+			}
+		}
+	}
+
+	public extractThresholdBreaches(monitor: Monitor, check: Check, thresholdBreaches: HardwareBreaches | undefined): ThresholdBreach[] {
 		const breaches: ThresholdBreach[] = [];
 
 		// Check if this is a hardware monitor with threshold data
-		if (monitor.type !== "hardware") {
+		if (monitor.type !== "hardware" || thresholdBreaches === undefined) {
 			return breaches;
 		}
 
-		// Note: usage_percent values in hardware payload are decimals (0-1)
-		if (monitor.cpuAlertThreshold !== undefined && monitor.cpuAlertThreshold !== null && check.cpu?.usage_percent !== undefined) {
-			const cpuUsageDecimal = check.cpu.usage_percent;
-			const cpuPercent = cpuUsageDecimal * 100;
-			const threshold = monitor.cpuAlertThreshold;
-			if (cpuPercent > threshold) {
-				breaches.push({
-					metric: "cpu",
-					currentValue: cpuPercent,
-					threshold,
-					unit: "%",
-					formattedValue: `${cpuPercent.toFixed(1)}%`,
-				});
-			}
-		}
-
-		// Memory threshold breach
-		if (monitor.memoryAlertThreshold !== undefined && monitor.memoryAlertThreshold !== null && check.memory?.usage_percent !== undefined) {
-			const memoryUsageDecimal = check.memory.usage_percent;
-			const memoryPercent = memoryUsageDecimal * 100;
-			const threshold = monitor.memoryAlertThreshold;
-			if (memoryPercent > threshold) {
-				breaches.push({
-					metric: "memory",
-					currentValue: memoryPercent,
-					threshold,
-					unit: "%",
-					formattedValue: `${memoryPercent.toFixed(1)}%`,
-				});
-			}
-		}
-
-		// Disk threshold breach
-		if (monitor.diskAlertThreshold !== undefined && monitor.diskAlertThreshold !== null && Array.isArray(check.disk)) {
-			// Find the highest disk usage
-			let maxDiskUsageDecimal = 0;
-			for (const disk of check.disk) {
-				if (disk.usage_percent !== undefined && disk.usage_percent > maxDiskUsageDecimal) {
-					maxDiskUsageDecimal = disk.usage_percent;
-				}
-			}
-			const maxDiskPercent = maxDiskUsageDecimal * 100;
-			const threshold = monitor.diskAlertThreshold;
-			if (maxDiskPercent > threshold) {
-				breaches.push({
-					metric: "disk",
-					currentValue: maxDiskPercent,
-					threshold,
-					unit: "%",
-					formattedValue: `${maxDiskPercent.toFixed(1)}%`,
-				});
-			}
-		}
-
-		// Temperature threshold breach
-		if (monitor.tempAlertThreshold !== undefined && monitor.tempAlertThreshold !== null && check.cpu?.temperature) {
-			// Temperature is an array in cpu.temperature
-			const temps = Array.isArray(check.cpu.temperature) ? check.cpu.temperature : [check.cpu.temperature];
-			const maxTemp = Math.max(...temps.filter((t: number) => !isNaN(t)));
-			const threshold = monitor.tempAlertThreshold;
-			if (maxTemp > threshold) {
-				breaches.push({
-					metric: "temp",
-					currentValue: maxTemp,
-					threshold,
-					unit: "°C",
-					formattedValue: `${maxTemp.toFixed(1)}°C`,
-				});
-			}
+		for (const metric of HardwareMetricKeys) {
+			if (!thresholdBreaches[metric]) continue;
+			breaches.push(this.describeBreach(metric, monitor, check));
 		}
 
 		return breaches;
