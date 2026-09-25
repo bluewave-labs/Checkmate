@@ -5,7 +5,7 @@ import { MonitorStatusResponse } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import ping from "ping";
 import * as net from "net";
-import { timeRequest } from "@/service/network/utils.js";
+import { timeRequest } from "@/service/networkProviders/utils.js";
 const SERVICE_NAME = "PingProvider";
 
 type Ping = typeof ping;

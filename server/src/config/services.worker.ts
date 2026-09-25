@@ -13,7 +13,7 @@ import mongoose from "mongoose";
 
 import { EnvConfig } from "@/domain/app-settings/app-settings.service.js";
 import { SharedServices } from "@/config/services.shared.js";
-import { INetworkService, NetworkService } from "@/service/networkService.js";
+import { IProviderRegistry, ProviderRegistry } from "@/service/networkProviders/providerRegistry.js";
 import { IBufferService, BufferService } from "@/service/bufferService.js";
 import { IStatusService, StatusService } from "@/service/statusService.js";
 import { SecretsRotationService } from "@/service/encryption/secretsRotationService.js";
@@ -24,25 +24,25 @@ import { NotificationReactor } from "@/worker/reactors/reactor.notification.js";
 import { IncidentReactor } from "@/worker/reactors/reactor.incident.js";
 import { ReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { DBQueueWorker } from "@/worker/worker.db-queue.js";
-import { ProxyResolver } from "@/service/network/ProxyResolver.js";
+import { ProxyResolver } from "@/service/networkProviders/ProxyResolver.js";
 import { IEgressService, EgressService } from "@/domain/egress/egress.service.js";
 // Network providers
-import { PingProvider } from "@/service/network/PingProvider.js";
-import { HttpProvider } from "@/service/network/HttpProvider.js";
-import { AdvancedMatcher } from "@/service/network/AdvancedMatcher.js";
-import { PageSpeedProvider } from "@/service/network/PageSpeedProvider.js";
-import { HardwareProvider } from "@/service/network/HardwareProvider.js";
-import { DockerProvider } from "@/service/network/DockerProvider.js";
-import { PortProvider } from "@/service/network/PortProvider.js";
-import { GameProvider } from "@/service/network/GameProvider.js";
-import { GrpcProvider } from "@/service/network/GrpcProvider.js";
-import { WebSocketProvider } from "@/service/network/WebSocketProvider.js";
-import { DNSProvider } from "@/service/network/DNSProvider.js";
+import { PingProvider } from "@/service/networkProviders/PingProvider.js";
+import { HttpProvider } from "@/service/networkProviders/HttpProvider.js";
+import { AdvancedMatcher } from "@/service/networkProviders/AdvancedMatcher.js";
+import { PageSpeedProvider } from "@/service/networkProviders/PageSpeedProvider.js";
+import { HardwareProvider } from "@/service/networkProviders/HardwareProvider.js";
+import { DockerProvider } from "@/service/networkProviders/DockerProvider.js";
+import { PortProvider } from "@/service/networkProviders/PortProvider.js";
+import { GameProvider } from "@/service/networkProviders/GameProvider.js";
+import { GrpcProvider } from "@/service/networkProviders/GrpcProvider.js";
+import { WebSocketProvider } from "@/service/networkProviders/WebSocketProvider.js";
+import { DNSProvider } from "@/service/networkProviders/DNSProvider.js";
 import { AppError } from "@/utils/AppError.js";
 import { WorkerPipeline } from "@/worker/worker.pipeline.js";
 export interface WorkerServices {
 	worker: IQueueWorker;
-	networkService: INetworkService;
+	networkService: IProviderRegistry;
 	bufferService: IBufferService;
 	statusService: IStatusService;
 	egressService: IEgressService;
@@ -87,7 +87,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	const webSocketProvider = new WebSocketProvider(WebSocket);
 	const dnsProvider = new DNSProvider(() => new Resolver());
 
-	const networkService = new NetworkService(axios, logger, [
+	const providerRegistry = new ProviderRegistry([
 		pingProvider,
 		httpProvider,
 		pageSpeedProvider,
@@ -105,7 +105,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		pipeline.ingestChecks(checks)
 	);
 	const statusService = new StatusService(logger, monitorsRepository, monitorStatsRepository);
-	const egressService = new EgressService(settingsService, egressStateRepository, jobsRepository, networkService, proxyResolver, logger);
+	const egressService = new EgressService(settingsService, egressStateRepository, jobsRepository, providerRegistry, proxyResolver, logger);
 
 	const notificationReactor = new NotificationReactor(notificationsService);
 	const incidentReactor = new IncidentReactor(incidentService);
@@ -118,7 +118,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		checksRepository,
 		jobsRepository,
 		checkService,
-		networkService,
+		providerRegistry: providerRegistry,
 		proxyResolver,
 		bufferService,
 		dockerLogsService,
@@ -188,5 +188,5 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		});
 	}
 
-	return { worker, networkService, bufferService, statusService, egressService };
+	return { worker, networkService: providerRegistry, bufferService, statusService, egressService };
 };

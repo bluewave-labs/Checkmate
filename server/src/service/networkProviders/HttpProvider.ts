@@ -1,12 +1,12 @@
 import { type Got, HTTPError, RequestError } from "got";
-import { IAdvancedMatcher } from "@/service/network/AdvancedMatcher.js";
-import { IStatusProvider } from "@/service/network/IStatusProvider.js";
+import { IAdvancedMatcher } from "@/service/networkProviders/AdvancedMatcher.js";
+import { IStatusProvider } from "@/service/networkProviders/IStatusProvider.js";
 import { HttpStatusPayload } from "@/types/network.js";
 import { MonitorStatusResponse } from "@/types/network.js";
 import { Agent as HttpsAgent } from "https";
 import { Agent as HttpAgent } from "http";
 import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
-import { isStatusUp, peerAnsweredFromError } from "@/service/network/utils.js";
+import { isStatusUp, peerAnsweredFromError } from "@/service/networkProviders/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import CacheableLookup from "cacheable-lookup";
 import { HttpProxyAgent, HttpsProxyAgent } from "hpagent";

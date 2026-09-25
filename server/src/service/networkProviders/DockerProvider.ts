@@ -1,7 +1,7 @@
 import https from "node:https";
 
-import { IStatusProvider } from "@/service/network/IStatusProvider.js";
-import { HttpProvider } from "@/service/network/HttpProvider.js";
+import { IStatusProvider } from "@/service/networkProviders/IStatusProvider.js";
+import { HttpProvider } from "@/service/networkProviders/HttpProvider.js";
 import { CaptureDockerContainer, CaptureDockerStatusPayload, CheckContext, DockerStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 
 import {
@@ -24,7 +24,7 @@ import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";
 import Dockerode from "dockerode";
-import { timeRequest, peerAnsweredFromError } from "@/service/network/utils.js";
+import { timeRequest, peerAnsweredFromError } from "@/service/networkProviders/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import { DOCKER_TLS_URL, isCaptureDockerUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";

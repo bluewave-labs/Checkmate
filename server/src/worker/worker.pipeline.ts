@@ -9,8 +9,8 @@ import { IMaintenanceWindowsRepository } from "@/domain/maintenance-windows/main
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { isEgressAttributable, Monitor } from "@/domain/monitors/monitor.type.js";
 import { IBufferService } from "@/service/bufferService.js";
-import { IProxyResolver } from "@/service/network/ProxyResolver.js";
-import { INetworkService } from "@/service/networkService.js";
+import { IProxyResolver } from "@/service/networkProviders/ProxyResolver.js";
+import { IProviderRegistry } from "@/service/networkProviders/providerRegistry.js";
 import { IStatusService } from "@/service/statusService.js";
 import { DockerStatusPayload, MonitorStatusResponse, StatusChangeResult } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
@@ -36,7 +36,7 @@ export interface WorkerPipelineDependencies {
 	checksRepository: IChecksRepository;
 	jobsRepository: IJobsRepository;
 	checkService: ICheckService;
-	networkService: INetworkService;
+	providerRegistry: IProviderRegistry;
 	proxyResolver: IProxyResolver;
 	bufferService: IBufferService;
 	dockerLogsService: IDockerLogsService;
@@ -103,7 +103,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 		const proxyUrl = await this.deps.proxyResolver.resolve(monitor);
 		const dockerTlsKey = await this.resolveDockerTlsKey(monitor);
 
-		const status = await this.deps.networkService.requestStatus(monitor, { proxyUrl, dockerTlsKey });
+		const status = await this.deps.providerRegistry.probe(monitor, { proxyUrl, dockerTlsKey });
 		if (!status) {
 			throw new Error("No network response");
 		}
