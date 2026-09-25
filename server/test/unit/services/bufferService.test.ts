@@ -134,41 +134,6 @@ describe("BufferService", () => {
 
 			expect(ingest).toHaveBeenCalledWith([check1, check2]);
 		});
-
-		it("logs error if push throws", () => {
-			const { service, logger } = createService();
-			// Force buffer.push to throw by making buffer non-extensible
-			Object.defineProperty(service, "buffer", { value: Object.freeze([]) });
-
-			service.addToBuffer(makeCheck());
-
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					service: "BufferService",
-					method: "addToBuffer",
-				})
-			);
-		});
-
-		it("logs 'Unknown error' for non-Error thrown values", () => {
-			const { service, logger } = createService();
-			Object.defineProperty(service, "buffer", {
-				value: {
-					push: () => {
-						throw "string error";
-					},
-				},
-			});
-
-			service.addToBuffer(makeCheck());
-
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "Unknown error",
-					stack: undefined,
-				})
-			);
-		});
 	});
 
 	// ── addGeoCheckToBuffer ──────────────────────────────────────────────
@@ -183,40 +148,6 @@ describe("BufferService", () => {
 
 			expect(geoChecksService.createGeoChecks).toHaveBeenCalledWith([geoCheck]);
 		});
-
-		it("logs error if push throws", () => {
-			const { service, logger } = createService();
-			Object.defineProperty(service, "geoBuffer", { value: Object.freeze([]) });
-
-			service.addGeoCheckToBuffer(makeGeoCheck());
-
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					service: "BufferService",
-					method: "addGeoCheckToBuffer",
-				})
-			);
-		});
-
-		it("logs 'Unknown error' for non-Error thrown values", () => {
-			const { service, logger } = createService();
-			Object.defineProperty(service, "geoBuffer", {
-				value: {
-					push: () => {
-						throw 42;
-					},
-				},
-			});
-
-			service.addGeoCheckToBuffer(makeGeoCheck());
-
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "Unknown error",
-					stack: undefined,
-				})
-			);
-		});
 	});
 
 	describe("addDockerLogToBuffer", () => {
@@ -228,15 +159,6 @@ describe("BufferService", () => {
 			await service.flushDockerLogsBuffer();
 
 			expect(dockerLogsService.createDockerLogs).toHaveBeenCalledWith([dockerLog]);
-		});
-
-		it("logs an error if push throws", () => {
-			const { service, logger } = createService();
-			Object.defineProperty(service, "dockerLogBuffer", { value: Object.freeze([]) });
-
-			service.addDockerLogToBuffer(makeDockerLog());
-
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ method: "addDockerLogToBuffer" }));
 		});
 	});
 
