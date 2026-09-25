@@ -1,5 +1,4 @@
 import { Resolver } from "dns/promises";
-import axios from "axios";
 import got from "got";
 import ping from "ping";
 import Docker from "dockerode";

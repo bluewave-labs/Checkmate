@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { ProxyResolver, buildProxyUrl } from "../../../src/service/network/ProxyResolver.ts";
+import { ProxyResolver, buildProxyUrl } from "../../../src/service/networkProviders/ProxyResolver.ts";
 import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { Proxy } from "../../../src/domain/proxies/proxy.type.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";

@@ -2,7 +2,7 @@ import type { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import type { CheckContext, MonitorPayloadMap, MonitorStatusResponse } from "@/types/network.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import { IStatusProvider } from "./IStatusProvider.js";
-const SERVICE_NAME = "NetworkService";
+const SERVICE_NAME = "ProviderRegistry";
 
 export interface IProviderRegistry {
 	probe<T extends MonitorType>(monitor: Monitor & { type: T }, ctx?: CheckContext): Promise<MonitorStatusResponse<MonitorPayloadMap[T]>>;

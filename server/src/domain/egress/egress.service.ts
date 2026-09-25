@@ -54,7 +54,7 @@ export class EgressService implements IEgressService {
 		private settingsService: ISettingsService,
 		private egressStateRepository: IEgressStateRepository,
 		private jobsRepository: IJobsRepository,
-		private networkService: IProviderRegistry,
+		private providerRegistry: IProviderRegistry,
 		private proxyResolver: IProxyResolver,
 		private logger: ILogger
 	) {}
@@ -100,7 +100,7 @@ export class EgressService implements IEgressService {
 		const { response, responseTime, error } = await timeRequest(async () => {
 			const proxyUrl = await this.proxyResolver.resolve(monitor);
 			return Promise.race([
-				this.networkService.probe(monitor, { proxyUrl }),
+				this.providerRegistry.probe(monitor, { proxyUrl }),
 				new Promise<never>((_, reject) => {
 					timer = setTimeout(() => reject(new Error(`Egress probe timed out after ${PROBE_TIMEOUT_MS}ms`)), PROBE_TIMEOUT_MS);
 				}),

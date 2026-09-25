@@ -60,7 +60,7 @@ export interface HeartbeatTestHarness {
 	statusService: StatusService;
 	incidentService: IncidentService;
 	notificationsService: { handleNotifications: jest.Mock };
-	networkService: { requestStatus: jest.Mock };
+	providerRegistry: { probe: jest.Mock };
 	bufferStub: { addToBuffer: jest.Mock; addGeoCheckToBuffer: jest.Mock; scheduleNextFlush: jest.Mock };
 	maintenanceWindowsRepo: { findByMonitorId: jest.Mock };
 	messageBuilder: { buildThresholdBreachMessage: jest.Mock };
@@ -87,8 +87,8 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 	let nextResponse: MonitorStatusResponse | null = null;
 	let nextStatus = true;
 	let nextCode = 200;
-	const networkService = {
-		requestStatus: jest.fn().mockImplementation(() => {
+	const providerRegistry = {
+		probe: jest.fn().mockImplementation(() => {
 			if (nextResponse) {
 				return Promise.resolve(nextResponse);
 			}
@@ -137,7 +137,7 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 		checksRepository: { findUnevaluatedByMonitorId: jest.fn() } as any,
 		jobsRepository: { upsertEvaluate: jest.fn(), pullEvaluated: jest.fn() } as any,
 		checkService: checkService as any,
-		networkService: networkService as any,
+		providerRegistry: providerRegistry as any,
 		proxyResolver: proxyResolver as any,
 		bufferService: bufferStub as any,
 		dockerLogsService: dockerLogsService as any,
@@ -163,7 +163,7 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 		statusService,
 		incidentService,
 		notificationsService,
-		networkService,
+		providerRegistry,
 		bufferStub,
 		maintenanceWindowsRepo,
 		messageBuilder,

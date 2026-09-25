@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { PingProvider } from "../../../../src/service/network/PingProvider.ts";
+import { PingProvider } from "../../../../src/service/networkProviders/PingProvider.ts";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
 import type { Monitor } from "../../../../src/domain/monitors/monitor.type.ts";
 import * as net from "net";

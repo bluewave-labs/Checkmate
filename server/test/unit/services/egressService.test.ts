@@ -42,7 +42,7 @@ const makeJob = (overrides?: Partial<Job>): Job => ({
 	...overrides,
 });
 
-// requestStatus mock that answers per target url
+// probe mock that answers per target url
 const statusFor = (reachableTargets: string[]) =>
 	jest.fn().mockImplementation(async (monitor: any) => ({
 		monitorId: monitor.id,
@@ -78,7 +78,7 @@ const createService = (overrides?: Record<string, any>) => {
 			upsertCleanupJob: jest.fn().mockResolvedValue(true),
 			deleteGlobalJobIfUnchanged: jest.fn().mockResolvedValue(true),
 		},
-		networkService: { requestStatus: statusFor(["1.1.1.1", "8.8.8.8"]) },
+		providerRegistry: { probe: statusFor(["1.1.1.1", "8.8.8.8"]) },
 		proxyResolver: { resolve: jest.fn().mockResolvedValue(undefined) },
 		logger: createMockLogger(),
 		...overrides,
@@ -87,15 +87,15 @@ const createService = (overrides?: Record<string, any>) => {
 		defaults.settingsService as any,
 		defaults.egressStateRepository as any,
 		defaults.jobsRepository as any,
-		defaults.networkService as any,
+		defaults.providerRegistry as any,
 		defaults.proxyResolver as any,
 		defaults.logger as any
 	);
 	return { service, defaults };
 };
 
-const probedUrls = (defaults: { networkService: { requestStatus: unknown } }) =>
-	(defaults.networkService.requestStatus as jest.Mock).mock.calls.map((call) => (call[0] as any).url);
+const probedUrls = (defaults: { providerRegistry: { probe: unknown } }) =>
+	(defaults.providerRegistry.probe as jest.Mock).mock.calls.map((call) => (call[0] as any).url);
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 
@@ -112,7 +112,7 @@ describe("EgressService", () => {
 
 			await service.probeTargets(["1.1.1.1", "8.8.8.8:53", "https://example.com/health", "[2606:4700::1111]:443", "2606:4700::1111"]);
 
-			const monitors = (defaults.networkService.requestStatus as jest.Mock).mock.calls.map((call) => call[0] as any);
+			const monitors = (defaults.providerRegistry.probe as jest.Mock).mock.calls.map((call) => call[0] as any);
 			expect(monitors).toEqual([
 				expect.objectContaining({ type: "ping", url: "1.1.1.1" }),
 				expect.objectContaining({ type: "port", url: "8.8.8.8", port: 53 }),
@@ -129,13 +129,13 @@ describe("EgressService", () => {
 			await service.probeTargets(["https://example.com/health"]);
 
 			expect(resolve).toHaveBeenCalledWith(expect.objectContaining({ type: "http", proxyMode: "inherit" }));
-			expect(defaults.networkService.requestStatus).toHaveBeenCalledWith(expect.objectContaining({ type: "http" }), {
+			expect(defaults.providerRegistry.probe).toHaveBeenCalledWith(expect.objectContaining({ type: "http" }), {
 				proxyUrl: "http://proxy.internal:3128",
 			});
 		});
 
 		it("reports reachable only when the provider says status is true", async () => {
-			const { service } = createService({ networkService: { requestStatus: statusFor(["1.1.1.1"]) } });
+			const { service } = createService({ providerRegistry: { probe: statusFor(["1.1.1.1"]) } });
 
 			const results = await service.probeTargets(["1.1.1.1", "8.8.8.8"]);
 
@@ -146,7 +146,7 @@ describe("EgressService", () => {
 		});
 
 		it("treats any HTTP response, even 4xx/5xx, as reachable but a transport failure as unreachable", async () => {
-			const requestStatus = jest.fn().mockImplementation(async (monitor: any) => ({
+			const probe = jest.fn().mockImplementation(async (monitor: any) => ({
 				monitorId: monitor.id,
 				teamId: monitor.teamId,
 				type: monitor.type,
@@ -155,7 +155,7 @@ describe("EgressService", () => {
 				message: monitor.url.includes("maintenance") ? "Service Unavailable" : "ECONNREFUSED",
 				responseTime: 3,
 			}));
-			const { service } = createService({ networkService: { requestStatus } });
+			const { service } = createService({ providerRegistry: { probe } });
 
 			const results = await service.probeTargets(["https://example.com/maintenance", "https://example.com/refused", "8.8.8.8:53"]);
 
@@ -172,11 +172,11 @@ describe("EgressService", () => {
 			const results = await service.probeTargets(["[1.1.1.1"]);
 
 			expect(results).toEqual([expect.objectContaining({ target: "[1.1.1.1", reachable: false, message: "Invalid egress target" })]);
-			expect(defaults.networkService.requestStatus).not.toHaveBeenCalled();
+			expect(defaults.providerRegistry.probe).not.toHaveBeenCalled();
 		});
 
 		it("counts a thrown provider error as unreachable", async () => {
-			const { service } = createService({ networkService: { requestStatus: jest.fn().mockRejectedValue(new Error("ENETUNREACH")) } });
+			const { service } = createService({ providerRegistry: { probe: jest.fn().mockRejectedValue(new Error("ENETUNREACH")) } });
 
 			const results = await service.probeTargets(["1.1.1.1"]);
 
@@ -185,7 +185,7 @@ describe("EgressService", () => {
 
 		it("counts a hung provider as unreachable once the probe timeout elapses", async () => {
 			jest.useFakeTimers();
-			const { service } = createService({ networkService: { requestStatus: jest.fn().mockReturnValue(new Promise(() => {})) } });
+			const { service } = createService({ providerRegistry: { probe: jest.fn().mockReturnValue(new Promise(() => {})) } });
 
 			const pending = service.probeTargets(["1.1.1.1"]);
 			await jest.advanceTimersByTimeAsync(5000);
@@ -206,13 +206,13 @@ describe("EgressService", () => {
 			const result = await service.assessAfterFailure();
 
 			expect(result).toBeNull();
-			expect(defaults.networkService.requestStatus).not.toHaveBeenCalled();
+			expect(defaults.providerRegistry.probe).not.toHaveBeenCalled();
 			expect(defaults.egressStateRepository.findSingleton).not.toHaveBeenCalled();
 			expect(defaults.egressStateRepository.recordProbe).not.toHaveBeenCalled();
 		});
 
 		it("returns ok and records the probe when any target is reachable", async () => {
-			const { service, defaults } = createService({ networkService: { requestStatus: statusFor(["8.8.8.8"]) } });
+			const { service, defaults } = createService({ providerRegistry: { probe: statusFor(["8.8.8.8"]) } });
 
 			const result = await service.assessAfterFailure();
 
@@ -227,7 +227,7 @@ describe("EgressService", () => {
 		});
 
 		it("marks degraded, warns, schedules the recovery job and returns degraded when every target is unreachable", async () => {
-			const { service, defaults } = createService({ networkService: { requestStatus: statusFor([]) } });
+			const { service, defaults } = createService({ providerRegistry: { probe: statusFor([]) } });
 
 			const result = await service.assessAfterFailure();
 
@@ -255,7 +255,7 @@ describe("EgressService", () => {
 
 		it("still returns degraded and leaves the job scheduled when another worker performed the transition first", async () => {
 			const { service, defaults } = createService({
-				networkService: { requestStatus: statusFor([]) },
+				providerRegistry: { probe: statusFor([]) },
 				egressStateRepository: degradedRepository({
 					findSingleton: jest.fn().mockResolvedValue(makeState()),
 					markDegraded: jest.fn().mockResolvedValue(null),
@@ -271,7 +271,7 @@ describe("EgressService", () => {
 
 		it("does not mark degraded when the recovery job cannot be scheduled", async () => {
 			const { service, defaults } = createService({
-				networkService: { requestStatus: statusFor([]) },
+				providerRegistry: { probe: statusFor([]) },
 				jobsRepository: {
 					upsertJob: jest.fn(),
 					upsertCleanupJob: jest.fn().mockRejectedValue(new Error("db down")),
@@ -289,7 +289,7 @@ describe("EgressService", () => {
 			const result = await service.assessAfterFailure();
 
 			expect(result).toBe("degraded");
-			expect(defaults.networkService.requestStatus).not.toHaveBeenCalled();
+			expect(defaults.providerRegistry.probe).not.toHaveBeenCalled();
 			expect(defaults.egressStateRepository.markDegraded).not.toHaveBeenCalled();
 			expect(defaults.egressStateRepository.recordProbe).not.toHaveBeenCalled();
 			expect(defaults.jobsRepository.upsertJob).toHaveBeenCalledWith(expect.objectContaining({ id: "egress", intervalMs: 5_000 }));
@@ -322,19 +322,19 @@ describe("EgressService", () => {
 
 	describe("shared assessment", () => {
 		it("shares one probe between concurrent failures", async () => {
-			const { service, defaults } = createService({ networkService: { requestStatus: statusFor(["8.8.8.8"]) } });
+			const { service, defaults } = createService({ providerRegistry: { probe: statusFor(["8.8.8.8"]) } });
 
 			const results = await Promise.all([service.assessAfterFailure(), service.assessAfterFailure(), service.assessAfterFailure()]);
 
 			expect(results).toEqual(["ok", "ok", "ok"]);
 			expect(defaults.settingsService.getCachedDBSettings).toHaveBeenCalledTimes(1);
-			expect(defaults.networkService.requestStatus).toHaveBeenCalledTimes(2); // one call per target, once
+			expect(defaults.providerRegistry.probe).toHaveBeenCalledTimes(2); // one call per target, once
 			expect(defaults.egressStateRepository.recordProbe).toHaveBeenCalledTimes(1);
 		});
 
 		it("keeps sharing an in-flight assessment that outlives the reuse window", async () => {
 			jest.useFakeTimers();
-			const { service, defaults } = createService({ networkService: { requestStatus: jest.fn().mockReturnValue(new Promise(() => {})) } });
+			const { service, defaults } = createService({ providerRegistry: { probe: jest.fn().mockReturnValue(new Promise(() => {})) } });
 
 			const first = service.assessAfterFailure();
 			await jest.advanceTimersByTimeAsync(4_900); // probes still hanging, past the 5 s reuse window from the first call
@@ -342,12 +342,12 @@ describe("EgressService", () => {
 			await jest.advanceTimersByTimeAsync(200); // probe timeout fires, both settle
 
 			expect(await Promise.all([first, second])).toEqual(["degraded", "degraded"]);
-			expect(defaults.networkService.requestStatus).toHaveBeenCalledTimes(2); // one round of two targets, not two rounds
+			expect(defaults.providerRegistry.probe).toHaveBeenCalledTimes(2); // one round of two targets, not two rounds
 		});
 
 		it("reuses a settled assessment within the reuse window and probes again after it", async () => {
 			jest.useFakeTimers();
-			const { service, defaults } = createService({ networkService: { requestStatus: statusFor(["8.8.8.8"]) } });
+			const { service, defaults } = createService({ providerRegistry: { probe: statusFor(["8.8.8.8"]) } });
 
 			await service.assessAfterFailure();
 			await jest.advanceTimersByTimeAsync(1_000);
@@ -385,7 +385,7 @@ describe("EgressService", () => {
 		it("marks recovered, releases the job and logs when a target becomes reachable", async () => {
 			const { service, defaults } = createService({
 				egressStateRepository: degradedRepository(),
-				networkService: { requestStatus: statusFor(["1.1.1.1"]) },
+				providerRegistry: { probe: statusFor(["1.1.1.1"]) },
 			});
 			const job = makeJob({ nextScheduledAt: 123_456 });
 
@@ -403,7 +403,7 @@ describe("EgressService", () => {
 		it("releases the job but does not log a recovery when another process already recorded it", async () => {
 			const { service, defaults } = createService({
 				egressStateRepository: degradedRepository({ markRecovered: jest.fn().mockResolvedValue(null) }),
-				networkService: { requestStatus: statusFor(["1.1.1.1"]) },
+				providerRegistry: { probe: statusFor(["1.1.1.1"]) },
 			});
 
 			await service.checkRecovery(makeJob());
@@ -417,7 +417,7 @@ describe("EgressService", () => {
 		it("records the probe and keeps the job while every target stays unreachable", async () => {
 			const { service, defaults } = createService({
 				egressStateRepository: degradedRepository(),
-				networkService: { requestStatus: statusFor([]) },
+				providerRegistry: { probe: statusFor([]) },
 			});
 
 			await service.checkRecovery(makeJob());
@@ -432,7 +432,7 @@ describe("EgressService", () => {
 
 			await service.checkRecovery(makeJob());
 
-			expect(defaults.networkService.requestStatus).not.toHaveBeenCalled();
+			expect(defaults.providerRegistry.probe).not.toHaveBeenCalled();
 			expect(defaults.egressStateRepository.markRecovered).not.toHaveBeenCalled();
 			expect(defaults.jobsRepository.deleteGlobalJobIfUnchanged).toHaveBeenCalledWith("egress", 1_000);
 		});
@@ -445,7 +445,7 @@ describe("EgressService", () => {
 
 			await service.checkRecovery(makeJob());
 
-			expect(defaults.networkService.requestStatus).not.toHaveBeenCalled();
+			expect(defaults.providerRegistry.probe).not.toHaveBeenCalled();
 			expect(defaults.jobsRepository.deleteGlobalJobIfUnchanged).toHaveBeenCalledWith("egress", 1_000);
 		});
 
