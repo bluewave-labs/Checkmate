@@ -5,16 +5,16 @@ import { IncidentReactor } from "../../src/worker/reactors/reactor.incident.ts";
 import { ReactorDispatcher } from "../../src/worker/reactors/reactor.dispatcher.ts";
 import { StatusService } from "../../src/service/statusService.ts";
 import { IncidentService } from "../../src/domain/incidents/incident.service.ts";
+import { CheckService } from "../../src/domain/checks/check.service.ts";
 import { InMemoryMonitorsRepository } from "./InMemoryMonitorsRepository.ts";
 import { InMemoryIncidentsRepository } from "./InMemoryIncidentsRepository.ts";
 import { createMockLogger } from "./createMockLogger.ts";
 import type { Monitor } from "../../src/domain/monitors/monitor.type.ts";
-import type { MonitorStatusResponse } from "../../src/types/network.ts";
 import type { Check } from "../../src/domain/checks/check.type.ts";
+import type { MonitorActionDecision } from "../../src/worker/worker.interface.ts";
+import type { MonitorStatusResponse } from "../../src/types/network.ts";
 import type { MaintenanceWindow } from "../../src/domain/maintenance-windows/maintenance-window.type.ts";
 import type { EgressStatus } from "../../src/domain/egress/egress.type.ts";
-
-let checkCounter = 0;
 
 export const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 	({
@@ -45,20 +45,6 @@ export const makeStatusResponse = (status: boolean, code: number): MonitorStatus
 	responseTime: status ? 150 : 0,
 });
 
-export const makeCheck = (status: boolean, code: number): Check => {
-	const now = new Date().toISOString();
-	return {
-		id: `check-${++checkCounter}`,
-		metadata: { monitorId: "mon-1", teamId: "team-1", type: "http" },
-		status,
-		statusCode: code,
-		responseTime: status ? 150 : 0,
-		message: status ? "OK" : "Service Unavailable",
-		createdAt: now,
-		updatedAt: now,
-	};
-};
-
 const createStubMonitorStatsRepo = () => ({
 	findByMonitorId: jest.fn().mockRejectedValue(new Error("no stats")),
 	create: jest.fn().mockResolvedValue({}),
@@ -77,7 +63,7 @@ export interface HeartbeatTestHarness {
 	networkService: { requestStatus: jest.Mock };
 	bufferStub: { addToBuffer: jest.Mock; addGeoCheckToBuffer: jest.Mock; scheduleNextFlush: jest.Mock };
 	maintenanceWindowsRepo: { findByMonitorId: jest.Mock };
-	messageBuilder: { extractThresholdBreaches: jest.Mock };
+	messageBuilder: { buildThresholdBreachMessage: jest.Mock };
 	egressService: { assessAfterFailure: jest.Mock };
 	heartbeatJob: (monitor: Monitor) => Promise<void>;
 	setNextResponse: (status: boolean, code: number) => void;
@@ -86,8 +72,6 @@ export interface HeartbeatTestHarness {
 }
 
 export function createHeartbeatTestHarness(): HeartbeatTestHarness {
-	checkCounter = 0;
-
 	const monitorsRepo = new InMemoryMonitorsRepository();
 	const incidentsRepo = new InMemoryIncidentsRepository();
 	const logger = createMockLogger() as any;
@@ -95,7 +79,7 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 
 	const statusService = new StatusService(logger, monitorsRepo as any, createStubMonitorStatsRepo() as any);
 
-	const messageBuilder = { extractThresholdBreaches: jest.fn().mockReturnValue([]) };
+	const messageBuilder = { buildThresholdBreachMessage: jest.fn().mockReturnValue("") };
 	const incidentService = new IncidentService(logger, incidentsRepo, monitorsRepo as any, { findById: jest.fn() } as any, messageBuilder as any);
 
 	const notificationsService = { handleNotifications: jest.fn().mockResolvedValue(true) };
@@ -111,11 +95,9 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 			return Promise.resolve(makeStatusResponse(nextStatus, nextCode));
 		}),
 	};
-	const checkService = {
-		toCheck: jest.fn().mockImplementation((response: MonitorStatusResponse) => {
-			return makeCheck(response.status, response.code);
-		}),
-	};
+	// The real mapper, so the stored check carries the hardware/docker payload the evaluator reads.
+	// Only toCheck is reached; the repositories are never touched.
+	const checkService = new CheckService(monitorsRepo as any, logger, {} as any);
 
 	const setNextResponse = (status: boolean, code: number) => {
 		nextResponse = null;
@@ -137,7 +119,13 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 		nextEgressStatus = status;
 	};
 
-	const notificationReactor = new NotificationReactor(notificationsService as any);
+	// The real NotificationsService ignores decisions with shouldSendNotification false; the stub is reached only for
+	// the ones it would act on, so tests can assert on handleNotifications calls as "notifications sent".
+	const guardedNotificationsService = {
+		handleNotifications: (monitor: Monitor, check: Check, decision: MonitorActionDecision) =>
+			decision.shouldSendNotification ? notificationsService.handleNotifications(monitor, check, decision) : Promise.resolve(false),
+	};
+	const notificationReactor = new NotificationReactor(guardedNotificationsService as any);
 	const incidentReactor = new IncidentReactor(incidentService as any);
 	const reactorDispatcher = new ReactorDispatcher(logger, [notificationReactor, incidentReactor]);
 
@@ -165,7 +153,7 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 		if (!monitor) return;
 		const result = await pipeline.produce(monitor);
 		if (!result) return; // skipped (e.g. maintenance window)
-		const evaluation = await pipeline.evaluateCheck(result.status, result.check, monitor);
+		const evaluation = await pipeline.evaluateCheck(result.check, monitor);
 		await reactorDispatcher.dispatch(evaluation);
 	};
 

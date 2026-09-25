@@ -2,7 +2,7 @@ const SERVICE_NAME = "SlackProvider";
 import type { Notification } from "@/domain/notifications/notification.type.js";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
-import { getTestMessage } from "@/domain/notifications/providers/utils.js";
+import { getTestMessage, incidentUrl } from "@/domain/notifications/providers/utils.js";
 import got, { HTTPError } from "got";
 
 export class SlackProvider extends NotificationProvider {
@@ -161,7 +161,7 @@ export class SlackProvider extends NotificationProvider {
 							text: "View Incident",
 							emoji: true,
 						},
-						url: `${message.clientHost}/infrastructure/${message.monitor.id}`,
+						url: incidentUrl(message),
 						style: "primary",
 					},
 				],

@@ -557,7 +557,7 @@
 				},
 				"status": {
 					"down": "down",
-					"breached": "threshold exceeded",
+					"breached": "alert",
 					"initializing": "initializing",
 					"maintenance": "maintenance",
 					"paused": "paused",
@@ -824,6 +824,18 @@
 					"option": {
 						"enabled": {
 							"label": "Collect container logs"
+						}
+					}
+				},
+				"dockerAlerts": {
+					"title": "Container alerts",
+					"description": "Mark this host as breached while any container on it is stopped or failing its health check, and notify on the change. Containers that exit with code 0 do not count as stopped. Capture does not report exit codes, so on Capture hosts every stopped container counts.",
+					"option": {
+						"onStopped": {
+							"label": "Alert when a container is stopped"
+						},
+						"onUnhealthy": {
+							"label": "Alert when a container is unhealthy"
 						}
 					}
 				},
@@ -1685,7 +1697,7 @@
 				"status": {
 					"up": "Operational",
 					"down": "Down",
-					"breached": "Threshold exceeded",
+					"breached": "Alert",
 					"maintenance": "Maintenance",
 					"paused": "Paused",
 					"initializing": "Initializing"
@@ -1725,13 +1737,13 @@
 				"monitoringSummary": "Monitoring {{count}} service · Updates every 10 seconds",
 				"monitoringSummary_other": "Monitoring {{count}} services · Updates every 10 seconds",
 				"allUp": "All systems operational",
-				"allBreached": "All systems have exceeded thresholds",
+				"allBreached": "All systems have active alerts",
 				"allMaintenance": "All systems are under maintenance",
 				"allDown": "All systems are down",
 				"allPaused": "All systems are paused",
 				"allInitializing": "All systems are initializing",
-				"breachedAndDown": "Some systems have exceeded thresholds and are down",
-				"breached": "Some systems have exceeded thresholds",
+				"breachedAndDown": "Some systems have active alerts and some are down",
+				"breached": "Some systems have active alerts",
 				"degraded": "Some systems are experiencing issues",
 				"maintenanceAndDown": "Some systems are down during maintenance",
 				"maintenance": "Some systems are under maintenance",
@@ -1924,7 +1936,15 @@
 			},
 			"cards": {
 				"monitorStatus": "Monitor status",
+				"currentlyDown": "Currently down",
+				"uptime": "Monitor uptime",
 				"monitorsByType": "Monitors by type"
+			},
+			"uptimeCard": {
+				"toggleSortOrder": "Toggle sort order"
+			},
+			"currentlyDown": {
+				"empty": "No monitors are down at this moment."
 			},
 			"header": {
 				"title": "Dashboard",
@@ -1932,8 +1952,11 @@
 			},
 			"editCards": "Edit cards",
 			"editCardsModal": {
-				"title": "Edit cards",
+				"title": "Dashboard cards",
 				"description": "Select the cards to display on your dashboard.",
+				"groups": {
+					"uptime": "Uptime"
+				},
 				"done": "Done"
 			}
 		}

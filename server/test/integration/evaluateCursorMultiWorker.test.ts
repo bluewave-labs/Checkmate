@@ -131,9 +131,9 @@ describe("Evaluate cursor with more than one processing worker", () => {
 			bufferService,
 			dockerLogsService: { buildDockerLogs: jest.fn<any>() } as any,
 			statusService: {
-				updateMonitorStatus: async (_status: MonitorStatusResponse, check: Check, monitor: Monitor) => {
+				updateMonitorStatus: async (check: Check, monitor: Monitor) => {
 					evaluatedCheckIds.push(check.id);
-					return { monitor, statusChanged: false, prevStatus: monitor.status, code: 200, timestamp: 0 };
+					return { monitor, statusChanged: false, prevStatus: monitor.status };
 				},
 			} as any,
 			dispatcher: { dispatch: jest.fn<any>().mockResolvedValue(undefined) } as any,

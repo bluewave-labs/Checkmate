@@ -1,5 +1,4 @@
-import type { Monitor } from "@/domain/monitors/monitor.type.js";
-import type { HardwareStatusPayload, MonitorStatusResponse } from "@/types/network.js";
+import { HardwareMetricKeys, type HardwareBreaches, type HardwareMetricKey, type Monitor } from "@/domain/monitors/monitor.type.js";
 import type { MonitorActionDecision } from "@/worker/worker.interface.js";
 import type {
 	NotificationMessage,
@@ -8,15 +7,12 @@ import type {
 	ThresholdBreach,
 	NotificationContent,
 } from "@/domain/notifications/notification.type.js";
+import { describeContainerBreach, findContainerBreaches } from "@/domain/docker/docker-alert.js";
+import type { Check } from "@/domain/checks/check.type.js";
 
 export interface INotificationMessageBuilder {
-	buildMessage(
-		monitor: Monitor,
-		monitorStatusResponse: MonitorStatusResponse,
-		decision: MonitorActionDecision,
-		clientHost: string
-	): NotificationMessage;
-	extractThresholdBreaches(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): ThresholdBreach[];
+	buildMessage(monitor: Monitor, check: Check, decision: MonitorActionDecision, clientHost: string): NotificationMessage;
+	buildThresholdBreachMessage(monitor: Monitor, check: Check, thresholdBreaches: HardwareBreaches | undefined): string;
 }
 
 const SERVICE_NAME = "NotificationMessageBuilder";
@@ -24,15 +20,10 @@ const SERVICE_NAME = "NotificationMessageBuilder";
 export class NotificationMessageBuilder implements INotificationMessageBuilder {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	buildMessage(
-		monitor: Monitor,
-		monitorStatusResponse: MonitorStatusResponse,
-		decision: MonitorActionDecision,
-		clientHost: string
-	): NotificationMessage {
+	buildMessage(monitor: Monitor, check: Check, decision: MonitorActionDecision, clientHost: string): NotificationMessage {
 		const type = this.determineNotificationType(decision, monitor);
 		const severity = this.determineSeverity(type);
-		const content = this.buildContent(type, monitor, monitorStatusResponse);
+		const content = this.buildContent(type, monitor, check, decision);
 
 		return {
 			type,
@@ -48,7 +39,7 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 			clientHost,
 			metadata: {
 				teamId: monitor.teamId,
-				notificationReason: decision.notificationReason || "status_change",
+				notificationReason: decision.notificationReason,
 			},
 		};
 	}
@@ -59,32 +50,29 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 			return "monitor_down";
 		}
 
-		// Threshold breach (only if not down)
-		if (decision.notificationReason === "threshold_breach") {
-			return "threshold_breach";
+		const isDocker = monitor.type === "docker";
+		switch (decision.notificationReason) {
+			case "threshold_breach":
+				return isDocker ? "container_breach" : "threshold_breach";
+			case "threshold_resolved":
+				return isDocker ? "container_resolved" : "threshold_resolved";
+			default:
+				return "monitor_up";
 		}
-
-		// Recovery from threshold breach (only for hardware monitors)
-		if (decision.notificationReason === "status_change" && monitor.status === "up" && monitor.type === "hardware") {
-			return "threshold_resolved";
-		}
-
-		// Standard recovery (up)
-		if (monitor.status === "up") {
-			return "monitor_up";
-		}
-
-		// Default to monitor_up for any other case
-		return "monitor_up";
 	}
 
 	private determineSeverity(type: NotificationType): NotificationSeverity {
 		switch (type) {
+			case "monitor_up":
+				return "success";
 			case "monitor_down":
 				return "critical";
+			case "container_breach":
+				return "warning";
 			case "threshold_breach":
 				return "warning";
-			case "monitor_up":
+			case "container_resolved":
+				return "success";
 			case "threshold_resolved":
 				return "success";
 			case "test":
@@ -94,34 +82,38 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		}
 	}
 
-	private buildContent(type: NotificationType, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): NotificationContent {
+	private buildContent(type: NotificationType, monitor: Monitor, check: Check, decision: MonitorActionDecision): NotificationContent {
 		switch (type) {
 			case "monitor_down":
-				return this.buildMonitorDownContent(monitor, monitorStatusResponse);
+				return this.buildMonitorDownContent(monitor, check);
 			case "monitor_up":
 				return this.buildMonitorUpContent(monitor);
 			case "threshold_breach":
-				return this.buildThresholdBreachContent(monitor, monitorStatusResponse as MonitorStatusResponse<HardwareStatusPayload>);
+				return this.buildThresholdBreachContent(monitor, check, decision.thresholdBreaches);
 			case "threshold_resolved":
 				return this.buildThresholdResolvedContent(monitor);
+			case "container_breach":
+				return this.buildContainerBreachContent(monitor, check);
+			case "container_resolved":
+				return this.buildContainersRecoveredContent(monitor);
 			default:
 				return this.buildDefaultContent(monitor);
 		}
 	}
 
-	private buildMonitorDownContent(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): NotificationContent {
+	private buildMonitorDownContent(monitor: Monitor, check: Check): NotificationContent {
 		const title = `Monitor Down: ${monitor.name}`;
 		const summary = `Monitor "${monitor.name}" is currently down and unreachable.`;
 		const details = [`URL: ${monitor.url}`, `Status: Down`, `Type: ${monitor.type}`];
 
 		// Add response code if available
-		if (monitorStatusResponse.code) {
-			details.push(`Response Code: ${monitorStatusResponse.code}`);
+		if (check.statusCode) {
+			details.push(`Response Code: ${check.statusCode}`);
 		}
 
 		// Add error message if available
-		if (monitorStatusResponse.message) {
-			details.push(`Error: ${monitorStatusResponse.message}`);
+		if (check.message) {
+			details.push(`Error: ${check.message}`);
 		}
 
 		return {
@@ -145,12 +137,12 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		};
 	}
 
-	private buildThresholdBreachContent(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse<HardwareStatusPayload>): NotificationContent {
+	private buildThresholdBreachContent(monitor: Monitor, check: Check, thresholdBreaches: HardwareBreaches | undefined): NotificationContent {
 		const title = `Threshold Exceeded: ${monitor.name}`;
 		const summary = `Monitor "${monitor.name}" has exceeded one or more thresholds.`;
 		const details = [`URL: ${monitor.url}`, `Status: Threshold exceeded`, `Type: ${monitor.type}`];
 
-		const thresholds = this.extractThresholdBreaches(monitor, monitorStatusResponse);
+		const thresholds = this.extractThresholdBreaches(monitor, check, thresholdBreaches);
 
 		return {
 			title,
@@ -174,6 +166,21 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		};
 	}
 
+	private buildContainerBreachContent(monitor: Monitor, check: Check): NotificationContent {
+		const lines = this.describeContainerBreaches(monitor, check);
+		const title = `Container Alert: ${monitor.name}`;
+		const summary = `${lines.length} container(s) on "${monitor.name}" need attention.`;
+		const details = [`URL: ${monitor.url}`, `Type: ${monitor.type}`, ...lines];
+		return { title, summary, details, timestamp: new Date() };
+	}
+
+	private buildContainersRecoveredContent(monitor: Monitor): NotificationContent {
+		const title = `Containers Recovered: ${monitor.name}`;
+		const summary = `All containers on "${monitor.name}" are back to normal.`;
+		const details = [`URL: ${monitor.url}`, `Status: Up`, `Type: ${monitor.type}`];
+		return { title, summary, details, timestamp: new Date() };
+	}
+
 	private buildDefaultContent(monitor: Monitor): NotificationContent {
 		return {
 			title: `Monitor: ${monitor.name}`,
@@ -183,93 +190,57 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		};
 	}
 
-	public extractThresholdBreaches(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse<HardwareStatusPayload>): ThresholdBreach[] {
+	private describeBreach(metric: HardwareMetricKey, monitor: Monitor, check: Check): ThresholdBreach {
+		switch (metric) {
+			case "cpu": {
+				const currentValue = (check.cpu?.usage_percent ?? 0) * 100;
+				return { metric, currentValue, threshold: monitor.cpuAlertThreshold, unit: "%", formattedValue: `${currentValue.toFixed(1)}%` };
+			}
+			case "memory": {
+				const currentValue = (check.memory?.usage_percent ?? 0) * 100;
+				return { metric, currentValue, threshold: monitor.memoryAlertThreshold, unit: "%", formattedValue: `${currentValue.toFixed(1)}%` };
+			}
+			case "disk": {
+				const currentValue = Math.max(0, ...(check.disk ?? []).map((disk) => disk?.usage_percent ?? 0)) * 100;
+				return { metric, currentValue, threshold: monitor.diskAlertThreshold, unit: "%", formattedValue: `${currentValue.toFixed(1)}%` };
+			}
+			case "temp": {
+				const currentValue = Math.max(0, ...(check.cpu?.temperature ?? []));
+				return { metric, currentValue, threshold: monitor.tempAlertThreshold, unit: "°C", formattedValue: `${currentValue.toFixed(1)}°C` };
+			}
+		}
+	}
+
+	private extractThresholdBreaches(monitor: Monitor, check: Check, thresholdBreaches: HardwareBreaches | undefined): ThresholdBreach[] {
 		const breaches: ThresholdBreach[] = [];
 
 		// Check if this is a hardware monitor with threshold data
-		if (monitor.type !== "hardware" || !monitorStatusResponse.payload || typeof monitorStatusResponse.payload === "string") {
+		if (monitor.type !== "hardware" || thresholdBreaches === undefined) {
 			return breaches;
 		}
 
-		// Cast to HardwareStatusPayload type
-		const payload = monitorStatusResponse.payload;
-		const hardware = payload.data;
-
-		if (!hardware) {
-			return breaches;
-		}
-
-		// Note: usage_percent values in hardware payload are decimals (0-1)
-		if (monitor.cpuAlertThreshold !== undefined && monitor.cpuAlertThreshold !== null && hardware.cpu?.usage_percent !== undefined) {
-			const cpuUsageDecimal = hardware.cpu.usage_percent;
-			const cpuPercent = cpuUsageDecimal * 100;
-			const threshold = monitor.cpuAlertThreshold;
-			if (cpuPercent > threshold) {
-				breaches.push({
-					metric: "cpu",
-					currentValue: cpuPercent,
-					threshold,
-					unit: "%",
-					formattedValue: `${cpuPercent.toFixed(1)}%`,
-				});
-			}
-		}
-
-		// Memory threshold breach
-		if (monitor.memoryAlertThreshold !== undefined && monitor.memoryAlertThreshold !== null && hardware.memory?.usage_percent !== undefined) {
-			const memoryUsageDecimal = hardware.memory.usage_percent;
-			const memoryPercent = memoryUsageDecimal * 100;
-			const threshold = monitor.memoryAlertThreshold;
-			if (memoryPercent > threshold) {
-				breaches.push({
-					metric: "memory",
-					currentValue: memoryPercent,
-					threshold,
-					unit: "%",
-					formattedValue: `${memoryPercent.toFixed(1)}%`,
-				});
-			}
-		}
-
-		// Disk threshold breach
-		if (monitor.diskAlertThreshold !== undefined && monitor.diskAlertThreshold !== null && Array.isArray(hardware.disk)) {
-			// Find the highest disk usage
-			let maxDiskUsageDecimal = 0;
-			for (const disk of hardware.disk) {
-				if (disk.usage_percent !== undefined && disk.usage_percent > maxDiskUsageDecimal) {
-					maxDiskUsageDecimal = disk.usage_percent;
-				}
-			}
-			const maxDiskPercent = maxDiskUsageDecimal * 100;
-			const threshold = monitor.diskAlertThreshold;
-			if (maxDiskPercent > threshold) {
-				breaches.push({
-					metric: "disk",
-					currentValue: maxDiskPercent,
-					threshold,
-					unit: "%",
-					formattedValue: `${maxDiskPercent.toFixed(1)}%`,
-				});
-			}
-		}
-
-		// Temperature threshold breach
-		if (monitor.tempAlertThreshold !== undefined && monitor.tempAlertThreshold !== null && hardware.cpu?.temperature) {
-			// Temperature is an array in cpu.temperature
-			const temps = Array.isArray(hardware.cpu.temperature) ? hardware.cpu.temperature : [hardware.cpu.temperature];
-			const maxTemp = Math.max(...temps.filter((t: number) => !isNaN(t)));
-			const threshold = monitor.tempAlertThreshold;
-			if (maxTemp > threshold) {
-				breaches.push({
-					metric: "temp",
-					currentValue: maxTemp,
-					threshold,
-					unit: "°C",
-					formattedValue: `${maxTemp.toFixed(1)}°C`,
-				});
-			}
+		for (const metric of HardwareMetricKeys) {
+			if (!thresholdBreaches[metric]) continue;
+			breaches.push(this.describeBreach(metric, monitor, check));
 		}
 
 		return breaches;
+	}
+
+	private describeContainerBreaches(monitor: Monitor, check: Check): string[] {
+		return findContainerBreaches(monitor, check.containers ?? []).map(describeContainerBreach);
+	}
+
+	public buildThresholdBreachMessage(monitor: Monitor, check: Check, thresholdBreaches: HardwareBreaches | undefined): string {
+		if (monitor.type === "docker") {
+			const lines = this.describeContainerBreaches(monitor, check);
+			return lines.length > 0 ? lines.join(", ") : "Container alert";
+		}
+
+		const breaches = this.extractThresholdBreaches(monitor, check, thresholdBreaches);
+		if (breaches.length === 0) {
+			return "Threshold breach detected";
+		}
+		return breaches.map((b) => `${b.metric.toUpperCase()}: ${b.formattedValue} (threshold: ${b.threshold}${b.unit})`).join(", ");
 	}
 }

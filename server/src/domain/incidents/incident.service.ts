@@ -1,6 +1,5 @@
-const SERVICE_NAME = "incidentService";
 import type { Monitor } from "@/domain/monitors/monitor.type.js";
-import type { MonitorStatusResponse } from "@/types/network.js";
+import type { Check } from "@/domain/checks/check.type.js";
 import { AppError } from "@/utils/AppError.js";
 import { getDateForRange } from "@/utils/dataUtils.js";
 import type { IIncidentsRepository } from "@/domain/incidents/incident.repository.interface.js";
@@ -13,13 +12,9 @@ import type { INotificationMessageBuilder } from "@/domain/notifications/notific
 import type { ILogger } from "@/utils/logger.js";
 import { DateRange } from "@/types/query.js";
 
+const SERVICE_NAME = "incidentService";
 export interface IIncidentService {
-	handleIncident(
-		monitor: Monitor,
-		code: number,
-		decision: MonitorActionDecision,
-		monitorStatusResponse?: MonitorStatusResponse
-	): Promise<Incident | null>;
+	handleIncident(monitor: Monitor, decision: MonitorActionDecision, check: Check): Promise<Incident | null>;
 	resolveIncident(incidentId: string, userId: string, teamId: string, comment?: string, userEmail?: string): Promise<Incident>;
 	getIncidentsByTeam(
 		teamId: string,
@@ -58,12 +53,7 @@ export class IncidentService implements IIncidentService {
 		this.notificationMessageBuilder = notificationMessageBuilder;
 	}
 
-	handleIncident = async (
-		monitor: Monitor,
-		code: number,
-		decision: MonitorActionDecision,
-		monitorStatusResponse?: MonitorStatusResponse
-	): Promise<Incident | null> => {
+	handleIncident = async (monitor: Monitor, decision: MonitorActionDecision, check: Check): Promise<Incident | null> => {
 		if (!decision.shouldCreateIncident && !decision.shouldResolveIncident) {
 			return null;
 		}
@@ -74,13 +64,13 @@ export class IncidentService implements IIncidentService {
 			if (activeIncident) {
 				return activeIncident;
 			} else {
-				let statusCode = code;
+				let statusCode = check.statusCode;
 				let message: string | undefined;
 
 				// For threshold breaches, use 9999 status code and build descriptive message
 				if (decision.incidentReason === "threshold_breach") {
 					statusCode = 9999;
-					message = this.buildThresholdBreachMessage(monitor, monitorStatusResponse);
+					message = this.notificationMessageBuilder.buildThresholdBreachMessage(monitor, check, decision.thresholdBreaches);
 				}
 
 				const incident = {
@@ -104,20 +94,6 @@ export class IncidentService implements IIncidentService {
 		activeIncident.resolutionType = "automatic";
 		return await this.incidentsRepository.updateById(activeIncident.id, activeIncident.teamId, activeIncident);
 	};
-
-	private buildThresholdBreachMessage(monitor: Monitor, monitorStatusResponse?: MonitorStatusResponse): string {
-		if (!monitorStatusResponse) {
-			return "Threshold breach detected";
-		}
-
-		const breaches = this.notificationMessageBuilder.extractThresholdBreaches(monitor, monitorStatusResponse);
-
-		if (breaches.length === 0) {
-			return "Threshold breach detected";
-		}
-
-		return breaches.map((b) => `${b.metric.toUpperCase()}: ${b.formattedValue} (threshold: ${b.threshold}${b.unit})`).join(", ");
-	}
 
 	resolveIncident = async (incidentId: string, userId: string, teamId: string, comment?: string, userEmail?: string) => {
 		try {

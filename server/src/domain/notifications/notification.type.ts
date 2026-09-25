@@ -1,3 +1,6 @@
+import type { HardwareMetricKey } from "@/domain/monitors/monitor.type.js";
+import { MonitorActionDecision } from "@/worker/worker.interface.js";
+
 export const NotificationChannels = [
 	"email",
 	"slack",
@@ -71,7 +74,8 @@ export interface AlertDiscordPayload {
  * Part of notification system unification effort
  */
 
-export type NotificationType = "monitor_down" | "monitor_up" | "threshold_breach" | "threshold_resolved" | "test";
+export type NotificationType =
+	"monitor_down" | "monitor_up" | "threshold_breach" | "threshold_resolved" | "container_breach" | "container_resolved" | "test";
 
 export type NotificationSeverity = "critical" | "warning" | "info" | "success";
 
@@ -84,7 +88,7 @@ export interface MonitorInfo {
 }
 
 export interface ThresholdBreach {
-	metric: "cpu" | "memory" | "disk" | "temp";
+	metric: HardwareMetricKey;
 	currentValue: number;
 	threshold: number;
 	unit: string;
@@ -116,6 +120,6 @@ export interface NotificationMessage {
 	clientHost: string;
 	metadata: {
 		teamId: string;
-		notificationReason: string;
+		notificationReason: MonitorActionDecision["notificationReason"];
 	};
 }

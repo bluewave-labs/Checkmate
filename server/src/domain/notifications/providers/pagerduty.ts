@@ -75,7 +75,8 @@ export class PagerDutyProvider extends NotificationProvider {
 
 	private buildPagerDutyPayload(notification: Notification, message: NotificationMessage): AlertPagerDutyPayload {
 		// Map our notification type to PagerDuty event_action
-		const eventAction = message.type === "monitor_up" || message.type === "threshold_resolved" ? "resolve" : "trigger";
+		const eventAction =
+			message.type === "monitor_up" || message.type === "threshold_resolved" || message.type === "container_resolved" ? "resolve" : "trigger";
 
 		// Map severity to PagerDuty severity levels
 		const severityMap: Record<string, string> = {
