@@ -1,5 +1,5 @@
 import { AppError } from "@/utils/AppError.js";
-import { Monitor, MonitorTypes, type MonitorType } from "@/domain/monitors/monitor.type.js";
+import { Monitor } from "@/domain/monitors/monitor.type.js";
 import { UserRole } from "@/domain/users/user.type.js";
 import sslChecker, { SSLDetails } from "ssl-checker";
 import * as whoiser from "whoiser";
@@ -124,75 +124,12 @@ export const fetchMonitorDomain = async (
 	return domainExpiry;
 };
 
-export const requireString = (value: unknown, fieldName: string): string => {
-	if (typeof value === "string" && value.trim().length > 0) {
-		return value;
-	}
-	throw new AppError({ message: `${fieldName} is required`, status: 400 });
-};
-
-export const optionalString = (value: unknown, fieldName: string): string | undefined => {
-	if (value === undefined) {
-		return undefined;
-	}
-	if (typeof value === "string") {
-		return value;
-	}
-	throw new AppError({ message: `${fieldName} must be a string`, status: 400 });
-};
-
 export const extractString = (value: unknown): string | undefined => {
 	const candidate = Array.isArray(value) ? value[0] : value;
 	if (typeof candidate !== "string" || candidate.length === 0) {
 		return undefined;
 	}
 	return candidate;
-};
-
-export const optionalNumber = (value: unknown, fieldName: string): number | undefined => {
-	if (value === undefined) {
-		return undefined;
-	}
-	if (typeof value === "number" && Number.isFinite(value)) {
-		return value;
-	}
-	if (typeof value === "string" && value.trim() !== "") {
-		const parsed = Number(value);
-		if (!Number.isNaN(parsed)) {
-			return parsed;
-		}
-	}
-	throw new AppError({ message: `${fieldName} must be a number`, status: 400 });
-};
-
-export const parseMonitorTypeFilter = (value: unknown): MonitorType | MonitorType[] | undefined => {
-	const parseSingle = (input: unknown): MonitorType => {
-		if (typeof input !== "string") {
-			throw new AppError({ message: "Monitor type must be a string", status: 400 });
-		}
-		if (!MonitorTypes.includes(input as MonitorType)) {
-			throw new AppError({ message: `Invalid monitor type: ${input}`, status: 400 });
-		}
-		return input as MonitorType;
-	};
-
-	if (value === undefined) {
-		return undefined;
-	}
-	if (Array.isArray(value)) {
-		return value.map((entry) => parseSingle(entry));
-	}
-	return parseSingle(value);
-};
-
-export const parseSortOrder = (value: unknown): "asc" | "desc" | undefined => {
-	if (value === undefined) {
-		return undefined;
-	}
-	if (value === "asc" || value === "desc") {
-		return value;
-	}
-	throw new AppError({ message: "order must be either 'asc' or 'desc'", status: 400 });
 };
 
 export const requireTeamId = (teamId?: string): string => {
