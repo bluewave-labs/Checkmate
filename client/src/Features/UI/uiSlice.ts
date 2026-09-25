@@ -10,6 +10,7 @@ type ThemeMode = "light" | "dark";
 type ChartType = "histogram" | "line";
 
 type TableName =
+	| "dashboard"
 	| "monitors"
 	| "team"
 	| "maintenance"
@@ -29,6 +30,7 @@ interface SidebarState {
 }
 
 interface UIState {
+	dashboard: TableState;
 	monitors: TableState;
 	pagespeed: TableState;
 	team: TableState;
@@ -54,6 +56,9 @@ const initialMode: ThemeMode = window?.matchMedia?.("(prefers-color-scheme: dark
 	: "light";
 
 const initialState: UIState = {
+	dashboard: {
+		rowsPerPage: 100,
+	},
 	monitors: {
 		rowsPerPage: 10,
 	},

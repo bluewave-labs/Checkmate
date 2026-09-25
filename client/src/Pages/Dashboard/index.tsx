@@ -34,7 +34,7 @@ const Dashboard = () => {
 		types: [...MonitorTypes],
 		checksLimit: 1,
 		refreshInterval: 30000,
-		rowsPerPageTable: "monitors",
+		rowsPerPageTable: "dashboard",
 		rowsPerPageDefault: 100,
 	});
 
