@@ -6,12 +6,12 @@ import type { QueueMode } from "@/domain/app-settings/app-settings.type.js";
 
 export type JobHandler = (job: Job) => Promise<void>;
 export type JobHandlers = Record<JobType, JobHandler>;
+
+export const MonitorTransitions = ["status_down", "status_up", "threshold_breach", "threshold_resolved"] as const;
+export type MonitorTransition = (typeof MonitorTransitions)[number];
+
 export interface MonitorActionDecision {
-	shouldCreateIncident: boolean;
-	shouldResolveIncident: boolean;
-	shouldSendNotification: boolean;
-	incidentReason: "status_down" | "threshold_breach" | null;
-	notificationReason: "status_change" | "threshold_breach" | "threshold_resolved" | null;
+	transition: MonitorTransition | null;
 	thresholdBreaches?: HardwareBreaches;
 }
 

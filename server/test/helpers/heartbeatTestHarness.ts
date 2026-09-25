@@ -119,11 +119,11 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 		nextEgressStatus = status;
 	};
 
-	// The real NotificationsService ignores decisions with shouldSendNotification false; the stub is reached only for
-	// the ones it would act on, so tests can assert on handleNotifications calls as "notifications sent".
+	// The real NotificationsService ignores decisions with no transition; the stub is reached only for the ones it
+	// would act on, so tests can assert on handleNotifications calls as "notifications sent".
 	const guardedNotificationsService = {
 		handleNotifications: (monitor: Monitor, check: Check, decision: MonitorActionDecision) =>
-			decision.shouldSendNotification ? notificationsService.handleNotifications(monitor, check, decision) : Promise.resolve(false),
+			decision.transition !== null ? notificationsService.handleNotifications(monitor, check, decision) : Promise.resolve(false),
 	};
 	const notificationReactor = new NotificationReactor(guardedNotificationsService as any);
 	const incidentReactor = new IncidentReactor(incidentService as any);

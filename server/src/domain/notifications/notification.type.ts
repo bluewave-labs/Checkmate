@@ -1,5 +1,4 @@
 import type { HardwareMetricKey } from "@/domain/monitors/monitor.type.js";
-import { MonitorActionDecision } from "@/worker/worker.interface.js";
 
 export const NotificationChannels = [
 	"email",
@@ -120,6 +119,5 @@ export interface NotificationMessage {
 	clientHost: string;
 	metadata: {
 		teamId: string;
-		notificationReason: MonitorActionDecision["notificationReason"];
 	};
 }

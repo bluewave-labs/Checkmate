@@ -48,7 +48,6 @@ const createMessage = (overrides?: Partial<NotificationMessage>): NotificationMe
 	clientHost: "https://app.example.com",
 	metadata: {
 		teamId: "team-1",
-		notificationReason: "monitor_down",
 	},
 	...overrides,
 });

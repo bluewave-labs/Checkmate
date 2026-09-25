@@ -39,24 +39,21 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 			clientHost,
 			metadata: {
 				teamId: monitor.teamId,
-				notificationReason: decision.notificationReason,
 			},
 		};
 	}
 
 	private determineNotificationType(decision: MonitorActionDecision, monitor: Monitor): NotificationType {
-		// Down status has highest priority (critical)
-		if (monitor.status === "down") {
-			return "monitor_down";
-		}
-
 		const isDocker = monitor.type === "docker";
-		switch (decision.notificationReason) {
+		switch (decision.transition) {
+			case "status_down":
+				return "monitor_down";
 			case "threshold_breach":
 				return isDocker ? "container_breach" : "threshold_breach";
 			case "threshold_resolved":
 				return isDocker ? "container_resolved" : "threshold_resolved";
-			default:
+			case "status_up":
+			case null:
 				return "monitor_up";
 		}
 	}

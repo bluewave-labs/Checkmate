@@ -20,13 +20,7 @@ import { IReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { JobHandler, MonitorActionDecision, MonitorEvaluation } from "@/worker/worker.interface.js";
 
 const SERVICE_NAME = "WorkerPipeline";
-const NO_ACTION: MonitorActionDecision = {
-	shouldCreateIncident: false,
-	shouldResolveIncident: false,
-	shouldSendNotification: false,
-	incidentReason: null,
-	notificationReason: null,
-};
+
 // The three entry points: the queue calls the two handlers, the buffer calls ingestChecks.
 // produce and evaluateCheck stay public on the class so tests can drive one stage without the queue or the buffer.
 export interface IWorkerPipeline {
@@ -272,7 +266,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 		return {
 			monitor,
 			check,
-			decision: { ...NO_ACTION },
+			decision: { transition: null },
 		};
 	};
 
@@ -288,30 +282,21 @@ export class WorkerPipeline implements IWorkerPipeline {
 	};
 
 	private decide = (statusChange: StatusChangeResult): MonitorActionDecision => {
-		const { monitor, statusChanged, prevStatus } = statusChange;
-		const decision: MonitorActionDecision = { ...NO_ACTION };
-		if (!statusChanged) return decision;
+		const { monitor, statusChanged, prevStatus, thresholdBreaches } = statusChange;
+		if (!statusChanged) return { transition: null };
 
-		if (monitor.status === "down") {
-			decision.shouldCreateIncident = true;
-			decision.shouldSendNotification = true;
-			decision.incidentReason = "status_down";
-			decision.notificationReason = "status_change";
-		} else if (monitor.status === "breached") {
-			if (statusChange.thresholdBreaches) decision.thresholdBreaches = statusChange.thresholdBreaches;
-			decision.shouldCreateIncident = true;
-			decision.shouldSendNotification = true;
-			decision.incidentReason = "threshold_breach";
-			decision.notificationReason = "threshold_breach";
-		} else if (monitor.status === "up" && prevStatus === "breached") {
-			decision.shouldResolveIncident = true;
-			decision.shouldSendNotification = true;
-			decision.notificationReason = "threshold_resolved";
-		} else if (monitor.status === "up" && prevStatus === "down") {
-			decision.shouldResolveIncident = true;
-			decision.shouldSendNotification = true;
-			decision.notificationReason = "status_change";
+		if (monitor.status === "down") return { transition: "status_down" };
+
+		if (monitor.status === "breached") {
+			return thresholdBreaches
+				? // Hardware
+					{ transition: "threshold_breach", thresholdBreaches }
+				: // Docker
+					{ transition: "threshold_breach" };
 		}
-		return decision;
+
+		if (monitor.status === "up" && prevStatus === "breached") return { transition: "threshold_resolved" };
+		if (monitor.status === "up" && prevStatus === "down") return { transition: "status_up" };
+		return { transition: null };
 	};
 }

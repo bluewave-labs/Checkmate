@@ -94,11 +94,7 @@ const makeCheck = (overrides?: Partial<Check>): Check =>
 	}) as Check;
 
 const makeDecision = (overrides?: Partial<MonitorActionDecision>): MonitorActionDecision => ({
-	shouldCreateIncident: false,
-	shouldResolveIncident: false,
-	shouldSendNotification: false,
-	incidentReason: null,
-	notificationReason: null,
+	transition: null,
 	...overrides,
 });
 
@@ -114,32 +110,24 @@ describe("IncidentService", () => {
 			expect(result).toBeNull();
 		});
 
-		it("returns existing active incident when shouldCreateIncident and one already exists", async () => {
+		it("returns the existing active incident on a down transition when one is already open", async () => {
 			const existing = makeIncident();
 			const { service, incidentsRepository } = createService();
 			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(existing);
 
-			const result = await service.handleIncident(
-				makeMonitor(),
-				makeDecision({ shouldCreateIncident: true, incidentReason: "status_down" }),
-				makeCheck({ statusCode: 500 })
-			);
+			const result = await service.handleIncident(makeMonitor(), makeDecision({ transition: "status_down" }), makeCheck({ statusCode: 500 }));
 
 			expect(result).toBe(existing);
 			expect(incidentsRepository.create).not.toHaveBeenCalled();
 		});
 
-		it("creates a new incident when shouldCreateIncident and no active incident exists", async () => {
+		it("creates a new incident on a down transition when none is open", async () => {
 			const created = makeIncident();
 			const { service, incidentsRepository, notificationMessageBuilder } = createService();
 			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(null);
 			(incidentsRepository.create as jest.Mock).mockResolvedValue(created);
 
-			const result = await service.handleIncident(
-				makeMonitor(),
-				makeDecision({ shouldCreateIncident: true, incidentReason: "status_down" }),
-				makeCheck({ statusCode: 500 })
-			);
+			const result = await service.handleIncident(makeMonitor(), makeDecision({ transition: "status_down" }), makeCheck({ statusCode: 500 }));
 
 			expect(result).toBe(created);
 			expect(incidentsRepository.create).toHaveBeenCalledWith(
@@ -163,7 +151,7 @@ describe("IncidentService", () => {
 			const monitor = makeMonitor({ type: "hardware" });
 			const check = makeCheck({ metadata: { monitorId: "mon-1", teamId: "team-1", type: "hardware" }, cpu: { usage_percent: 0.95 } });
 			const thresholdBreaches = { cpu: true, memory: false, disk: false, temp: false };
-			const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach", thresholdBreaches });
+			const decision = makeDecision({ transition: "threshold_breach", thresholdBreaches });
 			await service.handleIncident(monitor, decision, check);
 
 			expect(notificationMessageBuilder.buildThresholdBreachMessage).toHaveBeenCalledWith(monitor, check, thresholdBreaches);
@@ -175,14 +163,14 @@ describe("IncidentService", () => {
 			);
 		});
 
-		it("resolves active incident when shouldResolveIncident", async () => {
+		it("resolves the active incident on an up transition", async () => {
 			const active = makeIncident();
 			const resolved = makeIncident({ status: false, endTime: "123", resolutionType: "automatic" });
 			const { service, incidentsRepository } = createService();
 			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(active);
 			(incidentsRepository.updateById as jest.Mock).mockResolvedValue(resolved);
 
-			const result = await service.handleIncident(makeMonitor(), makeDecision({ shouldResolveIncident: true }), makeCheck());
+			const result = await service.handleIncident(makeMonitor(), makeDecision({ transition: "status_up" }), makeCheck());
 
 			expect(result).toBe(resolved);
 			expect(incidentsRepository.updateById).toHaveBeenCalledWith(
@@ -192,11 +180,28 @@ describe("IncidentService", () => {
 			);
 		});
 
-		it("returns null when shouldResolveIncident but no active incident exists", async () => {
+		it("resolves the active incident on a threshold_resolved transition", async () => {
+			const active = makeIncident();
+			const resolved = makeIncident({ status: false, endTime: "123", resolutionType: "automatic" });
+			const { service, incidentsRepository } = createService();
+			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(active);
+			(incidentsRepository.updateById as jest.Mock).mockResolvedValue(resolved);
+
+			const result = await service.handleIncident(makeMonitor(), makeDecision({ transition: "threshold_resolved" }), makeCheck());
+
+			expect(result).toBe(resolved);
+			expect(incidentsRepository.updateById).toHaveBeenCalledWith(
+				"inc-1",
+				"team-1",
+				expect.objectContaining({ status: false, resolutionType: "automatic" })
+			);
+		});
+
+		it("returns null on an up transition when no incident is open", async () => {
 			const { service, incidentsRepository } = createService();
 			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(null);
 
-			const result = await service.handleIncident(makeMonitor(), makeDecision({ shouldResolveIncident: true }), makeCheck());
+			const result = await service.handleIncident(makeMonitor(), makeDecision({ transition: "status_up" }), makeCheck());
 
 			expect(result).toBeNull();
 		});
