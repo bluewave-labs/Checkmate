@@ -62,7 +62,7 @@ VITE_APP_LOG_LEVEL="debug"
 
 ### Monorepo Structure
 - `/client` - React 18 + TypeScript + Vite + MUI frontend
-- `/server` - Node.js 20+ + Express + TypeScript backend
+- `/server` - Node.js 24+ + Express + TypeScript backend
 - `/docker` - Multi-environment Docker configs (dev, staging, prod, arm, mono)
 
 ### Backend Layers

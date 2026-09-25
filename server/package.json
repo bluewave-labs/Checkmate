@@ -30,7 +30,8 @@
 	"author": "",
 	"license": "ISC",
 	"engines": {
-		"node": ">=20"
+		"node": ">=24",
+		"npm": ">=11"
 	},
 	"dependencies": {
 		"@csstools/css-tokenizer": "^3.0.4",
