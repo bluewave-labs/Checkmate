@@ -1,8 +1,8 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { PageSpeedProvider } from "../../../../src/service/network/PageSpeedProvider.ts";
+import { PageSpeedProvider } from "../../../../src/service/networkProviders/PageSpeedProvider.ts";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
-import type { HttpProvider } from "../../../../src/service/network/HttpProvider.ts";
+import type { HttpProvider } from "../../../../src/service/networkProviders/HttpProvider.ts";
 import type { ISettingsService } from "../../../../src/domain/app-settings/app-settings.service.ts";
 import type { Monitor } from "../../../../src/domain/monitors/monitor.type.ts";
 

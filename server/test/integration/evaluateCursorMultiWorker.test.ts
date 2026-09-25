@@ -126,7 +126,7 @@ describe("Evaluate cursor with more than one processing worker", () => {
 			checksRepository,
 			jobsRepository,
 			checkService,
-			networkService: { requestStatus: jest.fn<any>() } as any,
+			providerRegistry: { probe: jest.fn<any>() } as any,
 			proxyResolver: { resolve: jest.fn<any>() } as any,
 			bufferService,
 			dockerLogsService: { buildDockerLogs: jest.fn<any>() } as any,

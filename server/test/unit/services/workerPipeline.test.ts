@@ -92,7 +92,7 @@ const createPipeline = (overrides?: Record<string, any>) => {
 			toCheck: jest.fn<any>().mockReturnValue({ id: "check-1" }),
 			createChecks: jest.fn<any>().mockResolvedValue([]),
 		},
-		networkService: { requestStatus: jest.fn<any>().mockResolvedValue({ monitorId: "m1", status: true, code: 200, message: "OK" }) },
+		providerRegistry: { probe: jest.fn<any>().mockResolvedValue({ monitorId: "m1", status: true, code: 200, message: "OK" }) },
 		proxyResolver: { resolve: jest.fn<any>().mockResolvedValue(undefined) },
 		bufferService: { addToBuffer: jest.fn<any>(), addDockerLogToBuffer: jest.fn<any>() },
 		dockerLogsService: { buildDockerLogs: jest.fn<any>().mockResolvedValue([]) },
@@ -115,7 +115,7 @@ describe("WorkerPipeline", () => {
 			await pipeline.handleCheck(makeJob());
 
 			expect(deps.monitorsRepository.findByIdLean).toHaveBeenCalledWith("m1");
-			expect(deps.networkService.requestStatus).toHaveBeenCalled();
+			expect(deps.providerRegistry.probe).toHaveBeenCalled();
 			expect(deps.bufferService.addToBuffer).toHaveBeenCalledWith({ id: "check-1" });
 		});
 
@@ -125,7 +125,7 @@ describe("WorkerPipeline", () => {
 			await pipeline.handleCheck(makeJob({ refId: null }));
 
 			expect(deps.monitorsRepository.findByIdLean).not.toHaveBeenCalled();
-			expect(deps.networkService.requestStatus).not.toHaveBeenCalled();
+			expect(deps.providerRegistry.probe).not.toHaveBeenCalled();
 		});
 
 		it("does nothing when the monitor no longer exists", async () => {
@@ -135,7 +135,7 @@ describe("WorkerPipeline", () => {
 
 			await pipeline.handleCheck(makeJob());
 
-			expect(deps.networkService.requestStatus).not.toHaveBeenCalled();
+			expect(deps.providerRegistry.probe).not.toHaveBeenCalled();
 		});
 	});
 
@@ -156,7 +156,7 @@ describe("WorkerPipeline", () => {
 
 			expect(result).toBeNull();
 			expect(deps.monitorsRepository.updateById).toHaveBeenCalledWith("m1", "team", { status: "maintenance", statusWindow: [] });
-			expect(deps.networkService.requestStatus).not.toHaveBeenCalled();
+			expect(deps.providerRegistry.probe).not.toHaveBeenCalled();
 			expect(deps.bufferService.addToBuffer).not.toHaveBeenCalled();
 		});
 
@@ -185,7 +185,7 @@ describe("WorkerPipeline", () => {
 			// The exit used to be a side effect of evaluating the resulting check, which the degraded-egress
 			// short-circuit skips. Left implicit, a monitor could sit in "maintenance" for a whole egress outage.
 			expect(deps.monitorsRepository.updateById).toHaveBeenCalledWith("m1", "team", { status: "initializing" });
-			expect(deps.networkService.requestStatus).toHaveBeenCalled();
+			expect(deps.providerRegistry.probe).toHaveBeenCalled();
 		});
 
 		it("does not touch the status of a monitor that was not in maintenance", async () => {
@@ -203,12 +203,12 @@ describe("WorkerPipeline", () => {
 
 			await pipeline.produce(makeMonitor());
 
-			expect(deps.networkService.requestStatus).toHaveBeenCalled();
+			expect(deps.providerRegistry.probe).toHaveBeenCalled();
 		});
 
 		// ── proxy resolution ──────────────────────────────────────────────────
 
-		it("passes the resolved proxy url into requestStatus", async () => {
+		it("passes the resolved proxy url into probe", async () => {
 			const { pipeline, deps } = createPipeline({
 				proxyResolver: { resolve: jest.fn<any>().mockResolvedValue("http://proxy.example.com:8080") },
 			});
@@ -216,7 +216,7 @@ describe("WorkerPipeline", () => {
 
 			await pipeline.produce(monitor);
 
-			expect(deps.networkService.requestStatus).toHaveBeenCalledWith(monitor, { proxyUrl: "http://proxy.example.com:8080" });
+			expect(deps.providerRegistry.probe).toHaveBeenCalledWith(monitor, { proxyUrl: "http://proxy.example.com:8080" });
 		});
 
 		it("still produces a check when the resolver returns undefined", async () => {
@@ -225,7 +225,7 @@ describe("WorkerPipeline", () => {
 
 			const result = await pipeline.produce(monitor);
 
-			expect(deps.networkService.requestStatus).toHaveBeenCalledWith(monitor, { proxyUrl: undefined });
+			expect(deps.providerRegistry.probe).toHaveBeenCalledWith(monitor, { proxyUrl: undefined });
 			expect(result).toEqual({ status: expect.objectContaining({ monitorId: "m1" }), check: { id: "check-1" } });
 		});
 
@@ -240,7 +240,7 @@ describe("WorkerPipeline", () => {
 			await pipeline.produce(monitor);
 
 			expect(deps.monitorsRepository.findDockerTlsKeyById).toHaveBeenCalledWith("m1");
-			expect(deps.networkService.requestStatus).toHaveBeenCalledWith(monitor, { proxyUrl: undefined, dockerTlsKey: "v1.abc123.iv.tag.data" });
+			expect(deps.providerRegistry.probe).toHaveBeenCalledWith(monitor, { proxyUrl: undefined, dockerTlsKey: "v1.abc123.iv.tag.data" });
 		});
 
 		it("does not fetch a key for a docker monitor without one set", async () => {
@@ -250,7 +250,7 @@ describe("WorkerPipeline", () => {
 			await pipeline.produce(monitor);
 
 			expect(deps.monitorsRepository.findDockerTlsKeyById).not.toHaveBeenCalled();
-			expect(deps.networkService.requestStatus).toHaveBeenCalledWith(monitor, { proxyUrl: undefined, dockerTlsKey: undefined });
+			expect(deps.providerRegistry.probe).toHaveBeenCalledWith(monitor, { proxyUrl: undefined, dockerTlsKey: undefined });
 		});
 
 		it("does not fetch a key for non-docker monitors even if the flag is set", async () => {
@@ -268,14 +268,14 @@ describe("WorkerPipeline", () => {
 			await pipeline.produce(monitor);
 
 			expect(deps.monitorsRepository.findDockerTlsKeyById).toHaveBeenCalledWith("m1");
-			expect(deps.networkService.requestStatus).toHaveBeenCalledWith(monitor, { proxyUrl: undefined, dockerTlsKey: undefined });
+			expect(deps.providerRegistry.probe).toHaveBeenCalledWith(monitor, { proxyUrl: undefined, dockerTlsKey: undefined });
 		});
 
 		// ── acquire / record ──────────────────────────────────────────────────
 
 		it("throws when the network response is null", async () => {
 			const { pipeline } = createPipeline({
-				networkService: { requestStatus: jest.fn<any>().mockResolvedValue(null) },
+				providerRegistry: { probe: jest.fn<any>().mockResolvedValue(null) },
 			});
 
 			await expect(pipeline.produce(makeMonitor())).rejects.toThrow("No network response");
@@ -297,7 +297,7 @@ describe("WorkerPipeline", () => {
 			const status = { monitorId: "m1", status: false, code: 500, message: "Error" };
 			const check = { id: "check-1" };
 			const { pipeline, deps } = createPipeline({
-				networkService: { requestStatus: jest.fn<any>().mockResolvedValue(status) },
+				providerRegistry: { probe: jest.fn<any>().mockResolvedValue(status) },
 				checkService: { toCheck: jest.fn<any>().mockReturnValue(check) },
 			});
 
@@ -311,7 +311,7 @@ describe("WorkerPipeline", () => {
 			const status = { type: "docker", monitorId: "m1", teamId: "team", status: true, code: 200, message: "OK", payload: {} };
 			const dockerLogs = [{ id: "docker-log-1" }, { id: "docker-log-2" }];
 			const { pipeline, deps } = createPipeline({
-				networkService: { requestStatus: jest.fn<any>().mockResolvedValue(status) },
+				providerRegistry: { probe: jest.fn<any>().mockResolvedValue(status) },
 				dockerLogsService: { buildDockerLogs: jest.fn<any>().mockResolvedValue(dockerLogs) },
 			});
 
@@ -354,7 +354,7 @@ describe("WorkerPipeline", () => {
 			]) {
 				const check: Record<string, unknown> = { id: "check-1" };
 				const { pipeline, deps } = createPipeline({
-					networkService: { requestStatus: jest.fn<any>().mockResolvedValue(status) },
+					providerRegistry: { probe: jest.fn<any>().mockResolvedValue(status) },
 					checkService: { toCheck: jest.fn<any>().mockReturnValue(check) },
 					egressService: { assessAfterFailure: jest.fn<any>().mockResolvedValue("degraded") },
 				});
@@ -370,7 +370,7 @@ describe("WorkerPipeline", () => {
 		it("consults egress for a timeout or network error", async () => {
 			const check: Record<string, unknown> = { id: "check-1" };
 			const { pipeline, deps } = createPipeline({
-				networkService: { requestStatus: jest.fn<any>().mockResolvedValue(failingStatus) },
+				providerRegistry: { probe: jest.fn<any>().mockResolvedValue(failingStatus) },
 				checkService: { toCheck: jest.fn<any>().mockReturnValue(check) },
 				egressService: { assessAfterFailure: jest.fn<any>().mockResolvedValue("degraded") },
 			});
@@ -385,7 +385,7 @@ describe("WorkerPipeline", () => {
 			for (const url of ["unix:///var/run/docker.sock", "/var/run/docker.sock"]) {
 				const check: Record<string, unknown> = { id: "check-1" };
 				const { pipeline, deps } = createPipeline({
-					networkService: { requestStatus: jest.fn<any>().mockResolvedValue({ ...failingStatus, type: "docker" }) },
+					providerRegistry: { probe: jest.fn<any>().mockResolvedValue({ ...failingStatus, type: "docker" }) },
 					checkService: { toCheck: jest.fn<any>().mockReturnValue(check) },
 					egressService: { assessAfterFailure: jest.fn<any>().mockResolvedValue("degraded") },
 				});
@@ -406,7 +406,7 @@ describe("WorkerPipeline", () => {
 			]) {
 				const check: Record<string, unknown> = { id: "check-1" };
 				const { pipeline, deps } = createPipeline({
-					networkService: { requestStatus: jest.fn<any>().mockResolvedValue({ ...failingStatus, type: monitor.type }) },
+					providerRegistry: { probe: jest.fn<any>().mockResolvedValue({ ...failingStatus, type: monitor.type }) },
 					checkService: { toCheck: jest.fn<any>().mockReturnValue(check) },
 					egressService: { assessAfterFailure: jest.fn<any>().mockResolvedValue("degraded") },
 				});
@@ -424,7 +424,7 @@ describe("WorkerPipeline", () => {
 			// them from a connection failure.
 			const check: Record<string, unknown> = { id: "check-1" };
 			const { pipeline, deps } = createPipeline({
-				networkService: { requestStatus: jest.fn<any>().mockResolvedValue({ ...failingStatus, peerResponded: true }) },
+				providerRegistry: { probe: jest.fn<any>().mockResolvedValue({ ...failingStatus, peerResponded: true }) },
 				checkService: { toCheck: jest.fn<any>().mockReturnValue(check) },
 				egressService: { assessAfterFailure: jest.fn<any>().mockResolvedValue("degraded") },
 			});
@@ -438,7 +438,7 @@ describe("WorkerPipeline", () => {
 		it("consults egress when the provider reports that nothing answered, despite an HTTP-shaped code", async () => {
 			const check: Record<string, unknown> = { id: "check-1" };
 			const { pipeline, deps } = createPipeline({
-				networkService: { requestStatus: jest.fn<any>().mockResolvedValue({ ...failingStatus, code: 503, peerResponded: false }) },
+				providerRegistry: { probe: jest.fn<any>().mockResolvedValue({ ...failingStatus, code: 503, peerResponded: false }) },
 				checkService: { toCheck: jest.fn<any>().mockReturnValue(check) },
 				egressService: { assessAfterFailure: jest.fn<any>().mockResolvedValue("degraded") },
 			});
@@ -453,7 +453,7 @@ describe("WorkerPipeline", () => {
 		it("flags a failing check as degraded when the egress service reports degraded egress", async () => {
 			const check: Record<string, unknown> = { id: "check-1" };
 			const { pipeline, deps } = createPipeline({
-				networkService: { requestStatus: jest.fn<any>().mockResolvedValue(failingStatus) },
+				providerRegistry: { probe: jest.fn<any>().mockResolvedValue(failingStatus) },
 				checkService: { toCheck: jest.fn<any>().mockReturnValue(check) },
 				egressService: { assessAfterFailure: jest.fn<any>().mockResolvedValue("degraded") },
 			});
@@ -472,7 +472,7 @@ describe("WorkerPipeline", () => {
 
 		it("clears the status window on the first degraded check of a spell", async () => {
 			const { pipeline, deps } = createPipeline({
-				networkService: { requestStatus: jest.fn<any>().mockResolvedValue(failingStatus) },
+				providerRegistry: { probe: jest.fn<any>().mockResolvedValue(failingStatus) },
 				egressService: { assessAfterFailure: jest.fn<any>().mockResolvedValue("degraded") },
 			});
 
@@ -483,7 +483,7 @@ describe("WorkerPipeline", () => {
 
 		it("does not re-write the status window for later degraded checks in the same spell", async () => {
 			const { pipeline, deps } = createPipeline({
-				networkService: { requestStatus: jest.fn<any>().mockResolvedValue(failingStatus) },
+				providerRegistry: { probe: jest.fn<any>().mockResolvedValue(failingStatus) },
 				egressService: { assessAfterFailure: jest.fn<any>().mockResolvedValue("degraded") },
 			});
 
@@ -494,7 +494,7 @@ describe("WorkerPipeline", () => {
 
 		it("leaves the status window alone when the probe found egress fine", async () => {
 			const { pipeline, deps } = createPipeline({
-				networkService: { requestStatus: jest.fn<any>().mockResolvedValue(failingStatus) },
+				providerRegistry: { probe: jest.fn<any>().mockResolvedValue(failingStatus) },
 				egressService: { assessAfterFailure: jest.fn<any>().mockResolvedValue("ok") },
 			});
 
@@ -506,7 +506,7 @@ describe("WorkerPipeline", () => {
 		it("flags a failing check as ok when the probe found egress fine", async () => {
 			const check: Record<string, unknown> = { id: "check-1" };
 			const { pipeline } = createPipeline({
-				networkService: { requestStatus: jest.fn<any>().mockResolvedValue(failingStatus) },
+				providerRegistry: { probe: jest.fn<any>().mockResolvedValue(failingStatus) },
 				checkService: { toCheck: jest.fn<any>().mockReturnValue(check) },
 				egressService: { assessAfterFailure: jest.fn<any>().mockResolvedValue("ok") },
 			});
@@ -519,7 +519,7 @@ describe("WorkerPipeline", () => {
 		it("leaves the field unset on a failing check when the egress check is disabled", async () => {
 			const check: Record<string, unknown> = { id: "check-1" };
 			const { pipeline, deps } = createPipeline({
-				networkService: { requestStatus: jest.fn<any>().mockResolvedValue(failingStatus) },
+				providerRegistry: { probe: jest.fn<any>().mockResolvedValue(failingStatus) },
 				checkService: { toCheck: jest.fn<any>().mockReturnValue(check) },
 			});
 

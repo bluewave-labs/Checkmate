@@ -1,7 +1,7 @@
-import { IStatusProvider } from "@/service/network/IStatusProvider.js";
+import { IStatusProvider } from "@/service/networkProviders/IStatusProvider.js";
 import { HardwareStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
-import { HttpProvider } from "@/service/network/HttpProvider.js";
+import { HttpProvider } from "@/service/networkProviders/HttpProvider.js";
 import { AppError } from "@/utils/AppError.js";
 
 export class HardwareProvider implements IStatusProvider<HardwareStatusPayload> {

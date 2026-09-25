@@ -1,4 +1,4 @@
-import { IStatusProvider } from "@/service/network/IStatusProvider.js";
+import { IStatusProvider } from "@/service/networkProviders/IStatusProvider.js";
 import { GameStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { GameDig } from "gamedig";

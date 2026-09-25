@@ -1,5 +1,5 @@
 import { describe, expect, it, jest, beforeEach, afterEach } from "@jest/globals";
-import { WebSocketProvider } from "../../../../src/service/network/WebSocketProvider.ts";
+import { WebSocketProvider } from "../../../../src/service/networkProviders/WebSocketProvider.ts";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
 import { NETWORK_ERROR } from "../../../../src/types/network.ts";
 import type { Monitor } from "../../../../src/domain/monitors/monitor.type.ts";

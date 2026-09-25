@@ -1,8 +1,8 @@
-import { IStatusProvider } from "@/service/network/IStatusProvider.js";
+import { IStatusProvider } from "@/service/networkProviders/IStatusProvider.js";
 import { PortStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { AppError } from "@/utils/AppError.js";
-import { timeRequest, peerAnsweredFromError } from "@/service/network/utils.js";
+import { timeRequest, peerAnsweredFromError } from "@/service/networkProviders/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import * as net from "net";
 type NetType = typeof net;

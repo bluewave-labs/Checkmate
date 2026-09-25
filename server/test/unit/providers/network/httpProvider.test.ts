@@ -39,7 +39,7 @@ jest.unstable_mockModule("got", () => ({
 	},
 }));
 
-const { HttpProvider } = await import("../../../../src/service/network/HttpProvider.ts");
+const { HttpProvider } = await import("../../../../src/service/networkProviders/HttpProvider.ts");
 const gotModule = await import("got");
 const { HTTPError, RequestError } = gotModule;
 

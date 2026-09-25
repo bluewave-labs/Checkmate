@@ -1,8 +1,8 @@
-import { IStatusProvider } from "@/service/network/IStatusProvider.js";
+import { IStatusProvider } from "@/service/networkProviders/IStatusProvider.js";
 import { GrpcStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { AppError } from "@/utils/AppError.js";
-import { timeRequest } from "@/service/network/utils.js";
+import { timeRequest } from "@/service/networkProviders/utils.js";
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 
