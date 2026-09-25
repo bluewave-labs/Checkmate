@@ -54,7 +54,7 @@ const initialMode: ThemeMode = window?.matchMedia?.("(prefers-color-scheme: dark
 
 const initialState: UIState = {
 	dashboard: {
-		rowsPerPage: 10,
+		rowsPerPage: 100,
 	},
 	monitors: {
 		rowsPerPage: 10,
