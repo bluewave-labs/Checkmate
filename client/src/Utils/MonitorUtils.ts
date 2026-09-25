@@ -1,4 +1,5 @@
 import type { MonitorStatus, MonitorType } from "@/Types/Monitor";
+import type { SortOrder } from "@/Types/Query";
 import type { PaletteKey } from "@/Utils/Theme/Theme";
 import type { ValueType } from "@/Components/design-elements/StatusLabel";
 import {
@@ -9,6 +10,16 @@ import {
 	type DockerLog,
 	type DockerLogLine,
 } from "@/Types/Check";
+
+export const getNextMonitorSort = (
+	field: string,
+	sortField: string,
+	sortOrder: SortOrder
+): { field: string; order: SortOrder } => {
+	if (field !== sortField) return { field, order: "asc" };
+	if (sortOrder === "asc") return { field, order: "desc" };
+	return { field: "", order: "asc" };
+};
 
 export const getMonitorPath = (type: MonitorType): string => {
 	const pathMap: Record<MonitorType, string> = {
