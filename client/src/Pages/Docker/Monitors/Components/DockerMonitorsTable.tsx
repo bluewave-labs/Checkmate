@@ -21,6 +21,7 @@ import { usePost } from "@/Hooks/UseApi";
 
 import type { Monitor } from "@/Types/Monitor";
 import type { Tag } from "@/Types/Tag";
+import type { SortOrder } from "@/Types/Query";
 import type { DockerContainerSummary } from "@/Types/Check";
 import { Checkbox } from "@/Components/inputs";
 
@@ -35,9 +36,8 @@ interface DockerMonitorsTableProps {
 	refetch: () => void;
 	setSelectedMonitor: (monitor: Monitor | null) => void;
 	sortField: string;
-	setSortField: (field: string) => void;
-	sortOrder: "asc" | "desc";
-	setSortOrder: (order: "asc" | "desc") => void;
+	sortOrder: SortOrder;
+	setSort: (field: string, order: SortOrder) => void;
 	count: number;
 	page: number;
 	setPage: (page: number) => void;
@@ -53,9 +53,8 @@ export const DockerMonitorsTable = ({
 	refetch,
 	setSelectedMonitor,
 	sortField,
-	setSortField,
 	sortOrder,
-	setSortOrder,
+	setSort,
 	count,
 	page,
 	setPage,
@@ -107,9 +106,7 @@ export const DockerMonitorsTable = ({
 		e.preventDefault();
 		e.stopPropagation();
 		const nextSort = getNextMonitorSort(field, sortField, sortOrder);
-		setSortField(nextSort.field);
-		setSortOrder(nextSort.order);
-		refetch();
+		setSort(nextSort.field, nextSort.order);
 	};
 
 	const getActions = (monitor: Monitor): ActionMenuItem[] => {

@@ -24,6 +24,7 @@ import type { ActionMenuItem } from "@/Components/actions-menu";
 import type { RootState } from "@/Types/state";
 import { Checkbox } from "@/Components/inputs";
 import type { Tag } from "@/Types/Tag";
+import type { SortOrder } from "@/Types/Query";
 import { SPACING } from "@/Utils/Theme/constants";
 import { getNextMonitorSort, getUptimePercentageColor } from "@/Utils/MonitorUtils";
 import { formatPercentage } from "@/Utils/FormatUtils";
@@ -34,9 +35,8 @@ interface MonitorTableProps {
 	refetch: () => void;
 	setSelectedMonitor: (monitor: Monitor | null) => void;
 	sortField: string;
-	setSortField: (field: string) => void;
-	sortOrder: "asc" | "desc";
-	setSortOrder: (order: "asc" | "desc") => void;
+	sortOrder: SortOrder;
+	setSort: (field: string, order: SortOrder) => void;
 	count: number;
 	page: number;
 	setPage: (page: number) => void;
@@ -52,9 +52,8 @@ export const MonitorTable = ({
 	refetch,
 	setSelectedMonitor,
 	sortField,
-	setSortField,
 	sortOrder,
-	setSortOrder,
+	setSort,
 	count,
 	page,
 	setPage,
@@ -92,9 +91,7 @@ export const MonitorTable = ({
 		e.preventDefault();
 		e.stopPropagation();
 		const nextSort = getNextMonitorSort(field, sortField, sortOrder);
-		setSortField(nextSort.field);
-		setSortOrder(nextSort.order);
-		refetch();
+		setSort(nextSort.field, nextSort.order);
 	};
 
 	const isBrowserOpenable = (monitor: Monitor): boolean => {

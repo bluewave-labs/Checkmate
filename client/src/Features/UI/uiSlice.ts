@@ -1,4 +1,5 @@
 import { dashboardCardKeys, type DashboardCardKey } from "@/Types/Dashboard";
+import type { SortOrder } from "@/Types/Query";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 type ThemeMode = "light" | "dark";
@@ -16,7 +17,7 @@ type TableName =
 interface TableState {
 	rowsPerPage: number;
 	sortField?: string;
-	sortOrder?: "asc" | "desc";
+	sortOrder?: SortOrder;
 }
 
 interface SidebarState {
@@ -96,19 +97,13 @@ const uiSlice = createSlice({
 			const { table, value } = action.payload;
 			state[table].rowsPerPage = value;
 		},
-		setTableSortField: (
+		setTableSort: (
 			state,
-			action: PayloadAction<{ table: TableName; value: string }>
+			action: PayloadAction<{ table: TableName; field: string; order: SortOrder }>
 		) => {
-			const { table, value } = action.payload;
-			state[table].sortField = value;
-		},
-		setTableSortOrder: (
-			state,
-			action: PayloadAction<{ table: TableName; value: "asc" | "desc" }>
-		) => {
-			const { table, value } = action.payload;
-			state[table].sortOrder = value;
+			const { table, field, order } = action.payload;
+			state[table].sortField = field;
+			state[table].sortOrder = order;
 		},
 		toggleSidebar: (state) => {
 			state.sidebar.collapsed = !state.sidebar.collapsed;
@@ -147,8 +142,7 @@ export type { UIState, ThemeMode, ChartType, TableName };
 export default uiSlice.reducer;
 export const {
 	setRowsPerPage,
-	setTableSortField,
-	setTableSortOrder,
+	setTableSort,
 	toggleSidebar,
 	setCollapsed,
 	setMode,

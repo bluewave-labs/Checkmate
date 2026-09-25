@@ -1,9 +1,4 @@
-import {
-	setRowsPerPage,
-	setTableSortField,
-	setTableSortOrder,
-	type TableName,
-} from "@/Features/UI/uiSlice";
+import { setRowsPerPage, setTableSort, type TableName } from "@/Features/UI/uiSlice";
 import { useDelete, useGet } from "@/Hooks/UseApi";
 import { useBulkMonitorActions } from "@/Hooks/useBulkMonitorActions";
 import useDebounce from "@/Hooks/useDebounce";
@@ -15,6 +10,7 @@ import {
 	type MonitorType,
 } from "@/Types/Monitor";
 import type { Tag } from "@/Types/Tag";
+import type { SortOrder } from "@/Types/Query";
 import { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -140,13 +136,8 @@ export const useMonitorListController = (config: MonitorListConfig) => {
 		setPage(0);
 	};
 
-	const setSortField = (value: string) => {
-		dispatch(setTableSortField({ value, table: config.rowsPerPageTable }));
-		setPage(0);
-	};
-
-	const setSortOrder = (value: "asc" | "desc") => {
-		dispatch(setTableSortOrder({ value, table: config.rowsPerPageTable }));
+	const setSort = (field: string, order: SortOrder) => {
+		dispatch(setTableSort({ field, order, table: config.rowsPerPageTable }));
 		setPage(0);
 	};
 
@@ -204,9 +195,8 @@ export const useMonitorListController = (config: MonitorListConfig) => {
 		rowsPerPage,
 		handleSetRowsPerPage,
 		sortField,
-		setSortField,
 		sortOrder,
-		setSortOrder,
+		setSort,
 
 		// Delete
 		selectedMonitor,
