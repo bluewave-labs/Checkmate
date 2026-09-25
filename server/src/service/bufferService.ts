@@ -55,42 +55,15 @@ export class BufferService implements IBufferService {
 	}
 
 	addToBuffer(check: Check) {
-		try {
-			this.buffer.push(check);
-		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
-				service: this.SERVICE_NAME,
-				method: "addToBuffer",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-		}
+		this.buffer.push(check);
 	}
 
 	addGeoCheckToBuffer(geoCheck: GeoCheck) {
-		try {
-			this.geoBuffer.push(geoCheck);
-		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
-				service: this.SERVICE_NAME,
-				method: "addGeoCheckToBuffer",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-		}
+		this.geoBuffer.push(geoCheck);
 	}
 
 	addDockerLogToBuffer(dockerLog: DockerLog): void {
-		try {
-			this.dockerLogBuffer.push(dockerLog);
-		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
-				service: this.SERVICE_NAME,
-				method: "addDockerLogToBuffer",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-		}
+		this.dockerLogBuffer.push(dockerLog);
 	}
 
 	scheduleNextFlush() {
