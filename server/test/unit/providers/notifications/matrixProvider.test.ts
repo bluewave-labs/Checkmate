@@ -105,6 +105,14 @@ describe("MatrixProvider", () => {
 			expect(body.formatted_body).toContain("View Incident");
 		});
 
+		it("links the incident to the monitor's incidents page", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessageWithIncident());
+			const body = mockGotPut.mock.calls[0][1].json;
+			expect(body.body).toContain("View Incident: https://app.example.com/incidents/mon-1");
+			expect(body.formatted_body).toContain('href="https://app.example.com/incidents/mon-1"');
+		});
+
 		it("omits optional sections when not present", async () => {
 			const { provider } = createProvider();
 			const msg = makeMessage();

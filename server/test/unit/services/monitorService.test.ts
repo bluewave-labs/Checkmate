@@ -2160,4 +2160,63 @@ describe("MonitorService — Docker TLS credentials", () => {
 			expect(monitorsRepository.updateById).not.toHaveBeenCalled();
 		});
 	});
+
+	describe("editMonitor for Capture hosts", () => {
+		const captureUrl = "http://capture:59232/api/v1/metrics/docker";
+
+		it("rejects a url change to Capture with a 422 when no secret is stored or provided", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker", url: "unix:///var/run/docker.sock" }));
+			const { service } = createService({ monitorsRepository });
+
+			await expectAppError(
+				() => service.editMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID, body: { type: "docker", url: captureUrl } }),
+				422,
+				/Capture API secret is required/
+			);
+			expect(monitorsRepository.updateById).not.toHaveBeenCalled();
+		});
+
+		it("keeps the stored secret and disables logs when only the url changes to Capture", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker", secret: "stored-secret", dockerLogsEnabled: true }));
+			(monitorsRepository.updateById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			const { service } = createService({ monitorsRepository });
+
+			await service.editMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID, body: { type: "docker", url: captureUrl } });
+
+			const [, , patch] = (monitorsRepository.updateById as jest.Mock).mock.calls[0] as [string, string, Record<string, unknown>];
+			expect(patch).not.toHaveProperty("secret");
+			expect(patch.dockerLogsEnabled).toBe(false);
+		});
+
+		it("rejects a blank secret against a stored Capture url when the body omits the url", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker", url: captureUrl, secret: "stored-secret" }));
+			const { service } = createService({ monitorsRepository });
+
+			await expectAppError(
+				() => service.editMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID, body: { type: "docker", secret: " " } }),
+				422,
+				/Capture API secret is required/
+			);
+			expect(monitorsRepository.updateById).not.toHaveBeenCalled();
+		});
+
+		it("clears the secret without reading the stored monitor when the url changes to a socket", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.updateById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			const { service } = createService({ monitorsRepository });
+
+			await service.editMonitor({
+				teamId: TEAM_ID,
+				monitorId: MONITOR_ID,
+				body: { type: "docker", url: "unix:///var/run/docker.sock", secret: "stale-capture-secret" },
+			});
+
+			expect(monitorsRepository.findById).not.toHaveBeenCalled();
+			const [, , patch] = (monitorsRepository.updateById as jest.Mock).mock.calls[0] as [string, string, Record<string, unknown>];
+			expect(patch.secret).toBe("");
+		});
+	});
 });

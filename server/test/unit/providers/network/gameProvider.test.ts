@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { GameProvider } from "../../../../src/service/network/GameProvider.ts";
+import { GameProvider } from "../../../../src/service/networkProviders/GameProvider.ts";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
 import { NETWORK_ERROR } from "../../../../src/types/network.ts";

@@ -15,7 +15,7 @@ import {
 import { DateRanges, SortOrders } from "@/types/query.js";
 import { DockerContainerStates, DockerHealthStatuses, DockerLogStreams, DockerPortProtocols } from "@/domain/docker/docker.type.js";
 import { DOCKER_LOG_PAGE_DEFAULT, DOCKER_LOG_PAGE_MAX } from "@/domain/docker/docker-log.type.js";
-import { isDockerSocketUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
+import { isCaptureDockerUrl, isDockerSocketUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
 import { X509Certificate } from "node:crypto";
 import { keyMatchesCertificate, parseCertificates, parsePrivateKey } from "@/utils/pem.js";
 
@@ -154,13 +154,19 @@ const refineProxySelection = (body: { proxyMode?: string; proxyId?: string }, ct
 
 const refineDockerUrl = (data: { type?: string; url?: string }, ctx: z.RefinementCtx) => {
 	if (data.type !== "docker" || data.url === undefined) return;
-	if (!isDockerSocketUrl(data.url) && !isDockerTlsUrl(data.url)) {
+	if (!isDockerSocketUrl(data.url) && !isDockerTlsUrl(data.url) && !isCaptureDockerUrl(data.url)) {
 		ctx.addIssue({
 			code: "custom",
 			path: ["url"],
-			message: "Docker host must be unix:///path, an absolute socket path, or tcp://host[:port]",
+			message: "Docker host must be a socket path, a TLS daemon URL, or a Capture /metrics/docker endpoint",
 		});
 	}
+};
+
+// Edits are checked in the monitor service against the stored secret, since the body may omit either the url or the secret.
+const refineCaptureSecret = (data: { type?: string; url?: string; secret?: string }, ctx: z.RefinementCtx) => {
+	if (data.type !== "docker" || !isCaptureDockerUrl(data.url)) return;
+	if (!data.secret?.trim()) ctx.addIssue({ code: "custom", path: ["secret"], message: "Capture API secret is required" });
 };
 
 type DockerTlsFields = {
@@ -244,6 +250,8 @@ export const createMonitorBodyValidation = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 		geoCheckInterval: z.number().min(300000).optional(),
 		dockerLogsEnabled: z.boolean().optional(),
+		dockerAlertOnStopped: z.boolean().optional(),
+		dockerAlertOnUnhealthy: z.boolean().optional(),
 		dockerTlsCa: z.union([z.string(), z.literal("")]).optional(),
 		dockerTlsCert: z.union([z.string(), z.literal("")]).optional(),
 		dockerTlsKey: z.union([z.string(), z.literal("")]).optional(),
@@ -256,6 +264,7 @@ export const createMonitorBodyValidation = z
 	.superRefine(refineRegexPattern)
 	.superRefine(refineProxySelection)
 	.superRefine(refineDockerUrl)
+	.superRefine(refineCaptureSecret)
 	.superRefine(refineDockerTls("create"));
 
 export const editMonitorBodyValidation = z
@@ -294,6 +303,8 @@ export const editMonitorBodyValidation = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 		geoCheckInterval: z.number().min(300000).optional(),
 		dockerLogsEnabled: z.boolean().optional(),
+		dockerAlertOnStopped: z.boolean().optional(),
+		dockerAlertOnUnhealthy: z.boolean().optional(),
 		dockerTlsCa: z.union([z.string(), z.literal("")]).optional(),
 		dockerTlsCert: z.union([z.string(), z.literal("")]).optional(),
 		dockerTlsKey: z.union([z.string(), z.literal("")]).optional(),
@@ -375,6 +386,8 @@ const importedMonitorSchema = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)).default([]),
 		geoCheckInterval: z.number().min(300000).default(300000),
 		dockerLogsEnabled: z.boolean().default(false),
+		dockerAlertOnStopped: z.boolean().default(false),
+		dockerAlertOnUnhealthy: z.boolean().default(false),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 		createdAt: z.string().optional(),
@@ -385,7 +398,8 @@ const importedMonitorSchema = z
 	.superRefine(refineHeadMatching)
 	.superRefine(refineRegexPattern)
 	.superRefine(refineProxySelection)
-	.superRefine(refineDockerUrl);
+	.superRefine(refineDockerUrl)
+	.superRefine(refineCaptureSecret);
 
 export const importMonitorsBodyValidation = z.object({
 	monitors: z.array(importedMonitorSchema).min(1, "At least one monitor is required"),
@@ -465,6 +479,8 @@ export const monitorResponseSchema = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)),
 		geoCheckInterval: z.number(),
 		dockerLogsEnabled: z.boolean(),
+		dockerAlertOnStopped: z.boolean(),
+		dockerAlertOnUnhealthy: z.boolean(),
 		dockerTlsCa: z.string().optional(),
 		dockerTlsCert: z.string().optional(),
 		dockerTlsKeySet: z.boolean().optional(),

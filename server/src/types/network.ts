@@ -10,7 +10,7 @@ import type {
 	ILighthouseAudit,
 } from "@/domain/checks/check.type.js";
 import { DockerContainerInfo, DockerContainerLogs, DockerContainerSummary } from "@/domain/docker/docker.type.js";
-import type { DnsRecordType, Monitor, MonitorMatchMethod, MonitorStatus, MonitorType } from "@/domain/monitors/monitor.type.js";
+import type { DnsRecordType, HardwareBreaches, Monitor, MonitorMatchMethod, MonitorStatus, MonitorType } from "@/domain/monitors/monitor.type.js";
 
 import type { QueryResult } from "gamedig";
 
@@ -33,6 +33,12 @@ export interface MonitorStatusResponse<
 	status: boolean;
 	code: number;
 	message: string;
+	// Whether the peer answered, for failures where `code` alone cannot say. `code` carries an HTTP status for
+	// providers that speak HTTP, but DNS and gRPC report their own codes, and gRPC reuses NETWORK_ERROR for a
+	// server that replied NOT_SERVING. Providers that can tell the two apart set this; the rest leave it unset
+	// and the HTTP-status heuristic stands. Consumed by the egress check, which must only blame the instance's
+	// own connectivity when nothing answered.
+	peerResponded?: boolean;
 	responseTime?: number;
 	payload?: T | string | null;
 	timings?: GotTimings;
@@ -99,6 +105,34 @@ export interface HardwareStatusPayload {
 
 // Docker host monitoring
 
+export interface CaptureDockerContainer {
+	container_id: string;
+	container_name: string;
+	status: string;
+	health?: {
+		healthy: boolean;
+		source: string;
+	} | null;
+	running: boolean;
+	base_image: string;
+	exposed_ports?: Array<{
+		port: string;
+		protocol: string;
+	}>;
+	started_at?: number;
+	stats?: {
+		cpu_percent: number;
+		memory_usage: number;
+		memory_limit: number;
+		memory_percent: number;
+	} | null;
+}
+
+export interface CaptureDockerStatusPayload {
+	data: CaptureDockerContainer[] | null;
+	errors: CheckErrorInfo[] | null;
+}
+
 export interface DockerStatusPayload {
 	containers: DockerContainerInfo[];
 	summary: DockerContainerSummary;
@@ -148,14 +182,7 @@ export type StatusChangeResult = {
 	monitor: Monitor;
 	statusChanged: boolean;
 	prevStatus: MonitorStatus;
-	code: number;
-	timestamp: number;
-	thresholdBreaches?: {
-		cpu: boolean;
-		memory: boolean;
-		disk: boolean;
-		temp: boolean;
-	};
+	thresholdBreaches?: HardwareBreaches;
 };
 
 export type MonitorStatusResponseOverrides<T> = Partial<Omit<MonitorStatusResponse<T>, "monitorId" | "teamId" | "type">>;

@@ -1,17 +1,24 @@
-import { Monitor } from "@/domain/monitors/monitor.type.js";
+import { HardwareBreaches, Monitor } from "@/domain/monitors/monitor.type.js";
 import { Check } from "@/domain/checks/check.type.js";
-import { JobType } from "@/domain/jobs/job.type.js";
-import { MonitorPayloadMap, MonitorStatusResponse, StatusChangeResult } from "@/types/network.js";
-import { MonitorActionDecision } from "@/worker/worker.helper.js";
+import { Job, JobType } from "@/domain/jobs/job.type.js";
 import { QueueWorker } from "@/domain/queue-workers/queue-worker.type.js";
 import type { QueueMode } from "@/domain/app-settings/app-settings.type.js";
 
+export type JobHandler = (job: Job) => Promise<void>;
+export type JobHandlers = Record<JobType, JobHandler>;
+
+export const MonitorTransitions = ["status_down", "status_up", "threshold_breach", "threshold_resolved"] as const;
+export type MonitorTransition = (typeof MonitorTransitions)[number];
+
+export interface MonitorActionDecision {
+	transition: MonitorTransition | null;
+	thresholdBreaches?: HardwareBreaches;
+}
+
 export type MonitorEvaluation = {
 	monitor: Monitor;
-	status: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>; // raw result from networkService.requestStatus
 	check: Check;
-	statusChange: StatusChangeResult; // from statusService.updateMonitorStatus
-	decision: MonitorActionDecision; // from MonitorStatusPolicy
+	decision: MonitorActionDecision;
 };
 
 export type WorkerJobFailure = {

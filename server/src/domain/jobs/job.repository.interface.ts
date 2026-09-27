@@ -1,4 +1,4 @@
-import { Job, JobSeed, JobType } from "@/domain/jobs/job.type.js";
+import { Job, JobSeed, JobType, PendingCheck } from "@/domain/jobs/job.type.js";
 
 export type JobPageQuery = {
 	page?: number;
@@ -32,9 +32,12 @@ export interface IJobsRepository {
 	recordOneShot(id: string, now: number): Promise<boolean>;
 
 	// ********************
-	// Hand off to evaluator // This is accomplished by creating an "evaluation" type job
+	// Hand off to evaluator // This is accomplished pushing newly inserted Check IDs onto the evaluation row
 	// ********************
-	upsertEvaluate(monitorId: string, now: number): Promise<boolean>;
+	upsertEvaluate(monitorId: string, pending: PendingCheck[], now: number): Promise<boolean>;
+
+	// Removes processed checks from the evaluate row. Returns false when this worker no longer holds the lease.
+	pullEvaluated(id: string, checkIds: string[]): Promise<boolean>;
 
 	// ********************
 	// Job CRUD

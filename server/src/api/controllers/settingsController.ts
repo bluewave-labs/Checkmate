@@ -9,6 +9,8 @@ import { IProxiesService } from "@/domain/proxies/proxy.service.js";
 import { IEgressStateService } from "@/domain/egress/egress-state.service.js";
 import { Settings } from "@/domain/app-settings/app-settings.type.js";
 
+const SERVICE_NAME = "SettingsController";
+
 export interface ISettingsController {
 	getAppSettings: RequestHandler;
 	updateAppSettings: RequestHandler;
@@ -119,7 +121,7 @@ class SettingsController implements ISettingsController {
 
 		const html = await this.emailService.buildEmail("testEmailTemplate", context);
 		if (!html) {
-			throw new AppError({ message: "Failed to build email template.", status: 500 });
+			throw new AppError({ message: "Failed to build email template.", status: 500, service: SERVICE_NAME, method: "sendTestEmail" });
 		}
 		let messageId: string;
 		try {
@@ -142,8 +144,11 @@ class SettingsController implements ISettingsController {
 			// Surface the underlying SMTP failure: diagnosing the settings is the whole
 			// point of the test email endpoint.
 			throw new AppError({
-				message: error instanceof Error ? `Failed to send test email. ${error.message}` : "Failed to send test email.",
-				status: 500,
+				message: error instanceof AppError ? error.message : "Failed to send test email.",
+				status: error instanceof AppError ? error.status : 500,
+				service: SERVICE_NAME,
+				method: "sendTestEmail",
+				details: error instanceof AppError ? error.details : undefined,
 			});
 		}
 

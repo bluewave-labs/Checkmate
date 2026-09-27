@@ -1,5 +1,6 @@
 import { Schema, model, Types } from "mongoose";
 import { MonitorTypes, type MonitorType } from "@/domain/monitors/monitor.type.js";
+import { EgressStatuses } from "@/domain/egress/egress.type.js";
 import type {
 	Check,
 	CheckAudits,
@@ -219,6 +220,7 @@ const dockerContainerSchema = new Schema<DockerContainerInfo>(
 		startedAt: { type: String },
 		ports: { type: [dockerContainerPortSchema], default: undefined },
 		mounts: { type: [dockerContainerMountSchema], default: undefined },
+		exitCode: { type: Number, default: undefined },
 	},
 	{ _id: false }
 );
@@ -335,6 +337,11 @@ const CheckSchema = new Schema<CheckDocument>(
 		},
 		containerSummary: {
 			type: containerSummarySchema,
+			default: undefined,
+		},
+		egressStatus: {
+			type: String,
+			enum: EgressStatuses,
 			default: undefined,
 		},
 	},

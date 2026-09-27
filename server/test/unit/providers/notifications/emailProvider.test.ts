@@ -4,6 +4,7 @@ import { createMockLogger } from "../../../helpers/createMockLogger.ts";
 import { makeNotification, makeMessage } from "../../../helpers/notificationMessage.ts";
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
 import type { IEmailService } from "../../../../src/service/emailService.ts";
+import { AppError } from "../../../../src/utils/AppError.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -50,11 +51,29 @@ describe("EmailProvider", () => {
 			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to build test email content" }));
 		});
 
-		it("returns false when sendEmail rejects", async () => {
+		it("returns false and logs the cause when sendEmail rejects with a plain error", async () => {
 			const { provider, emailService, logger } = createProvider();
 			(emailService.sendEmail as jest.Mock).mockRejectedValue(new Error("SMTP auth failed"));
 			expect(await provider.sendTestAlert(makeNotification())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Email test alert failed" }));
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Email test alert failed: SMTP auth failed" }));
+		});
+
+		it("rethrows an AppError from sendEmail so the caller can report the reason", async () => {
+			const { provider, emailService, logger } = createProvider();
+			const error = new AppError({
+				message: "Email is not configured. Set the system email host in settings.",
+				status: 400,
+				details: { cause: "no host" },
+			});
+			(emailService.sendEmail as jest.Mock).mockRejectedValue(error);
+
+			await expect(provider.sendTestAlert(makeNotification())).rejects.toBe(error);
+			expect(logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({
+					message: "Email test alert failed: Email is not configured. Set the system email host in settings.",
+					details: { cause: "no host" },
+				})
+			);
 		});
 	});
 
@@ -84,11 +103,29 @@ describe("EmailProvider", () => {
 
 		// NotificationsService fans providers out through Promise.all, so a failed email must
 		// resolve to false rather than reject and take the other channels down with it.
-		it("returns false when sendEmail rejects", async () => {
+		it("returns false and logs the cause when sendEmail rejects", async () => {
 			const { provider, emailService, logger } = createProvider();
 			(emailService.sendEmail as jest.Mock).mockRejectedValue(new Error("SMTP auth failed"));
 			expect(await provider.sendMessage(makeNotification() as any, makeMessage())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Email notification failed" }));
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Email notification failed: SMTP auth failed" }));
+		});
+
+		it("returns false rather than throwing when sendEmail rejects with an AppError", async () => {
+			const { provider, emailService, logger } = createProvider();
+			(emailService.sendEmail as jest.Mock).mockRejectedValue(
+				new AppError({
+					message: "SMTP verification failed for smtp.example.com:587: 535 Username and Password not accepted",
+					status: 502,
+					details: { cause: "ECONNREFUSED" },
+				})
+			);
+			expect(await provider.sendMessage(makeNotification() as any, makeMessage())).toBe(false);
+			expect(logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({
+					message: "Email notification failed: SMTP verification failed for smtp.example.com:587: 535 Username and Password not accepted",
+					details: { cause: "ECONNREFUSED" },
+				})
+			);
 		});
 
 		it("builds correct subject for monitor_down", async () => {
@@ -113,6 +150,18 @@ describe("EmailProvider", () => {
 			const { provider, emailService } = createProvider();
 			await provider.sendMessage(makeNotification() as any, makeMessage({ type: "threshold_resolved" }));
 			expect(emailService.sendEmail).toHaveBeenCalledWith(expect.anything(), "Monitor Test Monitor thresholds resolved", expect.anything());
+		});
+
+		it("builds correct subject for container_breach", async () => {
+			const { provider, emailService } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessage({ type: "container_breach" }));
+			expect(emailService.sendEmail).toHaveBeenCalledWith(expect.anything(), "Monitor Test Monitor container alert", expect.anything());
+		});
+
+		it("builds correct subject for container_resolved", async () => {
+			const { provider, emailService } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessage({ type: "container_resolved" }));
+			expect(emailService.sendEmail).toHaveBeenCalledWith(expect.anything(), "Monitor Test Monitor containers recovered", expect.anything());
 		});
 
 		it("builds default subject for unknown type", async () => {

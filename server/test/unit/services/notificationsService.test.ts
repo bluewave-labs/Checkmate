@@ -3,8 +3,8 @@ import { NotificationsService } from "../../../src/domain/notifications/notifica
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { Notification } from "../../../src/domain/notifications/notification.type.ts";
-import type { MonitorStatusResponse } from "../../../src/types/network.ts";
-import type { MonitorActionDecision } from "../../../src/worker/worker.helper.ts";
+import type { Check } from "../../../src/domain/checks/check.type.ts";
+import type { MonitorActionDecision } from "../../../src/worker/worker.interface.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -33,7 +33,7 @@ const createSettingsService = (clientHost = "https://app.example.com") => ({
 
 const createMessageBuilder = () => ({
 	buildMessage: jest.fn().mockReturnValue({ type: "monitor_down", content: { title: "Down" } }),
-	extractThresholdBreaches: jest.fn(),
+	buildThresholdBreachMessage: jest.fn(),
 });
 
 const createService = (overrides?: Record<string, unknown>) => {
@@ -122,15 +122,21 @@ const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 	}) as Monitor;
 
 const makeDecision = (overrides?: Partial<MonitorActionDecision>): MonitorActionDecision => ({
-	shouldCreateIncident: false,
-	shouldResolveIncident: false,
-	shouldSendNotification: true,
-	incidentReason: null,
-	notificationReason: "status_change",
+	transition: "status_down",
 	...overrides,
 });
 
-const makeStatusResponse = () => ({ monitorId: "mon-1", status: false, code: 500 }) as unknown as MonitorStatusResponse;
+const makeCheck = (overrides?: Partial<Check>): Check => ({
+	id: "check-1",
+	metadata: { monitorId: "mon-1", teamId: "team-1", type: "http" },
+	status: false,
+	responseTime: 100,
+	statusCode: 500,
+	message: "Internal Server Error",
+	createdAt: "2026-01-01T00:00:00Z",
+	updatedAt: "2026-01-01T00:00:00Z",
+	...overrides,
+});
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 
@@ -138,9 +144,9 @@ describe("NotificationsService", () => {
 	// ── handleNotifications ───────────────────────────────────────────────────
 
 	describe("handleNotifications", () => {
-		it("returns false when shouldSendNotification is false", async () => {
+		it("returns false when there is no transition", async () => {
 			const { service } = createService();
-			const result = await service.handleNotifications(makeMonitor(), makeStatusResponse(), makeDecision({ shouldSendNotification: false }));
+			const result = await service.handleNotifications(makeMonitor(), makeCheck(), makeDecision({ transition: null }));
 			expect(result).toBe(false);
 		});
 
@@ -148,7 +154,7 @@ describe("NotificationsService", () => {
 			const { service, notificationsRepository, emailProvider } = createService();
 			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([makeNotification({ type: "email" })]);
 
-			const result = await service.handleNotifications(makeMonitor(), makeStatusResponse(), makeDecision());
+			const result = await service.handleNotifications(makeMonitor(), makeCheck(), makeDecision());
 
 			expect(result).toBe(true);
 			expect(emailProvider.sendMessage).toHaveBeenCalledTimes(1);
@@ -160,7 +166,7 @@ describe("NotificationsService", () => {
 				const deps = createService();
 				(deps.notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([makeNotification({ type })]);
 
-				await deps.service.handleNotifications(makeMonitor(), makeStatusResponse(), makeDecision());
+				await deps.service.handleNotifications(makeMonitor(), makeCheck(), makeDecision());
 
 				const providerMap: Record<string, ReturnType<typeof createProvider>> = {
 					webhook: deps.webhookProvider,
@@ -183,7 +189,7 @@ describe("NotificationsService", () => {
 			const { service, notificationsRepository, logger } = createService();
 			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([makeNotification({ type: "carrier_pigeon" as any })]);
 
-			const result = await service.handleNotifications(makeMonitor(), makeStatusResponse(), makeDecision());
+			const result = await service.handleNotifications(makeMonitor(), makeCheck(), makeDecision());
 
 			expect(result).toBe(false);
 			expect(logger.warn).toHaveBeenCalledWith(
@@ -197,7 +203,7 @@ describe("NotificationsService", () => {
 			const { service, notificationsRepository, logger } = createService({ notificationMessageBuilder });
 			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([makeNotification()]);
 
-			const result = await service.handleNotifications(makeMonitor(), makeStatusResponse(), makeDecision());
+			const result = await service.handleNotifications(makeMonitor(), makeCheck(), makeDecision());
 
 			expect(result).toBe(false);
 			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Notification message not provided" }));
@@ -207,7 +213,7 @@ describe("NotificationsService", () => {
 			const { service, notificationsRepository } = createService();
 			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([]);
 
-			const result = await service.handleNotifications(makeMonitor({ notifications: undefined as any }), makeStatusResponse(), makeDecision());
+			const result = await service.handleNotifications(makeMonitor({ notifications: undefined as any }), makeCheck(), makeDecision());
 
 			expect(result).toBe(true);
 			expect(notificationsRepository.findNotificationsByIds).toHaveBeenCalledWith([]);
@@ -222,7 +228,7 @@ describe("NotificationsService", () => {
 			emailProvider.sendMessage.mockResolvedValue(true);
 			slackProvider.sendMessage.mockResolvedValue(false);
 
-			const result = await service.handleNotifications(makeMonitor(), makeStatusResponse(), makeDecision());
+			const result = await service.handleNotifications(makeMonitor(), makeCheck(), makeDecision());
 
 			expect(result).toBe(false);
 			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("1 success, 1 failure") }));
@@ -233,7 +239,7 @@ describe("NotificationsService", () => {
 			const { service, notificationsRepository, notificationMessageBuilder } = createService({ settingsService });
 			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([makeNotification()]);
 
-			await service.handleNotifications(makeMonitor(), makeStatusResponse(), makeDecision());
+			await service.handleNotifications(makeMonitor(), makeCheck(), makeDecision());
 
 			expect(notificationMessageBuilder.buildMessage).toHaveBeenCalledWith(
 				expect.anything(),
@@ -310,6 +316,23 @@ describe("NotificationsService", () => {
 
 			const result = await service.testAllNotifications(["notif-1"]);
 			expect(result).toBe(false);
+		});
+
+		it("counts a provider that throws as a failed test and still tests the others", async () => {
+			const { service, notificationsRepository, emailProvider, slackProvider, logger } = createService();
+			emailProvider.sendTestAlert.mockRejectedValue(new Error("Email is not configured. Set the system email host in settings."));
+			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([
+				makeNotification({ type: "email" }),
+				makeNotification({ type: "slack" }),
+			]);
+
+			const result = await service.testAllNotifications(["notif-1", "notif-2"]);
+
+			expect(result).toBe(false);
+			expect(slackProvider.sendTestAlert).toHaveBeenCalled();
+			expect(logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({ message: "Test notification failed: Email is not configured. Set the system email host in settings." })
+			);
 		});
 	});
 

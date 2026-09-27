@@ -7,6 +7,8 @@ import {
 	getStatusPageQueryValidation,
 	imageValidation,
 	resolveStatusPageQueryValidation,
+	getPublicMonitorIncidentsParamValidation,
+	getPublicMonitorIncidentsQueryValidation,
 } from "@/api/validation/statusPageValidation.js";
 import { AppError } from "@/utils/AppError.js";
 import { requireTeamId, requireUserId } from "@/api/controllers/controllerUtils.js";
@@ -17,6 +19,7 @@ export interface IStatusPageController {
 	createStatusPage: RequestHandler;
 	updateStatusPage: RequestHandler;
 	getStatusPageByUrl: RequestHandler;
+	getPublicMonitorIncidents: RequestHandler;
 	resolveStatusPageByDomain: RequestHandler;
 	getStatusPagesByTeamId: RequestHandler;
 	deleteStatusPage: RequestHandler;
@@ -82,6 +85,19 @@ class StatusPageController implements IStatusPageController {
 			success: true,
 			msg: "Status page retrieved successfully",
 			data,
+		});
+	});
+
+	getPublicMonitorIncidents = catchAsync(async (req: Request, res: Response) => {
+		const { url, monitorId } = getPublicMonitorIncidentsParamValidation.parse(req.params);
+		const { date } = getPublicMonitorIncidentsQueryValidation.parse(req.query);
+
+		const incidents = await this.statusPageService.getPublicMonitorIncidents(url, monitorId, date, req.user?.teamId);
+
+		return res.status(200).json({
+			success: true,
+			msg: "Incidents retrieved successfully",
+			data: { incidents },
 		});
 	});
 

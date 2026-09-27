@@ -53,6 +53,7 @@ import type { AppSettingsResponse } from "@/Types/Settings";
 import {
 	stepFieldsFor,
 	monitorStepCount,
+	isCaptureDockerUrl,
 	isDockerTlsUrl,
 	type MonitorFormData,
 } from "@/Validation/monitor";
@@ -360,6 +361,7 @@ const CreateMonitorPage = () => {
 
 	const watchedType = watch("type") as MonitorType;
 	const watchedUrl = watch("url") as string;
+	const isCaptureDocker = watchedType === "docker" && isCaptureDockerUrl(watchedUrl);
 	const watchedMethod = watch("method") as HttpMethod | undefined;
 	const watchedProxyMode = watch("proxyMode") as ProxyMode | undefined;
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
@@ -389,6 +391,13 @@ const CreateMonitorPage = () => {
 			clearErrors();
 		}
 	}, [watchedType, showTypeSelector, reset, clearErrors]);
+
+	// The logs switch is hidden for Capture hosts, so a value left over from a socket host must not be submitted.
+	useEffect(() => {
+		if (isCaptureDocker) {
+			setValue("dockerLogsEnabled", false);
+		}
+	}, [isCaptureDocker, setValue]);
 
 	const generalSettingsConfig = useMemo(
 		() => getGeneralSettingsConfig(watchedType, t),
@@ -618,7 +627,6 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
 				{showStep(0) && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.general.title")}
@@ -719,14 +727,20 @@ const CreateMonitorPage = () => {
 									/>
 								)}
 
-								{/* Secret field - only for hardware type */}
-								{generalSettingsConfig.showSecret && (
+								{/* Capture API secret - used by hardware and Capture-backed Docker monitors */}
+								{(generalSettingsConfig.showSecret || isCaptureDocker) && (
 									<FormTextField
 										name="secret"
 										fieldLabel={t("pages.createMonitor.form.general.option.secret.label")}
 										placeholder={t(
 											"pages.createMonitor.form.general.option.secret.placeholder"
 										)}
+									/>
+								)}
+								{isCaptureDocker && (
+									<FormSwitchField
+										name="ignoreTlsErrors"
+										label={t("pages.createMonitor.form.ignoreTls.option.tls.label")}
 									/>
 								)}
 								{generalSettingsConfig.showDnsServer && (
@@ -753,7 +767,6 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
 				{showStep(0) && watchedType === "docker" && isDockerTlsUrl(watchedUrl) && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.dockerTls.title")}
@@ -811,7 +824,6 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
 				{showStep(1) && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.frequency.title")}
@@ -832,7 +844,6 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
 				{/* Alert Thresholds - only for hardware type */}
 				{watchedType === "hardware" && showStep(1) && (
 					<ConfigBox
@@ -888,7 +899,6 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
 				{showStep(1) && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.incidents.title")}
@@ -915,7 +925,6 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
 				{showStep(1) && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.notifications.title")}
@@ -928,7 +937,6 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
 				{showStep(1) && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.tags.title")}
@@ -955,8 +963,7 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
-				{showStep(1) && watchedType === "docker" && (
+				{showStep(1) && watchedType === "docker" && !isCaptureDocker && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.dockerLogs.title")}
 						subtitle={t("pages.createMonitor.form.dockerLogs.description")}
@@ -968,7 +975,28 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
+				{showStep(1) && watchedType === "docker" && (
+					<ConfigBox
+						title={t("pages.createMonitor.form.dockerAlerts.title")}
+						subtitle={t("pages.createMonitor.form.dockerAlerts.description")}
+						rightContent={
+							<Stack gap={theme.spacing(LAYOUT.MD)}>
+								<FormSwitchField
+									name="dockerAlertOnStopped"
+									label={t(
+										"pages.createMonitor.form.dockerAlerts.option.onStopped.label"
+									)}
+								/>
+								<FormSwitchField
+									name="dockerAlertOnUnhealthy"
+									label={t(
+										"pages.createMonitor.form.dockerAlerts.option.onUnhealthy.label"
+									)}
+								/>
+							</Stack>
+						}
+					/>
+				)}
 				{showStep(2) &&
 					(watchedType === "http" ||
 						watchedType === "grpc" ||
@@ -984,7 +1012,6 @@ const CreateMonitorPage = () => {
 							}
 						/>
 					)}
-
 				{showStep(2) && watchedType === "http" && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.advanced.title")}
@@ -1084,7 +1111,6 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
 				{showStep(2) && watchedType === "http" && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.headers.title")}
@@ -1142,7 +1168,6 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
 				{showStep(2) && supportsGeoCheck(watchedType) && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.geoChecks.title")}
@@ -1175,7 +1200,6 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
 				<Stack
 					direction="row"
 					justifyContent={!isEditMode ? "space-between" : "flex-end"}

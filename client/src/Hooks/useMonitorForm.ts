@@ -78,6 +78,7 @@ export const getMonitorDefaults = (
 				...base,
 				type: "docker",
 				url: data?.url || "",
+				secret: data?.secret || "",
 				ignoreTlsErrors: data?.ignoreTlsErrors || false,
 				dockerTlsCa: data?.dockerTlsCa || "",
 				dockerTlsCert: data?.dockerTlsCert || "",
@@ -85,6 +86,8 @@ export const getMonitorDefaults = (
 				dockerTlsKey: "",
 				dockerTlsKeySet: data?.dockerTlsKeySet ?? false,
 				dockerLogsEnabled: data?.dockerLogsEnabled ?? false,
+				dockerAlertOnStopped: data?.dockerAlertOnStopped ?? false,
+				dockerAlertOnUnhealthy: data?.dockerAlertOnUnhealthy ?? false,
 			};
 			break;
 		case "game":

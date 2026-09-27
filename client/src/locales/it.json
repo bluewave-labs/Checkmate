@@ -1487,6 +1487,9 @@
 				"uptime": {
 					"title": "Uptime",
 					"responseTime": "Tempo di risposta"
+				},
+				"incidents": {
+					"errorLoading": "Impossibile caricare gli incidenti."
 				}
 			},
 			"statusBar": {

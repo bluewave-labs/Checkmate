@@ -4,7 +4,7 @@
 # Build on the host arch (BUILDPLATFORM) rather than under QEMU — the output is
 # pure JS so it's arch-independent, and this avoids the esbuild host/native
 # binary version mismatch under emulation.
-FROM --platform=$BUILDPLATFORM node:22-slim AS frontend-build
+FROM --platform=$BUILDPLATFORM node:24-slim AS frontend-build
 
 WORKDIR /app/client
 
@@ -19,7 +19,7 @@ RUN npm run build
 # ---------------------
 # Backend stage
 # ---------------------
-FROM node:22-slim AS app
+FROM node:24-slim AS app
 
 # Install ping
 RUN apt-get update \

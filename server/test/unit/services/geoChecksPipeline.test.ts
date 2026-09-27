@@ -1,5 +1,6 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { GeoChecksPipeline } from "../../../src/worker/worker.check-pipeline.ts";
+import { GeoChecksPipeline } from "../../../src/worker/worker.geo-pipeline.ts";
+import type { Job } from "../../../src/domain/jobs/job.type.ts";
 import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 
@@ -25,12 +26,14 @@ const activeWindow = () => {
 const createGeoPipeline = (overrides?: Record<string, any>) => {
 	const defaults = {
 		logger: createMockLogger(),
+		monitorsRepository: { findByIdLean: jest.fn().mockResolvedValue(null) },
 		geoChecksService: { buildGeoCheck: jest.fn().mockResolvedValue(null) },
 		buffer: { addGeoCheckToBuffer: jest.fn() },
 		maintenanceWindowsRepository: { findByMonitorId: jest.fn().mockResolvedValue([]) },
 		...overrides,
 	};
 	const pipeline = new GeoChecksPipeline(
+		defaults.monitorsRepository as any,
 		defaults.maintenanceWindowsRepository as any,
 		defaults.geoChecksService as any,
 		defaults.buffer as any,
@@ -42,7 +45,56 @@ const createGeoPipeline = (overrides?: Record<string, any>) => {
 const geoMonitor = (overrides?: Partial<Monitor>) =>
 	makeMonitor({ geoCheckEnabled: true, type: "http", geoCheckLocations: ["us-east"], ...overrides });
 
+const makeJob = (overrides?: Partial<Job>): Job => ({
+	id: "geo-check:m1",
+	type: "geo-check",
+	refId: "m1",
+	isActive: true,
+	nextScheduledAt: 1000,
+	intervalMs: 300000,
+	lockedBy: null,
+	lockedUntil: null,
+	pendingChecks: [],
+	runCount: 0,
+	failCount: 0,
+	lastFinishedAt: null,
+	lastFailReason: null,
+	...overrides,
+});
+
 describe("GeoChecksPipeline", () => {
+	describe("handle", () => {
+		it("loads the monitor by refId and runs the pipeline for it", async () => {
+			const geoCheck = { id: "gc-1", monitorId: "m1" };
+			const { pipeline, defaults } = createGeoPipeline({
+				monitorsRepository: { findByIdLean: jest.fn().mockResolvedValue(geoMonitor()) },
+				geoChecksService: { buildGeoCheck: jest.fn().mockResolvedValue(geoCheck) },
+			});
+
+			await pipeline.handle(makeJob());
+
+			expect(defaults.monitorsRepository.findByIdLean).toHaveBeenCalledWith("m1");
+			expect(defaults.buffer.addGeoCheckToBuffer).toHaveBeenCalledWith(geoCheck);
+		});
+
+		it("does nothing for a job without a refId", async () => {
+			const { pipeline, defaults } = createGeoPipeline();
+
+			await pipeline.handle(makeJob({ refId: null }));
+
+			expect(defaults.monitorsRepository.findByIdLean).not.toHaveBeenCalled();
+			expect(defaults.geoChecksService.buildGeoCheck).not.toHaveBeenCalled();
+		});
+
+		it("does nothing when the monitor no longer exists", async () => {
+			const { pipeline, defaults } = createGeoPipeline();
+
+			await pipeline.handle(makeJob());
+
+			expect(defaults.geoChecksService.buildGeoCheck).not.toHaveBeenCalled();
+		});
+	});
+
 	it("throws when monitor id is missing", async () => {
 		const { pipeline } = createGeoPipeline();
 		await expect(pipeline.run({} as Monitor)).rejects.toThrow("No monitor id");

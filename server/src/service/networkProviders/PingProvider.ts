@@ -5,7 +5,7 @@ import { MonitorStatusResponse } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import ping from "ping";
 import * as net from "net";
-import { timeRequest } from "@/service/network/utils.js";
+import { timeRequest } from "@/service/networkProviders/utils.js";
 const SERVICE_NAME = "PingProvider";
 
 type Ping = typeof ping;
@@ -58,6 +58,9 @@ export class PingProvider implements IStatusProvider<PingStatusPayload> {
 				type: monitor.type,
 				status: response.alive ?? false,
 				code: response.alive ? 200 : 5000,
+				// An echo reply is the host answering. Its absence is silence, which is indistinguishable
+				// from the instance having lost its egress, so the egress probe decides that case.
+				peerResponded: response.alive ?? false,
 				message: response.alive ? "Success" : "Ping failed",
 				responseTime,
 				payload: response,

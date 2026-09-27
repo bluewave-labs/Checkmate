@@ -122,7 +122,7 @@ export const createApp = ({
 	setupRoutes(app, controllers, services);
 
 	// FE routes
-	app.get("*", (req, res) => {
+	app.get("/{*splat}", (req, res) => {
 		res.sendFile(path.join(frontendPath, "index.html"));
 	});
 	app.use(handleErrors(services.logger));

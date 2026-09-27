@@ -1,7 +1,8 @@
 import https from "node:https";
 
-import { IStatusProvider } from "@/service/network/IStatusProvider.js";
-import { CheckContext, DockerStatusPayload, MonitorStatusResponse } from "@/types/network.js";
+import { IStatusProvider } from "@/service/networkProviders/IStatusProvider.js";
+import { HttpProvider } from "@/service/networkProviders/HttpProvider.js";
+import { CaptureDockerContainer, CaptureDockerStatusPayload, CheckContext, DockerStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 
 import {
 	DOCKER_LOG_TAIL_LINES,
@@ -23,10 +24,10 @@ import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";
 import Dockerode from "dockerode";
-import { timeRequest } from "@/service/network/utils.js";
+import { timeRequest, peerAnsweredFromError } from "@/service/networkProviders/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import { IEncryptionService } from "@/service/encryption/encryptionService.js";
-import { DOCKER_TLS_URL, isDockerTlsUrl } from "@/utils/dockerHost.js";
+import { DOCKER_TLS_URL, isCaptureDockerUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
 import { splitCertificateBundle } from "@/utils/pem.js";
 
 type DockerodeType = typeof Dockerode;
@@ -40,6 +41,9 @@ const DOCKER_LOG_MAX_LINE_BYTES = 4096;
 const DOCKER_LOG_TRUNCATION_MARKER = " …[truncated]";
 const DOCKER_LOG_TS_REGEX = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{1,9}))?Z /;
 const DOCKER_TLS_DEFAULT_PORT = 2376;
+const CAPTURE_FATAL_ERROR_METRICS = new Set(["docker.client", "docker.container.list"]);
+const EXITED_STATUS = /^Exited \((\d+)\)/;
+const HEALTH_STATUS = /\((healthy|unhealthy|health: starting)\)$/;
 
 export interface DockerError extends Error {
 	statusCode?: number;
@@ -53,7 +57,8 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 	constructor(
 		private logger: ILogger,
 		private DockerLib: DockerodeType,
-		private encryptionService: IEncryptionService
+		private encryptionService: IEncryptionService,
+		private httpProvider: HttpProvider
 	) {}
 
 	supports(type: MonitorType): boolean {
@@ -137,6 +142,104 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		return status && (DockerHealthStatuses as readonly string[]).includes(status) ? (status as DockerHealthStatus) : "none";
 	}
 
+	private exitCodeFromStatus = (status: string): number | undefined => {
+		const match = EXITED_STATUS.exec(status);
+		return match ? Number(match[1]) : undefined;
+	};
+
+	private healthFromStatus = (status: string): DockerHealthStatus => {
+		const match = HEALTH_STATUS.exec(status);
+		if (!match) return "none";
+		return match[1] === "health: starting" ? "starting" : (match[1] as DockerHealthStatus);
+	};
+
+	private toContainerSummary(containers: DockerContainerInfo[]): DockerContainerSummary {
+		return {
+			total: containers.length,
+			running: containers.filter((container) => container.state === "running").length,
+			stopped: containers.filter((container) => container.state === "exited" || container.state === "dead").length,
+			unhealthy: containers.filter((container) => container.health === "unhealthy").length,
+		};
+	}
+
+	private toCaptureContainer(container: CaptureDockerContainer): DockerContainerInfo {
+		const startedAt = container.started_at && container.started_at > 0 ? new Date(container.started_at * 1000).toISOString() : undefined;
+		// Capture reports zeroed stats for stopped containers; only running ones carry real metrics, matching toContainerInfo.
+		const stats =
+			container.status === "running" && container.stats
+				? {
+						cpuPct: container.stats.cpu_percent / 100,
+						memoryUsedBytes: container.stats.memory_usage,
+						memoryLimitBytes: container.stats.memory_limit,
+						memoryPct: container.stats.memory_percent / 100,
+					}
+				: {};
+		return {
+			id: container.container_id,
+			name: container.container_name || container.container_id.slice(0, 12),
+			image: container.base_image,
+			state: this.toContainerState(container.status),
+			status: container.status,
+			// Capture derives health from state when no Docker healthcheck exists.
+			// Keep Checkmate's `none` value in that case so summaries retain their existing semantics.
+			health: container.health?.source === "container_health_check" ? (container.health.healthy ? "healthy" : "unhealthy") : "none",
+			startedAt,
+			ports: (container.exposed_ports ?? []).flatMap((port) => {
+				const privatePort = Number(port.port);
+				return Number.isInteger(privatePort) ? [{ privatePort, protocol: this.toPortProtocol(port.protocol) }] : [];
+			}),
+			...stats,
+		};
+	}
+
+	private isCapturePayload = (payload: unknown): payload is CaptureDockerStatusPayload => {
+		if (!payload || typeof payload !== "object") return false;
+		const { data, errors } = payload as Partial<CaptureDockerStatusPayload>;
+		if (!Array.isArray(data) && data !== null) return false;
+		if (errors === undefined || errors === null) return true;
+		return Array.isArray(errors) && errors.every((error) => Array.isArray(error?.metric));
+	};
+
+	private handleCapture = async (monitor: Monitor, ctx?: CheckContext): Promise<MonitorStatusResponse<DockerStatusPayload>> => {
+		const captureUrl = new URL(monitor.url.trim());
+		captureUrl.searchParams.set("all", "true");
+		const response = await this.httpProvider.handle<CaptureDockerStatusPayload>({ ...monitor, url: captureUrl.toString() }, ctx);
+		if (!response.status) return this.failed(monitor, response.code, response.message, response.responseTime ?? 0);
+
+		const payload = response.payload;
+		if (!this.isCapturePayload(payload)) {
+			this.logger.warn({
+				message: "Capture returned an invalid Docker metrics payload",
+				service: SERVICE_NAME,
+				method: "handleCapture",
+			});
+			return this.failed(monitor, NETWORK_ERROR, "Capture returned an invalid Docker metrics payload", response.responseTime ?? 0);
+		}
+
+		const errors = payload.errors ?? [];
+		const fatalError = errors.find((error) => error.metric.some((metric) => CAPTURE_FATAL_ERROR_METRICS.has(metric)));
+		if (fatalError) return this.failed(monitor, NETWORK_ERROR, fatalError.err, response.responseTime ?? 0);
+		if (errors.length > 0) {
+			this.logger.warn({
+				message: `Capture returned ${errors.length} partial Docker collection error(s)`,
+				service: SERVICE_NAME,
+				method: "handleCapture",
+			});
+		}
+
+		const containers = (payload.data ?? []).map((container) => this.toCaptureContainer(container));
+		return {
+			monitorId: monitor.id,
+			teamId: monitor.teamId,
+			type: monitor.type,
+			status: true,
+			code: response.code,
+			message: "Docker host is reachable through Capture",
+			responseTime: response.responseTime,
+			payload: { containers, summary: this.toContainerSummary(containers) },
+		};
+	};
+
 	private computeCpuPct(stats: Dockerode.ContainerStats): number {
 		const cpuDelta = stats.cpu_stats.cpu_usage.total_usage - stats.precpu_stats.cpu_usage.total_usage;
 		const systemDelta = stats.cpu_stats.system_cpu_usage - (stats.precpu_stats.system_cpu_usage ?? 0);
@@ -183,7 +286,10 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 			info.health = this.toHealthStatus(inspectResult.value.State?.Health?.Status);
 			info.ports = this.toPorts(inspectResult.value.NetworkSettings?.Ports);
 			info.mounts = this.toMounts(inspectResult.value.Mounts);
+			info.exitCode = inspectResult.value.State?.ExitCode;
 		} else {
+			info.exitCode = this.exitCodeFromStatus(summary.Status);
+			info.health = this.healthFromStatus(summary.Status);
 			this.logger.warn({
 				message: `Failed to inspect container ${info.name}`,
 				service: SERVICE_NAME,
@@ -315,12 +421,19 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		return rawLogs.filter((log) => log !== null);
 	};
 
-	private failed = (monitor: Monitor, code: number, message: string, responseTime: number): MonitorStatusResponse<DockerStatusPayload> => ({
+	private failed = (
+		monitor: Monitor,
+		code: number,
+		message: string,
+		responseTime: number,
+		peerResponded = false
+	): MonitorStatusResponse<DockerStatusPayload> => ({
 		monitorId: monitor.id,
 		teamId: monitor.teamId,
 		type: monitor.type,
 		status: false,
 		code,
+		peerResponded,
 		message,
 		responseTime,
 		payload: null,
@@ -328,6 +441,8 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 
 	handle = async (monitor: Monitor, ctx?: CheckContext): Promise<MonitorStatusResponse<DockerStatusPayload>> => {
 		try {
+			if (isCaptureDockerUrl(monitor.url)) return await this.handleCapture(monitor, ctx);
+
 			const credentials = this.resolveTlsCredentials(monitor, ctx);
 			if (credentials && !credentials.ok) return this.failed(monitor, NETWORK_ERROR, credentials.message, 0);
 
@@ -337,31 +452,31 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 			if (error) {
 				let message = "Docker host is unreachable";
 				let code = NETWORK_ERROR;
+				// A status code from the daemon is the daemon answering; otherwise only a refusal or a reset
+				// proves we reached the host, and anything else could be the instance's own loss of egress.
+				let peerResponded = peerAnsweredFromError(error);
 				if (this.isDockerError(error)) {
 					code = error.statusCode ?? NETWORK_ERROR;
 					message = error.json?.message ?? error.reason ?? error.message;
+					peerResponded = peerResponded || error.statusCode !== undefined;
 				} else if (error instanceof Error) {
 					message = error.message;
 				}
-				return this.failed(monitor, code, message, responseTime);
+				return this.failed(monitor, code, message, responseTime, peerResponded);
 			}
 
 			const summaries = await docker.listContainers({ all: true });
 			const containers = await this.mapWithConcurrency(summaries, STATS_CONCURRENCY, (s) => this.toContainerInfo(docker, s));
 			const logs = monitor.dockerLogsEnabled ? await this.collectLogs(docker, summaries) : undefined;
 
-			const summary: DockerContainerSummary = {
-				total: containers.length,
-				running: containers.filter((c) => c.state === "running").length,
-				stopped: containers.filter((c) => c.state === "exited" || c.state === "dead").length,
-				unhealthy: containers.filter((c) => c.health === "unhealthy").length,
-			};
+			const summary = this.toContainerSummary(containers);
 			return {
 				monitorId: monitor.id,
 				teamId: monitor.teamId,
 				type: monitor.type,
 				status: true,
 				code: 200,
+				peerResponded: true,
 				message: "Docker host is reachable",
 				responseTime,
 				payload: { containers, summary, logs },

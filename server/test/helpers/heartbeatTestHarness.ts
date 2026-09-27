@@ -1,21 +1,20 @@
 import { jest } from "@jest/globals";
-import { MonitorStatusPolicy } from "../../src/worker/worker.monitor-status-policy.ts";
-import { CheckProducer } from "../../src/worker/worker.check-producer.ts";
-import { CheckEvaluator } from "../../src/worker/worker.check-evaluator.ts";
+import { WorkerPipeline } from "../../src/worker/worker.pipeline.ts";
 import { NotificationReactor } from "../../src/worker/reactors/reactor.notification.ts";
 import { IncidentReactor } from "../../src/worker/reactors/reactor.incident.ts";
 import { ReactorDispatcher } from "../../src/worker/reactors/reactor.dispatcher.ts";
 import { StatusService } from "../../src/service/statusService.ts";
 import { IncidentService } from "../../src/domain/incidents/incident.service.ts";
+import { CheckService } from "../../src/domain/checks/check.service.ts";
 import { InMemoryMonitorsRepository } from "./InMemoryMonitorsRepository.ts";
 import { InMemoryIncidentsRepository } from "./InMemoryIncidentsRepository.ts";
 import { createMockLogger } from "./createMockLogger.ts";
 import type { Monitor } from "../../src/domain/monitors/monitor.type.ts";
-import type { MonitorStatusResponse } from "../../src/types/network.ts";
 import type { Check } from "../../src/domain/checks/check.type.ts";
+import type { MonitorActionDecision } from "../../src/worker/worker.interface.ts";
+import type { MonitorStatusResponse } from "../../src/types/network.ts";
 import type { MaintenanceWindow } from "../../src/domain/maintenance-windows/maintenance-window.type.ts";
-
-let checkCounter = 0;
+import type { EgressStatus } from "../../src/domain/egress/egress.type.ts";
 
 export const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 	({
@@ -46,20 +45,6 @@ export const makeStatusResponse = (status: boolean, code: number): MonitorStatus
 	responseTime: status ? 150 : 0,
 });
 
-export const makeCheck = (status: boolean, code: number): Check => {
-	const now = new Date().toISOString();
-	return {
-		id: `check-${++checkCounter}`,
-		metadata: { monitorId: "mon-1", teamId: "team-1", type: "http" },
-		status,
-		statusCode: code,
-		responseTime: status ? 150 : 0,
-		message: status ? "OK" : "Service Unavailable",
-		createdAt: now,
-		updatedAt: now,
-	};
-};
-
 const createStubMonitorStatsRepo = () => ({
 	findByMonitorId: jest.fn().mockRejectedValue(new Error("no stats")),
 	create: jest.fn().mockResolvedValue({}),
@@ -75,18 +60,18 @@ export interface HeartbeatTestHarness {
 	statusService: StatusService;
 	incidentService: IncidentService;
 	notificationsService: { handleNotifications: jest.Mock };
-	networkService: { requestStatus: jest.Mock };
+	providerRegistry: { probe: jest.Mock };
 	bufferStub: { addToBuffer: jest.Mock; addGeoCheckToBuffer: jest.Mock; scheduleNextFlush: jest.Mock };
 	maintenanceWindowsRepo: { findByMonitorId: jest.Mock };
-	messageBuilder: { extractThresholdBreaches: jest.Mock };
+	messageBuilder: { buildThresholdBreachMessage: jest.Mock };
+	egressService: { assessAfterFailure: jest.Mock };
 	heartbeatJob: (monitor: Monitor) => Promise<void>;
 	setNextResponse: (status: boolean, code: number) => void;
 	setNextResponseFull: (response: MonitorStatusResponse) => void;
+	setEgressStatus: (status: EgressStatus | null) => void;
 }
 
 export function createHeartbeatTestHarness(): HeartbeatTestHarness {
-	checkCounter = 0;
-
 	const monitorsRepo = new InMemoryMonitorsRepository();
 	const incidentsRepo = new InMemoryIncidentsRepository();
 	const logger = createMockLogger() as any;
@@ -94,7 +79,7 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 
 	const statusService = new StatusService(logger, monitorsRepo as any, createStubMonitorStatsRepo() as any);
 
-	const messageBuilder = { extractThresholdBreaches: jest.fn().mockReturnValue([]) };
+	const messageBuilder = { buildThresholdBreachMessage: jest.fn().mockReturnValue("") };
 	const incidentService = new IncidentService(logger, incidentsRepo, monitorsRepo as any, { findById: jest.fn() } as any, messageBuilder as any);
 
 	const notificationsService = { handleNotifications: jest.fn().mockResolvedValue(true) };
@@ -102,19 +87,17 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 	let nextResponse: MonitorStatusResponse | null = null;
 	let nextStatus = true;
 	let nextCode = 200;
-	const networkService = {
-		requestStatus: jest.fn().mockImplementation(() => {
+	const providerRegistry = {
+		probe: jest.fn().mockImplementation(() => {
 			if (nextResponse) {
 				return Promise.resolve(nextResponse);
 			}
 			return Promise.resolve(makeStatusResponse(nextStatus, nextCode));
 		}),
 	};
-	const checkService = {
-		toCheck: jest.fn().mockImplementation((response: MonitorStatusResponse) => {
-			return makeCheck(response.status, response.code);
-		}),
-	};
+	// The real mapper, so the stored check carries the hardware/docker payload the evaluator reads.
+	// Only toCheck is reached; the repositories are never touched.
+	const checkService = new CheckService(monitorsRepo as any, logger, {} as any);
 
 	const setNextResponse = (status: boolean, code: number) => {
 		nextResponse = null;
@@ -129,31 +112,48 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 	const maintenanceWindowsRepo = { findByMonitorId: jest.fn().mockResolvedValue([]) };
 	const proxyResolver = { resolve: jest.fn().mockResolvedValue(undefined) };
 	const dockerLogsService = { buildDockerLogs: jest.fn().mockResolvedValue([]) };
+	// Null mirrors the egress check being disabled, so the existing heartbeat suites run unchanged.
+	let nextEgressStatus: EgressStatus | null = null;
+	const egressService = { assessAfterFailure: jest.fn().mockImplementation(() => Promise.resolve(nextEgressStatus)) };
+	const setEgressStatus = (status: EgressStatus | null) => {
+		nextEgressStatus = status;
+	};
 
-	const checkProducer = new CheckProducer(
-		monitorsRepo as any,
-		maintenanceWindowsRepo as any,
-		checkService as any,
-		networkService as any,
-		proxyResolver as any,
-		bufferStub as any,
-		dockerLogsService as any,
-		logger
-	);
-	const checkEvaluator = new CheckEvaluator(statusService as any, new MonitorStatusPolicy());
-
-	const notificationReactor = new NotificationReactor(notificationsService as any);
+	// The real NotificationsService ignores decisions with no transition; the stub is reached only for the ones it
+	// would act on, so tests can assert on handleNotifications calls as "notifications sent".
+	const guardedNotificationsService = {
+		handleNotifications: (monitor: Monitor, check: Check, decision: MonitorActionDecision) =>
+			decision.transition !== null ? notificationsService.handleNotifications(monitor, check, decision) : Promise.resolve(false),
+	};
+	const notificationReactor = new NotificationReactor(guardedNotificationsService as any);
 	const incidentReactor = new IncidentReactor(incidentService as any);
 	const reactorDispatcher = new ReactorDispatcher(logger, [notificationReactor, incidentReactor]);
+
+	// The harness drives stages 1 and 3 directly, so the stage 2 repositories are never reached.
+	const pipeline = new WorkerPipeline({
+		logger,
+		monitorsRepository: monitorsRepo as any,
+		maintenanceWindowsRepository: maintenanceWindowsRepo as any,
+		checksRepository: { findUnevaluatedByMonitorId: jest.fn() } as any,
+		jobsRepository: { upsertEvaluate: jest.fn(), pullEvaluated: jest.fn() } as any,
+		checkService: checkService as any,
+		providerRegistry: providerRegistry as any,
+		proxyResolver: proxyResolver as any,
+		bufferService: bufferStub as any,
+		dockerLogsService: dockerLogsService as any,
+		egressService: egressService as any,
+		statusService,
+		dispatcher: reactorDispatcher,
+	});
 
 	// Mirror the production check→evaluate flow: read the monitor fresh each cycle (so the
 	// accumulated statusWindow is visible), produce a check, then evaluate against that monitor.
 	const heartbeatJob = async (seedMonitor: Monitor) => {
 		const monitor = await monitorsRepo.findByIdLean(seedMonitor.id);
 		if (!monitor) return;
-		const result = await checkProducer.produce(monitor);
+		const result = await pipeline.produce(monitor);
 		if (!result) return; // skipped (e.g. maintenance window)
-		const evaluation = await checkEvaluator.evaluate(result.status, result.check, monitor);
+		const evaluation = await pipeline.evaluateCheck(result.check, monitor);
 		await reactorDispatcher.dispatch(evaluation);
 	};
 
@@ -163,12 +163,14 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 		statusService,
 		incidentService,
 		notificationsService,
-		networkService,
+		providerRegistry,
 		bufferStub,
 		maintenanceWindowsRepo,
 		messageBuilder,
+		egressService,
 		heartbeatJob,
 		setNextResponse,
 		setNextResponseFull,
+		setEgressStatus,
 	};
 }

@@ -247,6 +247,20 @@ describe("monitorValidation — strategy gating", () => {
 			expect(parsed.monitors[0].dockerLogsEnabled).toBe(false);
 		});
 
+		it("defaults the docker alert switches to false on imported docker monitors", () => {
+			const parsed = importMonitorsBodyValidation.parse({
+				monitors: [
+					{
+						name: "Imported Docker",
+						type: "docker",
+						url: "unix:///var/run/docker.sock",
+					},
+				],
+			});
+			expect(parsed.monitors[0].dockerAlertOnStopped).toBe(false);
+			expect(parsed.monitors[0].dockerAlertOnUnhealthy).toBe(false);
+		});
+
 		it("rejects strategy on imported non-pagespeed monitors", () => {
 			expect(() =>
 				importMonitorsBodyValidation.parse({
@@ -629,6 +643,18 @@ describe("monitorValidation — Docker host url", () => {
 			}
 		});
 
+		it("accepts a Capture Docker metric endpoint with a secret", () => {
+			const url = "http://capture:59232/api/v1/metrics/docker";
+			const parsed = createMonitorBodyValidation.parse({ ...baseDockerBody, url, secret: "capture-secret" });
+			expect(parsed.url).toBe(url);
+		});
+
+		it("requires a secret for a Capture Docker endpoint", () => {
+			expect(() => createMonitorBodyValidation.parse({ ...baseDockerBody, url: "https://capture.example.com/api/v1/metrics/docker" })).toThrow(
+				"Capture API secret is required"
+			);
+		});
+
 		it("rejects container names and unsupported engine urls", () => {
 			for (const badUrl of [
 				"my-container",
@@ -669,6 +695,13 @@ describe("monitorValidation — Docker host url", () => {
 		it("accepts an imported docker monitor with a socket url", () => {
 			const parsed = importMonitorsBodyValidation.parse({ monitors: [baseDockerBody] });
 			expect(parsed.monitors[0].url).toBe("unix:///var/run/docker.sock");
+		});
+
+		it("accepts an imported Capture Docker monitor with a secret", () => {
+			const parsed = importMonitorsBodyValidation.parse({
+				monitors: [{ ...baseDockerBody, url: "http://capture:59232/api/v1/metrics/docker", secret: "capture-secret" }],
+			});
+			expect(parsed.monitors[0].secret).toBe("capture-secret");
 		});
 
 		it("rejects an imported docker monitor with a container-name url", () => {
@@ -867,6 +900,46 @@ describe("monitorValidation — headers", () => {
 
 		it("rejects an imported monitor with an invalid header", () => {
 			expect(() => importMonitorsBodyValidation.parse({ monitors: [{ ...baseHttpBody, headers: [{ key: "Bad Header", value: "v" }] }] })).toThrow();
+		});
+	});
+});
+
+describe("monitorValidation — docker alert switches", () => {
+	describe("createMonitorBodyValidation", () => {
+		it("retains dockerAlertOnStopped and dockerAlertOnUnhealthy on a docker monitor", () => {
+			const parsed = createMonitorBodyValidation.parse({
+				name: "Docker host",
+				type: "docker",
+				url: "unix:///var/run/docker.sock",
+				dockerAlertOnStopped: true,
+				dockerAlertOnUnhealthy: true,
+			});
+
+			expect(parsed.dockerAlertOnStopped).toBe(true);
+			expect(parsed.dockerAlertOnUnhealthy).toBe(true);
+		});
+
+		it("leaves the switches undefined when omitted", () => {
+			const parsed = createMonitorBodyValidation.parse({
+				name: "Docker host",
+				type: "docker",
+				url: "unix:///var/run/docker.sock",
+			});
+
+			expect(parsed.dockerAlertOnStopped).toBeUndefined();
+			expect(parsed.dockerAlertOnUnhealthy).toBeUndefined();
+		});
+	});
+
+	describe("editMonitorBodyValidation", () => {
+		it("retains dockerAlertOnStopped and dockerAlertOnUnhealthy on edits", () => {
+			const parsed = editMonitorBodyValidation.parse({
+				dockerAlertOnStopped: true,
+				dockerAlertOnUnhealthy: false,
+			});
+
+			expect(parsed.dockerAlertOnStopped).toBe(true);
+			expect(parsed.dockerAlertOnUnhealthy).toBe(false);
 		});
 	});
 });

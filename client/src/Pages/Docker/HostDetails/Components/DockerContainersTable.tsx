@@ -12,7 +12,7 @@ import type { Header } from "@/Components/design-elements/Table";
 import type { DockerContainerInfo } from "@/Types/Check";
 
 // Utils
-import { formatPercentage } from "@/Utils/FormatUtils";
+import { formatPercentage, PLACEHOLDER } from "@/Utils/FormatUtils";
 
 interface DockerContainersTableProps {
 	monitorId: string | undefined;
@@ -91,7 +91,7 @@ export const DockerContainersTable = ({
 				id: "restarts",
 				content: t("common.labels.restarts"),
 				render: (row) => {
-					return <Typography>{row.restartCount}</Typography>;
+					return <Typography>{row.restartCount ?? PLACEHOLDER}</Typography>;
 				},
 			},
 		];

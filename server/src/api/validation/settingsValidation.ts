@@ -1,5 +1,5 @@
 import { CHECK_TTL_SENTINEL } from "@/domain/checks/check.type.js";
-import { MAX_EGRESS_POLL_INTERVAL_SECONDS, MAX_EGRESS_TARGETS, MIN_EGRESS_POLL_INTERVAL_SECONDS } from "@/domain/egress/egress.type.js";
+import { MAX_EGRESS_TARGETS } from "@/domain/egress/egress.type.js";
 import { parseEgressTarget } from "@/utils/egressTarget.js";
 import { z } from "zod";
 
@@ -56,7 +56,6 @@ export const updateAppSettingsBodyValidation = z
 
 		egressCheckEnabled: z.boolean().optional(),
 		egressCheckTargets: z.array(egressTargetValidation).max(MAX_EGRESS_TARGETS).optional(), // empty list falls back to DEFAULT_EGRESS_TARGETS
-		egressPollIntervalSeconds: z.number().int().min(MIN_EGRESS_POLL_INTERVAL_SECONDS).max(MAX_EGRESS_POLL_INTERVAL_SECONDS).optional(),
 		egressNotifications: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid notification id")).optional(),
 	})
 	.strip()

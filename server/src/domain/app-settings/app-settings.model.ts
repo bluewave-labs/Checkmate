@@ -1,6 +1,6 @@
 import { Schema, model, type Types } from "mongoose";
 import type { Settings, SettingsThresholds } from "@/domain/app-settings/app-settings.type.js";
-import { DEFAULT_EGRESS_POLL_INTERVAL_SECONDS, DEFAULT_EGRESS_TARGETS } from "@/domain/egress/egress.type.js";
+import { DEFAULT_EGRESS_TARGETS } from "@/domain/egress/egress.type.js";
 
 interface AppSettingsDocument extends Omit<Settings, "id" | "createdAt" | "updatedAt"> {
 	_id: Types.ObjectId;
@@ -45,7 +45,6 @@ const AppSettingsSchema = new Schema<AppSettingsDocument>(
 		globalProxyId: { type: String, default: null },
 		egressCheckEnabled: { type: Boolean, default: false },
 		egressCheckTargets: { type: [String], default: () => [...DEFAULT_EGRESS_TARGETS] },
-		egressPollIntervalSeconds: { type: Number, default: DEFAULT_EGRESS_POLL_INTERVAL_SECONDS },
 		egressNotifications: { type: [String], default: () => [] }, // Notification ids, stored as strings like globalProxyId
 	},
 	{ timestamps: true }

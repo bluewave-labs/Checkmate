@@ -14,6 +14,7 @@ export const createStatusPageRoutes = (
 	router.put("/:id", imageUpload.single("logo"), verifyJWT, isAllowed(["admin", "superadmin"]), statusPageController.updateStatusPage);
 	router.get("/resolve", statusPageController.resolveStatusPageByDomain);
 	router.get("/:url", verifyStatusPageAccess, statusPageController.getStatusPageByUrl);
+	router.get("/:url/incidents/:monitorId", verifyStatusPageAccess, statusPageController.getPublicMonitorIncidents);
 	router.delete("/:id", verifyJWT, isAllowed(["admin", "superadmin"]), statusPageController.deleteStatusPage);
 	return router;
 };

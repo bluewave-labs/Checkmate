@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { PingProvider } from "../../../../src/service/network/PingProvider.ts";
+import { PingProvider } from "../../../../src/service/networkProviders/PingProvider.ts";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
 import type { Monitor } from "../../../../src/domain/monitors/monitor.type.ts";
 import * as net from "net";
@@ -154,5 +154,24 @@ describe("PingProvider", () => {
 		const provider = new PingProvider(mockPing as any, net);
 
 		await expect(provider.handle(makeMonitor())).rejects.toThrow("42");
+	});
+
+	// ── Peer reachability ────────────────────────────────────────────────────
+
+	it("reports the peer as having answered when an echo reply comes back", async () => {
+		const provider = new PingProvider(createMockPing({ alive: true }) as any, net);
+
+		const result = await provider.handle(makeMonitor());
+
+		expect(result.peerResponded).toBe(true);
+	});
+
+	it("reports the peer as silent when no echo reply comes back", async () => {
+		// Silence is indistinguishable from the instance losing its egress, so the egress probe decides.
+		const provider = new PingProvider(createMockPing({ alive: false }) as any, net);
+
+		const result = await provider.handle(makeMonitor());
+
+		expect(result.peerResponded).toBe(false);
 	});
 });

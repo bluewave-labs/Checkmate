@@ -1,7 +1,7 @@
-import { IStatusProvider } from "@/service/network/IStatusProvider.js";
+import { IStatusProvider } from "@/service/networkProviders/IStatusProvider.js";
 import { MonitorStatusResponse, PageSpeedStatusPayload } from "@/types/network.js";
 import { Monitor, MonitorType, DefaultPageSpeedStrategy } from "@/domain/monitors/monitor.type.js";
-import { HttpProvider } from "@/service/network/HttpProvider.js";
+import { HttpProvider } from "@/service/networkProviders/HttpProvider.js";
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";

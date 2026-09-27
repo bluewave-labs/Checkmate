@@ -557,7 +557,7 @@
 				},
 				"status": {
 					"down": "down",
-					"breached": "threshold exceeded",
+					"breached": "alert",
 					"initializing": "initializing",
 					"maintenance": "maintenance",
 					"paused": "paused",
@@ -720,7 +720,7 @@
 						"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.  Set an optional proxy server to connect through.",
 						"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
 						"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
-						"docker": "Enter the Docker socket to monitor, as unix:///var/run/docker.sock or an absolute path such as /var/run/docker.sock, or a remote daemon as tcp://host:2376 to connect with TLS client certificates. Every container on the host is monitored.",
+						"docker": "Enter a Docker socket such as unix:///var/run/docker.sock, a remote daemon such as tcp://host:2376 with TLS client certificates, or a Capture endpoint ending in /metrics/docker with its authorization secret. Every container on the host is monitored.",
 						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type. Some games require enabling server queries in their config file — check your game server's documentation. See the <gamedigLink>supported games list</gamedigLink> for protocol details.",
 						"pagespeed": "Track page load performance, Core Web Vitals, and optimization scores for your website.",
 						"grpc": "Enter the hostname and port of the gRPC server, optionally specify a service name for the health check, and add a display name.",
@@ -838,6 +838,18 @@
 					"option": {
 						"enabled": {
 							"label": "Collect container logs"
+						}
+					}
+				},
+				"dockerAlerts": {
+					"title": "Container alerts",
+					"description": "Mark this host as breached while any container on it is stopped or failing its health check, and notify on the change. Containers that exit with code 0 do not count as stopped. Capture does not report exit codes, so on Capture hosts every stopped container counts.",
+					"option": {
+						"onStopped": {
+							"label": "Alert when a container is stopped"
+						},
+						"onUnhealthy": {
+							"label": "Alert when a container is unhealthy"
 						}
 					}
 				},
@@ -1699,7 +1711,7 @@
 				"status": {
 					"up": "Operational",
 					"down": "Down",
-					"breached": "Threshold exceeded",
+					"breached": "Alert",
 					"maintenance": "Maintenance",
 					"paused": "Paused",
 					"initializing": "Initializing"
@@ -1726,19 +1738,26 @@
 				"uptime": {
 					"title": "Uptime",
 					"responseTime": "Response time"
+				},
+				"incidents": {
+					"modalTitle": "Incidents for {{date}}",
+					"loading": "Loading...",
+					"noIncidents": "No incidents reported for this day.",
+					"ongoing": "Ongoing",
+					"errorLoading": "Failed to load incidents."
 				}
 			},
 			"statusBar": {
 				"monitoringSummary": "Monitoring {{count}} service · Updates every 10 seconds",
 				"monitoringSummary_other": "Monitoring {{count}} services · Updates every 10 seconds",
 				"allUp": "All systems operational",
-				"allBreached": "All systems have exceeded thresholds",
+				"allBreached": "All systems have active alerts",
 				"allMaintenance": "All systems are under maintenance",
 				"allDown": "All systems are down",
 				"allPaused": "All systems are paused",
 				"allInitializing": "All systems are initializing",
-				"breachedAndDown": "Some systems have exceeded thresholds and are down",
-				"breached": "Some systems have exceeded thresholds",
+				"breachedAndDown": "Some systems have active alerts and some are down",
+				"breached": "Some systems have active alerts",
 				"degraded": "Some systems are experiencing issues",
 				"maintenanceAndDown": "Some systems are down during maintenance",
 				"maintenance": "Some systems are under maintenance",
@@ -1925,16 +1944,34 @@
 			}
 		},
 		"dashboard": {
+			"noData": "No data available at this moment.",
 			"monitorStatus": {
 				"ofUp": "of {{total}} up"
 			},
 			"cards": {
 				"monitorStatus": "Monitor status",
+				"currentlyDown": "Currently down",
+				"uptime": "Monitor uptime",
 				"monitorsByType": "Monitors by type"
+			},
+			"uptimeCard": {
+				"toggleSortOrder": "Toggle sort order"
+			},
+			"currentlyDown": {
+				"empty": "No monitors are down at this moment."
 			},
 			"header": {
 				"title": "Dashboard",
 				"description": "See every monitor type in one place and spot what needs attention."
+			},
+			"editCards": "Edit cards",
+			"editCardsModal": {
+				"title": "Dashboard cards",
+				"description": "Select the cards to display on your dashboard.",
+				"groups": {
+					"uptime": "Uptime"
+				},
+				"done": "Done"
 			}
 		}
 	}

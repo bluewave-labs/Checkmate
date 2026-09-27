@@ -3,12 +3,11 @@ import type { GeoCheck } from "@/domain/geo-checks/geo-check.type.js";
 import type { IGeoChecksService } from "../domain/geo-checks/geo-check.service.js";
 import type { ILogger } from "@/utils/logger.js";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
-import type { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
-import { ICheckService } from "../domain/checks/check.service.js";
 import { DockerLog } from "@/domain/docker/docker-log.type.js";
 import { IDockerLogsService } from "@/domain/docker/docker-log.service.js";
 const SERVICE_NAME = "BufferService";
 
+export type CheckIngest = (checks: Check[]) => Promise<void>;
 export interface IBufferService {
 	addToBuffer(check: Check): void;
 	addGeoCheckToBuffer(geoCheck: GeoCheck): void;
@@ -29,25 +28,20 @@ export class BufferService implements IBufferService {
 	private geoBuffer: GeoCheck[];
 	private dockerLogBuffer: DockerLog[];
 	private bufferTimer: NodeJS.Timeout | null = null;
-	private checksService: ICheckService;
 	private geoChecksService: IGeoChecksService;
 	private dockerLogsService: IDockerLogsService;
-	private jobsRepository: IJobsRepository;
 
 	constructor(
 		logger: ILogger,
-		checkService: ICheckService,
 		geoChecksService: IGeoChecksService,
 		dockerLogsService: IDockerLogsService,
 		settingsService: ISettingsService,
-		jobsRepository: IJobsRepository
+		private ingest: CheckIngest
 	) {
 		this.BUFFER_TIMEOUT = settingsService.getSettings().nodeEnv === "development" ? 1000 : 1000 * 60 * 1; // 1 minute
 		this.logger = logger;
-		this.checksService = checkService;
 		this.geoChecksService = geoChecksService;
 		this.dockerLogsService = dockerLogsService;
-		this.jobsRepository = jobsRepository;
 		this.SERVICE_NAME = SERVICE_NAME;
 		this.buffer = [];
 		this.geoBuffer = [];
@@ -61,42 +55,15 @@ export class BufferService implements IBufferService {
 	}
 
 	addToBuffer(check: Check) {
-		try {
-			this.buffer.push(check);
-		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
-				service: this.SERVICE_NAME,
-				method: "addToBuffer",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-		}
+		this.buffer.push(check);
 	}
 
 	addGeoCheckToBuffer(geoCheck: GeoCheck) {
-		try {
-			this.geoBuffer.push(geoCheck);
-		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
-				service: this.SERVICE_NAME,
-				method: "addGeoCheckToBuffer",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-		}
+		this.geoBuffer.push(geoCheck);
 	}
 
 	addDockerLogToBuffer(dockerLog: DockerLog): void {
-		try {
-			this.dockerLogBuffer.push(dockerLog);
-		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
-				service: this.SERVICE_NAME,
-				method: "addDockerLogToBuffer",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-		}
+		this.dockerLogBuffer.push(dockerLog);
 	}
 
 	scheduleNextFlush() {
@@ -121,24 +88,16 @@ export class BufferService implements IBufferService {
 			}
 		}, this.BUFFER_TIMEOUT);
 	}
+
 	async flushBuffer() {
-		if (this.buffer.length === 0) {
-			return;
-		}
 		// Take the batch first so a write that drains it can't be appended to mid-flush
 		const batch = this.buffer;
 		this.buffer = [];
 		try {
-			this.logger.debug({
-				message: `Flushing ${batch.length} checks to database`,
-				service: this.SERVICE_NAME,
-				method: "flushBuffer",
-			});
-			await this.checksService.createChecks(batch);
-			// Need to evaluate checks when they are flushed
-			const monitorIds = [...new Set(batch.map((check) => check.metadata.monitorId))];
-			const now = Date.now();
-			await Promise.all(monitorIds.map((monitorId) => this.jobsRepository.upsertEvaluate(monitorId, now)));
+			if (batch.length > 0) {
+				this.logger.debug({ message: `Flushing ${batch.length} checks to database`, service: this.SERVICE_NAME, method: "flushBuffer" });
+			}
+			await this.ingest(batch);
 		} catch (error: unknown) {
 			this.logger.error({
 				message: error instanceof Error ? error.message : "Unknown error",

@@ -120,6 +120,17 @@ class MongoIncidentsRepository implements IIncidentsRepository {
 		return this.mapDocuments(incidents);
 	};
 
+	findByMonitorIdAndDate = async (monitorId: string, teamId: string, dateStart: Date, dateEnd: Date): Promise<Incident[]> => {
+		const matchStage = {
+			monitorId: new mongoose.Types.ObjectId(monitorId),
+			teamId: new mongoose.Types.ObjectId(teamId),
+			startTime: { $lt: dateEnd },
+			$or: [{ endTime: null }, { endTime: { $gte: dateStart } }],
+		};
+		const incidents = await IncidentModel.find(matchStage).sort({ startTime: -1 });
+		return this.mapDocuments(incidents);
+	};
+
 	updateById = async (incidentId: string, teamId: string, patch: Partial<Incident>) => {
 		const updatedIncident = await IncidentModel.findOneAndUpdate(
 			{ _id: new mongoose.Types.ObjectId(incidentId), teamId: new mongoose.Types.ObjectId(teamId) },
