@@ -86,23 +86,7 @@ class SettingsController implements ISettingsController {
 	};
 
 	sendTestEmail = async (req: Request, res: Response) => {
-		const {
-			to,
-			systemEmailHost,
-			systemEmailPort,
-			systemEmailAddress,
-			systemEmailDisplayName,
-			systemEmailPassword,
-			systemEmailUser,
-			systemEmailConnectionHost,
-			systemEmailSecure,
-			systemEmailPool,
-			systemEmailIgnoreTLS,
-			systemEmailRequireTLS,
-			systemEmailRejectUnauthorized,
-			systemEmailTLSServername,
-		} = sendTestEmailBodyValidation.parse(req.body);
-
+		const { to, ...transportConfig } = sendTestEmailBodyValidation.parse(req.body);
 		const subject = "This is a test email from Checkmate";
 		const context = { testName: "Monitoring System" };
 
@@ -112,21 +96,7 @@ class SettingsController implements ISettingsController {
 		}
 		let messageId: string;
 		try {
-			messageId = await this.emailService.sendEmail(to, subject, html, {
-				systemEmailHost,
-				systemEmailPort,
-				systemEmailUser,
-				systemEmailAddress,
-				systemEmailDisplayName,
-				systemEmailPassword,
-				systemEmailConnectionHost,
-				systemEmailSecure,
-				systemEmailPool,
-				systemEmailIgnoreTLS,
-				systemEmailRequireTLS,
-				systemEmailRejectUnauthorized,
-				systemEmailTLSServername,
-			});
+			messageId = await this.emailService.sendEmail(to, subject, html, transportConfig);
 		} catch (error: unknown) {
 			// Surface the underlying SMTP failure: diagnosing the settings is the whole
 			// point of the test email endpoint.
