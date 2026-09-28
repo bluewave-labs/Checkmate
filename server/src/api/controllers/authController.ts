@@ -68,15 +68,12 @@ class AuthController implements IAuthController {
 		const teamId = requireTeamId(req.user?.teamId);
 		const actorRoles = requireUserRoles(req.user?.role);
 		const newUser = await this.userService.createUser(validatedBody, teamId, actorRoles, req?.file ?? null);
-		res.json({ success: true, msg: "User created successfully", data: newUser });
+		res.status(201).json({ success: true, msg: "User created successfully", data: newUser });
 	};
 
 	loginUser = async (req: Request, res: Response) => {
-		if (req.body?.email) {
-			req.body.email = req.body.email?.toLowerCase();
-		}
-		loginValidation.parse(req.body);
-		const { user, token } = await this.userService.loginUser(req.body.email, req.body.password);
+		const { email, password } = loginValidation.parse(req.body);
+		const { user, token } = await this.userService.loginUser(email, password);
 		const data = { user, token };
 		res.json({ success: true, msg: "User logged in successfully", data });
 	};
@@ -96,21 +93,20 @@ class AuthController implements IAuthController {
 	};
 
 	requestRecovery = async (req: Request, res: Response) => {
-		recoveryValidation.parse(req.body);
-		const email = req?.body?.email;
+		const { email } = recoveryValidation.parse(req.body);
 		const msgId = await this.userService.requestRecovery(email);
 		res.json({ success: true, msg: "Password recovery email sent successfully", data: msgId });
 	};
 
 	validateRecovery = async (req: Request, res: Response) => {
-		recoveryTokenBodyValidation.parse(req.body);
-		await this.userService.validateRecovery(req.body.recoveryToken);
+		const { recoveryToken } = recoveryTokenBodyValidation.parse(req.body);
+		await this.userService.validateRecovery(recoveryToken);
 		res.json({ success: true, msg: "Recovery token is valid" });
 	};
 
 	resetPassword = async (req: Request, res: Response) => {
-		newPasswordValidation.parse(req.body);
-		const { user, token } = await this.userService.resetPassword(req.body.password, req.body.recoveryToken);
+		const { password, recoveryToken } = newPasswordValidation.parse(req.body);
+		const { user, token } = await this.userService.resetPassword(password, recoveryToken);
 		res.json({ success: true, msg: "Password has been reset successfully", data: { user, token } });
 	};
 
