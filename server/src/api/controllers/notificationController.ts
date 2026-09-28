@@ -1,5 +1,4 @@
 import { Request, Response, RequestHandler } from "express";
-import { catchAsync } from "@/utils/catchAsync.js";
 
 import {
 	createNotificationBodyValidation,
@@ -13,8 +12,6 @@ import { AppError } from "@/utils/AppError.js";
 import { INotificationsService } from "@/domain/notifications/notification.service.js";
 import { requireTeamId, requireUserId } from "./controllerUtils.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
-
-const SERVICE_NAME = "NotificationController";
 
 export interface INotificationController {
 	testNotification: RequestHandler;
@@ -33,7 +30,7 @@ class NotificationController implements INotificationController {
 		this.monitorsRepository = monitorsRepository;
 	}
 
-	testNotification = catchAsync(async (req: Request, res: Response) => {
+	testNotification = async (req: Request, res: Response) => {
 		const notification = testNotificationBodyValidation.parse(req.body);
 		let success = false;
 		let reason: string | undefined;
@@ -43,101 +40,62 @@ class NotificationController implements INotificationController {
 			if (!(error instanceof AppError)) throw error;
 			reason = error.message;
 		}
+		const msg = success ? "Notification sent successfully" : (reason ?? "Notification could not be sent — check the destination details.");
+		res.json({ success, msg });
+	};
 
-		return res.status(200).json({
-			success,
-			msg: success ? "Notification sent successfully" : (reason ?? "Notification could not be sent — check the destination details."),
-			details: { service: SERVICE_NAME },
-		});
-	});
-
-	createNotification = catchAsync(async (req: Request, res: Response) => {
+	createNotification = async (req: Request, res: Response) => {
 		const validatedBody = createNotificationBodyValidation.parse(req.body);
-
 		const teamId = requireTeamId(req.user?.teamId);
 		const userId = requireUserId(req.user?.id);
+		const data = await this.notificationsService.createNotification(validatedBody, userId, teamId);
+		res.json({ success: true, msg: "Notification created successfully", data });
+	};
 
-		const notification = await this.notificationsService.createNotification(validatedBody, userId, teamId);
-		return res.status(200).json({
-			success: true,
-			msg: "Notification created successfully",
-			data: notification,
-		});
-	});
-
-	getNotificationsByTeamId = catchAsync(async (req: Request, res: Response) => {
+	getNotificationsByTeamId = async (req: Request, res: Response) => {
 		const teamId = requireTeamId(req.user?.teamId);
-		const notifications = await this.notificationsService.findNotificationsByTeamId(teamId);
+		const data = await this.notificationsService.findNotificationsByTeamId(teamId);
 
-		return res.status(200).json({
-			success: true,
-			msg: "Notifications fetched successfully",
-			data: notifications,
-		});
-	});
+		res.json({ success: true, msg: "Notifications fetched successfully", data });
+	};
 
-	deleteNotification = catchAsync(async (req: Request, res: Response) => {
+	deleteNotification = async (req: Request, res: Response) => {
 		const teamId = requireTeamId(req.user?.teamId);
-		const validatedParams = deleteNotificationParamValidation.parse(req.params);
+		const { id } = deleteNotificationParamValidation.parse(req.params);
 
-		await this.notificationsService.deleteById(validatedParams.id, teamId);
-		return res.status(200).json({
-			success: true,
-			msg: "Notification deleted successfully",
-		});
-	});
+		await this.notificationsService.deleteById(id, teamId);
+		res.json({ success: true, msg: "Notification deleted successfully" });
+	};
 
-	getNotificationById = catchAsync(async (req: Request, res: Response) => {
+	getNotificationById = async (req: Request, res: Response) => {
 		const teamId = requireTeamId(req.user?.teamId);
-		const validatedParams = getNotificationByIdParamValidation.parse(req.params);
+		const { id } = getNotificationByIdParamValidation.parse(req.params);
+		const data = await this.notificationsService.findById(id, teamId);
+		res.json({ success: true, msg: "Notification fetched successfully", data });
+	};
 
-		const notification = await this.notificationsService.findById(validatedParams.id, teamId);
-
-		return res.status(200).json({
-			success: true,
-			msg: "Notification fetched successfully",
-			data: notification,
-		});
-	});
-
-	editNotification = catchAsync(async (req: Request, res: Response) => {
+	editNotification = async (req: Request, res: Response) => {
 		const validatedBody = createNotificationBodyValidation.parse(req.body);
-		const validatedParams = editNotificationParamValidation.parse(req.params);
-
+		const { id } = editNotificationParamValidation.parse(req.params);
 		const teamId = requireTeamId(req.user?.teamId);
-		const notificationId = validatedParams.id;
+		const data = await this.notificationsService.updateById(id, teamId, validatedBody);
+		res.json({ success: true, msg: "Notification updated successfully", data });
+	};
 
-		const editedNotification = await this.notificationsService.updateById(notificationId, teamId, validatedBody);
-		return res.status(200).json({
-			success: true,
-			msg: "Notification updated successfully",
-			data: editedNotification,
-		});
-	});
-
-	testAllNotifications = catchAsync(async (req: Request, res: Response) => {
-		const validatedBody = testAllNotificationsBodyValidation.parse(req.body);
-
+	testAllNotifications = async (req: Request, res: Response) => {
+		const { monitorId } = testAllNotificationsBodyValidation.parse(req.body);
 		const teamId = requireTeamId(req.user?.teamId);
-
-		const monitor = await this.monitorsRepository.findById(validatedBody.monitorId, teamId);
+		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		const notifications = monitor.notifications || [];
-
 		if (notifications.length === 0) {
 			throw new AppError({ message: "No notifications", status: 400 });
 		}
-
 		const result = await this.notificationsService.testAllNotifications(notifications);
-
 		if (!result) {
 			throw new AppError({ message: "Failed to send all notifications", status: 500 });
 		}
-
-		return res.status(200).json({
-			success: true,
-			msg: "All notifications sent successfully",
-		});
-	});
+		res.json({ success: true, msg: "All notifications sent successfully" });
+	};
 }
 
 export default NotificationController;
