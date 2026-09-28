@@ -635,6 +635,9 @@
 					"title": "Check frequency"
 				},
 				"general": {
+					"url": {
+						"alert": "The dashboard will now pull its data from the updated URL."
+					},
 					"option": {
 						"dockerHost": {
 							"label": "Docker host",
