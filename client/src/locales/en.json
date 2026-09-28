@@ -636,7 +636,7 @@
 				},
 				"general": {
 					"url": {
-						"alert": "The dashboard will now pull its data from the updated URL."
+						"alert": "Future checks will use the new URL. Historical data for this monitor is kept, but it was collected from the old URL."
 					},
 					"option": {
 						"dockerHost": {
