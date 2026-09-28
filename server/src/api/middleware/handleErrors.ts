@@ -30,8 +30,8 @@ const describeError = (error: unknown): ErrorReport => {
 
 const handleErrors = (logger: ILogger) => (error: unknown, req: Request, res: Response, _next: NextFunction) => {
 	const report = describeError(error);
-	const log = report.status < 500 ? logger.warn : logger.error;
-	log({ ...report, stack: error instanceof Error ? error.stack : undefined });
+	const level = report.status < 500 ? "warn" : "error";
+	logger[level]({ ...report, stack: error instanceof Error ? error.stack : undefined });
 	res.status(report.status).json({ status: report.status, msg: report.message });
 };
 
