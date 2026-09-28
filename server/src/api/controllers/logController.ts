@@ -1,6 +1,5 @@
 import { ILogger } from "@/utils/logger.js";
 import { Request, Response, RequestHandler } from "express";
-import { catchAsync } from "@/utils/catchAsync.js";
 
 export interface ILogController {
 	getLogs: RequestHandler;
@@ -12,13 +11,9 @@ class LogController {
 		this.logger = logger;
 	}
 
-	getLogs = catchAsync(async (req: Request, res: Response) => {
-		const logs = this.logger.getLogs();
-		res.status(200).json({
-			success: true,
-			msg: "Logs fetched successfully",
-			data: logs,
-		});
-	});
+	getLogs = async (req: Request, res: Response) => {
+		const data = this.logger.getLogs();
+		res.json({ success: true, msg: "Logs fetched successfully", data });
+	};
 }
 export default LogController;
