@@ -1,5 +1,4 @@
 import { Request, Response, RequestHandler } from "express";
-import { catchAsync } from "@/utils/catchAsync.js";
 import { getChecksParamValidation, getChecksQueryValidation } from "@/api/validation/checkValidation.js";
 import type { IGeoChecksService } from "@/domain/geo-checks/geo-check.service.js";
 import { requireTeamId } from "./controllerUtils.js";

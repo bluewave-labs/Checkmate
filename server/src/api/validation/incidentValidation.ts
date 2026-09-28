@@ -20,3 +20,11 @@ export const getIncidentsByTeamQueryValidation = z.object({
 export const getIncidentSummaryQueryValidation = z.object({
 	limit: z.coerce.number().int().min(1).optional(),
 });
+
+export const incidentIdParamValidation = z.object({
+	incidentId: z.string().min(1, "Incident ID is required"),
+});
+
+export const resolveIncidentBodyValidation = z.object({
+	comment: z.string().optional(),
+});
