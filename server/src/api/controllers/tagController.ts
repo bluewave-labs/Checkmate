@@ -1,5 +1,4 @@
 import { Request, Response, RequestHandler } from "express";
-import { catchAsync } from "@/utils/catchAsync.js";
 import { ITagsService } from "@/domain/tags/tag.service.js";
 import { requireTeamId } from "./controllerUtils.js";
 import {
