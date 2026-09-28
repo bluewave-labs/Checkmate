@@ -5,6 +5,7 @@ import {
 	getIncidentsByTeamQueryValidation,
 	getIncidentSummaryQueryValidation,
 	incidentIdParamValidation,
+	resolveIncidentBodyValidation,
 } from "@/api/validation/incidentValidation.js";
 
 export interface IIncidentController {
@@ -57,7 +58,7 @@ class IncidentController implements IIncidentController {
 		const userId = requireUserId(req.user?.id);
 		const userEmail = requireUserEmail(req.user?.email);
 		const { incidentId } = incidentIdParamValidation.parse(req.params);
-		const comment = extractString(req.body?.comment);
+		const { comment } = resolveIncidentBodyValidation.parse(req.body);
 		const data = await this.incidentService.resolveIncident(incidentId, userId, teamId, comment, userEmail);
 		res.json({ success: true, msg: "Incident resolved successfully", data });
 	};
