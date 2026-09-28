@@ -1,4 +1,4 @@
-import { Request, Response, RequestHandler } from "express";
+import { RequestHandler } from "express";
 
 import {
 	createNotificationBodyValidation,
@@ -10,7 +10,7 @@ import {
 } from "@/api/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
 import { INotificationsService } from "@/domain/notifications/notification.service.js";
-import { requireTeamId, requireUserId } from "./controllerUtils.js";
+import { Handler, requireTeamId, requireUserId } from "./controllerUtils.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 
 export interface INotificationController {
@@ -30,7 +30,7 @@ class NotificationController implements INotificationController {
 		this.monitorsRepository = monitorsRepository;
 	}
 
-	testNotification = async (req: Request, res: Response) => {
+	testNotification: Handler = async (req, res) => {
 		const notification = testNotificationBodyValidation.parse(req.body);
 		let success = false;
 		let reason: string | undefined;
@@ -44,7 +44,7 @@ class NotificationController implements INotificationController {
 		res.json({ success, msg });
 	};
 
-	createNotification = async (req: Request, res: Response) => {
+	createNotification: Handler = async (req, res) => {
 		const validatedBody = createNotificationBodyValidation.parse(req.body);
 		const teamId = requireTeamId(req.user?.teamId);
 		const userId = requireUserId(req.user?.id);
@@ -52,14 +52,14 @@ class NotificationController implements INotificationController {
 		res.json({ success: true, msg: "Notification created successfully", data });
 	};
 
-	getNotificationsByTeamId = async (req: Request, res: Response) => {
+	getNotificationsByTeamId: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const data = await this.notificationsService.findNotificationsByTeamId(teamId);
 
 		res.json({ success: true, msg: "Notifications fetched successfully", data });
 	};
 
-	deleteNotification = async (req: Request, res: Response) => {
+	deleteNotification: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const { id } = deleteNotificationParamValidation.parse(req.params);
 
@@ -67,14 +67,14 @@ class NotificationController implements INotificationController {
 		res.json({ success: true, msg: "Notification deleted successfully" });
 	};
 
-	getNotificationById = async (req: Request, res: Response) => {
+	getNotificationById: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const { id } = getNotificationByIdParamValidation.parse(req.params);
 		const data = await this.notificationsService.findById(id, teamId);
 		res.json({ success: true, msg: "Notification fetched successfully", data });
 	};
 
-	editNotification = async (req: Request, res: Response) => {
+	editNotification: Handler = async (req, res) => {
 		const validatedBody = createNotificationBodyValidation.parse(req.body);
 		const { id } = editNotificationParamValidation.parse(req.params);
 		const teamId = requireTeamId(req.user?.teamId);
@@ -82,7 +82,7 @@ class NotificationController implements INotificationController {
 		res.json({ success: true, msg: "Notification updated successfully", data });
 	};
 
-	testAllNotifications = async (req: Request, res: Response) => {
+	testAllNotifications: Handler = async (req, res) => {
 		const { monitorId } = testAllNotificationsBodyValidation.parse(req.body);
 		const teamId = requireTeamId(req.user?.teamId);
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);

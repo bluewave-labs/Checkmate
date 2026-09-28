@@ -1,4 +1,5 @@
-import { Request, Response, RequestHandler } from "express";
+import { RequestHandler } from "express";
+import { Handler } from "@/api/controllers/controllerUtils.js";
 import { updateAppSettingsBodyValidation } from "@/api/validation/settingsValidation.js";
 import { sendTestEmailBodyValidation } from "@/api/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
@@ -58,13 +59,13 @@ class SettingsController implements ISettingsController {
 		return returnSettings;
 	};
 
-	getAppSettings = async (req: Request, res: Response) => {
+	getAppSettings: Handler = async (req, res) => {
 		const dbSettings = await this.settingsService.getDBSettings();
 		const data = await this.buildAppSettings(dbSettings);
 		res.json({ success: true, msg: "App settings fetched successfully", data });
 	};
 
-	updateAppSettings = async (req: Request, res: Response) => {
+	updateAppSettings: Handler = async (req, res) => {
 		const validatedBody = updateAppSettingsBodyValidation.parse(req.body);
 		if (validatedBody.globalProxyId) {
 			const proxy = await this.proxiesService.getProxySummary(validatedBody.globalProxyId);
@@ -85,7 +86,7 @@ class SettingsController implements ISettingsController {
 		res.json({ success: true, msg: "App settings updated successfully", data });
 	};
 
-	sendTestEmail = async (req: Request, res: Response) => {
+	sendTestEmail: Handler = async (req, res) => {
 		const { to, ...transportConfig } = sendTestEmailBodyValidation.parse(req.body);
 		const subject = "This is a test email from Checkmate";
 		const context = { testName: "Monitoring System" };

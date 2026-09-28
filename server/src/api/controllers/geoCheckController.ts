@@ -1,7 +1,7 @@
-import { Request, Response, RequestHandler } from "express";
+import { RequestHandler } from "express";
 import { getChecksParamValidation, getChecksQueryValidation } from "@/api/validation/checkValidation.js";
 import type { IGeoChecksService } from "@/domain/geo-checks/geo-check.service.js";
-import { requireTeamId } from "./controllerUtils.js";
+import { Handler, requireTeamId } from "./controllerUtils.js";
 
 export interface IGeoCheckController {
 	getGeoChecksByMonitor: RequestHandler;
@@ -12,7 +12,7 @@ class GeoCheckController implements IGeoCheckController {
 		this.geoChecksService = geoChecksService;
 	}
 
-	getGeoChecksByMonitor = async (req: Request, res: Response) => {
+	getGeoChecksByMonitor: Handler = async (req, res) => {
 		const validatedParams = getChecksParamValidation.parse(req.params);
 		const validatedQuery = getChecksQueryValidation.parse(req.query);
 

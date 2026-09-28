@@ -1,5 +1,5 @@
-import { Request, Response, RequestHandler } from "express";
-import { requireTeamId, requireUserId, requireUserEmail } from "./controllerUtils.js";
+import { RequestHandler } from "express";
+import { Handler, requireTeamId, requireUserId, requireUserEmail } from "./controllerUtils.js";
 import { IIncidentService } from "@/domain/incidents/incident.service.js";
 import {
 	getIncidentsByTeamQueryValidation,
@@ -20,7 +20,7 @@ class IncidentController implements IIncidentController {
 		this.incidentService = incidentService;
 	}
 
-	getIncidentsByTeam = async (req: Request, res: Response) => {
+	getIncidentsByTeam: Handler = async (req, res) => {
 		const validatedQuery = getIncidentsByTeamQueryValidation.parse(req.query);
 
 		const teamId = requireTeamId(req.user?.teamId);
@@ -38,7 +38,7 @@ class IncidentController implements IIncidentController {
 		res.json({ success: true, msg: "Incidents retrieved successfully", data });
 	};
 
-	getIncidentSummary = async (req: Request, res: Response) => {
+	getIncidentSummary: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const validatedQuery = getIncidentSummaryQueryValidation.parse(req.query);
 
@@ -46,14 +46,14 @@ class IncidentController implements IIncidentController {
 		res.json({ success: true, msg: "Incident summary retrieved successfully", data });
 	};
 
-	getIncidentById = async (req: Request, res: Response) => {
+	getIncidentById: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const { incidentId } = incidentIdParamValidation.parse(req.params);
 		const data = await this.incidentService.getIncidentById(incidentId, teamId);
 		res.json({ success: true, msg: "Incident retrieved successfully", data });
 	};
 
-	resolveIncidentManually = async (req: Request, res: Response) => {
+	resolveIncidentManually: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const userId = requireUserId(req.user?.id);
 		const userEmail = requireUserEmail(req.user?.email);

@@ -1,4 +1,4 @@
-import { Request, Response, RequestHandler } from "express";
+import { RequestHandler } from "express";
 import { updateNotificationsValidation } from "@/api/validation/notificationValidation.js";
 import {
 	getMonitorByIdParamValidation,
@@ -24,7 +24,7 @@ import {
 } from "@/api/validation/monitorValidation.js";
 import sslChecker from "ssl-checker";
 import * as whoiser from "whoiser";
-import { fetchMonitorCertificate, fetchMonitorDomain, requireTeamId, requireUserId } from "@/api/controllers/controllerUtils.js";
+import { Handler, fetchMonitorCertificate, fetchMonitorDomain, requireTeamId, requireUserId } from "@/api/controllers/controllerUtils.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorService } from "@/domain/monitors/monitor.service.js";
 import { INotificationsService } from "@/domain/notifications/notification.service.js";
@@ -63,7 +63,7 @@ class MonitorController implements IMonitorController {
 		this.notificationsService = notificationsService;
 	}
 
-	getMonitorCertificate = async (req: Request, res: Response) => {
+	getMonitorCertificate: Handler = async (req, res) => {
 		const { monitorId } = getCertificateParamValidation.parse(req.params);
 		const teamId = requireTeamId(req.user?.teamId);
 		const monitor = await this.monitorService.getMonitorById({ teamId, monitorId });
@@ -72,7 +72,7 @@ class MonitorController implements IMonitorController {
 		res.json({ success: true, msg: "SSL certificate retrieved successfully", data });
 	};
 
-	getMonitorDomain = async (req: Request, res: Response) => {
+	getMonitorDomain: Handler = async (req, res) => {
 		const { monitorId } = getDomainParamValidation.parse(req.params);
 		const teamId = requireTeamId(req.user?.teamId);
 		const monitor = await this.monitorService.getMonitorById({ teamId, monitorId });
@@ -81,7 +81,7 @@ class MonitorController implements IMonitorController {
 		res.json({ success: true, msg: "Domain expiry retrieved successfully", data });
 	};
 
-	getUptimeDetailsById = async (req: Request, res: Response) => {
+	getUptimeDetailsById: Handler = async (req, res) => {
 		const { monitorId } = getUptimeDetailsByIdParamValidation.parse(req.params);
 		const { dateRange } = getUptimeDetailsByIdQueryValidation.parse(req.query);
 		const teamId = requireTeamId(req.user?.teamId);
@@ -89,7 +89,7 @@ class MonitorController implements IMonitorController {
 		res.json({ success: true, msg: "Uptime details retrieved successfully", data });
 	};
 
-	getHardwareDetailsById = async (req: Request, res: Response) => {
+	getHardwareDetailsById: Handler = async (req, res) => {
 		const { monitorId } = getHardwareDetailsByIdParamValidation.parse(req.params);
 		const { dateRange } = getHardwareDetailsByIdQueryValidation.parse(req.query);
 		const teamId = requireTeamId(req.user?.teamId);
@@ -102,7 +102,7 @@ class MonitorController implements IMonitorController {
 		res.json({ success: true, msg: "Hardware details retrieved successfully", data });
 	};
 
-	getPageSpeedDetailsById = async (req: Request, res: Response) => {
+	getPageSpeedDetailsById: Handler = async (req, res) => {
 		const { monitorId } = getHardwareDetailsByIdParamValidation.parse(req.params);
 		const { dateRange } = getHardwareDetailsByIdQueryValidation.parse(req.query);
 		const teamId = requireTeamId(req.user?.teamId);
@@ -111,7 +111,7 @@ class MonitorController implements IMonitorController {
 		res.json({ success: true, msg: "Page speed details retrieved successfully", data });
 	};
 
-	getDockerDetailsById = async (req: Request, res: Response) => {
+	getDockerDetailsById: Handler = async (req, res) => {
 		const { monitorId } = getDockerDetailsByIdParamValidation.parse(req.params);
 		const { dateRange } = getDockerDetailsByIdQueryValidation.parse(req.query);
 		const teamId = requireTeamId(req.user?.teamId);
@@ -119,7 +119,7 @@ class MonitorController implements IMonitorController {
 		res.json({ success: true, msg: "Docker details retrieved successfully", data });
 	};
 
-	getDockerContainerByName = async (req: Request, res: Response) => {
+	getDockerContainerByName: Handler = async (req, res) => {
 		const { monitorId, containerName } = getDockerContainerNameParamValidation.parse(req.params);
 		const { dateRange } = getDockerContainerByNameQueryValidation.parse(req.query);
 		const teamId = requireTeamId(req.user?.teamId);
@@ -127,7 +127,7 @@ class MonitorController implements IMonitorController {
 		res.json({ success: true, msg: "Docker container retrieved successfully", data });
 	};
 
-	getDockerContainerLogs = async (req: Request, res: Response) => {
+	getDockerContainerLogs: Handler = async (req, res) => {
 		const { monitorId, containerName } = getDockerContainerNameParamValidation.parse(req.params);
 		const { before, after, limit } = getDockerContainerLogsQueryValidation.parse(req.query);
 		const teamId = requireTeamId(req.user?.teamId);
@@ -135,7 +135,7 @@ class MonitorController implements IMonitorController {
 		res.json({ success: true, msg: "Docker container logs retrieved successfully", data });
 	};
 
-	getGeoChecksByMonitorId = async (req: Request, res: Response) => {
+	getGeoChecksByMonitorId: Handler = async (req, res) => {
 		const { monitorId } = getMonitorByIdParamValidation.parse(req.params);
 		const { dateRange, continent } = getMonitorByIdQueryValidation.parse(req.query);
 		const continents = continent ? (Array.isArray(continent) ? continent : [continent]) : undefined;
@@ -144,14 +144,14 @@ class MonitorController implements IMonitorController {
 		res.json({ success: true, msg: "Geo checks retrieved successfully", data });
 	};
 
-	getMonitorById = async (req: Request, res: Response) => {
+	getMonitorById: Handler = async (req, res) => {
 		const { monitorId } = getMonitorByIdParamValidation.parse(req.params);
 		const teamId = requireTeamId(req.user?.teamId);
 		const data = await this.monitorService.getMonitorById({ teamId, monitorId });
 		res.json({ success: true, msg: "Monitor retrieved successfully", data });
 	};
 
-	createMonitor = async (req: Request, res: Response) => {
+	createMonitor: Handler = async (req, res) => {
 		const validatedBody = createMonitorBodyValidation.parse(req.body);
 		const userId = requireUserId(req.user?.id);
 		const teamId = requireTeamId(req.user?.teamId);
@@ -159,7 +159,7 @@ class MonitorController implements IMonitorController {
 		res.json({ success: true, msg: "Monitor created successfully", data });
 	};
 
-	importMonitorsFromJSON = async (req: Request, res: Response) => {
+	importMonitorsFromJSON: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const userId = requireUserId(req.user?.id);
 		const { monitors } = importMonitorsBodyValidation.parse(req.body);
@@ -167,20 +167,20 @@ class MonitorController implements IMonitorController {
 		res.json({ success: true, msg: `Successfully imported ${data.imported} monitor(s)`, data });
 	};
 
-	deleteMonitor = async (req: Request, res: Response) => {
+	deleteMonitor: Handler = async (req, res) => {
 		const { monitorId } = getMonitorByIdParamValidation.parse(req.params);
 		const teamId = requireTeamId(req.user?.teamId);
 		const data = await this.monitorService.deleteMonitor({ teamId, monitorId });
 		res.json({ success: true, msg: "Monitor deleted successfully", data });
 	};
 
-	deleteAllMonitors = async (req: Request, res: Response) => {
+	deleteAllMonitors: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const deletedCount = await this.monitorService.deleteAllMonitors({ teamId });
 		res.json({ success: true, msg: `Deleted ${deletedCount} monitors` });
 	};
 
-	editMonitor = async (req: Request, res: Response) => {
+	editMonitor: Handler = async (req, res) => {
 		const { monitorId } = getMonitorByIdParamValidation.parse(req.params);
 		const body = editMonitorBodyValidation.parse(req.body);
 		const teamId = requireTeamId(req.user?.teamId);
@@ -188,7 +188,7 @@ class MonitorController implements IMonitorController {
 		res.json({ success: true, msg: "Monitor edited successfully", data });
 	};
 
-	pauseMonitor = async (req: Request, res: Response) => {
+	pauseMonitor: Handler = async (req, res) => {
 		const { monitorId } = pauseMonitorParamValidation.parse(req.params);
 		const teamId = requireTeamId(req.user?.teamId);
 		const data = await this.monitorService.pauseMonitor({ teamId, monitorId });
@@ -196,7 +196,7 @@ class MonitorController implements IMonitorController {
 		res.json({ success: true, msg, data });
 	};
 
-	bulkPauseMonitors = async (req: Request, res: Response) => {
+	bulkPauseMonitors: Handler = async (req, res) => {
 		const { monitorIds, pause } = bulkPauseMonitorBodyValidation.parse(req.body);
 		const teamId = requireTeamId(req.user?.teamId);
 		const { monitors, failedCount } = await this.monitorService.bulkPauseMonitors({ teamId, monitorIds, pause });
@@ -210,7 +210,7 @@ class MonitorController implements IMonitorController {
 		res.json({ success: true, msg, data });
 	};
 
-	addDemoMonitors = async (req: Request, res: Response) => {
+	addDemoMonitors: Handler = async (req, res) => {
 		const id = requireUserId(req.user?.id);
 		const teamId = requireTeamId(req.user?.teamId);
 		const demoMonitors = await this.monitorService.addDemoMonitors({ userId: id, teamId });
@@ -218,32 +218,32 @@ class MonitorController implements IMonitorController {
 		res.json({ success: true, msg: "Demo monitors added successfully", data });
 	};
 
-	getMonitorsByTeamId = async (req: Request, res: Response) => {
+	getMonitorsByTeamId: Handler = async (req, res) => {
 		const { type, tags, filter } = getMonitorsByTeamIdQueryValidation.parse(req.query);
 		const teamId = requireTeamId(req.user?.teamId);
 		const data = await this.monitorService.getMonitorsByTeamId({ teamId, type, tags, filter });
 		res.json({ success: true, msg: "Monitors retrieved successfully", data });
 	};
 
-	getMonitorsWithChecksByTeamId = async (req: Request, res: Response) => {
+	getMonitorsWithChecksByTeamId: Handler = async (req, res) => {
 		const { limit, page, rowsPerPage, filter, field, order, type, tags } = getMonitorsWithChecksQueryValidation.parse(req.query);
 		const teamId = requireTeamId(req.user?.teamId);
 		const data = await this.monitorService.getMonitorsWithChecksByTeamId({ teamId, limit, type, tags, page, rowsPerPage, filter, field, order });
 		res.json({ success: true, msg: "Monitors retrieved successfully", data });
 	};
 
-	exportMonitorsToJSON = async (req: Request, res: Response) => {
+	exportMonitorsToJSON: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const data = await this.monitorService.exportMonitorsToJSON({ teamId });
 		res.json({ success: true, msg: "Monitors exported successfully", data });
 	};
 
-	getAllGames = async (req: Request, res: Response) => {
+	getAllGames: Handler = async (req, res) => {
 		const data = this.monitorService.getAllGames();
 		res.json({ success: true, msg: "Supported games retrieved successfully", data });
 	};
 
-	updateNotifications = async (req: Request, res: Response) => {
+	updateNotifications: Handler = async (req, res) => {
 		const { monitorIds, notificationIds, action } = updateNotificationsValidation.parse(req.body);
 		const teamId = requireTeamId(req.user?.teamId);
 

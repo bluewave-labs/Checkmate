@@ -1,6 +1,6 @@
-import { Request, Response, RequestHandler } from "express";
+import { RequestHandler } from "express";
 import { ITagsService } from "@/domain/tags/tag.service.js";
-import { requireTeamId } from "./controllerUtils.js";
+import { Handler, requireTeamId } from "./controllerUtils.js";
 import {
 	createTagBodyValidation,
 	editTagBodyValidation,
@@ -20,7 +20,7 @@ export interface ITagsController {
 class TagsController implements ITagsController {
 	constructor(private tagsService: ITagsService) {}
 
-	createTag = async (req: Request, res: Response) => {
+	createTag: Handler = async (req, res) => {
 		const validatedBody = createTagBodyValidation.parse(req.body);
 		const teamId = requireTeamId(req.user?.teamId);
 
@@ -28,20 +28,20 @@ class TagsController implements ITagsController {
 		res.json({ success: true, msg: "Tag created successfully", data: tag });
 	};
 
-	getTagById = async (req: Request, res: Response) => {
+	getTagById: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const { id: tagId } = getTagByIdParamValidation.parse(req.params);
 		const tag = await this.tagsService.getTag(tagId, teamId);
 		res.json({ success: true, msg: "Tag retrieved successfully", data: tag });
 	};
 
-	getTagsByTeamId = async (req: Request, res: Response) => {
+	getTagsByTeamId: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const tags = await this.tagsService.getTagsByTeamId(teamId);
 		res.json({ success: true, msg: "Tags retrieved successfully", data: tags });
 	};
 
-	editTag = async (req: Request, res: Response) => {
+	editTag: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const { id: tagId } = editTagParamValidation.parse(req.params);
 		const validatedBody = editTagBodyValidation.parse(req.body);
@@ -49,7 +49,7 @@ class TagsController implements ITagsController {
 		res.json({ success: true, msg: "Tag updated successfully", data: updatedTag });
 	};
 
-	deleteTag = async (req: Request, res: Response) => {
+	deleteTag: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const { id: tagId } = deleteTagParamValidation.parse(req.params);
 		await this.tagsService.deleteTag(tagId, teamId);

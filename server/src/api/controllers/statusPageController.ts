@@ -1,4 +1,4 @@
-import { Request, Response, RequestHandler } from "express";
+import { RequestHandler } from "express";
 
 import {
 	createStatusPageBodyValidation,
@@ -11,7 +11,7 @@ import {
 	statusPageIdParamValidation,
 } from "@/api/validation/statusPageValidation.js";
 import { AppError } from "@/utils/AppError.js";
-import { requireTeamId, requireUserId } from "@/api/controllers/controllerUtils.js";
+import { Handler, requireTeamId, requireUserId } from "@/api/controllers/controllerUtils.js";
 import { IStatusPageService } from "@/domain/status-pages/status-page.service.js";
 import { resolveStatusPageDomainFromRequest } from "@/utils/statusPageDomain.js";
 
@@ -31,7 +31,7 @@ class StatusPageController implements IStatusPageController {
 		this.statusPageService = statusPageService;
 	}
 
-	createStatusPage = async (req: Request, res: Response) => {
+	createStatusPage: Handler = async (req, res) => {
 		const validatedBody = createStatusPageBodyValidation.parse(req.body);
 		if (req.file) {
 			imageValidation.parse(req.file);
@@ -42,7 +42,7 @@ class StatusPageController implements IStatusPageController {
 		res.json({ success: true, msg: "Status page created successfully", data });
 	};
 
-	updateStatusPage = async (req: Request, res: Response) => {
+	updateStatusPage: Handler = async (req, res) => {
 		const { id } = statusPageIdParamValidation.parse(req.params);
 		const validatedBody = createStatusPageBodyValidation.parse(req.body);
 		if (req.file) {
@@ -53,7 +53,7 @@ class StatusPageController implements IStatusPageController {
 		res.json({ success: true, msg: "Status page updated successfully", data });
 	};
 
-	getStatusPageByUrl = async (req: Request, res: Response) => {
+	getStatusPageByUrl: Handler = async (req, res) => {
 		const { url } = getStatusPageParamValidation.parse(req.params);
 		const { range } = getStatusPageQueryValidation.parse(req.query);
 		const statusPage = await this.statusPageService.getStatusPageByUrl(url);
@@ -61,14 +61,14 @@ class StatusPageController implements IStatusPageController {
 		res.json({ success: true, msg: "Status page retrieved successfully", data });
 	};
 
-	getPublicMonitorIncidents = async (req: Request, res: Response) => {
+	getPublicMonitorIncidents: Handler = async (req, res) => {
 		const { url, monitorId } = getPublicMonitorIncidentsParamValidation.parse(req.params);
 		const { date } = getPublicMonitorIncidentsQueryValidation.parse(req.query);
 		const incidents = await this.statusPageService.getPublicMonitorIncidents(url, monitorId, date, req.user?.teamId);
 		res.json({ success: true, msg: "Incidents retrieved successfully", data: { incidents } });
 	};
 
-	resolveStatusPageByDomain = async (req: Request, res: Response) => {
+	resolveStatusPageByDomain: Handler = async (req, res) => {
 		const { range, domain: queryDomain } = resolveStatusPageQueryValidation.parse(req.query);
 		const domain = resolveStatusPageDomainFromRequest(req.hostname, queryDomain);
 		if (!domain) {
@@ -84,13 +84,13 @@ class StatusPageController implements IStatusPageController {
 		res.json({ success: true, msg: "Status page retrieved successfully", data });
 	};
 
-	getStatusPagesByTeamId = async (req: Request, res: Response) => {
+	getStatusPagesByTeamId: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const data = await this.statusPageService.getStatusPagesByTeamId(teamId);
 		res.json({ success: true, msg: "Status pages retrieved successfully", data });
 	};
 
-	deleteStatusPage = async (req: Request, res: Response) => {
+	deleteStatusPage: Handler = async (req, res) => {
 		const { id } = statusPageIdParamValidation.parse(req.params);
 		const teamId = requireTeamId(req.user?.teamId);
 		await this.statusPageService.deleteStatusPage(id, teamId);

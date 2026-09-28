@@ -4,8 +4,12 @@ import { UserRole } from "@/domain/users/user.type.js";
 import sslChecker, { SSLDetails } from "ssl-checker";
 import * as whoiser from "whoiser";
 import { parse as parseDomain } from "tldts";
+import { Request, Response } from "express";
 type SSLCheckerType = typeof sslChecker;
 type WhoisModule = typeof whoiser;
+
+export type ApiEnvelope<T = unknown> = { success: boolean; msg: string; data?: T };
+export type Handler = (req: Request, res: Response<ApiEnvelope>) => Promise<void>;
 
 export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: Monitor): Promise<SSLDetails> => {
 	const monitorUrl = new URL(monitor.url);

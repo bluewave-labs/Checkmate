@@ -1,6 +1,7 @@
 import { IJobScheduler } from "@/worker/worker.interface.js";
 import { getQueueJobsQueryValidation } from "@/api/validation/queueValidation.js";
-import { Request, Response, RequestHandler } from "express";
+import { RequestHandler } from "express";
+import { Handler } from "@/api/controllers/controllerUtils.js";
 
 export interface IJobQueueController {
 	getMetrics: RequestHandler;
@@ -12,25 +13,25 @@ export interface IJobQueueController {
 class JobQueueController implements IJobQueueController {
 	constructor(private scheduler: IJobScheduler) {}
 
-	getMetrics = async (req: Request, res: Response) => {
+	getMetrics: Handler = async (req, res) => {
 		const data = await this.scheduler.getMetrics();
 		res.json({ success: true, msg: "Queue metrics fetched successfully", data });
 	};
 
-	getJobs = async (req: Request, res: Response) => {
+	getJobs: Handler = async (req, res) => {
 		const pagination = getQueueJobsQueryValidation.parse(req.query);
 		const data = await this.scheduler.getJobs(pagination);
 		res.json({ success: true, msg: "Queue jobs fetched successfully", data });
 	};
 
-	getAllMetrics = async (req: Request, res: Response) => {
+	getAllMetrics: Handler = async (req, res) => {
 		const pagination = getQueueJobsQueryValidation.parse(req.query);
 		const data = await this.scheduler.getJobs(pagination);
 		const metrics = await this.scheduler.getMetrics();
 		res.json({ success: true, msg: "Queue metrics fetched successfully", data: { ...data, metrics } });
 	};
 
-	flushQueue = async (req: Request, res: Response) => {
+	flushQueue: Handler = async (req, res) => {
 		const data = await this.scheduler.flushQueues();
 		res.json({ success: true, msg: "Queue flushed successfully", data });
 	};

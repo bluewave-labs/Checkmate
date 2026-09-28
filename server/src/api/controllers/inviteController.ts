@@ -1,6 +1,6 @@
-import { Request, Response, RequestHandler } from "express";
+import { RequestHandler } from "express";
 import { inviteBodyValidation, inviteVerificationBodyValidation } from "@/api/validation/authValidation.js";
-import { requireFirstName, requireTeamId, requireUserRoles } from "@/api/controllers/controllerUtils.js";
+import { Handler, requireFirstName, requireTeamId, requireUserRoles } from "@/api/controllers/controllerUtils.js";
 import { IInviteService } from "@/domain/invites/invite.service.js";
 
 export interface IInviteController {
@@ -15,7 +15,7 @@ class InviteController implements IInviteController {
 		this.inviteService = inviteService;
 	}
 
-	getInviteToken = async (req: Request, res: Response) => {
+	getInviteToken: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const userRoles = requireUserRoles(req.user?.role);
 		const invite = inviteBodyValidation.parse({ ...req.body, teamId });
@@ -23,7 +23,7 @@ class InviteController implements IInviteController {
 		res.json({ success: true, msg: "Invite token generated successfully", data });
 	};
 
-	sendInviteEmail = async (req: Request, res: Response) => {
+	sendInviteEmail: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const userRoles = requireUserRoles(req.user?.role);
 		const firstName = requireFirstName(req.user?.firstName);
@@ -33,7 +33,7 @@ class InviteController implements IInviteController {
 		res.json({ success: true, msg: "Invite issued successfully" });
 	};
 
-	verifyInviteToken = async (req: Request, res: Response) => {
+	verifyInviteToken: Handler = async (req, res) => {
 		const { token } = inviteVerificationBodyValidation.parse(req.body);
 		const data = await this.inviteService.verifyInviteToken({ inviteToken: token });
 		res.json({ success: true, msg: "Invite verified successfully", data });

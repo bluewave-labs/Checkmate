@@ -1,6 +1,6 @@
-import { Request, Response, RequestHandler } from "express";
+import { RequestHandler } from "express";
 import { AppError } from "@/utils/AppError.js";
-import { requireTeamId, requireUserEmail, requireUserId, requireUserRoles } from "@/api/controllers/controllerUtils.js";
+import { Handler, requireTeamId, requireUserEmail, requireUserId, requireUserRoles } from "@/api/controllers/controllerUtils.js";
 
 import {
 	registrationBodyValidation,
@@ -46,24 +46,15 @@ class AuthController implements IAuthController {
 		this.userService = userService;
 	}
 
-	registerUser = async (req: Request, res: Response) => {
-		const newUser = req.body.user;
+	registerUser: Handler = async (req, res) => {
 		const newUserToken = registerInviteTokenValidation.parse(req.body.token);
-		if (newUser?.email) {
-			const newUserEmail = requireUserEmail(newUser.email);
-			newUser.email = newUserEmail.toLowerCase();
-		}
-		const validatedBody = registrationBodyValidation.parse(newUser);
+		const validatedBody = registrationBodyValidation.parse(req.body.user);
 		const { user, token } = await this.userService.registerUser(validatedBody, newUserToken, req?.file ?? null);
 		res.json({ success: true, msg: "User registered successfully", data: { user, token } });
 	};
 
-	createUser = async (req: Request, res: Response) => {
-		const userData = req.body;
-		if (userData?.email) {
-			userData.email = userData.email.toLowerCase();
-		}
-		const validatedBody = createUserBodyValidation.parse(userData);
+	createUser: Handler = async (req, res) => {
+		const validatedBody = createUserBodyValidation.parse(req.body);
 
 		const teamId = requireTeamId(req.user?.teamId);
 		const actorRoles = requireUserRoles(req.user?.role);
@@ -71,14 +62,14 @@ class AuthController implements IAuthController {
 		res.status(201).json({ success: true, msg: "User created successfully", data: newUser });
 	};
 
-	loginUser = async (req: Request, res: Response) => {
+	loginUser: Handler = async (req, res) => {
 		const { email, password } = loginValidation.parse(req.body);
 		const { user, token } = await this.userService.loginUser(email, password);
 		const data = { user, token };
 		res.json({ success: true, msg: "User logged in successfully", data });
 	};
 
-	editUser = async (req: Request, res: Response) => {
+	editUser: Handler = async (req, res) => {
 		const validatedBody = editUserBodyValidation.parse(req.body);
 		const userId = requireUserId(req.user?.id);
 		const userEmail = requireUserEmail(req.user?.email);
@@ -87,30 +78,30 @@ class AuthController implements IAuthController {
 		res.json({ success: true, msg: "User updated successfully", data: updatedUser });
 	};
 
-	checkSuperadminExists = async (req: Request, res: Response) => {
+	checkSuperadminExists: Handler = async (req, res) => {
 		const superAdminExists = await this.userService.checkSuperadminExists();
 		res.json({ success: true, msg: "Superadmin existence checked successfully", data: superAdminExists });
 	};
 
-	requestRecovery = async (req: Request, res: Response) => {
+	requestRecovery: Handler = async (req, res) => {
 		const { email } = recoveryValidation.parse(req.body);
 		const msgId = await this.userService.requestRecovery(email);
 		res.json({ success: true, msg: "Password recovery email sent successfully", data: msgId });
 	};
 
-	validateRecovery = async (req: Request, res: Response) => {
+	validateRecovery: Handler = async (req, res) => {
 		const { recoveryToken } = recoveryTokenBodyValidation.parse(req.body);
 		await this.userService.validateRecovery(recoveryToken);
 		res.json({ success: true, msg: "Recovery token is valid" });
 	};
 
-	resetPassword = async (req: Request, res: Response) => {
+	resetPassword: Handler = async (req, res) => {
 		const { password, recoveryToken } = newPasswordValidation.parse(req.body);
 		const { user, token } = await this.userService.resetPassword(password, recoveryToken);
 		res.json({ success: true, msg: "Password has been reset successfully", data: { user, token } });
 	};
 
-	deleteUser = async (req: Request, res: Response) => {
+	deleteUser: Handler = async (req, res) => {
 		const userId = requireUserId(req.user?.id);
 		const teamId = requireTeamId(req.user?.teamId);
 		const roles = requireUserRoles(req.user?.role);
@@ -123,7 +114,7 @@ class AuthController implements IAuthController {
 		res.json({ success: true, msg: "User deleted successfully" });
 	};
 
-	deleteUserById = async (req: Request, res: Response) => {
+	deleteUserById: Handler = async (req, res) => {
 		const validatedParams = getUserByIdParamValidation.parse(req.params);
 		const targetUserId = validatedParams.userId;
 		const actorId = requireUserId(req.user?.id);
@@ -133,12 +124,12 @@ class AuthController implements IAuthController {
 		res.json({ success: true, msg: "User removed successfully" });
 	};
 
-	getAllUsers = async (req: Request, res: Response) => {
+	getAllUsers: Handler = async (req, res) => {
 		const allUsers = await this.userService.getAllUsers();
 		res.json({ success: true, msg: "Users retrieved successfully", data: allUsers });
 	};
 
-	getUserById = async (req: Request, res: Response) => {
+	getUserById: Handler = async (req, res) => {
 		const validatedParams = getUserByIdParamValidation.parse(req.params);
 		const actorRoles = requireUserRoles(req.user?.role);
 		const user = await this.userService.getUserById(actorRoles, validatedParams.userId);
@@ -146,7 +137,7 @@ class AuthController implements IAuthController {
 		res.json({ success: true, msg: "ok", data: user });
 	};
 
-	editUserById = async (req: Request, res: Response) => {
+	editUserById: Handler = async (req, res) => {
 		const actorRoles = requireUserRoles(req.user?.role);
 		const actorId = requireUserId(req.user?.id);
 
@@ -163,7 +154,7 @@ class AuthController implements IAuthController {
 		res.json({ success: true, msg: "ok" });
 	};
 
-	editUserPasswordById = async (req: Request, res: Response) => {
+	editUserPasswordById: Handler = async (req, res) => {
 		const actorRoles = requireUserRoles(req.user?.role);
 		if (!actorRoles.includes("superadmin")) {
 			throw new AppError({ message: "Unauthorized", status: 403 });

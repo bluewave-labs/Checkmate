@@ -1,5 +1,6 @@
 import { ILogger } from "@/utils/logger.js";
-import { Request, Response, RequestHandler } from "express";
+import { RequestHandler } from "express";
+import { Handler } from "@/api/controllers/controllerUtils.js";
 
 export interface ILogController {
 	getLogs: RequestHandler;
@@ -11,7 +12,7 @@ class LogController implements ILogController {
 		this.logger = logger;
 	}
 
-	getLogs = async (req: Request, res: Response) => {
+	getLogs: Handler = async (req, res) => {
 		const data = this.logger.getLogs();
 		res.json({ success: true, msg: "Logs fetched successfully", data });
 	};

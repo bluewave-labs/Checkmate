@@ -1,6 +1,6 @@
-import { Request, Response, RequestHandler } from "express";
+import { RequestHandler } from "express";
 import { IProxiesService } from "@/domain/proxies/proxy.service.js";
-import { requireTeamId } from "./controllerUtils.js";
+import { Handler, requireTeamId } from "./controllerUtils.js";
 import {
 	createProxyBodyValidation,
 	editProxyBodyValidation,
@@ -21,32 +21,32 @@ export interface IProxiesController {
 class ProxyController implements IProxiesController {
 	constructor(private proxiesService: IProxiesService) {}
 
-	createProxy = async (req: Request, res: Response) => {
+	createProxy: Handler = async (req, res) => {
 		const validatedBody = createProxyBodyValidation.parse(req.body);
 		const teamId = requireTeamId(req.user?.teamId);
 		const data = await this.proxiesService.createProxy(validatedBody, teamId);
 		res.json({ success: true, msg: "Proxy created successfully", data });
 	};
 
-	getProxyById = async (req: Request, res: Response) => {
+	getProxyById: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const { id } = getProxyByIdParamValidation.parse(req.params);
 		const data = await this.proxiesService.getProxy(id, teamId);
 		res.json({ success: true, msg: "Proxy retrieved successfully", data });
 	};
 
-	getAllProxies = async (req: Request, res: Response) => {
+	getAllProxies: Handler = async (req, res) => {
 		const data = await this.proxiesService.getProxies();
 		res.json({ success: true, msg: "Proxies retrieved successfully", data });
 	};
 
-	getProxiesByTeamId = async (req: Request, res: Response) => {
+	getProxiesByTeamId: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const data = await this.proxiesService.getProxiesByTeamId(teamId);
 		res.json({ success: true, msg: "Proxies retrieved successfully", data });
 	};
 
-	editProxy = async (req: Request, res: Response) => {
+	editProxy: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const { id } = editProxyParamValidation.parse(req.params);
 		const validatedBody = editProxyBodyValidation.parse(req.body);
@@ -54,7 +54,7 @@ class ProxyController implements IProxiesController {
 		res.json({ success: true, msg: "Proxy updated successfully", data });
 	};
 
-	deleteProxy = async (req: Request, res: Response) => {
+	deleteProxy: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const { id } = deleteProxyParamValidation.parse(req.params);
 		await this.proxiesService.deleteProxy(id, teamId);

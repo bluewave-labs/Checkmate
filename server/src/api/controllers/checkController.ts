@@ -1,4 +1,4 @@
-import { Request, Response, RequestHandler } from "express";
+import { RequestHandler } from "express";
 
 import {
 	getChecksParamValidation,
@@ -8,7 +8,7 @@ import {
 	deleteChecksParamValidation,
 } from "@/api/validation/checkValidation.js";
 import { ICheckService } from "@/domain/checks/check.service.js";
-import { requireTeamId } from "@/api/controllers/controllerUtils.js";
+import { Handler, requireTeamId } from "@/api/controllers/controllerUtils.js";
 
 export interface ICheckController {
 	getChecksByMonitor: RequestHandler;
@@ -24,7 +24,7 @@ class CheckController implements ICheckController {
 		this.checkService = checkService;
 	}
 
-	getChecksByMonitor = async (req: Request, res: Response) => {
+	getChecksByMonitor: Handler = async (req, res) => {
 		const validatedParams = getChecksParamValidation.parse(req.params);
 		const validatedQuery = getChecksQueryValidation.parse(req.query);
 
@@ -44,7 +44,7 @@ class CheckController implements ICheckController {
 		res.json({ success: true, msg: "Checks retrieved successfully", data });
 	};
 
-	getChecksByTeam = async (req: Request, res: Response) => {
+	getChecksByTeam: Handler = async (req, res) => {
 		const validatedQuery = getTeamChecksQueryValidation.parse(req.query);
 		const teamId = requireTeamId(req.user?.teamId);
 
@@ -59,7 +59,7 @@ class CheckController implements ICheckController {
 		res.json({ success: true, msg: "Team checks retrieved successfully", data });
 	};
 
-	getChecksSummaryByTeamId = async (req: Request, res: Response) => {
+	getChecksSummaryByTeamId: Handler = async (req, res) => {
 		const validatedQuery = getChecksSummaryByTeamIdQueryValidation.parse(req.query);
 		const teamId = requireTeamId(req.user?.teamId);
 		const dateRange = validatedQuery.dateRange ?? "hour";
@@ -68,7 +68,7 @@ class CheckController implements ICheckController {
 		res.json({ success: true, msg: "Checks summary retrieved successfully", data });
 	};
 
-	deleteChecks = async (req: Request, res: Response) => {
+	deleteChecks: Handler = async (req, res) => {
 		const validatedParams = deleteChecksParamValidation.parse(req.params);
 		const teamId = requireTeamId(req.user?.teamId);
 
@@ -80,7 +80,7 @@ class CheckController implements ICheckController {
 		res.json({ success: true, msg: "Checks deleted successfully", data: { deletedCount } });
 	};
 
-	deleteChecksByTeamId = async (req: Request, res: Response) => {
+	deleteChecksByTeamId: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 
 		const deletedCount = await this.checkService.deleteChecksByTeamId({ teamId });
