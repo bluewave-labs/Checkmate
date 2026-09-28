@@ -21,59 +21,41 @@ export interface ITagsController {
 class TagsController implements ITagsController {
 	constructor(private tagsService: ITagsService) {}
 
-	createTag = catchAsync(async (req: Request, res: Response) => {
+	createTag = async (req: Request, res: Response) => {
 		const validatedBody = createTagBodyValidation.parse(req.body);
 		const teamId = requireTeamId(req.user?.teamId);
 
 		const tag = await this.tagsService.createTag(validatedBody, teamId);
-		return res.status(200).json({
-			success: true,
-			msg: "Tag created successfully",
-			data: tag,
-		});
-	});
-	getTagById = catchAsync(async (req: Request, res: Response) => {
+		res.json({ success: true, msg: "Tag created successfully", data: tag });
+	};
+
+	getTagById = async (req: Request, res: Response) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const { id: tagId } = getTagByIdParamValidation.parse(req.params);
 		const tag = await this.tagsService.getTag(tagId, teamId);
-		return res.status(200).json({
-			success: true,
-			msg: "Tag retrieved successfully",
-			data: tag,
-		});
-	});
+		res.json({ success: true, msg: "Tag retrieved successfully", data: tag });
+	};
 
-	getTagsByTeamId = catchAsync(async (req: Request, res: Response) => {
+	getTagsByTeamId = async (req: Request, res: Response) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const tags = await this.tagsService.getTagsByTeamId(teamId);
-		return res.status(200).json({
-			success: true,
-			msg: "Tags retrieved successfully",
-			data: tags,
-		});
-	});
+		res.json({ success: true, msg: "Tags retrieved successfully", data: tags });
+	};
 
-	editTag = catchAsync(async (req: Request, res: Response) => {
+	editTag = async (req: Request, res: Response) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const { id: tagId } = editTagParamValidation.parse(req.params);
 		const validatedBody = editTagBodyValidation.parse(req.body);
 		const updatedTag = await this.tagsService.updateTag(tagId, teamId, validatedBody);
-		return res.status(200).json({
-			success: true,
-			msg: "Tag updated successfully",
-			data: updatedTag,
-		});
-	});
+		res.json({ success: true, msg: "Tag updated successfully", data: updatedTag });
+	};
 
-	deleteTag = catchAsync(async (req: Request, res: Response) => {
+	deleteTag = async (req: Request, res: Response) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const { id: tagId } = deleteTagParamValidation.parse(req.params);
 		await this.tagsService.deleteTag(tagId, teamId);
-		return res.status(200).json({
-			success: true,
-			msg: "Tag deleted successfully",
-		});
-	});
+		res.json({ success: true, msg: "Tag deleted successfully" });
+	};
 }
 
 export default TagsController;
