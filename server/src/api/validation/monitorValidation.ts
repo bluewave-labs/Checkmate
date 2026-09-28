@@ -36,7 +36,7 @@ export const getMonitorByIdQueryValidation = z.object({
 	status: booleanCoercion.optional(),
 	sortOrder: z.enum(SortOrders).optional(),
 	limit: z.coerce.number().optional(),
-	dateRange: z.enum(DateRanges).optional(),
+	dateRange: z.enum(DateRanges).default("recent"),
 	numToDisplay: z.coerce.number().optional(),
 	continent: z.union([z.enum(GeoContinents), z.array(z.enum(GeoContinents))]).optional(),
 });
@@ -380,22 +380,23 @@ export const getHardwareDetailsByIdParamValidation = z.object({
 });
 
 export const getHardwareDetailsByIdQueryValidation = z.object({
-	dateRange: z.enum(DateRanges).optional(),
+	dateRange: z.enum(DateRanges).default("recent"),
 });
 
 export const getDockerDetailsByIdParamValidation = z.object({ monitorId: z.string().min(1, "Monitor ID is required") });
-export const getDockerDetailsByIdQueryValidation = z.object({ dateRange: z.enum(DateRanges).optional() });
+export const getDockerDetailsByIdQueryValidation = z.object({ dateRange: z.enum(DateRanges).default("recent") });
 
 export const getDockerContainerNameParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
 	containerName: z.string().min(1, "Container name is required"),
 });
-export const getDockerContainerByNameQueryValidation = z.object({ dateRange: z.enum(DateRanges).optional() });
+export const getDockerContainerByNameQueryValidation = z.object({ dateRange: z.enum(DateRanges).default("recent") });
 
+const isoToDate = z.iso.datetime().transform((v) => new Date(v));
 export const getDockerContainerLogsQueryValidation = z
 	.object({
-		before: z.iso.datetime().optional(),
-		after: z.iso.datetime().optional(),
+		before: isoToDate.optional(),
+		after: isoToDate.optional(),
 		limit: z.coerce.number().int().min(1).max(DOCKER_LOG_PAGE_MAX).default(DOCKER_LOG_PAGE_DEFAULT),
 	})
 	.superRefine((query, ctx) => {

@@ -4,8 +4,12 @@ import { UserRole } from "@/domain/users/user.type.js";
 import sslChecker, { SSLDetails } from "ssl-checker";
 import * as whoiser from "whoiser";
 import { parse as parseDomain } from "tldts";
+import { Request, Response } from "express";
 type SSLCheckerType = typeof sslChecker;
 type WhoisModule = typeof whoiser;
+
+export type ApiEnvelope<T = unknown> = { success: boolean; msg: string; data?: T };
+export type Handler = (req: Request, res: Response<ApiEnvelope>) => Promise<void>;
 
 export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: Monitor): Promise<SSLDetails> => {
 	const monitorUrl = new URL(monitor.url);
@@ -61,7 +65,13 @@ export const createDomainExpiryCache = (positiveTtlMs: number, negativeTtlMs: nu
 };
 
 const domainExpiryCache = createDomainExpiryCache(DOMAIN_EXPIRY_CACHE_POSITIVE_TTL_MS, DOMAIN_EXPIRY_CACHE_NEGATIVE_TTL_MS);
-
+const extractString = (value: unknown): string | undefined => {
+	const candidate = Array.isArray(value) ? value[0] : value;
+	if (typeof candidate !== "string" || candidate.length === 0) {
+		return undefined;
+	}
+	return candidate;
+};
 export const extractDomainExpiryDate = (whoisData: object): string | null => {
 	const matchingKey = Object.keys(whoisData).find((key) => EXPIRY_DATE_KEY_PATTERN.test(key));
 	if (!matchingKey) {
@@ -122,14 +132,6 @@ export const fetchMonitorDomain = async (
 	const domainExpiry: DomainExpiryResult = { domain: registrableDomain, expiryDate };
 	cache.set(registrableDomain, domainExpiry);
 	return domainExpiry;
-};
-
-export const extractString = (value: unknown): string | undefined => {
-	const candidate = Array.isArray(value) ? value[0] : value;
-	if (typeof candidate !== "string" || candidate.length === 0) {
-		return undefined;
-	}
-	return candidate;
 };
 
 export const requireTeamId = (teamId?: string): string => {

@@ -97,6 +97,10 @@ export const imageValidation = z
 		message: "Image file is required",
 	});
 
+export const statusPageIdParamValidation = z.object({
+	id: z.string().min(1, "Status page ID is required"),
+});
+
 // Keep aligned with DailyCheckBucket in domain/checks/check.type.ts. avgResponseTime is null
 // when no check that day recorded a response time ($avg skips missing, $round passes null through).
 export const dailyCheckBucketResponseSchema = z.object({

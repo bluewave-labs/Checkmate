@@ -1,5 +1,4 @@
-import { Request, Response, RequestHandler } from "express";
-import { catchAsync } from "@/utils/catchAsync.js";
+import { RequestHandler } from "express";
 
 import {
 	createStatusPageBodyValidation,
@@ -9,9 +8,10 @@ import {
 	resolveStatusPageQueryValidation,
 	getPublicMonitorIncidentsParamValidation,
 	getPublicMonitorIncidentsQueryValidation,
+	statusPageIdParamValidation,
 } from "@/api/validation/statusPageValidation.js";
 import { AppError } from "@/utils/AppError.js";
-import { requireTeamId, requireUserId } from "@/api/controllers/controllerUtils.js";
+import { Handler, requireTeamId, requireUserId } from "@/api/controllers/controllerUtils.js";
 import { IStatusPageService } from "@/domain/status-pages/status-page.service.js";
 import { resolveStatusPageDomainFromRequest } from "@/utils/statusPageDomain.js";
 
@@ -31,79 +31,46 @@ class StatusPageController implements IStatusPageController {
 		this.statusPageService = statusPageService;
 	}
 
-	createStatusPage = catchAsync(async (req: Request, res: Response) => {
-		createStatusPageBodyValidation.parse(req.body);
+	createStatusPage: Handler = async (req, res) => {
+		const validatedBody = createStatusPageBodyValidation.parse(req.body);
 		if (req.file) {
 			imageValidation.parse(req.file);
 		}
-
 		const teamId = requireTeamId(req?.user?.teamId);
 		const userId = requireUserId(req?.user?.id);
-		const statusPage = await this.statusPageService.createStatusPage(userId, teamId, req.file, req.body);
+		const data = await this.statusPageService.createStatusPage(userId, teamId, req.file, validatedBody);
+		res.json({ success: true, msg: "Status page created successfully", data });
+	};
 
-		return res.status(200).json({
-			success: true,
-			msg: "Status page created successfully",
-			data: statusPage,
-		});
-	});
-
-	updateStatusPage = catchAsync(async (req: Request, res: Response) => {
-		createStatusPageBodyValidation.parse(req.body);
+	updateStatusPage: Handler = async (req, res) => {
+		const { id } = statusPageIdParamValidation.parse(req.params);
+		const validatedBody = createStatusPageBodyValidation.parse(req.body);
 		if (req.file) {
 			imageValidation.parse(req.file);
 		}
-
 		const teamId = requireTeamId(req?.user?.teamId);
-		const statusPageId = req.params.id as string;
-		if (!statusPageId) {
-			throw new AppError({ message: "Status page ID is required", status: 400 });
-		}
-		const statusPage = await this.statusPageService.updateStatusPage(statusPageId, teamId, req.file, req.body);
-		if (statusPage === null) {
-			throw new AppError({ message: "Status page not found", status: 404 });
-		}
-		res.status(200).json({
-			success: true,
-			msg: "Status page updated successfully",
-			data: statusPage,
-		});
-	});
+		const data = await this.statusPageService.updateStatusPage(id, teamId, req.file, validatedBody);
+		res.json({ success: true, msg: "Status page updated successfully", data });
+	};
 
-	getStatusPageByUrl = catchAsync(async (req: Request, res: Response) => {
-		getStatusPageParamValidation.parse(req.params);
+	getStatusPageByUrl: Handler = async (req, res) => {
+		const { url } = getStatusPageParamValidation.parse(req.params);
 		const { range } = getStatusPageQueryValidation.parse(req.query);
-
-		if (!req.params.url) {
-			throw new AppError({ message: "Status page URL is required", status: 400 });
-		}
-
-		const statusPage = await this.statusPageService.getStatusPageByUrl(req.params.url as string);
+		const statusPage = await this.statusPageService.getStatusPageByUrl(url);
 		const data = await this.statusPageService.getPublicStatusPagePayload(statusPage, req.user?.teamId, range);
+		res.json({ success: true, msg: "Status page retrieved successfully", data });
+	};
 
-		return res.status(200).json({
-			success: true,
-			msg: "Status page retrieved successfully",
-			data,
-		});
-	});
-
-	getPublicMonitorIncidents = catchAsync(async (req: Request, res: Response) => {
+	getPublicMonitorIncidents: Handler = async (req, res) => {
 		const { url, monitorId } = getPublicMonitorIncidentsParamValidation.parse(req.params);
 		const { date } = getPublicMonitorIncidentsQueryValidation.parse(req.query);
-
 		const incidents = await this.statusPageService.getPublicMonitorIncidents(url, monitorId, date, req.user?.teamId);
+		res.json({ success: true, msg: "Incidents retrieved successfully", data: { incidents } });
+	};
 
-		return res.status(200).json({
-			success: true,
-			msg: "Incidents retrieved successfully",
-			data: { incidents },
-		});
-	});
-
-	resolveStatusPageByDomain = catchAsync(async (req: Request, res: Response) => {
-		const { range } = resolveStatusPageQueryValidation.parse(req.query);
-		const domain = resolveStatusPageDomainFromRequest(req.hostname, req.query.domain as string | undefined);
+	resolveStatusPageByDomain: Handler = async (req, res) => {
+		const { range, domain: queryDomain } = resolveStatusPageQueryValidation.parse(req.query);
+		const domain = resolveStatusPageDomainFromRequest(req.hostname, queryDomain);
 		if (!domain) {
 			throw new AppError({ message: "Domain is required", status: 400 });
 		}
@@ -114,37 +81,21 @@ class StatusPageController implements IStatusPageController {
 		}
 
 		const data = await this.statusPageService.getPublicStatusPagePayload(statusPage, req.user?.teamId, range);
+		res.json({ success: true, msg: "Status page retrieved successfully", data });
+	};
 
-		return res.status(200).json({
-			success: true,
-			msg: "Status page retrieved successfully",
-			data,
-		});
-	});
-
-	getStatusPagesByTeamId = catchAsync(async (req: Request, res: Response) => {
+	getStatusPagesByTeamId: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
-		const statusPages = await this.statusPageService.getStatusPagesByTeamId(teamId);
+		const data = await this.statusPageService.getStatusPagesByTeamId(teamId);
+		res.json({ success: true, msg: "Status pages retrieved successfully", data });
+	};
 
-		return res.status(200).json({
-			success: true,
-			msg: "Status pages retrieved successfully",
-			data: statusPages,
-		});
-	});
-
-	deleteStatusPage = catchAsync(async (req: Request, res: Response) => {
-		const statusPageId = req.params.id as string;
-		if (!statusPageId) {
-			throw new AppError({ message: "Status page ID is required", status: 400 });
-		}
+	deleteStatusPage: Handler = async (req, res) => {
+		const { id } = statusPageIdParamValidation.parse(req.params);
 		const teamId = requireTeamId(req.user?.teamId);
-		await this.statusPageService.deleteStatusPage(statusPageId, teamId);
-		return res.status(200).json({
-			success: true,
-			msg: "Status page deleted successfully",
-		});
-	});
+		await this.statusPageService.deleteStatusPage(id, teamId);
+		res.json({ success: true, msg: "Status page deleted successfully" });
+	};
 }
 
 export default StatusPageController;
