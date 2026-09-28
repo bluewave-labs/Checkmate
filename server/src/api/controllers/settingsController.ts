@@ -1,5 +1,4 @@
 import { Request, Response, RequestHandler } from "express";
-import { catchAsync } from "@/utils/catchAsync.js";
 import { updateAppSettingsBodyValidation } from "@/api/validation/settingsValidation.js";
 import { sendTestEmailBodyValidation } from "@/api/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
@@ -59,20 +58,14 @@ class SettingsController implements ISettingsController {
 		return returnSettings;
 	};
 
-	getAppSettings = catchAsync(async (req: Request, res: Response) => {
+	getAppSettings = async (req: Request, res: Response) => {
 		const dbSettings = await this.settingsService.getDBSettings();
+		const data = await this.buildAppSettings(dbSettings);
+		res.json({ success: true, msg: "App settings fetched successfully", data });
+	};
 
-		const returnSettings = await this.buildAppSettings(dbSettings);
-		return res.status(200).json({
-			success: true,
-			msg: "App settings fetched successfully",
-			data: returnSettings,
-		});
-	});
-
-	updateAppSettings = catchAsync(async (req: Request, res: Response) => {
+	updateAppSettings = async (req: Request, res: Response) => {
 		const validatedBody = updateAppSettingsBodyValidation.parse(req.body);
-
 		if (validatedBody.globalProxyId) {
 			const proxy = await this.proxiesService.getProxySummary(validatedBody.globalProxyId);
 			if (!proxy) {
@@ -88,17 +81,11 @@ class SettingsController implements ISettingsController {
 			await this.egressStateService.reset();
 		}
 
-		const returnSettings = await this.buildAppSettings(updatedSettings);
-		return res.status(200).json({
-			success: true,
-			msg: "App settings updated successfully",
-			data: returnSettings,
-		});
-	});
+		const data = await this.buildAppSettings(updatedSettings);
+		res.json({ success: true, msg: "App settings updated successfully", data });
+	};
 
-	sendTestEmail = catchAsync(async (req: Request, res: Response) => {
-		sendTestEmailBodyValidation.parse(req.body);
-
+	sendTestEmail = async (req: Request, res: Response) => {
 		const {
 			to,
 			systemEmailHost,
@@ -114,7 +101,7 @@ class SettingsController implements ISettingsController {
 			systemEmailRequireTLS,
 			systemEmailRejectUnauthorized,
 			systemEmailTLSServername,
-		} = req.body;
+		} = sendTestEmailBodyValidation.parse(req.body);
 
 		const subject = "This is a test email from Checkmate";
 		const context = { testName: "Monitoring System" };
@@ -152,12 +139,8 @@ class SettingsController implements ISettingsController {
 			});
 		}
 
-		return res.status(200).json({
-			success: true,
-			msg: "Test email sent successfully",
-			data: { messageId },
-		});
-	});
+		res.json({ success: true, msg: "Test email sent successfully", data: { messageId } });
+	};
 }
 
 export default SettingsController;
