@@ -5,7 +5,7 @@ export interface ILogController {
 	getLogs: RequestHandler;
 }
 
-class LogController {
+class LogController implements ILogController {
 	private logger: ILogger;
 	constructor(logger: ILogger) {
 		this.logger = logger;
