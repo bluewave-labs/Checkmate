@@ -49,7 +49,10 @@ export const incidentResponseSchema = z
 	.passthrough()
 	.meta({ id: "Incident" });
 
-export const incidentListResponseSchema = z.array(incidentResponseSchema);
+export const incidentListResponseSchema = z.object({
+	incidents: z.array(incidentResponseSchema),
+	count: z.number(),
+});
 
 export const incidentDetailResponseSchema = z.object({
 	incident: incidentResponseSchema,

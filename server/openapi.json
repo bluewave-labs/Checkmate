@@ -78,189 +78,6 @@
 			}
 		},
 		"schemas": {
-			"Incident": {
-				"type": "object",
-				"properties": {
-					"id": {
-						"type": "string",
-						"example": "65f1c2a4d8b9e0123456789c"
-					},
-					"monitorId": {
-						"type": "string",
-						"example": "65f1c2a4d8b9e0123456789a"
-					},
-					"teamId": {
-						"type": "string",
-						"example": "65f1c2a4d8b9e01234567890"
-					},
-					"startTime": {
-						"type": "string",
-						"example": "2026-04-15T03:21:00.000Z"
-					},
-					"endTime": {
-						"type": "string",
-						"nullable": true,
-						"example": "2026-04-15T03:34:00.000Z"
-					},
-					"status": {
-						"type": "boolean",
-						"example": true,
-						"description": "true = resolved, false = ongoing"
-					},
-					"message": {
-						"type": "string",
-						"nullable": true,
-						"example": "HTTP 503 from origin"
-					},
-					"statusCode": {
-						"type": "number",
-						"nullable": true,
-						"example": 503
-					},
-					"resolutionType": {
-						"type": "string",
-						"nullable": true,
-						"enum": ["automatic", "manual", null],
-						"example": "automatic"
-					},
-					"resolvedBy": {
-						"type": "string",
-						"nullable": true
-					},
-					"resolvedByEmail": {
-						"type": "string",
-						"nullable": true
-					},
-					"comment": {
-						"type": "string",
-						"nullable": true
-					},
-					"createdAt": {
-						"type": "string",
-						"example": "2026-04-15T03:21:00.000Z"
-					},
-					"updatedAt": {
-						"type": "string",
-						"example": "2026-04-15T03:34:00.000Z"
-					}
-				},
-				"required": ["id", "monitorId", "teamId", "startTime", "endTime", "status", "resolutionType", "createdAt", "updatedAt"],
-				"additionalProperties": {
-					"nullable": true
-				}
-			},
-			"IncidentSummary": {
-				"type": "object",
-				"properties": {
-					"total": {
-						"type": "number",
-						"example": 12
-					},
-					"totalActive": {
-						"type": "number",
-						"example": 1
-					},
-					"totalManualResolutions": {
-						"type": "number",
-						"example": 2
-					},
-					"totalAutomaticResolutions": {
-						"type": "number",
-						"example": 9
-					},
-					"avgResolutionTimeHours": {
-						"type": "number",
-						"example": 0.5
-					},
-					"topMonitor": {
-						"type": "object",
-						"nullable": true,
-						"properties": {
-							"monitorId": {
-								"type": "string",
-								"example": "65f1c2a4d8b9e0123456789a"
-							},
-							"monitorName": {
-								"type": "string",
-								"nullable": true,
-								"example": "Marketing site"
-							},
-							"incidentCount": {
-								"type": "number",
-								"example": 4
-							}
-						},
-						"required": ["monitorId", "monitorName", "incidentCount"]
-					},
-					"latestIncidents": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/IncidentSummaryItem"
-						}
-					}
-				},
-				"required": [
-					"total",
-					"totalActive",
-					"totalManualResolutions",
-					"totalAutomaticResolutions",
-					"avgResolutionTimeHours",
-					"topMonitor",
-					"latestIncidents"
-				]
-			},
-			"IncidentSummaryItem": {
-				"type": "object",
-				"properties": {
-					"id": {
-						"type": "string",
-						"example": "65f1c2a4d8b9e0123456789c"
-					},
-					"monitorId": {
-						"type": "string",
-						"example": "65f1c2a4d8b9e0123456789a"
-					},
-					"monitorName": {
-						"type": "string",
-						"nullable": true,
-						"example": "Marketing site"
-					},
-					"status": {
-						"type": "boolean",
-						"example": true
-					},
-					"startTime": {
-						"type": "string",
-						"example": "2026-04-15T03:21:00.000Z"
-					},
-					"endTime": {
-						"type": "string",
-						"nullable": true,
-						"example": "2026-04-15T03:34:00.000Z"
-					},
-					"resolutionType": {
-						"type": "string",
-						"nullable": true,
-						"enum": ["automatic", "manual", null],
-						"example": "automatic"
-					},
-					"message": {
-						"type": "string",
-						"nullable": true,
-						"example": "HTTP 503 from origin"
-					},
-					"statusCode": {
-						"type": "number",
-						"nullable": true,
-						"example": 503
-					},
-					"createdAt": {
-						"type": "string",
-						"example": "2026-04-15T03:21:00.000Z"
-					}
-				},
-				"required": ["id", "monitorId", "monitorName", "status", "startTime", "endTime", "resolutionType", "message", "statusCode", "createdAt"]
-			},
 			"Monitor": {
 				"type": "object",
 				"properties": {
@@ -1846,543 +1663,194 @@
 					"createdAt": "2026-04-01T10:00:00.000Z",
 					"updatedAt": "2026-04-15T14:30:00.000Z"
 				}
+			},
+			"Incident": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"example": "65f1c2a4d8b9e0123456789c"
+					},
+					"monitorId": {
+						"type": "string",
+						"example": "65f1c2a4d8b9e0123456789a"
+					},
+					"teamId": {
+						"type": "string",
+						"example": "65f1c2a4d8b9e01234567890"
+					},
+					"startTime": {
+						"type": "string",
+						"example": "2026-04-15T03:21:00.000Z"
+					},
+					"endTime": {
+						"type": "string",
+						"nullable": true,
+						"example": "2026-04-15T03:34:00.000Z"
+					},
+					"status": {
+						"type": "boolean",
+						"example": true,
+						"description": "true = resolved, false = ongoing"
+					},
+					"message": {
+						"type": "string",
+						"nullable": true,
+						"example": "HTTP 503 from origin"
+					},
+					"statusCode": {
+						"type": "number",
+						"nullable": true,
+						"example": 503
+					},
+					"resolutionType": {
+						"type": "string",
+						"nullable": true,
+						"enum": ["automatic", "manual", null],
+						"example": "automatic"
+					},
+					"resolvedBy": {
+						"type": "string",
+						"nullable": true
+					},
+					"resolvedByEmail": {
+						"type": "string",
+						"nullable": true
+					},
+					"comment": {
+						"type": "string",
+						"nullable": true
+					},
+					"createdAt": {
+						"type": "string",
+						"example": "2026-04-15T03:21:00.000Z"
+					},
+					"updatedAt": {
+						"type": "string",
+						"example": "2026-04-15T03:34:00.000Z"
+					}
+				},
+				"required": ["id", "monitorId", "teamId", "startTime", "endTime", "status", "resolutionType", "createdAt", "updatedAt"],
+				"additionalProperties": {
+					"nullable": true
+				}
+			},
+			"IncidentSummary": {
+				"type": "object",
+				"properties": {
+					"total": {
+						"type": "number",
+						"example": 12
+					},
+					"totalActive": {
+						"type": "number",
+						"example": 1
+					},
+					"totalManualResolutions": {
+						"type": "number",
+						"example": 2
+					},
+					"totalAutomaticResolutions": {
+						"type": "number",
+						"example": 9
+					},
+					"avgResolutionTimeHours": {
+						"type": "number",
+						"example": 0.5
+					},
+					"topMonitor": {
+						"type": "object",
+						"nullable": true,
+						"properties": {
+							"monitorId": {
+								"type": "string",
+								"example": "65f1c2a4d8b9e0123456789a"
+							},
+							"monitorName": {
+								"type": "string",
+								"nullable": true,
+								"example": "Marketing site"
+							},
+							"incidentCount": {
+								"type": "number",
+								"example": 4
+							}
+						},
+						"required": ["monitorId", "monitorName", "incidentCount"]
+					},
+					"latestIncidents": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/IncidentSummaryItem"
+						}
+					}
+				},
+				"required": [
+					"total",
+					"totalActive",
+					"totalManualResolutions",
+					"totalAutomaticResolutions",
+					"avgResolutionTimeHours",
+					"topMonitor",
+					"latestIncidents"
+				]
+			},
+			"IncidentSummaryItem": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"example": "65f1c2a4d8b9e0123456789c"
+					},
+					"monitorId": {
+						"type": "string",
+						"example": "65f1c2a4d8b9e0123456789a"
+					},
+					"monitorName": {
+						"type": "string",
+						"nullable": true,
+						"example": "Marketing site"
+					},
+					"status": {
+						"type": "boolean",
+						"example": true
+					},
+					"startTime": {
+						"type": "string",
+						"example": "2026-04-15T03:21:00.000Z"
+					},
+					"endTime": {
+						"type": "string",
+						"nullable": true,
+						"example": "2026-04-15T03:34:00.000Z"
+					},
+					"resolutionType": {
+						"type": "string",
+						"nullable": true,
+						"enum": ["automatic", "manual", null],
+						"example": "automatic"
+					},
+					"message": {
+						"type": "string",
+						"nullable": true,
+						"example": "HTTP 503 from origin"
+					},
+					"statusCode": {
+						"type": "number",
+						"nullable": true,
+						"example": 503
+					},
+					"createdAt": {
+						"type": "string",
+						"example": "2026-04-15T03:21:00.000Z"
+					}
+				},
+				"required": ["id", "monitorId", "monitorName", "status", "startTime", "endTime", "resolutionType", "message", "statusCode", "createdAt"]
 			}
 		},
 		"parameters": {}
 	},
 	"paths": {
-		"/incidents/team": {
-			"get": {
-				"tags": ["incidents"],
-				"summary": "List incidents for the caller's team",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"schema": {
-							"type": "string",
-							"enum": ["asc", "desc"]
-						},
-						"required": true,
-						"name": "sortOrder",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"],
-							"default": "all"
-						},
-						"required": false,
-						"name": "dateRange",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "integer",
-							"nullable": true,
-							"minimum": 0
-						},
-						"required": false,
-						"name": "page",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "integer",
-							"minimum": 1
-						},
-						"required": true,
-						"name": "rowsPerPage",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "boolean"
-						},
-						"required": false,
-						"name": "status",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "string"
-						},
-						"required": false,
-						"name": "monitorId",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "string",
-							"enum": ["automatic", "manual"]
-						},
-						"required": false,
-						"name": "resolutionType",
-						"in": "query"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"type": "array",
-											"items": {
-												"$ref": "#/components/schemas/Incident"
-											}
-										}
-									},
-									"required": ["success", "msg", "data"]
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/incidents/team/summary": {
-			"get": {
-				"tags": ["incidents"],
-				"summary": "Incident summary for the caller's team",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"schema": {
-							"type": "integer",
-							"minimum": 1
-						},
-						"required": false,
-						"name": "limit",
-						"in": "query"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"$ref": "#/components/schemas/IncidentSummary"
-										}
-									},
-									"required": ["success", "msg", "data"]
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/incidents/{incidentId}": {
-			"get": {
-				"tags": ["incidents"],
-				"summary": "Get an incident by id",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"schema": {
-							"type": "string"
-						},
-						"required": true,
-						"name": "incidentId",
-						"in": "path"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"type": "object",
-											"properties": {
-												"incident": {
-													"$ref": "#/components/schemas/Incident"
-												},
-												"monitor": {
-													"nullable": true
-												},
-												"user": {
-													"nullable": true
-												}
-											},
-											"required": ["incident"]
-										}
-									},
-									"required": ["success", "msg", "data"]
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/incidents/{incidentId}/resolve": {
-			"put": {
-				"tags": ["incidents"],
-				"summary": "Manually resolve an incident (admin/superadmin)",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"schema": {
-							"type": "string"
-						},
-						"required": true,
-						"name": "incidentId",
-						"in": "path"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										}
-									},
-									"required": ["success", "msg"]
-								},
-								"example": {
-									"success": true,
-									"msg": "OK"
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
 		"/invite/send": {
 			"post": {
 				"tags": ["invite"],
@@ -15061,6 +14529,562 @@
 										}
 									},
 									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/incidents/team": {
+			"get": {
+				"tags": ["incidents"],
+				"summary": "List incidents for the caller's team",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["asc", "desc"]
+						},
+						"required": true,
+						"name": "sortOrder",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["recent", "hour", "day", "week", "month", "all"],
+							"default": "all"
+						},
+						"required": false,
+						"name": "dateRange",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0
+						},
+						"required": false,
+						"name": "page",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"minimum": 1
+						},
+						"required": true,
+						"name": "rowsPerPage",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "boolean"
+						},
+						"required": false,
+						"name": "status",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": false,
+						"name": "monitorId",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["automatic", "manual"]
+						},
+						"required": false,
+						"name": "resolutionType",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"incidents": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/Incident"
+													}
+												},
+												"count": {
+													"type": "number"
+												}
+											},
+											"required": ["incidents", "count"]
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/incidents/team/summary": {
+			"get": {
+				"tags": ["incidents"],
+				"summary": "Incident summary for the caller's team",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "integer",
+							"minimum": 1
+						},
+						"required": false,
+						"name": "limit",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/IncidentSummary"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/incidents/{incidentId}": {
+			"get": {
+				"tags": ["incidents"],
+				"summary": "Get an incident by id",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "incidentId",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"incident": {
+													"$ref": "#/components/schemas/Incident"
+												},
+												"monitor": {
+													"nullable": true
+												},
+												"user": {
+													"nullable": true
+												}
+											},
+											"required": ["incident"]
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/incidents/{incidentId}/resolve": {
+			"put": {
+				"tags": ["incidents"],
+				"summary": "Manually resolve an incident (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "incidentId",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"comment": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/Incident"
+										}
+									},
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
