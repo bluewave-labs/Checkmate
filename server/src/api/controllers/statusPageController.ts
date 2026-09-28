@@ -36,12 +36,10 @@ class StatusPageController implements IStatusPageController {
 		if (req.file) {
 			imageValidation.parse(req.file);
 		}
-
 		const teamId = requireTeamId(req?.user?.teamId);
 		const userId = requireUserId(req?.user?.id);
 		const data = await this.statusPageService.createStatusPage(userId, teamId, req.file, validatedBody);
-
-		return res.json({ success: true, msg: "Status page created successfully", data });
+		res.json({ success: true, msg: "Status page created successfully", data });
 	};
 
 	updateStatusPage = async (req: Request, res: Response) => {
