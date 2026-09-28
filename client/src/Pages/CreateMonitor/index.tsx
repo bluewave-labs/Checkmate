@@ -650,14 +650,14 @@ const CreateMonitorPage = () => {
 										placeholder={generalSettingsConfig.urlPlaceholder}
 									/>
 								)}
-								{isEditMode &&
-									existingMonitor &&
-									formState.dirtyFields.url &&
-									watchedUrl !== existingMonitor.url && (
-										<Alert severity="warning">
-											{t("pages.createMonitor.form.general.url.alert")}
-										</Alert>
-									)}
+								{isEditMode && formState.dirtyFields.url && (
+									<Alert
+										severity="warning"
+										sx={{ alignItems: "center" }}
+									>
+										{t("pages.createMonitor.form.general.url.alert")}
+									</Alert>
+								)}
 								{/* Proxy fields - only shown for HTTP */}
 								{generalSettingsConfig.showProxy && (
 									<>
