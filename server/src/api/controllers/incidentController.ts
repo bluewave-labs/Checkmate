@@ -1,5 +1,5 @@
 import { Request, Response, RequestHandler } from "express";
-import { requireTeamId, requireUserId, requireUserEmail, extractString } from "./controllerUtils.js";
+import { requireTeamId, requireUserId, requireUserEmail } from "./controllerUtils.js";
 import { IIncidentService } from "@/domain/incidents/incident.service.js";
 import {
 	getIncidentsByTeamQueryValidation,
