@@ -156,7 +156,7 @@ class MonitorController implements IMonitorController {
 		const userId = requireUserId(req.user?.id);
 		const teamId = requireTeamId(req.user?.teamId);
 		const data = await this.monitorService.createMonitor(teamId, userId, validatedBody);
-		res.status(201).json({ success: true, msg: "Monitor created successfully", data });
+		res.json({ success: true, msg: "Monitor created successfully", data });
 	};
 
 	importMonitorsFromJSON = async (req: Request, res: Response) => {
