@@ -6,6 +6,7 @@ import { useParams, useLocation, useNavigate } from "react-router";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTheme } from "@mui/material";
+import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 import { Trans, useTranslation } from "react-i18next";
 import Typography from "@mui/material/Typography";
@@ -338,7 +339,7 @@ const CreateMonitorPage = () => {
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
-	const { watch, handleSubmit, clearErrors, trigger, reset, setValue } = form;
+	const { watch, handleSubmit, clearErrors, trigger, reset, setValue, formState } = form;
 
 	useEffect(() => {
 		reset(defaults);
@@ -647,9 +648,16 @@ const CreateMonitorPage = () => {
 										name="url"
 										fieldLabel={generalSettingsConfig.urlLabel}
 										placeholder={generalSettingsConfig.urlPlaceholder}
-										disabled={isEditMode}
 									/>
 								)}
+								{isEditMode &&
+									existingMonitor &&
+									formState.dirtyFields.url &&
+									watchedUrl !== existingMonitor.url && (
+										<Alert severity="warning">
+											{t("pages.createMonitor.form.general.url.alert")}
+										</Alert>
+									)}
 								{/* Proxy fields - only shown for HTTP */}
 								{generalSettingsConfig.showProxy && (
 									<>
