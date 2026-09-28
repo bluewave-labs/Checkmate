@@ -1,5 +1,4 @@
 import { Request, Response, RequestHandler } from "express";
-import { catchAsync } from "@/utils/catchAsync.js";
 import { IProxiesService } from "@/domain/proxies/proxy.service.js";
 import { requireTeamId } from "./controllerUtils.js";
 import {
@@ -22,68 +21,45 @@ export interface IProxiesController {
 class ProxyController implements IProxiesController {
 	constructor(private proxiesService: IProxiesService) {}
 
-	createProxy = catchAsync(async (req: Request, res: Response) => {
+	createProxy = async (req: Request, res: Response) => {
 		const validatedBody = createProxyBodyValidation.parse(req.body);
 		const teamId = requireTeamId(req.user?.teamId);
+		const data = await this.proxiesService.createProxy(validatedBody, teamId);
+		res.json({ success: true, msg: "Proxy created successfully", data });
+	};
 
-		const proxy = await this.proxiesService.createProxy(validatedBody, teamId);
-		return res.status(200).json({
-			success: true,
-			msg: "Proxy created successfully",
-			data: proxy,
-		});
-	});
-	getProxyById = catchAsync(async (req: Request, res: Response) => {
+	getProxyById = async (req: Request, res: Response) => {
 		const teamId = requireTeamId(req.user?.teamId);
-		const { id: proxyId } = getProxyByIdParamValidation.parse(req.params);
-		const proxy = await this.proxiesService.getProxy(proxyId, teamId);
-		return res.status(200).json({
-			success: true,
-			msg: "Proxy retrieved successfully",
-			data: proxy,
-		});
-	});
+		const { id } = getProxyByIdParamValidation.parse(req.params);
+		const data = await this.proxiesService.getProxy(id, teamId);
+		res.json({ success: true, msg: "Proxy retrieved successfully", data });
+	};
 
-	getAllProxies = catchAsync(async (req: Request, res: Response) => {
-		const proxies = await this.proxiesService.getProxies();
-		return res.status(200).json({
-			success: true,
-			msg: "Proxies retrieved successfully",
-			data: proxies,
-		});
-	});
+	getAllProxies = async (req: Request, res: Response) => {
+		const data = await this.proxiesService.getProxies();
+		res.json({ success: true, msg: "Proxies retrieved successfully", data });
+	};
 
-	getProxiesByTeamId = catchAsync(async (req: Request, res: Response) => {
+	getProxiesByTeamId = async (req: Request, res: Response) => {
 		const teamId = requireTeamId(req.user?.teamId);
-		const proxies = await this.proxiesService.getProxiesByTeamId(teamId);
-		return res.status(200).json({
-			success: true,
-			msg: "Proxies retrieved successfully",
-			data: proxies,
-		});
-	});
+		const data = await this.proxiesService.getProxiesByTeamId(teamId);
+		res.json({ success: true, msg: "Proxies retrieved successfully", data });
+	};
 
-	editProxy = catchAsync(async (req: Request, res: Response) => {
+	editProxy = async (req: Request, res: Response) => {
 		const teamId = requireTeamId(req.user?.teamId);
-		const { id: proxyId } = editProxyParamValidation.parse(req.params);
+		const { id } = editProxyParamValidation.parse(req.params);
 		const validatedBody = editProxyBodyValidation.parse(req.body);
-		const updatedProxy = await this.proxiesService.updateProxy(proxyId, teamId, validatedBody);
-		return res.status(200).json({
-			success: true,
-			msg: "Proxy updated successfully",
-			data: updatedProxy,
-		});
-	});
+		const data = await this.proxiesService.updateProxy(id, teamId, validatedBody);
+		res.json({ success: true, msg: "Proxy updated successfully", data });
+	};
 
-	deleteProxy = catchAsync(async (req: Request, res: Response) => {
+	deleteProxy = async (req: Request, res: Response) => {
 		const teamId = requireTeamId(req.user?.teamId);
-		const { id: proxyId } = deleteProxyParamValidation.parse(req.params);
-		await this.proxiesService.deleteProxy(proxyId, teamId);
-		return res.status(200).json({
-			success: true,
-			msg: "Proxy deleted successfully",
-		});
-	});
+		const { id } = deleteProxyParamValidation.parse(req.params);
+		await this.proxiesService.deleteProxy(id, teamId);
+		res.json({ success: true, msg: "Proxy deleted successfully" });
+	};
 }
 
 export default ProxyController;
