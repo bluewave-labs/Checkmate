@@ -1,9 +1,5 @@
+import { registerRoutes } from "openapi/registerRoutes.js";
 import "./registry.js";
-import "./routes/auth.js";
-import "./routes/check.js";
-import "./routes/diagnostic.js";
-import "./routes/geoCheck.js";
-import "./routes/incident.js";
 import "./routes/invite.js";
 import "./routes/log.js";
 import "./routes/maintenanceWindow.js";
@@ -13,13 +9,25 @@ import "./routes/proxies.js";
 import "./routes/queue.js";
 import "./routes/settings.js";
 import "./routes/statusPage.js";
+import { tagRoutes } from "@/api/routes/tagRoutes.js";
 
 import { OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
 import type { JsonObject } from "swagger-ui-express";
 import { registry } from "./registry.js";
+import { authRoutes } from "@/api/routes/authRoutes.js";
+import { checkRoutes } from "@/api/routes/checkRoutes.js";
+import { diagnosticRoutes } from "@/api/routes/diagnosticRoutes.js";
+import { geoCheckRoutes } from "@/api/routes/geoCheckRoutes.js";
+import { incidentRoutes } from "@/api/routes/incidentRoutes.js";
 
 let cached: JsonObject | null = null;
 
+registerRoutes(registry, tagRoutes);
+registerRoutes(registry, authRoutes);
+registerRoutes(registry, checkRoutes);
+registerRoutes(registry, diagnosticRoutes);
+registerRoutes(registry, geoCheckRoutes);
+registerRoutes(registry, incidentRoutes);
 export function getOpenApiSpec(): JsonObject {
 	if (cached) return cached;
 

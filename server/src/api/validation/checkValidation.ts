@@ -42,3 +42,5 @@ export const deleteChecksParamValidation = z.object({
 export const getChecksSummaryByTeamIdQueryValidation = z.object({
 	dateRange: z.enum(DateRanges).optional(),
 });
+
+export const deletedCountResponseSchema = z.object({ deletedCount: z.number() });

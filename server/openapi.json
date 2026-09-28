@@ -78,81 +78,6 @@
 			}
 		},
 		"schemas": {
-			"AuthPayload": {
-				"type": "object",
-				"properties": {
-					"user": {
-						"$ref": "#/components/schemas/User"
-					},
-					"token": {
-						"type": "string"
-					}
-				},
-				"required": ["user"],
-				"example": {
-					"user": {
-						"_id": "65f1c2a4d8b9e0123456789a",
-						"firstName": "Ada",
-						"lastName": "Lovelace",
-						"email": "ada@example.com",
-						"role": ["admin"],
-						"teamId": "65f1c2a4d8b9e01234567890",
-						"createdAt": "2026-04-01T10:00:00.000Z",
-						"updatedAt": "2026-04-15T14:30:00.000Z"
-					},
-					"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-				}
-			},
-			"User": {
-				"type": "object",
-				"properties": {
-					"_id": {
-						"type": "string"
-					},
-					"firstName": {
-						"type": "string"
-					},
-					"lastName": {
-						"type": "string"
-					},
-					"email": {
-						"type": "string"
-					},
-					"role": {
-						"type": "array",
-						"items": {
-							"type": "string"
-						}
-					},
-					"teamId": {
-						"type": "string"
-					},
-					"profileImage": {
-						"type": "string",
-						"nullable": true
-					},
-					"createdAt": {
-						"type": "string"
-					},
-					"updatedAt": {
-						"type": "string"
-					}
-				},
-				"required": ["_id", "firstName", "lastName", "email", "role", "createdAt", "updatedAt"],
-				"additionalProperties": {
-					"nullable": true
-				},
-				"example": {
-					"_id": "65f1c2a4d8b9e0123456789a",
-					"firstName": "Ada",
-					"lastName": "Lovelace",
-					"email": "ada@example.com",
-					"role": ["admin"],
-					"teamId": "65f1c2a4d8b9e01234567890",
-					"createdAt": "2026-04-01T10:00:00.000Z",
-					"updatedAt": "2026-04-15T14:30:00.000Z"
-				}
-			},
 			"Incident": {
 				"type": "object",
 				"properties": {
@@ -1846,2632 +1771,86 @@
 						}
 					]
 				}
+			},
+			"AuthPayload": {
+				"type": "object",
+				"properties": {
+					"user": {
+						"$ref": "#/components/schemas/User"
+					},
+					"token": {
+						"type": "string"
+					}
+				},
+				"required": ["user"],
+				"example": {
+					"user": {
+						"_id": "65f1c2a4d8b9e0123456789a",
+						"firstName": "Ada",
+						"lastName": "Lovelace",
+						"email": "ada@example.com",
+						"role": ["admin"],
+						"teamId": "65f1c2a4d8b9e01234567890",
+						"createdAt": "2026-04-01T10:00:00.000Z",
+						"updatedAt": "2026-04-15T14:30:00.000Z"
+					},
+					"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+				}
+			},
+			"User": {
+				"type": "object",
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"firstName": {
+						"type": "string"
+					},
+					"lastName": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"role": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"profileImage": {
+						"type": "string",
+						"nullable": true
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					}
+				},
+				"required": ["_id", "firstName", "lastName", "email", "role", "createdAt", "updatedAt"],
+				"additionalProperties": {
+					"nullable": true
+				},
+				"example": {
+					"_id": "65f1c2a4d8b9e0123456789a",
+					"firstName": "Ada",
+					"lastName": "Lovelace",
+					"email": "ada@example.com",
+					"role": ["admin"],
+					"teamId": "65f1c2a4d8b9e01234567890",
+					"createdAt": "2026-04-01T10:00:00.000Z",
+					"updatedAt": "2026-04-15T14:30:00.000Z"
+				}
 			}
 		},
 		"parameters": {}
 	},
 	"paths": {
-		"/auth/register": {
-			"post": {
-				"tags": ["auth"],
-				"summary": "Register a new user (first user becomes superadmin)",
-				"requestBody": {
-					"content": {
-						"multipart/form-data": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"firstName": {
-										"type": "string",
-										"maxLength": 50,
-										"pattern": "^(?=.*[\\p{L}\\p{Sc}])[\\p{L}\\p{Sc}\\s'\\-().]+$/u"
-									},
-									"lastName": {
-										"type": "string",
-										"maxLength": 50,
-										"pattern": "^(?=.*[\\p{L}\\p{Sc}])[\\p{L}\\p{Sc}\\s'\\-().]+$/u"
-									},
-									"email": {
-										"type": "string",
-										"format": "email"
-									},
-									"password": {
-										"type": "string",
-										"minLength": 8,
-										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
-									},
-									"profileImage": {
-										"type": "string",
-										"format": "binary"
-									},
-									"inviteToken": {
-										"type": "string",
-										"default": ""
-									}
-								},
-								"required": ["firstName", "lastName", "email", "password", "profileImage"]
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"$ref": "#/components/schemas/AuthPayload"
-										}
-									},
-									"required": ["success", "msg", "data"]
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/auth/login": {
-			"post": {
-				"tags": ["auth"],
-				"summary": "Log in",
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"email": {
-										"type": "string",
-										"format": "email"
-									},
-									"password": {
-										"type": "string",
-										"minLength": 1
-									}
-								},
-								"required": ["email", "password"]
-							},
-							"example": {
-								"email": "ada@example.com",
-								"password": "S3cure!Passw0rd"
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"$ref": "#/components/schemas/AuthPayload"
-										}
-									},
-									"required": ["success", "msg", "data"]
-								},
-								"example": {
-									"success": true,
-									"msg": "OK",
-									"data": {
-										"user": {
-											"_id": "65f1c2a4d8b9e0123456789a",
-											"firstName": "Ada",
-											"lastName": "Lovelace",
-											"email": "ada@example.com",
-											"role": ["admin"],
-											"teamId": "65f1c2a4d8b9e01234567890",
-											"createdAt": "2026-04-01T10:00:00.000Z",
-											"updatedAt": "2026-04-15T14:30:00.000Z"
-										},
-										"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-									}
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Invalid credentials",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/auth/recovery/request": {
-			"post": {
-				"tags": ["auth"],
-				"summary": "Request a password recovery email",
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"email": {
-										"type": "string",
-										"format": "email"
-									}
-								},
-								"required": ["email"]
-							},
-							"example": {
-								"email": "ada@example.com"
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										}
-									},
-									"required": ["success", "msg"]
-								},
-								"example": {
-									"success": true,
-									"msg": "OK"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/auth/recovery/validate": {
-			"post": {
-				"tags": ["auth"],
-				"summary": "Validate a password recovery token",
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"recoveryToken": {
-										"type": "string",
-										"minLength": 1
-									}
-								},
-								"required": ["recoveryToken"]
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										}
-									},
-									"required": ["success", "msg"]
-								},
-								"example": {
-									"success": true,
-									"msg": "OK"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/auth/recovery/reset": {
-			"post": {
-				"tags": ["auth"],
-				"summary": "Reset password using a recovery token",
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"recoveryToken": {
-										"type": "string",
-										"minLength": 1
-									},
-									"password": {
-										"type": "string",
-										"minLength": 8,
-										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
-									},
-									"confirm": {
-										"type": "string"
-									}
-								},
-								"required": ["recoveryToken", "password"]
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										}
-									},
-									"required": ["success", "msg"]
-								},
-								"example": {
-									"success": true,
-									"msg": "OK"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/auth/users/superadmin": {
-			"get": {
-				"tags": ["auth"],
-				"summary": "Check whether a superadmin user exists",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"type": "object",
-											"properties": {
-												"superAdminExists": {
-													"type": "boolean"
-												}
-											},
-											"required": ["superAdminExists"]
-										}
-									},
-									"required": ["success", "msg", "data"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/auth/users": {
-			"get": {
-				"tags": ["auth"],
-				"summary": "List all users (admin/superadmin)",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"type": "array",
-											"items": {
-												"$ref": "#/components/schemas/User"
-											}
-										}
-									},
-									"required": ["success", "msg", "data"]
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			},
-			"post": {
-				"tags": ["auth"],
-				"summary": "Create a new user (superadmin)",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"requestBody": {
-					"content": {
-						"multipart/form-data": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"firstName": {
-										"type": "string",
-										"maxLength": 50,
-										"pattern": "^(?=.*[\\p{L}\\p{Sc}])[\\p{L}\\p{Sc}\\s'\\-().]+$/u"
-									},
-									"lastName": {
-										"type": "string",
-										"maxLength": 50,
-										"pattern": "^(?=.*[\\p{L}\\p{Sc}])[\\p{L}\\p{Sc}\\s'\\-().]+$/u"
-									},
-									"email": {
-										"type": "string",
-										"format": "email"
-									},
-									"password": {
-										"type": "string",
-										"minLength": 8,
-										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
-									},
-									"role": {
-										"type": "array",
-										"items": {
-											"type": "string",
-											"enum": ["user", "admin", "superadmin", "demo"]
-										},
-										"minItems": 1
-									},
-									"profileImage": {
-										"type": "string",
-										"format": "binary"
-									}
-								},
-								"required": ["firstName", "lastName", "email", "password", "role", "profileImage"]
-							}
-						}
-					}
-				},
-				"responses": {
-					"201": {
-						"description": "User created",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"$ref": "#/components/schemas/User"
-										}
-									},
-									"required": ["success", "msg", "data"]
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/auth/users/{userId}": {
-			"get": {
-				"tags": ["auth"],
-				"summary": "Get a user by id",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"schema": {
-							"type": "string",
-							"minLength": 1
-						},
-						"required": true,
-						"name": "userId",
-						"in": "path"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"$ref": "#/components/schemas/User"
-										}
-									},
-									"required": ["success", "msg", "data"]
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "User not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			},
-			"patch": {
-				"tags": ["auth"],
-				"summary": "Edit a user (superadmin)",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"schema": {
-							"type": "string",
-							"minLength": 1
-						},
-						"required": true,
-						"name": "userId",
-						"in": "path"
-					}
-				],
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"firstName": {
-										"type": "string",
-										"maxLength": 50,
-										"pattern": "^(?=.*[\\p{L}\\p{Sc}])[\\p{L}\\p{Sc}\\s'\\-().]+$/u"
-									},
-									"lastName": {
-										"type": "string",
-										"maxLength": 50,
-										"pattern": "^(?=.*[\\p{L}\\p{Sc}])[\\p{L}\\p{Sc}\\s'\\-().]+$/u"
-									},
-									"role": {
-										"type": "array",
-										"items": {
-											"type": "string",
-											"enum": ["user", "admin", "superadmin", "demo"]
-										},
-										"minItems": 1
-									}
-								},
-								"required": ["firstName", "lastName", "role"]
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										}
-									},
-									"required": ["success", "msg"]
-								},
-								"example": {
-									"success": true,
-									"msg": "OK"
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			},
-			"delete": {
-				"tags": ["auth"],
-				"summary": "Delete a user (admin/superadmin)",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"schema": {
-							"type": "string",
-							"minLength": 1
-						},
-						"required": true,
-						"name": "userId",
-						"in": "path"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										}
-									},
-									"required": ["success", "msg"]
-								},
-								"example": {
-									"success": true,
-									"msg": "OK"
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/auth/users/{userId}/password": {
-			"patch": {
-				"tags": ["auth"],
-				"summary": "Change a user's password (superadmin)",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"schema": {
-							"type": "string",
-							"minLength": 1
-						},
-						"required": true,
-						"name": "userId",
-						"in": "path"
-					}
-				],
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"password": {
-										"type": "string",
-										"minLength": 8,
-										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
-									}
-								},
-								"required": ["password"]
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										}
-									},
-									"required": ["success", "msg"]
-								},
-								"example": {
-									"success": true,
-									"msg": "OK"
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/auth/user": {
-			"patch": {
-				"tags": ["auth"],
-				"summary": "Edit the currently authenticated user",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"requestBody": {
-					"content": {
-						"multipart/form-data": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"firstName": {
-										"type": "string",
-										"maxLength": 50,
-										"pattern": "^(?=.*[\\p{L}\\p{Sc}])[\\p{L}\\p{Sc}\\s'\\-().]+$/u"
-									},
-									"lastName": {
-										"type": "string",
-										"maxLength": 50,
-										"pattern": "^(?=.*[\\p{L}\\p{Sc}])[\\p{L}\\p{Sc}\\s'\\-().]+$/u"
-									},
-									"email": {
-										"type": "string",
-										"format": "email"
-									},
-									"profilePicture": {
-										"type": "string"
-									},
-									"password": {
-										"type": "string",
-										"minLength": 8,
-										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
-									},
-									"newPassword": {
-										"type": "string",
-										"minLength": 8,
-										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
-									},
-									"deleteProfileImage": {
-										"type": "boolean"
-									},
-									"profileImage": {
-										"type": "string",
-										"format": "binary"
-									}
-								},
-								"required": ["profileImage"]
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"$ref": "#/components/schemas/User"
-										}
-									},
-									"required": ["success", "msg", "data"]
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			},
-			"delete": {
-				"tags": ["auth"],
-				"summary": "Delete the currently authenticated user",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										}
-									},
-									"required": ["success", "msg"]
-								},
-								"example": {
-									"success": true,
-									"msg": "OK"
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/checks/team/summary": {
-			"get": {
-				"tags": ["checks"],
-				"summary": "Aggregate check summary for the caller's team",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"schema": {
-							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"]
-						},
-						"required": false,
-						"name": "dateRange",
-						"in": "query"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/checks/team": {
-			"get": {
-				"tags": ["checks"],
-				"summary": "List checks across the team",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"schema": {
-							"type": "string",
-							"enum": ["asc", "desc"]
-						},
-						"required": true,
-						"name": "sortOrder",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "number",
-							"nullable": true
-						},
-						"required": false,
-						"name": "limit",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"]
-						},
-						"required": true,
-						"name": "dateRange",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "string",
-							"enum": ["all", "up", "down", "resolve"]
-						},
-						"required": false,
-						"name": "filter",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "boolean"
-						},
-						"required": false,
-						"name": "ack",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "number",
-							"nullable": true
-						},
-						"required": false,
-						"name": "page",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "number",
-							"nullable": true
-						},
-						"required": false,
-						"name": "rowsPerPage",
-						"in": "query"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			},
-			"delete": {
-				"tags": ["checks"],
-				"summary": "Delete all checks for the team (admin/superadmin)",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"type": "object",
-											"properties": {
-												"deletedCount": {
-													"type": "number"
-												}
-											},
-											"required": ["deletedCount"]
-										}
-									},
-									"required": ["success", "msg", "data"]
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/checks/{monitorId}": {
-			"get": {
-				"tags": ["checks"],
-				"summary": "List checks for a monitor",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"schema": {
-							"type": "string",
-							"minLength": 1
-						},
-						"required": true,
-						"name": "monitorId",
-						"in": "path"
-					},
-					{
-						"schema": {
-							"type": "string",
-							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
-						},
-						"required": false,
-						"name": "type",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "string",
-							"enum": ["asc", "desc"]
-						},
-						"required": true,
-						"name": "sortOrder",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "number",
-							"nullable": true
-						},
-						"required": false,
-						"name": "limit",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"]
-						},
-						"required": true,
-						"name": "dateRange",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "string",
-							"enum": ["all", "up", "down", "resolve"]
-						},
-						"required": false,
-						"name": "filter",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "boolean"
-						},
-						"required": false,
-						"name": "ack",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "number",
-							"nullable": true
-						},
-						"required": false,
-						"name": "page",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "number",
-							"nullable": true
-						},
-						"required": false,
-						"name": "rowsPerPage",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "boolean"
-						},
-						"required": false,
-						"name": "status",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"anyOf": [
-								{
-									"type": "string",
-									"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
-								},
-								{
-									"type": "array",
-									"items": {
-										"type": "string",
-										"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
-									}
-								}
-							]
-						},
-						"required": false,
-						"name": "continent",
-						"in": "query"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			},
-			"delete": {
-				"tags": ["checks"],
-				"summary": "Delete checks for a monitor",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"schema": {
-							"type": "string",
-							"minLength": 1
-						},
-						"required": true,
-						"name": "monitorId",
-						"in": "path"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										}
-									},
-									"required": ["success", "msg"]
-								},
-								"example": {
-									"success": true,
-									"msg": "OK"
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/diagnostic/system": {
-			"get": {
-				"tags": ["diagnostic"],
-				"summary": "Get system diagnostics (admin/superadmin)",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/geo-checks/{monitorId}": {
-			"get": {
-				"tags": ["geo-checks"],
-				"summary": "Get geo check results for a monitor",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"schema": {
-							"type": "string",
-							"minLength": 1
-						},
-						"required": true,
-						"name": "monitorId",
-						"in": "path"
-					},
-					{
-						"schema": {
-							"type": "string",
-							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
-						},
-						"required": false,
-						"name": "type",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "string",
-							"enum": ["asc", "desc"]
-						},
-						"required": true,
-						"name": "sortOrder",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "number",
-							"nullable": true
-						},
-						"required": false,
-						"name": "limit",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"]
-						},
-						"required": true,
-						"name": "dateRange",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "string",
-							"enum": ["all", "up", "down", "resolve"]
-						},
-						"required": false,
-						"name": "filter",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "boolean"
-						},
-						"required": false,
-						"name": "ack",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "number",
-							"nullable": true
-						},
-						"required": false,
-						"name": "page",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "number",
-							"nullable": true
-						},
-						"required": false,
-						"name": "rowsPerPage",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"type": "boolean"
-						},
-						"required": false,
-						"name": "status",
-						"in": "query"
-					},
-					{
-						"schema": {
-							"anyOf": [
-								{
-									"type": "string",
-									"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
-								},
-								{
-									"type": "array",
-									"items": {
-										"type": "string",
-										"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
-									}
-								}
-							]
-						},
-						"required": false,
-						"name": "continent",
-						"in": "query"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
 		"/incidents/team": {
 			"get": {
 				"tags": ["incidents"],
@@ -14468,6 +11847,3269 @@
 					},
 					"404": {
 						"description": "Status page not found"
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/tags": {
+			"post": {
+				"tags": ["tags"],
+				"summary": "Create a tag",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string",
+										"minLength": 1
+									},
+									"color": {
+										"type": "string",
+										"pattern": "^#([0-9a-fA-F]{6})$"
+									}
+								},
+								"required": ["name"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string"
+												},
+												"teamId": {
+													"type": "string"
+												},
+												"name": {
+													"type": "string"
+												},
+												"color": {
+													"type": "string"
+												},
+												"createdAt": {
+													"type": "string"
+												},
+												"updatedAt": {
+													"type": "string"
+												}
+											},
+											"required": ["id", "teamId", "name", "color", "createdAt", "updatedAt"]
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/tags/team": {
+			"get": {
+				"tags": ["tags"],
+				"summary": "List the team's tags",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"id": {
+														"type": "string"
+													},
+													"teamId": {
+														"type": "string"
+													},
+													"name": {
+														"type": "string"
+													},
+													"color": {
+														"type": "string"
+													},
+													"createdAt": {
+														"type": "string"
+													},
+													"updatedAt": {
+														"type": "string"
+													}
+												},
+												"required": ["id", "teamId", "name", "color", "createdAt", "updatedAt"]
+											}
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/tags/{id}": {
+			"get": {
+				"tags": ["tags"],
+				"summary": "Get a tag",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string"
+												},
+												"teamId": {
+													"type": "string"
+												},
+												"name": {
+													"type": "string"
+												},
+												"color": {
+													"type": "string"
+												},
+												"createdAt": {
+													"type": "string"
+												},
+												"updatedAt": {
+													"type": "string"
+												}
+											},
+											"required": ["id", "teamId", "name", "color", "createdAt", "updatedAt"]
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			},
+			"patch": {
+				"tags": ["tags"],
+				"summary": "Edit a tag",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "id",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string",
+										"minLength": 1
+									},
+									"color": {
+										"type": "string",
+										"pattern": "^#([0-9a-fA-F]{6})$"
+									}
+								},
+								"required": ["name"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string"
+												},
+												"teamId": {
+													"type": "string"
+												},
+												"name": {
+													"type": "string"
+												},
+												"color": {
+													"type": "string"
+												},
+												"createdAt": {
+													"type": "string"
+												},
+												"updatedAt": {
+													"type": "string"
+												}
+											},
+											"required": ["id", "teamId", "name", "color", "createdAt", "updatedAt"]
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["tags"],
+				"summary": "Delete a tag",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										}
+									},
+									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/register": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Register a new user (first user becomes superadmin)",
+				"requestBody": {
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"firstName": {
+										"type": "string",
+										"maxLength": 50,
+										"pattern": "^(?=.*[\\p{L}\\p{Sc}])[\\p{L}\\p{Sc}\\s'\\-().]+$/u"
+									},
+									"lastName": {
+										"type": "string",
+										"maxLength": 50,
+										"pattern": "^(?=.*[\\p{L}\\p{Sc}])[\\p{L}\\p{Sc}\\s'\\-().]+$/u"
+									},
+									"email": {
+										"type": "string",
+										"format": "email"
+									},
+									"password": {
+										"type": "string",
+										"minLength": 8,
+										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
+									},
+									"profileImage": {
+										"type": "string",
+										"format": "binary"
+									},
+									"inviteToken": {
+										"type": "string",
+										"default": ""
+									}
+								},
+								"required": ["firstName", "lastName", "email", "password", "profileImage"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/AuthPayload"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/login": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Log in",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"email": {
+										"type": "string",
+										"format": "email"
+									},
+									"password": {
+										"type": "string",
+										"minLength": 1
+									}
+								},
+								"required": ["email", "password"]
+							},
+							"example": {
+								"email": "ada@example.com",
+								"password": "S3cure!Passw0rd"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/AuthPayload"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK",
+									"data": {
+										"user": {
+											"_id": "65f1c2a4d8b9e0123456789a",
+											"firstName": "Ada",
+											"lastName": "Lovelace",
+											"email": "ada@example.com",
+											"role": ["admin"],
+											"teamId": "65f1c2a4d8b9e01234567890",
+											"createdAt": "2026-04-01T10:00:00.000Z",
+											"updatedAt": "2026-04-15T14:30:00.000Z"
+										},
+										"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/recovery/request": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Request a password recovery email",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"email": {
+										"type": "string",
+										"format": "email"
+									}
+								},
+								"required": ["email"]
+							},
+							"example": {
+								"email": "ada@example.com"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										}
+									},
+									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/recovery/validate": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "validate a password recovery token",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"recoveryToken": {
+										"type": "string",
+										"minLength": 1
+									}
+								},
+								"required": ["recoveryToken"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										}
+									},
+									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/recovery/reset": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Reset password using a recovery token",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"recoveryToken": {
+										"type": "string",
+										"minLength": 1
+									},
+									"password": {
+										"type": "string",
+										"minLength": 8,
+										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
+									},
+									"confirm": {
+										"type": "string"
+									}
+								},
+								"required": ["recoveryToken", "password"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										}
+									},
+									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/users/superadmin": {
+			"get": {
+				"tags": ["auth"],
+				"summary": "Check whether a superadmin user exists",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"superAdminExists": {
+													"type": "boolean"
+												}
+											},
+											"required": ["superAdminExists"]
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/users": {
+			"get": {
+				"tags": ["auth"],
+				"summary": "List all users (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/User"
+											}
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["auth"],
+				"summary": "Create a new user (superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"firstName": {
+										"type": "string",
+										"maxLength": 50,
+										"pattern": "^(?=.*[\\p{L}\\p{Sc}])[\\p{L}\\p{Sc}\\s'\\-().]+$/u"
+									},
+									"lastName": {
+										"type": "string",
+										"maxLength": 50,
+										"pattern": "^(?=.*[\\p{L}\\p{Sc}])[\\p{L}\\p{Sc}\\s'\\-().]+$/u"
+									},
+									"email": {
+										"type": "string",
+										"format": "email"
+									},
+									"password": {
+										"type": "string",
+										"minLength": 8,
+										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
+									},
+									"role": {
+										"type": "array",
+										"items": {
+											"type": "string",
+											"enum": ["user", "admin", "superadmin", "demo"]
+										},
+										"minItems": 1
+									},
+									"profileImage": {
+										"type": "string",
+										"format": "binary"
+									}
+								},
+								"required": ["firstName", "lastName", "email", "password", "role", "profileImage"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "User created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/User"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/users/{userId}": {
+			"get": {
+				"tags": ["auth"],
+				"summary": "Get a user by id",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "userId",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/User"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "User not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			},
+			"patch": {
+				"tags": ["auth"],
+				"summary": "Edit a user (superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "userId",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"firstName": {
+										"type": "string",
+										"maxLength": 50,
+										"pattern": "^(?=.*[\\p{L}\\p{Sc}])[\\p{L}\\p{Sc}\\s'\\-().]+$/u"
+									},
+									"lastName": {
+										"type": "string",
+										"maxLength": 50,
+										"pattern": "^(?=.*[\\p{L}\\p{Sc}])[\\p{L}\\p{Sc}\\s'\\-().]+$/u"
+									},
+									"role": {
+										"type": "array",
+										"items": {
+											"type": "string",
+											"enum": ["user", "admin", "superadmin", "demo"]
+										},
+										"minItems": 1
+									}
+								},
+								"required": ["firstName", "lastName", "role"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										}
+									},
+									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["auth"],
+				"summary": "Delete a user (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "userId",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										}
+									},
+									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/users/{userId}/password": {
+			"patch": {
+				"tags": ["auth"],
+				"summary": "Change a user's password (superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "userId",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"password": {
+										"type": "string",
+										"minLength": 8,
+										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
+									}
+								},
+								"required": ["password"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										}
+									},
+									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/user": {
+			"patch": {
+				"tags": ["auth"],
+				"summary": "Edit the currently authenticated user",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"firstName": {
+										"type": "string",
+										"maxLength": 50,
+										"pattern": "^(?=.*[\\p{L}\\p{Sc}])[\\p{L}\\p{Sc}\\s'\\-().]+$/u"
+									},
+									"lastName": {
+										"type": "string",
+										"maxLength": 50,
+										"pattern": "^(?=.*[\\p{L}\\p{Sc}])[\\p{L}\\p{Sc}\\s'\\-().]+$/u"
+									},
+									"email": {
+										"type": "string",
+										"format": "email"
+									},
+									"profilePicture": {
+										"type": "string"
+									},
+									"password": {
+										"type": "string",
+										"minLength": 8,
+										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
+									},
+									"newPassword": {
+										"type": "string",
+										"minLength": 8,
+										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
+									},
+									"deleteProfileImage": {
+										"type": "boolean"
+									},
+									"profileImage": {
+										"type": "string",
+										"format": "binary"
+									}
+								},
+								"required": ["profileImage"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/User"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["auth"],
+				"summary": "Delete the currently authenticated user",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										}
+									},
+									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/checks/team/summary": {
+			"get": {
+				"tags": ["checks"],
+				"summary": "Aggregate check summary for the caller's team",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["recent", "hour", "day", "week", "month", "all"]
+						},
+						"required": false,
+						"name": "dateRange",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/checks/team": {
+			"get": {
+				"tags": ["checks"],
+				"summary": "List checks across the team",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["asc", "desc"]
+						},
+						"required": true,
+						"name": "sortOrder",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "number",
+							"nullable": true
+						},
+						"required": false,
+						"name": "limit",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["recent", "hour", "day", "week", "month", "all"]
+						},
+						"required": true,
+						"name": "dateRange",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["all", "up", "down", "resolve"]
+						},
+						"required": false,
+						"name": "filter",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "boolean"
+						},
+						"required": false,
+						"name": "ack",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "number",
+							"nullable": true
+						},
+						"required": false,
+						"name": "page",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "number",
+							"nullable": true
+						},
+						"required": false,
+						"name": "rowsPerPage",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["checks"],
+				"summary": "Delete all checks for the team (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"deletedCount": {
+													"type": "number"
+												}
+											},
+											"required": ["deletedCount"]
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/checks/{monitorId}": {
+			"get": {
+				"tags": ["checks"],
+				"summary": "List checks for a monitor",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "monitorId",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+						},
+						"required": false,
+						"name": "type",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["asc", "desc"]
+						},
+						"required": true,
+						"name": "sortOrder",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "number",
+							"nullable": true
+						},
+						"required": false,
+						"name": "limit",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["recent", "hour", "day", "week", "month", "all"]
+						},
+						"required": true,
+						"name": "dateRange",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["all", "up", "down", "resolve"]
+						},
+						"required": false,
+						"name": "filter",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "boolean"
+						},
+						"required": false,
+						"name": "ack",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "number",
+							"nullable": true
+						},
+						"required": false,
+						"name": "page",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "number",
+							"nullable": true
+						},
+						"required": false,
+						"name": "rowsPerPage",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "boolean"
+						},
+						"required": false,
+						"name": "status",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string",
+									"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
+								},
+								{
+									"type": "array",
+									"items": {
+										"type": "string",
+										"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
+									}
+								}
+							]
+						},
+						"required": false,
+						"name": "continent",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["checks"],
+				"summary": "Delete checks for a monitor",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "monitorId",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										}
+									},
+									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/diagnostic/system": {
+			"get": {
+				"tags": ["diagnostic"],
+				"summary": "Get system diagnostics (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/geo-checks/{monitorId}": {
+			"get": {
+				"tags": ["geo-checks"],
+				"summary": "Get geo check results for a monitor",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "monitorId",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+						},
+						"required": false,
+						"name": "type",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["asc", "desc"]
+						},
+						"required": true,
+						"name": "sortOrder",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "number",
+							"nullable": true
+						},
+						"required": false,
+						"name": "limit",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["recent", "hour", "day", "week", "month", "all"]
+						},
+						"required": true,
+						"name": "dateRange",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["all", "up", "down", "resolve"]
+						},
+						"required": false,
+						"name": "filter",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "boolean"
+						},
+						"required": false,
+						"name": "ack",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "number",
+							"nullable": true
+						},
+						"required": false,
+						"name": "page",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "number",
+							"nullable": true
+						},
+						"required": false,
+						"name": "rowsPerPage",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "boolean"
+						},
+						"required": false,
+						"name": "status",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string",
+									"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
+								},
+								{
+									"type": "array",
+									"items": {
+										"type": "string",
+										"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
+									}
+								}
+							]
+						},
+						"required": false,
+						"name": "continent",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
 					},
 					"500": {
 						"description": "Internal server error",
