@@ -77,15 +77,8 @@ class AuthController implements IAuthController {
 		}
 		loginValidation.parse(req.body);
 		const { user, token } = await this.userService.loginUser(req.body.email, req.body.password);
-
-		res.json({
-			success: true,
-			msg: "User logged in successfully",
-			data: {
-				user,
-				token,
-			},
-		});
+		const data = { user, token };
+		res.json({ success: true, msg: "User logged in successfully", data });
 	};
 
 	editUser = async (req: Request, res: Response) => {
@@ -131,7 +124,7 @@ class AuthController implements IAuthController {
 			teamId,
 			roles,
 		});
-		return res.json({ success: true, msg: "User deleted successfully" });
+		res.json({ success: true, msg: "User deleted successfully" });
 	};
 
 	deleteUserById = async (req: Request, res: Response) => {
@@ -183,7 +176,7 @@ class AuthController implements IAuthController {
 		const validatedParams = editUserByIdParamValidation.parse(req.params);
 		const validatedBody = editUserPasswordByIdBodyValidation.parse(req.body);
 		await this.userService.setPasswordByUserId(validatedParams.userId, validatedBody.password);
-		return res.json({ success: true, msg: "Password reset successfully" });
+		res.json({ success: true, msg: "Password reset successfully" });
 	};
 }
 
