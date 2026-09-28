@@ -5497,7 +5497,8 @@
 										"minLength": 1
 									},
 									"active": {
-										"type": "boolean"
+										"type": "boolean",
+										"default": true
 									},
 									"duration": {
 										"type": "number",
@@ -6925,7 +6926,8 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"]
+							"enum": ["recent", "hour", "day", "week", "month", "all"],
+							"default": "recent"
 						},
 						"required": false,
 						"name": "dateRange",
@@ -7050,7 +7052,8 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"]
+							"enum": ["recent", "hour", "day", "week", "month", "all"],
+							"default": "recent"
 						},
 						"required": false,
 						"name": "dateRange",
@@ -7633,7 +7636,8 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"]
+							"enum": ["recent", "hour", "day", "week", "month", "all"],
+							"default": "recent"
 						},
 						"required": false,
 						"name": "dateRange",
@@ -8335,7 +8339,8 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"]
+							"enum": ["recent", "hour", "day", "week", "month", "all"],
+							"default": "recent"
 						},
 						"required": false,
 						"name": "dateRange",
@@ -8486,7 +8491,8 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"]
+							"enum": ["recent", "hour", "day", "week", "month", "all"],
+							"default": "recent"
 						},
 						"required": false,
 						"name": "dateRange",
@@ -13493,10 +13499,12 @@
 										"type": "number"
 									},
 									"systemEmailSecure": {
-										"type": "boolean"
+										"type": "boolean",
+										"default": false
 									},
 									"systemEmailPool": {
-										"type": "boolean"
+										"type": "boolean",
+										"default": false
 									},
 									"systemEmailAddress": {
 										"type": "string"
@@ -13522,13 +13530,16 @@
 										]
 									},
 									"systemEmailIgnoreTLS": {
-										"type": "boolean"
+										"type": "boolean",
+										"default": false
 									},
 									"systemEmailRequireTLS": {
-										"type": "boolean"
+										"type": "boolean",
+										"default": false
 									},
 									"systemEmailRejectUnauthorized": {
-										"type": "boolean"
+										"type": "boolean",
+										"default": true
 									},
 									"systemEmailTLSServername": {
 										"anyOf": [
