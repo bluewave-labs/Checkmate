@@ -9,7 +9,6 @@ import { createSettingsRoutes } from "@/api/routes/settingsRoutes.js";
 import { createQueueRoutes } from "@/api/routes/queueRoutes.js";
 import { createLogRoutes } from "@/api/routes/logRoutes.js";
 import { createStatusPageRoutes } from "@/api/routes/statusPageRoutes.js";
-import { createProxyRoutes } from "@/api/routes/proxyRoutes.js";
 import { AuthMiddleware, buildRouter } from "@/api/routes/buildRouter.js";
 
 import { tagRoutes } from "@/api/routes/tagRoutes.js";
@@ -22,6 +21,7 @@ import { inviteRoutes } from "@/api/routes/inviteRoutes.js";
 import { maintenanceWindowRoutes } from "@/api/routes/maintenanceWindowRoutes.js";
 import { monitorRoutes } from "@/api/routes/monitorRoutes.js";
 import { notificationRoutes } from "@/api/routes/notificationRoutes.js";
+import { proxyRoutes } from "@/api/routes/proxyRoutes.js";
 export const setupRoutes = (app: Application, controllers: InitializedControllers, apiServices: ApiServices) => {
 	const verifyJWT = createVerifyJWT(apiServices.settingsService);
 	const verifyStatusPageAccess = createVerifyStatusPageAccess(apiServices.statusPagesRepository, verifyJWT);
@@ -34,7 +34,6 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 	const queueRoutes = createQueueRoutes(controllers.queueController);
 	const logRoutes = createLogRoutes(controllers.logController);
 	const statusPageRoutes = createStatusPageRoutes(controllers.statusPageController, verifyJWT, verifyStatusPageAccess);
-	const proxyRoutes = createProxyRoutes(controllers.proxyController);
 
 	app.use("/api/v1/auth", authApiLimiter, buildRouter(authRoutes, controllers.authController, middleware));
 	app.use("/api/v1/monitors", buildRouter(monitorRoutes, controllers.monitorController, middleware));
@@ -50,5 +49,5 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 	app.use("/api/v1/tags", buildRouter(tagRoutes, controllers.tagController, middleware));
 	app.use("/api/v1/diagnostic", buildRouter(diagnosticRoutes, controllers.diagnosticController, middleware));
 	app.use("/api/v1/incidents", buildRouter(incidentRoutes, controllers.incidentController, middleware));
-	app.use("/api/v1/proxies", verifyJWT, proxyRoutes);
+	app.use("/api/v1/proxies", buildRouter(proxyRoutes, controllers.proxyController, middleware));
 };
