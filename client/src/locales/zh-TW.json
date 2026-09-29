@@ -175,6 +175,7 @@
 				"uptime": "正常運行時間",
 				"pagespeed": "PageSpeed",
 				"infrastructure": "基礎架構",
+				"docker": "Docker",
 				"notifications": "通知",
 				"checks": "檢查",
 				"incidents": "事件",
@@ -187,7 +188,8 @@
 					"alerting": "警示",
 					"reporting": "報表",
 					"configuration": "設定"
-				}
+				},
+				"dashboard": "儀表板"
 			},
 			"bottomMenu": {
 				"support": "支援",
@@ -534,10 +536,6 @@
 				},
 				"general": {
 					"option": {
-						"container": {
-							"label": "容器名稱/ID",
-							"placeholder": "my-app 或 abcd1234"
-						},
 						"host": {
 							"label": "主機",
 							"placeholder": "192.168.1.100 或 example.com"
@@ -593,6 +591,10 @@
 							"desktop": "桌面",
 							"label": "策略",
 							"mobile": "行動裝置"
+						},
+						"dockerHost": {
+							"label": "Docker 主機",
+							"placeholder": "unix:///var/run/docker.sock"
 						}
 					},
 					"title": "一般設定",
@@ -694,17 +696,6 @@
 						}
 					}
 				},
-				"url": {
-					"title": "在狀態頁面上顯示監控 IP/URL",
-					"description": "在公開狀態頁面上顯示監控的 IP 位址或 URL。若停用此選項，將僅顯示監控名稱以保護敏感資訊。",
-					"option": {
-						"showURL": {
-							"label": "在狀態頁面上顯示 IP/URL",
-							"enabled": "啟用",
-							"disabled": "停用"
-						}
-					}
-				},
 				"stats": {
 					"title": "監控歷史",
 					"description": "清除團隊的所有監控歷史和統計資料。此操作無法復原。",
@@ -713,6 +704,50 @@
 						"title": "清除所有監控歷史？",
 						"description": "這將永久刪除團隊的所有監控歷史、統計資料和檢查資料。此操作無法復原。",
 						"confirm": "是的，清除所有統計資料"
+					}
+				},
+				"dockerLogs": {
+					"title": "容器日誌",
+					"description": "每次檢查時收集此主機上所有容器的最新日誌行。日誌保留 7 天。若主機上的容器輸出量很大，請關閉此選項以節省資料庫空間。",
+					"option": {
+						"enabled": {
+							"label": "收集容器日誌"
+						}
+					}
+				},
+				"dockerAlerts": {
+					"title": "容器警示",
+					"description": "當此主機上任何容器處於停止狀態或健康檢查失敗時，將此主機標記為異常，並在狀態變更時發出通知。以代碼 0 結束的容器不計為停止。Capture 不回報結束代碼，因此在 Capture 主機上，所有已停止的容器都會被計入。",
+					"option": {
+						"onStopped": {
+							"label": "容器停止時發出警示"
+						},
+						"onUnhealthy": {
+							"label": "容器不健康時發出警示"
+						}
+					}
+				},
+				"dockerTls": {
+					"title": "TLS 憑證",
+					"description": "透過雙向 TLS 連線遠端 Docker 守護程序。請貼上您會傳給 docker --tlsverify 的 PEM 檔案。用戶端金鑰在儲存前會被加密，且不會再次顯示。",
+					"option": {
+						"ca": {
+							"label": "CA 憑證",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"cert": {
+							"label": "用戶端憑證",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"key": {
+							"label": "用戶端金鑰",
+							"placeholder": "-----BEGIN PRIVATE KEY-----",
+							"stored": "已儲存金鑰。留空即保留原金鑰。"
+						},
+						"ignoreTls": {
+							"label": "忽略 TLS/SSL 錯誤",
+							"description": "略過對守護程序憑證的驗證，因此 CA 憑證變為選填。用戶端憑證與金鑰仍為必填，因為守護程序會驗證它們。"
+						}
 					}
 				}
 			}
@@ -825,12 +860,9 @@
 		"infrastructure": {
 			"charts": {
 				"labels": {
-					"cpu": "CPU 使用率",
 					"disk": "磁碟使用率",
-					"memory": "記憶體使用率",
 					"netBytesRecv": "{{name}} - 接收位元組",
 					"netBytesSent": "{{name}} - 發送位元組",
-					"netNoTraffic": "Capture 回報所有介面的流量皆為零。當 Capture 在只能看到回環介面的容器中執行時，這是正常情況——請直接在主機上執行 Capture 才能看到實際的網路活動。",
 					"temp": "溫度"
 				}
 			},
@@ -1199,9 +1231,7 @@
 					"description": "在公開狀態頁面上顯示監控的 IP 位址或 URL。若停用此選項，將僅顯示監控名稱以保護敏感資訊。",
 					"option": {
 						"showURL": {
-							"label": "在狀態頁面上顯示 IP/URL",
-							"enabled": "啟用",
-							"disabled": "停用"
+							"label": "在狀態頁面上顯示 IP/URL"
 						}
 					}
 				},
@@ -1552,6 +1582,105 @@
 			"header": {
 				"title": "運行時間監視器",
 				"description": "監控 HTTP 端點、Ping、容器和連接埠 — 一旦發生故障即刻收到提醒。"
+			}
+		},
+		"docker": {
+			"table": {
+				"headers": {
+					"host": "主機",
+					"containers": "容器"
+				},
+				"containersRunning": "{{total}} 個中有 {{running}} 個正在執行"
+			},
+			"header": {
+				"title": "Docker 監控",
+				"description": "監控您的 Docker 主機及其上執行的所有容器。"
+			},
+			"fallback": {
+				"title": "尚無 Docker 監控",
+				"description": "新增一台 Docker 主機以監控其容器。",
+				"actionButton": "建立監控"
+			},
+			"container": {
+				"header": {
+					"title": "容器詳細資料",
+					"description": "此容器的狀態、資源使用情況與日誌。"
+				},
+				"tabs": {
+					"overview": "概覽",
+					"logs": "日誌"
+				},
+				"logs": {
+					"recentLines": "最近 {{count}} 行",
+					"loading": "載入中...",
+					"updatedSecondsAgo": "{{count}} 秒前更新",
+					"updatedMinutesAgo": "{{count}} 分鐘前更新",
+					"skipped": "部分日誌項目已略過",
+					"loadOlder": "載入較早的日誌",
+					"loadingOlder": "載入中...",
+					"noOlder": "已到保留日誌的開頭",
+					"loadError": "無法載入日誌",
+					"loadOlderError": "無法載入較早的日誌",
+					"empty": {
+						"title": "尚未收集到日誌",
+						"description": "下次檢查後這裡會顯示日誌行。僅儲存開啟收集之後寫入的輸出。"
+					},
+					"disabled": {
+						"title": "此主機的日誌收集已關閉",
+						"description": "在監控設定中開啟容器日誌即可開始收集。",
+						"action": "設定監控"
+					},
+					"forbidden": {
+						"title": "您無權檢視容器日誌",
+						"description": "只有管理員可以檢視日誌。如需檢視，請向管理員申請權限。"
+					}
+				}
+			},
+			"host": {
+				"statBoxes": {
+					"containers": "容器",
+					"running": "執行中",
+					"stopped": "已停止",
+					"unhealthy": "不健康"
+				},
+				"table": {
+					"headers": {
+						"container": "容器",
+						"cpu": "CPU",
+						"memory": "記憶體"
+					}
+				}
+			}
+		},
+		"dashboard": {
+			"noData": "目前沒有資料。",
+			"monitorStatus": {
+				"ofUp": "/ {{total}} 個正常"
+			},
+			"cards": {
+				"monitorStatus": "監控狀態",
+				"currentlyDown": "目前中斷",
+				"uptime": "監控可用率",
+				"monitorsByType": "依類型分類的監控"
+			},
+			"uptimeCard": {
+				"toggleSortOrder": "切換排序方式"
+			},
+			"currentlyDown": {
+				"empty": "目前沒有中斷的監控。"
+			},
+			"header": {
+				"title": "儀表板",
+				"description": "在一處檢視所有監控類型，找出需要關注的問題。"
+			},
+			"editCards": "編輯卡片",
+			"editCardsModal": {
+				"title": "儀表板卡片",
+				"description": "選擇要顯示在儀表板上的卡片。",
+				"groups": {
+					"uptime": "可用率"
+				},
+				"done": "完成"
 			}
 		}
 	}

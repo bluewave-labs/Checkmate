@@ -175,6 +175,7 @@
 				"uptime": "Dostupnost",
 				"pagespeed": "Pagespeed",
 				"infrastructure": "Infrastruktura",
+				"docker": "Docker",
 				"notifications": "Oznámení",
 				"checks": "Kontroly",
 				"incidents": "Incidenty",
@@ -187,7 +188,8 @@
 					"alerting": "Upozornění",
 					"reporting": "Přehledy",
 					"configuration": "Konfigurace"
-				}
+				},
+				"dashboard": "Přehled"
 			},
 			"bottomMenu": {
 				"support": "Podpora",
@@ -534,10 +536,6 @@
 				},
 				"general": {
 					"option": {
-						"container": {
-							"label": "Název/ID kontejneru",
-							"placeholder": "my-app nebo abcd1234"
-						},
 						"host": {
 							"label": "Hostitel",
 							"placeholder": "192.168.1.100 nebo example.com"
@@ -593,6 +591,10 @@
 							"desktop": "Stolní počítač",
 							"label": "Strategie",
 							"mobile": "Mobil"
+						},
+						"dockerHost": {
+							"label": "Docker hostitel",
+							"placeholder": "unix:///var/run/docker.sock"
 						}
 					},
 					"title": "Obecná nastavení",
@@ -694,17 +696,6 @@
 						}
 					}
 				},
-				"url": {
-					"title": "IP/URL monitoru na stavové stránce",
-					"description": "Zobrazí IP adresu nebo URL monitoru na veřejné stavové stránce. Pokud je tato možnost zakázána, zobrazí se pouze název monitoru pro ochranu citlivých informací.",
-					"option": {
-						"showURL": {
-							"label": "Zobrazit IP/URL na stavové stránce",
-							"enabled": "Povoleno",
-							"disabled": "Zakázáno"
-						}
-					}
-				},
 				"stats": {
 					"title": "Historie monitoru",
 					"description": "Vymazat veškerou historii sledování a statistiky vašeho týmu. Tato akce je nevratná.",
@@ -713,6 +704,50 @@
 						"title": "Vymazat veškerou historii sledování?",
 						"description": "Toto trvale smaže veškerou historii sledování, statistiky a data kontrol vašeho týmu. Tuto akci nelze vrátit zpět.",
 						"confirm": "Ano, vymazat všechny statistiky"
+					}
+				},
+				"dockerLogs": {
+					"title": "Logy kontejnerů",
+					"description": "Při každé kontrole sbírá nejnovější řádky logů z každého kontejneru na tomto hostiteli. Logy se uchovávají 7 dní. U hostitelů s upovídanými kontejnery nechte tuto volbu vypnutou, abyste ušetřili místo v databázi.",
+					"option": {
+						"enabled": {
+							"label": "Sbírat logy kontejnerů"
+						}
+					}
+				},
+				"dockerAlerts": {
+					"title": "Upozornění na kontejnery",
+					"description": "Označí tohoto hostitele jako narušeného, dokud je na něm některý kontejner zastavený nebo neprojde kontrolou zdraví, a při změně pošle oznámení. Kontejnery, které skončí s kódem 0, se nepočítají jako zastavené. Capture nehlásí návratové kódy, takže na hostitelích s Capture se počítá každý zastavený kontejner.",
+					"option": {
+						"onStopped": {
+							"label": "Upozornit, když je kontejner zastavený"
+						},
+						"onUnhealthy": {
+							"label": "Upozornit, když je kontejner v nezdravém stavu"
+						}
+					}
+				},
+				"dockerTls": {
+					"title": "Přihlašovací údaje TLS",
+					"description": "Připojí se ke vzdálenému Docker daemonu pomocí vzájemného TLS. Vložte soubory PEM, které byste předali příkazu docker --tlsverify. Klientský klíč je před uložením zašifrován a už se nikdy nezobrazí.",
+					"option": {
+						"ca": {
+							"label": "Certifikát CA",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"cert": {
+							"label": "Certifikát klienta",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"key": {
+							"label": "Klíč klienta",
+							"placeholder": "-----BEGIN PRIVATE KEY-----",
+							"stored": "Klíč je uložen. Ponechte prázdné, chcete-li jej zachovat."
+						},
+						"ignoreTls": {
+							"label": "Ignorovat chyby TLS/SSL",
+							"description": "Přeskočí ověření certifikátu daemonu, takže certifikát CA se stane volitelným. Klientský certifikát a klíč jsou i tak vyžadovány, protože je daemon ověřuje."
+						}
 					}
 				}
 			}
@@ -825,12 +860,9 @@
 		"infrastructure": {
 			"charts": {
 				"labels": {
-					"cpu": "Využití CPU",
 					"disk": "Využití disku",
-					"memory": "Využití paměti",
 					"netBytesRecv": "{{name}} - přijaté bajty",
 					"netBytesSent": "{{name}} - odeslané bajty",
-					"netNoTraffic": "Capture hlásí nulový provoz na všech rozhraních. To je normální, když Capture běží uvnitř kontejneru, který vidí pouze loopback rozhraní — spusťte Capture přímo na hostiteli, abyste viděli skutečnou síťovou aktivitu.",
 					"temp": "Teplota"
 				}
 			},
@@ -1199,9 +1231,7 @@
 					"description": "Zobrazí IP adresu nebo URL monitoru na veřejné stavové stránce. Pokud je tato možnost zakázána, zobrazí se pouze název monitoru pro ochranu citlivých informací.",
 					"option": {
 						"showURL": {
-							"label": "Zobrazit IP/URL na stavové stránce",
-							"enabled": "Povoleno",
-							"disabled": "Zakázáno"
+							"label": "Zobrazit IP/URL na stavové stránce"
 						}
 					}
 				},
@@ -1552,6 +1582,105 @@
 			"header": {
 				"title": "Monitory dostupnosti",
 				"description": "Sledujte HTTP koncové body, pingy, kontejnery a porty — buďte upozorněni v okamžiku, kdy něco vypadne."
+			}
+		},
+		"docker": {
+			"table": {
+				"headers": {
+					"host": "Hostitel",
+					"containers": "Kontejnery"
+				},
+				"containersRunning": "{{running}} z {{total}} běží"
+			},
+			"header": {
+				"title": "Docker monitory",
+				"description": "Monitorujte své Docker hostitele a každý kontejner, který na nich běží."
+			},
+			"fallback": {
+				"title": "Zatím žádné Docker monitory",
+				"description": "Přidejte Docker hostitele, abyste monitorovali jeho kontejnery.",
+				"actionButton": "Vytvořit monitor"
+			},
+			"container": {
+				"header": {
+					"title": "Podrobnosti kontejneru",
+					"description": "Stav, využití zdrojů a logy tohoto kontejneru."
+				},
+				"tabs": {
+					"overview": "Přehled",
+					"logs": "Logy"
+				},
+				"logs": {
+					"recentLines": "{{count}} nedávných řádků",
+					"loading": "Načítání...",
+					"updatedSecondsAgo": "Aktualizováno před {{count}} s",
+					"updatedMinutesAgo": "Aktualizováno před {{count}} min",
+					"skipped": "Některé záznamy logu byly vynechány",
+					"loadOlder": "Načíst starší logy",
+					"loadingOlder": "Načítání...",
+					"noOlder": "Začátek uchovávaných logů",
+					"loadError": "Logy se nepodařilo načíst",
+					"loadOlderError": "Starší logy se nepodařilo načíst",
+					"empty": {
+						"title": "Zatím nebyly sebrány žádné logy",
+						"description": "Řádky se zde zobrazí po další kontrole. Ukládá se pouze výstup zapsaný od zapnutí sběru."
+					},
+					"disabled": {
+						"title": "Sběr logů je pro tohoto hostitele vypnutý",
+						"description": "Zapněte logy kontejnerů v nastavení monitoru, aby se začaly sbírat.",
+						"action": "Nastavit monitor"
+					},
+					"forbidden": {
+						"title": "Nemáte přístup k logům kontejnerů",
+						"description": "Logy mohou zobrazit pouze administrátoři. Pokud je potřebujete vidět, požádejte administrátora o přístup."
+					}
+				}
+			},
+			"host": {
+				"statBoxes": {
+					"containers": "Kontejnery",
+					"running": "Běžící",
+					"stopped": "Zastavené",
+					"unhealthy": "Nezdravé"
+				},
+				"table": {
+					"headers": {
+						"container": "Kontejnery",
+						"cpu": "CPU",
+						"memory": "Paměť"
+					}
+				}
+			}
+		},
+		"dashboard": {
+			"noData": "Momentálně nejsou dostupná žádná data.",
+			"monitorStatus": {
+				"ofUp": "z {{total}} běží"
+			},
+			"cards": {
+				"monitorStatus": "Stav monitorů",
+				"currentlyDown": "Aktuálně nedostupné",
+				"uptime": "Dostupnost monitorů",
+				"monitorsByType": "Monitory podle typu"
+			},
+			"uptimeCard": {
+				"toggleSortOrder": "Přepnout řazení"
+			},
+			"currentlyDown": {
+				"empty": "Momentálně není žádný monitor nedostupný."
+			},
+			"header": {
+				"title": "Přehled",
+				"description": "Podívejte se na všechny typy monitorů na jednom místě a všimněte si, co potřebuje pozornost."
+			},
+			"editCards": "Upravit karty",
+			"editCardsModal": {
+				"title": "Karty přehledu",
+				"description": "Vyberte karty, které se zobrazí ve vašem přehledu.",
+				"groups": {
+					"uptime": "Dostupnost"
+				},
+				"done": "Hotovo"
 			}
 		}
 	}

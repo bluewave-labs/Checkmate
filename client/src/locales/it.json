@@ -186,6 +186,7 @@
 				"uptime": "Uptime",
 				"pagespeed": "Pagespeed",
 				"infrastructure": "Infrastruttura",
+				"docker": "Docker",
 				"notifications": "Notifiche",
 				"tags": "Tag",
 				"checks": "Verifiche",
@@ -199,7 +200,8 @@
 					"alerting": "Avvisi",
 					"reporting": "Report",
 					"configuration": "Configurazione"
-				}
+				},
+				"dashboard": "Dashboard"
 			},
 			"bottomMenu": {
 				"support": "Supporto",
@@ -521,8 +523,7 @@
 						},
 						"customUpCodes": {
 							"label": "Codici di stato accettati",
-							"description": "Aggiungi qualsiasi codice non-2xx che debba essere considerato riuscito.",
-							"removeAriaLabel": "Rimuovi codice di stato"
+							"description": "Aggiungi qualsiasi codice non-2xx che debba essere considerato riuscito."
 						}
 					},
 					"title": "Impostazioni avanzate"
@@ -550,10 +551,6 @@
 				},
 				"general": {
 					"option": {
-						"container": {
-							"label": "Nome/ID container",
-							"placeholder": "my-app o abcd1234"
-						},
 						"host": {
 							"label": "Host",
 							"placeholder": "192.168.1.100 o example.com"
@@ -609,6 +606,10 @@
 								"NS": "NS",
 								"TXT": "TXT"
 							}
+						},
+						"dockerHost": {
+							"label": "Host Docker",
+							"placeholder": "unix:///var/run/docker.sock"
 						}
 					},
 					"title": "Impostazioni generali",
@@ -714,17 +715,6 @@
 						}
 					}
 				},
-				"url": {
-					"title": "Monitor IP/URL sulla pagina di stato",
-					"description": "Visualizza l'indirizzo IP o l'URL del monitor sulla pagina di stato pubblica. Se disabilitato, verrà mostrato solo il nome del monitor per proteggere le informazioni sensibili.",
-					"option": {
-						"showURL": {
-							"label": "Visualizza IP/URL sulla pagina di stato",
-							"enabled": "Abilitato",
-							"disabled": "Disabilitato"
-						}
-					}
-				},
 				"stats": {
 					"title": "Cronologia monitor",
 					"description": "Cancella tutta la cronologia di monitoraggio e le statistiche per il tuo team. Questa azione è irreversibile.",
@@ -733,6 +723,50 @@
 						"title": "Cancellare tutta la cronologia di monitoraggio?",
 						"description": "Questa operazione eliminerà permanentemente tutta la cronologia di monitoraggio, le statistiche e i dati di verifica per il tuo team. Questa azione non può essere annullata.",
 						"confirm": "Sì, cancella tutte le statistiche"
+					}
+				},
+				"dockerLogs": {
+					"title": "Log dei container",
+					"description": "Raccoglie a ogni controllo le righe di log più recenti di ogni container su questo host. I log sono conservati per 7 giorni. Lascia questa opzione disattivata per host con container molto verbosi, per risparmiare spazio nel database.",
+					"option": {
+						"enabled": {
+							"label": "Raccogli i log dei container"
+						}
+					}
+				},
+				"dockerAlerts": {
+					"title": "Avvisi sui container",
+					"description": "Segna questo host come compromesso finché un container al suo interno è arrestato o non supera il controllo di integrità, e invia una notifica al cambio di stato. I container che terminano con codice 0 non contano come arrestati. Capture non riporta i codici di uscita, quindi sugli host Capture ogni container arrestato viene conteggiato.",
+					"option": {
+						"onStopped": {
+							"label": "Avvisa quando un container è arrestato"
+						},
+						"onUnhealthy": {
+							"label": "Avvisa quando un container non è integro"
+						}
+					}
+				},
+				"dockerTls": {
+					"title": "Credenziali TLS",
+					"description": "Si connette a un daemon Docker remoto tramite TLS mutuo. Incolla i file PEM che passeresti a docker --tlsverify. La chiave client viene cifrata prima di essere memorizzata e non viene più mostrata.",
+					"option": {
+						"ca": {
+							"label": "Certificato CA",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"cert": {
+							"label": "Certificato client",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"key": {
+							"label": "Chiave client",
+							"placeholder": "-----BEGIN PRIVATE KEY-----",
+							"stored": "Una chiave è memorizzata. Lascia vuoto per conservarla."
+						},
+						"ignoreTls": {
+							"label": "Ignora gli errori TLS/SSL",
+							"description": "Salta la verifica del certificato del daemon, così il certificato CA diventa opzionale. Il certificato e la chiave client restano obbligatori perché il daemon li verifica."
+						}
 					}
 				}
 			}
@@ -845,9 +879,7 @@
 		"infrastructure": {
 			"charts": {
 				"labels": {
-					"cpu": "Utilizzo CPU",
 					"disk": "Utilizzo disco",
-					"memory": "Utilizzo memoria",
 					"netBytesRecv": "{{name}} - Byte ricevuti",
 					"netBytesSent": "{{name}} - Byte inviati",
 					"loopbackOnlyNotice": "Capture sta segnalando solo interfacce loopback o bridge di container (lo, lo0, docker0). Questo è normale quando Capture viene eseguito all'interno di un container che può vedere solo il proprio namespace di rete — esegui Capture direttamente sull'host per vedere l'attività di rete reale.",
@@ -1295,9 +1327,7 @@
 					"description": "Visualizza l'indirizzo IP o l'URL del monitor sulla pagina di stato pubblica. Se disabilitato, verrà mostrato solo il nome del monitor per proteggere le informazioni sensibili.",
 					"option": {
 						"showURL": {
-							"label": "Visualizza IP/URL sulla pagina di stato",
-							"enabled": "Abilitato",
-							"disabled": "Disabilitato"
+							"label": "Visualizza IP/URL sulla pagina di stato"
 						}
 					}
 				},
@@ -1672,6 +1702,105 @@
 			"header": {
 				"title": "Monitor uptime",
 				"description": "Controlla endpoint HTTP, ping, container e porte — e ricevi un avviso nel momento in cui qualcosa va giù."
+			}
+		},
+		"docker": {
+			"table": {
+				"headers": {
+					"host": "Host",
+					"containers": "Container"
+				},
+				"containersRunning": "{{running}} di {{total}} in esecuzione"
+			},
+			"header": {
+				"title": "Monitor Docker",
+				"description": "Monitora i tuoi host Docker e ogni container in esecuzione su di essi."
+			},
+			"fallback": {
+				"title": "Ancora nessun monitor Docker",
+				"description": "Aggiungi un host Docker per monitorare i suoi container.",
+				"actionButton": "Crea un monitor"
+			},
+			"container": {
+				"header": {
+					"title": "Dettagli del container",
+					"description": "Stato, utilizzo delle risorse e log di questo container."
+				},
+				"tabs": {
+					"overview": "Panoramica",
+					"logs": "Log"
+				},
+				"logs": {
+					"recentLines": "{{count}} righe recenti",
+					"loading": "Caricamento...",
+					"updatedSecondsAgo": "Aggiornato {{count}} s fa",
+					"updatedMinutesAgo": "Aggiornato {{count}} min fa",
+					"skipped": "Alcune voci di log sono state omesse",
+					"loadOlder": "Carica log precedenti",
+					"loadingOlder": "Caricamento...",
+					"noOlder": "Inizio dei log conservati",
+					"loadError": "Impossibile caricare i log",
+					"loadOlderError": "Impossibile caricare i log precedenti",
+					"empty": {
+						"title": "Nessun log raccolto finora",
+						"description": "Le righe compariranno qui dopo il prossimo controllo. Viene memorizzato solo l'output scritto da quando la raccolta è stata attivata."
+					},
+					"disabled": {
+						"title": "La raccolta dei log è disattivata per questo host",
+						"description": "Attiva i log dei container nelle impostazioni del monitor per iniziare la raccolta.",
+						"action": "Configura il monitor"
+					},
+					"forbidden": {
+						"title": "Non hai accesso ai log dei container",
+						"description": "Solo gli amministratori possono vedere i log. Chiedi l'accesso a un amministratore se hai bisogno di consultarli."
+					}
+				}
+			},
+			"host": {
+				"statBoxes": {
+					"containers": "Container",
+					"running": "In esecuzione",
+					"stopped": "Arrestati",
+					"unhealthy": "Non integri"
+				},
+				"table": {
+					"headers": {
+						"container": "Container",
+						"cpu": "CPU",
+						"memory": "Memoria"
+					}
+				}
+			}
+		},
+		"dashboard": {
+			"noData": "Nessun dato disponibile in questo momento.",
+			"monitorStatus": {
+				"ofUp": "di {{total}} attivi"
+			},
+			"cards": {
+				"monitorStatus": "Stato dei monitor",
+				"currentlyDown": "Attualmente non attivi",
+				"uptime": "Disponibilità dei monitor",
+				"monitorsByType": "Monitor per tipo"
+			},
+			"uptimeCard": {
+				"toggleSortOrder": "Inverti l'ordinamento"
+			},
+			"currentlyDown": {
+				"empty": "Nessun monitor è inattivo in questo momento."
+			},
+			"header": {
+				"title": "Dashboard",
+				"description": "Vedi ogni tipo di monitor in un unico posto e individua ciò che richiede attenzione."
+			},
+			"editCards": "Modifica schede",
+			"editCardsModal": {
+				"title": "Schede della dashboard",
+				"description": "Seleziona le schede da mostrare nella tua dashboard.",
+				"groups": {
+					"uptime": "Disponibilità"
+				},
+				"done": "Fatto"
 			}
 		}
 	}

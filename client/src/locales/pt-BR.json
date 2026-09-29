@@ -226,7 +226,8 @@
 					"alerting": "Alertas",
 					"reporting": "Relatórios",
 					"configuration": "Configuração"
-				}
+				},
+				"dashboard": "Painel"
 			},
 			"bottomMenu": {
 				"support": "Suporte",
@@ -855,6 +856,18 @@
 						"ignoreTls": {
 							"label": "Ignorar erros de TLS/SSL",
 							"description": "Ignora a verificação do certificado do daemon, tornando o certificado da CA opcional. O certificado e a chave do cliente continuam obrigatórios, pois o daemon os verifica."
+						}
+					}
+				},
+				"dockerAlerts": {
+					"title": "Alertas de contêineres",
+					"description": "Marca este host como comprometido enquanto algum contêiner nele estiver parado ou falhando na verificação de saúde, e notifica na mudança. Contêineres que terminam com código 0 não contam como parados. O Capture não informa códigos de saída, então em hosts com Capture todo contêiner parado é contado.",
+					"option": {
+						"onStopped": {
+							"label": "Alertar quando um contêiner estiver parado"
+						},
+						"onUnhealthy": {
+							"label": "Alertar quando um contêiner estiver com problema"
 						}
 					}
 				}
@@ -1906,6 +1919,37 @@
 			"header": {
 				"title": "Monitores de uptime",
 				"description": "Acompanhe endpoints HTTP, pings, containers e portas — receba alertas no momento em que algo falhar."
+			}
+		},
+		"dashboard": {
+			"noData": "Nenhum dado disponível neste momento.",
+			"monitorStatus": {
+				"ofUp": "de {{total}} ativos"
+			},
+			"cards": {
+				"monitorStatus": "Status dos monitores",
+				"currentlyDown": "Fora do ar agora",
+				"uptime": "Disponibilidade dos monitores",
+				"monitorsByType": "Monitores por tipo"
+			},
+			"uptimeCard": {
+				"toggleSortOrder": "Alternar a ordenação"
+			},
+			"currentlyDown": {
+				"empty": "Nenhum monitor está fora do ar neste momento."
+			},
+			"header": {
+				"title": "Painel",
+				"description": "Veja todos os tipos de monitor em um só lugar e identifique o que precisa de atenção."
+			},
+			"editCards": "Editar cartões",
+			"editCardsModal": {
+				"title": "Cartões do painel",
+				"description": "Selecione os cartões que serão exibidos no seu painel.",
+				"groups": {
+					"uptime": "Disponibilidade"
+				},
+				"done": "Concluído"
 			}
 		}
 	}
