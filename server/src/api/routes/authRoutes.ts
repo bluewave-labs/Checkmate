@@ -1,6 +1,3 @@
-import { Router, RequestHandler } from "express";
-import { isAllowed } from "@/api/middleware/isAllowed.js";
-import { imageUpload } from "@/api/middleware/upload.js";
 import { IAuthController } from "@/api/controllers/authController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
 import {

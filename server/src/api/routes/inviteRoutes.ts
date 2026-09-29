@@ -1,5 +1,3 @@
-import { RequestHandler, Router } from "express";
-import { isAllowed } from "../middleware/isAllowed.js";
 import { IInviteController } from "@/api/controllers/inviteController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
 import { inviteBodyValidation, inviteVerificationBodyValidation } from "@/api/validation/authValidation.js";

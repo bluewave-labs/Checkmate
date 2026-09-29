@@ -1,9 +1,6 @@
 import { registerRoutes } from "openapi/registerRoutes.js";
 import "./registry.js";
 import "./routes/log.js";
-import "./routes/maintenanceWindow.js";
-import "./routes/monitor.js";
-import "./routes/notification.js";
 import "./routes/proxies.js";
 import "./routes/queue.js";
 import "./routes/settings.js";
@@ -19,6 +16,9 @@ import { diagnosticRoutes } from "@/api/routes/diagnosticRoutes.js";
 import { geoCheckRoutes } from "@/api/routes/geoCheckRoutes.js";
 import { incidentRoutes } from "@/api/routes/incidentRoutes.js";
 import { inviteRoutes } from "@/api/routes/inviteRoutes.js";
+import { maintenanceWindowRoutes } from "@/api/routes/maintenanceWindowRoutes.js";
+import { monitorRoutes } from "@/api/routes/monitorRoutes.js";
+import { notificationRoutes } from "@/api/routes/notificationRoutes.js";
 let cached: JsonObject | null = null;
 
 registerRoutes(registry, tagRoutes);
@@ -28,6 +28,10 @@ registerRoutes(registry, diagnosticRoutes);
 registerRoutes(registry, geoCheckRoutes);
 registerRoutes(registry, incidentRoutes);
 registerRoutes(registry, inviteRoutes);
+registerRoutes(registry, maintenanceWindowRoutes);
+registerRoutes(registry, monitorRoutes);
+registerRoutes(registry, notificationRoutes);
+
 export function getOpenApiSpec(): JsonObject {
 	if (cached) return cached;
 

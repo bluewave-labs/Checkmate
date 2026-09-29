@@ -39,7 +39,7 @@ const refineNtfyAuth = (body: { ntfyAuthType?: string; ntfyUsername?: string; ac
 	}
 };
 
-export const createNotificationBodyValidation = z.discriminatedUnion("type", [
+const notificationChannelVariants = z.discriminatedUnion("type", [
 	// Email notification
 	z.object({
 		notificationName: z.string().min(1, "Notification name is required"),
@@ -152,6 +152,100 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		})
 		.superRefine(refineNtfyAuth),
 ]);
+
+// OpenAPI component name and example per notification variant, keyed by the
+// discriminator value. Server start fails loudly if a variant has no entry here.
+const notificationVariantMeta: Record<string, { component: string; example: Record<string, unknown> }> = {
+	email: {
+		component: "EmailNotification",
+		example: { notificationName: "Ops on-call email", type: "email", address: "alerts@example.com" },
+	},
+	webhook: {
+		component: "WebhookNotification",
+		example: { notificationName: "Custom webhook", type: "webhook", address: "https://example.com/hooks/checkmate" },
+	},
+	rocket_chat: {
+		component: "RocketChatNotification",
+		example: {
+			notificationName: "Rocket.Chat alerts",
+			type: "rocket_chat",
+			address: "https://chat.example.com/hooks/integration-id/token",
+		},
+	},
+	slack: {
+		component: "SlackNotification",
+		example: { notificationName: "#alerts", type: "slack", address: "https://hooks.slack.com/services/T000/B000/XXXX" },
+	},
+	discord: {
+		component: "DiscordNotification",
+		example: { notificationName: "#status", type: "discord", address: "https://discord.com/api/webhooks/123/abc" },
+	},
+	pager_duty: {
+		component: "PagerDutyNotification",
+		example: { notificationName: "PagerDuty primary", type: "pager_duty", address: "R01XXXXXXXXXXXXXXXXXXXXXXX" },
+	},
+	matrix: {
+		component: "MatrixNotification",
+		example: {
+			notificationName: "Matrix room",
+			type: "matrix",
+			homeserverUrl: "https://matrix.example.com",
+			roomId: "!abc123:example.com",
+			accessToken: "syt_xxx",
+		},
+	},
+	teams: {
+		component: "TeamsNotification",
+		example: { notificationName: "Teams ops channel", type: "teams", address: "https://outlook.office.com/webhook/..." },
+	},
+	telegram: {
+		component: "TelegramNotification",
+		example: { notificationName: "Telegram bot", type: "telegram", address: "-1001234567890", accessToken: "123456:ABC-DEF" },
+	},
+	pushover: {
+		component: "PushoverNotification",
+		example: { notificationName: "Pushover personal", type: "pushover", address: "u1234567890abcdef", accessToken: "a1234567890abcdef" },
+	},
+	signalgrid: {
+		component: "SignalgridNotification",
+		example: { notificationName: "Signalgrid", type: "signalgrid", address: "your-channel", accessToken: "your-client-key" },
+	},
+	twilio: {
+		component: "TwilioNotification",
+		example: {
+			notificationName: "Twilio SMS",
+			type: "twilio",
+			accountSid: "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+			accessToken: "your-auth-token",
+			phone: "+15551234567",
+			twilioPhoneNumber: "+15557654321",
+		},
+	},
+	ntfy: {
+		component: "NtfyNotification",
+		example: {
+			notificationName: "ntfy topic",
+			type: "ntfy",
+			address: "https://ntfy.sh",
+			topic: "checkmate-alerts",
+			ntfyAuthType: "token",
+			accessToken: "tk_your-ntfy-access-token",
+		},
+	},
+};
+
+const decoratedVariants = notificationChannelVariants.options.map((variant) => {
+	const type = (variant.shape.type as z.ZodLiteral<string>).value;
+	const meta = notificationVariantMeta[type];
+	if (!meta) {
+		throw new Error(`Missing OpenAPI metadata for notification variant "${type}". Add an entry in notificationVariantMeta.`);
+	}
+	return variant.meta({ id: meta.component, example: meta.example });
+});
+
+export const createNotificationBodyValidation = z
+	.discriminatedUnion("type", decoratedVariants as typeof notificationChannelVariants.options)
+	.meta({ id: "NotificationChannelBody" });
 
 export const testNotificationBodyValidation = createNotificationBodyValidation;
 
