@@ -5,7 +5,6 @@ import { authApiLimiter } from "../api/middleware/rateLimiter.js";
 import type { InitializedControllers } from "./controllers.js";
 import type { ApiServices } from "@/config/services.api.js";
 
-import { createSettingsRoutes } from "@/api/routes/settingsRoutes.js";
 import { createLogRoutes } from "@/api/routes/logRoutes.js";
 import { createStatusPageRoutes } from "@/api/routes/statusPageRoutes.js";
 import { AuthMiddleware, buildRouter } from "@/api/routes/buildRouter.js";
@@ -22,7 +21,7 @@ import { monitorRoutes } from "@/api/routes/monitorRoutes.js";
 import { notificationRoutes } from "@/api/routes/notificationRoutes.js";
 import { proxyRoutes } from "@/api/routes/proxyRoutes.js";
 import { queueRoutes } from "@/api/routes/queueRoutes.js";
-
+import { settingsRoutes } from "@/api/routes/settingsRoutes.js";
 export const setupRoutes = (app: Application, controllers: InitializedControllers, apiServices: ApiServices) => {
 	const verifyJWT = createVerifyJWT(apiServices.settingsService);
 	const verifyStatusPageAccess = createVerifyStatusPageAccess(apiServices.statusPagesRepository, verifyJWT);
@@ -31,13 +30,12 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 		statusPage: verifyStatusPageAccess,
 	};
 
-	const settingsRoutes = createSettingsRoutes(controllers.settingsController);
 	const logRoutes = createLogRoutes(controllers.logController);
 	const statusPageRoutes = createStatusPageRoutes(controllers.statusPageController, verifyJWT, verifyStatusPageAccess);
 
 	app.use("/api/v1/auth", authApiLimiter, buildRouter(authRoutes, controllers.authController, middleware));
 	app.use("/api/v1/monitors", buildRouter(monitorRoutes, controllers.monitorController, middleware));
-	app.use("/api/v1/settings", verifyJWT, settingsRoutes);
+	app.use("/api/v1/settings", buildRouter(settingsRoutes, controllers.settingsController, middleware));
 	app.use("/api/v1/checks", buildRouter(checkRoutes, controllers.checkController, middleware));
 	app.use("/api/v1/geo-checks", buildRouter(geoCheckRoutes, controllers.geoCheckController, middleware));
 	app.use("/api/v1/invite", buildRouter(inviteRoutes, controllers.inviteController, middleware));

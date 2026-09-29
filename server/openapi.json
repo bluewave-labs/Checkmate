@@ -1956,524 +1956,6 @@
 				}
 			}
 		},
-		"/settings": {
-			"get": {
-				"tags": ["settings"],
-				"summary": "Get application settings",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			},
-			"patch": {
-				"tags": ["settings"],
-				"summary": "Update application settings (admin/superadmin)",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"checkTTL": {
-										"type": "integer",
-										"minimum": 1,
-										"maximum": 366
-									},
-									"systemEmailPort": {
-										"type": "number",
-										"nullable": true
-									},
-									"pagespeedApiKey": {
-										"type": "string",
-										"nullable": true
-									},
-									"language": {
-										"type": "string"
-									},
-									"timezone": {
-										"type": "string"
-									},
-									"systemEmailHost": {
-										"type": "string",
-										"nullable": true
-									},
-									"systemEmailAddress": {
-										"type": "string",
-										"nullable": true
-									},
-									"systemEmailDisplayName": {
-										"type": "string",
-										"nullable": true,
-										"maxLength": 100
-									},
-									"systemEmailPassword": {
-										"type": "string",
-										"nullable": true
-									},
-									"systemEmailUser": {
-										"type": "string",
-										"nullable": true
-									},
-									"systemEmailConnectionHost": {
-										"type": "string",
-										"nullable": true
-									},
-									"systemEmailTLSServername": {
-										"type": "string",
-										"nullable": true
-									},
-									"showURL": {
-										"type": "boolean"
-									},
-									"systemEmailSecure": {
-										"type": "boolean"
-									},
-									"systemEmailPool": {
-										"type": "boolean"
-									},
-									"systemEmailIgnoreTLS": {
-										"type": "boolean"
-									},
-									"systemEmailRequireTLS": {
-										"type": "boolean"
-									},
-									"systemEmailRejectUnauthorized": {
-										"type": "boolean"
-									},
-									"globalThresholds": {
-										"type": "object",
-										"properties": {
-											"cpu": {
-												"type": "number",
-												"minimum": 1,
-												"maximum": 100
-											},
-											"memory": {
-												"type": "number",
-												"minimum": 1,
-												"maximum": 100
-											},
-											"disk": {
-												"type": "number",
-												"minimum": 1,
-												"maximum": 100
-											},
-											"temperature": {
-												"type": "number",
-												"minimum": 1,
-												"maximum": 150
-											}
-										}
-									},
-									"globalProxyEnabled": {
-										"type": "boolean"
-									},
-									"globalProxyId": {
-										"type": "string",
-										"nullable": true
-									},
-									"egressCheckEnabled": {
-										"type": "boolean"
-									},
-									"egressCheckTargets": {
-										"type": "array",
-										"items": {
-											"type": "string",
-											"minLength": 1,
-											"maxLength": 253
-										},
-										"maxItems": 10
-									},
-									"egressNotifications": {
-										"type": "array",
-										"items": {
-											"type": "string",
-											"pattern": "^[0-9a-fA-F]{24}$"
-										}
-									}
-								}
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/settings/test-email": {
-			"post": {
-				"tags": ["settings"],
-				"summary": "Send a test email using current SMTP settings (admin/superadmin)",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"to": {
-										"type": "string",
-										"minLength": 1
-									},
-									"systemEmailHost": {
-										"type": "string"
-									},
-									"systemEmailPort": {
-										"type": "number"
-									},
-									"systemEmailSecure": {
-										"type": "boolean",
-										"default": false
-									},
-									"systemEmailPool": {
-										"type": "boolean",
-										"default": false
-									},
-									"systemEmailAddress": {
-										"type": "string"
-									},
-									"systemEmailDisplayName": {
-										"type": "string"
-									},
-									"systemEmailPassword": {
-										"type": "string"
-									},
-									"systemEmailUser": {
-										"type": "string"
-									},
-									"systemEmailConnectionHost": {
-										"anyOf": [
-											{
-												"type": "string"
-											},
-											{
-												"type": "string",
-												"enum": [""]
-											}
-										]
-									},
-									"systemEmailIgnoreTLS": {
-										"type": "boolean",
-										"default": false
-									},
-									"systemEmailRequireTLS": {
-										"type": "boolean",
-										"default": false
-									},
-									"systemEmailRejectUnauthorized": {
-										"type": "boolean",
-										"default": true
-									},
-									"systemEmailTLSServername": {
-										"anyOf": [
-											{
-												"type": "string"
-											},
-											{
-												"type": "string",
-												"enum": [""]
-											}
-										]
-									}
-								},
-								"required": ["to"]
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										}
-									},
-									"required": ["success", "msg"]
-								},
-								"example": {
-									"success": true,
-									"msg": "OK"
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
-								}
-							}
-						}
-					}
-				}
-			}
-		},
 		"/status-page/team": {
 			"get": {
 				"tags": ["status-page"],
@@ -14745,6 +14227,111 @@
 						"bearerAuth": []
 					}
 				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/queue/all-metrics": {
+			"get": {
+				"tags": ["queue"],
+				"summary": "Get queue metrics across all monitors (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"schema": {
@@ -14863,10 +14450,116 @@
 				}
 			}
 		},
-		"/queue/all-metrics": {
-			"get": {
+		"/queue/flush": {
+			"post": {
 				"tags": ["queue"],
-				"summary": "Get queue metrics across all monitors (admin/superadmin)",
+				"summary": "Flush the monitor job queue (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										}
+									},
+									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/settings": {
+			"get": {
+				"tags": ["settings"],
+				"summary": "Get application settings",
 				"security": [
 					{
 						"bearerAuth": []
@@ -14966,17 +14659,324 @@
 						}
 					}
 				}
-			}
-		},
-		"/queue/flush": {
-			"post": {
-				"tags": ["queue"],
-				"summary": "Flush the monitor job queue (admin/superadmin)",
+			},
+			"patch": {
+				"tags": ["settings"],
+				"summary": "Update application settings (admin/superadmin)",
 				"security": [
 					{
 						"bearerAuth": []
 					}
 				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"checkTTL": {
+										"type": "integer",
+										"minimum": 1,
+										"maximum": 366
+									},
+									"systemEmailPort": {
+										"type": "number",
+										"nullable": true
+									},
+									"pagespeedApiKey": {
+										"type": "string",
+										"nullable": true
+									},
+									"language": {
+										"type": "string"
+									},
+									"timezone": {
+										"type": "string"
+									},
+									"systemEmailHost": {
+										"type": "string",
+										"nullable": true
+									},
+									"systemEmailAddress": {
+										"type": "string",
+										"nullable": true
+									},
+									"systemEmailDisplayName": {
+										"type": "string",
+										"nullable": true,
+										"maxLength": 100
+									},
+									"systemEmailPassword": {
+										"type": "string",
+										"nullable": true
+									},
+									"systemEmailUser": {
+										"type": "string",
+										"nullable": true
+									},
+									"systemEmailConnectionHost": {
+										"type": "string",
+										"nullable": true
+									},
+									"systemEmailTLSServername": {
+										"type": "string",
+										"nullable": true
+									},
+									"showURL": {
+										"type": "boolean"
+									},
+									"systemEmailSecure": {
+										"type": "boolean"
+									},
+									"systemEmailPool": {
+										"type": "boolean"
+									},
+									"systemEmailIgnoreTLS": {
+										"type": "boolean"
+									},
+									"systemEmailRequireTLS": {
+										"type": "boolean"
+									},
+									"systemEmailRejectUnauthorized": {
+										"type": "boolean"
+									},
+									"globalThresholds": {
+										"type": "object",
+										"properties": {
+											"cpu": {
+												"type": "number",
+												"minimum": 1,
+												"maximum": 100
+											},
+											"memory": {
+												"type": "number",
+												"minimum": 1,
+												"maximum": 100
+											},
+											"disk": {
+												"type": "number",
+												"minimum": 1,
+												"maximum": 100
+											},
+											"temperature": {
+												"type": "number",
+												"minimum": 1,
+												"maximum": 150
+											}
+										}
+									},
+									"globalProxyEnabled": {
+										"type": "boolean"
+									},
+									"globalProxyId": {
+										"type": "string",
+										"nullable": true
+									},
+									"egressCheckEnabled": {
+										"type": "boolean"
+									},
+									"egressCheckTargets": {
+										"type": "array",
+										"items": {
+											"type": "string",
+											"minLength": 1,
+											"maxLength": 253
+										},
+										"maxItems": 10
+									},
+									"egressNotifications": {
+										"type": "array",
+										"items": {
+											"type": "string",
+											"pattern": "^[0-9a-fA-F]{24}$"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/settings/test-email": {
+			"post": {
+				"tags": ["settings"],
+				"summary": "Send a test email using current SMTP settings (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"to": {
+										"type": "string",
+										"minLength": 1
+									},
+									"systemEmailHost": {
+										"type": "string"
+									},
+									"systemEmailPort": {
+										"type": "number"
+									},
+									"systemEmailSecure": {
+										"type": "boolean",
+										"default": false
+									},
+									"systemEmailPool": {
+										"type": "boolean",
+										"default": false
+									},
+									"systemEmailAddress": {
+										"type": "string"
+									},
+									"systemEmailDisplayName": {
+										"type": "string"
+									},
+									"systemEmailPassword": {
+										"type": "string"
+									},
+									"systemEmailUser": {
+										"type": "string"
+									},
+									"systemEmailConnectionHost": {
+										"anyOf": [
+											{
+												"type": "string"
+											},
+											{
+												"type": "string",
+												"enum": [""]
+											}
+										]
+									},
+									"systemEmailIgnoreTLS": {
+										"type": "boolean",
+										"default": false
+									},
+									"systemEmailRequireTLS": {
+										"type": "boolean",
+										"default": false
+									},
+									"systemEmailRejectUnauthorized": {
+										"type": "boolean",
+										"default": true
+									},
+									"systemEmailTLSServername": {
+										"anyOf": [
+											{
+												"type": "string"
+											},
+											{
+												"type": "string",
+												"enum": [""]
+											}
+										]
+									}
+								},
+								"required": ["to"]
+							}
+						}
+					}
+				},
 				"responses": {
 					"200": {
 						"description": "OK",
