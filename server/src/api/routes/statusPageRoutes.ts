@@ -1,20 +1,88 @@
 import { IStatusPageController } from "@/api/controllers/statusPageController.js";
-import { RequestHandler, Router } from "express";
-import { isAllowed } from "@/api/middleware/isAllowed.js";
-import { imageUpload } from "@/api/middleware/upload.js";
+import { RouteTable } from "@/api/routes/defineRoutes.js";
+import { unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
+import {
+	createStatusPageBodyValidation,
+	getPublicMonitorIncidentsParamValidation,
+	getPublicMonitorIncidentsQueryValidation,
+	getStatusPageParamValidation,
+	getStatusPageQueryValidation,
+	publicStatusPagePayloadResponseSchema,
+	resolveStatusPageQueryValidation,
+	statusPageIdParamValidation,
+} from "@/api/validation/statusPageValidation.js";
 
-export const createStatusPageRoutes = (
-	statusPageController: IStatusPageController,
-	verifyJWT: RequestHandler,
-	verifyStatusPageAccess: RequestHandler
-): Router => {
-	const router = Router();
-	router.get("/team", verifyJWT, statusPageController.getStatusPagesByTeamId);
-	router.post("/", imageUpload.single("logo"), verifyJWT, isAllowed(["admin", "superadmin"]), statusPageController.createStatusPage);
-	router.put("/:id", imageUpload.single("logo"), verifyJWT, isAllowed(["admin", "superadmin"]), statusPageController.updateStatusPage);
-	router.get("/resolve", statusPageController.resolveStatusPageByDomain);
-	router.get("/:url", verifyStatusPageAccess, statusPageController.getStatusPageByUrl);
-	router.get("/:url/incidents/:monitorId", verifyStatusPageAccess, statusPageController.getPublicMonitorIncidents);
-	router.delete("/:id", verifyJWT, isAllowed(["admin", "superadmin"]), statusPageController.deleteStatusPage);
-	return router;
+export const statusPageRoutes: RouteTable<IStatusPageController> = {
+	prefix: "/status-page",
+	tag: "status-page",
+	auth: "jwt",
+	routes: [
+		{
+			method: "get",
+			path: "/team",
+			handler: "getStatusPagesByTeamId",
+			summary: "List status pages for the caller's team",
+			response: unknownResponseSchema,
+		},
+		{
+			method: "post",
+			path: "/",
+			handler: "createStatusPage",
+			summary: "Create a status page, logo upload optional (admin/superadmin)",
+			roles: ["admin", "superadmin"],
+			upload: "logo",
+			body: createStatusPageBodyValidation,
+			response: unknownResponseSchema,
+		},
+		{
+			method: "put",
+			path: "/:id",
+			handler: "updateStatusPage",
+			summary: "Update a status page, logo upload optional (admin/superadmin)",
+			roles: ["admin", "superadmin"],
+			upload: "logo",
+			params: statusPageIdParamValidation,
+			body: createStatusPageBodyValidation,
+			response: unknownResponseSchema,
+		},
+		{
+			method: "get",
+			path: "/resolve",
+			handler: "resolveStatusPageByDomain",
+			summary: "Resolve a published status page by custom domain",
+			auth: "none",
+			query: resolveStatusPageQueryValidation,
+			response: publicStatusPagePayloadResponseSchema,
+			spec: (d) => ({ ...d, responses: { ...d.responses, "404": { description: "Status page not found" } } }),
+		},
+		{
+			method: "get",
+			path: "/:url",
+			handler: "getStatusPageByUrl",
+			summary: "Get a public status page by its URL slug",
+			auth: "statusPage",
+			params: getStatusPageParamValidation,
+			query: getStatusPageQueryValidation,
+			response: publicStatusPagePayloadResponseSchema,
+			spec: (d) => ({ ...d, responses: { ...d.responses, "404": { description: "Status page not found" } } }),
+		},
+		{
+			method: "get",
+			path: "/:url/incidents/:monitorId",
+			handler: "getPublicMonitorIncidents",
+			summary: "Get incidents for one monitor on a public status page",
+			auth: "statusPage",
+			params: getPublicMonitorIncidentsParamValidation,
+			query: getPublicMonitorIncidentsQueryValidation,
+			response: unknownResponseSchema,
+		},
+		{
+			method: "delete",
+			path: "/:id",
+			handler: "deleteStatusPage",
+			summary: "Delete a status page (admin/superadmin)",
+			roles: ["admin", "superadmin"],
+			params: statusPageIdParamValidation,
+		},
+	],
 };

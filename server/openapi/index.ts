@@ -1,7 +1,6 @@
 import { registerRoutes } from "openapi/registerRoutes.js";
 import "./registry.js";
 import "./routes/log.js";
-import "./routes/statusPage.js";
 import { tagRoutes } from "@/api/routes/tagRoutes.js";
 
 import { OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
@@ -19,6 +18,7 @@ import { notificationRoutes } from "@/api/routes/notificationRoutes.js";
 import { proxyRoutes } from "@/api/routes/proxyRoutes.js";
 import { queueRoutes } from "@/api/routes/queueRoutes.js";
 import { settingsRoutes } from "@/api/routes/settingsRoutes.js";
+import { statusPageRoutes } from "@/api/routes/statusPageRoutes.js";
 let cached: JsonObject | null = null;
 
 registerRoutes(registry, tagRoutes);
@@ -34,6 +34,7 @@ registerRoutes(registry, notificationRoutes);
 registerRoutes(registry, proxyRoutes);
 registerRoutes(registry, queueRoutes);
 registerRoutes(registry, settingsRoutes);
+registerRoutes(registry, statusPageRoutes);
 export function getOpenApiSpec(): JsonObject {
 	if (cached) return cached;
 
