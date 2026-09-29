@@ -45,6 +45,36 @@ describe("notification validation", () => {
 		}
 	);
 
+	describe("apprise target", () => {
+		const parseApprise = (overrides: Record<string, unknown>) =>
+			createNotificationBodyValidation.safeParse({
+				notificationName: "Apprise",
+				type: "apprise",
+				address: "https://apprise.example.com",
+				...overrides,
+			});
+
+		it("accepts a configuration key", () => {
+			expect(parseApprise({ topic: "checkmate" }).success).toBe(true);
+		});
+
+		it("accepts Apprise URLs without a key", () => {
+			expect(parseApprise({ appriseUrls: "tgram://token/chat" }).success).toBe(true);
+		});
+
+		it("rejects a channel with neither a key nor URLs", () => {
+			const result = parseApprise({ topic: "", appriseUrls: " " });
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues.map((issue) => issue.path.join("."))).toContain("topic");
+			}
+		});
+
+		it("rejects an invalid server URL", () => {
+			expect(parseApprise({ address: "not-a-url", topic: "checkmate" }).success).toBe(false);
+		});
+	});
+
 	describe("ntfy authentication", () => {
 		const parseNtfy = (overrides: Record<string, unknown>) =>
 			createNotificationBodyValidation.safeParse({

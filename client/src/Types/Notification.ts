@@ -12,6 +12,7 @@ export const NotificationChannels = [
 	"signalgrid",
 	"twilio",
 	"ntfy",
+	"apprise",
 ] as const;
 export type NotificationChannel = (typeof NotificationChannels)[number];
 
@@ -29,6 +30,7 @@ export interface Notification {
 	accountSid?: string;
 	twilioPhoneNumber?: string;
 	topic?: string;
+	appriseUrls?: string;
 	createdAt: string;
 	updatedAt: string;
 }
