@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { NtfyAuthTypes } from "@/domain/notifications/notification.type.js";
+import { NtfyAuthTypes, type NotificationChannel } from "@/domain/notifications/notification.type.js";
 
 //****************************************
 // Notification Validations
@@ -153,9 +153,8 @@ const notificationChannelVariants = z.discriminatedUnion("type", [
 		.superRefine(refineNtfyAuth),
 ]);
 
-// OpenAPI component name and example per notification variant, keyed by the
-// discriminator value. Server start fails loudly if a variant has no entry here.
-const notificationVariantMeta: Record<string, { component: string; example: Record<string, unknown> }> = {
+// OpenAPI component name and example per notification channel.
+const notificationVariantMeta: Record<NotificationChannel, { component: string; example: Record<string, unknown> }> = {
 	email: {
 		component: "EmailNotification",
 		example: { notificationName: "Ops on-call email", type: "email", address: "alerts@example.com" },
@@ -235,11 +234,7 @@ const notificationVariantMeta: Record<string, { component: string; example: Reco
 };
 
 const decoratedVariants = notificationChannelVariants.options.map((variant) => {
-	const type = (variant.shape.type as z.ZodLiteral<string>).value;
-	const meta = notificationVariantMeta[type];
-	if (!meta) {
-		throw new Error(`Missing OpenAPI metadata for notification variant "${type}". Add an entry in notificationVariantMeta.`);
-	}
+	const meta = notificationVariantMeta[(variant.shape.type as z.ZodLiteral<NotificationChannel>).value];
 	return variant.meta({ id: meta.component, example: meta.example });
 });
 
