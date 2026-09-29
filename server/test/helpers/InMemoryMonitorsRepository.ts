@@ -1,4 +1,6 @@
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "../../src/domain/monitors/monitor.repository.interface.ts";
+import type { DashboardQueryConfig } from "../../src/domain/monitors/monitor.repository.interface.ts";
+import type { DashboardByTeamIdResult } from "../../src/domain/monitors/monitor.type.ts";
 import type { CheckSnapshot } from "../../src/domain/checks/check.type.ts";
 import type { Monitor, MonitorScheduleFields, MonitorsSummary } from "../../src/domain/monitors/monitor.type.ts";
 
@@ -119,6 +121,10 @@ export class InMemoryMonitorsRepository implements IMonitorsRepository {
 	}
 
 	async findMonitorsSummaryByTeamId(_teamId: string, _config?: SummaryConfig): Promise<MonitorsSummary> {
+		throw new Error("Not implemented");
+	}
+
+	async findDashboardByTeamId(_teamId: string, _config: DashboardQueryConfig): Promise<DashboardByTeamIdResult> {
 		throw new Error("Not implemented");
 	}
 

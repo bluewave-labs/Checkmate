@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { MonitorModel } from "../../src/domain/monitors/monitor.model.ts";
 import MongoMonitorsRepository from "../../src/domain/monitors/monitor.repository.mongo.ts";
+import { MonitorStatsModel } from "../../src/domain/monitor-stats/monitor-stats.model.ts";
 
 let mongod: MongoMemoryServer;
 
@@ -19,6 +20,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
 	await MonitorModel.deleteMany({});
+	await MonitorStatsModel.deleteMany({});
 });
 
 const seedMonitor = (teamId: mongoose.Types.ObjectId, name: string, tags: mongoose.Types.ObjectId[]) =>
@@ -215,6 +217,77 @@ describe("MongoMonitorsRepository", () => {
 			expect(after?.dockerTlsCert).toBe("cert");
 			expect(after?.dockerTlsKeySet).toBe(true);
 			expect(after?.name).toBe("docker");
+		});
+	});
+	describe("findDashboardByTeamId", () => {
+		const seedDashboardMonitor = async (teamId: mongoose.Types.ObjectId, name: string, type: string, status: string, uptimePercentage?: number) => {
+			const monitor = await MonitorModel.create({ userId: new mongoose.Types.ObjectId(), teamId, name, type, status, url: `https://${name}.com` });
+			if (uptimePercentage !== undefined) {
+				await MonitorStatsModel.create({ monitorId: monitor._id, uptimePercentage, lastCheckTimestamp: 1000 });
+			}
+			return monitor;
+		};
+
+		it("aggregates summary, type counts, down monitors and uptime ranking for the team only", async () => {
+			const repo = new MongoMonitorsRepository();
+			const teamId = new mongoose.Types.ObjectId();
+			const down = await seedDashboardMonitor(teamId, "down", "http", "down", 0);
+			await seedDashboardMonitor(teamId, "up-high", "http", "up", 0.99);
+			await seedDashboardMonitor(teamId, "up-low", "ping", "up", 0.5);
+			await seedDashboardMonitor(teamId, "paused", "http", "paused", 0.1);
+			await seedDashboardMonitor(teamId, "no-stats", "http", "up");
+			await seedDashboardMonitor(new mongoose.Types.ObjectId(), "other-team", "http", "down", 0);
+
+			const result = await repo.findDashboardByTeamId(teamId.toString(), { order: "asc" });
+
+			expect(result.summary).toEqual({
+				totalMonitors: 5,
+				upMonitors: 3,
+				downMonitors: 1,
+				pausedMonitors: 1,
+				initializingMonitors: 0,
+				maintenanceMonitors: 0,
+				breachedMonitors: 0,
+			});
+			expect(result.byType).toEqual([
+				{ type: "http", count: 4 },
+				{ type: "ping", count: 1 },
+			]);
+			expect(result.down).toEqual([
+				{
+					id: down._id.toString(),
+					name: "down",
+					url: "https://down.com",
+					type: "http",
+					status: "down",
+					uptimePercentage: 0,
+					lastCheckTimestamp: 1000,
+				},
+			]);
+			expect(result.uptime.map((monitor) => monitor.name)).toEqual(["down", "up-low", "up-high"]);
+		});
+
+		it("sorts uptime descending and applies the limit", async () => {
+			const repo = new MongoMonitorsRepository();
+			const teamId = new mongoose.Types.ObjectId();
+			await seedDashboardMonitor(teamId, "a", "http", "up", 0.2);
+			await seedDashboardMonitor(teamId, "b", "http", "up", 0.9);
+			await seedDashboardMonitor(teamId, "c", "http", "up", 0.5);
+
+			const result = await repo.findDashboardByTeamId(teamId.toString(), { limit: 2, order: "desc" });
+
+			expect(result.uptime.map((monitor) => monitor.name)).toEqual(["b", "c"]);
+		});
+
+		it("returns an empty dashboard for a team without monitors", async () => {
+			const repo = new MongoMonitorsRepository();
+
+			const result = await repo.findDashboardByTeamId(new mongoose.Types.ObjectId().toString(), {});
+
+			expect(result.summary.totalMonitors).toBe(0);
+			expect(result.byType).toEqual([]);
+			expect(result.down).toEqual([]);
+			expect(result.uptime).toEqual([]);
 		});
 	});
 });

@@ -1,4 +1,6 @@
 import type { MonitorType, Monitor, MonitorStatus, MonitorsSummary, CheckSnapshot, MonitorScheduleFields } from "@/domain/monitors/monitor.type.js";
+import type { DashboardByTeamIdResult } from "@/domain/monitors/monitor.type.js";
+import type { SortOrder } from "@/types/query.js";
 
 export interface TeamQueryConfig {
 	limit?: number;
@@ -14,6 +16,11 @@ export interface TeamQueryConfig {
 export interface SummaryConfig {
 	type?: MonitorType | MonitorType[];
 	tags?: string | string[];
+}
+
+export interface DashboardQueryConfig {
+	limit?: number;
+	order?: SortOrder;
 }
 
 export type RecentChecksMode = "all" | "latestHardware" | "none";
@@ -62,6 +69,7 @@ export interface IMonitorsRepository {
 
 	// other
 	findMonitorsSummaryByTeamId(teamId: string, config?: SummaryConfig): Promise<MonitorsSummary>;
+	findDashboardByTeamId(teamId: string, config: DashboardQueryConfig): Promise<DashboardByTeamIdResult>;
 	removeNotificationFromMonitors(notificationId: string): Promise<void>;
 	removeTagFromMonitors(tagId: string): Promise<void>;
 	updateNotifications(teamId: string, monitorIds: string[], notificationIds: string[], action: "add" | "remove" | "set"): Promise<number>;

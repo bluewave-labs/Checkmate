@@ -5,6 +5,7 @@ import {
 	getMonitorByIdQueryValidation,
 	getMonitorsByTeamIdQueryValidation,
 	getMonitorsWithChecksQueryValidation,
+	getDashboardByTeamIdQueryValidation,
 	createMonitorBodyValidation,
 	editMonitorBodyValidation,
 	pauseMonitorParamValidation,
@@ -50,6 +51,7 @@ export interface IMonitorController {
 	addDemoMonitors: RequestHandler;
 	getMonitorsByTeamId: RequestHandler;
 	getMonitorsWithChecksByTeamId: RequestHandler;
+	getDashboardByTeamId: RequestHandler;
 	exportMonitorsToJSON: RequestHandler;
 	getAllGames: RequestHandler;
 	updateNotifications: RequestHandler;
@@ -230,6 +232,13 @@ class MonitorController implements IMonitorController {
 		const teamId = requireTeamId(req.user?.teamId);
 		const data = await this.monitorService.getMonitorsWithChecksByTeamId({ teamId, limit, type, tags, page, rowsPerPage, filter, field, order });
 		res.json({ success: true, msg: "Monitors retrieved successfully", data });
+	};
+
+	getDashboardByTeamId: Handler = async (req, res) => {
+		const { limit, order } = getDashboardByTeamIdQueryValidation.parse(req.query);
+		const teamId = requireTeamId(req.user?.teamId);
+		const data = await this.monitorService.getDashboardByTeamId({ teamId, limit, order });
+		res.json({ success: true, msg: "Dashboard retrieved successfully", data });
 	};
 
 	exportMonitorsToJSON: Handler = async (req, res) => {

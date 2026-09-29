@@ -2,6 +2,7 @@ import { type Monitor } from "@/domain/monitors/monitor.type.js";
 import type {
 	MonitorType,
 	MonitorsWithChecksByTeamIdResult,
+	DashboardByTeamIdResult,
 	UptimeDetailsResult,
 	HardwareDetailsResult,
 	PageSpeedDetailsResult,
@@ -31,7 +32,7 @@ import { AppError } from "@/utils/AppError.js";
 import type { ImportedMonitor } from "@/api/validation/monitorValidation.js";
 import { ILogger } from "@/utils/logger.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
-import { DateRange } from "@/types/query.js";
+import { DateRange, SortOrder } from "@/types/query.js";
 import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
 import { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import { isCaptureDockerUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
@@ -114,6 +115,7 @@ export interface IMonitorService {
 		field?: string;
 		order?: "asc" | "desc";
 	}): Promise<MonitorsWithChecksByTeamIdResult>;
+	getDashboardByTeamId(args: { teamId: string; limit?: number; order?: SortOrder }): Promise<DashboardByTeamIdResult>;
 	getAllGames(): GamesMap;
 
 	// update
@@ -538,6 +540,18 @@ export class MonitorService implements IMonitorService {
 			return monitor;
 		});
 		return { summary: summary ?? null, count, monitors: monitorsWithChecks };
+	};
+
+	getDashboardByTeamId = async ({
+		teamId,
+		limit,
+		order,
+	}: {
+		teamId: string;
+		limit?: number;
+		order?: SortOrder;
+	}): Promise<DashboardByTeamIdResult> => {
+		return await this.monitorsRepository.findDashboardByTeamId(teamId, { limit, order });
 	};
 
 	getAllGames = (): GamesMap => {

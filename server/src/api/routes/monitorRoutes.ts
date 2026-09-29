@@ -6,6 +6,8 @@ import {
 	getMonitorByIdQueryValidation,
 	getMonitorsByTeamIdQueryValidation,
 	getMonitorsWithChecksQueryValidation,
+	getDashboardByTeamIdQueryValidation,
+	dashboardResponseSchema,
 	getCertificateParamValidation,
 	getDomainParamValidation,
 	createMonitorBodyValidation,
@@ -50,6 +52,14 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "List team monitors with their most recent checks (paginated)",
 			query: getMonitorsWithChecksQueryValidation,
 			response: unknownResponseSchema,
+		},
+		{
+			method: "get",
+			path: "/team/dashboard",
+			handler: "getDashboardByTeamId",
+			summary: "Get aggregate monitor data for the caller's team dashboard",
+			query: getDashboardByTeamIdQueryValidation,
+			response: dashboardResponseSchema,
 		},
 		{
 			method: "get",

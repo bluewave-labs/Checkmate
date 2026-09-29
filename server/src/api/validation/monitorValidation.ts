@@ -61,6 +61,11 @@ export const getMonitorsWithChecksQueryValidation = z.object({
 	explain: booleanCoercion.optional(),
 });
 
+export const getDashboardByTeamIdQueryValidation = z.object({
+	limit: z.coerce.number().int().min(1).max(100).default(10),
+	order: z.enum(SortOrders).default("asc"),
+});
+
 export const getCertificateParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
 });
@@ -665,3 +670,37 @@ export const dockerContainerLogsResponseSchema = z.object({
 	logs: z.array(dockerLogResponseSchema),
 	nextCursor: z.string().nullable(),
 });
+
+// Keep aligned with MonitorsSummary in domain/monitors/monitor.type.ts.
+export const monitorsSummaryResponseSchema = z.object({
+	totalMonitors: z.number(),
+	upMonitors: z.number(),
+	downMonitors: z.number(),
+	pausedMonitors: z.number(),
+	initializingMonitors: z.number(),
+	maintenanceMonitors: z.number(),
+	breachedMonitors: z.number(),
+});
+
+// Keep aligned with DashboardMonitor in domain/monitors/monitor.type.ts.
+export const dashboardMonitorResponseSchema = z
+	.object({
+		id: z.string(),
+		name: z.string(),
+		url: z.string(),
+		type: z.enum(MonitorTypes),
+		status: z.enum(MonitorStatuses),
+		uptimePercentage: z.number().nullable(),
+		lastCheckTimestamp: z.number().nullable(),
+	})
+	.meta({ id: "DashboardMonitor" });
+
+// Response of GET /monitors/team/dashboard. Keep aligned with DashboardByTeamIdResult in domain/monitors/monitor.type.ts.
+export const dashboardResponseSchema = z
+	.object({
+		summary: monitorsSummaryResponseSchema,
+		byType: z.array(z.object({ type: z.enum(MonitorTypes), count: z.number() })),
+		down: z.array(dashboardMonitorResponseSchema),
+		uptime: z.array(dashboardMonitorResponseSchema),
+	})
+	.meta({ id: "MonitorDashboard" });

@@ -2,12 +2,16 @@ import { MonitorModel } from "@/domain/monitors/monitor.model.js";
 import type { MonitorDocument, CheckSnapshotDocument } from "@/domain/monitors/monitor.model.js";
 import type { CheckSnapshot } from "@/domain/checks/check.type.js";
 import type { Monitor, MonitorScheduleFields, MonitorStatus, MonitorsSummary } from "@/domain/monitors/monitor.type.js";
+import type { DashboardByTeamIdResult, DashboardMonitor } from "@/domain/monitors/monitor.type.js";
 import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import { MongoBulkWriteError } from "mongodb";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorsRepository, TeamQueryConfig, SummaryConfig, RecentChecksMode } from "@/domain/monitors/monitor.repository.interface.js";
+import type { DashboardQueryConfig } from "@/domain/monitors/monitor.repository.interface.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 import { toCheckSnapshot } from "@/domain/checks/check.snapshot.js";
+type DashboardMonitorDocument = Omit<DashboardMonitor, "id"> & { _id: mongoose.Types.ObjectId };
+
 class MongoMonitorsRepository implements IMonitorsRepository {
 	create = async (monitor: Monitor, teamId: string, userId: string) => {
 		const monitorModel = new MonitorModel({ ...monitor, teamId, userId });
@@ -374,6 +378,80 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		);
 	};
 
+	private countByStatus = (status: MonitorStatus) => ({ $sum: { $cond: [{ $eq: ["$status", status] }, 1, 0] } });
+
+	private dashboardMonitorStages: PipelineStage.FacetPipelineStage[] = [
+		{ $lookup: { from: "monitorstats", localField: "_id", foreignField: "monitorId", as: "stats" } },
+		{
+			$project: {
+				name: 1,
+				url: 1,
+				type: 1,
+				status: 1,
+				uptimePercentage: { $ifNull: [{ $arrayElemAt: ["$stats.uptimePercentage", 0] }, null] },
+				lastCheckTimestamp: { $ifNull: [{ $arrayElemAt: ["$stats.lastCheckTimestamp", 0] }, null] },
+			},
+		},
+	];
+
+	findDashboardByTeamId = async (teamId: string, config: DashboardQueryConfig): Promise<DashboardByTeamIdResult> => {
+		const { limit, order = "asc" } = config ?? {};
+		const direction: 1 | -1 = order === "asc" ? 1 : -1;
+		const limitStage: PipelineStage.FacetPipelineStage[] = limit ? [{ $limit: limit }] : [];
+
+		const pipeline: PipelineStage[] = [
+			{ $match: { teamId: new mongoose.Types.ObjectId(teamId) } },
+			{
+				$facet: {
+					summary: [
+						{
+							$group: {
+								_id: null,
+								totalMonitors: { $sum: 1 },
+								upMonitors: this.countByStatus("up"),
+								downMonitors: this.countByStatus("down"),
+								pausedMonitors: this.countByStatus("paused"),
+								initializingMonitors: this.countByStatus("initializing"),
+								maintenanceMonitors: this.countByStatus("maintenance"),
+								breachedMonitors: this.countByStatus("breached"),
+							},
+						},
+						{ $project: { _id: 0 } },
+					],
+					byType: [
+						{ $group: { _id: "$type", count: { $sum: 1 } } },
+						{ $sort: { count: -1, _id: 1 } },
+						{ $project: { _id: 0, type: "$_id", count: 1 } },
+					],
+					down: [{ $match: { status: "down" } }, { $sort: { name: 1, _id: 1 } }, ...limitStage, ...this.dashboardMonitorStages],
+					uptime: [
+						{ $match: { status: { $nin: ["paused", "initializing"] } } },
+						...this.dashboardMonitorStages,
+						{ $match: { uptimePercentage: { $ne: null } } },
+						{ $sort: { uptimePercentage: direction, _id: 1 } },
+						...limitStage,
+					],
+				},
+			},
+		];
+
+		const [result] = await MonitorModel.aggregate(pipeline);
+		return {
+			summary: result?.summary?.[0] ?? {
+				totalMonitors: 0,
+				upMonitors: 0,
+				downMonitors: 0,
+				pausedMonitors: 0,
+				initializingMonitors: 0,
+				maintenanceMonitors: 0,
+				breachedMonitors: 0,
+			},
+			byType: result?.byType ?? [],
+			down: (result?.down ?? []).map(this.toDashboardMonitor),
+			uptime: (result?.uptime ?? []).map(this.toDashboardMonitor),
+		};
+	};
+
 	removeNotificationFromMonitors = async (notificationId: string): Promise<void> => {
 		await MonitorModel.updateMany({ notifications: notificationId }, { $pull: { notifications: notificationId } });
 	};
@@ -416,6 +494,16 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		const result = await MonitorModel.updateMany(filter, update);
 		return result.modifiedCount;
 	};
+
+	private toDashboardMonitor = (doc: DashboardMonitorDocument): DashboardMonitor => ({
+		id: toStringId(doc._id),
+		name: doc.name,
+		url: doc.url,
+		type: doc.type,
+		status: doc.status ?? "initializing",
+		uptimePercentage: doc.uptimePercentage,
+		lastCheckTimestamp: doc.lastCheckTimestamp,
+	});
 
 	private mapDocuments = (documents: MonitorDocument[]): Monitor[] => {
 		if (!documents?.length) {

@@ -181,6 +181,29 @@ export interface MonitorsWithChecksByTeamIdResult {
 	monitors: Monitor[];
 }
 
+// uptimePercentage and lastCheckTimestamp come from monitorstats and are null until the monitor has been checked
+export interface DashboardMonitor {
+	id: string;
+	name: string;
+	url: string;
+	type: MonitorType;
+	status: MonitorStatus;
+	uptimePercentage: number | null;
+	lastCheckTimestamp: number | null;
+}
+
+export interface MonitorTypeCount {
+	type: MonitorType;
+	count: number;
+}
+
+export interface DashboardByTeamIdResult {
+	summary: MonitorsSummary;
+	byType: MonitorTypeCount[];
+	down: DashboardMonitor[];
+	uptime: DashboardMonitor[];
+}
+
 export interface GroupedGeoCheckResult {
 	groupedGeoChecks: GroupedGeoCheck[];
 }
