@@ -112,7 +112,7 @@ export const authRoutes: RouteTable<IAuthController> = {
 			method: "get",
 			path: "/users/:userId",
 			handler: "getUserById",
-			summary: "Get a user by id",
+			summary: "Get a user by id (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			params: getUserByIdParamValidation,
 			response: userResponseSchema,

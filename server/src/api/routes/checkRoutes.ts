@@ -52,7 +52,7 @@ export const checkRoutes: RouteTable<ICheckController> = {
 			method: "delete",
 			path: "/:monitorId",
 			handler: "deleteChecks",
-			summary: "Delete checks for a monitor",
+			summary: "Delete checks for a monitor (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			params: deleteChecksParamValidation,
 		},

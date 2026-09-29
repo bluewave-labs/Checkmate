@@ -5,7 +5,6 @@ import { authApiLimiter } from "../api/middleware/rateLimiter.js";
 import type { InitializedControllers } from "./controllers.js";
 import type { ApiServices } from "@/config/services.api.js";
 
-import { createLogRoutes } from "@/api/routes/logRoutes.js";
 import { AuthMiddleware, buildRouter } from "@/api/routes/buildRouter.js";
 
 import { tagRoutes } from "@/api/routes/tagRoutes.js";
@@ -22,6 +21,8 @@ import { proxyRoutes } from "@/api/routes/proxyRoutes.js";
 import { queueRoutes } from "@/api/routes/queueRoutes.js";
 import { settingsRoutes } from "@/api/routes/settingsRoutes.js";
 import { statusPageRoutes } from "@/api/routes/statusPageRoutes.js";
+import { logRoutes } from "@/api/routes/logRoutes.js";
+
 export const setupRoutes = (app: Application, controllers: InitializedControllers, apiServices: ApiServices) => {
 	const verifyJWT = createVerifyJWT(apiServices.settingsService);
 	const verifyStatusPageAccess = createVerifyStatusPageAccess(apiServices.statusPagesRepository, verifyJWT);
@@ -29,8 +30,6 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 		jwt: verifyJWT,
 		statusPage: verifyStatusPageAccess,
 	};
-
-	const logRoutes = createLogRoutes(controllers.logController);
 
 	app.use("/api/v1/auth", authApiLimiter, buildRouter(authRoutes, controllers.authController, middleware));
 	app.use("/api/v1/monitors", buildRouter(monitorRoutes, controllers.monitorController, middleware));
@@ -40,7 +39,7 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 	app.use("/api/v1/invite", buildRouter(inviteRoutes, controllers.inviteController, middleware));
 	app.use("/api/v1/maintenance-window", buildRouter(maintenanceWindowRoutes, controllers.maintenanceWindowController, middleware));
 	app.use("/api/v1/queue", buildRouter(queueRoutes, controllers.queueController, middleware));
-	app.use("/api/v1/logs", verifyJWT, logRoutes);
+	app.use("/api/v1/logs", buildRouter(logRoutes, controllers.logController, middleware));
 	app.use("/api/v1/status-page", buildRouter(statusPageRoutes, controllers.statusPageController, middleware));
 	app.use("/api/v1/notifications", buildRouter(notificationRoutes, controllers.notificationController, middleware));
 	app.use("/api/v1/tags", buildRouter(tagRoutes, controllers.tagController, middleware));

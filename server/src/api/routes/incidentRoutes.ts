@@ -1,5 +1,3 @@
-import { Router } from "express";
-import { isAllowed } from "../middleware/isAllowed.js";
 import { IIncidentController } from "@/api/controllers/incidentController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
 import {

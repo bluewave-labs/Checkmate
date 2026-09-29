@@ -1,6 +1,5 @@
-import { registerRoutes } from "openapi/registerRoutes.js";
+import { registerRoutes } from "./registerRoutes.js";
 import "./registry.js";
-import "./routes/log.js";
 import { tagRoutes } from "@/api/routes/tagRoutes.js";
 
 import { OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
@@ -19,6 +18,7 @@ import { proxyRoutes } from "@/api/routes/proxyRoutes.js";
 import { queueRoutes } from "@/api/routes/queueRoutes.js";
 import { settingsRoutes } from "@/api/routes/settingsRoutes.js";
 import { statusPageRoutes } from "@/api/routes/statusPageRoutes.js";
+import { logRoutes } from "@/api/routes/logRoutes.js";
 let cached: JsonObject | null = null;
 
 registerRoutes(registry, tagRoutes);
@@ -35,6 +35,7 @@ registerRoutes(registry, proxyRoutes);
 registerRoutes(registry, queueRoutes);
 registerRoutes(registry, settingsRoutes);
 registerRoutes(registry, statusPageRoutes);
+registerRoutes(registry, logRoutes);
 export function getOpenApiSpec(): JsonObject {
 	if (cached) return cached;
 
@@ -66,6 +67,7 @@ export function getOpenApiSpec(): JsonObject {
 			{ name: "queue", description: "Background job queue introspection and admin actions (admin/superadmin)." },
 			{ name: "diagnostic", description: "System diagnostics for the running server (admin/superadmin)." },
 			{ name: "logs", description: "Application logs for the running server (admin/superadmin)." },
+			{ name: "tags", description: "Labels for grouping and filtering monitors, team-scoped." },
 		],
 	});
 
