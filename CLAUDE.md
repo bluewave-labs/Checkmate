@@ -102,7 +102,8 @@ client/src/
 ### API
 - Base URL: `/api/v1`
 - Documentation: `http://localhost:52345/api-docs` (Swagger UI)
-- OpenAPI spec: `/server/openapi.json`
+- OpenAPI spec: `/server/openapi.json`, generated at build time from the route tables
+- Routes: one `RouteTable` per resource in `server/src/api/routes/*Routes.ts`. `buildRouter` builds the Express router from it and `server/openapi/registerRoutes.ts` builds the spec from it, so every endpoint is declared exactly once
 
 ### Key Technologies
 - **State Management**: Redux Toolkit + Redux-Persist

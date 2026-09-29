@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const successEnvelope = <T extends z.ZodTypeAny>(data: T) =>
+export const successEnvelope = <T extends z.ZodType>(data: T) =>
 	z.object({
 		success: z.literal(true),
 		msg: z.string(),
@@ -20,9 +20,13 @@ export const errorEnvelope = z.object({
 
 export const bearer = [{ bearerAuth: [] }];
 
-export const json = <T extends z.ZodTypeAny>(schema: T, example?: unknown) => ({
+export const json = <T extends z.ZodType>(schema: T, example?: unknown) => ({
 	"application/json": example === undefined ? { schema } : { schema, example },
 });
+
+export const errorJson = (description: string) => ({ description, content: json(errorEnvelope) });
+
+export const unknownResponseSchema = z.unknown();
 
 export const standardErrors = {
 	"401": { description: "Unauthorized", content: json(errorEnvelope) },
@@ -30,7 +34,7 @@ export const standardErrors = {
 	"500": { description: "Internal server error", content: json(errorEnvelope) },
 };
 
-export const okJson = <T extends z.ZodTypeAny>(data: T, description = "OK", example?: unknown) => ({
+export const okJson = <T extends z.ZodType>(data: T, description = "OK", example?: unknown) => ({
 	description,
 	content: json(successEnvelope(data), example === undefined ? undefined : { success: true, msg: "OK", data: example }),
 });
@@ -40,12 +44,10 @@ export const okJsonNoData = (description = "OK") => ({
 	content: json(successEnvelopeNoData, { success: true, msg: "OK" }),
 });
 
-export const okUnknown = okJson(z.unknown());
-
-export const multipart = (fields: Record<string, z.ZodTypeAny>, fileField?: string) => {
-	const shape: Record<string, z.ZodTypeAny> = { ...fields };
+export const multipart = (fields: Record<string, z.ZodType>, fileField?: string) => {
+	const shape: Record<string, z.ZodType> = { ...fields };
 	if (fileField) {
-		shape[fileField] = z.string().openapi({ type: "string", format: "binary" });
+		shape[fileField] = z.string().meta({ type: "string", format: "binary" });
 	}
 	return {
 		"multipart/form-data": { schema: z.object(shape) },

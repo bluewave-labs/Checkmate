@@ -408,6 +408,35 @@ export const getDockerContainerLogsQueryValidation = z
 			});
 		}
 	});
+const monitorResponseExample = {
+	_id: "65f1c2a4d8b9e0123456789a",
+	name: "Marketing site",
+	description: "Production marketing site monitored from the EU region",
+	type: "http",
+	url: "https://www.example.com",
+	port: 443,
+	isActive: true,
+	interval: 60000,
+	status: "up",
+	statusWindowSize: 5,
+	statusWindowThreshold: 3,
+	ignoreTlsErrors: false,
+	useAdvancedMatching: false,
+	notifications: ["65f1c2a4d8b9e0123456789b"],
+	cpuAlertThreshold: 90,
+	memoryAlertThreshold: 90,
+	diskAlertThreshold: 90,
+	tempAlertThreshold: 80,
+	selectedDisks: [],
+	geoCheckEnabled: false,
+	geoCheckLocations: [],
+	geoCheckInterval: 300000,
+	teamId: "65f1c2a4d8b9e01234567890",
+	userId: "65f1c2a4d8b9e01234567891",
+	createdAt: "2026-04-01T10:00:00.000Z",
+	updatedAt: "2026-04-15T14:30:00.000Z",
+};
+
 // Canonical monitor shape returned by /monitors endpoints. Keep aligned with
 // what the controllers actually serialize.
 export const monitorResponseSchema = z
@@ -460,7 +489,8 @@ export const monitorResponseSchema = z
 		updatedAt: z.string(),
 		lastEvaluatedAt: z.number(),
 	})
-	.passthrough();
+	.passthrough()
+	.meta({ id: "Monitor", example: monitorResponseExample });
 
 // Grouped-check buckets returned by GET /monitors/uptime/details/{monitorId}. Keep
 // aligned with GroupedCheck / GroupedUptimeCheck in domain/checks/check.type.ts.
@@ -499,17 +529,19 @@ export const monitorStatsResponseSchema = z.object({
 // Response of GET /monitors/uptime/details/{monitorId}. Keep aligned with
 // UptimeDetailsResult in domain/monitors/monitor.type.ts; the monitor here is the
 // repository's domain entity, which serializes `id` rather than `_id`.
-export const uptimeDetailsResponseSchema = z.object({
-	monitorData: z.object({
-		monitor: monitorResponseSchema.omit({ _id: true }).extend({ id: z.string() }),
-		groupedChecks: z.array(groupedUptimeCheckResponseSchema),
-		groupedUpChecks: z.array(groupedCheckResponseSchema),
-		groupedDownChecks: z.array(groupedCheckResponseSchema),
-		groupedAvgResponseTime: z.number(),
-		groupedUptimePercentage: z.number(),
-	}),
-	monitorStats: monitorStatsResponseSchema.nullable(),
-});
+export const uptimeDetailsResponseSchema = z
+	.object({
+		monitorData: z.object({
+			monitor: monitorResponseSchema.omit({ _id: true }).extend({ id: z.string() }),
+			groupedChecks: z.array(groupedUptimeCheckResponseSchema),
+			groupedUpChecks: z.array(groupedCheckResponseSchema),
+			groupedDownChecks: z.array(groupedCheckResponseSchema),
+			groupedAvgResponseTime: z.number(),
+			groupedUptimePercentage: z.number(),
+		}),
+		monitorStats: monitorStatsResponseSchema.nullable(),
+	})
+	.meta({ id: "UptimeDetails" });
 
 // Keep aligned with DockerContainerPort / DockerContainerMount in types/network.ts.
 export const dockerContainerPortResponseSchema = z.object({

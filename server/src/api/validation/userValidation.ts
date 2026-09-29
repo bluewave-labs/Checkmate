@@ -56,6 +56,17 @@ export const editUserBodyValidation = z
 		path: ["newPassword"],
 	});
 
+export const userResponseExample = {
+	_id: "65f1c2a4d8b9e0123456789a",
+	firstName: "Ada",
+	lastName: "Lovelace",
+	email: "ada@example.com",
+	role: ["admin"],
+	teamId: "65f1c2a4d8b9e01234567890",
+	createdAt: "2026-04-01T10:00:00.000Z",
+	updatedAt: "2026-04-15T14:30:00.000Z",
+};
+
 // Canonical user shape returned by auth/user endpoints. Keep aligned with what
 // the controllers actually serialize (password is intentionally omitted).
 export const userResponseSchema = z
@@ -70,4 +81,7 @@ export const userResponseSchema = z
 		createdAt: z.string(),
 		updatedAt: z.string(),
 	})
-	.passthrough();
+	.passthrough()
+	.meta({ id: "User", example: userResponseExample });
+
+export const userListResponseSchema = z.array(userResponseSchema);

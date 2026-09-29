@@ -1,9 +1,21 @@
 import { IGeoCheckController } from "@/api/controllers/geoCheckController.js";
-import { Router } from "express";
+import { RouteTable } from "@/api/routes/defineRoutes.js";
+import { unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
+import { getChecksParamValidation, getChecksQueryValidation } from "@/api/validation/checkValidation.js";
 
-export const createGeoCheckRoutes = (geoCheckController: IGeoCheckController): Router => {
-	const router = Router();
-	router.get("/:monitorId", geoCheckController.getGeoChecksByMonitor);
-
-	return router;
+export const geoCheckRoutes: RouteTable<IGeoCheckController> = {
+	prefix: "/geo-checks",
+	tag: "geo-checks",
+	auth: "jwt",
+	routes: [
+		{
+			method: "get",
+			path: "/:monitorId",
+			handler: "getGeoChecksByMonitor",
+			summary: "Get geo check results for a monitor",
+			params: getChecksParamValidation,
+			query: getChecksQueryValidation,
+			response: unknownResponseSchema,
+		},
+	],
 };
