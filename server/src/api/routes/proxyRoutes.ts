@@ -1,5 +1,4 @@
 import { IProxiesController } from "@/api/controllers/proxyController.js";
-import { isAllowed } from "@/api/middleware/isAllowed.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
 import { errorJson, unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
 import {
@@ -10,7 +9,6 @@ import {
 	getProxyByIdParamValidation,
 	proxyResponseSchema,
 } from "@/api/validation/proxyValidation.js";
-import { Router } from "express";
 
 export const proxyRoutes: RouteTable<IProxiesController> = {
 	prefix: "/proxies",
@@ -67,14 +65,4 @@ export const proxyRoutes: RouteTable<IProxiesController> = {
 			response: proxyResponseSchema,
 		},
 	],
-};
-
-export const createProxyRoutes = (proxyController: IProxiesController): Router => {
-	const router = Router();
-	router.get("/", isAllowed(["admin", "superadmin"]), proxyController.getAllProxies);
-	router.get("/team", proxyController.getProxiesByTeamId);
-	router.get("/:id", proxyController.getProxyById);
-	router.delete("/:id", proxyController.deleteProxy);
-	router.patch("/:id", proxyController.editProxy);
-	return router;
 };

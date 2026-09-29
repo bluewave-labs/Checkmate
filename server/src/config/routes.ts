@@ -6,7 +6,6 @@ import type { InitializedControllers } from "./controllers.js";
 import type { ApiServices } from "@/config/services.api.js";
 
 import { createSettingsRoutes } from "@/api/routes/settingsRoutes.js";
-import { createQueueRoutes } from "@/api/routes/queueRoutes.js";
 import { createLogRoutes } from "@/api/routes/logRoutes.js";
 import { createStatusPageRoutes } from "@/api/routes/statusPageRoutes.js";
 import { AuthMiddleware, buildRouter } from "@/api/routes/buildRouter.js";
@@ -22,6 +21,8 @@ import { maintenanceWindowRoutes } from "@/api/routes/maintenanceWindowRoutes.js
 import { monitorRoutes } from "@/api/routes/monitorRoutes.js";
 import { notificationRoutes } from "@/api/routes/notificationRoutes.js";
 import { proxyRoutes } from "@/api/routes/proxyRoutes.js";
+import { queueRoutes } from "@/api/routes/queueRoutes.js";
+
 export const setupRoutes = (app: Application, controllers: InitializedControllers, apiServices: ApiServices) => {
 	const verifyJWT = createVerifyJWT(apiServices.settingsService);
 	const verifyStatusPageAccess = createVerifyStatusPageAccess(apiServices.statusPagesRepository, verifyJWT);
@@ -31,7 +32,6 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 	};
 
 	const settingsRoutes = createSettingsRoutes(controllers.settingsController);
-	const queueRoutes = createQueueRoutes(controllers.queueController);
 	const logRoutes = createLogRoutes(controllers.logController);
 	const statusPageRoutes = createStatusPageRoutes(controllers.statusPageController, verifyJWT, verifyStatusPageAccess);
 
@@ -42,7 +42,7 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 	app.use("/api/v1/geo-checks", buildRouter(geoCheckRoutes, controllers.geoCheckController, middleware));
 	app.use("/api/v1/invite", buildRouter(inviteRoutes, controllers.inviteController, middleware));
 	app.use("/api/v1/maintenance-window", buildRouter(maintenanceWindowRoutes, controllers.maintenanceWindowController, middleware));
-	app.use("/api/v1/queue", verifyJWT, queueRoutes);
+	app.use("/api/v1/queue", buildRouter(queueRoutes, controllers.queueController, middleware));
 	app.use("/api/v1/logs", verifyJWT, logRoutes);
 	app.use("/api/v1/status-page", statusPageRoutes);
 	app.use("/api/v1/notifications", buildRouter(notificationRoutes, controllers.notificationController, middleware));
