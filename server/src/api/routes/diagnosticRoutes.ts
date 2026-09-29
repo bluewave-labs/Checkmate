@@ -1,5 +1,3 @@
-import { RequestHandler, Router } from "express";
-import { isAllowed } from "../middleware/isAllowed.js";
 import { IDiagnosticController } from "@/api/controllers/diagnosticController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
 import { unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
@@ -18,10 +16,4 @@ export const diagnosticRoutes: RouteTable<IDiagnosticController> = {
 			response: unknownResponseSchema,
 		},
 	],
-};
-
-export const createDiagnosticRoutes = (diagnosticController: IDiagnosticController, verifyJWT: RequestHandler): Router => {
-	const router = Router();
-	router.get("/system", verifyJWT, isAllowed(["admin", "superadmin"]), diagnosticController.getSystemStats);
-	return router;
 };

@@ -5,7 +5,6 @@ import { authApiLimiter } from "../api/middleware/rateLimiter.js";
 import type { InitializedControllers } from "./controllers.js";
 import type { ApiServices } from "@/config/services.api.js";
 
-import { createInviteRoutes } from "@/api/routes/inviteRoutes.js";
 import { createMonitorRoutes } from "@/api/routes/monitorRoutes.js";
 import { createSettingsRoutes } from "@/api/routes/settingsRoutes.js";
 import { createMaintenanceWindowRoutes } from "@/api/routes/maintenanceWindowRoutes.js";
@@ -22,6 +21,7 @@ import { checkRoutes } from "@/api/routes/checkRoutes.js";
 import { diagnosticRoutes } from "@/api/routes/diagnosticRoutes.js";
 import { geoCheckRoutes } from "@/api/routes/geoCheckRoutes.js";
 import { incidentRoutes } from "@/api/routes/incidentRoutes.js";
+import { inviteRoutes } from "@/api/routes/inviteRoutes.js";
 export const setupRoutes = (app: Application, controllers: InitializedControllers, apiServices: ApiServices) => {
 	const verifyJWT = createVerifyJWT(apiServices.settingsService);
 	const verifyStatusPageAccess = createVerifyStatusPageAccess(apiServices.statusPagesRepository, verifyJWT);
@@ -32,7 +32,6 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 
 	const monitorRoutes = createMonitorRoutes(controllers.monitorController);
 	const settingsRoutes = createSettingsRoutes(controllers.settingsController);
-	const inviteRoutes = createInviteRoutes(controllers.inviteController, verifyJWT);
 	const maintenanceWindowRoutes = createMaintenanceWindowRoutes(controllers.maintenanceWindowController);
 	const queueRoutes = createQueueRoutes(controllers.queueController);
 	const logRoutes = createLogRoutes(controllers.logController);
@@ -45,7 +44,7 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 	app.use("/api/v1/settings", verifyJWT, settingsRoutes);
 	app.use("/api/v1/checks", buildRouter(checkRoutes, controllers.checkController, middleware));
 	app.use("/api/v1/geo-checks", buildRouter(geoCheckRoutes, controllers.geoCheckController, middleware));
-	app.use("/api/v1/invite", inviteRoutes);
+	app.use("/api/v1/invite", buildRouter(inviteRoutes, controllers.inviteController, middleware));
 	app.use("/api/v1/maintenance-window", verifyJWT, maintenanceWindowRoutes);
 	app.use("/api/v1/queue", verifyJWT, queueRoutes);
 	app.use("/api/v1/logs", verifyJWT, logRoutes);
