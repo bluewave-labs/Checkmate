@@ -44,7 +44,21 @@ export const timezoneValidation = z
 // optionally prefixed with `_` for service labels (e.g. _dmarc, _imaps._tcp).
 // No scheme, port, path, or whitespace. Total length ≤ 253. Kept in sync with
 // the client-side regex in client/src/Validation/monitor.ts.
-export const dnsHostnameRegex = /^(?=.{1,253}$)([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}$/;
+const dnsHostnamePattern = "([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,63}";
+export const dnsHostnameRegex = new RegExp(`^(?=.{1,253}$)${dnsHostnamePattern}$`);
+
+// Web origin for CSP frame-ancestors: http(s) scheme, a host, an optional port,
+// and nothing else — no path, query, or trailing slash. The host may be a
+// hostname, localhost, an IPv4 address, or a bracketed IPv6 address. Kept in
+// sync with isStatusPageOrigin in client/src/Validation/statusPage.ts.
+const embedOriginShapeRegex = /^https?:\/\/([^\s/?#:[\]]+|\[[^\s/?#[\]]+\])(?::\d{1,5})?$/;
+
+export const isEmbedOrigin = (value: string): boolean => {
+	const host = embedOriginShapeRegex.exec(value)?.[1];
+	if (host === undefined) return false;
+	if (host.startsWith("[")) return z.ipv6().safeParse(host.slice(1, -1)).success;
+	return host === "localhost" || z.ipv4().safeParse(host).success || dnsHostnameRegex.test(host);
+};
 
 export const booleanCoercion = z.preprocess((val) => {
 	if (val === "true" || val === true) return true;

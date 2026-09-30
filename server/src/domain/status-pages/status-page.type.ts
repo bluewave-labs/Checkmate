@@ -38,6 +38,7 @@ export interface StatusPage {
 	companyName: string;
 	url: string;
 	customDomain?: string | null;
+	embedAllowedOrigins?: string[];
 	timezone?: string;
 	color: string;
 	monitors: string[];
