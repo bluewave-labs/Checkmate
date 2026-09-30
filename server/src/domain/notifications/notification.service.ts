@@ -117,12 +117,22 @@ export class NotificationsService implements INotificationsService {
 	};
 
 	sendEgressRecoveredNotification = async (state: EgressState, notificationIds: string[]) => {
-		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
-		if (notifications.length === 0) {
+		if (notificationIds.length === 0) {
 			this.logger.info({
 				message: "Egress recovered but no notification channels are configured for it",
 				service: SERVICE_NAME,
 				method: "sendEgressRecoveredNotification",
+			});
+			return true;
+		}
+
+		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
+		if (notifications.length === 0) {
+			this.logger.warn({
+				message: "Egress recovered but none of the configured notification channels exist",
+				service: SERVICE_NAME,
+				method: "sendEgressRecoveredNotification",
+				details: { notificationIds },
 			});
 			return true;
 		}

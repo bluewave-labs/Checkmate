@@ -372,15 +372,26 @@ describe("NotificationsService", () => {
 			expect(slackProvider.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ id: "notif-2" }), message);
 		});
 
-		it("returns true without building a message when no notifications are configured", async () => {
+		it("returns true without querying the repository when no notifications are configured", async () => {
 			const { service, notificationsRepository, notificationMessageBuilder, logger } = createService();
-			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([]);
 
 			const result = await service.sendEgressRecoveredNotification(makeEgressState(), []);
 
 			expect(result).toBe(true);
+			expect(notificationsRepository.findNotificationsByIds).not.toHaveBeenCalled();
 			expect(notificationMessageBuilder.buildEgressRecoveredMessage).not.toHaveBeenCalled();
 			expect(logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("no notification channels") }));
+		});
+
+		it("warns without building a message when none of the configured notifications exist", async () => {
+			const { service, notificationsRepository, notificationMessageBuilder, logger } = createService();
+			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([]);
+
+			const result = await service.sendEgressRecoveredNotification(makeEgressState(), ["notif-deleted"]);
+
+			expect(result).toBe(true);
+			expect(notificationMessageBuilder.buildEgressRecoveredMessage).not.toHaveBeenCalled();
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ details: { notificationIds: ["notif-deleted"] } }));
 		});
 
 		it("returns false when any provider fails", async () => {
