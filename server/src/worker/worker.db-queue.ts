@@ -1,15 +1,8 @@
-import { IQueueWorker } from "@/worker/worker.interface.js";
+import { IQueueWorker, JobHandlers } from "@/worker/worker.interface.js";
 import { type Job, type JobType, LOCK_MS } from "@/domain/jobs/job.type.js";
 import { ILogger } from "@/utils/logger.js";
 import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
-import { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
-import { ICheckService } from "@/domain/checks/check.service.js";
-import { ICheckProducer } from "@/worker/worker.check-producer.js";
-import { ICheckEvaluator } from "@/worker/worker.check-evaluator.js";
-import { ICheckPipeline } from "@/worker/worker.check-pipeline.js";
-import { IReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
-import { IWorkerHelper } from "@/worker/worker.helper.js";
 import { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.repository.interface.js";
 import { WORKER_STALE_MS } from "@/domain/queue-workers/queue-worker.model.js";
 import { QueueMode } from "@/domain/app-settings/app-settings.type.js";
@@ -36,14 +29,8 @@ export interface DBQueueWorkerDependencies {
 	isDbConnected: () => boolean;
 	jobsRepository: IJobsRepository; // forwarded
 	monitorsRepository: IMonitorsRepository; // forwarded
-	checksRepository: IChecksRepository;
-	checkService: ICheckService;
+	handlers: JobHandlers;
 	bufferService: IBufferService;
-	checkProducer: ICheckProducer;
-	checkEvaluator: ICheckEvaluator;
-	geoCheckPipeline: ICheckPipeline;
-	dispatcher: IReactorDispatcher;
-	helper: IWorkerHelper;
 	queueWorkersRepository: IQueueWorkersRepository; // forwarded
 	queueMode: QueueMode; // forwarded
 	queuePrimaryProcesses: boolean; // consumed immediately
@@ -65,15 +52,9 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		egress: 0,
 	};
 
-	private checksRepository: IChecksRepository;
-	private checkProducer: ICheckProducer;
-	private checkService: ICheckService;
-	private checkEvaluator: ICheckEvaluator;
-	private dispatcher: IReactorDispatcher;
-	private geoCheckPipeline: ICheckPipeline;
-	private helper: IWorkerHelper;
 	private bufferService: IBufferService;
 	private isDbConnected: () => boolean;
+	private handlers: JobHandlers;
 
 	constructor(dependencies: DBQueueWorkerDependencies) {
 		super(
@@ -85,13 +66,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 			dependencies.workerId
 		);
 		this.processesJobs = dependencies.queuePrimaryProcesses === true || dependencies.queueMode === "worker";
-		this.checksRepository = dependencies.checksRepository;
-		this.checkProducer = dependencies.checkProducer;
-		this.checkService = dependencies.checkService;
-		this.checkEvaluator = dependencies.checkEvaluator;
-		this.dispatcher = dependencies.dispatcher;
-		this.geoCheckPipeline = dependencies.geoCheckPipeline;
-		this.helper = dependencies.helper;
+		this.handlers = dependencies.handlers;
 		this.bufferService = dependencies.bufferService;
 		this.isDbConnected = dependencies.isDbConnected;
 	}
@@ -103,64 +78,6 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 	}
 
 	private getInFlightCount = () => Object.values(this.inFlight).reduce((sum, n) => sum + n, 0);
-
-	// ********************
-	// Stage 1:  This can eventually be offloaded to a separate service
-	// ********************
-
-	private runCheck = async (job: Job) => {
-		if (!job.refId) return;
-		const monitor = await this.monitorsRepository.findByIdLean(job.refId); // job row has no teamId
-		if (!monitor) return;
-		await this.checkProducer.produce(monitor);
-	};
-
-	// ********************
-	// Stage 2:  Evaluator loop stays here
-	// ********************
-
-	private runEvaluate = async (job: Job) => {
-		if (!job.refId || job.pendingChecks.length === 0) return;
-		const pendingCheckIds = job.pendingChecks.map((entry) => entry.checkId);
-
-		const monitor = await this.monitorsRepository.findByIdLean(job.refId); // job row has no teamId
-		if (!monitor) {
-			await this.jobsRepository.pullEvaluated(job.id, pendingCheckIds);
-			return;
-		}
-		const checks = await this.checksRepository.findUnevaluatedByMonitorId(job.refId, job.pendingChecks);
-
-		let current = monitor;
-		for (const check of checks) {
-			const status = this.checkService.toStatusResponse(check);
-			const evaluation = await this.checkEvaluator.evaluate(status, check, current);
-			await this.dispatcher.dispatch(evaluation); // Handle incidents and notifications
-			const leaseHeld = await this.jobsRepository.pullEvaluated(job.id, [check.id]);
-			if (!leaseHeld) {
-				// Another worker has claimed this row and is evaluating the remaining ids; stop here so nothing is applied twice
-				this.logger.warn({ message: `Lost lease on ${job.id} after check ${check.id}, stopping`, service: SERVICE_NAME, method: "runEvaluate" });
-				return;
-			}
-			current = evaluation.statusChange.monitor; // fresh statusWindow/status/counters for the next check
-		}
-
-		// Ids whose check was not returned (deleted by retention cleanup) would otherwise sit on the row forever
-		const found = new Set(checks.map((check) => check.id));
-		const missing = pendingCheckIds.filter((checkId) => !found.has(checkId));
-		if (missing.length > 0) {
-			this.logger.warn({
-				message: `Dropping ${missing.length} pending checks with no stored check: ${missing.join(", ")}`,
-				service: SERVICE_NAME,
-				method: "runEvaluate",
-			});
-			await this.jobsRepository.pullEvaluated(job.id, missing);
-		}
-	};
-
-	private runGeoCheck = async (job: Job) => {
-		const monitor = await this.monitorsRepository.findByIdLean(job.refId!);
-		if (monitor) await this.geoCheckPipeline.run(monitor); // returns null; no evaluate handoff
-	};
 
 	// Extend the lock while a job runs so a slow-but-alive job is never reclaimed.
 	private renewLock = async (job: Job): Promise<boolean> => {
@@ -183,27 +100,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 			if (!renewLock) clearInterval(renewTimer);
 		}, LOCK_RENEW_MS);
 		try {
-			switch (job.type) {
-				case "check":
-					await this.runCheck(job);
-					break;
-				case "evaluate":
-					await this.runEvaluate(job);
-					break;
-				case "geo-check":
-					await this.runGeoCheck(job);
-					break;
-				case "cleanup-orphaned":
-					await this.helper.getCleanupOrphanedJob()(); // Get job and execute
-					break;
-				case "cleanup-retention":
-					await this.helper.getCleanupRetentionJob()(); // Get job and execute
-					break;
-				case "egress":
-					await this.helper.getEgressRecoveryJob()(job); // Re-probe while degraded; removes its own row on recovery
-					break;
-			}
-
+			await this.handlers[job.type](job);
 			if (job.intervalMs === null) {
 				// One-shot job
 				await this.jobsRepository.recordOneShot(job.id, Date.now());

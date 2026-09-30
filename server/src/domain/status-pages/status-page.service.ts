@@ -1,6 +1,13 @@
+import { type IIncidentsRepository } from "@/domain/incidents/incident.repository.interface.js";
+import type { Incident, PublicIncident } from "@/domain/incidents/incident.type.js";
 import { type IStatusPagesRepository } from "@/domain/status-pages/status-page-repository.interface.js";
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
+import { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
+import type { DailyCheckBucket } from "@/domain/checks/check.type.js";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc.js";
+import timezone from "dayjs/plugin/timezone.js";
 import {
 	DEFAULT_STATUS_PAGE_THEME,
 	DEFAULT_STATUS_PAGE_THEME_MODE,
@@ -12,8 +19,9 @@ import {
 import { AppError } from "@/utils/AppError.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
 import { Monitor } from "@/domain/monitors/monitor.type.js";
-import { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
-import type { DailyCheckBucket } from "@/domain/checks/check.type.js";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export interface IStatusPageService {
 	createStatusPage(userId: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage>;
@@ -21,6 +29,7 @@ export interface IStatusPageService {
 	getStatusPageByCustomDomain(customDomain: string): Promise<StatusPage>;
 	getStatusPagesByTeamId(teamId: string): Promise<StatusPage[]>;
 	getPublicStatusPagePayload(statusPage: StatusPage, requesterTeamId: string | undefined, range: StatusPageRange): Promise<PublicStatusPagePayload>;
+	getPublicMonitorIncidents(url: string, monitorId: string, date: string, requesterTeamId?: string): Promise<PublicIncident[]>;
 	updateStatusPage(id: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage>;
 
 	deleteStatusPage(statusPageId: string, teamId: string): Promise<StatusPage>;
@@ -31,7 +40,8 @@ export class StatusPageService implements IStatusPageService {
 		private statusPagesRepository: IStatusPagesRepository,
 		private settingsService: ISettingsService,
 		private monitorsRepository: IMonitorsRepository,
-		private checksRepository: IChecksRepository
+		private checksRepository: IChecksRepository,
+		private incidentsRepository: IIncidentsRepository
 	) {}
 
 	private assertCustomDomainAllowed = (customDomain: string | null | undefined) => {
@@ -94,6 +104,18 @@ export class StatusPageService implements IStatusPageService {
 		}
 		return base;
 	};
+
+	private toPublicIncident = (incident: Incident): PublicIncident => ({
+		id: incident.id,
+		monitorId: incident.monitorId,
+		status: incident.status,
+		startTime: incident.startTime,
+		endTime: incident.endTime,
+		resolutionType: incident.resolutionType,
+		message: incident.message ?? null,
+		statusCode: incident.statusCode ?? null,
+		createdAt: incident.createdAt,
+	});
 
 	createStatusPage = async (
 		userId: string,
@@ -165,6 +187,29 @@ export class StatusPageService implements IStatusPageService {
 				dailyChecks: bucketsByMonitor.get(monitor.id) ?? [],
 			})),
 		};
+	};
+
+	getPublicMonitorIncidents = async (url: string, monitorId: string, date: string, requesterTeamId?: string): Promise<PublicIncident[]> => {
+		const statusPage = await this.getStatusPageByUrl(url);
+
+		// Ensure the status page is public or the requester is the owner
+		if (!statusPage.isPublished) {
+			if (!requesterTeamId || statusPage.teamId !== requesterTeamId) {
+				throw new AppError({ message: "Forbidden", status: 403 });
+			}
+		}
+
+		// Ensure the requested monitor actually belongs to this status page
+		if (!statusPage.monitors.includes(monitorId)) {
+			throw new AppError({ message: "Monitor not found on this status page", status: 404 });
+		}
+
+		const tz = statusPage.timezone ?? "Etc/UTC";
+		const dateStart = dayjs.tz(date, tz).startOf("day").toDate();
+		const dateEnd = dayjs.tz(date, tz).endOf("day").toDate();
+
+		const incidents = await this.incidentsRepository.findByMonitorIdAndDate(monitorId, statusPage.teamId, dateStart, dateEnd);
+		return incidents.map(this.toPublicIncident);
 	};
 
 	updateStatusPage = async (id: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage> => {

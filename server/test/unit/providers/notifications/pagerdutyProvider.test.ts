@@ -2,6 +2,7 @@ import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
 import { makeNotification, makeMessage, makeMessageWithThresholds } from "../../../helpers/notificationMessage.ts";
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
+import { EGRESS_MONITOR_INFO } from "../../../../src/domain/notifications/notification.message-builder.ts";
 
 const mockGotPost = jest.fn().mockResolvedValue({});
 jest.unstable_mockModule("got", () => ({ default: { post: mockGotPost } }));
@@ -89,10 +90,28 @@ describe("PagerDutyProvider", () => {
 			expect(mockGotPost.mock.calls[0][1].json.event_action).toBe("resolve");
 		});
 
-		it("uses 'resolve' event_action for egress_recovered so a recovery never opens an incident", async () => {
+		it("uses 'resolve' event_action for container_resolved", async () => {
 			const { provider } = createProvider();
-			await provider.sendMessage(makeNotification() as any, makeMessage({ type: "egress_recovered" }));
+			await provider.sendMessage(makeNotification() as any, makeMessage({ type: "container_resolved" }));
 			expect(mockGotPost.mock.calls[0][1].json.event_action).toBe("resolve");
+		});
+
+		it("uses 'trigger' event_action for container_breach", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessage({ type: "container_breach" }));
+			expect(mockGotPost.mock.calls[0][1].json.event_action).toBe("trigger");
+		});
+
+		it("uses 'trigger' with 'info' severity for egress_recovered", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(
+				makeNotification() as any,
+				makeMessage({ type: "egress_recovered", severity: "success", monitor: { ...EGRESS_MONITOR_INFO, url: "https://app.example.com" } })
+			);
+			const payload = mockGotPost.mock.calls[0][1].json;
+			expect(payload.event_action).toBe("trigger");
+			expect(payload.payload.severity).toBe("info");
+			expect(payload.dedup_key).toBe("checkmate-egress");
 		});
 
 		it("includes threshold info in summary and custom_details", async () => {

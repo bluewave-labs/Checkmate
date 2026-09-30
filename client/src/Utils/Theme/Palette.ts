@@ -85,6 +85,10 @@ export const lightPalette = {
 	sidebar: {
 		accent: colors.brandGreen,
 	},
+	scrollbar: {
+		track: colors.rule200,
+		thumb: colors.brandGreen,
+	},
 	rowStatus: {
 		running: colors.green200,
 		paused: colors.yellow200,
@@ -136,6 +140,10 @@ export const darkPalette = {
 	},
 	sidebar: {
 		accent: colors.brandGreenLight,
+	},
+	scrollbar: {
+		track: colors.ruleDark,
+		thumb: colors.brandGreen,
 	},
 	rowStatus: {
 		running: alpha(colors.brandGreen, 0.18),

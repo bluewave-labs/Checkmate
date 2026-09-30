@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { HardwareProvider } from "../../../../src/service/network/HardwareProvider.ts";
+import { HardwareProvider } from "../../../../src/service/networkProviders/HardwareProvider.ts";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
-import type { HttpProvider } from "../../../../src/service/network/HttpProvider.ts";
+import type { HttpProvider } from "../../../../src/service/networkProviders/HttpProvider.ts";
 import type { Monitor } from "../../../../src/domain/monitors/monitor.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────

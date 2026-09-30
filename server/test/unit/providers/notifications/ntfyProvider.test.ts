@@ -106,7 +106,7 @@ describe("NtfyProvider", () => {
 		it("includes incident links in text", async () => {
 			const { provider } = createProvider();
 			await provider.sendMessage(makeNtfyNotification() as any, makeMessageWithIncident());
-			expect(mockGotPost.mock.calls[0][1].body).toContain("/infrastructure/mon-1");
+			expect(mockGotPost.mock.calls[0][1].body).toContain("https://app.example.com/incidents/mon-1");
 		});
 	});
 

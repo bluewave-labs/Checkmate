@@ -23,3 +23,14 @@ export const editTagParamValidation = z.object({
 export const deleteTagParamValidation = z.object({
 	id: z.string().min(1, "Tag ID is required"),
 });
+
+export const tagResponseSchema = z.object({
+	id: z.string(),
+	teamId: z.string(),
+	name: z.string(),
+	color: z.string(),
+	createdAt: z.string(),
+	updatedAt: z.string(),
+});
+
+export const tagListResponseSchema = z.array(tagResponseSchema);

@@ -175,6 +175,7 @@
 				"uptime": "Temps en ligne",
 				"pagespeed": "Vitesse",
 				"infrastructure": "Infrastructure",
+				"docker": "Docker",
 				"notifications": "Notifications",
 				"checks": "Vérifications",
 				"incidents": "Incidents",
@@ -187,7 +188,8 @@
 					"alerting": "Alertes",
 					"reporting": "Rapports",
 					"configuration": "Configuration"
-				}
+				},
+				"dashboard": "Tableau de bord"
 			},
 			"bottomMenu": {
 				"support": "Support",
@@ -534,10 +536,6 @@
 				},
 				"general": {
 					"option": {
-						"container": {
-							"label": "Nom/ID du conteneur",
-							"placeholder": "my-app ou abcd1234"
-						},
 						"host": {
 							"label": "Hôte",
 							"placeholder": "192.168.1.100 ou example.com"
@@ -593,6 +591,10 @@
 							"desktop": "Bureau",
 							"label": "Stratégie",
 							"mobile": "Mobile"
+						},
+						"dockerHost": {
+							"label": "Hôte Docker",
+							"placeholder": "unix:///var/run/docker.sock"
 						}
 					},
 					"title": "Paramètres généraux",
@@ -694,17 +696,6 @@
 						}
 					}
 				},
-				"url": {
-					"title": "IP/URL du moniteur sur la page de statut",
-					"description": "Affichez l'adresse IP ou l'URL du moniteur sur la page de statut publique. Si désactivé, seul le nom du moniteur sera affiché pour protéger les informations sensibles.",
-					"option": {
-						"showURL": {
-							"label": "Afficher l'IP/URL sur la page de statut",
-							"enabled": "Activé",
-							"disabled": "Désactivé"
-						}
-					}
-				},
 				"stats": {
 					"title": "Historique du moniteur",
 					"description": "Effacez tout l'historique de surveillance et les statistiques de votre équipe. Cette action est irréversible.",
@@ -713,6 +704,50 @@
 						"title": "Effacer tout l'historique de surveillance ?",
 						"description": "Ceci supprimera définitivement tout l'historique de surveillance, les statistiques et les données de vérification de votre équipe. Cette action est irréversible.",
 						"confirm": "Oui, tout effacer"
+					}
+				},
+				"dockerLogs": {
+					"title": "Journaux des conteneurs",
+					"description": "Collecte à chaque vérification les lignes de journal les plus récentes de chaque conteneur de cet hôte. Les journaux sont conservés 7 jours. Laissez cette option désactivée pour les hôtes aux conteneurs bavards afin d'économiser de l'espace en base de données.",
+					"option": {
+						"enabled": {
+							"label": "Collecter les journaux des conteneurs"
+						}
+					}
+				},
+				"dockerAlerts": {
+					"title": "Alertes de conteneurs",
+					"description": "Marque cet hôte comme dégradé tant qu'un de ses conteneurs est arrêté ou échoue à son contrôle de santé, et notifie lors du changement. Les conteneurs qui se terminent avec le code 0 ne comptent pas comme arrêtés. Capture ne rapporte pas les codes de sortie, donc sur les hôtes Capture tout conteneur arrêté compte.",
+					"option": {
+						"onStopped": {
+							"label": "Alerter quand un conteneur est arrêté"
+						},
+						"onUnhealthy": {
+							"label": "Alerter quand un conteneur est défaillant"
+						}
+					}
+				},
+				"dockerTls": {
+					"title": "Identifiants TLS",
+					"description": "Se connecte à un démon Docker distant via TLS mutuel. Collez les fichiers PEM que vous passeriez à docker --tlsverify. La clé client est chiffrée avant d'être stockée et n'est plus jamais affichée.",
+					"option": {
+						"ca": {
+							"label": "Certificat d'autorité",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"cert": {
+							"label": "Certificat client",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"key": {
+							"label": "Clé client",
+							"placeholder": "-----BEGIN PRIVATE KEY-----",
+							"stored": "Une clé est enregistrée. Laissez vide pour la conserver."
+						},
+						"ignoreTls": {
+							"label": "Ignorer les erreurs TLS/SSL",
+							"description": "Ignore la vérification du certificat du démon, ce qui rend le certificat d'autorité optionnel. Le certificat et la clé client restent obligatoires car le démon les vérifie."
+						}
 					}
 				}
 			}
@@ -825,12 +860,9 @@
 		"infrastructure": {
 			"charts": {
 				"labels": {
-					"cpu": "Utilisation CPU",
 					"disk": "Utilisation disque",
-					"memory": "Utilisation mémoire",
 					"netBytesRecv": "{{name}} - Octets reçus",
 					"netBytesSent": "{{name}} - Octets envoyés",
-					"netNoTraffic": "Capture ne signale aucun trafic sur toutes les interfaces. C'est normal lorsque Capture s'exécute dans un conteneur qui ne voit que les interfaces de loopback — exécutez Capture directement sur l'hôte pour voir l'activité réseau réelle.",
 					"temp": "Temp."
 				}
 			},
@@ -1199,9 +1231,7 @@
 					"description": "Affichez l'adresse IP ou l'URL du moniteur sur la page de statut publique. Si désactivé, seul le nom du moniteur sera affiché pour protéger les informations sensibles.",
 					"option": {
 						"showURL": {
-							"label": "Afficher l'IP/URL sur la page de statut",
-							"enabled": "Activé",
-							"disabled": "Désactivé"
+							"label": "Afficher l'IP/URL sur la page de statut"
 						}
 					}
 				},
@@ -1377,6 +1407,9 @@
 					"maintenance": "Maintenance",
 					"paused": "En pause",
 					"up": "Opérationnel"
+				},
+				"incidents": {
+					"errorLoading": "Échec du chargement des incidents."
 				}
 			},
 			"statusBar": {
@@ -1549,6 +1582,105 @@
 			"header": {
 				"title": "Moniteurs de disponibilité",
 				"description": "Surveillez les points de terminaison HTTP, les pings, les conteneurs et les ports — soyez alerté dès qu'une panne survient."
+			}
+		},
+		"docker": {
+			"table": {
+				"headers": {
+					"host": "Hôte",
+					"containers": "Conteneurs"
+				},
+				"containersRunning": "{{running}} sur {{total}} en cours"
+			},
+			"header": {
+				"title": "Moniteurs Docker",
+				"description": "Surveillez vos hôtes Docker et chaque conteneur qui y tourne."
+			},
+			"fallback": {
+				"title": "Aucun moniteur Docker pour l'instant",
+				"description": "Ajoutez un hôte Docker pour surveiller ses conteneurs.",
+				"actionButton": "Créer un moniteur"
+			},
+			"container": {
+				"header": {
+					"title": "Détails du conteneur",
+					"description": "État, utilisation des ressources et journaux de ce conteneur."
+				},
+				"tabs": {
+					"overview": "Aperçu",
+					"logs": "Journaux"
+				},
+				"logs": {
+					"recentLines": "{{count}} lignes récentes",
+					"loading": "Chargement...",
+					"updatedSecondsAgo": "Mis à jour il y a {{count}} s",
+					"updatedMinutesAgo": "Mis à jour il y a {{count}} min",
+					"skipped": "Certaines entrées de journal ont été ignorées",
+					"loadOlder": "Charger les journaux plus anciens",
+					"loadingOlder": "Chargement...",
+					"noOlder": "Début des journaux conservés",
+					"loadError": "Impossible de charger les journaux",
+					"loadOlderError": "Impossible de charger les journaux plus anciens",
+					"empty": {
+						"title": "Aucun journal collecté pour l'instant",
+						"description": "Les lignes apparaîtront ici après la prochaine vérification. Seule la sortie écrite depuis l'activation de la collecte est conservée."
+					},
+					"disabled": {
+						"title": "La collecte des journaux est désactivée pour cet hôte",
+						"description": "Activez les journaux des conteneurs dans les paramètres du moniteur pour commencer la collecte.",
+						"action": "Configurer le moniteur"
+					},
+					"forbidden": {
+						"title": "Vous n'avez pas accès aux journaux des conteneurs",
+						"description": "Seuls les administrateurs peuvent consulter les journaux. Demandez l'accès à un administrateur si vous avez besoin de les voir."
+					}
+				}
+			},
+			"host": {
+				"statBoxes": {
+					"containers": "Conteneurs",
+					"running": "En cours",
+					"stopped": "Arrêtés",
+					"unhealthy": "Défaillants"
+				},
+				"table": {
+					"headers": {
+						"container": "Conteneurs",
+						"cpu": "CPU",
+						"memory": "Mémoire"
+					}
+				}
+			}
+		},
+		"dashboard": {
+			"noData": "Aucune donnée disponible pour le moment.",
+			"monitorStatus": {
+				"ofUp": "sur {{total}} actifs"
+			},
+			"cards": {
+				"monitorStatus": "État des moniteurs",
+				"currentlyDown": "Actuellement hors service",
+				"uptime": "Disponibilité des moniteurs",
+				"monitorsByType": "Moniteurs par type"
+			},
+			"uptimeCard": {
+				"toggleSortOrder": "Inverser l'ordre de tri"
+			},
+			"currentlyDown": {
+				"empty": "Aucun moniteur n'est hors service pour le moment."
+			},
+			"header": {
+				"title": "Tableau de bord",
+				"description": "Voyez tous les types de moniteurs au même endroit et repérez ce qui demande attention."
+			},
+			"editCards": "Modifier les cartes",
+			"editCardsModal": {
+				"title": "Cartes du tableau de bord",
+				"description": "Sélectionnez les cartes à afficher sur votre tableau de bord.",
+				"groups": {
+					"uptime": "Disponibilité"
+				},
+				"done": "Terminé"
 			}
 		}
 	}

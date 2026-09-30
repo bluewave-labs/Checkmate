@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
 import { NETWORK_ERROR } from "../../../../src/types/network.ts";
 import type { Monitor } from "../../../../src/domain/monitors/monitor.type.ts";
-import { DNSProvider } from "../../../../src/service/network/DNSProvider.ts";
+import { DNSProvider } from "../../../../src/service/networkProviders/DNSProvider.ts";
 
 // ── Mocks ────────────────────────────────────────────────────────────────────
 

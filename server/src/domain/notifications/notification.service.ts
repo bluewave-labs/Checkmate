@@ -1,16 +1,17 @@
 import type { Monitor } from "@/domain/monitors/monitor.type.js";
 import type { Notification } from "@/domain/notifications/notification.type.js";
-import type { MonitorStatusResponse } from "@/types/network.js";
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { INotificationsRepository } from "@/domain/notifications/notification.repository.interface.js";
 import { INotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
-import type { MonitorActionDecision } from "@/worker/worker.helper.js";
+import type { MonitorActionDecision } from "@/worker/worker.interface.js";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { ILogger } from "@/utils/logger.js";
 import type { INotificationMessageBuilder } from "@/domain/notifications/notification.message-builder.js";
 import type { NotificationChannel } from "@/domain/notifications/notification.type.js";
+import { CLIENT_HOST_FALLBACK } from "@/domain/notifications/providers/utils.js";
 import type { EgressState } from "@/domain/egress/egress.type.js";
+import type { Check } from "@/domain/checks/check.type.js";
 
 export type NotificationProviderRegistry = Record<NotificationChannel, INotificationProvider>;
 
@@ -18,10 +19,9 @@ export interface INotificationsService {
 	createNotification: (notificationData: Partial<Notification>, userId: string, teamId: string) => Promise<Notification>;
 	findById: (id: string, teamId: string) => Promise<Notification>;
 	findNotificationsByTeamId: (teamId: string) => Promise<Notification[]>;
-	findNotificationsByIds: (ids: string[]) => Promise<Notification[]>;
 	updateById(id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification>;
 	deleteById: (id: string, teamId: string) => Promise<Notification>;
-	handleNotifications: (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => Promise<boolean>;
+	handleNotifications: (monitor: Monitor, check: Check, decision: MonitorActionDecision) => Promise<boolean>;
 
 	// Instance-level (not monitor-scoped): sent once when outbound connectivity returns after a degraded egress episode.
 	sendEgressRecoveredNotification: (state: EgressState, notificationIds: string[]) => Promise<boolean>;
@@ -65,6 +65,10 @@ export class NotificationsService implements INotificationsService {
 		this.notificationMessageBuilder = notificationMessageBuilder;
 	}
 
+	private resolveClientHost = (): string => {
+		return this.settingsService.getSettings().clientHost || CLIENT_HOST_FALLBACK;
+	};
+
 	private send = async (notification: Notification, notificationMessage: NotificationMessage | undefined): Promise<boolean> => {
 		if (!notificationMessage) {
 			this.logger.warn({
@@ -88,14 +92,13 @@ export class NotificationsService implements INotificationsService {
 		return await provider.sendMessage(notification, notificationMessage);
 	};
 
-	private sendNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
+	private sendNotifications = async (monitor: Monitor, check: Check, decision: MonitorActionDecision) => {
 		const notificationIds = monitor.notifications ?? [];
 		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
 
 		// Build notification message once for all notifications
-		const settings = this.settingsService.getSettings();
-		const clientHost = settings.clientHost || "Host not defined";
-		const notificationMessage = this.notificationMessageBuilder.buildMessage(monitor, monitorStatusResponse, decision, clientHost);
+		const clientHost = this.resolveClientHost();
+		const notificationMessage = this.notificationMessageBuilder.buildMessage(monitor, check, decision, clientHost);
 
 		return await this.sendToAll(notifications, notificationMessage, "sendNotifications");
 	};
@@ -118,8 +121,7 @@ export class NotificationsService implements INotificationsService {
 	};
 
 	sendEgressRecoveredNotification = async (state: EgressState, notificationIds: string[]) => {
-		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
-		if (notifications.length === 0) {
+		if (notificationIds.length === 0) {
 			this.logger.info({
 				message: "Egress recovered but no notification channels are configured for it",
 				service: SERVICE_NAME,
@@ -128,20 +130,28 @@ export class NotificationsService implements INotificationsService {
 			return true;
 		}
 
-		const settings = this.settingsService.getSettings();
-		const clientHost = settings.clientHost || "Host not defined";
+		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
+		if (notifications.length === 0) {
+			this.logger.warn({
+				message: "Egress recovered but none of the configured notification channels exist",
+				service: SERVICE_NAME,
+				method: "sendEgressRecoveredNotification",
+				details: { notificationIds },
+			});
+			return true;
+		}
+
+		const clientHost = this.resolveClientHost();
 		const notificationMessage = this.notificationMessageBuilder.buildEgressRecoveredMessage(state, clientHost);
 
 		return await this.sendToAll(notifications, notificationMessage, "sendEgressRecoveredNotification");
 	};
 
-	handleNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
-		if (!decision.shouldSendNotification) {
-			return false;
-		}
+	handleNotifications = async (monitor: Monitor, check: Check, decision: MonitorActionDecision) => {
+		if (decision.transition === null) return false;
 
 		// Send notifications based on decision
-		return await this.sendNotifications(monitor, monitorStatusResponse, decision);
+		return await this.sendNotifications(monitor, check, decision);
 	};
 
 	sendTestNotification = async (notification: Partial<Notification>) => {
@@ -169,7 +179,17 @@ export class NotificationsService implements INotificationsService {
 
 	testAllNotifications = async (notificationIds: string[]) => {
 		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
-		const tasks = notifications.map((notification) => this.sendTestNotification(notification));
+		const tasks = notifications.map((notification) =>
+			this.sendTestNotification(notification).catch((error: unknown) => {
+				this.logger.warn({
+					message: `Test notification failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+					service: SERVICE_NAME,
+					method: "testAllNotifications",
+					details: { notificationId: notification.id, type: notification.type },
+				});
+				return false;
+			})
+		);
 		const outcomes = await Promise.all(tasks);
 		const succeeded = outcomes.filter(Boolean).length;
 		const failed = outcomes.length - succeeded;
@@ -187,10 +207,6 @@ export class NotificationsService implements INotificationsService {
 
 	findById = async (id: string, teamId: string): Promise<Notification> => {
 		return await this.notificationsRepository.findById(id, teamId);
-	};
-
-	findNotificationsByIds = async (ids: string[]): Promise<Notification[]> => {
-		return this.notificationsRepository.findNotificationsByIds(ids);
 	};
 
 	findNotificationsByTeamId = async (teamId: string): Promise<Notification[]> => {

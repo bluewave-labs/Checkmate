@@ -74,11 +74,10 @@ export class PagerDutyProvider extends NotificationProvider {
 	}
 
 	private buildPagerDutyPayload(notification: Notification, message: NotificationMessage): AlertPagerDutyPayload {
-		// Map our notification type to PagerDuty event_action. Every recovery resolves, including egress_recovered,
-		// which has no matching trigger. A resolve with no open alert under its dedup key is expected to be accepted
-		// and do nothing, whereas a trigger would open an incident for connectivity being restored.
+		// Map our notification type to PagerDuty event_action. egress_recovered has no open alert to resolve, so it
+		// falls through to an informational trigger (success maps to info) under the checkmate-egress dedup key.
 		const eventAction =
-			message.type === "monitor_up" || message.type === "threshold_resolved" || message.type === "egress_recovered" ? "resolve" : "trigger";
+			message.type === "monitor_up" || message.type === "threshold_resolved" || message.type === "container_resolved" ? "resolve" : "trigger";
 
 		// Map severity to PagerDuty severity levels
 		const severityMap: Record<string, string> = {

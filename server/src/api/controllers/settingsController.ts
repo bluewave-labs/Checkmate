@@ -1,5 +1,5 @@
-import { Request, Response, RequestHandler } from "express";
-import { catchAsync } from "@/utils/catchAsync.js";
+import { RequestHandler } from "express";
+import { Handler, requireTeamId } from "@/api/controllers/controllerUtils.js";
 import { updateAppSettingsBodyValidation } from "@/api/validation/settingsValidation.js";
 import { sendTestEmailBodyValidation } from "@/api/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
@@ -9,6 +9,8 @@ import { IProxiesService } from "@/domain/proxies/proxy.service.js";
 import { IEgressStateService } from "@/domain/egress/egress-state.service.js";
 import { Settings } from "@/domain/app-settings/app-settings.type.js";
 import { INotificationsService } from "@/domain/notifications/notification.service.js";
+
+const SERVICE_NAME = "SettingsController";
 
 export interface ISettingsController {
 	getAppSettings: RequestHandler;
@@ -61,20 +63,14 @@ class SettingsController implements ISettingsController {
 		return returnSettings;
 	};
 
-	getAppSettings = catchAsync(async (req: Request, res: Response) => {
+	getAppSettings: Handler = async (req, res) => {
 		const dbSettings = await this.settingsService.getDBSettings();
+		const data = await this.buildAppSettings(dbSettings);
+		res.json({ success: true, msg: "App settings fetched successfully", data });
+	};
 
-		const returnSettings = await this.buildAppSettings(dbSettings);
-		return res.status(200).json({
-			success: true,
-			msg: "App settings fetched successfully",
-			data: returnSettings,
-		});
-	});
-
-	updateAppSettings = catchAsync(async (req: Request, res: Response) => {
+	updateAppSettings: Handler = async (req, res) => {
 		const validatedBody = updateAppSettingsBodyValidation.parse(req.body);
-
 		if (validatedBody.globalProxyId) {
 			const proxy = await this.proxiesService.getProxySummary(validatedBody.globalProxyId);
 			if (!proxy) {
@@ -83,90 +79,58 @@ class SettingsController implements ISettingsController {
 		}
 
 		const previousSettings = await this.settingsService.getDBSettings();
-		if (validatedBody.egressNotifications && validatedBody.egressNotifications.length > 0) {
-			const requestedIds = [...new Set(validatedBody.egressNotifications)];
-			const notifications = await this.notificationsService.findNotificationsByIds(requestedIds);
-			const foundIds = new Set(notifications.map((notification) => notification.id));
+		// Deduplicated once and persisted as such. Left undefined when absent, since an undefined key unsets the stored value.
+		const requestedIds = validatedBody.egressNotifications && [...new Set(validatedBody.egressNotifications)];
+		if (requestedIds && requestedIds.length > 0) {
+			// Only the caller's team's notifications can be selected; anything else is treated as not found.
+			const teamId = requireTeamId(req.user?.teamId);
+			const teamNotifications = await this.notificationsService.findNotificationsByTeamId(teamId);
+			const foundIds = new Set(teamNotifications.map((notification) => notification.id));
 			const missing = requestedIds.filter((id) => !foundIds.has(id));
 			if (missing.length > 0) {
 				throw new AppError({ message: `Referenced notification does not exist: ${missing.join(", ")}`, status: 422 });
 			}
 		}
 
-		const updatedSettings = await this.settingsService.updateDbSettings(validatedBody);
+		const updatedSettings = await this.settingsService.updateDbSettings(
+			requestedIds ? { ...validatedBody, egressNotifications: requestedIds } : validatedBody
+		);
 
 		// Switching the egress check on or off starts from a clean state: no degraded episode, no pending recovery job
 		if (validatedBody.egressCheckEnabled !== undefined && validatedBody.egressCheckEnabled !== previousSettings.egressCheckEnabled) {
 			await this.egressStateService.reset();
 		}
 
-		const returnSettings = await this.buildAppSettings(updatedSettings);
-		return res.status(200).json({
-			success: true,
-			msg: "App settings updated successfully",
-			data: returnSettings,
-		});
-	});
+		const data = await this.buildAppSettings(updatedSettings);
+		res.json({ success: true, msg: "App settings updated successfully", data });
+	};
 
-	sendTestEmail = catchAsync(async (req: Request, res: Response) => {
-		sendTestEmailBodyValidation.parse(req.body);
-
-		const {
-			to,
-			systemEmailHost,
-			systemEmailPort,
-			systemEmailAddress,
-			systemEmailDisplayName,
-			systemEmailPassword,
-			systemEmailUser,
-			systemEmailConnectionHost,
-			systemEmailSecure,
-			systemEmailPool,
-			systemEmailIgnoreTLS,
-			systemEmailRequireTLS,
-			systemEmailRejectUnauthorized,
-			systemEmailTLSServername,
-		} = req.body;
-
+	sendTestEmail: Handler = async (req, res) => {
+		const { to, ...transportConfig } = sendTestEmailBodyValidation.parse(req.body);
 		const subject = "This is a test email from Checkmate";
 		const context = { testName: "Monitoring System" };
 
 		const html = await this.emailService.buildEmail("testEmailTemplate", context);
 		if (!html) {
-			throw new AppError({ message: "Failed to build email template.", status: 500 });
+			throw new AppError({ message: "Failed to build email template.", status: 500, service: SERVICE_NAME, method: "sendTestEmail" });
 		}
 		let messageId: string;
 		try {
-			messageId = await this.emailService.sendEmail(to, subject, html, {
-				systemEmailHost,
-				systemEmailPort,
-				systemEmailUser,
-				systemEmailAddress,
-				systemEmailDisplayName,
-				systemEmailPassword,
-				systemEmailConnectionHost,
-				systemEmailSecure,
-				systemEmailPool,
-				systemEmailIgnoreTLS,
-				systemEmailRequireTLS,
-				systemEmailRejectUnauthorized,
-				systemEmailTLSServername,
-			});
+			messageId = await this.emailService.sendEmail(to, subject, html, transportConfig);
 		} catch (error: unknown) {
 			// Surface the underlying SMTP failure: diagnosing the settings is the whole
 			// point of the test email endpoint.
 			throw new AppError({
-				message: error instanceof Error ? `Failed to send test email. ${error.message}` : "Failed to send test email.",
-				status: 500,
+				message: error instanceof AppError ? error.message : "Failed to send test email.",
+				status: error instanceof AppError ? error.status : 500,
+				service: SERVICE_NAME,
+				method: "sendTestEmail",
+				details: error instanceof AppError ? error.details : undefined,
 			});
 		}
 
-		return res.status(200).json({
-			success: true,
-			msg: "Test email sent successfully",
-			data: { messageId },
-		});
-	});
+		res.json({ success: true, msg: "Test email sent successfully", data: { messageId } });
+	};
 }
 
 export default SettingsController;

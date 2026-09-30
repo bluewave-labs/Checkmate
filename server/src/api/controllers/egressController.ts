@@ -1,5 +1,5 @@
-import { Request, Response, RequestHandler } from "express";
-import { catchAsync } from "@/utils/catchAsync.js";
+import { RequestHandler } from "express";
+import { Handler } from "@/api/controllers/controllerUtils.js";
 import { IEgressStateService } from "@/domain/egress/egress-state.service.js";
 
 export interface IEgressController {
@@ -7,16 +7,15 @@ export interface IEgressController {
 }
 
 class EgressController implements IEgressController {
-	constructor(private egressStateService: IEgressStateService) {}
+	private egressStateService: IEgressStateService;
+	constructor(egressStateService: IEgressStateService) {
+		this.egressStateService = egressStateService;
+	}
 
-	getState = catchAsync(async (req: Request, res: Response) => {
-		const state = await this.egressStateService.getState();
-		return res.status(200).json({
-			success: true,
-			msg: "Egress state retrieved successfully",
-			data: state,
-		});
-	});
+	getState: Handler = async (req, res) => {
+		const data = await this.egressStateService.getState();
+		res.json({ success: true, msg: "Egress state retrieved successfully", data });
+	};
 }
 
 export default EgressController;

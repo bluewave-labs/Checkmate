@@ -183,6 +183,7 @@
 				"uptime": "Temps en línia",
 				"pagespeed": "Velocitat de pàgina",
 				"infrastructure": "Infraestructura",
+				"docker": "Docker",
 				"notifications": "Notificacions",
 				"checks": "Comprovacions",
 				"incidents": "Incidents",
@@ -195,7 +196,8 @@
 					"alerting": "Alertes",
 					"reporting": "Informes",
 					"configuration": "Configuració"
-				}
+				},
+				"dashboard": "Tauler"
 			},
 			"bottomMenu": {
 				"support": "Suport",
@@ -534,10 +536,6 @@
 				},
 				"general": {
 					"option": {
-						"container": {
-							"label": "Nom/ID del contenidor",
-							"placeholder": "my-app o abcd1234"
-						},
 						"host": {
 							"label": "Host",
 							"placeholder": "192.168.1.100 o example.com"
@@ -593,6 +591,10 @@
 							"desktop": "Escriptori",
 							"label": "Estratègia",
 							"mobile": "Mòbil"
+						},
+						"dockerHost": {
+							"label": "Amfitrió Docker",
+							"placeholder": "unix:///var/run/docker.sock"
 						}
 					},
 					"title": "Configuració general",
@@ -694,17 +696,6 @@
 						}
 					}
 				},
-				"url": {
-					"title": "IP/URL del monitor a la pàgina d'estat",
-					"description": "Mostra l'adreça IP o URL del monitor a la pàgina d'estat pública. Si està desactivat, només es mostrarà el nom del monitor per protegir informació sensible.",
-					"option": {
-						"showURL": {
-							"label": "Mostrar IP/URL a la pàgina d'estat",
-							"enabled": "Activat",
-							"disabled": "Desactivat"
-						}
-					}
-				},
 				"stats": {
 					"title": "Historial del monitor",
 					"description": "Neteja tot l'historial de monitoratge i les estadístiques del teu equip. Aquesta acció és irreversible.",
@@ -713,6 +704,50 @@
 						"title": "Netejar tot l'historial de monitoratge?",
 						"description": "Això eliminarà permanentment tot l'historial de monitoratge, les estadístiques i les dades de comprovació del teu equip. Aquesta acció no es pot desfer.",
 						"confirm": "Sí, netejar totes les estadístiques"
+					}
+				},
+				"dockerLogs": {
+					"title": "Registres dels contenidors",
+					"description": "Recull a cada comprovació les línies de registre més recents de tots els contenidors d'aquest amfitrió. Els registres es conserven 7 dies. Deixeu aquesta opció desactivada en amfitrions amb contenidors molt xerraires per estalviar espai a la base de dades.",
+					"option": {
+						"enabled": {
+							"label": "Recull els registres dels contenidors"
+						}
+					}
+				},
+				"dockerAlerts": {
+					"title": "Alertes dels contenidors",
+					"description": "Marca aquest amfitrió com a degradat mentre algun dels seus contenidors estigui aturat o falli la comprovació de salut, i notifica el canvi. Els contenidors que acaben amb el codi 0 no compten com aturats. Capture no informa dels codis de sortida, així que en amfitrions amb Capture compta qualsevol contenidor aturat.",
+					"option": {
+						"onStopped": {
+							"label": "Avisa quan un contenidor estigui aturat"
+						},
+						"onUnhealthy": {
+							"label": "Avisa quan un contenidor no estigui sa"
+						}
+					}
+				},
+				"dockerTls": {
+					"title": "Credencials TLS",
+					"description": "Es connecta a un dimoni de Docker remot mitjançant TLS mutu. Enganxeu els fitxers PEM que passaríeu a docker --tlsverify. La clau del client es xifra abans de desar-se i no es torna a mostrar.",
+					"option": {
+						"ca": {
+							"label": "Certificat de la CA",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"cert": {
+							"label": "Certificat del client",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"key": {
+							"label": "Clau del client",
+							"placeholder": "-----BEGIN PRIVATE KEY-----",
+							"stored": "Hi ha una clau desada. Deixeu-ho en blanc per conservar-la."
+						},
+						"ignoreTls": {
+							"label": "Ignora els errors de TLS/SSL",
+							"description": "Omet la verificació del certificat del dimoni, de manera que el certificat de la CA passa a ser opcional. El certificat i la clau del client continuen sent obligatoris perquè el dimoni els verifica."
+						}
 					}
 				}
 			}
@@ -825,12 +860,9 @@
 		"infrastructure": {
 			"charts": {
 				"labels": {
-					"cpu": "Ús de CPU",
 					"disk": "Ús de disc",
-					"memory": "Ús de memòria",
 					"netBytesRecv": "{{name}} - Bytes rebuts",
 					"netBytesSent": "{{name}} - Bytes enviats",
-					"netNoTraffic": "La captura informa de zero tràfic en totes les interfícies. Això és normal quan la captura s'executa dins d'un contenidor que només pot veure interfícies de loopback — executa la captura directament a l'amfitrió per veure l'activitat de xarxa real.",
 					"temp": "Temperatura"
 				}
 			},
@@ -1199,9 +1231,7 @@
 					"description": "Mostra l'adreça IP o URL del monitor a la pàgina d'estat pública. Si està desactivat, només es mostrarà el nom del monitor per protegir informació sensible.",
 					"option": {
 						"showURL": {
-							"label": "Mostrar IP/URL a la pàgina d'estat",
-							"enabled": "Activat",
-							"disabled": "Desactivat"
+							"label": "Mostrar IP/URL a la pàgina d'estat"
 						}
 					}
 				},
@@ -1377,6 +1407,9 @@
 				"uptime": {
 					"title": "Temps en línia",
 					"responseTime": "Temps de resposta"
+				},
+				"incidents": {
+					"errorLoading": "No s'han pogut carregar les incidències."
 				}
 			},
 			"statusBar": {
@@ -1549,6 +1582,105 @@
 			"header": {
 				"title": "Monitors de temps en línia",
 				"description": "Vigila endpoints HTTP, pings, contenidors i ports — i rep alertes en el moment en que alguna cosa cau."
+			}
+		},
+		"docker": {
+			"table": {
+				"headers": {
+					"host": "Amfitrió",
+					"containers": "Contenidors"
+				},
+				"containersRunning": "{{running}} de {{total}} en execució"
+			},
+			"header": {
+				"title": "Monitors de Docker",
+				"description": "Monitoritzeu els vostres amfitrions Docker i tots els contenidors que s'hi executen."
+			},
+			"fallback": {
+				"title": "Encara no hi ha monitors de Docker",
+				"description": "Afegiu un amfitrió Docker per monitoritzar els seus contenidors.",
+				"actionButton": "Crea un monitor"
+			},
+			"container": {
+				"header": {
+					"title": "Detalls del contenidor",
+					"description": "Estat, ús de recursos i registres d'aquest contenidor."
+				},
+				"tabs": {
+					"overview": "Resum",
+					"logs": "Registres"
+				},
+				"logs": {
+					"recentLines": "{{count}} línies recents",
+					"loading": "S'està carregant...",
+					"updatedSecondsAgo": "Actualitzat fa {{count}} s",
+					"updatedMinutesAgo": "Actualitzat fa {{count}} min",
+					"skipped": "S'han omès algunes entrades del registre",
+					"loadOlder": "Carrega registres anteriors",
+					"loadingOlder": "S'està carregant...",
+					"noOlder": "Inici dels registres conservats",
+					"loadError": "No s'han pogut carregar els registres",
+					"loadOlderError": "No s'han pogut carregar els registres anteriors",
+					"empty": {
+						"title": "Encara no s'ha recollit cap registre",
+						"description": "Les línies apareixeran aquí després de la propera comprovació. Només es desa la sortida escrita des que es va activar la recollida."
+					},
+					"disabled": {
+						"title": "La recollida de registres està desactivada per a aquest amfitrió",
+						"description": "Activeu els registres dels contenidors a la configuració del monitor per començar a recollir-los.",
+						"action": "Configura el monitor"
+					},
+					"forbidden": {
+						"title": "No teniu accés als registres dels contenidors",
+						"description": "Només els administradors poden veure els registres. Demaneu accés a un administrador si necessiteu consultar-los."
+					}
+				}
+			},
+			"host": {
+				"statBoxes": {
+					"containers": "Contenidors",
+					"running": "En execució",
+					"stopped": "Aturats",
+					"unhealthy": "No sans"
+				},
+				"table": {
+					"headers": {
+						"container": "Contenidors",
+						"cpu": "CPU",
+						"memory": "Memòria"
+					}
+				}
+			}
+		},
+		"dashboard": {
+			"noData": "No hi ha dades disponibles en aquest moment.",
+			"monitorStatus": {
+				"ofUp": "de {{total}} actius"
+			},
+			"cards": {
+				"monitorStatus": "Estat dels monitors",
+				"currentlyDown": "Actualment caiguts",
+				"uptime": "Disponibilitat dels monitors",
+				"monitorsByType": "Monitors per tipus"
+			},
+			"uptimeCard": {
+				"toggleSortOrder": "Canvia l'ordre"
+			},
+			"currentlyDown": {
+				"empty": "Cap monitor no està caigut en aquest moment."
+			},
+			"header": {
+				"title": "Tauler",
+				"description": "Vegeu tots els tipus de monitor en un sol lloc i detecteu què necessita atenció."
+			},
+			"editCards": "Edita les targetes",
+			"editCardsModal": {
+				"title": "Targetes del tauler",
+				"description": "Seleccioneu les targetes que es mostraran al vostre tauler.",
+				"groups": {
+					"uptime": "Disponibilitat"
+				},
+				"done": "Fet"
 			}
 		}
 	}

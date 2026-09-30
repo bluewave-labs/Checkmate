@@ -25,6 +25,7 @@ export interface ChartCell {
 	responseTime: number; // 0 for empty cells
 	tooltip: React.ReactNode | null;
 	ariaLabel: string;
+	date: string | null;
 }
 
 const DAY_DOWN_THRESHOLD = 0.5;
@@ -61,7 +62,7 @@ export const classifyResponseTime = (
 	return "fast";
 };
 
-const emptyCell = (key: string): ChartCell => ({
+const emptyCell = (key: string, date: string | null = null): ChartCell => ({
 	key,
 	barKind: "empty",
 	heatKind: "empty",
@@ -70,6 +71,7 @@ const emptyCell = (key: string): ChartCell => ({
 	tooltip: null,
 	ariaLabel: "",
 	severity: 0,
+	date,
 });
 
 const padCells = (cells: ChartCell[], length: number): ChartCell[] => [
@@ -92,6 +94,7 @@ export const checksToCells = (checks: CheckSnapshot[]): ChartCell[] => {
 			tooltip: <ThemedChartTooltip check={check} />,
 			ariaLabel: `${formatMs(check.responseTime)}, ${check.status ? "up" : "down"}`,
 			severity: 0,
+			date: null,
 		})
 	);
 	return padCells(cells, MAX_RECENT_CHECKS);
@@ -108,7 +111,7 @@ export const dailyBucketsToCells = (
 	const enumerated = enumerateDays(days, bucketTimezone);
 	return enumerated.map((date) => {
 		const bucket = byDate.get(date);
-		if (!bucket) return emptyCell(`day-${date}`);
+		if (!bucket) return emptyCell(`day-${date}`, date);
 		const upRatio = bucket.upChecks / bucket.totalChecks;
 
 		const barKind = classifyDay(bucket, upRatio);
@@ -132,6 +135,7 @@ export const dailyBucketsToCells = (
 				date,
 				uptime: formatPercentage(bucket.upChecks / bucket.totalChecks),
 			}),
+			date,
 		};
 	});
 };

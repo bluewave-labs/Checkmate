@@ -1,62 +1,238 @@
-import { Router } from "express";
-import { isAllowed } from "@/api/middleware/isAllowed.js";
 import { IMonitorController } from "@/api/controllers/monitorController.js";
+import { RouteTable } from "@/api/routes/defineRoutes.js";
+import { okJson, unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
+import {
+	getMonitorByIdParamValidation,
+	getMonitorByIdQueryValidation,
+	getMonitorsByTeamIdQueryValidation,
+	getMonitorsWithChecksQueryValidation,
+	getCertificateParamValidation,
+	getDomainParamValidation,
+	createMonitorBodyValidation,
+	editMonitorBodyValidation,
+	pauseMonitorParamValidation,
+	bulkPauseMonitorBodyValidation,
+	getUptimeDetailsByIdParamValidation,
+	getUptimeDetailsByIdQueryValidation,
+	importMonitorsBodyValidation,
+	getHardwareDetailsByIdParamValidation,
+	getHardwareDetailsByIdQueryValidation,
+	getDockerDetailsByIdParamValidation,
+	getDockerDetailsByIdQueryValidation,
+	getDockerContainerNameParamValidation,
+	getDockerContainerByNameQueryValidation,
+	getDockerContainerLogsQueryValidation,
+	dockerDetailsResponseSchema,
+	dockerContainerDetailsResponseSchema,
+	dockerContainerLogsResponseSchema,
+	monitorResponseSchema,
+	uptimeDetailsResponseSchema,
+} from "@/api/validation/monitorValidation.js";
+import { updateNotificationsValidation } from "@/api/validation/notificationValidation.js";
 
-export const createMonitorRoutes = (monitorController: IMonitorController): Router => {
-	const router = Router();
-
-	// Team routes
-	router.get("/team", monitorController.getMonitorsByTeamId);
-	router.get("/team/with-checks", monitorController.getMonitorsWithChecksByTeamId);
-
-	// Uptime routes
-	router.get("/uptime/details/:monitorId", monitorController.getUptimeDetailsById);
-
-	// Hardware routes
-	router.get("/hardware/details/:monitorId", monitorController.getHardwareDetailsById);
-
-	// PageSpeed routes
-	router.get("/pagespeed/details/:monitorId", monitorController.getPageSpeedDetailsById);
-
-	// Docker routes
-	router.get("/docker/details/:monitorId", monitorController.getDockerDetailsById);
-	router.get("/docker/details/:monitorId/containers/:containerName", monitorController.getDockerContainerByName);
-	router.get(
-		"/docker/details/:monitorId/containers/:containerName/logs",
-		isAllowed(["admin", "superadmin"]),
-		monitorController.getDockerContainerLogs
-	);
-
-	// Geo checks routes
-	router.get("/:monitorId/geo-checks", monitorController.getGeoChecksByMonitorId);
-
-	// General monitor routes
-	router.post("/pause/:monitorId", isAllowed(["admin", "superadmin"]), monitorController.pauseMonitor);
-	router.post("/bulk/pause", isAllowed(["admin", "superadmin"]), monitorController.bulkPauseMonitors);
-
-	// Util routes
-	router.get("/certificate/:monitorId", (req, res, next) => {
-		monitorController.getMonitorCertificate(req, res, next);
-	});
-	router.get("/domain/:monitorId", (req, res, next) => {
-		monitorController.getMonitorDomain(req, res, next);
-	});
-
-	// General monitor CRUD routes
-	router.patch("/notifications", isAllowed(["admin", "superadmin"]), monitorController.updateNotifications);
-	router.post("/", isAllowed(["admin", "superadmin"]), monitorController.createMonitor);
-	router.delete("/", isAllowed(["superadmin"]), monitorController.deleteAllMonitors);
-
-	// Other static routes
-	router.post("/demo", isAllowed(["admin", "superadmin"]), monitorController.addDemoMonitors);
-	router.get("/export/json", isAllowed(["admin", "superadmin"]), monitorController.exportMonitorsToJSON);
-	router.post("/import/json", isAllowed(["admin", "superadmin"]), monitorController.importMonitorsFromJSON);
-
-	router.get("/games", monitorController.getAllGames);
-
-	// Individual monitor CRUD routes
-	router.get("/:monitorId", monitorController.getMonitorById);
-	router.patch("/:monitorId", isAllowed(["admin", "superadmin"]), monitorController.editMonitor);
-	router.delete("/:monitorId", isAllowed(["admin", "superadmin"]), monitorController.deleteMonitor);
-	return router;
+export const monitorRoutes: RouteTable<IMonitorController> = {
+	prefix: "/monitors",
+	tag: "monitors",
+	auth: "jwt",
+	routes: [
+		{
+			method: "get",
+			path: "/team",
+			handler: "getMonitorsByTeamId",
+			summary: "List monitors for the caller's team",
+			query: getMonitorsByTeamIdQueryValidation,
+			response: unknownResponseSchema,
+		},
+		{
+			method: "get",
+			path: "/team/with-checks",
+			handler: "getMonitorsWithChecksByTeamId",
+			summary: "List team monitors with their most recent checks (paginated)",
+			query: getMonitorsWithChecksQueryValidation,
+			response: unknownResponseSchema,
+		},
+		{
+			method: "get",
+			path: "/uptime/details/:monitorId",
+			handler: "getUptimeDetailsById",
+			summary: "Get uptime details for a monitor",
+			params: getUptimeDetailsByIdParamValidation,
+			query: getUptimeDetailsByIdQueryValidation,
+			response: uptimeDetailsResponseSchema,
+		},
+		{
+			method: "get",
+			path: "/hardware/details/:monitorId",
+			handler: "getHardwareDetailsById",
+			summary: "Get hardware metrics detail for a monitor",
+			params: getHardwareDetailsByIdParamValidation,
+			query: getHardwareDetailsByIdQueryValidation,
+			response: unknownResponseSchema,
+		},
+		{
+			method: "get",
+			path: "/pagespeed/details/:monitorId",
+			handler: "getPageSpeedDetailsById",
+			summary: "Get PageSpeed detail for a monitor",
+			params: getHardwareDetailsByIdParamValidation,
+			query: getHardwareDetailsByIdQueryValidation,
+			response: unknownResponseSchema,
+		},
+		{
+			method: "get",
+			path: "/docker/details/:monitorId",
+			handler: "getDockerDetailsById",
+			summary: "Get Docker host details for a monitor",
+			params: getDockerDetailsByIdParamValidation,
+			query: getDockerDetailsByIdQueryValidation,
+			response: dockerDetailsResponseSchema,
+		},
+		{
+			method: "get",
+			path: "/docker/details/:monitorId/containers/:containerName",
+			handler: "getDockerContainerByName",
+			summary: "Get details for one container on a Docker host monitor",
+			params: getDockerContainerNameParamValidation,
+			query: getDockerContainerByNameQueryValidation,
+			response: dockerContainerDetailsResponseSchema,
+		},
+		{
+			method: "get",
+			path: "/docker/details/:monitorId/containers/:containerName/logs",
+			handler: "getDockerContainerLogs",
+			summary: "Get stored log lines for one container on a Docker host monitor, newest first (admin/superadmin)",
+			roles: ["admin", "superadmin"],
+			params: getDockerContainerNameParamValidation,
+			query: getDockerContainerLogsQueryValidation,
+			response: dockerContainerLogsResponseSchema,
+		},
+		{
+			method: "get",
+			path: "/:monitorId/geo-checks",
+			handler: "getGeoChecksByMonitorId",
+			summary: "Get geo check results for a monitor",
+			params: getMonitorByIdParamValidation,
+			query: getMonitorByIdQueryValidation,
+			response: unknownResponseSchema,
+		},
+		{
+			method: "post",
+			path: "/pause/:monitorId",
+			handler: "pauseMonitor",
+			summary: "Toggle pause state for a monitor (admin/superadmin)",
+			roles: ["admin", "superadmin"],
+			params: pauseMonitorParamValidation,
+			response: monitorResponseSchema,
+		},
+		{
+			method: "post",
+			path: "/bulk/pause",
+			handler: "bulkPauseMonitors",
+			summary: "Pause or resume several monitors (admin/superadmin)",
+			roles: ["admin", "superadmin"],
+			body: bulkPauseMonitorBodyValidation,
+			response: unknownResponseSchema,
+		},
+		{
+			method: "get",
+			path: "/certificate/:monitorId",
+			handler: "getMonitorCertificate",
+			summary: "Get SSL certificate info for a monitor",
+			params: getCertificateParamValidation,
+			response: unknownResponseSchema,
+		},
+		{
+			method: "get",
+			path: "/domain/:monitorId",
+			handler: "getMonitorDomain",
+			summary: "Get domain registration expiry for a monitor",
+			params: getDomainParamValidation,
+			response: unknownResponseSchema,
+		},
+		{
+			method: "patch",
+			path: "/notifications",
+			handler: "updateNotifications",
+			summary: "Bulk update notifications across monitors (admin/superadmin)",
+			roles: ["admin", "superadmin"],
+			body: updateNotificationsValidation,
+			response: unknownResponseSchema,
+		},
+		{
+			method: "post",
+			path: "/",
+			handler: "createMonitor",
+			summary: "Create a new monitor (admin/superadmin)",
+			roles: ["admin", "superadmin"],
+			body: createMonitorBodyValidation,
+			response: monitorResponseSchema,
+			spec: (d) => ({ ...d, responses: { ...d.responses, "200": okJson(monitorResponseSchema, "Monitor created") } }),
+		},
+		{
+			method: "delete",
+			path: "/",
+			handler: "deleteAllMonitors",
+			summary: "Delete every monitor (superadmin)",
+			roles: ["superadmin"],
+		},
+		{
+			method: "post",
+			path: "/demo",
+			handler: "addDemoMonitors",
+			summary: "Insert preconfigured demo monitors (admin/superadmin)",
+			roles: ["admin", "superadmin"],
+			response: unknownResponseSchema,
+		},
+		{
+			method: "get",
+			path: "/export/json",
+			handler: "exportMonitorsToJSON",
+			summary: "Export all team monitors as JSON (admin/superadmin)",
+			roles: ["admin", "superadmin"],
+			response: unknownResponseSchema,
+		},
+		{
+			method: "post",
+			path: "/import/json",
+			handler: "importMonitorsFromJSON",
+			summary: "Import monitors from JSON (admin/superadmin)",
+			roles: ["admin", "superadmin"],
+			body: importMonitorsBodyValidation,
+			response: unknownResponseSchema,
+		},
+		{
+			method: "get",
+			path: "/games",
+			handler: "getAllGames",
+			summary: "List supported game-server types",
+			response: unknownResponseSchema,
+		},
+		{
+			method: "get",
+			path: "/:monitorId",
+			handler: "getMonitorById",
+			summary: "Get a monitor by id",
+			params: getMonitorByIdParamValidation,
+			response: monitorResponseSchema,
+		},
+		{
+			method: "patch",
+			path: "/:monitorId",
+			handler: "editMonitor",
+			summary: "Edit a monitor (admin/superadmin)",
+			roles: ["admin", "superadmin"],
+			params: getMonitorByIdParamValidation,
+			body: editMonitorBodyValidation,
+			response: monitorResponseSchema,
+		},
+		{
+			method: "delete",
+			path: "/:monitorId",
+			handler: "deleteMonitor",
+			summary: "Delete a monitor (admin/superadmin)",
+			roles: ["admin", "superadmin"],
+			params: getMonitorByIdParamValidation,
+			response: monitorResponseSchema,
+		},
+	],
 };

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { NtfyAuthTypes } from "@/domain/notifications/notification.type.js";
+import { NtfyAuthTypes, type NotificationChannel } from "@/domain/notifications/notification.type.js";
 
 //****************************************
 // Notification Validations
@@ -39,7 +39,7 @@ const refineNtfyAuth = (body: { ntfyAuthType?: string; ntfyUsername?: string; ac
 	}
 };
 
-export const createNotificationBodyValidation = z.discriminatedUnion("type", [
+const notificationChannelVariants = z.discriminatedUnion("type", [
 	// Email notification
 	z.object({
 		notificationName: z.string().min(1, "Notification name is required"),
@@ -153,6 +153,95 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		.superRefine(refineNtfyAuth),
 ]);
 
+// OpenAPI component name and example per notification channel.
+const notificationVariantMeta: Record<NotificationChannel, { component: string; example: Record<string, unknown> }> = {
+	email: {
+		component: "EmailNotification",
+		example: { notificationName: "Ops on-call email", type: "email", address: "alerts@example.com" },
+	},
+	webhook: {
+		component: "WebhookNotification",
+		example: { notificationName: "Custom webhook", type: "webhook", address: "https://example.com/hooks/checkmate" },
+	},
+	rocket_chat: {
+		component: "RocketChatNotification",
+		example: {
+			notificationName: "Rocket.Chat alerts",
+			type: "rocket_chat",
+			address: "https://chat.example.com/hooks/integration-id/token",
+		},
+	},
+	slack: {
+		component: "SlackNotification",
+		example: { notificationName: "#alerts", type: "slack", address: "https://hooks.slack.com/services/T000/B000/XXXX" },
+	},
+	discord: {
+		component: "DiscordNotification",
+		example: { notificationName: "#status", type: "discord", address: "https://discord.com/api/webhooks/123/abc" },
+	},
+	pager_duty: {
+		component: "PagerDutyNotification",
+		example: { notificationName: "PagerDuty primary", type: "pager_duty", address: "R01XXXXXXXXXXXXXXXXXXXXXXX" },
+	},
+	matrix: {
+		component: "MatrixNotification",
+		example: {
+			notificationName: "Matrix room",
+			type: "matrix",
+			homeserverUrl: "https://matrix.example.com",
+			roomId: "!abc123:example.com",
+			accessToken: "syt_xxx",
+		},
+	},
+	teams: {
+		component: "TeamsNotification",
+		example: { notificationName: "Teams ops channel", type: "teams", address: "https://outlook.office.com/webhook/..." },
+	},
+	telegram: {
+		component: "TelegramNotification",
+		example: { notificationName: "Telegram bot", type: "telegram", address: "-1001234567890", accessToken: "123456:ABC-DEF" },
+	},
+	pushover: {
+		component: "PushoverNotification",
+		example: { notificationName: "Pushover personal", type: "pushover", address: "u1234567890abcdef", accessToken: "a1234567890abcdef" },
+	},
+	signalgrid: {
+		component: "SignalgridNotification",
+		example: { notificationName: "Signalgrid", type: "signalgrid", address: "your-channel", accessToken: "your-client-key" },
+	},
+	twilio: {
+		component: "TwilioNotification",
+		example: {
+			notificationName: "Twilio SMS",
+			type: "twilio",
+			accountSid: "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+			accessToken: "your-auth-token",
+			phone: "+15551234567",
+			twilioPhoneNumber: "+15557654321",
+		},
+	},
+	ntfy: {
+		component: "NtfyNotification",
+		example: {
+			notificationName: "ntfy topic",
+			type: "ntfy",
+			address: "https://ntfy.sh",
+			topic: "checkmate-alerts",
+			ntfyAuthType: "token",
+			accessToken: "tk_your-ntfy-access-token",
+		},
+	},
+};
+
+const decoratedVariants = notificationChannelVariants.options.map((variant) => {
+	const meta = notificationVariantMeta[(variant.shape.type as z.ZodLiteral<NotificationChannel>).value];
+	return variant.meta({ id: meta.component, example: meta.example });
+});
+
+export const createNotificationBodyValidation = z
+	.discriminatedUnion("type", decoratedVariants as typeof notificationChannelVariants.options)
+	.meta({ id: "NotificationChannelBody" });
+
 export const testNotificationBodyValidation = createNotificationBodyValidation;
 
 export const deleteNotificationParamValidation = z.object({
@@ -173,16 +262,16 @@ export const sendTestEmailBodyValidation = z.object({
 	to: z.string().min(1, "To field is required"),
 	systemEmailHost: z.string().optional(),
 	systemEmailPort: z.number().optional(),
-	systemEmailSecure: z.boolean().optional(),
-	systemEmailPool: z.boolean().optional(),
+	systemEmailSecure: z.boolean().default(false),
+	systemEmailPool: z.boolean().default(false),
 	systemEmailAddress: z.string().optional(),
 	systemEmailDisplayName: z.string().optional(),
 	systemEmailPassword: z.string().optional(),
 	systemEmailUser: z.string().optional(),
 	systemEmailConnectionHost: z.union([z.string(), z.literal("")]).optional(),
-	systemEmailIgnoreTLS: z.boolean().optional(),
-	systemEmailRequireTLS: z.boolean().optional(),
-	systemEmailRejectUnauthorized: z.boolean().optional(),
+	systemEmailIgnoreTLS: z.boolean().default(false),
+	systemEmailRequireTLS: z.boolean().default(false),
+	systemEmailRejectUnauthorized: z.boolean().default(true),
 	systemEmailTLSServername: z.union([z.string(), z.literal("")]).optional(),
 });
 

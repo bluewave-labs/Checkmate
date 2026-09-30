@@ -19,6 +19,7 @@ const DockerMonitorsPage = () => {
 			controller={c}
 			bulkActions
 			showTypeFilter={false}
+			summaryProps={{ showBreached: true }}
 		>
 			<DockerMonitorsTable
 				monitors={c.monitors || []}
@@ -30,9 +31,8 @@ const DockerMonitorsPage = () => {
 				setPage={c.setPage}
 				rowsPerPage={c.rowsPerPage}
 				sortField={c.sortField}
-				setSortField={c.setSortField}
 				sortOrder={c.sortOrder}
-				setSortOrder={c.setSortOrder}
+				setSort={c.setSort}
 				setRowsPerPage={c.handleSetRowsPerPage}
 				selectedRows={c.selectedRows}
 				onSelectionChange={c.setSelectedRows}

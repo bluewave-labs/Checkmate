@@ -49,7 +49,7 @@ describe("Heartbeat job: hardware threshold breach", () => {
 		h.setNextResponseFull(makeHardwareResponse(0.9));
 
 		// Configure message builder for when incident is created
-		h.messageBuilder.extractThresholdBreaches.mockReturnValue([{ metric: "cpu", formattedValue: "90%", threshold: 80, unit: "%" }]);
+		h.messageBuilder.buildThresholdBreachMessage.mockReturnValue("CPU: 90% (threshold: 80%)");
 
 		// 4 heartbeats: counter goes 5→4→3→2→1, status still "up"
 		for (let i = 0; i < 4; i++) {
@@ -191,7 +191,7 @@ describe("Heartbeat job: hardware threshold breach", () => {
 		h.monitorsRepo.seed(monitor);
 
 		h.setNextResponseFull(makeHardwareResponse(0.9));
-		h.messageBuilder.extractThresholdBreaches.mockReturnValue([{ metric: "cpu", formattedValue: "90%", threshold: 80, unit: "%" }]);
+		h.messageBuilder.buildThresholdBreachMessage.mockReturnValue("CPU: 90% (threshold: 80%)");
 
 		// 5 heartbeats to trigger breach, then 5 more while still breaching
 		for (let i = 0; i < 10; i++) {

@@ -1,8 +1,8 @@
 const SERVICE_NAME = "RocketChatProvider";
-import { supportsUptimeDetails, type MonitorType } from "@/domain/monitors/monitor.type.js";
+import { getMonitorPath, type MonitorType } from "@/domain/monitors/monitor.type.js";
 import type { Notification, NotificationMessage } from "@/domain/notifications/notification.type.js";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
-import { getTestMessage } from "@/domain/notifications/providers/utils.js";
+import { CLIENT_HOST_FALLBACK, getTestMessage } from "@/domain/notifications/providers/utils.js";
 import got from "got";
 
 type RocketChatField = { title: string; value: string; short: boolean };
@@ -135,23 +135,11 @@ export class RocketChatProvider extends NotificationProvider {
 
 	private monitorUrl(message: NotificationMessage): string | undefined {
 		const clientHost = message.clientHost?.trim();
-		if (!clientHost || clientHost === "Host not defined") {
+		if (!clientHost || clientHost === CLIENT_HOST_FALLBACK) {
 			return undefined;
 		}
 
-		if (message.monitor.type === "hardware") {
-			return `${clientHost}/infrastructure/${message.monitor.id}`;
-		}
-
-		if (message.monitor.type === "pagespeed") {
-			return `${clientHost}/pagespeed/${message.monitor.id}`;
-		}
-
-		if (supportsUptimeDetails(message.monitor.type as MonitorType)) {
-			return `${clientHost}/uptime/${message.monitor.id}`;
-		}
-
-		return undefined;
+		return `${clientHost}/${getMonitorPath(message.monitor.type as MonitorType)}/${message.monitor.id}`;
 	}
 
 	private severityColor(severity: NotificationMessage["severity"]): string {

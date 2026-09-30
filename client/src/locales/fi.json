@@ -175,6 +175,7 @@
 				"uptime": "Käytettävyys",
 				"pagespeed": "Pagespeed",
 				"infrastructure": "Infrastruktuuri",
+				"docker": "Docker",
 				"notifications": "Ilmoitukset",
 				"checks": "Tarkistukset",
 				"incidents": "Häiriöt",
@@ -187,7 +188,8 @@
 					"alerting": "Hälytykset",
 					"reporting": "Raportointi",
 					"configuration": "Määritykset"
-				}
+				},
+				"dashboard": "Koontinäyttö"
 			},
 			"bottomMenu": {
 				"support": "Tuki",
@@ -534,10 +536,6 @@
 				},
 				"general": {
 					"option": {
-						"container": {
-							"label": "Kontin nimi/tunnus",
-							"placeholder": "my-app tai abcd1234"
-						},
 						"host": {
 							"label": "Isäntä",
 							"placeholder": "192.168.1.100 tai example.com"
@@ -593,6 +591,10 @@
 							"desktop": "Työpöytä",
 							"label": "Strategia",
 							"mobile": "Mobiili"
+						},
+						"dockerHost": {
+							"label": "Docker-isäntä",
+							"placeholder": "unix:///var/run/docker.sock"
 						}
 					},
 					"title": "Yleiset asetukset",
@@ -694,17 +696,6 @@
 						}
 					}
 				},
-				"url": {
-					"title": "Monitorin IP/URL tilasivulla",
-					"description": "Näytä monitorin IP-osoite tai URL julkisella tilasivulla. Jos se on poistettu käytöstä, vain monitorin nimi näytetään arkaluonteisten tietojen suojaamiseksi.",
-					"option": {
-						"showURL": {
-							"label": "Näytä IP/URL tilasivulla",
-							"enabled": "Käytössä",
-							"disabled": "Pois käytöstä"
-						}
-					}
-				},
 				"stats": {
 					"title": "Monitorointihistoria",
 					"description": "Tyhjennä kaikki tiimisi monitorointihistoria ja tilastot. Tätä toimintoa ei voi kumota.",
@@ -713,6 +704,50 @@
 						"title": "Tyhjennetäänkö kaikki monitorointihistoria?",
 						"description": "Tämä poistaa pysyvästi kaikki tiimisi monitorointihistorian, tilastot ja tarkistustiedot. Tätä toimintoa ei voi kumota.",
 						"confirm": "Kyllä, tyhjennä kaikki tilastot"
+					}
+				},
+				"dockerLogs": {
+					"title": "Säiliöiden lokit",
+					"description": "Kerää jokaisessa tarkistuksessa uusimmat lokirivit kaikista tämän isännän säiliöistä. Lokeja säilytetään 7 päivää. Jätä tämä pois päältä isännillä, joiden säiliöt tuottavat paljon tulostetta, jotta säästät tietokantatilaa.",
+					"option": {
+						"enabled": {
+							"label": "Kerää säiliöiden lokit"
+						}
+					}
+				},
+				"dockerAlerts": {
+					"title": "Säiliöhälytykset",
+					"description": "Merkitsee tämän isännän rikkoutuneeksi niin kauan kuin jokin sen säiliö on pysäytetty tai ei läpäise terveystarkistusta, ja ilmoittaa muutoksesta. Säiliöt, jotka päättyvät koodilla 0, eivät laske pysäytetyiksi. Capture ei raportoi lopetuskoodeja, joten Capture-isännillä jokainen pysäytetty säiliö lasketaan.",
+					"option": {
+						"onStopped": {
+							"label": "Hälytä, kun säiliö on pysäytetty"
+						},
+						"onUnhealthy": {
+							"label": "Hälytä, kun säiliö on epäterve"
+						}
+					}
+				},
+				"dockerTls": {
+					"title": "TLS-tunnistetiedot",
+					"description": "Yhdistää etäiseen Docker-demoniin molemminpuolisella TLS:llä. Liitä PEM-tiedostot, jotka antaisit komennolle docker --tlsverify. Asiakasavain salataan ennen tallennusta, eikä sitä näytetä enää uudelleen.",
+					"option": {
+						"ca": {
+							"label": "CA-varmenne",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"cert": {
+							"label": "Asiakasvarmenne",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"key": {
+							"label": "Asiakasavain",
+							"placeholder": "-----BEGIN PRIVATE KEY-----",
+							"stored": "Avain on tallennettu. Jätä tyhjäksi säilyttääksesi sen."
+						},
+						"ignoreTls": {
+							"label": "Ohita TLS/SSL-virheet",
+							"description": "Ohittaa demonin varmenteen tarkistuksen, joten CA-varmenne muuttuu valinnaiseksi. Asiakasvarmenne ja -avain vaaditaan silti, koska demoni tarkistaa ne."
+						}
 					}
 				}
 			}
@@ -825,12 +860,9 @@
 		"infrastructure": {
 			"charts": {
 				"labels": {
-					"cpu": "CPU:n käyttö",
 					"disk": "Levyn käyttö",
-					"memory": "Muistin käyttö",
 					"netBytesRecv": "{{name}} - tavua vastaanotettu",
 					"netBytesSent": "{{name}} - tavua lähetetty",
-					"netNoTraffic": "Capture ilmoittaa nollaliikennettä kaikilla rajapinnoilla. Tämä on normaalia, kun Capture käynnistetään säiliössä, joka näkee vain loopback-rajapinnat — suorita Capture suoraan isännällä nähdäksesi todellisen verkkoaktiviteetin.",
 					"temp": "Lämpö"
 				}
 			},
@@ -1199,9 +1231,7 @@
 					"description": "Näytä monitorin IP-osoite tai URL julkisella tilasivulla. Jos se on poistettu käytöstä, vain monitorin nimi näytetään arkaluonteisten tietojen suojaamiseksi.",
 					"option": {
 						"showURL": {
-							"label": "Näytä IP/URL tilasivulla",
-							"enabled": "Käytössä",
-							"disabled": "Pois käytöstä"
+							"label": "Näytä IP/URL tilasivulla"
 						}
 					}
 				},
@@ -1377,6 +1407,9 @@
 					"maintenance": "Huolto",
 					"paused": "Keskeytetty",
 					"up": "Toiminnassa"
+				},
+				"incidents": {
+					"errorLoading": "Häiriöiden lataaminen epäonnistui."
 				}
 			},
 			"statusBar": {
@@ -1549,6 +1582,105 @@
 			"header": {
 				"title": "Käytettävyysmonitorit",
 				"description": "Tarkkaile HTTP-päätepisteitä, pingejä, kontteja ja portteja — saat hälytyksen heti, kun jokin kaatuu."
+			}
+		},
+		"docker": {
+			"table": {
+				"headers": {
+					"host": "Isäntä",
+					"containers": "Säiliöt"
+				},
+				"containersRunning": "{{running}} / {{total}} käynnissä"
+			},
+			"header": {
+				"title": "Docker-monitorit",
+				"description": "Valvo Docker-isäntiäsi ja jokaista niillä käynnissä olevaa säiliötä."
+			},
+			"fallback": {
+				"title": "Ei vielä Docker-monitoreja",
+				"description": "Lisää Docker-isäntä valvoaksesi sen säiliöitä.",
+				"actionButton": "Luo monitori"
+			},
+			"container": {
+				"header": {
+					"title": "Säiliön tiedot",
+					"description": "Tämän säiliön tila, resurssien käyttö ja lokit."
+				},
+				"tabs": {
+					"overview": "Yleiskatsaus",
+					"logs": "Lokit"
+				},
+				"logs": {
+					"recentLines": "{{count}} viimeisintä riviä",
+					"loading": "Ladataan...",
+					"updatedSecondsAgo": "Päivitetty {{count}} s sitten",
+					"updatedMinutesAgo": "Päivitetty {{count}} min sitten",
+					"skipped": "Osa lokimerkinnöistä ohitettiin",
+					"loadOlder": "Lataa vanhempia lokeja",
+					"loadingOlder": "Ladataan...",
+					"noOlder": "Säilytettyjen lokien alku",
+					"loadError": "Lokeja ei voitu ladata",
+					"loadOlderError": "Vanhempia lokeja ei voitu ladata",
+					"empty": {
+						"title": "Lokeja ei ole vielä kerätty",
+						"description": "Rivit ilmestyvät tähän seuraavan tarkistuksen jälkeen. Vain keräyksen käynnistämisen jälkeen kirjoitettu tuloste tallennetaan."
+					},
+					"disabled": {
+						"title": "Lokien keräys on pois päältä tälle isännälle",
+						"description": "Ota säiliöiden lokit käyttöön monitorin asetuksissa aloittaaksesi keräyksen.",
+						"action": "Määritä monitori"
+					},
+					"forbidden": {
+						"title": "Sinulla ei ole oikeutta säiliöiden lokeihin",
+						"description": "Vain järjestelmänvalvojat voivat katsella lokeja. Pyydä järjestelmänvalvojalta oikeudet, jos sinun täytyy nähdä ne."
+					}
+				}
+			},
+			"host": {
+				"statBoxes": {
+					"containers": "Säiliöt",
+					"running": "Käynnissä",
+					"stopped": "Pysäytetyt",
+					"unhealthy": "Epäterveet"
+				},
+				"table": {
+					"headers": {
+						"container": "Säiliöt",
+						"cpu": "CPU",
+						"memory": "Muisti"
+					}
+				}
+			}
+		},
+		"dashboard": {
+			"noData": "Tietoja ei ole juuri nyt saatavilla.",
+			"monitorStatus": {
+				"ofUp": "/ {{total}} käynnissä"
+			},
+			"cards": {
+				"monitorStatus": "Monitorien tila",
+				"currentlyDown": "Tällä hetkellä alhaalla",
+				"uptime": "Monitorien käytettävyys",
+				"monitorsByType": "Monitorit tyypin mukaan"
+			},
+			"uptimeCard": {
+				"toggleSortOrder": "Vaihda järjestys"
+			},
+			"currentlyDown": {
+				"empty": "Yksikään monitori ei ole juuri nyt alhaalla."
+			},
+			"header": {
+				"title": "Koontinäyttö",
+				"description": "Näe kaikki monitorityypit yhdessä paikassa ja huomaa, mikä vaatii huomiota."
+			},
+			"editCards": "Muokkaa kortteja",
+			"editCardsModal": {
+				"title": "Koontinäytön kortit",
+				"description": "Valitse kortit, jotka näytetään koontinäytölläsi.",
+				"groups": {
+					"uptime": "Käytettävyys"
+				},
+				"done": "Valmis"
 			}
 		}
 	}

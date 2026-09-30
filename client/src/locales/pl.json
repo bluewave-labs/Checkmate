@@ -204,23 +204,25 @@
 				"support": "Wsparcie"
 			},
 			"menu": {
+				"uptime": "Czas działania",
+				"pagespeed": "Pagespeed",
+				"infrastructure": "Infrastruktura",
+				"docker": "Docker",
+				"notifications": "Powiadomienia",
+				"tags": "Tagi",
 				"checks": "Kontrole",
 				"incidents": "Incydenty",
-				"infrastructure": "Infrastruktura",
-				"logs": "Dzienniki",
-				"maintenance": "Konserwacja",
-				"notifications": "Powiadomienia",
-				"pagespeed": "Pagespeed",
-				"settings": "Ustawienia",
 				"statusPages": "Strony statusu",
-				"tags": "Tagi",
-				"uptime": "Czas działania",
+				"maintenance": "Konserwacja",
+				"logs": "Dzienniki",
+				"settings": "Ustawienia",
 				"groups": {
 					"monitoring": "Monitorowanie",
 					"alerting": "Alerty",
 					"reporting": "Raporty",
 					"configuration": "Konfiguracja"
-				}
+				},
+				"dashboard": "Panel"
 			},
 			"starPrompt": {
 				"description": "Zobacz najnowsze wydania i pomóż rozwijać społeczność na GitHub",
@@ -497,8 +499,7 @@
 						},
 						"customUpCodes": {
 							"description": "Dodaj dowolne kody inne niż 2xx, które również powinny być uznane za pomyślne.",
-							"label": "Zaakceptowane kody statusu",
-							"removeAriaLabel": "Usuń kod statusu"
+							"label": "Zaakceptowane kody statusu"
 						},
 						"expectedValue": {
 							"label": "Oczekiwana wartość"
@@ -562,10 +563,6 @@
 							"label": "Punkt końcowy przechwytywania",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
 						},
-						"container": {
-							"label": "Nazwa/ID kontenera",
-							"placeholder": "moja-aplikacja lub abcd1234"
-						},
 						"dnsRecordType": {
 							"label": "Typ rekordu DNS",
 							"value": {
@@ -617,6 +614,10 @@
 						"wsUrl": {
 							"label": "WebSocket URL",
 							"placeholder": "wss://example.com/socket"
+						},
+						"dockerHost": {
+							"label": "Host Dockera",
+							"placeholder": "unix:///var/run/docker.sock"
 						}
 					},
 					"title": "Ustawienia ogólne"
@@ -720,16 +721,49 @@
 					"optionWebSocketDescription": "Monitoruj punkty końcowe WebSocket pod kątem stanu połączenia i czasu odpowiedzi.",
 					"title": "Typ"
 				},
-				"url": {
-					"description": "Wyświetl adres IP lub URL monitora na publicznej stronie Status. Jeśli ta opcja jest wyłączona, zostanie wyświetlona tylko nazwa monitora, aby chronić poufne informacje.",
+				"dockerLogs": {
+					"title": "Logi kontenerów",
+					"description": "Przy każdym sprawdzeniu zbiera najnowsze wiersze logów z każdego kontenera na tym hoście. Logi są przechowywane 7 dni. Na hostach z gadatliwymi kontenerami zostaw tę opcję wyłączoną, aby oszczędzić miejsce w bazie danych.",
 					"option": {
-						"showURL": {
-							"disabled": "Wyłączone",
-							"enabled": "Włączone",
-							"label": "Wyświetl IP/URL na stronie statusu"
+						"enabled": {
+							"label": "Zbieraj logi kontenerów"
 						}
-					},
-					"title": "Monitoruj IP/URL na stronie statusu"
+					}
+				},
+				"dockerAlerts": {
+					"title": "Alerty kontenerów",
+					"description": "Oznacza ten host jako naruszony, dopóki którykolwiek kontener na nim jest zatrzymany lub nie przechodzi kontroli stanu, i powiadamia o zmianie. Kontenery kończące się kodem 0 nie są liczone jako zatrzymane. Capture nie raportuje kodów wyjścia, więc na hostach z Capture liczy się każdy zatrzymany kontener.",
+					"option": {
+						"onStopped": {
+							"label": "Powiadom, gdy kontener jest zatrzymany"
+						},
+						"onUnhealthy": {
+							"label": "Powiadom, gdy kontener jest w złym stanie"
+						}
+					}
+				},
+				"dockerTls": {
+					"title": "Dane uwierzytelniające TLS",
+					"description": "Łączy się ze zdalnym daemonem Dockera przez wzajemne TLS. Wklej pliki PEM, które przekazałbyś do docker --tlsverify. Klucz klienta jest szyfrowany przed zapisaniem i nigdy nie jest ponownie pokazywany.",
+					"option": {
+						"ca": {
+							"label": "Certyfikat CA",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"cert": {
+							"label": "Certyfikat klienta",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"key": {
+							"label": "Klucz klienta",
+							"placeholder": "-----BEGIN PRIVATE KEY-----",
+							"stored": "Klucz jest zapisany. Pozostaw puste, aby go zachować."
+						},
+						"ignoreTls": {
+							"label": "Ignoruj błędy TLS/SSL",
+							"description": "Pomija weryfikację certyfikatu daemona, więc certyfikat CA staje się opcjonalny. Certyfikat i klucz klienta są nadal wymagane, ponieważ daemon je weryfikuje."
+						}
+					}
 				}
 			}
 		},
@@ -841,13 +875,10 @@
 		"infrastructure": {
 			"charts": {
 				"labels": {
-					"cpu": "Użycie CPU",
 					"disk": "Zużycie dysku",
 					"loopbackOnlyNotice": "Przechwytywanie raportuje tylko interfejsy loopback lub container-bridge (lo, lo0, docker0). To normalne, gdy Capture działa wewnątrz kontenera, który widzi tylko własną przestrzeń nazw sieci — uruchom Capture bezpośrednio na hoście, aby zobaczyć rzeczywistą aktywność sieciową.",
-					"memory": "Zużycie pamięci",
 					"netBytesRecv": "{{name}} - Otrzymane bajty",
 					"netBytesSent": "{{name}} - Wysłane bajty",
-					"netNoTraffic": "Capture raportuje zerowy ruch na wszystkich interfejsach. Jest to normalne, gdy Capture działa w kontenerze z dostępem tylko do interfejsów loopback — aby zobaczyć rzeczywistą aktywność sieciową, uruchom Capture bezpośrednio na hoście.",
 					"temp": "Temperatura"
 				}
 			},
@@ -1389,8 +1420,6 @@
 					"description": "Wyświetl adres IP lub URL monitora na publicznej stronie Status. Jeśli opcja jest wyłączona, wyświetlana będzie tylko nazwa monitora, aby chronić poufne informacje.",
 					"option": {
 						"showURL": {
-							"disabled": "Wyłączone",
-							"enabled": "Włączone",
 							"label": "Wyświetl IP/URL na stronie statusu"
 						}
 					},
@@ -1584,6 +1613,9 @@
 				"uptime": {
 					"responseTime": "Czas odpowiedzi",
 					"title": "Czas pracy"
+				},
+				"incidents": {
+					"errorLoading": "Nie udało się załadować incydentów."
 				}
 			},
 			"preview": {
@@ -1670,6 +1702,105 @@
 					"responseTime": "Czas odpowiedzi",
 					"uptime": "Czas działania %"
 				}
+			}
+		},
+		"docker": {
+			"table": {
+				"headers": {
+					"host": "Host",
+					"containers": "Kontenery"
+				},
+				"containersRunning": "{{running}} z {{total}} działa"
+			},
+			"header": {
+				"title": "Monitory Dockera",
+				"description": "Monitoruj swoje hosty Dockera i każdy kontener na nich uruchomiony."
+			},
+			"fallback": {
+				"title": "Nie ma jeszcze monitorów Dockera",
+				"description": "Dodaj host Dockera, aby monitorować jego kontenery.",
+				"actionButton": "Utwórz monitor"
+			},
+			"container": {
+				"header": {
+					"title": "Szczegóły kontenera",
+					"description": "Stan, zużycie zasobów i logi tego kontenera."
+				},
+				"tabs": {
+					"overview": "Przegląd",
+					"logs": "Logi"
+				},
+				"logs": {
+					"recentLines": "{{count}} ostatnich wierszy",
+					"loading": "Wczytywanie...",
+					"updatedSecondsAgo": "Zaktualizowano {{count}} s temu",
+					"updatedMinutesAgo": "Zaktualizowano {{count}} min temu",
+					"skipped": "Niektóre wpisy logu zostały pominięte",
+					"loadOlder": "Wczytaj starsze logi",
+					"loadingOlder": "Wczytywanie...",
+					"noOlder": "Początek przechowywanych logów",
+					"loadError": "Nie udało się wczytać logów",
+					"loadOlderError": "Nie udało się wczytać starszych logów",
+					"empty": {
+						"title": "Nie zebrano jeszcze żadnych logów",
+						"description": "Wiersze pojawią się tutaj po następnym sprawdzeniu. Zapisywane są tylko dane wyjściowe zapisane od włączenia zbierania."
+					},
+					"disabled": {
+						"title": "Zbieranie logów jest wyłączone dla tego hosta",
+						"description": "Włącz logi kontenerów w ustawieniach monitora, aby rozpocząć ich zbieranie.",
+						"action": "Skonfiguruj monitor"
+					},
+					"forbidden": {
+						"title": "Nie masz dostępu do logów kontenerów",
+						"description": "Logi mogą przeglądać tylko administratorzy. Poproś administratora o dostęp, jeśli musisz je zobaczyć."
+					}
+				}
+			},
+			"host": {
+				"statBoxes": {
+					"containers": "Kontenery",
+					"running": "Działające",
+					"stopped": "Zatrzymane",
+					"unhealthy": "W złym stanie"
+				},
+				"table": {
+					"headers": {
+						"container": "Kontenery",
+						"cpu": "CPU",
+						"memory": "Pamięć"
+					}
+				}
+			}
+		},
+		"dashboard": {
+			"noData": "Obecnie brak dostępnych danych.",
+			"monitorStatus": {
+				"ofUp": "z {{total}} działa"
+			},
+			"cards": {
+				"monitorStatus": "Stan monitorów",
+				"currentlyDown": "Obecnie niedostępne",
+				"uptime": "Dostępność monitorów",
+				"monitorsByType": "Monitory według typu"
+			},
+			"uptimeCard": {
+				"toggleSortOrder": "Zmień kolejność sortowania"
+			},
+			"currentlyDown": {
+				"empty": "Obecnie żaden monitor nie jest niedostępny."
+			},
+			"header": {
+				"title": "Panel",
+				"description": "Zobacz wszystkie typy monitorów w jednym miejscu i zauważ, co wymaga uwagi."
+			},
+			"editCards": "Edytuj karty",
+			"editCardsModal": {
+				"title": "Karty panelu",
+				"description": "Wybierz karty, które mają być widoczne w panelu.",
+				"groups": {
+					"uptime": "Dostępność"
+				},
+				"done": "Gotowe"
 			}
 		}
 	}

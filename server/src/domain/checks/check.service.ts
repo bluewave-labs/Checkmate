@@ -13,7 +13,6 @@ const SERVICE_NAME = "checkService";
 export interface ICheckService {
 	createChecks(checks: Check[]): Promise<Check[]>;
 	toCheck(statusResponse: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>): Check | undefined;
-	toStatusResponse(check: Check): MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>;
 	getChecksByMonitor(params: {
 		monitorId: string;
 		teamId: string;
@@ -133,24 +132,6 @@ export class CheckService implements ICheckService {
 			check.containerSummary = dockerPayload?.summary;
 		}
 		return check;
-	};
-
-	toStatusResponse = (check: Check) => {
-		const statusResponse: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]> = {
-			monitorId: check.metadata.monitorId,
-			teamId: check.metadata.teamId,
-			type: check.metadata.type,
-			status: check.status,
-			code: check.statusCode,
-			message: check.message,
-			responseTime: check.responseTime,
-			// re-nest hardware metrics so updateMonitorStatus / extractThresholdBreaches see payload.data
-			payload:
-				check.metadata.type === "hardware"
-					? ({ data: { cpu: check.cpu, memory: check.memory, disk: check.disk, host: check.host, net: check.net } } as HardwareStatusPayload)
-					: undefined,
-		};
-		return statusResponse;
 	};
 
 	getChecksByMonitor = async ({

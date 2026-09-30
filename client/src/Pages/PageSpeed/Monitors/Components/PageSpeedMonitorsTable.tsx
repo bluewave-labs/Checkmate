@@ -9,6 +9,7 @@ import {
 	ColoredLabel,
 } from "@/Components/design-elements";
 import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
+import { getNextMonitorSort } from "@/Utils/MonitorUtils";
 import { HistogramPageSpeed } from "@/Components/monitors";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import type { Header } from "@/Components/design-elements/Table";
@@ -22,6 +23,7 @@ import { usePatch } from "@/Hooks/UseApi";
 
 import type { Monitor, MonitorWithChecks } from "@/Types/Monitor";
 import type { Tag } from "@/Types/Tag";
+import type { SortOrder } from "@/Types/Query";
 import type { ActionMenuItem } from "@/Components/actions-menu";
 
 export const PageSpeedMonitorsTable = ({
@@ -30,9 +32,8 @@ export const PageSpeedMonitorsTable = ({
 	refetch,
 	setSelectedMonitor,
 	sortField,
-	setSortField,
 	sortOrder,
-	setSortOrder,
+	setSort,
 	count,
 	page,
 	setPage,
@@ -44,9 +45,8 @@ export const PageSpeedMonitorsTable = ({
 	refetch: Function;
 	setSelectedMonitor: Function;
 	sortField: string;
-	setSortField: (field: string) => void;
-	sortOrder: "asc" | "desc";
-	setSortOrder: (order: "asc" | "desc") => void;
+	sortOrder: SortOrder;
+	setSort: (field: string, order: SortOrder) => void;
 	count: number;
 	page: number;
 	setPage: (page: number) => void;
@@ -81,14 +81,8 @@ export const PageSpeedMonitorsTable = ({
 	const handleSort = (e: any, field: string) => {
 		e.preventDefault();
 		e.stopPropagation();
-		if (sortField === field) {
-			const newOrder = sortOrder === "asc" ? "desc" : "asc";
-			setSortOrder(newOrder);
-		} else {
-			setSortField(field);
-			setSortOrder("asc");
-		}
-		refetch();
+		const nextSort = getNextMonitorSort(field, sortField, sortOrder);
+		setSort(nextSort.field, nextSort.order);
 	};
 
 	const getActions = (monitor: Monitor): ActionMenuItem[] => {

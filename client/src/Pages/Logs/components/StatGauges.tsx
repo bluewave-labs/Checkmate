@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import { DetailGauge } from "@/Components/design-elements";
 
-import { getPercentage, formatPercentageFromWhole } from "@/Utils/FormatUtils";
+import { getPercentage, formatPercentageFromWhole, PLACEHOLDER } from "@/Utils/FormatUtils";
 import prettyBytes from "pretty-bytes";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material";
@@ -11,7 +11,6 @@ interface StatGaugesProps {
 	diagnostics: Diagnostics | null;
 }
 
-const PLACEHOLDER = "—";
 
 export const StatGauges = ({ diagnostics }: StatGaugesProps) => {
 	const theme = useTheme();
