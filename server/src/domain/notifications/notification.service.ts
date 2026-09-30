@@ -9,6 +9,7 @@ import type { ISettingsService } from "@/domain/app-settings/app-settings.servic
 import { ILogger } from "@/utils/logger.js";
 import type { INotificationMessageBuilder } from "@/domain/notifications/notification.message-builder.js";
 import type { NotificationChannel } from "@/domain/notifications/notification.type.js";
+import { CLIENT_HOST_FALLBACK } from "@/domain/notifications/providers/utils.js";
 import type { EgressState } from "@/domain/egress/egress.type.js";
 import type { Check } from "@/domain/checks/check.type.js";
 
@@ -64,6 +65,10 @@ export class NotificationsService implements INotificationsService {
 		this.notificationMessageBuilder = notificationMessageBuilder;
 	}
 
+	private resolveClientHost = (): string => {
+		return this.settingsService.getSettings().clientHost || CLIENT_HOST_FALLBACK;
+	};
+
 	private send = async (notification: Notification, notificationMessage: NotificationMessage | undefined): Promise<boolean> => {
 		if (!notificationMessage) {
 			this.logger.warn({
@@ -92,8 +97,7 @@ export class NotificationsService implements INotificationsService {
 		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
 
 		// Build notification message once for all notifications
-		const settings = this.settingsService.getSettings();
-		const clientHost = settings.clientHost || "Host not defined";
+		const clientHost = this.resolveClientHost();
 		const notificationMessage = this.notificationMessageBuilder.buildMessage(monitor, check, decision, clientHost);
 
 		return await this.sendToAll(notifications, notificationMessage, "sendNotifications");
@@ -137,8 +141,7 @@ export class NotificationsService implements INotificationsService {
 			return true;
 		}
 
-		const settings = this.settingsService.getSettings();
-		const clientHost = settings.clientHost || "Host not defined";
+		const clientHost = this.resolveClientHost();
 		const notificationMessage = this.notificationMessageBuilder.buildEgressRecoveredMessage(state, clientHost);
 
 		return await this.sendToAll(notifications, notificationMessage, "sendEgressRecoveredNotification");
