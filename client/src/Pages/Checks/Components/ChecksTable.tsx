@@ -3,8 +3,12 @@ import {
 	Pagination,
 	StatusLabel,
 	StatusCodeLabel,
+	EgressDegradedLabel,
 } from "@/Components/design-elements";
 import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import { useTheme } from "@mui/material/styles";
+import { LAYOUT } from "@/Utils/Theme/constants";
 import type { Header } from "@/Components/design-elements/Table";
 import type { Monitor } from "@/Types/Monitor";
 import { useTranslation } from "react-i18next";
@@ -31,6 +35,7 @@ export const ChecksTable = ({
 	setRowsPerPage: (rowsPerPage: number) => void;
 }) => {
 	const { t } = useTranslation();
+	const theme = useTheme();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 
 	const getHeaders = () => {
@@ -47,9 +52,18 @@ export const ChecksTable = ({
 			},
 			{
 				id: "status",
-				content: "Status",
+				content: t("common.table.headers.status"),
 				render: (row) => {
-					return <StatusLabel status={row.status === true ? "up" : "down"} />;
+					return (
+						<Stack
+							direction="row"
+							alignItems="center"
+							gap={theme.spacing(LAYOUT.XS)}
+						>
+							<StatusLabel status={row.status === true ? "up" : "down"} />
+							<EgressDegradedLabel check={row} />
+						</Stack>
+					);
 				},
 			},
 			{

@@ -17,6 +17,7 @@ import type {
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
 import { CheckModel, type CheckDocument } from "@/domain/checks/check.model.js";
 import { EXCLUDE_DEGRADED_EGRESS_MATCH } from "@/domain/checks/check.query.js";
+import type { EgressStatus } from "@/domain/egress/egress.type.js";
 import mongoose from "mongoose";
 import { getDateFormat, getDateForRange } from "@/utils/dataUtils.js";
 import { ILogger } from "@/utils/logger.js";
@@ -237,6 +238,10 @@ class MongoChecksRepository implements IChecksRepository {
 				return { status: false };
 			case "resolve":
 				return { status: false, statusCode: NETWORK_ERROR };
+			case "degraded":
+				// Checks taken while the instance's own egress was down; excluded from every aggregate, so this is the
+				// one place they can be reviewed as a set.
+				return { egressStatus: "degraded" satisfies EgressStatus };
 			default:
 				this.logger.warn({
 					message: "invalid filter",
@@ -347,20 +352,24 @@ class MongoChecksRepository implements IChecksRepository {
 	};
 
 	findSummaryByTeamId = async (teamId: string, dateRange: DateRange) => {
-		const baseMatch = {
+		const rangeMatch = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
 			createdAt: { $gte: getDateForRange(dateRange) },
-			...EXCLUDE_DEGRADED_EGRESS_MATCH,
 		};
+		const baseMatch = { ...rangeMatch, ...EXCLUDE_DEGRADED_EGRESS_MATCH };
 
-		const [totalResult, downResult] = await Promise.all([
+		// Degraded checks sit outside the totals; counting them separately lets the Checks page header account for
+		// the rows its listing shows under the down filter but its totals leave out.
+		const [totalResult, downResult, degradedResult] = await Promise.all([
 			CheckModel.countDocuments(baseMatch),
 			CheckModel.countDocuments({ ...baseMatch, status: false }),
+			CheckModel.countDocuments({ ...rangeMatch, egressStatus: "degraded" satisfies EgressStatus }),
 		]);
 
 		return {
 			totalChecks: totalResult,
 			downChecks: downResult,
+			degradedChecks: degradedResult,
 		};
 	};
 
