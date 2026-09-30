@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { Handler } from "@/api/controllers/controllerUtils.js";
+import { Handler, requireTeamId } from "@/api/controllers/controllerUtils.js";
 import { updateAppSettingsBodyValidation } from "@/api/validation/settingsValidation.js";
 import { sendTestEmailBodyValidation } from "@/api/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
@@ -80,9 +80,11 @@ class SettingsController implements ISettingsController {
 
 		const previousSettings = await this.settingsService.getDBSettings();
 		if (validatedBody.egressNotifications && validatedBody.egressNotifications.length > 0) {
+			// Only the caller's team's notifications can be selected; anything else is treated as not found.
+			const teamId = requireTeamId(req.user?.teamId);
 			const requestedIds = [...new Set(validatedBody.egressNotifications)];
-			const notifications = await this.notificationsService.findNotificationsByIds(requestedIds);
-			const foundIds = new Set(notifications.map((notification) => notification.id));
+			const teamNotifications = await this.notificationsService.findNotificationsByTeamId(teamId);
+			const foundIds = new Set(teamNotifications.map((notification) => notification.id));
 			const missing = requestedIds.filter((id) => !foundIds.has(id));
 			if (missing.length > 0) {
 				throw new AppError({ message: `Referenced notification does not exist: ${missing.join(", ")}`, status: 422 });

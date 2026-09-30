@@ -18,7 +18,6 @@ export interface INotificationsService {
 	createNotification: (notificationData: Partial<Notification>, userId: string, teamId: string) => Promise<Notification>;
 	findById: (id: string, teamId: string) => Promise<Notification>;
 	findNotificationsByTeamId: (teamId: string) => Promise<Notification[]>;
-	findNotificationsByIds: (ids: string[]) => Promise<Notification[]>;
 	updateById(id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification>;
 	deleteById: (id: string, teamId: string) => Promise<Notification>;
 	handleNotifications: (monitor: Monitor, check: Check, decision: MonitorActionDecision) => Promise<boolean>;
@@ -195,10 +194,6 @@ export class NotificationsService implements INotificationsService {
 
 	findById = async (id: string, teamId: string): Promise<Notification> => {
 		return await this.notificationsRepository.findById(id, teamId);
-	};
-
-	findNotificationsByIds = async (ids: string[]): Promise<Notification[]> => {
-		return this.notificationsRepository.findNotificationsByIds(ids);
 	};
 
 	findNotificationsByTeamId = async (teamId: string): Promise<Notification[]> => {
