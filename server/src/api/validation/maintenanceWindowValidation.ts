@@ -13,7 +13,7 @@ export const createMaintenanceWindowBodyValidation = z
 	.object({
 		monitors: z.array(z.string()).min(1, "At least one monitor is required"),
 		name: z.string().min(1, "Name is required"),
-		active: z.boolean().optional(),
+		active: z.boolean().default(true),
 		duration: z.number().min(1, "Duration is required"),
 		durationUnit: z.enum(DurationUnits),
 		start: dateToString,

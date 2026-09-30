@@ -1,25 +1,41 @@
+import { registerRoutes } from "./registerRoutes.js";
 import "./registry.js";
-import "./routes/auth.js";
-import "./routes/check.js";
-import "./routes/diagnostic.js";
-import "./routes/geoCheck.js";
-import "./routes/incident.js";
-import "./routes/invite.js";
-import "./routes/log.js";
-import "./routes/maintenanceWindow.js";
-import "./routes/monitor.js";
-import "./routes/notification.js";
-import "./routes/proxies.js";
-import "./routes/queue.js";
-import "./routes/settings.js";
-import "./routes/statusPage.js";
+import { tagRoutes } from "@/api/routes/tagRoutes.js";
 
 import { OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
 import type { JsonObject } from "swagger-ui-express";
 import { registry } from "./registry.js";
-
+import { authRoutes } from "@/api/routes/authRoutes.js";
+import { checkRoutes } from "@/api/routes/checkRoutes.js";
+import { diagnosticRoutes } from "@/api/routes/diagnosticRoutes.js";
+import { geoCheckRoutes } from "@/api/routes/geoCheckRoutes.js";
+import { incidentRoutes } from "@/api/routes/incidentRoutes.js";
+import { inviteRoutes } from "@/api/routes/inviteRoutes.js";
+import { maintenanceWindowRoutes } from "@/api/routes/maintenanceWindowRoutes.js";
+import { monitorRoutes } from "@/api/routes/monitorRoutes.js";
+import { notificationRoutes } from "@/api/routes/notificationRoutes.js";
+import { proxyRoutes } from "@/api/routes/proxyRoutes.js";
+import { queueRoutes } from "@/api/routes/queueRoutes.js";
+import { settingsRoutes } from "@/api/routes/settingsRoutes.js";
+import { statusPageRoutes } from "@/api/routes/statusPageRoutes.js";
+import { logRoutes } from "@/api/routes/logRoutes.js";
 let cached: JsonObject | null = null;
 
+registerRoutes(registry, tagRoutes);
+registerRoutes(registry, authRoutes);
+registerRoutes(registry, checkRoutes);
+registerRoutes(registry, diagnosticRoutes);
+registerRoutes(registry, geoCheckRoutes);
+registerRoutes(registry, incidentRoutes);
+registerRoutes(registry, inviteRoutes);
+registerRoutes(registry, maintenanceWindowRoutes);
+registerRoutes(registry, monitorRoutes);
+registerRoutes(registry, notificationRoutes);
+registerRoutes(registry, proxyRoutes);
+registerRoutes(registry, queueRoutes);
+registerRoutes(registry, settingsRoutes);
+registerRoutes(registry, statusPageRoutes);
+registerRoutes(registry, logRoutes);
 export function getOpenApiSpec(): JsonObject {
 	if (cached) return cached;
 
@@ -51,6 +67,7 @@ export function getOpenApiSpec(): JsonObject {
 			{ name: "queue", description: "Background job queue introspection and admin actions (admin/superadmin)." },
 			{ name: "diagnostic", description: "System diagnostics for the running server (admin/superadmin)." },
 			{ name: "logs", description: "Application logs for the running server (admin/superadmin)." },
+			{ name: "tags", description: "Labels for grouping and filtering monitors, team-scoped." },
 		],
 	});
 

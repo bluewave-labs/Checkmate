@@ -1,5 +1,4 @@
-import { Request, Response, RequestHandler } from "express";
-import { catchAsync } from "@/utils/catchAsync.js";
+import { RequestHandler } from "express";
 
 import {
 	getChecksParamValidation,
@@ -9,7 +8,7 @@ import {
 	deleteChecksParamValidation,
 } from "@/api/validation/checkValidation.js";
 import { ICheckService } from "@/domain/checks/check.service.js";
-import { requireTeamId } from "@/api/controllers/controllerUtils.js";
+import { Handler, requireTeamId } from "@/api/controllers/controllerUtils.js";
 
 export interface ICheckController {
 	getChecksByMonitor: RequestHandler;
@@ -25,13 +24,13 @@ class CheckController implements ICheckController {
 		this.checkService = checkService;
 	}
 
-	getChecksByMonitor = catchAsync(async (req: Request, res: Response) => {
+	getChecksByMonitor: Handler = async (req, res) => {
 		const validatedParams = getChecksParamValidation.parse(req.params);
 		const validatedQuery = getChecksQueryValidation.parse(req.query);
 
 		const teamId = requireTeamId(req.user?.teamId);
 
-		const result = await this.checkService.getChecksByMonitor({
+		const data = await this.checkService.getChecksByMonitor({
 			monitorId: validatedParams.monitorId,
 			teamId,
 			sortOrder: validatedQuery.sortOrder,
@@ -42,18 +41,14 @@ class CheckController implements ICheckController {
 			status: validatedQuery.status,
 		});
 
-		return res.status(200).json({
-			success: true,
-			msg: "Checks retrieved successfully",
-			data: result,
-		});
-	});
+		res.json({ success: true, msg: "Checks retrieved successfully", data });
+	};
 
-	getChecksByTeam = catchAsync(async (req: Request, res: Response) => {
+	getChecksByTeam: Handler = async (req, res) => {
 		const validatedQuery = getTeamChecksQueryValidation.parse(req.query);
 		const teamId = requireTeamId(req.user?.teamId);
 
-		const checkData = await this.checkService.getChecksByTeam({
+		const data = await this.checkService.getChecksByTeam({
 			teamId,
 			sortOrder: validatedQuery.sortOrder,
 			dateRange: validatedQuery.dateRange,
@@ -61,27 +56,19 @@ class CheckController implements ICheckController {
 			rowsPerPage: validatedQuery.rowsPerPage,
 			filter: validatedQuery.filter,
 		});
-		return res.status(200).json({
-			success: true,
-			msg: "Team checks retrieved successfully",
-			data: checkData,
-		});
-	});
+		res.json({ success: true, msg: "Team checks retrieved successfully", data });
+	};
 
-	getChecksSummaryByTeamId = catchAsync(async (req: Request, res: Response) => {
+	getChecksSummaryByTeamId: Handler = async (req, res) => {
 		const validatedQuery = getChecksSummaryByTeamIdQueryValidation.parse(req.query);
 		const teamId = requireTeamId(req.user?.teamId);
 		const dateRange = validatedQuery.dateRange ?? "hour";
 
-		const summary = await this.checkService.getChecksSummaryByTeamId({ teamId, dateRange });
-		return res.status(200).json({
-			success: true,
-			msg: "Checks summary retrieved successfully",
-			data: summary,
-		});
-	});
+		const data = await this.checkService.getChecksSummaryByTeamId({ teamId, dateRange });
+		res.json({ success: true, msg: "Checks summary retrieved successfully", data });
+	};
 
-	deleteChecks = catchAsync(async (req: Request, res: Response) => {
+	deleteChecks: Handler = async (req, res) => {
 		const validatedParams = deleteChecksParamValidation.parse(req.params);
 		const teamId = requireTeamId(req.user?.teamId);
 
@@ -90,24 +77,16 @@ class CheckController implements ICheckController {
 			teamId,
 		});
 
-		return res.status(200).json({
-			success: true,
-			msg: "Checks deleted successfully",
-			data: { deletedCount },
-		});
-	});
+		res.json({ success: true, msg: "Checks deleted successfully", data: { deletedCount } });
+	};
 
-	deleteChecksByTeamId = catchAsync(async (req: Request, res: Response) => {
+	deleteChecksByTeamId: Handler = async (req, res) => {
 		const teamId = requireTeamId(req.user?.teamId);
 
 		const deletedCount = await this.checkService.deleteChecksByTeamId({ teamId });
 
-		return res.status(200).json({
-			success: true,
-			msg: "Checks deleted successfully",
-			data: { deletedCount },
-		});
-	});
+		res.json({ success: true, msg: "Checks deleted successfully", data: { deletedCount } });
+	};
 }
 
 export default CheckController;

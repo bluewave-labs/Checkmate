@@ -1,6 +1,6 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import https from "node:https";
-import { DockerProvider } from "../../../../src/service/network/DockerProvider.ts";
+import { DockerProvider } from "../../../../src/service/networkProviders/DockerProvider.ts";
 import type { IEncryptionService } from "../../../../src/service/encryption/encryptionService.ts";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
@@ -76,6 +76,33 @@ const makeStats = (overrides?: Record<string, any>) => ({
 	...overrides,
 });
 
+const makeCaptureContainer = (overrides?: Record<string, any>) => ({
+	container_id: "capture-container-id",
+	container_name: "capture-container",
+	status: "running",
+	health: { healthy: true, source: "container_health_check" },
+	running: true,
+	base_image: "nginx:latest",
+	exposed_ports: [{ port: "80", protocol: "tcp" }],
+	started_at: 1_788_000_000,
+	stats: {
+		cpu_percent: 80,
+		memory_usage: 256,
+		memory_limit: 1024,
+		memory_percent: 25,
+	},
+	...overrides,
+});
+
+const makeCaptureResponse = (overrides?: Record<string, any>) => ({
+	status: true,
+	code: 200,
+	message: "OK",
+	responseTime: 42,
+	payload: { data: [makeCaptureContainer()], errors: [] },
+	...overrides,
+});
+
 const makeLogFrame = (streamType: number, text: string): Buffer => {
 	const payload = Buffer.from(text);
 	const header = Buffer.alloc(8);
@@ -92,6 +119,7 @@ const setup = (
 		inspect: any;
 		stats: any;
 		logs: any;
+		httpHandle: any;
 		encryptionService: IEncryptionService;
 	}> = {}
 ) => {
@@ -107,12 +135,14 @@ const setup = (
 	const DockerLib = jest.fn().mockReturnValue(instance) as any;
 	const logger = createMockLogger();
 	const encryptionService = overrides.encryptionService ?? makeEncryptionService();
-	const provider = new DockerProvider(logger as any, DockerLib, encryptionService);
+	const httpHandle = overrides.httpHandle ?? jest.fn();
+	const provider = new DockerProvider(logger as any, DockerLib, encryptionService, { handle: httpHandle } as any);
 	return {
 		provider,
 		logger,
 		DockerLib,
 		encryptionService,
+		httpHandle,
 		ping: instance.ping,
 		listContainers: instance.listContainers,
 		getContainer,
@@ -159,6 +189,157 @@ describe("DockerProvider", () => {
 			await provider.handle(makeMonitor({ url: "  /var/run/docker.sock  " }));
 
 			expect(DockerLib).toHaveBeenCalledWith({ socketPath: "/var/run/docker.sock", ...TIMEOUTS });
+		});
+	});
+
+	// ── Capture urls ─────────────────────────────────────────────────────
+
+	describe("Capture urls", () => {
+		it("requests all containers and normalizes Capture metrics", async () => {
+			const httpHandle = jest.fn().mockResolvedValue(makeCaptureResponse());
+			const { provider, DockerLib } = setup({ httpHandle });
+			const monitor = makeMonitor({
+				url: "https://capture.example.com/api/v1/metrics/docker?site=west&all=false",
+				secret: "capture-secret",
+			});
+
+			const result = await provider.handle(monitor);
+
+			expect(httpHandle).toHaveBeenCalledWith(
+				expect.objectContaining({
+					url: "https://capture.example.com/api/v1/metrics/docker?site=west&all=true",
+					secret: "capture-secret",
+				}),
+				undefined
+			);
+			expect(DockerLib).not.toHaveBeenCalled();
+			expect(result).toMatchObject({
+				status: true,
+				payload: { summary: { total: 1, running: 1, stopped: 0, unhealthy: 0 } },
+			});
+			expect(result.payload?.containers[0]).toMatchObject({
+				id: "capture-container-id",
+				state: "running",
+				health: "healthy",
+				cpuPct: 0.8,
+				memoryUsedBytes: 256,
+				memoryPct: 0.25,
+				startedAt: new Date(1_788_000_000 * 1000).toISOString(),
+				ports: [{ privatePort: 80, protocol: "tcp" }],
+			});
+		});
+
+		it("leaves the exit code undefined for Capture containers", async () => {
+			const response = makeCaptureResponse({
+				payload: { data: [makeCaptureContainer({ status: "exited", running: false, stats: undefined })], errors: [] },
+			});
+			const { provider } = setup({ httpHandle: jest.fn().mockResolvedValue(response) });
+
+			const result = await provider.handle(makeMonitor({ url: "http://capture:59232/api/v1/metrics/docker", secret: "secret" }));
+
+			expect(result.payload?.containers[0]?.state).toBe("exited");
+			expect(result.payload?.containers[0]?.exitCode).toBeUndefined();
+		});
+
+		it("keeps state-derived Capture health separate from Docker healthchecks", async () => {
+			const response = makeCaptureResponse({
+				payload: {
+					data: [makeCaptureContainer({ health: { healthy: false, source: "state_based_health_check" } })],
+					errors: [],
+				},
+			});
+			const { provider } = setup({ httpHandle: jest.fn().mockResolvedValue(response) });
+
+			const result = await provider.handle(makeMonitor({ url: "http://capture:59232/api/v1/metrics/docker", secret: "secret" }));
+
+			expect(result.payload?.containers[0]?.health).toBe("none");
+			expect(result.payload?.summary.unhealthy).toBe(0);
+		});
+
+		it("keeps a partial Capture response up", async () => {
+			const response = makeCaptureResponse({
+				code: 207,
+				payload: {
+					data: [makeCaptureContainer()],
+					errors: [{ metric: ["docker.container.stats"], err: "stats unavailable" }],
+				},
+			});
+			const { provider, logger } = setup({ httpHandle: jest.fn().mockResolvedValue(response) });
+
+			const result = await provider.handle(makeMonitor({ url: "http://capture:59232/api/v1/metrics/docker", secret: "secret" }));
+
+			expect(result.status).toBe(true);
+			expect(result.code).toBe(207);
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Capture returned 1 partial Docker collection error(s)" }));
+		});
+
+		it("marks fatal Capture Docker errors down", async () => {
+			const response = makeCaptureResponse({
+				code: 207,
+				payload: { data: null, errors: [{ metric: ["docker.client"], err: "Docker daemon unavailable" }] },
+			});
+			const { provider } = setup({ httpHandle: jest.fn().mockResolvedValue(response) });
+
+			const result = await provider.handle(makeMonitor({ url: "http://capture:59232/api/v1/metrics/docker", secret: "secret" }));
+
+			expect(result).toMatchObject({ status: false, code: NETWORK_ERROR, message: "Docker daemon unavailable", payload: null });
+		});
+
+		it("accepts an empty Capture host and rejects malformed payloads", async () => {
+			const emptyHandle = jest.fn().mockResolvedValue(makeCaptureResponse({ payload: { data: [], errors: null } }));
+			const { provider } = setup({ httpHandle: emptyHandle });
+			const monitor = makeMonitor({ url: "http://capture:59232/api/v1/metrics/docker", secret: "secret" });
+
+			const emptyResult = await provider.handle(monitor);
+			expect(emptyResult).toMatchObject({ status: true, payload: { containers: [], summary: { total: 0 } } });
+
+			emptyHandle.mockResolvedValueOnce(makeCaptureResponse({ payload: { data: "not-an-array" } }));
+			const malformedResult = await provider.handle(monitor);
+			expect(malformedResult).toMatchObject({
+				status: false,
+				code: NETWORK_ERROR,
+				message: "Capture returned an invalid Docker metrics payload",
+			});
+		});
+
+		it("rejects a malformed errors field as an invalid payload instead of throwing", async () => {
+			const httpHandle = jest.fn();
+			const { provider } = setup({ httpHandle });
+			const monitor = makeMonitor({ url: "http://capture:59232/api/v1/metrics/docker", secret: "secret" });
+
+			for (const errors of [{}, [{ err: "no metric" }], [{ metric: "docker.client", err: "x" }]]) {
+				httpHandle.mockResolvedValueOnce(makeCaptureResponse({ payload: { data: [], errors } }));
+				const result = await provider.handle(monitor);
+				expect(result).toMatchObject({
+					status: false,
+					code: NETWORK_ERROR,
+					message: "Capture returned an invalid Docker metrics payload",
+				});
+			}
+		});
+
+		it("records no stats for containers that are not running", async () => {
+			const response = makeCaptureResponse({
+				payload: {
+					data: [
+						makeCaptureContainer({
+							status: "exited",
+							running: false,
+							stats: { cpu_percent: 0, memory_usage: 0, memory_limit: 0, memory_percent: 0 },
+						}),
+					],
+					errors: [],
+				},
+			});
+			const { provider } = setup({ httpHandle: jest.fn().mockResolvedValue(response) });
+
+			const result = await provider.handle(makeMonitor({ url: "http://capture:59232/api/v1/metrics/docker", secret: "secret" }));
+
+			const [container] = result.payload!.containers;
+			expect(container.state).toBe("exited");
+			expect(container).not.toHaveProperty("cpuPct");
+			expect(container).not.toHaveProperty("memoryPct");
+			expect(container).not.toHaveProperty("memoryUsedBytes");
 		});
 	});
 
@@ -389,6 +570,16 @@ describe("DockerProvider", () => {
 			);
 		});
 
+		it("reads the exit code from inspect", async () => {
+			const inspect = jest.fn().mockResolvedValue(makeInspect({ State: { StartedAt: "2026-08-28T10:00:00.000Z", ExitCode: 137 } }));
+			const listContainers = jest.fn().mockResolvedValue([makeContainer({ State: "exited", Status: "Exited (137) 2 minutes ago" })]);
+			const { provider } = setup({ inspect, listContainers });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]).toEqual(expect.objectContaining({ state: "exited", exitCode: 137, health: "none" }));
+		});
+
 		it("counts running, stopped, and unhealthy states in the summary", async () => {
 			const containers = [
 				makeContainer({ Id: "a".repeat(64) }),
@@ -513,9 +704,38 @@ describe("DockerProvider", () => {
 
 			expect(result.status).toBe(true);
 			expect(result.payload?.containers).toHaveLength(1);
-			expect(result.payload?.containers[0]).toEqual(expect.objectContaining({ health: "none" }));
 			expect(result.payload?.containers[0]?.restartCount).toBeUndefined();
 			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Failed to inspect") }));
+		});
+
+		it.each([
+			["Up 3 hours (healthy)", "healthy"],
+			["Up 3 hours (unhealthy)", "unhealthy"],
+			["Up 5 seconds (health: starting)", "starting"],
+			["Up 3 hours", "none"],
+			["Exited (1) 2 minutes ago", "none"],
+		])("reads health from the list status %s when inspect rejects", async (Status, health) => {
+			const inspect = jest.fn().mockRejectedValue(new Error("inspect failed"));
+			const listContainers = jest.fn().mockResolvedValue([makeContainer({ Status })]);
+			const { provider } = setup({ inspect, listContainers });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]?.health).toBe(health);
+		});
+
+		it.each([
+			["Exited (0) 2 minutes ago", 0],
+			["Exited (137) 2 minutes ago", 137],
+			["Up 3 hours", undefined],
+		])("reads the exit code from the list status %s when inspect rejects", async (Status, exitCode) => {
+			const inspect = jest.fn().mockRejectedValue(new Error("inspect failed"));
+			const listContainers = jest.fn().mockResolvedValue([makeContainer({ State: "exited", Status })]);
+			const { provider } = setup({ inspect, listContainers });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]?.exitCode).toBe(exitCode);
 		});
 
 		it("keeps the container without metrics when stats rejects", async () => {

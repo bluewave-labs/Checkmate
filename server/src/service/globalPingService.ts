@@ -3,7 +3,7 @@ import { supportsGeoCheck, type HttpStatusCode } from "@/domain/monitors/monitor
 import { MonitorType } from "@/domain/monitors/monitor.type.js";
 import type { ILogger } from "@/utils/logger.js";
 import got from "got";
-import { isStatusUp } from "@/service/network/utils.js";
+import { isStatusUp } from "@/service/networkProviders/utils.js";
 
 const SERVICE_NAME = "GlobalPingService";
 const GLOBAL_PING_API_BASE = "https://api.globalping.io/v1";

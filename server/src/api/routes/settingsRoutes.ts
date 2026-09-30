@@ -1,11 +1,37 @@
-import { Router } from "express";
-import { isAllowed } from "../middleware/isAllowed.js";
 import { ISettingsController } from "@/api/controllers/settingsController.js";
+import { RouteTable } from "@/api/routes/defineRoutes.js";
+import { unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
+import { updateAppSettingsBodyValidation } from "@/api/validation/settingsValidation.js";
+import { sendTestEmailBodyValidation } from "@/api/validation/notificationValidation.js";
 
-export const createSettingsRoutes = (settingsController: ISettingsController): Router => {
-	const router = Router();
-	router.get("/", settingsController.getAppSettings);
-	router.patch("/", isAllowed(["admin", "superadmin"]), settingsController.updateAppSettings);
-	router.post("/test-email", isAllowed(["admin", "superadmin"]), settingsController.sendTestEmail);
-	return router;
+export const settingsRoutes: RouteTable<ISettingsController> = {
+	prefix: "/settings",
+	tag: "settings",
+	auth: "jwt",
+	routes: [
+		{
+			method: "get",
+			path: "/",
+			handler: "getAppSettings",
+			summary: "Get application settings",
+			response: unknownResponseSchema,
+		},
+		{
+			method: "patch",
+			path: "/",
+			handler: "updateAppSettings",
+			summary: "Update application settings (admin/superadmin)",
+			roles: ["admin", "superadmin"],
+			body: updateAppSettingsBodyValidation,
+			response: unknownResponseSchema,
+		},
+		{
+			method: "post",
+			path: "/test-email",
+			handler: "sendTestEmail",
+			summary: "Send a test email using current SMTP settings (admin/superadmin)",
+			roles: ["admin", "superadmin"],
+			body: sendTestEmailBodyValidation,
+		},
+	],
 };

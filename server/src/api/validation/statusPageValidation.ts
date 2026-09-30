@@ -20,6 +20,15 @@ export const getStatusPageParamValidation = z.object({
 	url: z.string().min(1, "URL is required"),
 });
 
+export const getPublicMonitorIncidentsParamValidation = z.object({
+	url: z.string().min(1, "URL is required"),
+	monitorId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Must be a valid monitor ID"),
+});
+
+export const getPublicMonitorIncidentsQueryValidation = z.object({
+	date: z.string().date("Date must be a valid calendar date in YYYY-MM-DD format"),
+});
+
 export const getStatusPageQueryValidation = z.object({
 	type: z.union([z.enum(StatusPageTypes), z.array(z.enum(StatusPageTypes))]).transform((val) => (Array.isArray(val) ? val : [val])),
 	range: z.enum(StatusPageRanges).optional().default("latest"),
@@ -87,6 +96,10 @@ export const imageValidation = z
 	.refine((data) => data.buffer, {
 		message: "Image file is required",
 	});
+
+export const statusPageIdParamValidation = z.object({
+	id: z.string().min(1, "Status page ID is required"),
+});
 
 // Keep aligned with DailyCheckBucket in domain/checks/check.type.ts. avgResponseTime is null
 // when no check that day recorded a response time ($avg skips missing, $round passes null through).
@@ -160,10 +173,54 @@ export const publicStatusPageMonitorResponseSchema = z.object({
 
 // Response of the public status page endpoints. Keep aligned with PublicStatusPagePayload in
 // domain/status-pages/status-page.type.ts; range, bucketTimezone, and checkTTLDays are present only when range !== "latest".
-export const publicStatusPagePayloadResponseSchema = z.object({
-	statusPage: statusPageResponseSchema,
-	monitors: z.array(publicStatusPageMonitorResponseSchema),
-	range: z.enum(StatusPageDayRanges).optional(),
-	bucketTimezone: z.string().optional(),
-	checkTTLDays: z.number().optional(),
-});
+const publicStatusPagePayloadResponseExample = {
+	statusPage: {
+		id: "65f1c2a4d8b9e0123456789c",
+		userId: "65f1c2a4d8b9e01234567891",
+		teamId: "65f1c2a4d8b9e01234567890",
+		type: ["uptime"],
+		companyName: "Acme",
+		url: "acme-status",
+		customDomain: null,
+		timezone: "America/Toronto",
+		color: "#4169E1",
+		monitors: ["65f1c2a4d8b9e0123456789a"],
+		subMonitors: [],
+		isPublished: true,
+		showCharts: true,
+		showUptimePercentage: true,
+		showAdminLoginLink: false,
+		showInfrastructure: false,
+		customCSS: "",
+		theme: "refined",
+		themeMode: "auto",
+		createdAt: "2026-04-01T10:00:00.000Z",
+		updatedAt: "2026-04-15T14:30:00.000Z",
+	},
+	range: "90d",
+	bucketTimezone: "America/Toronto",
+	checkTTLDays: 30,
+	monitors: [
+		{
+			id: "65f1c2a4d8b9e0123456789a",
+			name: "API",
+			type: "http",
+			status: "up",
+			uptimePercentage: 0.9987,
+			recentChecks: [],
+			dailyChecks: [
+				{ monitorId: "65f1c2a4d8b9e0123456789a", date: "2026-07-19", totalChecks: 2880, upChecks: 2877, downChecks: 3, avgResponseTime: 142 },
+			],
+		},
+	],
+};
+
+export const publicStatusPagePayloadResponseSchema = z
+	.object({
+		statusPage: statusPageResponseSchema,
+		monitors: z.array(publicStatusPageMonitorResponseSchema),
+		range: z.enum(StatusPageDayRanges).optional(),
+		bucketTimezone: z.string().optional(),
+		checkTTLDays: z.number().optional(),
+	})
+	.meta({ id: "PublicStatusPagePayload", example: publicStatusPagePayloadResponseExample });

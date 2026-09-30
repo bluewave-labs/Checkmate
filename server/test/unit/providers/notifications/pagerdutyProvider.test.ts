@@ -89,10 +89,16 @@ describe("PagerDutyProvider", () => {
 			expect(mockGotPost.mock.calls[0][1].json.event_action).toBe("resolve");
 		});
 
-		it("uses 'resolve' event_action for egress_recovered so a recovery never opens an incident", async () => {
+		it("uses 'resolve' event_action for container_resolved", async () => {
 			const { provider } = createProvider();
-			await provider.sendMessage(makeNotification() as any, makeMessage({ type: "egress_recovered" }));
+			await provider.sendMessage(makeNotification() as any, makeMessage({ type: "container_resolved" }));
 			expect(mockGotPost.mock.calls[0][1].json.event_action).toBe("resolve");
+		});
+
+		it("uses 'trigger' event_action for container_breach", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessage({ type: "container_breach" }));
+			expect(mockGotPost.mock.calls[0][1].json.event_action).toBe("trigger");
 		});
 
 		it("includes threshold info in summary and custom_details", async () => {

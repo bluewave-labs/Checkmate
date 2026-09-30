@@ -20,6 +20,11 @@ export interface Incident {
 	updatedAt: string;
 }
 
+export type PublicIncident = Pick<
+	Incident,
+	"id" | "monitorId" | "status" | "startTime" | "endTime" | "resolutionType" | "message" | "statusCode" | "createdAt"
+>;
+
 export interface IncidentSummaryTopMonitor {
 	monitorId: string;
 	monitorName: string | null;

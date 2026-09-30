@@ -62,7 +62,7 @@ VITE_APP_LOG_LEVEL="debug"
 
 ### Monorepo Structure
 - `/client` - React 18 + TypeScript + Vite + MUI frontend
-- `/server` - Node.js 20+ + Express + TypeScript backend
+- `/server` - Node.js 24+ + Express + TypeScript backend
 - `/docker` - Multi-environment Docker configs (dev, staging, prod, arm, mono)
 
 ### Backend Layers
@@ -70,7 +70,7 @@ VITE_APP_LOG_LEVEL="debug"
 server/src/
 ├── api/             # HTTP layer
 │   ├── controllers/   # Route handlers (authController, monitorController, etc.)
-│   ├── middleware/    # verifyJWT, rateLimiter, sanitization, responseHandler
+│   ├── middleware/    # verifyJWT, rateLimiter, sanitization, handleErrors
 │   ├── routes/        # API route definitions
 │   └── validation/    # Zod request-payload schemas
 ├── domain/          # Business logic + data access, one folder per entity
@@ -102,7 +102,8 @@ client/src/
 ### API
 - Base URL: `/api/v1`
 - Documentation: `http://localhost:52345/api-docs` (Swagger UI)
-- OpenAPI spec: `/server/openapi.json`
+- OpenAPI spec: `/server/openapi.json`, generated at build time from the route tables
+- Routes: one `RouteTable` per resource in `server/src/api/routes/*Routes.ts`. `buildRouter` builds the Express router from it and `server/openapi/registerRoutes.ts` builds the spec from it, so every endpoint is declared exactly once
 
 ### Key Technologies
 - **State Management**: Redux Toolkit + Redux-Persist
@@ -123,7 +124,7 @@ The backend enforces a strict three-layer separation between HTTP handling, busi
 Request → Controller → Service → Repository → MongoDB (Mongoose)
 ```
 
-- **Controllers** (`/controllers`) handle HTTP concerns only: parsing request params, calling the appropriate service, and returning a response via the `responseHandler` middleware. They contain no business logic.
+- **Controllers** (`/controllers`) handle HTTP concerns only. Each method is a plain `async` arrow that parses the request with a Zod schema, calls the appropriate service with the parse result, and writes `res.json({ success, msg, data })`. No wrapper is needed: Express 5 forwards rejected promises to `handleErrors`, which maps `ZodError` to 400 and `AppError` to its status. They contain no business logic.
 - **Services** (`/service/business`) contain all business logic: deciding whether an incident should be created, whether a notification should fire, what state a monitor is in, etc.
 - **Repositories** (`/repositories`) are the sole layer that talks to MongoDB through Mongoose. They expose clean, reusable query methods (e.g. `findByMonitorId`, `createCheck`) so that services never construct raw DB queries directly.
 

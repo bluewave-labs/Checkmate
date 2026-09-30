@@ -30,9 +30,8 @@ const UptimeMonitorsPage = () => {
 				setPage={monitorListController.setPage}
 				rowsPerPage={monitorListController.rowsPerPage}
 				sortField={monitorListController.sortField}
-				setSortField={monitorListController.setSortField}
 				sortOrder={monitorListController.sortOrder}
-				setSortOrder={monitorListController.setSortOrder}
+				setSort={monitorListController.setSort}
 				setRowsPerPage={monitorListController.handleSetRowsPerPage}
 				selectedRows={monitorListController.selectedRows}
 				onSelectionChange={monitorListController.setSelectedRows}

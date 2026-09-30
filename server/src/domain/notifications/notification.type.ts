@@ -1,3 +1,5 @@
+import type { HardwareMetricKey } from "@/domain/monitors/monitor.type.js";
+
 export const NotificationChannels = [
 	"email",
 	"slack",
@@ -71,8 +73,16 @@ export interface AlertDiscordPayload {
  * Part of notification system unification effort
  */
 
-// "egress_recovered" is instance-level rather than monitor-scoped: sent once when the instance regains outbound connectivity.
-export type NotificationType = "monitor_down" | "monitor_up" | "threshold_breach" | "threshold_resolved" | "egress_recovered" | "test";
+export type NotificationType =
+	| "monitor_down"
+	| "monitor_up"
+	| "threshold_breach"
+	| "threshold_resolved"
+	| "container_breach"
+	| "container_resolved"
+	// Instance-level rather than monitor-scoped: sent once when the instance regains outbound connectivity.
+	| "egress_recovered"
+	| "test";
 
 export type NotificationSeverity = "critical" | "warning" | "info" | "success";
 
@@ -85,7 +95,7 @@ export interface MonitorInfo {
 }
 
 export interface ThresholdBreach {
-	metric: "cpu" | "memory" | "disk" | "temp";
+	metric: HardwareMetricKey;
 	currentValue: number;
 	threshold: number;
 	unit: string;
@@ -117,6 +127,5 @@ export interface NotificationMessage {
 	clientHost: string;
 	metadata: {
 		teamId: string;
-		notificationReason: string;
 	};
 }

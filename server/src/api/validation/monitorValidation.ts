@@ -15,7 +15,7 @@ import {
 import { DateRanges, SortOrders } from "@/types/query.js";
 import { DockerContainerStates, DockerHealthStatuses, DockerLogStreams, DockerPortProtocols } from "@/domain/docker/docker.type.js";
 import { DOCKER_LOG_PAGE_DEFAULT, DOCKER_LOG_PAGE_MAX } from "@/domain/docker/docker-log.type.js";
-import { isDockerSocketUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
+import { isCaptureDockerUrl, isDockerSocketUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
 import { X509Certificate } from "node:crypto";
 import { keyMatchesCertificate, parseCertificates, parsePrivateKey } from "@/utils/pem.js";
 
@@ -36,7 +36,7 @@ export const getMonitorByIdQueryValidation = z.object({
 	status: booleanCoercion.optional(),
 	sortOrder: z.enum(SortOrders).optional(),
 	limit: z.coerce.number().optional(),
-	dateRange: z.enum(DateRanges).optional(),
+	dateRange: z.enum(DateRanges).default("recent"),
 	numToDisplay: z.coerce.number().optional(),
 	continent: z.union([z.enum(GeoContinents), z.array(z.enum(GeoContinents))]).optional(),
 });
@@ -125,13 +125,19 @@ const refineProxySelection = (body: { proxyMode?: string; proxyId?: string }, ct
 
 const refineDockerUrl = (data: { type?: string; url?: string }, ctx: z.RefinementCtx) => {
 	if (data.type !== "docker" || data.url === undefined) return;
-	if (!isDockerSocketUrl(data.url) && !isDockerTlsUrl(data.url)) {
+	if (!isDockerSocketUrl(data.url) && !isDockerTlsUrl(data.url) && !isCaptureDockerUrl(data.url)) {
 		ctx.addIssue({
 			code: "custom",
 			path: ["url"],
-			message: "Docker host must be unix:///path, an absolute socket path, or tcp://host[:port]",
+			message: "Docker host must be a socket path, a TLS daemon URL, or a Capture /metrics/docker endpoint",
 		});
 	}
+};
+
+// Edits are checked in the monitor service against the stored secret, since the body may omit either the url or the secret.
+const refineCaptureSecret = (data: { type?: string; url?: string; secret?: string }, ctx: z.RefinementCtx) => {
+	if (data.type !== "docker" || !isCaptureDockerUrl(data.url)) return;
+	if (!data.secret?.trim()) ctx.addIssue({ code: "custom", path: ["secret"], message: "Capture API secret is required" });
 };
 
 type DockerTlsFields = {
@@ -214,6 +220,8 @@ export const createMonitorBodyValidation = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 		geoCheckInterval: z.number().min(300000).optional(),
 		dockerLogsEnabled: z.boolean().optional(),
+		dockerAlertOnStopped: z.boolean().optional(),
+		dockerAlertOnUnhealthy: z.boolean().optional(),
 		dockerTlsCa: z.union([z.string(), z.literal("")]).optional(),
 		dockerTlsCert: z.union([z.string(), z.literal("")]).optional(),
 		dockerTlsKey: z.union([z.string(), z.literal("")]).optional(),
@@ -226,6 +234,7 @@ export const createMonitorBodyValidation = z
 	.superRefine(refineRegexPattern)
 	.superRefine(refineProxySelection)
 	.superRefine(refineDockerUrl)
+	.superRefine(refineCaptureSecret)
 	.superRefine(refineDockerTls("create"));
 
 export const editMonitorBodyValidation = z
@@ -263,6 +272,8 @@ export const editMonitorBodyValidation = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 		geoCheckInterval: z.number().min(300000).optional(),
 		dockerLogsEnabled: z.boolean().optional(),
+		dockerAlertOnStopped: z.boolean().optional(),
+		dockerAlertOnUnhealthy: z.boolean().optional(),
 		dockerTlsCa: z.union([z.string(), z.literal("")]).optional(),
 		dockerTlsCert: z.union([z.string(), z.literal("")]).optional(),
 		dockerTlsKey: z.union([z.string(), z.literal("")]).optional(),
@@ -343,6 +354,8 @@ const importedMonitorSchema = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)).default([]),
 		geoCheckInterval: z.number().min(300000).default(300000),
 		dockerLogsEnabled: z.boolean().default(false),
+		dockerAlertOnStopped: z.boolean().default(false),
+		dockerAlertOnUnhealthy: z.boolean().default(false),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 		createdAt: z.string().optional(),
@@ -353,7 +366,8 @@ const importedMonitorSchema = z
 	.superRefine(refineHeadMatching)
 	.superRefine(refineRegexPattern)
 	.superRefine(refineProxySelection)
-	.superRefine(refineDockerUrl);
+	.superRefine(refineDockerUrl)
+	.superRefine(refineCaptureSecret);
 
 export const importMonitorsBodyValidation = z.object({
 	monitors: z.array(importedMonitorSchema).min(1, "At least one monitor is required"),
@@ -366,22 +380,23 @@ export const getHardwareDetailsByIdParamValidation = z.object({
 });
 
 export const getHardwareDetailsByIdQueryValidation = z.object({
-	dateRange: z.enum(DateRanges).optional(),
+	dateRange: z.enum(DateRanges).default("recent"),
 });
 
 export const getDockerDetailsByIdParamValidation = z.object({ monitorId: z.string().min(1, "Monitor ID is required") });
-export const getDockerDetailsByIdQueryValidation = z.object({ dateRange: z.enum(DateRanges).optional() });
+export const getDockerDetailsByIdQueryValidation = z.object({ dateRange: z.enum(DateRanges).default("recent") });
 
 export const getDockerContainerNameParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
 	containerName: z.string().min(1, "Container name is required"),
 });
-export const getDockerContainerByNameQueryValidation = z.object({ dateRange: z.enum(DateRanges).optional() });
+export const getDockerContainerByNameQueryValidation = z.object({ dateRange: z.enum(DateRanges).default("recent") });
 
+const isoToDate = z.iso.datetime().transform((v) => new Date(v));
 export const getDockerContainerLogsQueryValidation = z
 	.object({
-		before: z.iso.datetime().optional(),
-		after: z.iso.datetime().optional(),
+		before: isoToDate.optional(),
+		after: isoToDate.optional(),
 		limit: z.coerce.number().int().min(1).max(DOCKER_LOG_PAGE_MAX).default(DOCKER_LOG_PAGE_DEFAULT),
 	})
 	.superRefine((query, ctx) => {
@@ -393,6 +408,35 @@ export const getDockerContainerLogsQueryValidation = z
 			});
 		}
 	});
+const monitorResponseExample = {
+	_id: "65f1c2a4d8b9e0123456789a",
+	name: "Marketing site",
+	description: "Production marketing site monitored from the EU region",
+	type: "http",
+	url: "https://www.example.com",
+	port: 443,
+	isActive: true,
+	interval: 60000,
+	status: "up",
+	statusWindowSize: 5,
+	statusWindowThreshold: 3,
+	ignoreTlsErrors: false,
+	useAdvancedMatching: false,
+	notifications: ["65f1c2a4d8b9e0123456789b"],
+	cpuAlertThreshold: 90,
+	memoryAlertThreshold: 90,
+	diskAlertThreshold: 90,
+	tempAlertThreshold: 80,
+	selectedDisks: [],
+	geoCheckEnabled: false,
+	geoCheckLocations: [],
+	geoCheckInterval: 300000,
+	teamId: "65f1c2a4d8b9e01234567890",
+	userId: "65f1c2a4d8b9e01234567891",
+	createdAt: "2026-04-01T10:00:00.000Z",
+	updatedAt: "2026-04-15T14:30:00.000Z",
+};
+
 // Canonical monitor shape returned by /monitors endpoints. Keep aligned with
 // what the controllers actually serialize.
 export const monitorResponseSchema = z
@@ -432,6 +476,8 @@ export const monitorResponseSchema = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)),
 		geoCheckInterval: z.number(),
 		dockerLogsEnabled: z.boolean(),
+		dockerAlertOnStopped: z.boolean(),
+		dockerAlertOnUnhealthy: z.boolean(),
 		dockerTlsCa: z.string().optional(),
 		dockerTlsCert: z.string().optional(),
 		dockerTlsKeySet: z.boolean().optional(),
@@ -443,7 +489,8 @@ export const monitorResponseSchema = z
 		updatedAt: z.string(),
 		lastEvaluatedAt: z.number(),
 	})
-	.passthrough();
+	.passthrough()
+	.meta({ id: "Monitor", example: monitorResponseExample });
 
 // Grouped-check buckets returned by GET /monitors/uptime/details/{monitorId}. Keep
 // aligned with GroupedCheck / GroupedUptimeCheck in domain/checks/check.type.ts.
@@ -482,17 +529,19 @@ export const monitorStatsResponseSchema = z.object({
 // Response of GET /monitors/uptime/details/{monitorId}. Keep aligned with
 // UptimeDetailsResult in domain/monitors/monitor.type.ts; the monitor here is the
 // repository's domain entity, which serializes `id` rather than `_id`.
-export const uptimeDetailsResponseSchema = z.object({
-	monitorData: z.object({
-		monitor: monitorResponseSchema.omit({ _id: true }).extend({ id: z.string() }),
-		groupedChecks: z.array(groupedUptimeCheckResponseSchema),
-		groupedUpChecks: z.array(groupedCheckResponseSchema),
-		groupedDownChecks: z.array(groupedCheckResponseSchema),
-		groupedAvgResponseTime: z.number(),
-		groupedUptimePercentage: z.number(),
-	}),
-	monitorStats: monitorStatsResponseSchema.nullable(),
-});
+export const uptimeDetailsResponseSchema = z
+	.object({
+		monitorData: z.object({
+			monitor: monitorResponseSchema.omit({ _id: true }).extend({ id: z.string() }),
+			groupedChecks: z.array(groupedUptimeCheckResponseSchema),
+			groupedUpChecks: z.array(groupedCheckResponseSchema),
+			groupedDownChecks: z.array(groupedCheckResponseSchema),
+			groupedAvgResponseTime: z.number(),
+			groupedUptimePercentage: z.number(),
+		}),
+		monitorStats: monitorStatsResponseSchema.nullable(),
+	})
+	.meta({ id: "UptimeDetails" });
 
 // Keep aligned with DockerContainerPort / DockerContainerMount in types/network.ts.
 export const dockerContainerPortResponseSchema = z.object({

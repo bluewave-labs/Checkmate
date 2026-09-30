@@ -1,0 +1,77 @@
+import { PingStatusPayload } from "@/types/network.js";
+import { IStatusProvider } from "./IStatusProvider.js";
+import { MonitorType, Monitor } from "@/domain/monitors/monitor.type.js";
+import { MonitorStatusResponse } from "@/types/network.js";
+import { AppError } from "@/utils/AppError.js";
+import ping from "ping";
+import * as net from "net";
+import { timeRequest } from "@/service/networkProviders/utils.js";
+const SERVICE_NAME = "PingProvider";
+
+type Ping = typeof ping;
+type NetType = typeof net;
+
+export class PingProvider implements IStatusProvider<PingStatusPayload> {
+	readonly type = "ping";
+
+	constructor(
+		private ping: Ping,
+		private net: NetType
+	) {}
+
+	supports(type: MonitorType): boolean {
+		return type === "ping";
+	}
+
+	private sanitizeHost(url: string): string {
+		const host = url.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+		// "[2001:db8::1]" or "[2001:db8::1]:53": the address is inside the brackets
+		const bracketed = /^\[([^\]]+)\](?::\d+)?$/.exec(host);
+		if (bracketed) return bracketed[1]!;
+		// A bare IPv6 address contains colons that are not a port separator
+		if (this.net.isIPv6(host)) return host;
+		return host.replace(/:.*/, "");
+	}
+
+	async handle(monitor: Monitor): Promise<MonitorStatusResponse<PingStatusPayload>> {
+		try {
+			if (!monitor.url) {
+				throw new Error("URL is required for ping monitor");
+			}
+
+			const sanitizedHost = this.sanitizeHost(monitor.url);
+			const { response, error } = await timeRequest<PingStatusPayload>(() => this.ping.promise.probe(sanitizedHost));
+
+			if (error) {
+				throw error;
+			}
+
+			if (!response) {
+				throw new Error(`No response from ping for host: ${sanitizedHost}`);
+			}
+
+			const responseTime = typeof response.time === "number" ? response.time : parseFloat(String(response.time)) || 0;
+
+			return {
+				monitorId: monitor.id,
+				teamId: monitor.teamId,
+				type: monitor.type,
+				status: response.alive ?? false,
+				code: response.alive ? 200 : 5000,
+				// An echo reply is the host answering. Its absence is silence, which is indistinguishable
+				// from the instance having lost its egress, so the egress probe decides that case.
+				peerResponded: response.alive ?? false,
+				message: response.alive ? "Success" : "Ping failed",
+				responseTime,
+				payload: response,
+			};
+		} catch (err: unknown) {
+			const message = err instanceof Error ? err.message : String(err);
+			throw new AppError({
+				message,
+				service: SERVICE_NAME,
+				method: "handle",
+			});
+		}
+	}
+}

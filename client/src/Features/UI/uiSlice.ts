@@ -1,8 +1,16 @@
+import {
+	dashboardCardKeys,
+	type DashboardCardKey,
+	type DashboardSortOrder,
+} from "@/Types/Dashboard";
+import type { SortOrder } from "@/Types/Query";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 type ThemeMode = "light" | "dark";
 type ChartType = "histogram" | "line";
+
 type TableName =
+	| "dashboard"
 	| "monitors"
 	| "team"
 	| "maintenance"
@@ -13,6 +21,8 @@ type TableName =
 
 interface TableState {
 	rowsPerPage: number;
+	sortField?: string;
+	sortOrder?: SortOrder;
 }
 
 interface SidebarState {
@@ -20,6 +30,7 @@ interface SidebarState {
 }
 
 interface UIState {
+	dashboard: TableState;
 	monitors: TableState;
 	pagespeed: TableState;
 	team: TableState;
@@ -35,6 +46,8 @@ interface UIState {
 	language: string;
 	starPromptOpen: boolean;
 	chartType: ChartType;
+	dashboardVisibleCards: DashboardCardKey[];
+	dashboardUptimeSortOrder: DashboardSortOrder;
 }
 
 const initialMode: ThemeMode = window?.matchMedia?.("(prefers-color-scheme: dark)")
@@ -43,6 +56,9 @@ const initialMode: ThemeMode = window?.matchMedia?.("(prefers-color-scheme: dark
 	: "light";
 
 const initialState: UIState = {
+	dashboard: {
+		rowsPerPage: 100,
+	},
 	monitors: {
 		rowsPerPage: 10,
 	},
@@ -74,6 +90,8 @@ const initialState: UIState = {
 	language: "en",
 	starPromptOpen: true,
 	chartType: "histogram",
+	dashboardVisibleCards: [...dashboardCardKeys],
+	dashboardUptimeSortOrder: "ascending",
 };
 
 const uiSlice = createSlice({
@@ -89,6 +107,14 @@ const uiSlice = createSlice({
 		) => {
 			const { table, value } = action.payload;
 			state[table].rowsPerPage = value;
+		},
+		setTableSort: (
+			state,
+			action: PayloadAction<{ table: TableName; field: string; order: SortOrder }>
+		) => {
+			const { table, field, order } = action.payload;
+			state[table].sortField = field;
+			state[table].sortOrder = order;
 		},
 		toggleSidebar: (state) => {
 			state.sidebar.collapsed = !state.sidebar.collapsed;
@@ -117,6 +143,12 @@ const uiSlice = createSlice({
 		setChartType: (state, action: PayloadAction<ChartType>) => {
 			state.chartType = action.payload;
 		},
+		setDashboardVisibleCards: (state, action: PayloadAction<DashboardCardKey[]>) => {
+			state.dashboardVisibleCards = action.payload;
+		},
+		setDashboardUptimeSortOrder: (state, action: PayloadAction<DashboardSortOrder>) => {
+			state.dashboardUptimeSortOrder = action.payload;
+		},
 	},
 });
 
@@ -124,6 +156,7 @@ export type { UIState, ThemeMode, ChartType, TableName };
 export default uiSlice.reducer;
 export const {
 	setRowsPerPage,
+	setTableSort,
 	toggleSidebar,
 	setCollapsed,
 	setMode,
@@ -133,4 +166,6 @@ export const {
 	setLanguage,
 	setStarPromptOpen,
 	setChartType,
+	setDashboardVisibleCards,
+	setDashboardUptimeSortOrder,
 } = uiSlice.actions;

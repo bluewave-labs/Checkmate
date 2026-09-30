@@ -220,6 +220,7 @@ const dockerContainerSchema = new Schema<DockerContainerInfo>(
 		startedAt: { type: String },
 		ports: { type: [dockerContainerPortSchema], default: undefined },
 		mounts: { type: [dockerContainerMountSchema], default: undefined },
+		exitCode: { type: Number, default: undefined },
 	},
 	{ _id: false }
 );

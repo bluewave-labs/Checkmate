@@ -175,6 +175,7 @@
 				"uptime": "稼働時間",
 				"pagespeed": "ページ速度",
 				"infrastructure": "インフラストラクチャ",
+				"docker": "Docker",
 				"notifications": "通知",
 				"checks": "チェック",
 				"incidents": "インシデント",
@@ -187,7 +188,8 @@
 					"alerting": "アラート",
 					"reporting": "レポート",
 					"configuration": "設定"
-				}
+				},
+				"dashboard": "ダッシュボード"
 			},
 			"bottomMenu": {
 				"support": "サポート",
@@ -534,10 +536,6 @@
 				},
 				"general": {
 					"option": {
-						"container": {
-							"label": "コンテナ名/ID",
-							"placeholder": "my-app または abcd1234"
-						},
 						"host": {
 							"label": "ホスト",
 							"placeholder": "192.168.1.100 または example.com"
@@ -593,6 +591,10 @@
 							"desktop": "デスクトップ",
 							"label": "ストラテジー",
 							"mobile": "モバイル"
+						},
+						"dockerHost": {
+							"label": "Docker ホスト",
+							"placeholder": "unix:///var/run/docker.sock"
 						}
 					},
 					"title": "一般設定",
@@ -694,17 +696,6 @@
 						}
 					}
 				},
-				"url": {
-					"title": "ステータスページにモニターのIP/URLを表示",
-					"description": "公開ステータスページにモニターのIPアドレスまたはURLを表示します。無効の場合、機密情報を保護するためにモニター名のみが表示されます。",
-					"option": {
-						"showURL": {
-							"label": "ステータスページにIP/URLを表示",
-							"enabled": "有効",
-							"disabled": "無効"
-						}
-					}
-				},
 				"stats": {
 					"title": "モニター履歴",
 					"description": "チームのすべての監視履歴と統計をクリアします。この操作は元に戻せません。",
@@ -713,6 +704,50 @@
 						"title": "すべての監視履歴をクリアしますか？",
 						"description": "チームのすべての監視履歴、統計、チェックデータが完全に削除されます。この操作は元に戻せません。",
 						"confirm": "はい、すべての統計をクリア"
+					}
+				},
+				"dockerLogs": {
+					"title": "コンテナのログ",
+					"description": "チェックごとに、このホスト上のすべてのコンテナから最新のログ行を収集します。ログは 7 日間保持されます。出力の多いコンテナがあるホストでは、データベース容量を節約するためにオフのままにしてください。",
+					"option": {
+						"enabled": {
+							"label": "コンテナのログを収集する"
+						}
+					}
+				},
+				"dockerAlerts": {
+					"title": "コンテナのアラート",
+					"description": "このホスト上のいずれかのコンテナが停止している、またはヘルスチェックに失敗している間、このホストを違反状態として扱い、状態が変化したときに通知します。終了コード 0 で終了したコンテナは停止として数えません。Capture は終了コードを報告しないため、Capture ホストでは停止したコンテナはすべて数えられます。",
+					"option": {
+						"onStopped": {
+							"label": "コンテナが停止したときに通知する"
+						},
+						"onUnhealthy": {
+							"label": "コンテナが異常なときに通知する"
+						}
+					}
+				},
+				"dockerTls": {
+					"title": "TLS 認証情報",
+					"description": "相互 TLS でリモートの Docker デーモンに接続します。docker --tlsverify に渡す PEM ファイルを貼り付けてください。クライアント鍵は保存前に暗号化され、以後表示されることはありません。",
+					"option": {
+						"ca": {
+							"label": "CA 証明書",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"cert": {
+							"label": "クライアント証明書",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"key": {
+							"label": "クライアント鍵",
+							"placeholder": "-----BEGIN PRIVATE KEY-----",
+							"stored": "鍵は保存されています。そのまま保持するには空欄にしてください。"
+						},
+						"ignoreTls": {
+							"label": "TLS/SSL エラーを無視する",
+							"description": "デーモンの証明書の検証を省略するため、CA 証明書は任意になります。デーモンがクライアントを検証するため、クライアント証明書と鍵は引き続き必要です。"
+						}
 					}
 				}
 			}
@@ -825,12 +860,9 @@
 		"infrastructure": {
 			"charts": {
 				"labels": {
-					"cpu": "CPU使用率",
 					"disk": "ディスク使用率",
-					"memory": "メモリ使用率",
 					"netBytesRecv": "{{name}} - 受信バイト数",
 					"netBytesSent": "{{name}} - 送信バイト数",
-					"netNoTraffic": "Capture はすべてのインターフェイスでゼロのトラフィックを報告しています。これは Capture がループバックインターフェイスのみを認識できるコンテナ内で実行されている場合に正常です — 実際のネットワークアクティビティを表示するには、ホスト上で Capture を直接実行してください。",
 					"temp": "温度"
 				}
 			},
@@ -1199,9 +1231,7 @@
 					"description": "公開ステータスページにモニターのIPアドレスまたはURLを表示します。無効の場合、機密情報を保護するためにモニター名のみが表示されます。",
 					"option": {
 						"showURL": {
-							"label": "ステータスページにIP/URLを表示",
-							"enabled": "有効",
-							"disabled": "無効"
+							"label": "ステータスページにIP/URLを表示"
 						}
 					}
 				},
@@ -1377,6 +1407,9 @@
 					"maintenance": "メンテナンス",
 					"paused": "一時停止中",
 					"up": "稼働中"
+				},
+				"incidents": {
+					"errorLoading": "インシデントの読み込みに失敗しました。"
 				}
 			},
 			"statusBar": {
@@ -1549,6 +1582,105 @@
 			"header": {
 				"title": "稼働監視",
 				"description": "HTTPエンドポイント、Ping、コンテナ、ポートを監視し、ダウンした瞬間に通知を受け取ります。"
+			}
+		},
+		"docker": {
+			"table": {
+				"headers": {
+					"host": "ホスト",
+					"containers": "コンテナ"
+				},
+				"containersRunning": "{{total}} 個のうち {{running}} 個が稼働中"
+			},
+			"header": {
+				"title": "Docker モニター",
+				"description": "Docker ホストと、その上で稼働するすべてのコンテナを監視します。"
+			},
+			"fallback": {
+				"title": "Docker モニターがまだありません",
+				"description": "コンテナを監視するには Docker ホストを追加してください。",
+				"actionButton": "モニターを作成"
+			},
+			"container": {
+				"header": {
+					"title": "コンテナの詳細",
+					"description": "このコンテナの状態、リソース使用量、ログ。"
+				},
+				"tabs": {
+					"overview": "概要",
+					"logs": "ログ"
+				},
+				"logs": {
+					"recentLines": "最近の {{count}} 行",
+					"loading": "読み込み中...",
+					"updatedSecondsAgo": "{{count}} 秒前に更新",
+					"updatedMinutesAgo": "{{count}} 分前に更新",
+					"skipped": "一部のログエントリはスキップされました",
+					"loadOlder": "古いログを読み込む",
+					"loadingOlder": "読み込み中...",
+					"noOlder": "保持されているログの先頭です",
+					"loadError": "ログを読み込めませんでした",
+					"loadOlderError": "古いログを読み込めませんでした",
+					"empty": {
+						"title": "ログはまだ収集されていません",
+						"description": "次のチェック後にここに行が表示されます。収集を有効にした後に書き込まれた出力のみが保存されます。"
+					},
+					"disabled": {
+						"title": "このホストではログ収集が無効です",
+						"description": "収集を開始するには、モニターの設定でコンテナのログを有効にしてください。",
+						"action": "モニターを設定"
+					},
+					"forbidden": {
+						"title": "コンテナのログへのアクセス権がありません",
+						"description": "ログを閲覧できるのは管理者のみです。必要な場合は管理者にアクセス権を依頼してください。"
+					}
+				}
+			},
+			"host": {
+				"statBoxes": {
+					"containers": "コンテナ",
+					"running": "稼働中",
+					"stopped": "停止中",
+					"unhealthy": "異常"
+				},
+				"table": {
+					"headers": {
+						"container": "コンテナ",
+						"cpu": "CPU",
+						"memory": "メモリ"
+					}
+				}
+			}
+		},
+		"dashboard": {
+			"noData": "現在、データはありません。",
+			"monitorStatus": {
+				"ofUp": "/ {{total}} 稼働中"
+			},
+			"cards": {
+				"monitorStatus": "モニターの状態",
+				"currentlyDown": "現在停止中",
+				"uptime": "モニターの稼働率",
+				"monitorsByType": "タイプ別モニター"
+			},
+			"uptimeCard": {
+				"toggleSortOrder": "並び順を切り替える"
+			},
+			"currentlyDown": {
+				"empty": "現在停止中のモニターはありません。"
+			},
+			"header": {
+				"title": "ダッシュボード",
+				"description": "すべてのモニタータイプを一か所で確認し、対応が必要なものを見つけます。"
+			},
+			"editCards": "カードを編集",
+			"editCardsModal": {
+				"title": "ダッシュボードのカード",
+				"description": "ダッシュボードに表示するカードを選択してください。",
+				"groups": {
+					"uptime": "稼働率"
+				},
+				"done": "完了"
 			}
 		}
 	}

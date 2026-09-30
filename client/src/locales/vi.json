@@ -175,6 +175,7 @@
 				"uptime": "Thời gian hoạt động",
 				"pagespeed": "Pagespeed",
 				"infrastructure": "Hạ tầng",
+				"docker": "Docker",
 				"notifications": "Thông báo",
 				"checks": "Kiểm tra",
 				"incidents": "Sự cố",
@@ -187,7 +188,8 @@
 					"alerting": "Cảnh báo",
 					"reporting": "Báo cáo",
 					"configuration": "Cấu hình"
-				}
+				},
+				"dashboard": "Bảng điều khiển"
 			},
 			"bottomMenu": {
 				"support": "Hỗ trợ",
@@ -534,10 +536,6 @@
 				},
 				"general": {
 					"option": {
-						"container": {
-							"label": "Tên/ID container",
-							"placeholder": "my-app hoặc abcd1234"
-						},
 						"host": {
 							"label": "Máy chủ",
 							"placeholder": "192.168.1.100 hoặc example.com"
@@ -593,6 +591,10 @@
 							"desktop": "Máy tính để bàn",
 							"label": "Chiến lược",
 							"mobile": "Di động"
+						},
+						"dockerHost": {
+							"label": "Máy chủ Docker",
+							"placeholder": "unix:///var/run/docker.sock"
 						}
 					},
 					"title": "Cài đặt chung",
@@ -694,17 +696,6 @@
 						}
 					}
 				},
-				"url": {
-					"title": "Giám sát IP/URL trên trang trạng thái",
-					"description": "Hiển thị địa chỉ IP hoặc URL của trình giám sát trên trang trạng thái công khai. Nếu tắt, chỉ tên trình giám sát được hiển thị để bảo vệ thông tin nhạy cảm.",
-					"option": {
-						"showURL": {
-							"label": "Hiển thị IP/URL trên trang trạng thái",
-							"enabled": "Đã bật",
-							"disabled": "Đã tắt"
-						}
-					}
-				},
 				"stats": {
 					"title": "Lịch sử giám sát",
 					"description": "Xóa tất cả lịch sử giám sát và thống kê cho nhóm của bạn. Hành động này không thể hoàn tác.",
@@ -713,6 +704,50 @@
 						"title": "Xóa tất cả lịch sử giám sát?",
 						"description": "Điều này sẽ xóa vĩnh viễn tất cả lịch sử giám sát, thống kê và dữ liệu kiểm tra cho nhóm của bạn. Hành động này không thể hoàn tác.",
 						"confirm": "Có, xóa tất cả thống kê"
+					}
+				},
+				"dockerLogs": {
+					"title": "Nhật ký container",
+					"description": "Thu thập các dòng nhật ký mới nhất từ mọi container trên máy chủ này ở mỗi lần kiểm tra. Nhật ký được lưu 7 ngày. Hãy tắt tùy chọn này với những máy chủ có container ghi nhiều log để tiết kiệm dung lượng cơ sở dữ liệu.",
+					"option": {
+						"enabled": {
+							"label": "Thu thập nhật ký container"
+						}
+					}
+				},
+				"dockerAlerts": {
+					"title": "Cảnh báo container",
+					"description": "Đánh dấu máy chủ này là vi phạm khi có container nào trên đó bị dừng hoặc không đạt kiểm tra sức khỏe, và thông báo khi trạng thái thay đổi. Container kết thúc với mã 0 không bị tính là đã dừng. Capture không báo cáo mã kết thúc, nên trên máy chủ dùng Capture thì mọi container đã dừng đều được tính.",
+					"option": {
+						"onStopped": {
+							"label": "Cảnh báo khi một container bị dừng"
+						},
+						"onUnhealthy": {
+							"label": "Cảnh báo khi một container không khỏe"
+						}
+					}
+				},
+				"dockerTls": {
+					"title": "Thông tin đăng nhập TLS",
+					"description": "Kết nối tới một daemon Docker từ xa qua TLS hai chiều. Dán các tệp PEM mà bạn sẽ truyền cho docker --tlsverify. Khóa máy khách được mã hóa trước khi lưu và không bao giờ hiển thị lại.",
+					"option": {
+						"ca": {
+							"label": "Chứng chỉ CA",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"cert": {
+							"label": "Chứng chỉ máy khách",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"key": {
+							"label": "Khóa máy khách",
+							"placeholder": "-----BEGIN PRIVATE KEY-----",
+							"stored": "Đã lưu một khóa. Để trống để giữ nguyên khóa đó."
+						},
+						"ignoreTls": {
+							"label": "Bỏ qua lỗi TLS/SSL",
+							"description": "Bỏ qua việc xác minh chứng chỉ của daemon, nên chứng chỉ CA trở thành không bắt buộc. Chứng chỉ và khóa máy khách vẫn bắt buộc vì daemon xác minh chúng."
+						}
 					}
 				}
 			}
@@ -825,12 +860,9 @@
 		"infrastructure": {
 			"charts": {
 				"labels": {
-					"cpu": "Sử dụng CPU",
 					"disk": "Sử dụng ổ đĩa",
-					"memory": "Sử dụng bộ nhớ",
 					"netBytesRecv": "{{name}} - Byte nhận",
 					"netBytesSent": "{{name}} - Byte gửi",
-					"netNoTraffic": "Capture đang báo cáo lưu lượng bằng không trên mọi giao diện. Điều này là bình thường khi Capture chạy bên trong một container chỉ có thể thấy các giao diện loopback — hãy chạy Capture trực tiếp trên máy chủ để xem hoạt động mạng thực tế.",
 					"temp": "Nhiệt độ"
 				}
 			},
@@ -1199,9 +1231,7 @@
 					"description": "Hiển thị địa chỉ IP hoặc URL của trình giám sát trên trang trạng thái công khai. Nếu tắt, chỉ tên trình giám sát được hiển thị để bảo vệ thông tin nhạy cảm.",
 					"option": {
 						"showURL": {
-							"label": "Hiển thị IP/URL trên trang trạng thái",
-							"enabled": "Đã bật",
-							"disabled": "Đã tắt"
+							"label": "Hiển thị IP/URL trên trang trạng thái"
 						}
 					}
 				},
@@ -1377,6 +1407,9 @@
 					"maintenance": "Bảo trì",
 					"paused": "Tạm dừng",
 					"up": "Hoạt động"
+				},
+				"incidents": {
+					"errorLoading": "Không thể tải sự cố."
 				}
 			},
 			"statusBar": {
@@ -1549,6 +1582,105 @@
 			"header": {
 				"title": "Trình giám sát uptime",
 				"description": "Theo dõi các endpoint HTTP, ping, container và cổng — nhận cảnh báo ngay khi có sự cố."
+			}
+		},
+		"docker": {
+			"table": {
+				"headers": {
+					"host": "Máy chủ",
+					"containers": "Container"
+				},
+				"containersRunning": "{{running}} trên {{total}} đang chạy"
+			},
+			"header": {
+				"title": "Trình giám sát Docker",
+				"description": "Giám sát các máy chủ Docker của bạn và mọi container đang chạy trên đó."
+			},
+			"fallback": {
+				"title": "Chưa có trình giám sát Docker nào",
+				"description": "Thêm một máy chủ Docker để giám sát các container của nó.",
+				"actionButton": "Tạo trình giám sát"
+			},
+			"container": {
+				"header": {
+					"title": "Chi tiết container",
+					"description": "Trạng thái, mức sử dụng tài nguyên và nhật ký của container này."
+				},
+				"tabs": {
+					"overview": "Tổng quan",
+					"logs": "Nhật ký"
+				},
+				"logs": {
+					"recentLines": "{{count}} dòng gần đây",
+					"loading": "Đang tải...",
+					"updatedSecondsAgo": "Cập nhật {{count}} giây trước",
+					"updatedMinutesAgo": "Cập nhật {{count}} phút trước",
+					"skipped": "Một số mục nhật ký đã bị bỏ qua",
+					"loadOlder": "Tải nhật ký cũ hơn",
+					"loadingOlder": "Đang tải...",
+					"noOlder": "Điểm bắt đầu của nhật ký được lưu",
+					"loadError": "Không thể tải nhật ký",
+					"loadOlderError": "Không thể tải nhật ký cũ hơn",
+					"empty": {
+						"title": "Chưa thu thập được nhật ký nào",
+						"description": "Các dòng sẽ xuất hiện ở đây sau lần kiểm tra tiếp theo. Chỉ đầu ra được ghi kể từ khi bật thu thập mới được lưu."
+					},
+					"disabled": {
+						"title": "Việc thu thập nhật ký đang tắt cho máy chủ này",
+						"description": "Bật nhật ký container trong cài đặt trình giám sát để bắt đầu thu thập.",
+						"action": "Cấu hình trình giám sát"
+					},
+					"forbidden": {
+						"title": "Bạn không có quyền truy cập nhật ký container",
+						"description": "Chỉ quản trị viên mới xem được nhật ký. Hãy hỏi quản trị viên để được cấp quyền nếu bạn cần xem."
+					}
+				}
+			},
+			"host": {
+				"statBoxes": {
+					"containers": "Container",
+					"running": "Đang chạy",
+					"stopped": "Đã dừng",
+					"unhealthy": "Không khỏe"
+				},
+				"table": {
+					"headers": {
+						"container": "Container",
+						"cpu": "CPU",
+						"memory": "Bộ nhớ"
+					}
+				}
+			}
+		},
+		"dashboard": {
+			"noData": "Hiện không có dữ liệu.",
+			"monitorStatus": {
+				"ofUp": "trên {{total}} đang hoạt động"
+			},
+			"cards": {
+				"monitorStatus": "Trạng thái trình giám sát",
+				"currentlyDown": "Hiện đang ngừng hoạt động",
+				"uptime": "Thời gian hoạt động",
+				"monitorsByType": "Trình giám sát theo loại"
+			},
+			"uptimeCard": {
+				"toggleSortOrder": "Đổi thứ tự sắp xếp"
+			},
+			"currentlyDown": {
+				"empty": "Hiện không có trình giám sát nào ngừng hoạt động."
+			},
+			"header": {
+				"title": "Bảng điều khiển",
+				"description": "Xem mọi loại trình giám sát ở cùng một nơi và phát hiện điều cần chú ý."
+			},
+			"editCards": "Chỉnh sửa thẻ",
+			"editCardsModal": {
+				"title": "Thẻ bảng điều khiển",
+				"description": "Chọn các thẻ sẽ hiển thị trên bảng điều khiển của bạn.",
+				"groups": {
+					"uptime": "Thời gian hoạt động"
+				},
+				"done": "Xong"
 			}
 		}
 	}

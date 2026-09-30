@@ -53,14 +53,10 @@ export const sanitizeBody = (options = {}): ((req: Request, res: Response, next:
 
 export const sanitizeQuery = (options = {}): ((req: Request, res: Response, next: NextFunction) => void) => {
 	return (req: Request, res: Response, next: NextFunction) => {
-		if (req.query && typeof req.query === "object") {
-			for (const key of Object.keys(req.query)) {
-				const value = req.query[key];
-				if (typeof value === "string") {
-					req.query[key] = sanitizeInput(value, options);
-				}
-			}
-		}
+		const sanitized = Object.fromEntries(
+			Object.entries(req.query).map(([key, value]) => [key, typeof value === "string" ? sanitizeInput(value, options) : value])
+		);
+		Object.defineProperty(req, "query", { value: sanitized, writable: true, configurable: true, enumerable: true });
 		next();
 	};
 };

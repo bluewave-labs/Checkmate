@@ -82,6 +82,7 @@ IncidentSchema.index({ teamId: 1, startTime: -1 });
 IncidentSchema.index({ status: 1, startTime: -1 });
 IncidentSchema.index({ resolutionType: 1, status: 1 });
 IncidentSchema.index({ resolvedBy: 1, status: 1 });
+IncidentSchema.index({ monitorId: 1, startTime: -1 });
 IncidentSchema.index({ createdAt: -1 });
 
 const IncidentModel = model<IncidentDocument>("Incident", IncidentSchema);

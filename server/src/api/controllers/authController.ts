@@ -1,7 +1,6 @@
-import { Request, Response, RequestHandler } from "express";
-import { catchAsync } from "@/utils/catchAsync.js";
+import { RequestHandler } from "express";
 import { AppError } from "@/utils/AppError.js";
-import { requireTeamId, requireUserEmail, requireUserId, requireUserRoles } from "@/api/controllers/controllerUtils.js";
+import { Handler, requireTeamId, requireUserEmail, requireUserId, requireUserRoles } from "@/api/controllers/controllerUtils.js";
 
 import {
 	registrationBodyValidation,
@@ -47,110 +46,62 @@ class AuthController implements IAuthController {
 		this.userService = userService;
 	}
 
-	registerUser = catchAsync(async (req: Request, res: Response) => {
-		const newUser = req.body.user;
+	registerUser: Handler = async (req, res) => {
 		const newUserToken = registerInviteTokenValidation.parse(req.body.token);
-		if (newUser?.email) {
-			const newUserEmail = requireUserEmail(newUser.email);
-			newUser.email = newUserEmail.toLowerCase();
-		}
-		const validatedBody = registrationBodyValidation.parse(newUser);
-
+		const validatedBody = registrationBodyValidation.parse(req.body.user);
 		const { user, token } = await this.userService.registerUser(validatedBody, newUserToken, req?.file ?? null);
-		res.status(200).json({
-			success: true,
-			msg: "User registered successfully",
-			data: { user, token },
-		});
-	});
+		res.json({ success: true, msg: "User registered successfully", data: { user, token } });
+	};
 
-	createUser = catchAsync(async (req: Request, res: Response) => {
-		const userData = req.body;
-		if (userData?.email) {
-			userData.email = userData.email.toLowerCase();
-		}
-		const validatedBody = createUserBodyValidation.parse(userData);
+	createUser: Handler = async (req, res) => {
+		const validatedBody = createUserBodyValidation.parse(req.body);
 
 		const teamId = requireTeamId(req.user?.teamId);
 		const actorRoles = requireUserRoles(req.user?.role);
 		const newUser = await this.userService.createUser(validatedBody, teamId, actorRoles, req?.file ?? null);
-		res.status(201).json({
-			success: true,
-			msg: "User created successfully",
-			data: newUser,
-		});
-	});
+		res.status(201).json({ success: true, msg: "User created successfully", data: newUser });
+	};
 
-	loginUser = catchAsync(async (req: Request, res: Response) => {
-		if (req.body?.email) {
-			req.body.email = req.body.email?.toLowerCase();
-		}
-		loginValidation.parse(req.body);
-		const { user, token } = await this.userService.loginUser(req.body.email, req.body.password);
+	loginUser: Handler = async (req, res) => {
+		const { email, password } = loginValidation.parse(req.body);
+		const { user, token } = await this.userService.loginUser(email, password);
+		const data = { user, token };
+		res.json({ success: true, msg: "User logged in successfully", data });
+	};
 
-		return res.status(200).json({
-			success: true,
-			msg: "User logged in successfully",
-			data: {
-				user,
-				token,
-			},
-		});
-	});
-
-	editUser = catchAsync(async (req: Request, res: Response) => {
+	editUser: Handler = async (req, res) => {
 		const validatedBody = editUserBodyValidation.parse(req.body);
 		const userId = requireUserId(req.user?.id);
 		const userEmail = requireUserEmail(req.user?.email);
 		const updatedUser = await this.userService.editUser(validatedBody, req?.file ?? null, userId, userEmail);
 
-		res.status(200).json({
-			success: true,
-			msg: "User updated successfully",
-			data: updatedUser,
-		});
-	});
+		res.json({ success: true, msg: "User updated successfully", data: updatedUser });
+	};
 
-	checkSuperadminExists = catchAsync(async (req: Request, res: Response) => {
+	checkSuperadminExists: Handler = async (req, res) => {
 		const superAdminExists = await this.userService.checkSuperadminExists();
-		return res.status(200).json({
-			success: true,
-			msg: "Superadmin existence checked successfully",
-			data: superAdminExists,
-		});
-	});
+		res.json({ success: true, msg: "Superadmin existence checked successfully", data: superAdminExists });
+	};
 
-	requestRecovery = catchAsync(async (req: Request, res: Response) => {
-		recoveryValidation.parse(req.body);
-		const email = req?.body?.email;
+	requestRecovery: Handler = async (req, res) => {
+		const { email } = recoveryValidation.parse(req.body);
 		const msgId = await this.userService.requestRecovery(email);
-		return res.status(200).json({
-			success: true,
-			msg: "Password recovery email sent successfully",
-			data: msgId,
-		});
-	});
+		res.json({ success: true, msg: "Password recovery email sent successfully", data: msgId });
+	};
 
-	validateRecovery = catchAsync(async (req: Request, res: Response) => {
-		recoveryTokenBodyValidation.parse(req.body);
-		await this.userService.validateRecovery(req.body.recoveryToken);
-		return res.status(200).json({
-			success: true,
-			msg: "Recovery token is valid",
-		});
-	});
+	validateRecovery: Handler = async (req, res) => {
+		const { recoveryToken } = recoveryTokenBodyValidation.parse(req.body);
+		await this.userService.validateRecovery(recoveryToken);
+		res.json({ success: true, msg: "Recovery token is valid" });
+	};
 
-	resetPassword = catchAsync(async (req: Request, res: Response) => {
-		newPasswordValidation.parse(req.body);
-		const { user, token } = await this.userService.resetPassword(req.body.password, req.body.recoveryToken);
-		return res.status(200).json({
-			success: true,
-			msg: "Password has been reset successfully",
-			data: { user, token },
-		});
-	});
+	resetPassword: Handler = async (req, res) => {
+		const { password, recoveryToken } = newPasswordValidation.parse(req.body);
+		const { user, token } = await this.userService.resetPassword(password, recoveryToken);
+		res.json({ success: true, msg: "Password has been reset successfully", data: { user, token } });
+	};
 
-	deleteUser = catchAsync(async (req: Request, res: Response) => {
+	deleteUser: Handler = async (req, res) => {
 		const userId = requireUserId(req.user?.id);
 		const teamId = requireTeamId(req.user?.teamId);
 		const roles = requireUserRoles(req.user?.role);
@@ -160,43 +111,33 @@ class AuthController implements IAuthController {
 			teamId,
 			roles,
 		});
-		return res.status(200).json({
-			success: true,
-			msg: "User deleted successfully",
-		});
-	});
+		res.json({ success: true, msg: "User deleted successfully" });
+	};
 
-	deleteUserById = catchAsync(async (req: Request, res: Response) => {
+	deleteUserById: Handler = async (req, res) => {
 		const validatedParams = getUserByIdParamValidation.parse(req.params);
 		const targetUserId = validatedParams.userId;
 		const actorId = requireUserId(req.user?.id);
 		const actorTeamId = requireTeamId(req.user?.teamId);
 		const actorRoles = requireUserRoles(req.user?.role);
 		await this.userService.deleteUserById({ actorId, actorTeamId, actorRoles, targetUserId });
-		return res.status(200).json({
-			success: true,
-			msg: "User removed successfully",
-		});
-	});
+		res.json({ success: true, msg: "User removed successfully" });
+	};
 
-	getAllUsers = catchAsync(async (req: Request, res: Response) => {
+	getAllUsers: Handler = async (req, res) => {
 		const allUsers = await this.userService.getAllUsers();
-		return res.status(200).json({
-			success: true,
-			msg: "Users retrieved successfully",
-			data: allUsers,
-		});
-	});
+		res.json({ success: true, msg: "Users retrieved successfully", data: allUsers });
+	};
 
-	getUserById = catchAsync(async (req: Request, res: Response) => {
+	getUserById: Handler = async (req, res) => {
 		const validatedParams = getUserByIdParamValidation.parse(req.params);
 		const actorRoles = requireUserRoles(req.user?.role);
 		const user = await this.userService.getUserById(actorRoles, validatedParams.userId);
 
-		return res.status(200).json({ success: true, msg: "ok", data: user });
-	});
+		res.json({ success: true, msg: "ok", data: user });
+	};
 
-	editUserById = catchAsync(async (req: Request, res: Response) => {
+	editUserById: Handler = async (req, res) => {
 		const actorRoles = requireUserRoles(req.user?.role);
 		const actorId = requireUserId(req.user?.id);
 
@@ -210,10 +151,10 @@ class AuthController implements IAuthController {
 			validatedParams.userId === actorId ? editSuperadminUserByIdBodyValidation.parse(req.body) : editUserByIdBodyValidation.parse(req.body);
 
 		await this.userService.editUserById(validatedParams.userId, validatedBody);
-		return res.status(200).json({ success: true, msg: "ok" });
-	});
+		res.json({ success: true, msg: "ok" });
+	};
 
-	editUserPasswordById = catchAsync(async (req: Request, res: Response) => {
+	editUserPasswordById: Handler = async (req, res) => {
 		const actorRoles = requireUserRoles(req.user?.role);
 		if (!actorRoles.includes("superadmin")) {
 			throw new AppError({ message: "Unauthorized", status: 403 });
@@ -222,8 +163,8 @@ class AuthController implements IAuthController {
 		const validatedParams = editUserByIdParamValidation.parse(req.params);
 		const validatedBody = editUserPasswordByIdBodyValidation.parse(req.body);
 		await this.userService.setPasswordByUserId(validatedParams.userId, validatedBody.password);
-		return res.status(200).json({ success: true, msg: "Password reset successfully" });
-	});
+		res.json({ success: true, msg: "Password reset successfully" });
+	};
 }
 
 export default AuthController;

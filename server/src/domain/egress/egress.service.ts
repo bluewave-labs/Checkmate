@@ -3,8 +3,8 @@ import type { ISettingsService } from "@/domain/app-settings/app-settings.servic
 import type { IEgressStateRepository } from "@/domain/egress/egress-state.repository.interface.js";
 import type { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import { jobId, type Job, type JobSeed } from "@/domain/jobs/job.type.js";
-import type { INetworkService } from "@/service/networkService.js";
-import type { IProxyResolver } from "@/service/network/ProxyResolver.js";
+import type { IProviderRegistry } from "@/service/networkProviders/providerRegistry.js";
+import type { IProxyResolver } from "@/service/networkProviders/ProxyResolver.js";
 import type { INotificationsService } from "@/domain/notifications/notification.service.js";
 import type { ILogger } from "@/utils/logger.js";
 import {
@@ -14,7 +14,7 @@ import {
 	type EgressProbeResult,
 	type EgressStatus,
 } from "@/domain/egress/egress.type.js";
-import { timeRequest } from "@/service/network/utils.js";
+import { timeRequest } from "@/service/networkProviders/utils.js";
 import { parseEgressTarget, type EgressTarget } from "@/utils/egressTarget.js";
 
 const SERVICE_NAME = "EgressService";
@@ -55,7 +55,7 @@ export class EgressService implements IEgressService {
 		private settingsService: ISettingsService,
 		private egressStateRepository: IEgressStateRepository,
 		private jobsRepository: IJobsRepository,
-		private networkService: INetworkService,
+		private providerRegistry: IProviderRegistry,
 		private proxyResolver: IProxyResolver,
 		private notificationsService: INotificationsService,
 		private logger: ILogger
@@ -102,7 +102,7 @@ export class EgressService implements IEgressService {
 		const { response, responseTime, error } = await timeRequest(async () => {
 			const proxyUrl = await this.proxyResolver.resolve(monitor);
 			return Promise.race([
-				this.networkService.requestStatus(monitor, { proxyUrl }),
+				this.providerRegistry.probe(monitor, { proxyUrl }),
 				new Promise<never>((_, reject) => {
 					timer = setTimeout(() => reject(new Error(`Egress probe timed out after ${PROBE_TIMEOUT_MS}ms`)), PROBE_TIMEOUT_MS);
 				}),

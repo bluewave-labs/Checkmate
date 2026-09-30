@@ -134,6 +134,7 @@ describe("RocketChatProvider", () => {
 		["ping", "https://app.example.com/uptime/mon-1"],
 		["pagespeed", "https://app.example.com/pagespeed/mon-1"],
 		["hardware", "https://app.example.com/infrastructure/mon-1"],
+		["docker", "https://app.example.com/docker/host/mon-1"],
 	])("links %s monitors to %s", async (type, expectedLink) => {
 		const { provider } = createProvider();
 

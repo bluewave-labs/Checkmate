@@ -20,20 +20,6 @@ export interface IWorkerHelper {
 	getEgressRecoveryJob(): (job: Job) => Promise<void>;
 }
 
-export interface MonitorActionDecision {
-	shouldCreateIncident: boolean;
-	shouldResolveIncident: boolean;
-	shouldSendNotification: boolean;
-	incidentReason: "status_down" | "threshold_breach" | null;
-	notificationReason: "status_change" | "threshold_breach" | null;
-	thresholdBreaches?: {
-		cpu?: boolean;
-		memory?: boolean;
-		disk?: boolean;
-		temp?: boolean;
-	};
-}
-
 export class WorkerHelper implements IWorkerHelper {
 	static SERVICE_NAME = SERVICE_NAME;
 

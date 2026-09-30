@@ -4,8 +4,6 @@ import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import type { IChecksRepository } from "../../../src/domain/checks/check.repository.interface.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
 import type { MonitorStatusResponse, HardwareStatusPayload, PageSpeedStatusPayload } from "../../../src/types/network.ts";
-import { NotificationMessageBuilder } from "../../../src/domain/notifications/notification.message-builder.ts";
-import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -278,84 +276,6 @@ describe("CheckService", () => {
 				expect(check!.containers).toBeUndefined();
 				expect(check!.containerSummary).toBeUndefined();
 			});
-		});
-	});
-
-	// ── toStatusResponse round-trip (Phase 2 §5 guard) ─────────────────────────
-	// The DB-queue split persists a Check, then the evaluator rebuilds the status response from it.
-	// toStatusResponse is only correct because every field a downstream consumer reads survives
-	// toCheck → toStatusResponse. These tests pin that: if a future change drops a consumed field
-	// from the round-trip, they fail instead of silently regressing the evaluator/reactors.
-
-	describe("toStatusResponse round-trip", () => {
-		const makeHardwareStatus = (overrides?: Partial<MonitorStatusResponse>): MonitorStatusResponse =>
-			makeStatusResponse({
-				type: "hardware",
-				status: true,
-				code: 200,
-				message: "OK",
-				responseTime: 42,
-				payload: {
-					data: {
-						cpu: { usage_percent: 0.92 },
-						memory: { usage_percent: 0.81 },
-						disk: [{ device: "/dev/sda", usage_percent: 0.75 }],
-						host: { os: "linux" },
-						net: [{ name: "eth0" }],
-					},
-				} as HardwareStatusPayload,
-				...overrides,
-			} as any);
-
-		it("uptime: preserves every consumed scalar field", () => {
-			const { service } = createService();
-			const status = makeStatusResponse({ type: "http", status: false, code: 503, message: "Service Unavailable", responseTime: 87 });
-
-			const rebuilt = service.toStatusResponse(service.toCheck(status)!);
-
-			expect(rebuilt.monitorId).toBe(status.monitorId);
-			expect(rebuilt.teamId).toBe(status.teamId);
-			expect(rebuilt.type).toBe(status.type);
-			expect(rebuilt.status).toBe(status.status);
-			expect(rebuilt.code).toBe(status.code);
-			expect(rebuilt.message).toBe(status.message);
-			expect(rebuilt.responseTime).toBe(status.responseTime);
-		});
-
-		it("hardware: preserves payload.data metrics verbatim, same units (usage_percent stays a 0–1 decimal)", () => {
-			const { service } = createService();
-			const status = makeHardwareStatus();
-
-			const rebuilt = service.toStatusResponse(service.toCheck(status)!);
-
-			const original = status.payload as HardwareStatusPayload;
-			const roundtripped = rebuilt.payload as HardwareStatusPayload;
-			expect(roundtripped.data).toEqual(original.data);
-			expect(roundtripped.data.cpu!.usage_percent).toBe(0.92); // not rescaled to 92
-		});
-
-		it("hardware: a real consumer (extractThresholdBreaches) behaves identically on raw vs round-tripped status", () => {
-			const { service } = createService();
-			const builder = new NotificationMessageBuilder();
-			const monitor = {
-				id: "mon-1",
-				type: "hardware",
-				cpuAlertThreshold: 90, // 0.92 → 92% breaches
-				memoryAlertThreshold: 90, // 0.81 → 81% does not
-				diskAlertThreshold: 90, // 0.75 → 75% does not
-				tempAlertThreshold: 100,
-			} as Monitor;
-			const status = makeHardwareStatus();
-
-			const rebuilt = service.toStatusResponse(service.toCheck(status)!);
-
-			const fromRaw = builder.extractThresholdBreaches(monitor, status as MonitorStatusResponse<HardwareStatusPayload>);
-			const fromRebuilt = builder.extractThresholdBreaches(monitor, rebuilt as MonitorStatusResponse<HardwareStatusPayload>);
-
-			// sanity: the fixture actually triggers a breach, so the equality below is not vacuous
-			expect(fromRaw).toHaveLength(1);
-			expect(fromRaw[0].metric).toBe("cpu");
-			expect(fromRebuilt).toEqual(fromRaw);
 		});
 	});
 

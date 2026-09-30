@@ -232,7 +232,7 @@ Request → Controller → Service → Repository → MongoDB (Mongoose)
 
 **How to apply:** when adding a new feature, the pattern is — **add a repository method** for any new DB query, **call it from a service**, **expose it via a controller**. If a service constructs a `MonitorModel.findOne({...})`, you've broken the rule; the query belongs in the repository.
 
-- **Controllers** (`server/src/controllers/`) handle HTTP concerns only: parse params, call the service, return via the `responseHandler` middleware. No business logic.
+- **Controllers** (`server/src/api/controllers/`) handle HTTP concerns only. Each method is annotated `Handler` (from `controllerUtils.ts`), parses the request with a Zod schema, calls the service with the parse result, and writes `res.json({ success, msg, data })`. `Handler` types the response body as the envelope, so any other shape is a compile error. No wrapper: Express 5 forwards a rejected promise to `handleErrors`. No business logic.
 - **Services** (`server/src/service/business/`) contain all business logic. They throw `AppError` on validation/auth failures; they do not write directly to MongoDB.
 - **Repositories** (`server/src/repositories/`) are the sole layer that talks to MongoDB. They expose clean query methods (`findByMonitorId`, `createCheck`, `updateStatusWindowAndChecks`) and return entities — never Mongoose documents — via a `toEntity` private helper.
 
