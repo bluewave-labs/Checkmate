@@ -704,6 +704,179 @@
 				},
 				"required": ["monitorData", "monitorStats"]
 			},
+			"DockerContainer": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"image": {
+						"type": "string"
+					},
+					"state": {
+						"type": "string",
+						"enum": ["created", "running", "paused", "restarting", "removing", "exited", "dead"]
+					},
+					"status": {
+						"type": "string"
+					},
+					"health": {
+						"type": "string",
+						"enum": ["healthy", "unhealthy", "starting", "none"]
+					},
+					"cpuPct": {
+						"type": "number"
+					},
+					"memoryUsedBytes": {
+						"type": "number"
+					},
+					"memoryLimitBytes": {
+						"type": "number"
+					},
+					"memoryPct": {
+						"type": "number"
+					},
+					"restartCount": {
+						"type": "number"
+					},
+					"startedAt": {
+						"type": "string"
+					},
+					"ports": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"privatePort": {
+									"type": "number"
+								},
+								"protocol": {
+									"type": "string",
+									"enum": ["tcp", "udp", "sctp"]
+								},
+								"publicPort": {
+									"type": "number"
+								},
+								"hostIp": {
+									"type": "string"
+								}
+							},
+							"required": ["privatePort", "protocol"]
+						}
+					},
+					"mounts": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"type": {
+									"type": "string"
+								},
+								"name": {
+									"type": "string"
+								},
+								"source": {
+									"type": "string"
+								},
+								"destination": {
+									"type": "string"
+								},
+								"mode": {
+									"type": "string"
+								},
+								"rw": {
+									"type": "boolean"
+								}
+							},
+							"required": ["type", "source", "destination", "mode", "rw"]
+						}
+					},
+					"exitCode": {
+						"type": "number"
+					}
+				},
+				"required": ["id", "name", "image", "state", "status", "health"]
+			},
+			"DockerLogPage": {
+				"type": "object",
+				"properties": {
+					"logs": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/DockerLog"
+						}
+					},
+					"nextCursor": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"required": ["logs", "nextCursor"]
+			},
+			"DockerLog": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"metadata": {
+						"type": "object",
+						"properties": {
+							"monitorId": {
+								"type": "string"
+							},
+							"teamId": {
+								"type": "string"
+							},
+							"containerId": {
+								"type": "string"
+							},
+							"containerName": {
+								"type": "string"
+							}
+						},
+						"required": ["monitorId", "teamId", "containerId", "containerName"]
+					},
+					"lines": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"ts": {
+									"type": "string"
+								},
+								"stream": {
+									"type": "string",
+									"enum": ["stdout", "stderr"]
+								},
+								"text": {
+									"type": "string"
+								}
+							},
+							"required": ["ts", "stream", "text"]
+						}
+					},
+					"gap": {
+						"type": "boolean"
+					},
+					"checkedAt": {
+						"type": "string"
+					},
+					"expiry": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					}
+				},
+				"required": ["id", "metadata", "lines", "gap", "checkedAt", "expiry", "createdAt", "updatedAt"]
+			},
 			"Monitor": {
 				"type": "object",
 				"properties": {
@@ -8054,97 +8227,7 @@
 																"containers": {
 																	"type": "array",
 																	"items": {
-																		"type": "object",
-																		"properties": {
-																			"id": {
-																				"type": "string"
-																			},
-																			"name": {
-																				"type": "string"
-																			},
-																			"image": {
-																				"type": "string"
-																			},
-																			"state": {
-																				"type": "string",
-																				"enum": ["created", "running", "paused", "restarting", "removing", "exited", "dead"]
-																			},
-																			"status": {
-																				"type": "string"
-																			},
-																			"health": {
-																				"type": "string",
-																				"enum": ["healthy", "unhealthy", "starting", "none"]
-																			},
-																			"cpuPct": {
-																				"type": "number"
-																			},
-																			"memoryUsedBytes": {
-																				"type": "number"
-																			},
-																			"memoryLimitBytes": {
-																				"type": "number"
-																			},
-																			"memoryPct": {
-																				"type": "number"
-																			},
-																			"restartCount": {
-																				"type": "number"
-																			},
-																			"startedAt": {
-																				"type": "string"
-																			},
-																			"ports": {
-																				"type": "array",
-																				"items": {
-																					"type": "object",
-																					"properties": {
-																						"privatePort": {
-																							"type": "number"
-																						},
-																						"protocol": {
-																							"type": "string",
-																							"enum": ["tcp", "udp", "sctp"]
-																						},
-																						"publicPort": {
-																							"type": "number"
-																						},
-																						"hostIp": {
-																							"type": "string"
-																						}
-																					},
-																					"required": ["privatePort", "protocol"]
-																				}
-																			},
-																			"mounts": {
-																				"type": "array",
-																				"items": {
-																					"type": "object",
-																					"properties": {
-																						"type": {
-																							"type": "string"
-																						},
-																						"name": {
-																							"type": "string"
-																						},
-																						"source": {
-																							"type": "string"
-																						},
-																						"destination": {
-																							"type": "string"
-																						},
-																						"mode": {
-																							"type": "string"
-																						},
-																						"rw": {
-																							"type": "boolean"
-																						}
-																					},
-																					"required": ["type", "source", "destination", "mode", "rw"]
-																				}
-																			}
-																		},
-																		"required": ["id", "name", "image", "state", "status", "health"]
+																		"$ref": "#/components/schemas/DockerContainer"
 																	}
 																},
 																"summary": {
@@ -8619,97 +8702,7 @@
 															"nullable": true,
 															"properties": {
 																"container": {
-																	"type": "object",
-																	"properties": {
-																		"id": {
-																			"type": "string"
-																		},
-																		"name": {
-																			"type": "string"
-																		},
-																		"image": {
-																			"type": "string"
-																		},
-																		"state": {
-																			"type": "string",
-																			"enum": ["created", "running", "paused", "restarting", "removing", "exited", "dead"]
-																		},
-																		"status": {
-																			"type": "string"
-																		},
-																		"health": {
-																			"type": "string",
-																			"enum": ["healthy", "unhealthy", "starting", "none"]
-																		},
-																		"cpuPct": {
-																			"type": "number"
-																		},
-																		"memoryUsedBytes": {
-																			"type": "number"
-																		},
-																		"memoryLimitBytes": {
-																			"type": "number"
-																		},
-																		"memoryPct": {
-																			"type": "number"
-																		},
-																		"restartCount": {
-																			"type": "number"
-																		},
-																		"startedAt": {
-																			"type": "string"
-																		},
-																		"ports": {
-																			"type": "array",
-																			"items": {
-																				"type": "object",
-																				"properties": {
-																					"privatePort": {
-																						"type": "number"
-																					},
-																					"protocol": {
-																						"type": "string",
-																						"enum": ["tcp", "udp", "sctp"]
-																					},
-																					"publicPort": {
-																						"type": "number"
-																					},
-																					"hostIp": {
-																						"type": "string"
-																					}
-																				},
-																				"required": ["privatePort", "protocol"]
-																			}
-																		},
-																		"mounts": {
-																			"type": "array",
-																			"items": {
-																				"type": "object",
-																				"properties": {
-																					"type": {
-																						"type": "string"
-																					},
-																					"name": {
-																						"type": "string"
-																					},
-																					"source": {
-																						"type": "string"
-																					},
-																					"destination": {
-																						"type": "string"
-																					},
-																					"mode": {
-																						"type": "string"
-																					},
-																					"rw": {
-																						"type": "boolean"
-																					}
-																				},
-																				"required": ["type", "source", "destination", "mode", "rw"]
-																			}
-																		}
-																	},
-																	"required": ["id", "name", "image", "state", "status", "health"]
+																	"$ref": "#/components/schemas/DockerContainer"
 																},
 																"checkedAt": {
 																	"type": "string"
@@ -8875,78 +8868,7 @@
 											"type": "string"
 										},
 										"data": {
-											"type": "object",
-											"properties": {
-												"logs": {
-													"type": "array",
-													"items": {
-														"type": "object",
-														"properties": {
-															"id": {
-																"type": "string"
-															},
-															"metadata": {
-																"type": "object",
-																"properties": {
-																	"monitorId": {
-																		"type": "string"
-																	},
-																	"teamId": {
-																		"type": "string"
-																	},
-																	"containerId": {
-																		"type": "string"
-																	},
-																	"containerName": {
-																		"type": "string"
-																	}
-																},
-																"required": ["monitorId", "teamId", "containerId", "containerName"]
-															},
-															"lines": {
-																"type": "array",
-																"items": {
-																	"type": "object",
-																	"properties": {
-																		"ts": {
-																			"type": "string"
-																		},
-																		"stream": {
-																			"type": "string",
-																			"enum": ["stdout", "stderr"]
-																		},
-																		"text": {
-																			"type": "string"
-																		}
-																	},
-																	"required": ["ts", "stream", "text"]
-																}
-															},
-															"gap": {
-																"type": "boolean"
-															},
-															"checkedAt": {
-																"type": "string"
-															},
-															"expiry": {
-																"type": "string"
-															},
-															"createdAt": {
-																"type": "string"
-															},
-															"updatedAt": {
-																"type": "string"
-															}
-														},
-														"required": ["id", "metadata", "lines", "gap", "checkedAt", "expiry", "createdAt", "updatedAt"]
-													}
-												},
-												"nextCursor": {
-													"type": "string",
-													"nullable": true
-												}
-											},
-											"required": ["logs", "nextCursor"]
+											"$ref": "#/components/schemas/DockerLogPage"
 										}
 									},
 									"required": ["success", "msg", "data"]

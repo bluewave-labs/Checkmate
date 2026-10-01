@@ -13,11 +13,12 @@ import {
 	ProxyModes,
 } from "@/domain/monitors/monitor.type.js";
 import { DateRanges, SortOrders } from "@/types/query.js";
-import { DockerContainerStates, DockerHealthStatuses, DockerLogStreams, DockerPortProtocols } from "@/domain/docker/docker.type.js";
 import { DOCKER_LOG_PAGE_DEFAULT, DOCKER_LOG_PAGE_MAX } from "@/domain/docker/docker-log.type.js";
 import { isCaptureDockerUrl, isDockerSocketUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
 import { X509Certificate } from "node:crypto";
 import { keyMatchesCertificate, parseCertificates, parsePrivateKey } from "@/utils/pem.js";
+import { dockerContainerInfoSchema, dockerContainerSummarySchema } from "@/domain/docker/docker.schema.js";
+import { dockerLogPageSchema } from "@/domain/docker/docker-log.schema.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
@@ -543,48 +544,6 @@ export const uptimeDetailsResponseSchema = z
 	})
 	.meta({ id: "UptimeDetails" });
 
-// Keep aligned with DockerContainerPort / DockerContainerMount in types/network.ts.
-export const dockerContainerPortResponseSchema = z.object({
-	privatePort: z.number(),
-	protocol: z.enum(DockerPortProtocols),
-	publicPort: z.number().optional(),
-	hostIp: z.string().optional(),
-});
-
-export const dockerContainerMountResponseSchema = z.object({
-	type: z.string(),
-	name: z.string().optional(),
-	source: z.string(),
-	destination: z.string(),
-	mode: z.string(),
-	rw: z.boolean(),
-});
-
-// Keep aligned with DockerContainerInfo / DockerContainerSummary in types/network.ts.
-export const dockerContainerResponseSchema = z.object({
-	id: z.string(),
-	name: z.string(),
-	image: z.string(),
-	state: z.enum(DockerContainerStates),
-	status: z.string(),
-	health: z.enum(DockerHealthStatuses),
-	cpuPct: z.number().optional(),
-	memoryUsedBytes: z.number().optional(),
-	memoryLimitBytes: z.number().optional(),
-	memoryPct: z.number().optional(),
-	restartCount: z.number().optional(),
-	startedAt: z.string().optional(),
-	ports: z.array(dockerContainerPortResponseSchema).optional(),
-	mounts: z.array(dockerContainerMountResponseSchema).optional(),
-});
-
-export const containerSummaryResponseSchema = z.object({
-	total: z.number(),
-	running: z.number(),
-	stopped: z.number(),
-	unhealthy: z.number(),
-});
-
 // Keep aligned with DockerStatsBucket in domain/checks/check.type.ts. The avg fields are
 // null for buckets with no values ($avg skips missing; down checks store no containerSummary).
 export const dockerStatsBucketResponseSchema = z.object({
@@ -608,8 +567,8 @@ export const dockerDetailsResponseSchema = z.object({
 		aggregate: z.array(dockerStatsBucketResponseSchema),
 		latest: z
 			.object({
-				containers: z.array(dockerContainerResponseSchema),
-				summary: containerSummaryResponseSchema.optional(),
+				containers: z.array(dockerContainerInfoSchema),
+				summary: dockerContainerSummarySchema.optional(),
 				checkedAt: z.string(),
 			})
 			.nullable(),
@@ -636,32 +595,11 @@ export const dockerContainerDetailsResponseSchema = z.object({
 		restartsInRange: z.number(),
 		latest: z
 			.object({
-				container: dockerContainerResponseSchema,
+				container: dockerContainerInfoSchema,
 				checkedAt: z.string(),
 			})
 			.nullable(),
 	}),
 });
 
-export const dockerLogLineResponseSchema = z.object({
-	ts: z.string(),
-	stream: z.enum(DockerLogStreams),
-	text: z.string(),
-});
-
-export const dockerLogResponseSchema = z.object({
-	id: z.string(),
-	metadata: z.object({ monitorId: z.string(), teamId: z.string(), containerId: z.string(), containerName: z.string() }),
-	lines: z.array(dockerLogLineResponseSchema),
-	gap: z.boolean(),
-	checkedAt: z.string(),
-	expiry: z.string(),
-	createdAt: z.string(),
-	updatedAt: z.string(),
-});
-
-// Response of GET /monitors/docker/details/{monitorId}/containers/{containerName}/logs.
-export const dockerContainerLogsResponseSchema = z.object({
-	logs: z.array(dockerLogResponseSchema),
-	nextCursor: z.string().nullable(),
-});
+export const dockerContainerLogsResponseSchema = dockerLogPageSchema;
