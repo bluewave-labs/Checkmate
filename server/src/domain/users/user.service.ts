@@ -38,7 +38,7 @@ export interface IUserService {
 	getAllUsers(): Promise<UserResponse[]>;
 	getUserById(roles: UserRole[], userId: string): Promise<UserResponse>;
 	editUserById(userId: string, patch: Partial<User>): Promise<void>;
-	setPasswordByUserId(userId: string, password: string): Promise<User>;
+	setPasswordByUserId(userId: string, password: string): Promise<UserResponse>;
 }
 
 export class UserService implements IUserService {
@@ -145,7 +145,6 @@ export class UserService implements IUserService {
 			details: { userId: newUser.id },
 		});
 
-		delete newUser.profileImage;
 		delete newUser.avatarImage;
 
 		const appSettings = await this.settingsService.getSettings();
@@ -176,7 +175,7 @@ export class UserService implements IUserService {
 			});
 		}
 
-		return { user: this.toResponse(newUser), token };
+		return { user: newUser, token };
 	};
 
 	createUser = async (userData: Partial<User>, teamId: string, actorRoles: UserRole[], file: Express.Multer.File | null) => {
@@ -211,7 +210,7 @@ export class UserService implements IUserService {
 
 		newUser.avatarImage = undefined;
 
-		return this.toResponse(newUser);
+		return newUser;
 	};
 
 	loginUser = async (email: string, password: string) => {
@@ -224,17 +223,12 @@ export class UserService implements IUserService {
 			throw new AppError({ message: "Incorrect password", service: SERVICE_NAME, status: 401 });
 		}
 
-		// Remove password from user object.  Should this be abstracted to DB layer?
-		const userWithoutPassword = { ...user };
-		userWithoutPassword.password = "";
-		userWithoutPassword.avatarImage = "";
+		const userResponse = this.toResponse(user);
 
 		// Happy path, return token
 		const appSettings = await this.settingsService.getSettings();
-		const token = this.issueToken(userWithoutPassword, appSettings);
-		// reset avatar image
-		userWithoutPassword.avatarImage = user.avatarImage;
-		return { user: this.toResponse(userWithoutPassword), token };
+		const token = this.issueToken({ ...userResponse, avatarImage: "" }, appSettings);
+		return { user: userResponse, token };
 	};
 
 	editUser = async (
@@ -258,7 +252,7 @@ export class UserService implements IUserService {
 			delete updates.newPassword;
 		}
 
-		return this.toResponse(await this.usersRepository.updateById(currentUserId, updates, file));
+		return await this.usersRepository.updateById(currentUserId, updates, file);
 	};
 
 	checkSuperadminExists = async () => {
@@ -310,12 +304,10 @@ export class UserService implements IUserService {
 		await this.usersRepository.updateById(existingUser.id, { password: hashedPassword }, null);
 		await this.recoveryTokensRepository.deleteManyByEmail(existingUser.email);
 
-		existingUser.password = "";
-		existingUser.profileImage = undefined;
+		const userResponse = this.toResponse(existingUser);
+		const token = this.issueToken(userResponse, await this.settingsService.getSettings());
 
-		const token = this.issueToken(existingUser, await this.settingsService.getSettings());
-
-		return { user: this.toResponse(existingUser), token };
+		return { user: userResponse, token };
 	};
 
 	deleteUser = async ({ userId, teamId, roles }: { userId: string; teamId: string; roles: UserRole[] }) => {
@@ -383,14 +375,14 @@ export class UserService implements IUserService {
 	};
 
 	getAllUsers = async () => {
-		return (await this.usersRepository.findAll()).map(this.toResponse);
+		return await this.usersRepository.findAll();
 	};
 
 	getUserById = async (roles: UserRole[], userId: string) => {
 		if (!roles.includes("superadmin") && !roles.includes("admin")) {
 			throw new AppError({ message: "Insufficient permissions", service: SERVICE_NAME, status: 403 });
 		}
-		return this.toResponse(await this.usersRepository.findById(userId));
+		return await this.usersRepository.findById(userId);
 	};
 
 	editUserById = async (userId: string, patch: Partial<User>) => {
