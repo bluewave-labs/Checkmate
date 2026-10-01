@@ -1,7 +1,6 @@
 import { IInviteController } from "@/api/controllers/inviteController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
 import { inviteBodyValidation, inviteVerificationBodyValidation } from "@/api/validation/authValidation.js";
-import { unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
 import { inviteSchema } from "@/domain/invites/invite.schema.js";
 
 export const inviteRoutes: RouteTable<IInviteController> = {
