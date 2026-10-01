@@ -1,6 +1,5 @@
 import { IMaintenanceWindowController } from "@/api/controllers/maintenanceWindowController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
-import { unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
 import {
 	createMaintenanceWindowBodyValidation,
 	deleteMaintenanceWindowByIdParamValidation,
@@ -9,7 +8,10 @@ import {
 	getMaintenanceWindowByIdParamValidation,
 	getMaintenanceWindowsByMonitorIdParamValidation,
 	getMaintenanceWindowsByTeamIdQueryValidation,
+	maintenanceWindowListResponseSchema,
+	maintenanceWindowPageResponseSchema,
 } from "@/api/validation/maintenanceWindowValidation.js";
+import { maintenanceWindowSchema } from "@/domain/maintenance-windows/maintenance-window.schema.js";
 
 export const maintenanceWindowRoutes: RouteTable<IMaintenanceWindowController> = {
 	prefix: "/maintenance-window",
@@ -23,7 +25,6 @@ export const maintenanceWindowRoutes: RouteTable<IMaintenanceWindowController> =
 			summary: "Create one or more maintenance windows (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			body: createMaintenanceWindowBodyValidation,
-			response: unknownResponseSchema,
 		},
 		{
 			method: "get",
@@ -31,7 +32,7 @@ export const maintenanceWindowRoutes: RouteTable<IMaintenanceWindowController> =
 			handler: "getMaintenanceWindowsByTeamId",
 			summary: "List maintenance windows for the caller's team",
 			query: getMaintenanceWindowsByTeamIdQueryValidation,
-			response: unknownResponseSchema,
+			response: maintenanceWindowPageResponseSchema,
 		},
 		{
 			method: "get",
@@ -39,7 +40,7 @@ export const maintenanceWindowRoutes: RouteTable<IMaintenanceWindowController> =
 			handler: "getMaintenanceWindowsByMonitorId",
 			summary: "List maintenance windows for a monitor",
 			params: getMaintenanceWindowsByMonitorIdParamValidation,
-			response: unknownResponseSchema,
+			response: maintenanceWindowListResponseSchema,
 		},
 		{
 			method: "get",
@@ -47,7 +48,7 @@ export const maintenanceWindowRoutes: RouteTable<IMaintenanceWindowController> =
 			handler: "getMaintenanceWindowById",
 			summary: "Get a maintenance window by id",
 			params: getMaintenanceWindowByIdParamValidation,
-			response: unknownResponseSchema,
+			response: maintenanceWindowSchema,
 		},
 		{
 			method: "patch",
@@ -57,7 +58,7 @@ export const maintenanceWindowRoutes: RouteTable<IMaintenanceWindowController> =
 			roles: ["admin", "superadmin"],
 			params: editMaintenanceWindowByIdParamValidation,
 			body: editMaintenanceByIdWindowBodyValidation,
-			response: unknownResponseSchema,
+			response: maintenanceWindowSchema,
 		},
 		{
 			method: "delete",

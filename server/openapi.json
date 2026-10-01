@@ -1552,6 +1552,52 @@
 					"updatedAt": "2026-04-15T14:30:00.000Z"
 				}
 			},
+			"MaintenanceWindow": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"monitorIds": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"active": {
+						"type": "boolean"
+					},
+					"name": {
+						"type": "string"
+					},
+					"duration": {
+						"type": "number"
+					},
+					"durationUnit": {
+						"type": "string",
+						"enum": ["seconds", "minutes", "hours", "days"]
+					},
+					"repeat": {
+						"type": "number"
+					},
+					"start": {
+						"type": "string"
+					},
+					"end": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					}
+				},
+				"required": ["id", "monitorIds", "teamId", "active", "name", "duration", "durationUnit", "repeat", "start", "end", "createdAt", "updatedAt"]
+			},
 			"UptimeDetails": {
 				"type": "object",
 				"properties": {
@@ -7680,12 +7726,13 @@
 										},
 										"msg": {
 											"type": "string"
-										},
-										"data": {
-											"nullable": true
 										}
 									},
 									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK"
 								}
 							}
 						}
@@ -7832,10 +7879,22 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"maintenanceWindows": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/MaintenanceWindow"
+													}
+												},
+												"maintenanceWindowCount": {
+													"type": "number"
+												}
+											},
+											"required": ["maintenanceWindows", "maintenanceWindowCount"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -7948,10 +8007,13 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/MaintenanceWindow"
+											}
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -8064,10 +8126,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/MaintenanceWindow"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -8228,10 +8290,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/MaintenanceWindow"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
