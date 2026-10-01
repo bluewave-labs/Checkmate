@@ -1,6 +1,5 @@
 import { IProxiesController } from "@/api/controllers/proxyController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
-import { errorJson } from "@/api/routes/openapiHelpers.js";
 import { proxyResponseSchema } from "@/domain/proxies/proxy.schema.js";
 import {
 	createProxyBodyValidation,
@@ -22,6 +21,7 @@ export const proxyRoutes: RouteTable<IProxiesController> = {
 			handler: "createProxy",
 			summary: "Create a proxy for the caller's team",
 			body: createProxyBodyValidation,
+			errors: { 409: "A proxy with that name already exists" },
 			response: proxyResponseSchema,
 		},
 		{
@@ -45,6 +45,7 @@ export const proxyRoutes: RouteTable<IProxiesController> = {
 			handler: "getProxyById",
 			summary: "Get a proxy by id",
 			params: getProxyByIdParamValidation,
+			errors: { 404: "Proxy not found" },
 			response: proxyResponseSchema,
 		},
 		{
@@ -53,7 +54,7 @@ export const proxyRoutes: RouteTable<IProxiesController> = {
 			handler: "deleteProxy",
 			summary: "Delete a proxy by id",
 			params: deleteProxyParamValidation,
-			spec: (d) => ({ ...d, responses: { ...d.responses, "409": errorJson("Proxy is in use by monitors or set as the global proxy") } }),
+			errors: { 404: "Proxy not found", 409: "Proxy is in use by monitors or set as the global proxy" },
 		},
 		{
 			method: "patch",
@@ -62,6 +63,7 @@ export const proxyRoutes: RouteTable<IProxiesController> = {
 			summary: "Edit a proxy by id",
 			params: editProxyParamValidation,
 			body: editProxyBodyValidation,
+			errors: { 404: "Proxy not found", 409: "A proxy with that name already exists" },
 			response: proxyResponseSchema,
 		},
 	],

@@ -3,6 +3,7 @@ import { MulterError } from "multer";
 import type { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";
 import { ZodError } from "zod";
+import { ErrorBody } from "@/api/routes/openapiHelpers.js";
 
 type ErrorReport = {
 	status: number;
@@ -10,6 +11,12 @@ type ErrorReport = {
 	service: string;
 	method: string;
 	details?: Record<string, unknown>;
+};
+
+const isClientHttpError = (error: unknown): error is { status: number; message: string } => {
+	if (typeof error !== "object" || error === null) return false;
+	const status = (error as { status?: unknown }).status;
+	return typeof status === "number" && status >= 400 && status < 500;
 };
 
 const formatZodIssues = (error: ZodError): string =>
@@ -25,6 +32,9 @@ const describeError = (error: unknown): ErrorReport => {
 	if (error instanceof AppError) {
 		return { status: error.status, message: error.message, service: error.service, method: error.method, details: error.details };
 	}
+	if (isClientHttpError(error)) {
+		return { status: error.status, message: error.message, service: "bodyParser", method: "unknownMethod" };
+	}
 	return { status: 500, message: error instanceof Error ? error.message : "Server error", service: "unknownService", method: "unknownMethod" };
 };
 
@@ -32,7 +42,8 @@ const handleErrors = (logger: ILogger) => (error: unknown, req: Request, res: Re
 	const report = describeError(error);
 	const level = report.status < 500 ? "warn" : "error";
 	logger[level]({ ...report, stack: error instanceof Error ? error.stack : undefined });
-	res.status(report.status).json({ status: report.status, msg: report.message });
+	const body: ErrorBody = { status: report.status, msg: report.message };
+	res.status(body.status).json(body);
 };
 
 export { handleErrors };

@@ -13,6 +13,7 @@ export const geoCheckRoutes: RouteTable<IGeoCheckController> = {
 			path: "/:monitorId",
 			handler: "getGeoChecksByMonitor",
 			summary: "Get geo check results for a monitor",
+			errors: { 404: "Monitor not found" },
 			params: getChecksParamValidation,
 			query: getChecksQueryValidation,
 			response: flatGeoChecksQueryResultSchema,

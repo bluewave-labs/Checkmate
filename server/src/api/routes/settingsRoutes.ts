@@ -20,6 +20,7 @@ export const settingsRoutes: RouteTable<ISettingsController> = {
 			path: "/",
 			handler: "updateAppSettings",
 			summary: "Update application settings (admin/superadmin)",
+			errors: { 422: "Referenced proxy does not exist" },
 			roles: ["admin", "superadmin"],
 			body: updateAppSettingsBodyValidation,
 			response: appSettingsResponseSchema,
