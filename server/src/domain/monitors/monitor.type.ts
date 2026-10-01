@@ -3,7 +3,7 @@ export type { CheckSnapshot } from "@/domain/checks/check.type.js";
 import type { GeoContinent, GroupedGeoCheck } from "@/domain/geo-checks/geo-check.type.js";
 export type { GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
 import http from "node:http";
-import { HardwareStats } from "@/domain/checks/check.type.js";
+import type { HardwareStats } from "@/domain/checks/check.type.js";
 import { MonitorStats } from "@/domain/monitor-stats/monitor-stats.type.js";
 import { DockerLogPage } from "@/domain/docker/docker-log.type.js";
 import { isDockerSocketUrl } from "@/utils/dockerHost.js";

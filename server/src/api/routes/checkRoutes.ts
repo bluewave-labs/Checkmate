@@ -7,8 +7,9 @@ import {
 	getChecksParamValidation,
 	getChecksQueryValidation,
 	deleteChecksParamValidation,
+	paginatedChecksResponseSchema,
+	checksSummaryResponseSchema,
 } from "@/api/validation/checkValidation.js";
-import { unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
 
 export const checkRoutes: RouteTable<ICheckController> = {
 	prefix: "/checks",
@@ -21,7 +22,7 @@ export const checkRoutes: RouteTable<ICheckController> = {
 			handler: "getChecksSummaryByTeamId",
 			summary: "Aggregate check summary for the caller's team",
 			query: getChecksSummaryByTeamIdQueryValidation,
-			response: unknownResponseSchema,
+			response: checksSummaryResponseSchema,
 		},
 		{
 			method: "get",
@@ -29,7 +30,7 @@ export const checkRoutes: RouteTable<ICheckController> = {
 			handler: "getChecksByTeam",
 			summary: "List checks across the team",
 			query: getTeamChecksQueryValidation,
-			response: unknownResponseSchema,
+			response: paginatedChecksResponseSchema,
 		},
 		{
 			method: "delete",
@@ -46,7 +47,7 @@ export const checkRoutes: RouteTable<ICheckController> = {
 			summary: "List checks for a monitor",
 			params: getChecksParamValidation,
 			query: getChecksQueryValidation,
-			response: unknownResponseSchema,
+			response: paginatedChecksResponseSchema,
 		},
 		{
 			method: "delete",

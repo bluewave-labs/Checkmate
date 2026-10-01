@@ -1,133 +1,40 @@
+import type { z } from "zod";
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
-import type { EgressStatus } from "@/domain/egress/egress.type.js";
-import { DockerContainerInfo, DockerContainerSummary } from "@/domain/docker/docker.type.js";
+import type { DockerContainerInfo, DockerContainerSummary } from "@/domain/docker/docker.type.js";
 import type { Response } from "got";
+import {
+	checkAuditsSchema,
+	checkCaptureInfoSchema,
+	checkCpuInfoSchema,
+	checkDiskInfoSchema,
+	checkErrorInfoSchema,
+	checkHostInfoSchema,
+	checkMemoryInfoSchema,
+	checkMetadataSchema,
+	checkNetworkInterfaceInfoSchema,
+	checkSchema,
+	checkSnapshotSchema,
+	checksPageSchema,
+	checksSummarySchema,
+	lighthouseAuditSchema,
+} from "@/domain/checks/check.schema.js";
 
 export const CHECK_TTL_SENTINEL = 366;
 
 export type GotTimings = Response["timings"];
 
-export interface CheckMetadata {
-	monitorId: string;
-	teamId: string;
-	type: MonitorType;
-}
-
-export interface CheckCpuInfo {
-	physical_core?: number;
-	logical_core?: number;
-	frequency?: number;
-	current_frequency?: number;
-	temperature?: number[];
-	free_percent?: number;
-	usage_percent?: number;
-}
-
-export interface CheckMemoryInfo {
-	total_bytes?: number;
-	available_bytes?: number;
-	used_bytes?: number;
-	usage_percent?: number;
-}
-
-export interface CheckHostInfo {
-	os?: string;
-	platform?: string;
-	kernel_version?: string;
-	pretty_name?: string;
-}
-
-export interface CheckCaptureInfo {
-	version?: string;
-	mode?: string;
-}
-
-export interface CheckDiskInfo {
-	device?: string;
-	mountpoint?: string;
-	total_bytes?: number;
-	free_bytes?: number;
-	used_bytes?: number;
-	usage_percent?: number;
-	total_inodes?: number;
-	free_inodes?: number;
-	used_inodes?: number;
-	inodes_usage_percent?: number;
-	read_bytes?: number;
-	write_bytes?: number;
-	read_time?: number;
-	write_time?: number;
-}
-
-export interface CheckErrorInfo {
-	metric: string[];
-	err: string;
-}
-
-export interface CheckNetworkInterfaceInfo {
-	name: string;
-	bytes_sent: number;
-	bytes_recv: number;
-	packets_sent: number;
-	packets_recv: number;
-	err_in: number;
-	err_out: number;
-	drop_in: number;
-	drop_out: number;
-	fifo_in: number;
-	fifo_out: number;
-}
-
-export interface CheckAudits {
-	cls?: ILighthouseAudit;
-	si?: ILighthouseAudit;
-	fcp?: ILighthouseAudit;
-	lcp?: ILighthouseAudit;
-	tbt?: ILighthouseAudit;
-}
-
-export interface ILighthouseAudit {
-	id?: string;
-	title?: string;
-	score?: number | null;
-	displayValue?: string;
-	numericValue?: number;
-	numericUnit?: string;
-}
-
-export interface Check {
-	id: string;
-	metadata: CheckMetadata;
-	status: boolean;
-	responseTime: number;
-	timings?: GotTimings;
-	statusCode: number;
-	message: string;
-	cpu?: CheckCpuInfo;
-	memory?: CheckMemoryInfo;
-	disk?: CheckDiskInfo[];
-	host?: CheckHostInfo;
-	errors?: CheckErrorInfo[];
-	capture?: CheckCaptureInfo;
-	containers?: DockerContainerInfo[];
-	containerSummary?: DockerContainerSummary;
-	net?: CheckNetworkInterfaceInfo[];
-	accessibility?: number;
-	bestPractices?: number;
-	seo?: number;
-	performance?: number;
-	audits?: CheckAudits;
-	// Set on failing checks while the egress check is enabled; absent otherwise.
-	// "degraded": no reliability target was reachable (or the instance was already degraded), so the failure is not attributable to the target.
-	// "ok": a reliability target was reachable.
-	egressStatus?: EgressStatus;
-	createdAt: string;
-	updatedAt: string;
-}
-export interface ChecksQueryResult {
-	checksCount: number;
-	checks: Check[];
-}
+export type CheckMetadata = z.infer<typeof checkMetadataSchema>;
+export type CheckCpuInfo = z.infer<typeof checkCpuInfoSchema>;
+export type CheckMemoryInfo = z.infer<typeof checkMemoryInfoSchema>;
+export type CheckHostInfo = z.infer<typeof checkHostInfoSchema>;
+export type CheckCaptureInfo = z.infer<typeof checkCaptureInfoSchema>;
+export type CheckDiskInfo = z.infer<typeof checkDiskInfoSchema>;
+export type CheckErrorInfo = z.infer<typeof checkErrorInfoSchema>;
+export type CheckNetworkInterfaceInfo = z.infer<typeof checkNetworkInterfaceInfoSchema>;
+export type CheckAudits = z.infer<typeof checkAuditsSchema>;
+export type ILighthouseAudit = z.infer<typeof lighthouseAuditSchema>;
+export type Check = z.infer<typeof checkSchema>;
+export type ChecksQueryResult = z.infer<typeof checksPageSchema>;
 
 export interface PageSpeedChecksResult {
 	monitorType: "pagespeed";
@@ -166,47 +73,14 @@ export interface UptimeChecksResult {
 	avgResponseTime: number;
 }
 
-export interface ChecksSummary {
-	totalChecks: number;
-	downChecks: number;
-}
+export type ChecksSummary = z.infer<typeof checksSummarySchema>;
 
-export interface HasResponseTime {
-	responseTime: number;
-}
+export type CheckSnapshot = z.infer<typeof checkSnapshotSchema>;
+export type SnapshotCpuInfo = NonNullable<CheckSnapshot["cpu"]>;
+export type SnapshotMemoryInfo = NonNullable<CheckSnapshot["memory"]>;
+export type SnapshotDiskInfo = NonNullable<CheckSnapshot["disk"]>[number];
+export type SnapshotHostInfo = NonNullable<CheckSnapshot["host"]>;
 
-export type SnapshotCpuInfo = Pick<
-	CheckCpuInfo,
-	"physical_core" | "logical_core" | "frequency" | "current_frequency" | "temperature" | "usage_percent"
->;
-export type SnapshotMemoryInfo = Pick<CheckMemoryInfo, "total_bytes" | "used_bytes" | "usage_percent">;
-export type SnapshotDiskInfo = Pick<CheckDiskInfo, "device" | "total_bytes" | "used_bytes" | "usage_percent">;
-export type SnapshotHostInfo = Pick<CheckHostInfo, "os" | "platform" | "pretty_name">;
-
-export type CheckSnapshot = Pick<
-	Check,
-	// uptime charts and down check tooltips
-	| "id"
-	| "status"
-	| "responseTime"
-	| "statusCode"
-	| "message"
-	| "createdAt"
-	// pagespeed
-	| "accessibility"
-	| "bestPractices"
-	| "seo"
-	| "performance"
-	| "audits"
-> & {
-	// hardware monitors only
-	cpu?: SnapshotCpuInfo;
-	memory?: SnapshotMemoryInfo;
-	disk?: SnapshotDiskInfo[];
-	host?: SnapshotHostInfo;
-	// Docker Only
-	containerSummary?: DockerContainerSummary;
-};
 export interface HardwareDiskStats {
 	name: string;
 	readSpeed: number;

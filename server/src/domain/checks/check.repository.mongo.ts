@@ -76,6 +76,7 @@ class MongoChecksRepository implements IChecksRepository {
 			physical_core: cpu?.physical_core ?? 0,
 			logical_core: cpu?.logical_core ?? 0,
 			frequency: cpu?.frequency ?? 0,
+			current_frequency: cpu?.current_frequency ?? 0,
 			temperature: cpu?.temperature ?? [],
 			free_percent: cpu?.free_percent ?? 0,
 			usage_percent: cpu?.usage_percent ?? 0,

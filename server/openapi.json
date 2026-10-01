@@ -157,6 +157,565 @@
 					"updatedAt": "2026-04-15T14:30:00.000Z"
 				}
 			},
+			"Check": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"metadata": {
+						"type": "object",
+						"properties": {
+							"monitorId": {
+								"type": "string"
+							},
+							"teamId": {
+								"type": "string"
+							},
+							"type": {
+								"type": "string",
+								"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+							}
+						},
+						"required": ["monitorId", "teamId", "type"]
+					},
+					"status": {
+						"type": "boolean"
+					},
+					"responseTime": {
+						"type": "number"
+					},
+					"timings": {
+						"type": "object",
+						"properties": {
+							"start": {
+								"type": "number"
+							},
+							"socket": {
+								"type": "number"
+							},
+							"lookup": {
+								"type": "number"
+							},
+							"connect": {
+								"type": "number"
+							},
+							"secureConnect": {
+								"type": "number"
+							},
+							"upload": {
+								"type": "number"
+							},
+							"response": {
+								"type": "number"
+							},
+							"end": {
+								"type": "number"
+							},
+							"phases": {
+								"type": "object",
+								"properties": {
+									"wait": {
+										"type": "number"
+									},
+									"dns": {
+										"type": "number"
+									},
+									"tcp": {
+										"type": "number"
+									},
+									"tls": {
+										"type": "number"
+									},
+									"request": {
+										"type": "number"
+									},
+									"firstByte": {
+										"type": "number"
+									},
+									"download": {
+										"type": "number"
+									},
+									"total": {
+										"type": "number"
+									}
+								}
+							}
+						},
+						"required": ["start", "phases"]
+					},
+					"statusCode": {
+						"type": "number"
+					},
+					"message": {
+						"type": "string"
+					},
+					"cpu": {
+						"type": "object",
+						"properties": {
+							"physical_core": {
+								"type": "number"
+							},
+							"logical_core": {
+								"type": "number"
+							},
+							"frequency": {
+								"type": "number"
+							},
+							"current_frequency": {
+								"type": "number"
+							},
+							"temperature": {
+								"type": "array",
+								"items": {
+									"type": "number"
+								}
+							},
+							"free_percent": {
+								"type": "number"
+							},
+							"usage_percent": {
+								"type": "number"
+							}
+						}
+					},
+					"memory": {
+						"type": "object",
+						"properties": {
+							"total_bytes": {
+								"type": "number"
+							},
+							"available_bytes": {
+								"type": "number"
+							},
+							"used_bytes": {
+								"type": "number"
+							},
+							"usage_percent": {
+								"type": "number"
+							}
+						}
+					},
+					"disk": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"device": {
+									"type": "string"
+								},
+								"mountpoint": {
+									"type": "string"
+								},
+								"total_bytes": {
+									"type": "number"
+								},
+								"free_bytes": {
+									"type": "number"
+								},
+								"used_bytes": {
+									"type": "number"
+								},
+								"usage_percent": {
+									"type": "number"
+								},
+								"total_inodes": {
+									"type": "number"
+								},
+								"free_inodes": {
+									"type": "number"
+								},
+								"used_inodes": {
+									"type": "number"
+								},
+								"inodes_usage_percent": {
+									"type": "number"
+								},
+								"read_bytes": {
+									"type": "number"
+								},
+								"write_bytes": {
+									"type": "number"
+								},
+								"read_time": {
+									"type": "number"
+								},
+								"write_time": {
+									"type": "number"
+								}
+							}
+						}
+					},
+					"host": {
+						"type": "object",
+						"properties": {
+							"os": {
+								"type": "string"
+							},
+							"platform": {
+								"type": "string"
+							},
+							"kernel_version": {
+								"type": "string"
+							},
+							"pretty_name": {
+								"type": "string"
+							}
+						}
+					},
+					"errors": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"metric": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								},
+								"err": {
+									"type": "string"
+								}
+							},
+							"required": ["metric", "err"]
+						}
+					},
+					"capture": {
+						"type": "object",
+						"properties": {
+							"version": {
+								"type": "string"
+							},
+							"mode": {
+								"type": "string"
+							}
+						}
+					},
+					"containers": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/DockerContainer"
+						}
+					},
+					"containerSummary": {
+						"type": "object",
+						"properties": {
+							"total": {
+								"type": "number"
+							},
+							"running": {
+								"type": "number"
+							},
+							"stopped": {
+								"type": "number"
+							},
+							"unhealthy": {
+								"type": "number"
+							}
+						},
+						"required": ["total", "running", "stopped", "unhealthy"]
+					},
+					"net": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"name": {
+									"type": "string"
+								},
+								"bytes_sent": {
+									"type": "number"
+								},
+								"bytes_recv": {
+									"type": "number"
+								},
+								"packets_sent": {
+									"type": "number"
+								},
+								"packets_recv": {
+									"type": "number"
+								},
+								"err_in": {
+									"type": "number"
+								},
+								"err_out": {
+									"type": "number"
+								},
+								"drop_in": {
+									"type": "number"
+								},
+								"drop_out": {
+									"type": "number"
+								},
+								"fifo_in": {
+									"type": "number"
+								},
+								"fifo_out": {
+									"type": "number"
+								}
+							},
+							"required": [
+								"name",
+								"bytes_sent",
+								"bytes_recv",
+								"packets_sent",
+								"packets_recv",
+								"err_in",
+								"err_out",
+								"drop_in",
+								"drop_out",
+								"fifo_in",
+								"fifo_out"
+							]
+						}
+					},
+					"accessibility": {
+						"type": "number"
+					},
+					"bestPractices": {
+						"type": "number"
+					},
+					"seo": {
+						"type": "number"
+					},
+					"performance": {
+						"type": "number"
+					},
+					"audits": {
+						"type": "object",
+						"properties": {
+							"cls": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "string"
+									},
+									"title": {
+										"type": "string"
+									},
+									"score": {
+										"type": "number",
+										"nullable": true
+									},
+									"displayValue": {
+										"type": "string"
+									},
+									"numericValue": {
+										"type": "number"
+									},
+									"numericUnit": {
+										"type": "string"
+									}
+								}
+							},
+							"si": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "string"
+									},
+									"title": {
+										"type": "string"
+									},
+									"score": {
+										"type": "number",
+										"nullable": true
+									},
+									"displayValue": {
+										"type": "string"
+									},
+									"numericValue": {
+										"type": "number"
+									},
+									"numericUnit": {
+										"type": "string"
+									}
+								}
+							},
+							"fcp": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "string"
+									},
+									"title": {
+										"type": "string"
+									},
+									"score": {
+										"type": "number",
+										"nullable": true
+									},
+									"displayValue": {
+										"type": "string"
+									},
+									"numericValue": {
+										"type": "number"
+									},
+									"numericUnit": {
+										"type": "string"
+									}
+								}
+							},
+							"lcp": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "string"
+									},
+									"title": {
+										"type": "string"
+									},
+									"score": {
+										"type": "number",
+										"nullable": true
+									},
+									"displayValue": {
+										"type": "string"
+									},
+									"numericValue": {
+										"type": "number"
+									},
+									"numericUnit": {
+										"type": "string"
+									}
+								}
+							},
+							"tbt": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "string"
+									},
+									"title": {
+										"type": "string"
+									},
+									"score": {
+										"type": "number",
+										"nullable": true
+									},
+									"displayValue": {
+										"type": "string"
+									},
+									"numericValue": {
+										"type": "number"
+									},
+									"numericUnit": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					},
+					"egressStatus": {
+						"type": "string",
+						"enum": ["ok", "degraded"]
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					}
+				},
+				"required": ["id", "metadata", "status", "responseTime", "statusCode", "message", "createdAt", "updatedAt"]
+			},
+			"DockerContainer": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"image": {
+						"type": "string"
+					},
+					"state": {
+						"type": "string",
+						"enum": ["created", "running", "paused", "restarting", "removing", "exited", "dead"]
+					},
+					"status": {
+						"type": "string"
+					},
+					"health": {
+						"type": "string",
+						"enum": ["healthy", "unhealthy", "starting", "none"]
+					},
+					"cpuPct": {
+						"type": "number"
+					},
+					"memoryUsedBytes": {
+						"type": "number"
+					},
+					"memoryLimitBytes": {
+						"type": "number"
+					},
+					"memoryPct": {
+						"type": "number"
+					},
+					"restartCount": {
+						"type": "number"
+					},
+					"startedAt": {
+						"type": "string"
+					},
+					"ports": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"privatePort": {
+									"type": "number"
+								},
+								"protocol": {
+									"type": "string",
+									"enum": ["tcp", "udp", "sctp"]
+								},
+								"publicPort": {
+									"type": "number"
+								},
+								"hostIp": {
+									"type": "string"
+								}
+							},
+							"required": ["privatePort", "protocol"]
+						}
+					},
+					"mounts": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"type": {
+									"type": "string"
+								},
+								"name": {
+									"type": "string"
+								},
+								"source": {
+									"type": "string"
+								},
+								"destination": {
+									"type": "string"
+								},
+								"mode": {
+									"type": "string"
+								},
+								"rw": {
+									"type": "boolean"
+								}
+							},
+							"required": ["type", "source", "destination", "mode", "rw"]
+						}
+					},
+					"exitCode": {
+						"type": "number"
+					}
+				},
+				"required": ["id", "name", "image", "state", "status", "health"]
+			},
 			"Incident": {
 				"type": "object",
 				"properties": {
@@ -703,102 +1262,6 @@
 					}
 				},
 				"required": ["monitorData", "monitorStats"]
-			},
-			"DockerContainer": {
-				"type": "object",
-				"properties": {
-					"id": {
-						"type": "string"
-					},
-					"name": {
-						"type": "string"
-					},
-					"image": {
-						"type": "string"
-					},
-					"state": {
-						"type": "string",
-						"enum": ["created", "running", "paused", "restarting", "removing", "exited", "dead"]
-					},
-					"status": {
-						"type": "string"
-					},
-					"health": {
-						"type": "string",
-						"enum": ["healthy", "unhealthy", "starting", "none"]
-					},
-					"cpuPct": {
-						"type": "number"
-					},
-					"memoryUsedBytes": {
-						"type": "number"
-					},
-					"memoryLimitBytes": {
-						"type": "number"
-					},
-					"memoryPct": {
-						"type": "number"
-					},
-					"restartCount": {
-						"type": "number"
-					},
-					"startedAt": {
-						"type": "string"
-					},
-					"ports": {
-						"type": "array",
-						"items": {
-							"type": "object",
-							"properties": {
-								"privatePort": {
-									"type": "number"
-								},
-								"protocol": {
-									"type": "string",
-									"enum": ["tcp", "udp", "sctp"]
-								},
-								"publicPort": {
-									"type": "number"
-								},
-								"hostIp": {
-									"type": "string"
-								}
-							},
-							"required": ["privatePort", "protocol"]
-						}
-					},
-					"mounts": {
-						"type": "array",
-						"items": {
-							"type": "object",
-							"properties": {
-								"type": {
-									"type": "string"
-								},
-								"name": {
-									"type": "string"
-								},
-								"source": {
-									"type": "string"
-								},
-								"destination": {
-									"type": "string"
-								},
-								"mode": {
-									"type": "string"
-								},
-								"rw": {
-									"type": "boolean"
-								}
-							},
-							"required": ["type", "source", "destination", "mode", "rw"]
-						}
-					},
-					"exitCode": {
-						"type": "number"
-					}
-				},
-				"required": ["id", "name", "image", "state", "status", "health"]
 			},
 			"DockerLogPage": {
 				"type": "object",
@@ -4436,10 +4899,19 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"totalChecks": {
+													"type": "number"
+												},
+												"downChecks": {
+													"type": "number"
+												}
+											},
+											"required": ["totalChecks", "downChecks"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -4605,10 +5077,22 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"checksCount": {
+													"type": "number"
+												},
+												"checks": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/Check"
+													}
+												}
+											},
+											"required": ["checksCount", "checks"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -4929,10 +5413,22 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"checksCount": {
+													"type": "number"
+												},
+												"checks": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/Check"
+													}
+												}
+											},
+											"required": ["checksCount", "checks"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
