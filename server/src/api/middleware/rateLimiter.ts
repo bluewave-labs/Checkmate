@@ -1,4 +1,4 @@
-import { ErrorBody } from "@/api/routes/openapiHelpers.js";
+import type { ErrorBody } from "@/api/routes/openapiHelpers.js";
 import rateLimit, { type Options } from "express-rate-limit";
 
 export const tooManyRequests: Options["handler"] = (_req, res) => {

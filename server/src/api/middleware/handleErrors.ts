@@ -3,7 +3,7 @@ import { MulterError } from "multer";
 import type { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";
 import { ZodError } from "zod";
-import { ErrorBody } from "@/api/routes/openapiHelpers.js";
+import type { ErrorBody } from "@/api/routes/openapiHelpers.js";
 
 type ErrorReport = {
 	status: number;
