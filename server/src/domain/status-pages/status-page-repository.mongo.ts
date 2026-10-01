@@ -1,6 +1,6 @@
 import { IStatusPagesRepository } from "@/domain/status-pages/status-page-repository.interface.js";
-import { type StatusPageDocument, StatusPageModel } from "@/domain/status-pages/status-page.model.js";
-import type { StatusPage, StatusPageLogo, StatusPageLogoDocument } from "@/domain/status-pages/status-page.type.js";
+import { type StatusPageDocument, type StatusPageLogoDocument, StatusPageModel } from "@/domain/status-pages/status-page.model.js";
+import type { StatusPage, StatusPageLogo } from "@/domain/status-pages/status-page.type.js";
 import mongoose from "mongoose";
 import { AppError } from "@/utils/AppError.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";

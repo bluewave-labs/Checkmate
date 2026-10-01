@@ -1,6 +1,5 @@
 import { IStatusPageController } from "@/api/controllers/statusPageController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
-import { unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
 import {
 	createStatusPageBodyValidation,
 	getPublicMonitorIncidentsParamValidation,
@@ -8,10 +7,11 @@ import {
 	getStatusPageParamValidation,
 	getStatusPageQueryValidation,
 	publicMonitorIncidentsResponseSchema,
-	publicStatusPagePayloadResponseSchema,
 	resolveStatusPageQueryValidation,
 	statusPageIdParamValidation,
+	statusPageListResponseSchema,
 } from "@/api/validation/statusPageValidation.js";
+import { publicStatusPagePayloadSchema, statusPageSchema } from "@/domain/status-pages/status-page.schema.js";
 
 export const statusPageRoutes: RouteTable<IStatusPageController> = {
 	prefix: "/status-page",
@@ -23,7 +23,7 @@ export const statusPageRoutes: RouteTable<IStatusPageController> = {
 			path: "/team",
 			handler: "getStatusPagesByTeamId",
 			summary: "List status pages for the caller's team",
-			response: unknownResponseSchema,
+			response: statusPageListResponseSchema,
 		},
 		{
 			method: "post",
@@ -33,7 +33,7 @@ export const statusPageRoutes: RouteTable<IStatusPageController> = {
 			roles: ["admin", "superadmin"],
 			upload: "logo",
 			body: createStatusPageBodyValidation,
-			response: unknownResponseSchema,
+			response: statusPageSchema,
 		},
 		{
 			method: "put",
@@ -44,7 +44,7 @@ export const statusPageRoutes: RouteTable<IStatusPageController> = {
 			upload: "logo",
 			params: statusPageIdParamValidation,
 			body: createStatusPageBodyValidation,
-			response: unknownResponseSchema,
+			response: statusPageSchema,
 		},
 		{
 			method: "get",
@@ -53,7 +53,7 @@ export const statusPageRoutes: RouteTable<IStatusPageController> = {
 			summary: "Resolve a published status page by custom domain",
 			auth: "none",
 			query: resolveStatusPageQueryValidation,
-			response: publicStatusPagePayloadResponseSchema,
+			response: publicStatusPagePayloadSchema,
 			spec: (d) => ({ ...d, responses: { ...d.responses, "404": { description: "Status page not found" } } }),
 		},
 		{
@@ -64,7 +64,7 @@ export const statusPageRoutes: RouteTable<IStatusPageController> = {
 			auth: "statusPage",
 			params: getStatusPageParamValidation,
 			query: getStatusPageQueryValidation,
-			response: publicStatusPagePayloadResponseSchema,
+			response: publicStatusPagePayloadSchema,
 			spec: (d) => ({ ...d, responses: { ...d.responses, "404": { description: "Status page not found" } } }),
 		},
 		{

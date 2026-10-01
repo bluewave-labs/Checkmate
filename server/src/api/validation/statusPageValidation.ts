@@ -1,17 +1,11 @@
 import { z } from "zod";
 import { publicIncidentSchema } from "@/domain/incidents/incident.schema.js";
 import { booleanCoercion, dnsHostnameRegex, timezoneValidation } from "./shared.js";
-import {
-	StatusPageTypes,
-	StatusPageThemes,
-	StatusPageThemeModes,
-	StatusPageRanges,
-	StatusPageDayRanges,
-} from "@/domain/status-pages/status-page.type.js";
-import { MonitorTypes, MonitorStatuses } from "@/domain/monitors/monitor.type.js";
+import { StatusPageTypes, StatusPageThemes, StatusPageThemeModes, StatusPageRanges } from "@/domain/status-pages/status-page.type.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
 import { cssReferencesExternalResource } from "@/utils/customCss.js";
 import { ImageMimeTypes } from "@/types/upload.js";
+import { statusPageSchema } from "@/domain/status-pages/status-page.schema.js";
 
 //****************************************
 // Status Page Validations
@@ -102,128 +96,5 @@ export const statusPageIdParamValidation = z.object({
 	id: z.string().min(1, "Status page ID is required"),
 });
 
-// Keep aligned with DailyCheckBucket in domain/checks/check.type.ts. avgResponseTime is null
-// when no check that day recorded a response time ($avg skips missing, $round passes null through).
-export const dailyCheckBucketResponseSchema = z.object({
-	monitorId: z.string(),
-	date: z.string(),
-	totalChecks: z.number(),
-	upChecks: z.number(),
-	downChecks: z.number(),
-	avgResponseTime: z.number().nullable(),
-});
-
-// Keep aligned with CheckSnapshot in domain/checks/check.type.ts.
-export const checkSnapshotResponseSchema = z
-	.object({
-		id: z.string(),
-		status: z.boolean(),
-		responseTime: z.number(),
-		statusCode: z.number(),
-		message: z.string(),
-		createdAt: z.string(),
-		accessibility: z.number().optional(),
-		bestPractices: z.number().optional(),
-		seo: z.number().optional(),
-		performance: z.number().optional(),
-		containerSummary: z.object({ total: z.number(), running: z.number(), stopped: z.number(), unhealthy: z.number() }).optional(),
-	})
-	.passthrough();
-
-// Status page entity as serialized by the repository. Keep aligned with StatusPage in
-// domain/status-pages/status-page.type.ts.
-export const statusPageResponseSchema = z.object({
-	id: z.string(),
-	userId: z.string(),
-	teamId: z.string(),
-	type: z.array(z.enum(StatusPageTypes)),
-	companyName: z.string(),
-	url: z.string(),
-	customDomain: z.string().nullable().optional(),
-	timezone: z.string().optional(),
-	color: z.string(),
-	monitors: z.array(z.string()),
-	subMonitors: z.array(z.string()),
-	originalMonitors: z.array(z.string()).optional(),
-	logo: z.object({ data: z.string(), contentType: z.string() }).nullable().optional(),
-	isPublished: z.boolean(),
-	showCharts: z.boolean(),
-	showUptimePercentage: z.boolean(),
-	showAdminLoginLink: z.boolean(),
-	showInfrastructure: z.boolean(),
-	customCSS: z.string(),
-	theme: z.enum(StatusPageThemes),
-	themeMode: z.enum(StatusPageThemeModes),
-	createdAt: z.string(),
-	updatedAt: z.string(),
-});
-
-// Keep aligned with PublicStatusPageMonitor in domain/status-pages/status-page.type.ts.
-// url/port are present only when the showURL setting is enabled; dailyChecks only when range !== "latest".
-export const publicStatusPageMonitorResponseSchema = z.object({
-	id: z.string(),
-	name: z.string(),
-	type: z.enum(MonitorTypes),
-	status: z.enum(MonitorStatuses),
-	uptimePercentage: z.number().optional(),
-	recentChecks: z.array(checkSnapshotResponseSchema),
-	url: z.string().optional(),
-	port: z.number().optional(),
-	dailyChecks: z.array(dailyCheckBucketResponseSchema).optional(),
-});
-
-// Response of the public status page endpoints. Keep aligned with PublicStatusPagePayload in
-// domain/status-pages/status-page.type.ts; range, bucketTimezone, and checkTTLDays are present only when range !== "latest".
-const publicStatusPagePayloadResponseExample = {
-	statusPage: {
-		id: "65f1c2a4d8b9e0123456789c",
-		userId: "65f1c2a4d8b9e01234567891",
-		teamId: "65f1c2a4d8b9e01234567890",
-		type: ["uptime"],
-		companyName: "Acme",
-		url: "acme-status",
-		customDomain: null,
-		timezone: "America/Toronto",
-		color: "#4169E1",
-		monitors: ["65f1c2a4d8b9e0123456789a"],
-		subMonitors: [],
-		isPublished: true,
-		showCharts: true,
-		showUptimePercentage: true,
-		showAdminLoginLink: false,
-		showInfrastructure: false,
-		customCSS: "",
-		theme: "refined",
-		themeMode: "auto",
-		createdAt: "2026-04-01T10:00:00.000Z",
-		updatedAt: "2026-04-15T14:30:00.000Z",
-	},
-	range: "90d",
-	bucketTimezone: "America/Toronto",
-	checkTTLDays: 30,
-	monitors: [
-		{
-			id: "65f1c2a4d8b9e0123456789a",
-			name: "API",
-			type: "http",
-			status: "up",
-			uptimePercentage: 0.9987,
-			recentChecks: [],
-			dailyChecks: [
-				{ monitorId: "65f1c2a4d8b9e0123456789a", date: "2026-07-19", totalChecks: 2880, upChecks: 2877, downChecks: 3, avgResponseTime: 142 },
-			],
-		},
-	],
-};
-
-export const publicStatusPagePayloadResponseSchema = z
-	.object({
-		statusPage: statusPageResponseSchema,
-		monitors: z.array(publicStatusPageMonitorResponseSchema),
-		range: z.enum(StatusPageDayRanges).optional(),
-		bucketTimezone: z.string().optional(),
-		checkTTLDays: z.number().optional(),
-	})
-	.meta({ id: "PublicStatusPagePayload", example: publicStatusPagePayloadResponseExample });
-
 export const publicMonitorIncidentsResponseSchema = z.object({ incidents: z.array(publicIncidentSchema) });
+export const statusPageListResponseSchema = z.array(statusPageSchema);
