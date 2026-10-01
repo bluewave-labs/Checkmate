@@ -4,6 +4,7 @@ import { GeoContinents } from "@/domain/geo-checks/geo-check.type.js";
 import { MonitorTypes } from "@/domain/monitors/monitor.type.js";
 import { CheckFilters, DateRanges, SortOrders } from "@/types/query.js";
 import { checksPageSchema, checksSummarySchema } from "@/domain/checks/check.schema.js";
+import { flatGeoChecksQueryResultSchema } from "@/domain/geo-checks/geo-check.schema.js";
 
 //****************************************
 // Check Validations
@@ -47,3 +48,4 @@ export const getChecksSummaryByTeamIdQueryValidation = z.object({
 export const deletedCountResponseSchema = z.object({ deletedCount: z.number() });
 export const checksSummaryResponseSchema = checksSummarySchema;
 export const paginatedChecksResponseSchema = checksPageSchema;
+export const flatGeoChecksResponseSchema = flatGeoChecksQueryResultSchema;

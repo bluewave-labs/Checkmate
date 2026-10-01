@@ -1,72 +1,27 @@
-import type { MonitorType } from "@/domain/monitors/monitor.type.js";
+import type { z } from "zod";
+import type {
+	flatGeoCheckSchema,
+	flatGeoChecksQueryResultSchema,
+	geoCheckLocationSchema,
+	geoCheckMetadataSchema,
+	geoCheckResultSchema,
+	geoCheckSchema,
+	geoCheckTimingsSchema,
+	groupedGeoCheckResultSchema,
+	groupedGeoCheckSchema,
+} from "@/domain/geo-checks/geo-check.schema.js";
 
 export const GeoContinents = ["EU", "NA", "AS", "SA", "AF", "OC"] as const;
 export type GeoContinent = (typeof GeoContinents)[number];
 
-export interface GeoCheckMetadata {
-	monitorId: string;
-	teamId: string;
-	type: MonitorType;
-}
+export type GeoCheckMetadata = z.infer<typeof geoCheckMetadataSchema>;
+export type GeoCheckTimings = z.infer<typeof geoCheckTimingsSchema>;
+export type GeoCheckLocation = z.infer<typeof geoCheckLocationSchema>;
+export type GeoCheckResult = z.infer<typeof geoCheckResultSchema>;
+export type GeoCheck = z.infer<typeof geoCheckSchema>;
 
-export interface GeoCheckTimings {
-	total: number;
-	dns: number;
-	tcp: number;
-	tls: number;
-	firstByte: number;
-	download: number;
-}
+export type FlatGeoCheck = z.infer<typeof flatGeoCheckSchema>;
+export type FlatGeoChecksQueryResult = z.infer<typeof flatGeoChecksQueryResultSchema>;
 
-export interface GeoCheckLocation {
-	continent: GeoContinent;
-	region: string;
-	country: string;
-	state: string;
-	city: string;
-	longitude: number;
-	latitude: number;
-}
-
-export interface GeoCheckResult {
-	location: GeoCheckLocation;
-	status: boolean;
-	statusCode: number;
-	timings: GeoCheckTimings;
-}
-
-export interface GeoCheck {
-	id: string;
-	metadata: GeoCheckMetadata;
-	results: GeoCheckResult[];
-	expiry: string;
-	__v: number;
-	createdAt: string;
-	updatedAt: string;
-}
-
-export interface FlatGeoCheck {
-	id: string;
-	monitorId: string;
-	teamId: string;
-	type: string;
-	location: GeoCheckLocation;
-	status: boolean;
-	statusCode: number;
-	timings: GeoCheckTimings;
-	createdAt: string;
-	updatedAt: string;
-}
-
-export interface GroupedGeoCheck {
-	bucketDate: string;
-	continent: GeoContinent;
-	avgResponseTime: number;
-	totalChecks: number;
-	uptimePercentage: number;
-}
-
-export interface GeoChecksResult {
-	monitorType: Exclude<MonitorType, "hardware" | "pagespeed">;
-	groupedGeoChecks: GroupedGeoCheck[];
-}
+export type GroupedGeoCheck = z.infer<typeof groupedGeoCheckSchema>;
+export type GroupedGeoCheckResult = z.infer<typeof groupedGeoCheckResultSchema>;

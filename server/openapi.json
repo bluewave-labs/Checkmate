@@ -716,6 +716,89 @@
 				},
 				"required": ["id", "name", "image", "state", "status", "health"]
 			},
+			"FlatGeoCheck": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"monitorId": {
+						"type": "string"
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string",
+						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+					},
+					"location": {
+						"type": "object",
+						"properties": {
+							"continent": {
+								"type": "string",
+								"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
+							},
+							"region": {
+								"type": "string"
+							},
+							"country": {
+								"type": "string"
+							},
+							"state": {
+								"type": "string"
+							},
+							"city": {
+								"type": "string"
+							},
+							"longitude": {
+								"type": "number"
+							},
+							"latitude": {
+								"type": "number"
+							}
+						},
+						"required": ["continent", "region", "country", "state", "city", "longitude", "latitude"]
+					},
+					"status": {
+						"type": "boolean"
+					},
+					"statusCode": {
+						"type": "number"
+					},
+					"timings": {
+						"type": "object",
+						"properties": {
+							"total": {
+								"type": "number"
+							},
+							"dns": {
+								"type": "number"
+							},
+							"tcp": {
+								"type": "number"
+							},
+							"tls": {
+								"type": "number"
+							},
+							"firstByte": {
+								"type": "number"
+							},
+							"download": {
+								"type": "number"
+							}
+						},
+						"required": ["total", "dns", "tcp", "tls", "firstByte", "download"]
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					}
+				},
+				"required": ["id", "monitorId", "teamId", "type", "location", "status", "statusCode", "timings", "createdAt", "updatedAt"]
+			},
 			"Incident": {
 				"type": "object",
 				"properties": {
@@ -1202,66 +1285,75 @@
 						"required": ["monitor", "groupedChecks", "groupedUpChecks", "groupedDownChecks", "groupedAvgResponseTime", "groupedUptimePercentage"]
 					},
 					"monitorStats": {
-						"type": "object",
-						"nullable": true,
-						"properties": {
-							"id": {
-								"type": "string"
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/MonitorStats"
 							},
-							"monitorId": {
-								"type": "string"
-							},
-							"avgResponseTime": {
-								"type": "number"
-							},
-							"maxResponseTime": {
-								"type": "number"
-							},
-							"totalChecks": {
-								"type": "number"
-							},
-							"totalUpChecks": {
-								"type": "number"
-							},
-							"totalDownChecks": {
-								"type": "number"
-							},
-							"uptimePercentage": {
-								"type": "number"
-							},
-							"lastCheckTimestamp": {
-								"type": "number"
-							},
-							"lastResponseTime": {
-								"type": "number"
-							},
-							"timeOfLastFailure": {
-								"type": "number"
-							},
-							"createdAt": {
-								"type": "string"
-							},
-							"updatedAt": {
-								"type": "string"
+							{
+								"nullable": true
 							}
-						},
-						"required": [
-							"id",
-							"monitorId",
-							"avgResponseTime",
-							"maxResponseTime",
-							"totalChecks",
-							"totalUpChecks",
-							"totalDownChecks",
-							"uptimePercentage",
-							"lastCheckTimestamp",
-							"lastResponseTime",
-							"createdAt",
-							"updatedAt"
 						]
 					}
 				},
 				"required": ["monitorData", "monitorStats"]
+			},
+			"MonitorStats": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"monitorId": {
+						"type": "string"
+					},
+					"avgResponseTime": {
+						"type": "number"
+					},
+					"maxResponseTime": {
+						"type": "number"
+					},
+					"totalChecks": {
+						"type": "number"
+					},
+					"totalUpChecks": {
+						"type": "number"
+					},
+					"totalDownChecks": {
+						"type": "number"
+					},
+					"uptimePercentage": {
+						"type": "number"
+					},
+					"lastCheckTimestamp": {
+						"type": "number"
+					},
+					"lastResponseTime": {
+						"type": "number"
+					},
+					"timeOfLastFailure": {
+						"type": "number"
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"monitorId",
+					"avgResponseTime",
+					"maxResponseTime",
+					"totalChecks",
+					"totalUpChecks",
+					"totalDownChecks",
+					"uptimePercentage",
+					"lastCheckTimestamp",
+					"lastResponseTime",
+					"createdAt",
+					"updatedAt"
+				]
 			},
 			"DockerLogPage": {
 				"type": "object",
@@ -5860,10 +5952,22 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"geoChecksCount": {
+													"type": "number"
+												},
+												"geoChecks": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/FlatGeoCheck"
+													}
+												}
+											},
+											"required": ["geoChecksCount", "geoChecks"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -8754,62 +8858,13 @@
 													"required": ["aggregateData", "upChecks", "aggregate", "latest"]
 												},
 												"monitorStats": {
-													"type": "object",
-													"nullable": true,
-													"properties": {
-														"id": {
-															"type": "string"
+													"anyOf": [
+														{
+															"$ref": "#/components/schemas/MonitorStats"
 														},
-														"monitorId": {
-															"type": "string"
-														},
-														"avgResponseTime": {
-															"type": "number"
-														},
-														"maxResponseTime": {
-															"type": "number"
-														},
-														"totalChecks": {
-															"type": "number"
-														},
-														"totalUpChecks": {
-															"type": "number"
-														},
-														"totalDownChecks": {
-															"type": "number"
-														},
-														"uptimePercentage": {
-															"type": "number"
-														},
-														"lastCheckTimestamp": {
-															"type": "number"
-														},
-														"lastResponseTime": {
-															"type": "number"
-														},
-														"timeOfLastFailure": {
-															"type": "number"
-														},
-														"createdAt": {
-															"type": "string"
-														},
-														"updatedAt": {
-															"type": "string"
+														{
+															"nullable": true
 														}
-													},
-													"required": [
-														"id",
-														"monitorId",
-														"avgResponseTime",
-														"maxResponseTime",
-														"totalChecks",
-														"totalUpChecks",
-														"totalDownChecks",
-														"uptimePercentage",
-														"lastCheckTimestamp",
-														"lastResponseTime",
-														"createdAt",
-														"updatedAt"
 													]
 												}
 											},
@@ -9545,10 +9600,38 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"groupedGeoChecks": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"bucketDate": {
+																"type": "string"
+															},
+															"continent": {
+																"type": "string",
+																"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
+															},
+															"avgResponseTime": {
+																"type": "number"
+															},
+															"totalChecks": {
+																"type": "number"
+															},
+															"uptimePercentage": {
+																"type": "number"
+															}
+														},
+														"required": ["bucketDate", "continent", "avgResponseTime", "totalChecks", "uptimePercentage"]
+													}
+												}
+											},
+											"required": ["groupedGeoChecks"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}

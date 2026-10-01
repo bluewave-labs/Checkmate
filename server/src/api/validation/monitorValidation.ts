@@ -2,6 +2,7 @@ import { z } from "zod";
 import RE2 from "re2";
 import { booleanCoercion, dnsHostnameRegex, dnsServerValidation } from "./shared.js";
 import { GeoContinents } from "@/domain/geo-checks/geo-check.type.js";
+import { groupedGeoCheckResultSchema } from "@/domain/geo-checks/geo-check.schema.js";
 import {
 	DnsRecordTypes,
 	HttpMethods,
@@ -19,6 +20,7 @@ import { X509Certificate } from "node:crypto";
 import { keyMatchesCertificate, parseCertificates, parsePrivateKey } from "@/utils/pem.js";
 import { dockerContainerInfoSchema, dockerContainerSummarySchema } from "@/domain/docker/docker.schema.js";
 import { dockerLogPageSchema } from "@/domain/docker/docker-log.schema.js";
+import { monitorStatsSchema } from "@/domain/monitor-stats/monitor-stats.schema.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
@@ -510,22 +512,7 @@ export const groupedUptimeCheckResponseSchema = groupedCheckResponseSchema.exten
 	avgDownload: z.number(),
 });
 
-// Keep aligned with MonitorStats in domain/monitor-stats/monitor-stats.type.ts.
-export const monitorStatsResponseSchema = z.object({
-	id: z.string(),
-	monitorId: z.string(),
-	avgResponseTime: z.number(),
-	maxResponseTime: z.number(),
-	totalChecks: z.number(),
-	totalUpChecks: z.number(),
-	totalDownChecks: z.number(),
-	uptimePercentage: z.number(),
-	lastCheckTimestamp: z.number(),
-	lastResponseTime: z.number(),
-	timeOfLastFailure: z.number().optional(),
-	createdAt: z.string(),
-	updatedAt: z.string(),
-});
+export const groupedGeoCheckResultResponseSchema = groupedGeoCheckResultSchema;
 
 // Response of GET /monitors/uptime/details/{monitorId}. Keep aligned with
 // UptimeDetailsResult in domain/monitors/monitor.type.ts; the monitor here is the
@@ -540,7 +527,7 @@ export const uptimeDetailsResponseSchema = z
 			groupedAvgResponseTime: z.number(),
 			groupedUptimePercentage: z.number(),
 		}),
-		monitorStats: monitorStatsResponseSchema.nullable(),
+		monitorStats: monitorStatsSchema.or(z.null()),
 	})
 	.meta({ id: "UptimeDetails" });
 
@@ -573,7 +560,7 @@ export const dockerDetailsResponseSchema = z.object({
 			})
 			.nullable(),
 	}),
-	monitorStats: monitorStatsResponseSchema.nullable(),
+	monitorStats: monitorStatsSchema.or(z.null()),
 });
 
 // Keep aligned with DockerContainerStatsBucket in domain/checks/check.type.ts.

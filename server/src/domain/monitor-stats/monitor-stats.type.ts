@@ -1,21 +1,10 @@
+import type { z } from "zod";
+import type { monitorStatsSchema } from "@/domain/monitor-stats/monitor-stats.schema.js";
+
 export interface CheckResultInput {
 	status: boolean;
 	responseTime: number;
 	now: number;
 }
 
-export interface MonitorStats {
-	id: string;
-	monitorId: string;
-	avgResponseTime: number;
-	maxResponseTime: number;
-	totalChecks: number;
-	totalUpChecks: number;
-	totalDownChecks: number;
-	uptimePercentage: number;
-	lastCheckTimestamp: number;
-	lastResponseTime: number;
-	timeOfLastFailure?: number;
-	createdAt: string;
-	updatedAt: string;
-}
+export type MonitorStats = z.infer<typeof monitorStatsSchema>;

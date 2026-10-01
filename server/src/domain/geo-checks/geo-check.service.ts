@@ -1,8 +1,7 @@
-import type { GeoCheck } from "@/domain/geo-checks/geo-check.type.js";
+import type { FlatGeoChecksQueryResult, GeoCheck, GeoCheckResult, GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
 import type { Monitor } from "@/domain/monitors/monitor.type.js";
-import type { GeoCheckResult, GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
 import { Types } from "mongoose";
-import type { FlatGeoChecksQueryResult, IGeoChecksRepository } from "@/domain/geo-checks/geo-check.repository.interface.js";
+import type { IGeoChecksRepository } from "@/domain/geo-checks/geo-check.repository.interface.js";
 import type { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import type { IGlobalPingService } from "@/service/globalPingService.js";
 import type { ILogger } from "@/utils/logger.js";

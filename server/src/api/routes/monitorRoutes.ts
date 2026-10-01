@@ -27,6 +27,7 @@ import {
 	dockerContainerLogsResponseSchema,
 	monitorResponseSchema,
 	uptimeDetailsResponseSchema,
+	groupedGeoCheckResultResponseSchema,
 } from "@/api/validation/monitorValidation.js";
 import { updateNotificationsValidation } from "@/api/validation/notificationValidation.js";
 
@@ -113,7 +114,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Get geo check results for a monitor",
 			params: getMonitorByIdParamValidation,
 			query: getMonitorByIdQueryValidation,
-			response: unknownResponseSchema,
+			response: groupedGeoCheckResultResponseSchema,
 		},
 		{
 			method: "post",

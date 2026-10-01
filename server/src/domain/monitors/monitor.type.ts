@@ -1,7 +1,7 @@
 import type { CheckSnapshot, DockerContainerStats, DockerStats } from "@/domain/checks/check.type.js";
 export type { CheckSnapshot } from "@/domain/checks/check.type.js";
-import type { GeoContinent, GroupedGeoCheck } from "@/domain/geo-checks/geo-check.type.js";
-export type { GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
+import type { GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
+export type { GeoContinent, GroupedGeoCheckResult } from "@/domain/geo-checks/geo-check.type.js";
 import http from "node:http";
 import type { HardwareStats } from "@/domain/checks/check.type.js";
 import { MonitorStats } from "@/domain/monitor-stats/monitor-stats.type.js";
@@ -179,10 +179,6 @@ export interface MonitorsWithChecksByTeamIdResult {
 	summary: MonitorsSummary | null;
 	count: number;
 	monitors: Monitor[];
-}
-
-export interface GroupedGeoCheckResult {
-	groupedGeoChecks: GroupedGeoCheck[];
 }
 
 export interface UptimeDetailsResult {
