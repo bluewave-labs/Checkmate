@@ -6,6 +6,8 @@ export type QueueMode = (typeof QueueModes)[number];
 
 export const LogLevels = ["error", "warn", "info", "debug"] as const;
 export type LogLevel = (typeof LogLevels)[number];
+import type { z } from "zod";
+import type { emailTransportConfigSchema, settingsSchema, settingsThresholdsSchema } from "./app-settings.schema.js";
 
 // Rendered into GET /config.js as window.__CHECKMATE_CONFIG__; keys left unset
 // fall back to the client's same-origin defaults.
@@ -15,63 +17,10 @@ export type ClientRuntimeConfig = {
 	logLevel?: LogLevel;
 };
 
-export interface SettingsThresholds {
-	cpu?: number;
-	memory?: number;
-	disk?: number;
-	temperature?: number;
-}
-
 export type SettingsUpdate = {
 	[K in keyof Settings]?: Settings[K] | null;
 };
 
-export interface Settings {
-	id: string;
-	checkTTL: number;
-	language: string;
-	jwtSecret?: string;
-	pagespeedApiKey?: string;
-	systemEmailHost?: string;
-	systemEmailPort?: number;
-	systemEmailAddress?: string;
-	systemEmailDisplayName?: string;
-	systemEmailPassword?: string;
-	systemEmailUser?: string;
-	systemEmailConnectionHost?: string;
-	systemEmailTLSServername?: string;
-	systemEmailSecure: boolean;
-	systemEmailPool: boolean;
-	systemEmailIgnoreTLS: boolean;
-	systemEmailRequireTLS: boolean;
-	systemEmailRejectUnauthorized: boolean;
-	showURL: boolean;
-	singleton: boolean;
-	version: number;
-	globalThresholds?: SettingsThresholds;
-	globalProxyEnabled: boolean;
-	globalProxyId?: string | null;
-	// Egress self-check (see domain/egress)
-	egressCheckEnabled: boolean;
-	egressCheckTargets: string[];
-	egressNotifications: string[]; // Notification ids to receive the "egress recovered" alert
-	createdAt: string;
-	updatedAt: string;
-}
-
-export type EmailTransportConfig = Pick<
-	Settings,
-	| "systemEmailHost"
-	| "systemEmailPort"
-	| "systemEmailAddress"
-	| "systemEmailDisplayName"
-	| "systemEmailPassword"
-	| "systemEmailUser"
-	| "systemEmailConnectionHost"
-	| "systemEmailTLSServername"
-	| "systemEmailSecure"
-	| "systemEmailPool"
-	| "systemEmailIgnoreTLS"
-	| "systemEmailRequireTLS"
-	| "systemEmailRejectUnauthorized"
->;
+export type SettingsThresholds = z.infer<typeof settingsThresholdsSchema>;
+export type Settings = z.infer<typeof settingsSchema>;
+export type EmailTransportConfig = z.infer<typeof emailTransportConfigSchema>;

@@ -1546,6 +1546,159 @@
 					"accessToken": "tk_your-ntfy-access-token"
 				}
 			},
+			"AppSettings": {
+				"type": "object",
+				"properties": {
+					"pagespeedKeySet": {
+						"type": "boolean"
+					},
+					"emailPasswordSet": {
+						"type": "boolean"
+					},
+					"globalProxy": {
+						"type": "object",
+						"nullable": true,
+						"properties": {
+							"id": {
+								"type": "string"
+							},
+							"name": {
+								"type": "string"
+							},
+							"host": {
+								"type": "string"
+							},
+							"port": {
+								"type": "number"
+							}
+						},
+						"required": ["id", "name", "host", "port"],
+						"additionalProperties": {
+							"nullable": true
+						}
+					},
+					"settings": {
+						"type": "object",
+						"properties": {
+							"id": {
+								"type": "string"
+							},
+							"checkTTL": {
+								"type": "number"
+							},
+							"language": {
+								"type": "string"
+							},
+							"systemEmailHost": {
+								"type": "string"
+							},
+							"systemEmailPort": {
+								"type": "number"
+							},
+							"systemEmailAddress": {
+								"type": "string"
+							},
+							"systemEmailDisplayName": {
+								"type": "string"
+							},
+							"systemEmailUser": {
+								"type": "string"
+							},
+							"systemEmailConnectionHost": {
+								"type": "string"
+							},
+							"systemEmailTLSServername": {
+								"type": "string"
+							},
+							"systemEmailSecure": {
+								"type": "boolean"
+							},
+							"systemEmailPool": {
+								"type": "boolean"
+							},
+							"systemEmailIgnoreTLS": {
+								"type": "boolean"
+							},
+							"systemEmailRequireTLS": {
+								"type": "boolean"
+							},
+							"systemEmailRejectUnauthorized": {
+								"type": "boolean"
+							},
+							"showURL": {
+								"type": "boolean"
+							},
+							"singleton": {
+								"type": "boolean"
+							},
+							"globalThresholds": {
+								"type": "object",
+								"properties": {
+									"cpu": {
+										"type": "number"
+									},
+									"memory": {
+										"type": "number"
+									},
+									"disk": {
+										"type": "number"
+									},
+									"temperature": {
+										"type": "number"
+									}
+								}
+							},
+							"globalProxyEnabled": {
+								"type": "boolean"
+							},
+							"globalProxyId": {
+								"type": "string",
+								"nullable": true
+							},
+							"egressCheckEnabled": {
+								"type": "boolean"
+							},
+							"egressCheckTargets": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							},
+							"egressNotifications": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							},
+							"createdAt": {
+								"type": "string"
+							},
+							"updatedAt": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"id",
+							"checkTTL",
+							"language",
+							"systemEmailSecure",
+							"systemEmailPool",
+							"systemEmailIgnoreTLS",
+							"systemEmailRequireTLS",
+							"systemEmailRejectUnauthorized",
+							"showURL",
+							"singleton",
+							"globalProxyEnabled",
+							"egressCheckEnabled",
+							"egressCheckTargets",
+							"egressNotifications",
+							"createdAt",
+							"updatedAt"
+						]
+					}
+				},
+				"required": ["pagespeedKeySet", "emailPasswordSet", "globalProxy", "settings"]
+			},
 			"PublicStatusPagePayload": {
 				"type": "object",
 				"properties": {
@@ -13640,10 +13793,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/AppSettings"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -13871,10 +14024,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/AppSettings"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}

@@ -1,3 +1,5 @@
+import { proxyResponseSchema } from "@/api/validation/proxyValidation.js";
+import { settingsSchema } from "@/domain/app-settings/app-settings.schema.js";
 import { CHECK_TTL_SENTINEL } from "@/domain/checks/check.type.js";
 import { MAX_EGRESS_TARGETS } from "@/domain/egress/egress.type.js";
 import { parseEgressTarget } from "@/utils/egressTarget.js";
@@ -68,3 +70,17 @@ export const updateAppSettingsBodyValidation = z
 			});
 		}
 	});
+
+export const appSettingsResponseSchema = z
+	.object({
+		pagespeedKeySet: z.boolean(),
+		emailPasswordSet: z.boolean(),
+		globalProxy: proxyResponseSchema.pick({ id: true, name: true, host: true, port: true }).nullable(),
+		settings: settingsSchema.omit({
+			version: true,
+			jwtSecret: true,
+			pagespeedApiKey: true,
+			systemEmailPassword: true,
+		}),
+	})
+	.meta({ id: "AppSettings" });

@@ -1,7 +1,6 @@
 import { ISettingsController } from "@/api/controllers/settingsController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
-import { unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
-import { updateAppSettingsBodyValidation } from "@/api/validation/settingsValidation.js";
+import { appSettingsResponseSchema, updateAppSettingsBodyValidation } from "@/api/validation/settingsValidation.js";
 import { sendTestEmailBodyValidation } from "@/api/validation/notificationValidation.js";
 
 export const settingsRoutes: RouteTable<ISettingsController> = {
@@ -14,7 +13,7 @@ export const settingsRoutes: RouteTable<ISettingsController> = {
 			path: "/",
 			handler: "getAppSettings",
 			summary: "Get application settings",
-			response: unknownResponseSchema,
+			response: appSettingsResponseSchema,
 		},
 		{
 			method: "patch",
@@ -23,7 +22,7 @@ export const settingsRoutes: RouteTable<ISettingsController> = {
 			summary: "Update application settings (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			body: updateAppSettingsBodyValidation,
-			response: unknownResponseSchema,
+			response: appSettingsResponseSchema,
 		},
 		{
 			method: "post",
