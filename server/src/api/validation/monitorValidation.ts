@@ -18,6 +18,7 @@ import { isCaptureDockerUrl, isDockerSocketUrl, isDockerTlsUrl } from "@/utils/d
 import { X509Certificate } from "node:crypto";
 import { keyMatchesCertificate, parseCertificates, parsePrivateKey } from "@/utils/pem.js";
 import { monitorSchema } from "@/domain/monitors/monitor.schema.js";
+
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
 // The client form submits proxyId: "" when no proxy is selected, set it to undefined

@@ -82,6 +82,30 @@
 			}
 		},
 		"schemas": {
+			"Tag": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"color": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					}
+				},
+				"required": ["id", "teamId", "name", "color", "createdAt", "updatedAt"]
+			},
 			"AuthPayload": {
 				"type": "object",
 				"properties": {
@@ -3275,28 +3299,7 @@
 											"type": "string"
 										},
 										"data": {
-											"type": "object",
-											"properties": {
-												"id": {
-													"type": "string"
-												},
-												"teamId": {
-													"type": "string"
-												},
-												"name": {
-													"type": "string"
-												},
-												"color": {
-													"type": "string"
-												},
-												"createdAt": {
-													"type": "string"
-												},
-												"updatedAt": {
-													"type": "string"
-												}
-											},
-											"required": ["id", "teamId", "name", "color", "createdAt", "updatedAt"]
+											"$ref": "#/components/schemas/Tag"
 										}
 									},
 									"required": ["success", "msg", "data"]
@@ -3403,28 +3406,7 @@
 										"data": {
 											"type": "array",
 											"items": {
-												"type": "object",
-												"properties": {
-													"id": {
-														"type": "string"
-													},
-													"teamId": {
-														"type": "string"
-													},
-													"name": {
-														"type": "string"
-													},
-													"color": {
-														"type": "string"
-													},
-													"createdAt": {
-														"type": "string"
-													},
-													"updatedAt": {
-														"type": "string"
-													}
-												},
-												"required": ["id", "teamId", "name", "color", "createdAt", "updatedAt"]
+												"$ref": "#/components/schemas/Tag"
 											}
 										}
 									},
@@ -3541,28 +3523,7 @@
 											"type": "string"
 										},
 										"data": {
-											"type": "object",
-											"properties": {
-												"id": {
-													"type": "string"
-												},
-												"teamId": {
-													"type": "string"
-												},
-												"name": {
-													"type": "string"
-												},
-												"color": {
-													"type": "string"
-												},
-												"createdAt": {
-													"type": "string"
-												},
-												"updatedAt": {
-													"type": "string"
-												}
-											},
-											"required": ["id", "teamId", "name", "color", "createdAt", "updatedAt"]
+											"$ref": "#/components/schemas/Tag"
 										}
 									},
 									"required": ["success", "msg", "data"]
@@ -3696,28 +3657,7 @@
 											"type": "string"
 										},
 										"data": {
-											"type": "object",
-											"properties": {
-												"id": {
-													"type": "string"
-												},
-												"teamId": {
-													"type": "string"
-												},
-												"name": {
-													"type": "string"
-												},
-												"color": {
-													"type": "string"
-												},
-												"createdAt": {
-													"type": "string"
-												},
-												"updatedAt": {
-													"type": "string"
-												}
-											},
-											"required": ["id", "teamId", "name", "color", "createdAt", "updatedAt"]
+											"$ref": "#/components/schemas/Tag"
 										}
 									},
 									"required": ["success", "msg", "data"]
