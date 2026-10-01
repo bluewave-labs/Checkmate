@@ -181,3 +181,121 @@ export const checksSummarySchema = z.object({
 	totalChecks: z.number(),
 	downChecks: z.number(),
 });
+
+//****************************************
+// Aggregation results
+//****************************************
+
+export const groupedCheckSchema = z.object({
+	bucketDate: z.string(),
+	avgResponseTime: z.number(),
+	totalChecks: z.number(),
+});
+
+export const groupedUptimeCheckSchema = groupedCheckSchema.extend({
+	avgDns: z.number(),
+	avgTcp: z.number(),
+	avgTls: z.number(),
+	avgRequest: z.number(),
+	avgFirstByte: z.number(),
+	avgDownload: z.number(),
+});
+
+export const pageSpeedGroupedCheckSchema = z.object({
+	bucketDate: z.string(),
+	performance: z.number(),
+	accessibility: z.number(),
+	bestPractices: z.number(),
+	seo: z.number(),
+});
+
+export const hardwareDiskStatsSchema = z.object({
+	name: z.string(),
+	readSpeed: z.number(),
+	writeSpeed: z.number(),
+	totalBytes: z.number(),
+	freeBytes: z.number(),
+	usagePercent: z.number(),
+});
+
+export const hardwareNetStatsSchema = z.object({
+	name: z.string(),
+	bytesSentPerSecond: z.number(),
+	deltaBytesRecv: z.number(),
+	deltaPacketsSent: z.number(),
+	deltaPacketsRecv: z.number(),
+	deltaErrIn: z.number(),
+	deltaErrOut: z.number(),
+	deltaDropIn: z.number(),
+	deltaDropOut: z.number(),
+	deltaFifoIn: z.number(),
+	deltaFifoOut: z.number(),
+});
+
+export const hardwareCheckStatsSchema = z.object({
+	bucketDate: z.string(),
+	avgCpuUsage: z.number(),
+	avgMemoryUsage: z.number(),
+	avgTemperature: z.array(z.number()),
+	disks: z.array(hardwareDiskStatsSchema),
+	net: z.array(hardwareNetStatsSchema),
+});
+
+export const hardwareStatsSchema = z.object({
+	aggregateData: z.object({ totalChecks: z.number() }),
+	upChecks: z.object({ totalChecks: z.number() }),
+	checks: z.array(hardwareCheckStatsSchema),
+});
+
+export const dailyCheckBucketSchema = z.object({
+	monitorId: z.string(),
+	date: z.string(),
+	totalChecks: z.number(),
+	upChecks: z.number(),
+	downChecks: z.number(),
+	avgResponseTime: z.number().nullable(),
+});
+
+// The avg fields are null for buckets with no values ($avg skips missing; down checks store no containerSummary).
+export const dockerStatsBucketSchema = z.object({
+	_id: z.string(),
+	avgResponseTime: z.number().nullable(),
+	upCount: z.number(),
+	totalCount: z.number(),
+	avgRunning: z.number().nullable(),
+	avgTotal: z.number().nullable(),
+	avgUnhealthy: z.number().nullable(),
+});
+
+export const dockerStatsSchema = z.object({
+	aggregateData: z.object({ totalChecks: z.number() }),
+	upChecks: z.object({ totalChecks: z.number() }),
+	aggregate: z.array(dockerStatsBucketSchema),
+	latest: z
+		.object({
+			containers: z.array(dockerContainerInfoSchema),
+			summary: dockerContainerSummarySchema.optional(),
+			checkedAt: z.string(),
+		})
+		.nullable(),
+});
+
+export const dockerContainerStatsBucketSchema = z.object({
+	_id: z.string(),
+	avgCpuPct: z.number().nullable(),
+	avgMemoryUsedBytes: z.number().nullable(),
+	avgMemoryPct: z.number().nullable(),
+	minRestartCount: z.number().nullable(),
+	maxRestartCount: z.number().nullable(),
+});
+
+export const dockerContainerStatsSchema = z.object({
+	aggregate: z.array(dockerContainerStatsBucketSchema),
+	restartsInRange: z.number(),
+	latest: z
+		.object({
+			container: dockerContainerInfoSchema,
+			checkedAt: z.string(),
+		})
+		.nullable(),
+});
