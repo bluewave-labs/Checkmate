@@ -750,6 +750,126 @@
 				},
 				"required": ["id", "name", "image", "state", "status", "health"]
 			},
+			"Diagnostics": {
+				"type": "object",
+				"properties": {
+					"osStats": {
+						"type": "object",
+						"properties": {
+							"totalMemoryBytes": {
+								"type": "number"
+							}
+						},
+						"required": ["totalMemoryBytes"]
+					},
+					"cpuUsage": {
+						"type": "object",
+						"properties": {
+							"usagePercentage": {
+								"type": "number"
+							}
+						},
+						"required": ["usagePercentage"]
+					},
+					"v8HeapStats": {
+						"type": "object",
+						"properties": {
+							"totalHeapSizeBytes": {
+								"type": "number"
+							},
+							"usedHeapSizeBytes": {
+								"type": "number"
+							},
+							"heapSizeLimitBytes": {
+								"type": "number"
+							}
+						},
+						"required": ["totalHeapSizeBytes", "usedHeapSizeBytes", "heapSizeLimitBytes"]
+					},
+					"eventLoopDelayMs": {
+						"type": "number"
+					},
+					"uptimeMs": {
+						"type": "number"
+					},
+					"mongoStats": {
+						"type": "object",
+						"properties": {
+							"readyState": {
+								"type": "number"
+							},
+							"readsPerSecond": {
+								"type": "number"
+							},
+							"insertsPerSecond": {
+								"type": "number"
+							},
+							"updatesPerSecond": {
+								"type": "number"
+							},
+							"deletesPerSecond": {
+								"type": "number"
+							},
+							"writesPerSecond": {
+								"type": "number"
+							},
+							"host": {
+								"type": "string"
+							},
+							"port": {
+								"type": "number"
+							},
+							"dbName": {
+								"type": "string"
+							},
+							"totalSize": {
+								"type": "number"
+							},
+							"collections": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"name": {
+											"type": "string"
+										},
+										"documentCount": {
+											"type": "number"
+										},
+										"storageSize": {
+											"type": "number"
+										},
+										"totalIndexSize": {
+											"type": "number"
+										},
+										"totalSize": {
+											"type": "number"
+										},
+										"bucketCount": {
+											"type": "number"
+										}
+									},
+									"required": ["name", "documentCount", "storageSize", "totalIndexSize", "totalSize"]
+								}
+							}
+						},
+						"required": [
+							"readyState",
+							"readsPerSecond",
+							"insertsPerSecond",
+							"updatesPerSecond",
+							"deletesPerSecond",
+							"writesPerSecond",
+							"host",
+							"port",
+							"dbName",
+							"totalSize",
+							"collections"
+						]
+					}
+				},
+				"required": ["osStats", "cpuUsage", "v8HeapStats", "eventLoopDelayMs", "uptimeMs", "mongoStats"]
+			},
 			"FlatGeoCheck": {
 				"type": "object",
 				"properties": {
@@ -2970,6 +3090,155 @@
 				},
 				"required": ["id", "teamId", "name", "protocol", "host", "port", "createdAt", "updatedAt", "hasPassword"]
 			},
+			"WorkerJobsPage": {
+				"type": "object",
+				"properties": {
+					"jobs": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"monitorId": {
+									"type": "string"
+								},
+								"monitorType": {
+									"type": "string",
+									"nullable": true
+								},
+								"monitorInterval": {
+									"type": "number",
+									"nullable": true
+								},
+								"monitorActive": {
+									"type": "boolean",
+									"nullable": true
+								},
+								"lockedBy": {
+									"type": "string",
+									"nullable": true
+								},
+								"lockedUntil": {
+									"type": "number",
+									"nullable": true
+								},
+								"nextScheduledAt": {
+									"type": "number"
+								},
+								"runCount": {
+									"type": "number"
+								},
+								"failCount": {
+									"type": "number"
+								},
+								"failReason": {
+									"type": "string",
+									"nullable": true
+								},
+								"lastFinishedAt": {
+									"type": "number",
+									"nullable": true
+								}
+							},
+							"required": [
+								"monitorId",
+								"monitorType",
+								"monitorInterval",
+								"monitorActive",
+								"lockedBy",
+								"lockedUntil",
+								"nextScheduledAt",
+								"runCount",
+								"failCount",
+								"failReason",
+								"lastFinishedAt"
+							]
+						}
+					},
+					"count": {
+						"type": "number"
+					}
+				},
+				"required": ["jobs", "count"]
+			},
+			"WorkerMetrics": {
+				"type": "object",
+				"properties": {
+					"jobs": {
+						"type": "number"
+					},
+					"activeJobs": {
+						"type": "number"
+					},
+					"failingJobs": {
+						"type": "number"
+					},
+					"jobsWithFailures": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"monitorId": {
+									"type": "string"
+								},
+								"monitorUrl": {
+									"type": "string",
+									"nullable": true
+								},
+								"monitorType": {
+									"type": "string",
+									"nullable": true
+								},
+								"failedAt": {
+									"type": "number",
+									"nullable": true
+								},
+								"failCount": {
+									"type": "number"
+								},
+								"failReason": {
+									"type": "string",
+									"nullable": true
+								}
+							},
+							"required": ["monitorId", "monitorUrl", "monitorType", "failedAt", "failCount", "failReason"]
+						}
+					},
+					"totalRuns": {
+						"type": "number"
+					},
+					"totalFailures": {
+						"type": "number"
+					},
+					"workers": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/QueueWorker"
+						}
+					}
+				},
+				"required": ["jobs", "activeJobs", "failingJobs", "jobsWithFailures", "totalRuns", "totalFailures", "workers"]
+			},
+			"QueueWorker": {
+				"type": "object",
+				"properties": {
+					"workerId": {
+						"type": "string",
+						"description": "hostname:pid:uuid"
+					},
+					"mode": {
+						"type": "string",
+						"enum": ["primary", "worker"]
+					},
+					"processesJobs": {
+						"type": "boolean"
+					},
+					"lastSeenAt": {
+						"type": "number",
+						"description": "Epoch ms of the last heartbeat"
+					}
+				},
+				"required": ["workerId", "mode", "processesJobs", "lastSeenAt"]
+			},
 			"AppSettings": {
 				"type": "object",
 				"properties": {
@@ -3625,6 +3894,36 @@
 						}
 					]
 				}
+			},
+			"LogEntry": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"service": {
+						"type": "string"
+					},
+					"method": {
+						"type": "string"
+					},
+					"details": {
+						"type": "object",
+						"additionalProperties": {
+							"nullable": true
+						}
+					},
+					"stack": {
+						"type": "string"
+					},
+					"level": {
+						"type": "string"
+					},
+					"timestamp": {
+						"type": "string"
+					}
+				},
+				"required": ["message", "level", "timestamp"]
 			}
 		},
 		"parameters": {}
@@ -6548,10 +6847,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/Diagnostics"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -14112,10 +14411,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/WorkerJobsPage"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -14217,10 +14516,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/WorkerMetrics"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -14344,10 +14643,80 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"jobs": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"monitorId": {
+																"type": "string"
+															},
+															"monitorType": {
+																"type": "string",
+																"nullable": true
+															},
+															"monitorInterval": {
+																"type": "number",
+																"nullable": true
+															},
+															"monitorActive": {
+																"type": "boolean",
+																"nullable": true
+															},
+															"lockedBy": {
+																"type": "string",
+																"nullable": true
+															},
+															"lockedUntil": {
+																"type": "number",
+																"nullable": true
+															},
+															"nextScheduledAt": {
+																"type": "number"
+															},
+															"runCount": {
+																"type": "number"
+															},
+															"failCount": {
+																"type": "number"
+															},
+															"failReason": {
+																"type": "string",
+																"nullable": true
+															},
+															"lastFinishedAt": {
+																"type": "number",
+																"nullable": true
+															}
+														},
+														"required": [
+															"monitorId",
+															"monitorType",
+															"monitorInterval",
+															"monitorActive",
+															"lockedBy",
+															"lockedUntil",
+															"nextScheduledAt",
+															"runCount",
+															"failCount",
+															"failReason",
+															"lastFinishedAt"
+														]
+													}
+												},
+												"count": {
+													"type": "number"
+												},
+												"metrics": {
+													"$ref": "#/components/schemas/WorkerMetrics"
+												}
+											},
+											"required": ["jobs", "count", "metrics"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -16075,10 +16444,13 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/LogEntry"
+											}
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}

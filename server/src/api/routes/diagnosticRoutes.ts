@@ -1,6 +1,6 @@
 import { IDiagnosticController } from "@/api/controllers/diagnosticController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
-import { unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
+import { diagnosticsSchema } from "@/domain/diagnostics/diagnostic.schema.js";
 
 export const diagnosticRoutes: RouteTable<IDiagnosticController> = {
 	prefix: "/diagnostic",
@@ -13,7 +13,7 @@ export const diagnosticRoutes: RouteTable<IDiagnosticController> = {
 			handler: "getSystemStats",
 			summary: "Get system diagnostics (admin/superadmin)",
 			roles: ["admin", "superadmin"],
-			response: unknownResponseSchema,
+			response: diagnosticsSchema,
 		},
 	],
 };
