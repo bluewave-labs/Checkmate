@@ -2251,6 +2251,79 @@
 				},
 				"required": ["id", "metadata", "lines", "gap", "checkedAt", "expiry", "createdAt", "updatedAt"]
 			},
+			"Notification": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"userId": {
+						"type": "string"
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string",
+						"enum": [
+							"email",
+							"slack",
+							"discord",
+							"webhook",
+							"rocket_chat",
+							"pager_duty",
+							"matrix",
+							"teams",
+							"telegram",
+							"pushover",
+							"signalgrid",
+							"twilio",
+							"ntfy"
+						]
+					},
+					"notificationName": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"homeserverUrl": {
+						"type": "string"
+					},
+					"roomId": {
+						"type": "string"
+					},
+					"accessToken": {
+						"type": "string"
+					},
+					"accountSid": {
+						"type": "string"
+					},
+					"twilioPhoneNumber": {
+						"type": "string"
+					},
+					"topic": {
+						"type": "string"
+					},
+					"ntfyAuthType": {
+						"type": "string",
+						"enum": ["none", "token", "basic"]
+					},
+					"ntfyUsername": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					}
+				},
+				"required": ["id", "userId", "teamId", "type", "notificationName", "createdAt", "updatedAt"]
+			},
 			"NotificationChannelBody": {
 				"oneOf": [
 					{
@@ -12450,10 +12523,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/Notification"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -12569,12 +12642,13 @@
 										},
 										"msg": {
 											"type": "string"
-										},
-										"data": {
-											"nullable": true
 										}
 									},
 									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK"
 								}
 							}
 						}
@@ -12683,12 +12757,13 @@
 										},
 										"msg": {
 											"type": "string"
-										},
-										"data": {
-											"nullable": true
 										}
 									},
 									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK"
 								}
 							}
 						}
@@ -12790,10 +12865,13 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/Notification"
+											}
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -12906,10 +12984,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/Notification"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -13144,10 +13222,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/Notification"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}

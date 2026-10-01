@@ -1,5 +1,6 @@
 import type { HardwareMetricKey } from "@/domain/monitors/monitor.type.js";
-
+import type { z } from "zod";
+import type { notificationSchema } from "@/domain/notifications/notification.schema.js";
 export const NotificationChannels = [
 	"email",
 	"slack",
@@ -22,25 +23,7 @@ export type NotificationChannel = (typeof NotificationChannels)[number];
 export const NtfyAuthTypes = ["none", "token", "basic"] as const;
 export type NtfyAuthType = (typeof NtfyAuthTypes)[number];
 
-export interface Notification {
-	id: string;
-	userId: string;
-	teamId: string;
-	type: NotificationChannel;
-	notificationName: string;
-	address?: string;
-	phone?: string;
-	homeserverUrl?: string;
-	roomId?: string;
-	accessToken?: string;
-	accountSid?: string;
-	twilioPhoneNumber?: string;
-	topic?: string;
-	ntfyAuthType?: NtfyAuthType;
-	ntfyUsername?: string;
-	createdAt: string;
-	updatedAt: string;
-}
+export type Notification = z.infer<typeof notificationSchema>;
 
 export interface AlertPagerDutyPayload {
 	routing_key?: string;

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { NtfyAuthTypes, type NotificationChannel } from "@/domain/notifications/notification.type.js";
-
+import { notificationSchema } from "@/domain/notifications/notification.schema.js";
 //****************************************
 // Notification Validations
 //****************************************
@@ -291,3 +291,5 @@ export const updateNotificationsValidation = z
 			path: ["notificationIds"],
 		}
 	);
+
+export const notificationListResponseSchema = z.array(notificationSchema);
