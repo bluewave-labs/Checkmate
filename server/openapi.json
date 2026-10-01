@@ -899,10 +899,22 @@
 						"example": "2026-04-15T03:34:00.000Z"
 					}
 				},
-				"required": ["id", "monitorId", "teamId", "startTime", "endTime", "status", "resolutionType", "createdAt", "updatedAt"],
-				"additionalProperties": {
-					"nullable": true
-				}
+				"required": [
+					"id",
+					"monitorId",
+					"teamId",
+					"startTime",
+					"endTime",
+					"status",
+					"message",
+					"statusCode",
+					"resolutionType",
+					"resolvedBy",
+					"resolvedByEmail",
+					"comment",
+					"createdAt",
+					"updatedAt"
+				]
 			},
 			"IncidentSummary": {
 				"type": "object",
@@ -6829,13 +6841,20 @@
 													"$ref": "#/components/schemas/Incident"
 												},
 												"monitor": {
-													"nullable": true
+													"$ref": "#/components/schemas/Monitor"
 												},
 												"user": {
-													"nullable": true
+													"anyOf": [
+														{
+															"$ref": "#/components/schemas/User"
+														},
+														{
+															"nullable": true
+														}
+													]
 												}
 											},
-											"required": ["incident"]
+											"required": ["incident", "monitor", "user"]
 										}
 									},
 									"required": ["success", "msg", "data"]
@@ -15565,10 +15584,64 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"incidents": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"id": {
+																"type": "string",
+																"example": "65f1c2a4d8b9e0123456789c"
+															},
+															"monitorId": {
+																"type": "string",
+																"example": "65f1c2a4d8b9e0123456789a"
+															},
+															"status": {
+																"type": "boolean",
+																"example": true,
+																"description": "true = resolved, false = ongoing"
+															},
+															"startTime": {
+																"type": "string",
+																"example": "2026-04-15T03:21:00.000Z"
+															},
+															"endTime": {
+																"type": "string",
+																"nullable": true,
+																"example": "2026-04-15T03:34:00.000Z"
+															},
+															"resolutionType": {
+																"type": "string",
+																"nullable": true,
+																"enum": ["automatic", "manual", null],
+																"example": "automatic"
+															},
+															"message": {
+																"type": "string",
+																"nullable": true,
+																"example": "HTTP 503 from origin"
+															},
+															"statusCode": {
+																"type": "number",
+																"nullable": true,
+																"example": 503
+															},
+															"createdAt": {
+																"type": "string",
+																"example": "2026-04-15T03:21:00.000Z"
+															}
+														},
+														"required": ["id", "monitorId", "status", "startTime", "endTime", "resolutionType", "message", "statusCode", "createdAt"]
+													}
+												}
+											},
+											"required": ["incidents"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}

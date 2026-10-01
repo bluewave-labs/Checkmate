@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { publicIncidentSchema } from "@/domain/incidents/incident.schema.js";
 import { booleanCoercion, dnsHostnameRegex, timezoneValidation } from "./shared.js";
 import {
 	StatusPageTypes,
@@ -224,3 +225,5 @@ export const publicStatusPagePayloadResponseSchema = z
 		checkTTLDays: z.number().optional(),
 	})
 	.meta({ id: "PublicStatusPagePayload", example: publicStatusPagePayloadResponseExample });
+
+export const publicMonitorIncidentsResponseSchema = z.object({ incidents: z.array(publicIncidentSchema) });

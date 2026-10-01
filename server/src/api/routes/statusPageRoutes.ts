@@ -7,6 +7,7 @@ import {
 	getPublicMonitorIncidentsQueryValidation,
 	getStatusPageParamValidation,
 	getStatusPageQueryValidation,
+	publicMonitorIncidentsResponseSchema,
 	publicStatusPagePayloadResponseSchema,
 	resolveStatusPageQueryValidation,
 	statusPageIdParamValidation,
@@ -74,7 +75,7 @@ export const statusPageRoutes: RouteTable<IStatusPageController> = {
 			auth: "statusPage",
 			params: getPublicMonitorIncidentsParamValidation,
 			query: getPublicMonitorIncidentsQueryValidation,
-			response: unknownResponseSchema,
+			response: publicMonitorIncidentsResponseSchema,
 		},
 		{
 			method: "delete",
