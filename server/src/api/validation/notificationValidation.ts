@@ -244,6 +244,12 @@ export const createNotificationBodyValidation = z
 
 export const testNotificationBodyValidation = createNotificationBodyValidation;
 
+// The send result is the envelope's own success flag: a valid request whose delivery fails is a 200 with success false.
+export const testNotificationResponseEnvelope = z.object({
+	success: z.boolean(),
+	msg: z.string(),
+});
+
 export const deleteNotificationParamValidation = z.object({
 	id: z.string().min(1, "Notification ID is required"),
 });

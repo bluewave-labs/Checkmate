@@ -1,5 +1,6 @@
 import { INotificationController } from "@/api/controllers/notificationController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
+import { json } from "@/api/routes/openapiHelpers.js";
 import {
 	createNotificationBodyValidation,
 	deleteNotificationParamValidation,
@@ -8,6 +9,7 @@ import {
 	notificationListResponseSchema,
 	testAllNotificationsBodyValidation,
 	testNotificationBodyValidation,
+	testNotificationResponseEnvelope,
 } from "@/api/validation/notificationValidation.js";
 import { notificationSchema } from "@/domain/notifications/notification.schema.js";
 
@@ -40,6 +42,16 @@ export const notificationRoutes: RouteTable<INotificationController> = {
 			summary: "Send a test alert through a single notification channel (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			body: testNotificationBodyValidation,
+			spec: (d) => ({
+				...d,
+				responses: {
+					...d.responses,
+					"200": {
+						description: "Send result",
+						content: json(testNotificationResponseEnvelope, { success: true, msg: "Notification sent successfully" }),
+					},
+				},
+			}),
 		},
 		{
 			method: "get",

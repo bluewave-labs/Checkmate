@@ -13044,15 +13044,14 @@
 				},
 				"responses": {
 					"200": {
-						"description": "OK",
+						"description": "Send result",
 						"content": {
 							"application/json": {
 								"schema": {
 									"type": "object",
 									"properties": {
 										"success": {
-											"type": "boolean",
-											"enum": [true]
+											"type": "boolean"
 										},
 										"msg": {
 											"type": "string"
@@ -13062,7 +13061,7 @@
 								},
 								"example": {
 									"success": true,
-									"msg": "OK"
+									"msg": "Notification sent successfully"
 								}
 							}
 						}
@@ -15334,13 +15333,18 @@
 										},
 										"msg": {
 											"type": "string"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"messageId": {
+													"type": "string"
+												}
+											},
+											"required": ["messageId"]
 										}
 									},
-									"required": ["success", "msg"]
-								},
-								"example": {
-									"success": true,
-									"msg": "OK"
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}

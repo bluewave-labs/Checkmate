@@ -1,6 +1,6 @@
 import { ISettingsController } from "@/api/controllers/settingsController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
-import { appSettingsResponseSchema, updateAppSettingsBodyValidation } from "@/api/validation/settingsValidation.js";
+import { appSettingsResponseSchema, testEmailResponseSchema, updateAppSettingsBodyValidation } from "@/api/validation/settingsValidation.js";
 import { sendTestEmailBodyValidation } from "@/api/validation/notificationValidation.js";
 
 export const settingsRoutes: RouteTable<ISettingsController> = {
@@ -31,6 +31,7 @@ export const settingsRoutes: RouteTable<ISettingsController> = {
 			summary: "Send a test email using current SMTP settings (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			body: sendTestEmailBodyValidation,
+			response: testEmailResponseSchema,
 		},
 	],
 };

@@ -71,6 +71,8 @@ export const updateAppSettingsBodyValidation = z
 		}
 	});
 
+export const testEmailResponseSchema = z.object({ messageId: z.string() });
+
 export const appSettingsResponseSchema = z
 	.object({
 		pagespeedKeySet: z.boolean(),
