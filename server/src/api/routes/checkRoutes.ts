@@ -7,9 +7,8 @@ import {
 	getChecksParamValidation,
 	getChecksQueryValidation,
 	deleteChecksParamValidation,
-	paginatedChecksResponseSchema,
-	checksSummaryResponseSchema,
 } from "@/api/validation/checkValidation.js";
+import { checksPageSchema, checksSummarySchema } from "@/domain/checks/check.schema.js";
 
 export const checkRoutes: RouteTable<ICheckController> = {
 	prefix: "/checks",
@@ -22,7 +21,7 @@ export const checkRoutes: RouteTable<ICheckController> = {
 			handler: "getChecksSummaryByTeamId",
 			summary: "Aggregate check summary for the caller's team",
 			query: getChecksSummaryByTeamIdQueryValidation,
-			response: checksSummaryResponseSchema,
+			response: checksSummarySchema,
 		},
 		{
 			method: "get",
@@ -30,7 +29,7 @@ export const checkRoutes: RouteTable<ICheckController> = {
 			handler: "getChecksByTeam",
 			summary: "List checks across the team",
 			query: getTeamChecksQueryValidation,
-			response: paginatedChecksResponseSchema,
+			response: checksPageSchema,
 		},
 		{
 			method: "delete",
@@ -47,7 +46,7 @@ export const checkRoutes: RouteTable<ICheckController> = {
 			summary: "List checks for a monitor",
 			params: getChecksParamValidation,
 			query: getChecksQueryValidation,
-			response: paginatedChecksResponseSchema,
+			response: checksPageSchema,
 		},
 		{
 			method: "delete",

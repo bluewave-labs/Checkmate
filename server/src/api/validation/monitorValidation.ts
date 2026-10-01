@@ -2,7 +2,6 @@ import { z } from "zod";
 import RE2 from "re2";
 import { booleanCoercion, dnsHostnameRegex, dnsServerValidation } from "./shared.js";
 import { GeoContinents } from "@/domain/geo-checks/geo-check.type.js";
-import { groupedGeoCheckResultSchema } from "@/domain/geo-checks/geo-check.schema.js";
 import {
 	DnsRecordTypes,
 	HttpMethods,
@@ -18,17 +17,7 @@ import { DOCKER_LOG_PAGE_DEFAULT, DOCKER_LOG_PAGE_MAX } from "@/domain/docker/do
 import { isCaptureDockerUrl, isDockerSocketUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
 import { X509Certificate } from "node:crypto";
 import { keyMatchesCertificate, parseCertificates, parsePrivateKey } from "@/utils/pem.js";
-import { dockerLogPageSchema } from "@/domain/docker/docker-log.schema.js";
-import {
-	dockerContainerDetailsResultSchema,
-	dockerDetailsResultSchema,
-	gamesMapSchema,
-	hardwareDetailsResultSchema,
-	monitorSchema,
-	monitorsWithChecksByTeamIdResultSchema,
-	pageSpeedDetailsResultSchema,
-	uptimeDetailsResultSchema,
-} from "@/domain/monitors/monitor.schema.js";
+import { monitorSchema } from "@/domain/monitors/monitor.schema.js";
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
 // The client form submits proxyId: "" when no proxy is selected, set it to undefined
@@ -423,21 +412,10 @@ export const getDockerContainerLogsQueryValidation = z
 // Response schemas
 //****************************************
 
-export const monitorResponseSchema = monitorSchema;
-export const monitorListResponseSchema = z.array(monitorResponseSchema);
-
-export const monitorsWithChecksResponseSchema = monitorsWithChecksByTeamIdResultSchema;
-export const uptimeDetailsResponseSchema = uptimeDetailsResultSchema;
-export const hardwareDetailsResponseSchema = hardwareDetailsResultSchema;
-export const pageSpeedDetailsResponseSchema = pageSpeedDetailsResultSchema;
-export const dockerDetailsResponseSchema = dockerDetailsResultSchema;
-export const dockerContainerDetailsResponseSchema = dockerContainerDetailsResultSchema;
-export const dockerContainerLogsResponseSchema = dockerLogPageSchema;
-export const groupedGeoCheckResultResponseSchema = groupedGeoCheckResultSchema;
-export const gamesResponseSchema = gamesMapSchema;
+export const monitorListResponseSchema = z.array(monitorSchema);
 
 export const bulkPauseResponseSchema = z.object({
-	monitors: z.array(monitorResponseSchema),
+	monitors: z.array(monitorSchema),
 	failedCount: z.number(),
 });
 

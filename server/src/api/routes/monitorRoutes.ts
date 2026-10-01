@@ -22,25 +22,27 @@ import {
 	getDockerContainerNameParamValidation,
 	getDockerContainerByNameQueryValidation,
 	getDockerContainerLogsQueryValidation,
-	dockerDetailsResponseSchema,
-	dockerContainerDetailsResponseSchema,
-	dockerContainerLogsResponseSchema,
-	monitorResponseSchema,
-	uptimeDetailsResponseSchema,
-	groupedGeoCheckResultResponseSchema,
 	bulkPauseResponseSchema,
 	certificateResponseSchema,
 	demoMonitorsResponseSchema,
 	domainResponseSchema,
-	gamesResponseSchema,
-	hardwareDetailsResponseSchema,
 	importMonitorsResponseSchema,
 	monitorListResponseSchema,
-	monitorsWithChecksResponseSchema,
-	pageSpeedDetailsResponseSchema,
 	updateNotificationsResponseSchema,
 } from "@/api/validation/monitorValidation.js";
 import { updateNotificationsValidation } from "@/api/validation/notificationValidation.js";
+import { dockerLogPageSchema } from "@/domain/docker/docker-log.schema.js";
+import { groupedGeoCheckResultSchema } from "@/domain/geo-checks/geo-check.schema.js";
+import {
+	dockerContainerDetailsResultSchema,
+	dockerDetailsResultSchema,
+	gamesMapSchema,
+	hardwareDetailsResultSchema,
+	monitorSchema,
+	monitorsWithChecksByTeamIdResultSchema,
+	pageSpeedDetailsResultSchema,
+	uptimeDetailsResultSchema,
+} from "@/domain/monitors/monitor.schema.js";
 
 export const monitorRoutes: RouteTable<IMonitorController> = {
 	prefix: "/monitors",
@@ -61,7 +63,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			handler: "getMonitorsWithChecksByTeamId",
 			summary: "List team monitors with their most recent checks (paginated)",
 			query: getMonitorsWithChecksQueryValidation,
-			response: monitorsWithChecksResponseSchema,
+			response: monitorsWithChecksByTeamIdResultSchema,
 		},
 		{
 			method: "get",
@@ -70,7 +72,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Get uptime details for a monitor",
 			params: getUptimeDetailsByIdParamValidation,
 			query: getUptimeDetailsByIdQueryValidation,
-			response: uptimeDetailsResponseSchema,
+			response: uptimeDetailsResultSchema,
 		},
 		{
 			method: "get",
@@ -79,7 +81,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Get hardware metrics detail for a monitor",
 			params: getHardwareDetailsByIdParamValidation,
 			query: getHardwareDetailsByIdQueryValidation,
-			response: hardwareDetailsResponseSchema,
+			response: hardwareDetailsResultSchema,
 		},
 		{
 			method: "get",
@@ -88,7 +90,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Get PageSpeed detail for a monitor",
 			params: getHardwareDetailsByIdParamValidation,
 			query: getHardwareDetailsByIdQueryValidation,
-			response: pageSpeedDetailsResponseSchema,
+			response: pageSpeedDetailsResultSchema,
 		},
 		{
 			method: "get",
@@ -97,7 +99,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Get Docker host details for a monitor",
 			params: getDockerDetailsByIdParamValidation,
 			query: getDockerDetailsByIdQueryValidation,
-			response: dockerDetailsResponseSchema,
+			response: dockerDetailsResultSchema,
 		},
 		{
 			method: "get",
@@ -106,7 +108,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Get details for one container on a Docker host monitor",
 			params: getDockerContainerNameParamValidation,
 			query: getDockerContainerByNameQueryValidation,
-			response: dockerContainerDetailsResponseSchema,
+			response: dockerContainerDetailsResultSchema,
 		},
 		{
 			method: "get",
@@ -116,7 +118,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			roles: ["admin", "superadmin"],
 			params: getDockerContainerNameParamValidation,
 			query: getDockerContainerLogsQueryValidation,
-			response: dockerContainerLogsResponseSchema,
+			response: dockerLogPageSchema,
 		},
 		{
 			method: "get",
@@ -125,7 +127,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Get geo check results for a monitor",
 			params: getMonitorByIdParamValidation,
 			query: getMonitorByIdQueryValidation,
-			response: groupedGeoCheckResultResponseSchema,
+			response: groupedGeoCheckResultSchema,
 		},
 		{
 			method: "post",
@@ -134,7 +136,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Toggle pause state for a monitor (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			params: pauseMonitorParamValidation,
-			response: monitorResponseSchema,
+			response: monitorSchema,
 		},
 		{
 			method: "post",
@@ -177,8 +179,8 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Create a new monitor (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			body: createMonitorBodyValidation,
-			response: monitorResponseSchema,
-			spec: (d) => ({ ...d, responses: { ...d.responses, "200": okJson(monitorResponseSchema, "Monitor created") } }),
+			response: monitorSchema,
+			spec: (d) => ({ ...d, responses: { ...d.responses, "200": okJson(monitorSchema, "Monitor created") } }),
 		},
 		{
 			method: "delete",
@@ -217,7 +219,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			path: "/games",
 			handler: "getAllGames",
 			summary: "List supported game-server types",
-			response: gamesResponseSchema,
+			response: gamesMapSchema,
 		},
 		{
 			method: "get",
@@ -225,7 +227,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			handler: "getMonitorById",
 			summary: "Get a monitor by id",
 			params: getMonitorByIdParamValidation,
-			response: monitorResponseSchema,
+			response: monitorSchema,
 		},
 		{
 			method: "patch",
@@ -235,7 +237,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			roles: ["admin", "superadmin"],
 			params: getMonitorByIdParamValidation,
 			body: editMonitorBodyValidation,
-			response: monitorResponseSchema,
+			response: monitorSchema,
 		},
 		{
 			method: "delete",
@@ -244,7 +246,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Delete a monitor (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			params: getMonitorByIdParamValidation,
-			response: monitorResponseSchema,
+			response: monitorSchema,
 		},
 	],
 };
