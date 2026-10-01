@@ -182,7 +182,7 @@ Read `docs/coding-conventions.md` before touching any `.tsx` or `.ts` file. The 
 8. Mongoose schema fields with closed value sets must declare `enum` reusing the same `types/*` const tuple.
 9. Provider tests at `server/test/unit/providers/network/<name>.test.ts`, `from "@jest/globals"`, `testStatusProviderContract`, inline `setup()` per test (not `beforeEach`).
 10. Centralize validation enums in `types/*` const tuples; never inline `z.enum([…])` more than once.
-11. New entity fields must land in the validator's `*ResponseSchema` so the auto-generated OpenAPI spec sees them.
+11. Entity shapes are one Zod schema in `domain/<entity>/<entity>.schema.ts`; the TS type is inferred from it and the auto-generated OpenAPI spec reads it. New fields go there and in the Mongoose model, nowhere else.
 
 ### Internationalization
 All user-facing strings must use the translation function:

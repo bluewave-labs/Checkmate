@@ -18,3 +18,5 @@ export const canManageRole = (actorRole: UserRole, targetRole: UserRole): boolea
 export type UserProfileImage = z.infer<typeof userProfileImageSchema>;
 export type User = z.infer<typeof userSchema>;
 export type UserResponse = z.infer<typeof userResponseSchema>;
+
+export const toUserResponse = ({ password: _password, profileImage: _profileImage, ...rest }: User): UserResponse => rest;

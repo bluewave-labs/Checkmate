@@ -55,6 +55,7 @@ export const checkRoutes: RouteTable<ICheckController> = {
 			summary: "Delete checks for a monitor (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			params: deleteChecksParamValidation,
+			response: deletedCountResponseSchema,
 		},
 	],
 };

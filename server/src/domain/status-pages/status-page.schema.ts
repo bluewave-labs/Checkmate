@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { dailyCheckBucketSchema } from "@/domain/checks/check.schema.js";
-import { monitorSchema } from "@/domain/monitors/monitor.schema.js";
+import { monitorResponseSchema } from "@/domain/monitors/monitor.schema.js";
 import { StatusPageDayRanges, StatusPageThemeModes, StatusPageThemes, StatusPageTypes } from "./status-page.type.js";
 
 export const statusPageLogoSchema = z.object({
@@ -37,7 +37,7 @@ export const statusPageSchema = z
 	.meta({ id: "StatusPage" });
 
 // url and port are present only when the showURL setting is enabled; dailyChecks only when range !== "latest".
-export const publicStatusPageMonitorSchema = monitorSchema
+export const publicStatusPageMonitorSchema = monitorResponseSchema
 	.pick({ id: true, name: true, type: true, status: true, uptimePercentage: true, recentChecks: true })
 	.extend({
 		url: z.string().optional(),

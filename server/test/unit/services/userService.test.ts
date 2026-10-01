@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { UserService } from "../../../src/domain/users/user.service.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { User, UserRole } from "../../../src/domain/users/user.type.ts";
+import { toUserResponse, type User, type UserRole } from "../../../src/domain/users/user.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -20,10 +20,7 @@ const makeUser = (overrides?: Partial<User>): User => ({
 	...overrides,
 });
 
-const makeUserResponse = (overrides: Partial<User> = {}) => {
-	const { password: _password, profileImage: _profileImage, ...rest } = makeUser(overrides);
-	return rest;
-};
+const makeUserResponse = (overrides: Partial<User> = {}) => toUserResponse(makeUser(overrides));
 
 const makeAppSettings = () => ({
 	jwtSecret: "test-secret",

@@ -1329,9 +1329,6 @@
 					"dockerTlsCert": {
 						"type": "string"
 					},
-					"dockerTlsKey": {
-						"type": "string"
-					},
 					"dockerTlsKeySet": {
 						"type": "boolean"
 					},
@@ -1648,28 +1645,40 @@
 					"name": "Marketing site",
 					"description": "Production marketing site monitored from the EU region",
 					"type": "http",
+					"method": "GET",
 					"url": "https://www.example.com",
 					"port": 443,
 					"isActive": true,
 					"interval": 60000,
 					"status": "up",
+					"statusWindow": [true, true, true, true, true],
 					"statusWindowSize": 5,
 					"statusWindowThreshold": 3,
 					"ignoreTlsErrors": false,
+					"proxyMode": "inherit",
 					"useAdvancedMatching": false,
 					"notifications": ["65f1c2a4d8b9e0123456789b"],
+					"tags": [],
+					"customUpCodes": [],
 					"cpuAlertThreshold": 90,
+					"cpuAlertCounter": 0,
 					"memoryAlertThreshold": 90,
+					"memoryAlertCounter": 0,
 					"diskAlertThreshold": 90,
+					"diskAlertCounter": 0,
 					"tempAlertThreshold": 80,
+					"tempAlertCounter": 0,
 					"selectedDisks": [],
+					"group": null,
 					"geoCheckEnabled": false,
 					"geoCheckLocations": [],
 					"geoCheckInterval": 300000,
+					"recentChecks": [],
 					"teamId": "65f1c2a4d8b9e01234567890",
 					"userId": "65f1c2a4d8b9e01234567891",
 					"createdAt": "2026-04-01T10:00:00.000Z",
-					"updatedAt": "2026-04-15T14:30:00.000Z"
+					"updatedAt": "2026-04-15T14:30:00.000Z",
+					"lastEvaluatedAt": 1776254400000
 				}
 			},
 			"Invite": {
@@ -6739,13 +6748,18 @@
 										},
 										"msg": {
 											"type": "string"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"deletedCount": {
+													"type": "number"
+												}
+											},
+											"required": ["deletedCount"]
 										}
 									},
-									"required": ["success", "msg"]
-								},
-								"example": {
-									"success": true,
-									"msg": "OK"
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}

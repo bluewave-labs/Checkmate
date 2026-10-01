@@ -2,7 +2,7 @@ import { z } from "zod";
 import { booleanCoercion } from "./shared.js";
 import { DateRanges, SortOrders } from "@/types/query.js";
 import { incidentSchema } from "@/domain/incidents/incident.schema.js";
-import { monitorSchema } from "@/domain/monitors/monitor.schema.js";
+import { monitorResponseSchema } from "@/domain/monitors/monitor.schema.js";
 import { userResponseSchema } from "@/domain/users/user.schema.js";
 import { IncidentResolutionTypes } from "@/domain/incidents/incident.type.js";
 
@@ -39,6 +39,6 @@ export const incidentListResponseSchema = z.object({
 
 export const incidentDetailResponseSchema = z.object({
 	incident: incidentSchema,
-	monitor: monitorSchema,
+	monitor: monitorResponseSchema,
 	user: userResponseSchema.or(z.null()),
 });

@@ -38,7 +38,7 @@ import {
 	dockerDetailsResultSchema,
 	gamesMapSchema,
 	hardwareDetailsResultSchema,
-	monitorSchema,
+	monitorResponseSchema,
 	monitorsWithChecksByTeamIdResultSchema,
 	pageSpeedDetailsResultSchema,
 	uptimeDetailsResultSchema,
@@ -136,7 +136,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Toggle pause state for a monitor (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			params: pauseMonitorParamValidation,
-			response: monitorSchema,
+			response: monitorResponseSchema,
 		},
 		{
 			method: "post",
@@ -179,8 +179,8 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Create a new monitor (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			body: createMonitorBodyValidation,
-			response: monitorSchema,
-			spec: (d) => ({ ...d, responses: { ...d.responses, "200": okJson(monitorSchema, "Monitor created") } }),
+			response: monitorResponseSchema,
+			spec: (d) => ({ ...d, responses: { ...d.responses, "200": okJson(monitorResponseSchema, "Monitor created") } }),
 		},
 		{
 			method: "delete",
@@ -227,7 +227,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			handler: "getMonitorById",
 			summary: "Get a monitor by id",
 			params: getMonitorByIdParamValidation,
-			response: monitorSchema,
+			response: monitorResponseSchema,
 		},
 		{
 			method: "patch",
@@ -237,7 +237,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			roles: ["admin", "superadmin"],
 			params: getMonitorByIdParamValidation,
 			body: editMonitorBodyValidation,
-			response: monitorSchema,
+			response: monitorResponseSchema,
 		},
 		{
 			method: "delete",
@@ -246,7 +246,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Delete a monitor (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			params: getMonitorByIdParamValidation,
-			response: monitorSchema,
+			response: monitorResponseSchema,
 		},
 	],
 };

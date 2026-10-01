@@ -1,6 +1,6 @@
 import { IUsersRepository } from "@/domain/users/user.repository.interface.js";
 import { UserModel, type UserDocument } from "@/domain/users/user.model.js";
-import type { User, UserProfileImage, UserResponse } from "@/domain/users/user.type.js";
+import { toUserResponse, type User, type UserProfileImage, type UserResponse } from "@/domain/users/user.type.js";
 import { GenerateAvatarImage } from "@/utils/imageProcessing.js";
 import { AppError } from "@/utils/AppError.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
@@ -38,10 +38,7 @@ class MongoUsersRepository implements IUsersRepository {
 		};
 	};
 
-	private toResponse = (doc: UserDocument): UserResponse => {
-		const { password: _password, profileImage: _profileImage, ...rest } = this.toEntity(doc);
-		return rest;
-	};
+	private toResponse = (doc: UserDocument): UserResponse => toUserResponse(this.toEntity(doc));
 
 	create = async (user: Partial<User>, imageFile: Express.Multer.File | null) => {
 		if (imageFile) {

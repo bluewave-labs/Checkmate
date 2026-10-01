@@ -17,7 +17,7 @@ import { DOCKER_LOG_PAGE_DEFAULT, DOCKER_LOG_PAGE_MAX } from "@/domain/docker/do
 import { isCaptureDockerUrl, isDockerSocketUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
 import { X509Certificate } from "node:crypto";
 import { keyMatchesCertificate, parseCertificates, parsePrivateKey } from "@/utils/pem.js";
-import { monitorSchema } from "@/domain/monitors/monitor.schema.js";
+import { monitorResponseSchema } from "@/domain/monitors/monitor.schema.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
@@ -413,10 +413,10 @@ export const getDockerContainerLogsQueryValidation = z
 // Response schemas
 //****************************************
 
-export const monitorListResponseSchema = z.array(monitorSchema);
+export const monitorListResponseSchema = z.array(monitorResponseSchema);
 
 export const bulkPauseResponseSchema = z.object({
-	monitors: z.array(monitorSchema),
+	monitors: z.array(monitorResponseSchema),
 	failedCount: z.number(),
 });
 

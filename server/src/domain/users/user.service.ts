@@ -5,7 +5,7 @@ import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
 import { IUsersRepository } from "@/domain/users/user.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import type { User, UserResponse } from "@/domain/users/user.type.js";
-import { canManageRole, type UserRole } from "@/domain/users/user.type.js";
+import { canManageRole, toUserResponse, type UserRole } from "@/domain/users/user.type.js";
 import bcrypt from "bcryptjs";
 import { AppError } from "@/utils/AppError.js";
 import { IEmailService } from "@/service/emailService.js";
@@ -102,8 +102,6 @@ export class UserService implements IUserService {
 		this.settingsRepository = settingsRepository;
 		this.teamsRepository = teamsRepository;
 	}
-
-	private toResponse = ({ password: _password, profileImage: _profileImage, ...rest }: User): UserResponse => rest;
 
 	issueToken = (payload: Partial<User>, appSettings: EnvConfig) => {
 		return this.jwt.sign(payload, appSettings.jwtSecret, { expiresIn: appSettings.jwtTTL });
@@ -223,7 +221,7 @@ export class UserService implements IUserService {
 			throw new AppError({ message: "Incorrect password", service: SERVICE_NAME, status: 401 });
 		}
 
-		const userResponse = this.toResponse(user);
+		const userResponse = toUserResponse(user);
 
 		// Happy path, return token
 		const appSettings = await this.settingsService.getSettings();
@@ -304,7 +302,7 @@ export class UserService implements IUserService {
 		await this.usersRepository.updateById(existingUser.id, { password: hashedPassword }, null);
 		await this.recoveryTokensRepository.deleteManyByEmail(existingUser.email);
 
-		const userResponse = this.toResponse(existingUser);
+		const userResponse = toUserResponse(existingUser);
 		const token = this.issueToken(userResponse, await this.settingsService.getSettings());
 
 		return { user: userResponse, token };
