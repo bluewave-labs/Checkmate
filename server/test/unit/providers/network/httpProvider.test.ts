@@ -225,6 +225,126 @@ describe("HttpProvider", () => {
 			expect(result.message).toBe("Response is not JSON");
 		});
 
+		it("accepts JSON content types with a +json suffix", async () => {
+			mockGot.mockResolvedValue(
+				makeGotResponse({
+					headers: { "content-type": "application/health+json; charset=utf-8" },
+					body: '{"status":"healthy"}',
+				})
+			);
+
+			const matcher = createMockMatcher({
+				ok: true,
+				message: "Success",
+				extracted: "healthy",
+			});
+
+			const { provider } = createProvider(matcher);
+
+			const result = await provider.handle(
+				makeMonitor({
+					jsonPath: "status",
+					useAdvancedMatching: true,
+				})
+			);
+
+			expect(result.status).toBe(true);
+			expect(result.payload).toEqual({ status: "healthy" });
+			expect(result.extracted).toBe("healthy");
+		});
+
+		it("accepts application/problem+json", async () => {
+			mockGot.mockResolvedValue(
+				makeGotResponse({
+					headers: { "content-type": "application/problem+json" },
+					body: '{"status":"error","detail":"Something went wrong"}',
+				})
+			);
+
+			const matcher = createMockMatcher({
+				ok: true,
+				message: "Success",
+				extracted: "error",
+			});
+
+			const { provider } = createProvider(matcher);
+
+			const result = await provider.handle(
+				makeMonitor({
+					jsonPath: "status",
+					useAdvancedMatching: true,
+				})
+			);
+
+			expect(result.status).toBe(true);
+			expect(result.payload).toEqual({
+				status: "error",
+				detail: "Something went wrong",
+			});
+			expect(result.extracted).toBe("error");
+		});
+
+		it("accepts application/json with charset parameter", async () => {
+			mockGot.mockResolvedValue(
+				makeGotResponse({
+					headers: { "content-type": "application/json; charset=utf-8" },
+					body: '{"status":"ok"}',
+				})
+			);
+
+			const matcher = createMockMatcher({
+				ok: true,
+				message: "Success",
+				extracted: "ok",
+			});
+
+			const { provider } = createProvider(matcher);
+
+			const result = await provider.handle(
+				makeMonitor({
+					jsonPath: "status",
+					useAdvancedMatching: true,
+				})
+			);
+
+			expect(result.status).toBe(true);
+			expect(result.payload).toEqual({ status: "ok" });
+			expect(result.extracted).toBe("ok");
+		});
+
+		it("accepts application/problem+json with charset parameter", async () => {
+			mockGot.mockResolvedValue(
+				makeGotResponse({
+					headers: {
+						"content-type": "application/problem+json; charset=utf-8",
+					},
+					body: '{"status":"error","detail":"Invalid request"}',
+				})
+			);
+
+			const matcher = createMockMatcher({
+				ok: true,
+				message: "Success",
+				extracted: "error",
+			});
+
+			const { provider } = createProvider(matcher);
+
+			const result = await provider.handle(
+				makeMonitor({
+					jsonPath: "status",
+					useAdvancedMatching: true,
+				})
+			);
+
+			expect(result.status).toBe(true);
+			expect(result.payload).toEqual({
+				status: "error",
+				detail: "Invalid request",
+			});
+			expect(result.extracted).toBe("error");
+		});
+
 		it("defaults responseTime to 0 in non-JSON jsonPath response when total is undefined", async () => {
 			mockGot.mockResolvedValue(
 				makeGotResponse({
