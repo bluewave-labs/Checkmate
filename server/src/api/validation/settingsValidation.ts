@@ -1,7 +1,7 @@
-import { proxyResponseSchema } from "@/api/validation/proxyValidation.js";
 import { settingsSchema } from "@/domain/app-settings/app-settings.schema.js";
 import { CHECK_TTL_SENTINEL } from "@/domain/checks/check.type.js";
 import { MAX_EGRESS_TARGETS } from "@/domain/egress/egress.type.js";
+import { proxySummarySchema } from "@/domain/proxies/proxy.schema.js";
 import { parseEgressTarget } from "@/utils/egressTarget.js";
 import { z } from "zod";
 
@@ -75,7 +75,7 @@ export const appSettingsResponseSchema = z
 	.object({
 		pagespeedKeySet: z.boolean(),
 		emailPasswordSet: z.boolean(),
-		globalProxy: proxyResponseSchema.pick({ id: true, name: true, host: true, port: true }).nullable(),
+		globalProxy: proxySummarySchema.nullable(),
 		settings: settingsSchema.omit({
 			version: true,
 			jwtSecret: true,

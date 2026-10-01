@@ -1,13 +1,14 @@
 import { IProxiesController } from "@/api/controllers/proxyController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
-import { errorJson, unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
+import { errorJson } from "@/api/routes/openapiHelpers.js";
+import { proxyResponseSchema } from "@/domain/proxies/proxy.schema.js";
 import {
 	createProxyBodyValidation,
 	deleteProxyParamValidation,
 	editProxyBodyValidation,
 	editProxyParamValidation,
 	getProxyByIdParamValidation,
-	proxyResponseSchema,
+	proxyListResponseSchema,
 } from "@/api/validation/proxyValidation.js";
 
 export const proxyRoutes: RouteTable<IProxiesController> = {
@@ -29,14 +30,14 @@ export const proxyRoutes: RouteTable<IProxiesController> = {
 			handler: "getAllProxies",
 			summary: "List all proxies on the instance (admin/superadmin)",
 			roles: ["admin", "superadmin"],
-			response: unknownResponseSchema,
+			response: proxyListResponseSchema,
 		},
 		{
 			method: "get",
 			path: "/team",
 			handler: "getProxiesByTeamId",
 			summary: "List proxies for the caller's team",
-			response: unknownResponseSchema,
+			response: proxyListResponseSchema,
 		},
 		{
 			method: "get",
@@ -52,7 +53,6 @@ export const proxyRoutes: RouteTable<IProxiesController> = {
 			handler: "deleteProxy",
 			summary: "Delete a proxy by id",
 			params: deleteProxyParamValidation,
-			response: proxyResponseSchema,
 			spec: (d) => ({ ...d, responses: { ...d.responses, "409": errorJson("Proxy is in use by monitors or set as the global proxy") } }),
 		},
 		{

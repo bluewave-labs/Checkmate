@@ -2734,6 +2734,43 @@
 					"accessToken": "tk_your-ntfy-access-token"
 				}
 			},
+			"Proxy": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"protocol": {
+						"type": "string",
+						"enum": ["http", "https"]
+					},
+					"host": {
+						"type": "string"
+					},
+					"port": {
+						"type": "number"
+					},
+					"username": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					},
+					"hasPassword": {
+						"type": "boolean"
+					}
+				},
+				"required": ["id", "teamId", "name", "protocol", "host", "port", "createdAt", "updatedAt", "hasPassword"]
+			},
 			"AppSettings": {
 				"type": "object",
 				"properties": {
@@ -2760,10 +2797,7 @@
 								"type": "number"
 							}
 						},
-						"required": ["id", "name", "host", "port"],
-						"additionalProperties": {
-							"nullable": true
-						}
+						"required": ["id", "name", "host", "port"]
 					},
 					"settings": {
 						"type": "object",
@@ -12983,44 +13017,7 @@
 											"type": "string"
 										},
 										"data": {
-											"type": "object",
-											"properties": {
-												"id": {
-													"type": "string"
-												},
-												"teamId": {
-													"type": "string"
-												},
-												"name": {
-													"type": "string"
-												},
-												"protocol": {
-													"type": "string",
-													"enum": ["http", "https"]
-												},
-												"host": {
-													"type": "string"
-												},
-												"port": {
-													"type": "number"
-												},
-												"username": {
-													"type": "string"
-												},
-												"hasPassword": {
-													"type": "boolean"
-												},
-												"createdAt": {
-													"type": "string"
-												},
-												"updatedAt": {
-													"type": "string"
-												}
-											},
-											"required": ["id", "teamId", "name", "protocol", "host", "port", "hasPassword", "createdAt", "updatedAt"],
-											"additionalProperties": {
-												"nullable": true
-											}
+											"$ref": "#/components/schemas/Proxy"
 										}
 									},
 									"required": ["success", "msg", "data"]
@@ -13123,10 +13120,13 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/Proxy"
+											}
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -13228,10 +13228,13 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/Proxy"
+											}
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -13344,44 +13347,7 @@
 											"type": "string"
 										},
 										"data": {
-											"type": "object",
-											"properties": {
-												"id": {
-													"type": "string"
-												},
-												"teamId": {
-													"type": "string"
-												},
-												"name": {
-													"type": "string"
-												},
-												"protocol": {
-													"type": "string",
-													"enum": ["http", "https"]
-												},
-												"host": {
-													"type": "string"
-												},
-												"port": {
-													"type": "number"
-												},
-												"username": {
-													"type": "string"
-												},
-												"hasPassword": {
-													"type": "boolean"
-												},
-												"createdAt": {
-													"type": "string"
-												},
-												"updatedAt": {
-													"type": "string"
-												}
-											},
-											"required": ["id", "teamId", "name", "protocol", "host", "port", "hasPassword", "createdAt", "updatedAt"],
-											"additionalProperties": {
-												"nullable": true
-											}
+											"$ref": "#/components/schemas/Proxy"
 										}
 									},
 									"required": ["success", "msg", "data"]
@@ -13493,49 +13459,13 @@
 										},
 										"msg": {
 											"type": "string"
-										},
-										"data": {
-											"type": "object",
-											"properties": {
-												"id": {
-													"type": "string"
-												},
-												"teamId": {
-													"type": "string"
-												},
-												"name": {
-													"type": "string"
-												},
-												"protocol": {
-													"type": "string",
-													"enum": ["http", "https"]
-												},
-												"host": {
-													"type": "string"
-												},
-												"port": {
-													"type": "number"
-												},
-												"username": {
-													"type": "string"
-												},
-												"hasPassword": {
-													"type": "boolean"
-												},
-												"createdAt": {
-													"type": "string"
-												},
-												"updatedAt": {
-													"type": "string"
-												}
-											},
-											"required": ["id", "teamId", "name", "protocol", "host", "port", "hasPassword", "createdAt", "updatedAt"],
-											"additionalProperties": {
-												"nullable": true
-											}
 										}
 									},
-									"required": ["success", "msg", "data"]
+									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK"
 								}
 							}
 						}
@@ -13710,44 +13640,7 @@
 											"type": "string"
 										},
 										"data": {
-											"type": "object",
-											"properties": {
-												"id": {
-													"type": "string"
-												},
-												"teamId": {
-													"type": "string"
-												},
-												"name": {
-													"type": "string"
-												},
-												"protocol": {
-													"type": "string",
-													"enum": ["http", "https"]
-												},
-												"host": {
-													"type": "string"
-												},
-												"port": {
-													"type": "number"
-												},
-												"username": {
-													"type": "string"
-												},
-												"hasPassword": {
-													"type": "boolean"
-												},
-												"createdAt": {
-													"type": "string"
-												},
-												"updatedAt": {
-													"type": "string"
-												}
-											},
-											"required": ["id", "teamId", "name", "protocol", "host", "port", "hasPassword", "createdAt", "updatedAt"],
-											"additionalProperties": {
-												"nullable": true
-											}
+											"$ref": "#/components/schemas/Proxy"
 										}
 									},
 									"required": ["success", "msg", "data"]
