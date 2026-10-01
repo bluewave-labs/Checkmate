@@ -1,22 +1,14 @@
 import { createLogger, format, transports, Logger as WinstonLogger } from "winston";
 import type { Logform } from "winston";
+import type { z } from "zod";
+import type { logConfigSchema, logEntrySchema } from "@/utils/logger.schema.js";
 import dotenv from "dotenv";
 dotenv.config();
 
 const SERVICE_NAME = "Logger";
 
-interface LogConfig {
-	message: string;
-	service?: string;
-	method?: string;
-	details?: Record<string, unknown>;
-	stack?: string;
-}
-
-interface LogEntry extends LogConfig {
-	level: string;
-	timestamp: string;
-}
+type LogConfig = z.infer<typeof logConfigSchema>;
+type LogEntry = z.infer<typeof logEntrySchema>;
 
 export interface ILogger {
 	info(config: LogConfig): void;

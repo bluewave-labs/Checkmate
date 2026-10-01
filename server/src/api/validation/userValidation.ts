@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { UserRoles } from "@/domain/users/user.type.js";
 import { nameValidation, lowercaseEmailValidation, passwordValidation, booleanCoercion } from "@/api/validation/shared.js";
+import { userResponseSchema } from "@/domain/users/user.schema.js";
 
 //****************************************
 // User Validations
@@ -55,33 +56,5 @@ export const editUserBodyValidation = z
 		message: "Both current password and new password are required to change your password",
 		path: ["newPassword"],
 	});
-
-export const userResponseExample = {
-	_id: "65f1c2a4d8b9e0123456789a",
-	firstName: "Ada",
-	lastName: "Lovelace",
-	email: "ada@example.com",
-	role: ["admin"],
-	teamId: "65f1c2a4d8b9e01234567890",
-	createdAt: "2026-04-01T10:00:00.000Z",
-	updatedAt: "2026-04-15T14:30:00.000Z",
-};
-
-// Canonical user shape returned by auth/user endpoints. Keep aligned with what
-// the controllers actually serialize (password is intentionally omitted).
-export const userResponseSchema = z
-	.object({
-		_id: z.string(),
-		firstName: z.string(),
-		lastName: z.string(),
-		email: z.string(),
-		role: z.array(z.string()),
-		teamId: z.string().optional(),
-		profileImage: z.string().nullable().optional(),
-		createdAt: z.string(),
-		updatedAt: z.string(),
-	})
-	.passthrough()
-	.meta({ id: "User", example: userResponseExample });
 
 export const userListResponseSchema = z.array(userResponseSchema);

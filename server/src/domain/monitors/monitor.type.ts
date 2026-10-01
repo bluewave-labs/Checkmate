@@ -1,12 +1,22 @@
-import type { CheckSnapshot, DockerContainerStats, DockerStats } from "@/domain/checks/check.type.js";
 export type { CheckSnapshot } from "@/domain/checks/check.type.js";
-import type { GeoContinent, GroupedGeoCheck } from "@/domain/geo-checks/geo-check.type.js";
-export type { GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
+export type { GeoContinent, GroupedGeoCheckResult } from "@/domain/geo-checks/geo-check.type.js";
 import http from "node:http";
-import { HardwareStats } from "@/domain/checks/check.type.js";
-import { MonitorStats } from "@/domain/monitor-stats/monitor-stats.type.js";
 import { DockerLogPage } from "@/domain/docker/docker-log.type.js";
 import { isDockerSocketUrl } from "@/utils/dockerHost.js";
+
+import type { z } from "zod";
+import type {
+	dockerContainerDetailsResultSchema,
+	dockerDetailsResultSchema,
+	gameSchema,
+	gamesMapSchema,
+	hardwareDetailsResultSchema,
+	monitorSchema,
+	monitorsSummarySchema,
+	monitorsWithChecksByTeamIdResultSchema,
+	pageSpeedDetailsResultSchema,
+	uptimeDetailsResultSchema,
+} from "@/domain/monitors/monitor.schema.js";
 
 export const HttpStatusCodes = [
 	...Object.keys(http.STATUS_CODES).map(Number),
@@ -50,6 +60,11 @@ export type ProxyMode = (typeof ProxyModes)[number];
 export const UptimeDetailsSupportedTypes = ["http", "ping", "port", "game", "grpc", "websocket", "dns"] as const satisfies readonly MonitorType[];
 export type UptimeDetailsSupportedType = (typeof UptimeDetailsSupportedTypes)[number];
 export const supportsUptimeDetails = (type: MonitorType): type is UptimeDetailsSupportedType => UptimeDetailsSupportedTypes.some((t) => t === type);
+
+export const HardwareMetricKeys = ["cpu", "memory", "disk", "temp"] as const;
+export type HardwareMetricKey = (typeof HardwareMetricKeys)[number];
+export type HardwareBreaches = Record<HardwareMetricKey, boolean>;
+export type HardwareCounters = Record<HardwareMetricKey, number>;
 
 const MonitorPaths: Record<MonitorType, string> = {
 	http: "uptime",
@@ -105,143 +120,16 @@ export type HttpMethod = (typeof HttpMethods)[number];
 
 export const MAX_RECENT_CHECKS = 50;
 
-export interface Monitor {
-	id: string;
-	userId: string;
-	teamId: string;
-	name: string;
-	description?: string;
-	method: HttpMethod;
-	status: MonitorStatus;
-	statusWindow: boolean[];
-	statusWindowSize: number;
-	statusWindowThreshold: number;
-	type: MonitorType;
-	ignoreTlsErrors: boolean;
-	proxyMode: ProxyMode;
-	proxyId?: string;
-	useAdvancedMatching: boolean;
-	jsonPath?: string;
-	expectedValue?: string;
-	matchMethod?: MonitorMatchMethod;
-	url: string;
-	port?: number;
-	isActive: boolean;
-	interval: number;
-	uptimePercentage?: number;
-	notifications: string[];
-	tags: string[];
-	customUpCodes: HttpStatusCode[];
-	secret?: string;
-	cpuAlertThreshold: number;
-	cpuAlertCounter: number;
-	memoryAlertThreshold: number;
-	memoryAlertCounter: number;
-	diskAlertThreshold: number;
-	diskAlertCounter: number;
-	tempAlertThreshold: number;
-	tempAlertCounter: number;
-	selectedDisks: string[];
-	gameId?: string;
-	grpcServiceName?: string;
-	strategy?: PageSpeedStrategy;
-	group: string | null;
-	geoCheckEnabled?: boolean;
-	geoCheckLocations?: GeoContinent[];
-	geoCheckInterval?: number;
-	dockerLogsEnabled?: boolean;
-	dockerAlertOnStopped?: boolean;
-	dockerAlertOnUnhealthy?: boolean;
-	dockerTlsCa?: string;
-	dockerTlsCert?: string;
-	// EncryptionService ciphertext. Normally excluded
-	dockerTlsKey?: string;
-	dockerTlsKeySet?: boolean;
-	dnsServer?: string;
-	dnsRecordType?: DnsRecordType;
-	recentChecks: CheckSnapshot[];
-	createdAt: string;
-	updatedAt: string;
-	lastEvaluatedAt: number; // epoch ms
-}
-
-export interface MonitorsSummary {
-	totalMonitors: number;
-	upMonitors: number;
-	downMonitors: number;
-	pausedMonitors: number;
-	initializingMonitors: number;
-	maintenanceMonitors: number;
-	breachedMonitors: number;
-}
-
-export interface MonitorsWithChecksByTeamIdResult {
-	summary: MonitorsSummary | null;
-	count: number;
-	monitors: Monitor[];
-}
-
-export interface GroupedGeoCheckResult {
-	groupedGeoChecks: GroupedGeoCheck[];
-}
-
-export interface UptimeDetailsResult {
-	monitorData: {
-		monitor: Monitor;
-		groupedChecks: import("../checks/check.type.js").GroupedCheck[];
-		groupedUpChecks: import("../checks/check.type.js").GroupedCheck[];
-		groupedDownChecks: import("../checks/check.type.js").GroupedCheck[];
-		groupedAvgResponseTime: number;
-		groupedUptimePercentage: number;
-	};
-	monitorStats: import("../monitor-stats/monitor-stats.type.js").MonitorStats | null;
-}
-
-export interface HardwareDetailsResult {
-	monitor: Monitor;
-	stats: HardwareStats;
-	monitorStats: import("../monitor-stats/monitor-stats.type.js").MonitorStats | null;
-}
-
-export interface DockerDetailsResult {
-	monitor: Monitor;
-	stats: DockerStats;
-	monitorStats: MonitorStats | null;
-}
-
-export interface DockerContainerDetailsResult {
-	monitor: Monitor;
-	stats: DockerContainerStats;
-}
-
-export interface PageSpeedDetailsResult {
-	monitorData: {
-		monitor: Monitor;
-		groupedChecks: import("../checks/check.type.js").PageSpeedGroupedCheck[];
-	};
-	monitorStats: import("../monitor-stats/monitor-stats.type.js").MonitorStats | null;
-}
-
-export interface Game {
-	name: string;
-	release_year?: number;
-	options?: {
-		port?: number;
-		port_query?: number;
-		protocol?: string;
-	};
-	extra?: {
-		old_id?: string;
-	};
-}
-
-export type GamesMap = Record<string, Game>;
+export type Monitor = z.infer<typeof monitorSchema>;
+export type MonitorsSummary = z.infer<typeof monitorsSummarySchema>;
+export type MonitorsWithChecksByTeamIdResult = z.infer<typeof monitorsWithChecksByTeamIdResultSchema>;
+export type UptimeDetailsResult = z.infer<typeof uptimeDetailsResultSchema>;
+export type HardwareDetailsResult = z.infer<typeof hardwareDetailsResultSchema>;
+export type DockerDetailsResult = z.infer<typeof dockerDetailsResultSchema>;
+export type DockerContainerDetailsResult = z.infer<typeof dockerContainerDetailsResultSchema>;
+export type PageSpeedDetailsResult = z.infer<typeof pageSpeedDetailsResultSchema>;
+export type Game = z.infer<typeof gameSchema>;
+export type GamesMap = z.infer<typeof gamesMapSchema>;
 
 export type MonitorScheduleFields = Pick<Monitor, "id" | "type" | "isActive" | "interval" | "geoCheckEnabled" | "geoCheckInterval">;
-
 export type DockerContainerLogsResult = DockerLogPage;
-
-export const HardwareMetricKeys = ["cpu", "memory", "disk", "temp"] as const;
-export type HardwareMetricKey = (typeof HardwareMetricKeys)[number];
-export type HardwareBreaches = Record<HardwareMetricKey, boolean>;
-export type HardwareCounters = Record<HardwareMetricKey, number>;

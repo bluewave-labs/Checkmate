@@ -1,6 +1,6 @@
 import { IUsersRepository } from "@/domain/users/user.repository.interface.js";
 import { UserModel, type UserDocument } from "@/domain/users/user.model.js";
-import type { User, UserProfileImage } from "@/domain/users/user.type.js";
+import { toUserResponse, type User, type UserProfileImage, type UserResponse } from "@/domain/users/user.type.js";
 import { GenerateAvatarImage } from "@/utils/imageProcessing.js";
 import { AppError } from "@/utils/AppError.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
@@ -38,6 +38,8 @@ class MongoUsersRepository implements IUsersRepository {
 		};
 	};
 
+	private toResponse = (doc: UserDocument): UserResponse => toUserResponse(this.toEntity(doc));
+
 	create = async (user: Partial<User>, imageFile: Express.Multer.File | null) => {
 		if (imageFile) {
 			// 1.  Save the full size image
@@ -57,7 +59,7 @@ class MongoUsersRepository implements IUsersRepository {
 		if (!sanitizedUser) {
 			throw new AppError({ message: "Failed to create user", service: SERVICE_NAME, status: 500 });
 		}
-		return this.toEntity(sanitizedUser);
+		return this.toResponse(sanitizedUser);
 	};
 
 	findByEmail = async (email: string) => {
@@ -74,15 +76,19 @@ class MongoUsersRepository implements IUsersRepository {
 			throw new AppError({ message: "User not found", service: SERVICE_NAME, status: 404 });
 		}
 
-		return this.toEntity(user);
+		return this.toResponse(user);
 	};
 
 	findAll = async () => {
 		const users = await UserModel.find().select("-password").select("-profileImage");
-		return this.mapDocuments(users);
+		return users.map((doc) => this.toResponse(doc));
 	};
 
-	updateById = async (id: string, patch: Partial<User & { deleteProfileImage?: boolean }>, file?: Express.Multer.File | null): Promise<User> => {
+	updateById = async (
+		id: string,
+		patch: Partial<User & { deleteProfileImage?: boolean }>,
+		file?: Express.Multer.File | null
+	): Promise<UserResponse> => {
 		const candidateUser = { ...patch };
 		let unsetFields: Record<string, 1> | undefined;
 
@@ -111,7 +117,7 @@ class MongoUsersRepository implements IUsersRepository {
 		if (!updatedUser) {
 			throw new AppError({ message: "User not found", service: SERVICE_NAME, status: 404 });
 		}
-		return this.toEntity(updatedUser);
+		return this.toResponse(updatedUser);
 	};
 
 	deleteById = async (id: string) => {
@@ -128,13 +134,6 @@ class MongoUsersRepository implements IUsersRepository {
 			return true;
 		}
 		return false;
-	};
-
-	private mapDocuments = (documents: UserDocument[]): User[] => {
-		if (!documents?.length) {
-			return [];
-		}
-		return documents.map((doc) => this.toEntity(doc));
 	};
 }
 

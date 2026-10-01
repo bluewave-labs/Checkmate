@@ -16,11 +16,10 @@ import {
 	editUserByIdParamValidation,
 	editUserPasswordByIdBodyValidation,
 	getUserByIdParamValidation,
-	userResponseExample,
-	userResponseSchema,
 	userListResponseSchema,
 } from "@/api/validation/userValidation.js";
 import { errorJson, json, okJson, standardErrors } from "@/api/routes/openapiHelpers.js";
+import { userExample, userResponseSchema } from "@/domain/users/user.schema.js";
 
 export const authRoutes: RouteTable<IAuthController> = {
 	prefix: "/auth",
@@ -49,7 +48,7 @@ export const authRoutes: RouteTable<IAuthController> = {
 				...d,
 				request: { body: { content: json(loginValidation, { email: "ada@example.com", password: "S3cure!Passw0rd" }) } },
 				responses: {
-					"200": okJson(authPayloadResponseSchema, "OK", { user: userResponseExample, token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }),
+					"200": okJson(authPayloadResponseSchema, "OK", { user: userExample, token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }),
 					"401": errorJson("Invalid credentials"),
 					"500": standardErrors["500"],
 				},
@@ -79,6 +78,7 @@ export const authRoutes: RouteTable<IAuthController> = {
 			summary: "Reset password using a recovery token",
 			auth: "none",
 			body: newPasswordValidation,
+			response: authPayloadResponseSchema,
 		},
 		{
 			method: "get",

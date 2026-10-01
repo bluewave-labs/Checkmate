@@ -4,8 +4,8 @@ import { IRecoveryTokensRepository } from "@/domain/recovery-tokens/recovery-tok
 import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
 import { IUsersRepository } from "@/domain/users/user.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
-import type { User } from "@/domain/users/user.type.js";
-import { canManageRole, type UserRole } from "@/domain/users/user.type.js";
+import type { User, UserResponse } from "@/domain/users/user.type.js";
+import { canManageRole, toUserResponse, type UserRole } from "@/domain/users/user.type.js";
 import bcrypt from "bcryptjs";
 import { AppError } from "@/utils/AppError.js";
 import { IEmailService } from "@/service/emailService.js";
@@ -20,25 +20,25 @@ const SERVICE_NAME = "userService";
 
 export interface IUserService {
 	issueToken(payload: Partial<User>, appSettings: EnvConfig): string;
-	registerUser(user: Partial<User>, inviteToken: string, file: Express.Multer.File | null): Promise<{ user: User; token: string }>;
-	createUser(userData: Partial<User>, teamId: string, actorRoles: UserRole[], file: Express.Multer.File | null): Promise<User>;
-	loginUser(email: string, password: string): Promise<{ user: User; token: string }>;
+	registerUser(user: Partial<User>, inviteToken: string, file: Express.Multer.File | null): Promise<{ user: UserResponse; token: string }>;
+	createUser(userData: Partial<User>, teamId: string, actorRoles: UserRole[], file: Express.Multer.File | null): Promise<UserResponse>;
+	loginUser(email: string, password: string): Promise<{ user: UserResponse; token: string }>;
 	editUser(
 		updates: Partial<User & { newPassword?: string; deleteProfileImage?: boolean }>,
 		file: Express.Multer.File | null,
 		currentUserId: string,
 		currentUserEmail: string
-	): Promise<User>;
+	): Promise<UserResponse>;
 	checkSuperadminExists(): Promise<boolean>;
 	requestRecovery(email: string): Promise<string>;
 	validateRecovery(recoveryToken: string): Promise<void>;
-	resetPassword(password: string, recoveryToken: string): Promise<{ user: User; token: string }>;
+	resetPassword(password: string, recoveryToken: string): Promise<{ user: UserResponse; token: string }>;
 	deleteUser(params: { userId: string; teamId: string; roles: UserRole[] }): Promise<void>;
 	deleteUserById(params: { actorId: string; actorTeamId: string; actorRoles: UserRole[]; targetUserId: string }): Promise<void>;
-	getAllUsers(): Promise<User[]>;
-	getUserById(roles: UserRole[], userId: string): Promise<User>;
+	getAllUsers(): Promise<UserResponse[]>;
+	getUserById(roles: UserRole[], userId: string): Promise<UserResponse>;
 	editUserById(userId: string, patch: Partial<User>): Promise<void>;
-	setPasswordByUserId(userId: string, password: string): Promise<User>;
+	setPasswordByUserId(userId: string, password: string): Promise<UserResponse>;
 }
 
 export class UserService implements IUserService {
@@ -143,7 +143,6 @@ export class UserService implements IUserService {
 			details: { userId: newUser.id },
 		});
 
-		delete newUser.profileImage;
 		delete newUser.avatarImage;
 
 		const appSettings = await this.settingsService.getSettings();
@@ -207,9 +206,7 @@ export class UserService implements IUserService {
 			details: { userId: newUser.id },
 		});
 
-		newUser.profileImage = undefined;
 		newUser.avatarImage = undefined;
-		newUser.password = "";
 
 		return newUser;
 	};
@@ -224,17 +221,12 @@ export class UserService implements IUserService {
 			throw new AppError({ message: "Incorrect password", service: SERVICE_NAME, status: 401 });
 		}
 
-		// Remove password from user object.  Should this be abstracted to DB layer?
-		const userWithoutPassword = { ...user };
-		userWithoutPassword.password = "";
-		userWithoutPassword.avatarImage = "";
+		const userResponse = toUserResponse(user);
 
 		// Happy path, return token
 		const appSettings = await this.settingsService.getSettings();
-		const token = this.issueToken(userWithoutPassword, appSettings);
-		// reset avatar image
-		userWithoutPassword.avatarImage = user.avatarImage;
-		return { user: userWithoutPassword, token };
+		const token = this.issueToken({ ...userResponse, avatarImage: "" }, appSettings);
+		return { user: userResponse, token };
 	};
 
 	editUser = async (
@@ -310,12 +302,10 @@ export class UserService implements IUserService {
 		await this.usersRepository.updateById(existingUser.id, { password: hashedPassword }, null);
 		await this.recoveryTokensRepository.deleteManyByEmail(existingUser.email);
 
-		existingUser.password = "";
-		existingUser.profileImage = undefined;
+		const userResponse = toUserResponse(existingUser);
+		const token = this.issueToken(userResponse, await this.settingsService.getSettings());
 
-		const token = this.issueToken(existingUser, await this.settingsService.getSettings());
-
-		return { user: existingUser, token };
+		return { user: userResponse, token };
 	};
 
 	deleteUser = async ({ userId, teamId, roles }: { userId: string; teamId: string; roles: UserRole[] }) => {

@@ -82,6 +82,30 @@
 			}
 		},
 		"schemas": {
+			"Tag": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"color": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					}
+				},
+				"required": ["id", "teamId", "name", "color", "createdAt", "updatedAt"]
+			},
 			"AuthPayload": {
 				"type": "object",
 				"properties": {
@@ -95,10 +119,12 @@
 				"required": ["user"],
 				"example": {
 					"user": {
-						"_id": "65f1c2a4d8b9e0123456789a",
+						"id": "65f1c2a4d8b9e0123456789a",
 						"firstName": "Ada",
 						"lastName": "Lovelace",
 						"email": "ada@example.com",
+						"isActive": true,
+						"isVerified": true,
 						"role": ["admin"],
 						"teamId": "65f1c2a4d8b9e01234567890",
 						"createdAt": "2026-04-01T10:00:00.000Z",
@@ -110,7 +136,7 @@
 			"User": {
 				"type": "object",
 				"properties": {
-					"_id": {
+					"id": {
 						"type": "string"
 					},
 					"firstName": {
@@ -122,18 +148,27 @@
 					"email": {
 						"type": "string"
 					},
+					"avatarImage": {
+						"type": "string"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"isVerified": {
+						"type": "boolean"
+					},
 					"role": {
 						"type": "array",
 						"items": {
-							"type": "string"
+							"type": "string",
+							"enum": ["user", "admin", "superadmin", "demo"]
 						}
 					},
 					"teamId": {
 						"type": "string"
 					},
-					"profileImage": {
-						"type": "string",
-						"nullable": true
+					"checkTTL": {
+						"type": "number"
 					},
 					"createdAt": {
 						"type": "string"
@@ -142,20 +177,781 @@
 						"type": "string"
 					}
 				},
-				"required": ["_id", "firstName", "lastName", "email", "role", "createdAt", "updatedAt"],
-				"additionalProperties": {
-					"nullable": true
-				},
+				"required": ["id", "firstName", "lastName", "email", "isActive", "isVerified", "role", "teamId", "createdAt", "updatedAt"],
 				"example": {
-					"_id": "65f1c2a4d8b9e0123456789a",
+					"id": "65f1c2a4d8b9e0123456789a",
 					"firstName": "Ada",
 					"lastName": "Lovelace",
 					"email": "ada@example.com",
+					"isActive": true,
+					"isVerified": true,
 					"role": ["admin"],
 					"teamId": "65f1c2a4d8b9e01234567890",
 					"createdAt": "2026-04-01T10:00:00.000Z",
 					"updatedAt": "2026-04-15T14:30:00.000Z"
 				}
+			},
+			"Check": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"metadata": {
+						"type": "object",
+						"properties": {
+							"monitorId": {
+								"type": "string"
+							},
+							"teamId": {
+								"type": "string"
+							},
+							"type": {
+								"type": "string",
+								"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+							}
+						},
+						"required": ["monitorId", "teamId", "type"]
+					},
+					"status": {
+						"type": "boolean"
+					},
+					"responseTime": {
+						"type": "number"
+					},
+					"timings": {
+						"type": "object",
+						"properties": {
+							"start": {
+								"type": "number"
+							},
+							"socket": {
+								"type": "number"
+							},
+							"lookup": {
+								"type": "number"
+							},
+							"connect": {
+								"type": "number"
+							},
+							"secureConnect": {
+								"type": "number"
+							},
+							"upload": {
+								"type": "number"
+							},
+							"response": {
+								"type": "number"
+							},
+							"end": {
+								"type": "number"
+							},
+							"phases": {
+								"type": "object",
+								"properties": {
+									"wait": {
+										"type": "number"
+									},
+									"dns": {
+										"type": "number"
+									},
+									"tcp": {
+										"type": "number"
+									},
+									"tls": {
+										"type": "number"
+									},
+									"request": {
+										"type": "number"
+									},
+									"firstByte": {
+										"type": "number"
+									},
+									"download": {
+										"type": "number"
+									},
+									"total": {
+										"type": "number"
+									}
+								}
+							}
+						},
+						"required": ["start", "phases"]
+					},
+					"statusCode": {
+						"type": "number"
+					},
+					"message": {
+						"type": "string"
+					},
+					"cpu": {
+						"type": "object",
+						"properties": {
+							"physical_core": {
+								"type": "number"
+							},
+							"logical_core": {
+								"type": "number"
+							},
+							"frequency": {
+								"type": "number"
+							},
+							"current_frequency": {
+								"type": "number"
+							},
+							"temperature": {
+								"type": "array",
+								"items": {
+									"type": "number"
+								}
+							},
+							"free_percent": {
+								"type": "number"
+							},
+							"usage_percent": {
+								"type": "number"
+							}
+						}
+					},
+					"memory": {
+						"type": "object",
+						"properties": {
+							"total_bytes": {
+								"type": "number"
+							},
+							"available_bytes": {
+								"type": "number"
+							},
+							"used_bytes": {
+								"type": "number"
+							},
+							"usage_percent": {
+								"type": "number"
+							}
+						}
+					},
+					"disk": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"device": {
+									"type": "string"
+								},
+								"mountpoint": {
+									"type": "string"
+								},
+								"total_bytes": {
+									"type": "number"
+								},
+								"free_bytes": {
+									"type": "number"
+								},
+								"used_bytes": {
+									"type": "number"
+								},
+								"usage_percent": {
+									"type": "number"
+								},
+								"total_inodes": {
+									"type": "number"
+								},
+								"free_inodes": {
+									"type": "number"
+								},
+								"used_inodes": {
+									"type": "number"
+								},
+								"inodes_usage_percent": {
+									"type": "number"
+								},
+								"read_bytes": {
+									"type": "number"
+								},
+								"write_bytes": {
+									"type": "number"
+								},
+								"read_time": {
+									"type": "number"
+								},
+								"write_time": {
+									"type": "number"
+								}
+							}
+						}
+					},
+					"host": {
+						"type": "object",
+						"properties": {
+							"os": {
+								"type": "string"
+							},
+							"platform": {
+								"type": "string"
+							},
+							"kernel_version": {
+								"type": "string"
+							},
+							"pretty_name": {
+								"type": "string"
+							}
+						}
+					},
+					"errors": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"metric": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								},
+								"err": {
+									"type": "string"
+								}
+							},
+							"required": ["metric", "err"]
+						}
+					},
+					"capture": {
+						"type": "object",
+						"properties": {
+							"version": {
+								"type": "string"
+							},
+							"mode": {
+								"type": "string"
+							}
+						}
+					},
+					"containers": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/DockerContainer"
+						}
+					},
+					"containerSummary": {
+						"type": "object",
+						"properties": {
+							"total": {
+								"type": "number"
+							},
+							"running": {
+								"type": "number"
+							},
+							"stopped": {
+								"type": "number"
+							},
+							"unhealthy": {
+								"type": "number"
+							}
+						},
+						"required": ["total", "running", "stopped", "unhealthy"]
+					},
+					"net": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"name": {
+									"type": "string"
+								},
+								"bytes_sent": {
+									"type": "number"
+								},
+								"bytes_recv": {
+									"type": "number"
+								},
+								"packets_sent": {
+									"type": "number"
+								},
+								"packets_recv": {
+									"type": "number"
+								},
+								"err_in": {
+									"type": "number"
+								},
+								"err_out": {
+									"type": "number"
+								},
+								"drop_in": {
+									"type": "number"
+								},
+								"drop_out": {
+									"type": "number"
+								},
+								"fifo_in": {
+									"type": "number"
+								},
+								"fifo_out": {
+									"type": "number"
+								}
+							},
+							"required": [
+								"name",
+								"bytes_sent",
+								"bytes_recv",
+								"packets_sent",
+								"packets_recv",
+								"err_in",
+								"err_out",
+								"drop_in",
+								"drop_out",
+								"fifo_in",
+								"fifo_out"
+							]
+						}
+					},
+					"accessibility": {
+						"type": "number"
+					},
+					"bestPractices": {
+						"type": "number"
+					},
+					"seo": {
+						"type": "number"
+					},
+					"performance": {
+						"type": "number"
+					},
+					"audits": {
+						"type": "object",
+						"properties": {
+							"cls": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "string"
+									},
+									"title": {
+										"type": "string"
+									},
+									"score": {
+										"type": "number",
+										"nullable": true
+									},
+									"displayValue": {
+										"type": "string"
+									},
+									"numericValue": {
+										"type": "number"
+									},
+									"numericUnit": {
+										"type": "string"
+									}
+								}
+							},
+							"si": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "string"
+									},
+									"title": {
+										"type": "string"
+									},
+									"score": {
+										"type": "number",
+										"nullable": true
+									},
+									"displayValue": {
+										"type": "string"
+									},
+									"numericValue": {
+										"type": "number"
+									},
+									"numericUnit": {
+										"type": "string"
+									}
+								}
+							},
+							"fcp": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "string"
+									},
+									"title": {
+										"type": "string"
+									},
+									"score": {
+										"type": "number",
+										"nullable": true
+									},
+									"displayValue": {
+										"type": "string"
+									},
+									"numericValue": {
+										"type": "number"
+									},
+									"numericUnit": {
+										"type": "string"
+									}
+								}
+							},
+							"lcp": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "string"
+									},
+									"title": {
+										"type": "string"
+									},
+									"score": {
+										"type": "number",
+										"nullable": true
+									},
+									"displayValue": {
+										"type": "string"
+									},
+									"numericValue": {
+										"type": "number"
+									},
+									"numericUnit": {
+										"type": "string"
+									}
+								}
+							},
+							"tbt": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "string"
+									},
+									"title": {
+										"type": "string"
+									},
+									"score": {
+										"type": "number",
+										"nullable": true
+									},
+									"displayValue": {
+										"type": "string"
+									},
+									"numericValue": {
+										"type": "number"
+									},
+									"numericUnit": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					},
+					"egressStatus": {
+						"type": "string",
+						"enum": ["ok", "degraded"]
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					}
+				},
+				"required": ["id", "metadata", "status", "responseTime", "statusCode", "message", "createdAt", "updatedAt"]
+			},
+			"DockerContainer": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"image": {
+						"type": "string"
+					},
+					"state": {
+						"type": "string",
+						"enum": ["created", "running", "paused", "restarting", "removing", "exited", "dead"]
+					},
+					"status": {
+						"type": "string"
+					},
+					"health": {
+						"type": "string",
+						"enum": ["healthy", "unhealthy", "starting", "none"]
+					},
+					"cpuPct": {
+						"type": "number"
+					},
+					"memoryUsedBytes": {
+						"type": "number"
+					},
+					"memoryLimitBytes": {
+						"type": "number"
+					},
+					"memoryPct": {
+						"type": "number"
+					},
+					"restartCount": {
+						"type": "number"
+					},
+					"startedAt": {
+						"type": "string"
+					},
+					"ports": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"privatePort": {
+									"type": "number"
+								},
+								"protocol": {
+									"type": "string",
+									"enum": ["tcp", "udp", "sctp"]
+								},
+								"publicPort": {
+									"type": "number"
+								},
+								"hostIp": {
+									"type": "string"
+								}
+							},
+							"required": ["privatePort", "protocol"]
+						}
+					},
+					"mounts": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"type": {
+									"type": "string"
+								},
+								"name": {
+									"type": "string"
+								},
+								"source": {
+									"type": "string"
+								},
+								"destination": {
+									"type": "string"
+								},
+								"mode": {
+									"type": "string"
+								},
+								"rw": {
+									"type": "boolean"
+								}
+							},
+							"required": ["type", "source", "destination", "mode", "rw"]
+						}
+					},
+					"exitCode": {
+						"type": "number"
+					}
+				},
+				"required": ["id", "name", "image", "state", "status", "health"]
+			},
+			"Diagnostics": {
+				"type": "object",
+				"properties": {
+					"osStats": {
+						"type": "object",
+						"properties": {
+							"totalMemoryBytes": {
+								"type": "number"
+							}
+						},
+						"required": ["totalMemoryBytes"]
+					},
+					"cpuUsage": {
+						"type": "object",
+						"properties": {
+							"usagePercentage": {
+								"type": "number"
+							}
+						},
+						"required": ["usagePercentage"]
+					},
+					"v8HeapStats": {
+						"type": "object",
+						"properties": {
+							"totalHeapSizeBytes": {
+								"type": "number"
+							},
+							"usedHeapSizeBytes": {
+								"type": "number"
+							},
+							"heapSizeLimitBytes": {
+								"type": "number"
+							}
+						},
+						"required": ["totalHeapSizeBytes", "usedHeapSizeBytes", "heapSizeLimitBytes"]
+					},
+					"eventLoopDelayMs": {
+						"type": "number"
+					},
+					"uptimeMs": {
+						"type": "number"
+					},
+					"mongoStats": {
+						"type": "object",
+						"properties": {
+							"readyState": {
+								"type": "number"
+							},
+							"readsPerSecond": {
+								"type": "number"
+							},
+							"insertsPerSecond": {
+								"type": "number"
+							},
+							"updatesPerSecond": {
+								"type": "number"
+							},
+							"deletesPerSecond": {
+								"type": "number"
+							},
+							"writesPerSecond": {
+								"type": "number"
+							},
+							"host": {
+								"type": "string"
+							},
+							"port": {
+								"type": "number"
+							},
+							"dbName": {
+								"type": "string"
+							},
+							"totalSize": {
+								"type": "number"
+							},
+							"collections": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"name": {
+											"type": "string"
+										},
+										"documentCount": {
+											"type": "number"
+										},
+										"storageSize": {
+											"type": "number"
+										},
+										"totalIndexSize": {
+											"type": "number"
+										},
+										"totalSize": {
+											"type": "number"
+										},
+										"bucketCount": {
+											"type": "number"
+										}
+									},
+									"required": ["name", "documentCount", "storageSize", "totalIndexSize", "totalSize"]
+								}
+							}
+						},
+						"required": [
+							"readyState",
+							"readsPerSecond",
+							"insertsPerSecond",
+							"updatesPerSecond",
+							"deletesPerSecond",
+							"writesPerSecond",
+							"host",
+							"port",
+							"dbName",
+							"totalSize",
+							"collections"
+						]
+					}
+				},
+				"required": ["osStats", "cpuUsage", "v8HeapStats", "eventLoopDelayMs", "uptimeMs", "mongoStats"]
+			},
+			"FlatGeoCheck": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"monitorId": {
+						"type": "string"
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string",
+						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+					},
+					"location": {
+						"type": "object",
+						"properties": {
+							"continent": {
+								"type": "string",
+								"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
+							},
+							"region": {
+								"type": "string"
+							},
+							"country": {
+								"type": "string"
+							},
+							"state": {
+								"type": "string"
+							},
+							"city": {
+								"type": "string"
+							},
+							"longitude": {
+								"type": "number"
+							},
+							"latitude": {
+								"type": "number"
+							}
+						},
+						"required": ["continent", "region", "country", "state", "city", "longitude", "latitude"]
+					},
+					"status": {
+						"type": "boolean"
+					},
+					"statusCode": {
+						"type": "number"
+					},
+					"timings": {
+						"type": "object",
+						"properties": {
+							"total": {
+								"type": "number"
+							},
+							"dns": {
+								"type": "number"
+							},
+							"tcp": {
+								"type": "number"
+							},
+							"tls": {
+								"type": "number"
+							},
+							"firstByte": {
+								"type": "number"
+							},
+							"download": {
+								"type": "number"
+							}
+						},
+						"required": ["total", "dns", "tcp", "tls", "firstByte", "download"]
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					}
+				},
+				"required": ["id", "monitorId", "teamId", "type", "location", "status", "statusCode", "timings", "createdAt", "updatedAt"]
 			},
 			"Incident": {
 				"type": "object",
@@ -223,10 +1019,22 @@
 						"example": "2026-04-15T03:34:00.000Z"
 					}
 				},
-				"required": ["id", "monitorId", "teamId", "startTime", "endTime", "status", "resolutionType", "createdAt", "updatedAt"],
-				"additionalProperties": {
-					"nullable": true
-				}
+				"required": [
+					"id",
+					"monitorId",
+					"teamId",
+					"startTime",
+					"endTime",
+					"status",
+					"message",
+					"statusCode",
+					"resolutionType",
+					"resolvedBy",
+					"resolvedByEmail",
+					"comment",
+					"createdAt",
+					"updatedAt"
+				]
 			},
 			"IncidentSummary": {
 				"type": "object",
@@ -340,6 +1148,619 @@
 				},
 				"required": ["id", "monitorId", "monitorName", "status", "startTime", "endTime", "resolutionType", "message", "statusCode", "createdAt"]
 			},
+			"Monitor": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"userId": {
+						"type": "string"
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"method": {
+						"type": "string",
+						"enum": ["GET", "HEAD"]
+					},
+					"status": {
+						"type": "string",
+						"enum": ["up", "down", "paused", "initializing", "maintenance", "breached"]
+					},
+					"statusWindow": {
+						"type": "array",
+						"items": {
+							"type": "boolean"
+						}
+					},
+					"statusWindowSize": {
+						"type": "number"
+					},
+					"statusWindowThreshold": {
+						"type": "number"
+					},
+					"type": {
+						"type": "string",
+						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+					},
+					"ignoreTlsErrors": {
+						"type": "boolean"
+					},
+					"proxyMode": {
+						"type": "string",
+						"enum": ["inherit", "none", "custom"]
+					},
+					"proxyId": {
+						"type": "string"
+					},
+					"useAdvancedMatching": {
+						"type": "boolean"
+					},
+					"jsonPath": {
+						"type": "string"
+					},
+					"expectedValue": {
+						"type": "string"
+					},
+					"matchMethod": {
+						"anyOf": [
+							{
+								"type": "string",
+								"enum": ["equal", "include", "regex"]
+							},
+							{
+								"type": "string",
+								"enum": [""]
+							}
+						]
+					},
+					"url": {
+						"type": "string"
+					},
+					"port": {
+						"type": "number"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"interval": {
+						"type": "number"
+					},
+					"uptimePercentage": {
+						"type": "number"
+					},
+					"notifications": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"tags": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"customUpCodes": {
+						"type": "array",
+						"items": {
+							"type": "number"
+						}
+					},
+					"secret": {
+						"type": "string"
+					},
+					"cpuAlertThreshold": {
+						"type": "number"
+					},
+					"cpuAlertCounter": {
+						"type": "number"
+					},
+					"memoryAlertThreshold": {
+						"type": "number"
+					},
+					"memoryAlertCounter": {
+						"type": "number"
+					},
+					"diskAlertThreshold": {
+						"type": "number"
+					},
+					"diskAlertCounter": {
+						"type": "number"
+					},
+					"tempAlertThreshold": {
+						"type": "number"
+					},
+					"tempAlertCounter": {
+						"type": "number"
+					},
+					"selectedDisks": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"gameId": {
+						"type": "string"
+					},
+					"grpcServiceName": {
+						"type": "string"
+					},
+					"strategy": {
+						"type": "string",
+						"enum": ["desktop", "mobile"]
+					},
+					"group": {
+						"type": "string",
+						"nullable": true
+					},
+					"geoCheckEnabled": {
+						"type": "boolean"
+					},
+					"geoCheckLocations": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
+						}
+					},
+					"geoCheckInterval": {
+						"type": "number"
+					},
+					"dockerLogsEnabled": {
+						"type": "boolean"
+					},
+					"dockerAlertOnStopped": {
+						"type": "boolean"
+					},
+					"dockerAlertOnUnhealthy": {
+						"type": "boolean"
+					},
+					"dockerTlsCa": {
+						"type": "string"
+					},
+					"dockerTlsCert": {
+						"type": "string"
+					},
+					"dockerTlsKeySet": {
+						"type": "boolean"
+					},
+					"dnsServer": {
+						"type": "string"
+					},
+					"dnsRecordType": {
+						"type": "string",
+						"enum": ["A", "AAAA", "CNAME", "MX", "TXT", "NS"]
+					},
+					"recentChecks": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"id": {
+									"type": "string"
+								},
+								"status": {
+									"type": "boolean"
+								},
+								"responseTime": {
+									"type": "number"
+								},
+								"statusCode": {
+									"type": "number"
+								},
+								"message": {
+									"type": "string"
+								},
+								"createdAt": {
+									"type": "string"
+								},
+								"accessibility": {
+									"type": "number"
+								},
+								"bestPractices": {
+									"type": "number"
+								},
+								"seo": {
+									"type": "number"
+								},
+								"performance": {
+									"type": "number"
+								},
+								"audits": {
+									"type": "object",
+									"properties": {
+										"cls": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string"
+												},
+												"title": {
+													"type": "string"
+												},
+												"score": {
+													"type": "number",
+													"nullable": true
+												},
+												"displayValue": {
+													"type": "string"
+												},
+												"numericValue": {
+													"type": "number"
+												},
+												"numericUnit": {
+													"type": "string"
+												}
+											}
+										},
+										"si": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string"
+												},
+												"title": {
+													"type": "string"
+												},
+												"score": {
+													"type": "number",
+													"nullable": true
+												},
+												"displayValue": {
+													"type": "string"
+												},
+												"numericValue": {
+													"type": "number"
+												},
+												"numericUnit": {
+													"type": "string"
+												}
+											}
+										},
+										"fcp": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string"
+												},
+												"title": {
+													"type": "string"
+												},
+												"score": {
+													"type": "number",
+													"nullable": true
+												},
+												"displayValue": {
+													"type": "string"
+												},
+												"numericValue": {
+													"type": "number"
+												},
+												"numericUnit": {
+													"type": "string"
+												}
+											}
+										},
+										"lcp": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string"
+												},
+												"title": {
+													"type": "string"
+												},
+												"score": {
+													"type": "number",
+													"nullable": true
+												},
+												"displayValue": {
+													"type": "string"
+												},
+												"numericValue": {
+													"type": "number"
+												},
+												"numericUnit": {
+													"type": "string"
+												}
+											}
+										},
+										"tbt": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string"
+												},
+												"title": {
+													"type": "string"
+												},
+												"score": {
+													"type": "number",
+													"nullable": true
+												},
+												"displayValue": {
+													"type": "string"
+												},
+												"numericValue": {
+													"type": "number"
+												},
+												"numericUnit": {
+													"type": "string"
+												}
+											}
+										}
+									}
+								},
+								"cpu": {
+									"type": "object",
+									"properties": {
+										"physical_core": {
+											"type": "number"
+										},
+										"logical_core": {
+											"type": "number"
+										},
+										"frequency": {
+											"type": "number"
+										},
+										"current_frequency": {
+											"type": "number"
+										},
+										"temperature": {
+											"type": "array",
+											"items": {
+												"type": "number"
+											}
+										},
+										"usage_percent": {
+											"type": "number"
+										}
+									}
+								},
+								"memory": {
+									"type": "object",
+									"properties": {
+										"total_bytes": {
+											"type": "number"
+										},
+										"used_bytes": {
+											"type": "number"
+										},
+										"usage_percent": {
+											"type": "number"
+										}
+									}
+								},
+								"disk": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"device": {
+												"type": "string"
+											},
+											"total_bytes": {
+												"type": "number"
+											},
+											"used_bytes": {
+												"type": "number"
+											},
+											"usage_percent": {
+												"type": "number"
+											}
+										}
+									}
+								},
+								"host": {
+									"type": "object",
+									"properties": {
+										"os": {
+											"type": "string"
+										},
+										"platform": {
+											"type": "string"
+										},
+										"pretty_name": {
+											"type": "string"
+										}
+									}
+								},
+								"containerSummary": {
+									"type": "object",
+									"properties": {
+										"total": {
+											"type": "number"
+										},
+										"running": {
+											"type": "number"
+										},
+										"stopped": {
+											"type": "number"
+										},
+										"unhealthy": {
+											"type": "number"
+										}
+									},
+									"required": ["total", "running", "stopped", "unhealthy"]
+								}
+							},
+							"required": ["id", "status", "responseTime", "statusCode", "message", "createdAt"]
+						}
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					},
+					"lastEvaluatedAt": {
+						"type": "number"
+					}
+				},
+				"required": [
+					"id",
+					"userId",
+					"teamId",
+					"name",
+					"method",
+					"status",
+					"statusWindow",
+					"statusWindowSize",
+					"statusWindowThreshold",
+					"type",
+					"ignoreTlsErrors",
+					"proxyMode",
+					"useAdvancedMatching",
+					"url",
+					"isActive",
+					"interval",
+					"notifications",
+					"tags",
+					"customUpCodes",
+					"cpuAlertThreshold",
+					"cpuAlertCounter",
+					"memoryAlertThreshold",
+					"memoryAlertCounter",
+					"diskAlertThreshold",
+					"diskAlertCounter",
+					"tempAlertThreshold",
+					"tempAlertCounter",
+					"selectedDisks",
+					"group",
+					"recentChecks",
+					"createdAt",
+					"updatedAt",
+					"lastEvaluatedAt"
+				],
+				"example": {
+					"id": "65f1c2a4d8b9e0123456789a",
+					"name": "Marketing site",
+					"description": "Production marketing site monitored from the EU region",
+					"type": "http",
+					"method": "GET",
+					"url": "https://www.example.com",
+					"port": 443,
+					"isActive": true,
+					"interval": 60000,
+					"status": "up",
+					"statusWindow": [true, true, true, true, true],
+					"statusWindowSize": 5,
+					"statusWindowThreshold": 3,
+					"ignoreTlsErrors": false,
+					"proxyMode": "inherit",
+					"useAdvancedMatching": false,
+					"notifications": ["65f1c2a4d8b9e0123456789b"],
+					"tags": [],
+					"customUpCodes": [],
+					"cpuAlertThreshold": 90,
+					"cpuAlertCounter": 0,
+					"memoryAlertThreshold": 90,
+					"memoryAlertCounter": 0,
+					"diskAlertThreshold": 90,
+					"diskAlertCounter": 0,
+					"tempAlertThreshold": 80,
+					"tempAlertCounter": 0,
+					"selectedDisks": [],
+					"group": null,
+					"geoCheckEnabled": false,
+					"geoCheckLocations": [],
+					"geoCheckInterval": 300000,
+					"recentChecks": [],
+					"teamId": "65f1c2a4d8b9e01234567890",
+					"userId": "65f1c2a4d8b9e01234567891",
+					"createdAt": "2026-04-01T10:00:00.000Z",
+					"updatedAt": "2026-04-15T14:30:00.000Z",
+					"lastEvaluatedAt": 1776254400000
+				}
+			},
+			"Invite": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"role": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"enum": ["user", "admin", "superadmin", "demo"]
+						}
+					},
+					"token": {
+						"type": "string"
+					},
+					"expiry": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					}
+				},
+				"required": ["id", "email", "teamId", "role", "token", "expiry", "createdAt", "updatedAt"]
+			},
+			"MaintenanceWindow": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"monitorIds": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"active": {
+						"type": "boolean"
+					},
+					"name": {
+						"type": "string"
+					},
+					"duration": {
+						"type": "number"
+					},
+					"durationUnit": {
+						"type": "string",
+						"enum": ["seconds", "minutes", "hours", "days"]
+					},
+					"repeat": {
+						"type": "number"
+					},
+					"start": {
+						"type": "string"
+					},
+					"end": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					}
+				},
+				"required": ["id", "monitorIds", "teamId", "active", "name", "duration", "durationUnit", "repeat", "start", "end", "createdAt", "updatedAt"]
+			},
 			"UptimeDetails": {
 				"type": "object",
 				"properties": {
@@ -347,209 +1768,7 @@
 						"type": "object",
 						"properties": {
 							"monitor": {
-								"type": "object",
-								"properties": {
-									"name": {
-										"type": "string"
-									},
-									"description": {
-										"type": "string"
-									},
-									"type": {
-										"type": "string",
-										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
-									},
-									"url": {
-										"type": "string"
-									},
-									"port": {
-										"type": "number"
-									},
-									"isActive": {
-										"type": "boolean"
-									},
-									"interval": {
-										"type": "number"
-									},
-									"status": {
-										"type": "string",
-										"enum": ["up", "down", "paused", "initializing", "maintenance", "breached"]
-									},
-									"statusWindowSize": {
-										"type": "number"
-									},
-									"statusWindowThreshold": {
-										"type": "number"
-									},
-									"ignoreTlsErrors": {
-										"type": "boolean"
-									},
-									"proxyMode": {
-										"type": "string",
-										"enum": ["inherit", "none", "custom"]
-									},
-									"proxyId": {
-										"type": "string"
-									},
-									"useAdvancedMatching": {
-										"type": "boolean"
-									},
-									"jsonPath": {
-										"type": "string"
-									},
-									"expectedValue": {
-										"type": "string"
-									},
-									"matchMethod": {
-										"type": "string",
-										"enum": ["equal", "include", "regex"]
-									},
-									"method": {
-										"type": "string",
-										"enum": ["GET", "HEAD"]
-									},
-									"notifications": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"tags": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"customUpCodes": {
-										"type": "array",
-										"items": {
-											"type": "number"
-										}
-									},
-									"secret": {
-										"type": "string"
-									},
-									"cpuAlertThreshold": {
-										"type": "number"
-									},
-									"memoryAlertThreshold": {
-										"type": "number"
-									},
-									"diskAlertThreshold": {
-										"type": "number"
-									},
-									"tempAlertThreshold": {
-										"type": "number"
-									},
-									"selectedDisks": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"gameId": {
-										"type": "string"
-									},
-									"grpcServiceName": {
-										"type": "string"
-									},
-									"group": {
-										"type": "string",
-										"nullable": true
-									},
-									"geoCheckEnabled": {
-										"type": "boolean"
-									},
-									"geoCheckLocations": {
-										"type": "array",
-										"items": {
-											"type": "string",
-											"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
-										}
-									},
-									"geoCheckInterval": {
-										"type": "number"
-									},
-									"dockerLogsEnabled": {
-										"type": "boolean"
-									},
-									"dockerAlertOnStopped": {
-										"type": "boolean"
-									},
-									"dockerAlertOnUnhealthy": {
-										"type": "boolean"
-									},
-									"dockerTlsCa": {
-										"type": "string"
-									},
-									"dockerTlsCert": {
-										"type": "string"
-									},
-									"dockerTlsKeySet": {
-										"type": "boolean"
-									},
-									"dnsServer": {
-										"type": "string"
-									},
-									"dnsRecordType": {
-										"type": "string",
-										"enum": ["A", "AAAA", "CNAME", "MX", "TXT", "NS"]
-									},
-									"teamId": {
-										"type": "string"
-									},
-									"userId": {
-										"type": "string"
-									},
-									"createdAt": {
-										"type": "string"
-									},
-									"updatedAt": {
-										"type": "string"
-									},
-									"lastEvaluatedAt": {
-										"type": "number"
-									},
-									"id": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"name",
-									"type",
-									"url",
-									"isActive",
-									"interval",
-									"status",
-									"statusWindowSize",
-									"statusWindowThreshold",
-									"ignoreTlsErrors",
-									"proxyMode",
-									"useAdvancedMatching",
-									"method",
-									"notifications",
-									"tags",
-									"cpuAlertThreshold",
-									"memoryAlertThreshold",
-									"diskAlertThreshold",
-									"tempAlertThreshold",
-									"selectedDisks",
-									"geoCheckEnabled",
-									"geoCheckLocations",
-									"geoCheckInterval",
-									"dockerLogsEnabled",
-									"dockerAlertOnStopped",
-									"dockerAlertOnUnhealthy",
-									"teamId",
-									"userId",
-									"createdAt",
-									"updatedAt",
-									"lastEvaluatedAt",
-									"id"
-								],
-								"additionalProperties": {
-									"nullable": true
-								}
+								"$ref": "#/components/schemas/Monitor"
 							},
 							"groupedChecks": {
 								"type": "array",
@@ -643,223 +1862,513 @@
 						"required": ["monitor", "groupedChecks", "groupedUpChecks", "groupedDownChecks", "groupedAvgResponseTime", "groupedUptimePercentage"]
 					},
 					"monitorStats": {
-						"type": "object",
-						"nullable": true,
-						"properties": {
-							"id": {
-								"type": "string"
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/MonitorStats"
 							},
-							"monitorId": {
-								"type": "string"
-							},
-							"avgResponseTime": {
-								"type": "number"
-							},
-							"maxResponseTime": {
-								"type": "number"
-							},
-							"totalChecks": {
-								"type": "number"
-							},
-							"totalUpChecks": {
-								"type": "number"
-							},
-							"totalDownChecks": {
-								"type": "number"
-							},
-							"uptimePercentage": {
-								"type": "number"
-							},
-							"lastCheckTimestamp": {
-								"type": "number"
-							},
-							"lastResponseTime": {
-								"type": "number"
-							},
-							"timeOfLastFailure": {
-								"type": "number"
-							},
-							"createdAt": {
-								"type": "string"
-							},
-							"updatedAt": {
-								"type": "string"
+							{
+								"nullable": true
 							}
-						},
-						"required": [
-							"id",
-							"monitorId",
-							"avgResponseTime",
-							"maxResponseTime",
-							"totalChecks",
-							"totalUpChecks",
-							"totalDownChecks",
-							"uptimePercentage",
-							"lastCheckTimestamp",
-							"lastResponseTime",
-							"createdAt",
-							"updatedAt"
 						]
 					}
 				},
 				"required": ["monitorData", "monitorStats"]
 			},
-			"Monitor": {
+			"MonitorStats": {
 				"type": "object",
 				"properties": {
-					"_id": {
+					"id": {
 						"type": "string"
 					},
-					"name": {
+					"monitorId": {
 						"type": "string"
 					},
-					"description": {
-						"type": "string"
-					},
-					"type": {
-						"type": "string",
-						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
-					},
-					"url": {
-						"type": "string"
-					},
-					"port": {
+					"avgResponseTime": {
 						"type": "number"
 					},
-					"isActive": {
-						"type": "boolean"
-					},
-					"interval": {
+					"maxResponseTime": {
 						"type": "number"
 					},
-					"status": {
-						"type": "string",
-						"enum": ["up", "down", "paused", "initializing", "maintenance", "breached"]
-					},
-					"statusWindowSize": {
+					"totalChecks": {
 						"type": "number"
 					},
-					"statusWindowThreshold": {
+					"totalUpChecks": {
 						"type": "number"
 					},
-					"ignoreTlsErrors": {
-						"type": "boolean"
+					"totalDownChecks": {
+						"type": "number"
 					},
-					"proxyMode": {
-						"type": "string",
-						"enum": ["inherit", "none", "custom"]
+					"uptimePercentage": {
+						"type": "number"
 					},
-					"proxyId": {
+					"lastCheckTimestamp": {
+						"type": "number"
+					},
+					"lastResponseTime": {
+						"type": "number"
+					},
+					"timeOfLastFailure": {
+						"type": "number"
+					},
+					"createdAt": {
 						"type": "string"
 					},
-					"useAdvancedMatching": {
-						"type": "boolean"
-					},
-					"jsonPath": {
+					"updatedAt": {
 						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"monitorId",
+					"avgResponseTime",
+					"maxResponseTime",
+					"totalChecks",
+					"totalUpChecks",
+					"totalDownChecks",
+					"uptimePercentage",
+					"lastCheckTimestamp",
+					"lastResponseTime",
+					"createdAt",
+					"updatedAt"
+				]
+			},
+			"HardwareDetails": {
+				"type": "object",
+				"properties": {
+					"monitor": {
+						"$ref": "#/components/schemas/Monitor"
 					},
-					"expectedValue": {
-						"type": "string"
+					"stats": {
+						"type": "object",
+						"properties": {
+							"aggregateData": {
+								"type": "object",
+								"properties": {
+									"totalChecks": {
+										"type": "number"
+									}
+								},
+								"required": ["totalChecks"]
+							},
+							"upChecks": {
+								"type": "object",
+								"properties": {
+									"totalChecks": {
+										"type": "number"
+									}
+								},
+								"required": ["totalChecks"]
+							},
+							"checks": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"bucketDate": {
+											"type": "string"
+										},
+										"avgCpuUsage": {
+											"type": "number"
+										},
+										"avgMemoryUsage": {
+											"type": "number"
+										},
+										"avgTemperature": {
+											"type": "array",
+											"items": {
+												"type": "number"
+											}
+										},
+										"disks": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"name": {
+														"type": "string"
+													},
+													"readSpeed": {
+														"type": "number"
+													},
+													"writeSpeed": {
+														"type": "number"
+													},
+													"totalBytes": {
+														"type": "number"
+													},
+													"freeBytes": {
+														"type": "number"
+													},
+													"usagePercent": {
+														"type": "number"
+													}
+												},
+												"required": ["name", "readSpeed", "writeSpeed", "totalBytes", "freeBytes", "usagePercent"]
+											}
+										},
+										"net": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"name": {
+														"type": "string"
+													},
+													"bytesSentPerSecond": {
+														"type": "number"
+													},
+													"deltaBytesRecv": {
+														"type": "number"
+													},
+													"deltaPacketsSent": {
+														"type": "number"
+													},
+													"deltaPacketsRecv": {
+														"type": "number"
+													},
+													"deltaErrIn": {
+														"type": "number"
+													},
+													"deltaErrOut": {
+														"type": "number"
+													},
+													"deltaDropIn": {
+														"type": "number"
+													},
+													"deltaDropOut": {
+														"type": "number"
+													},
+													"deltaFifoIn": {
+														"type": "number"
+													},
+													"deltaFifoOut": {
+														"type": "number"
+													}
+												},
+												"required": [
+													"name",
+													"bytesSentPerSecond",
+													"deltaBytesRecv",
+													"deltaPacketsSent",
+													"deltaPacketsRecv",
+													"deltaErrIn",
+													"deltaErrOut",
+													"deltaDropIn",
+													"deltaDropOut",
+													"deltaFifoIn",
+													"deltaFifoOut"
+												]
+											}
+										}
+									},
+									"required": ["bucketDate", "avgCpuUsage", "avgMemoryUsage", "avgTemperature", "disks", "net"]
+								}
+							}
+						},
+						"required": ["aggregateData", "upChecks", "checks"]
 					},
-					"matchMethod": {
-						"type": "string",
-						"enum": ["equal", "include", "regex"]
+					"monitorStats": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/MonitorStats"
+							},
+							{
+								"nullable": true
+							}
+						]
+					}
+				},
+				"required": ["monitor", "stats", "monitorStats"]
+			},
+			"PageSpeedDetails": {
+				"type": "object",
+				"properties": {
+					"monitorData": {
+						"type": "object",
+						"properties": {
+							"monitor": {
+								"$ref": "#/components/schemas/Monitor"
+							},
+							"groupedChecks": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"bucketDate": {
+											"type": "string"
+										},
+										"performance": {
+											"type": "number"
+										},
+										"accessibility": {
+											"type": "number"
+										},
+										"bestPractices": {
+											"type": "number"
+										},
+										"seo": {
+											"type": "number"
+										}
+									},
+									"required": ["bucketDate", "performance", "accessibility", "bestPractices", "seo"]
+								}
+							}
+						},
+						"required": ["monitor", "groupedChecks"]
 					},
-					"method": {
-						"type": "string",
-						"enum": ["GET", "HEAD"]
+					"monitorStats": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/MonitorStats"
+							},
+							{
+								"nullable": true
+							}
+						]
+					}
+				},
+				"required": ["monitorData", "monitorStats"]
+			},
+			"DockerDetails": {
+				"type": "object",
+				"properties": {
+					"monitor": {
+						"$ref": "#/components/schemas/Monitor"
 					},
-					"notifications": {
+					"stats": {
+						"type": "object",
+						"properties": {
+							"aggregateData": {
+								"type": "object",
+								"properties": {
+									"totalChecks": {
+										"type": "number"
+									}
+								},
+								"required": ["totalChecks"]
+							},
+							"upChecks": {
+								"type": "object",
+								"properties": {
+									"totalChecks": {
+										"type": "number"
+									}
+								},
+								"required": ["totalChecks"]
+							},
+							"aggregate": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"_id": {
+											"type": "string"
+										},
+										"avgResponseTime": {
+											"type": "number",
+											"nullable": true
+										},
+										"upCount": {
+											"type": "number"
+										},
+										"totalCount": {
+											"type": "number"
+										},
+										"avgRunning": {
+											"type": "number",
+											"nullable": true
+										},
+										"avgTotal": {
+											"type": "number",
+											"nullable": true
+										},
+										"avgUnhealthy": {
+											"type": "number",
+											"nullable": true
+										}
+									},
+									"required": ["_id", "avgResponseTime", "upCount", "totalCount", "avgRunning", "avgTotal", "avgUnhealthy"]
+								}
+							},
+							"latest": {
+								"type": "object",
+								"nullable": true,
+								"properties": {
+									"containers": {
+										"type": "array",
+										"items": {
+											"$ref": "#/components/schemas/DockerContainer"
+										}
+									},
+									"summary": {
+										"type": "object",
+										"properties": {
+											"total": {
+												"type": "number"
+											},
+											"running": {
+												"type": "number"
+											},
+											"stopped": {
+												"type": "number"
+											},
+											"unhealthy": {
+												"type": "number"
+											}
+										},
+										"required": ["total", "running", "stopped", "unhealthy"]
+									},
+									"checkedAt": {
+										"type": "string"
+									}
+								},
+								"required": ["containers", "checkedAt"]
+							}
+						},
+						"required": ["aggregateData", "upChecks", "aggregate", "latest"]
+					},
+					"monitorStats": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/MonitorStats"
+							},
+							{
+								"nullable": true
+							}
+						]
+					}
+				},
+				"required": ["monitor", "stats", "monitorStats"]
+			},
+			"DockerContainerDetails": {
+				"type": "object",
+				"properties": {
+					"monitor": {
+						"$ref": "#/components/schemas/Monitor"
+					},
+					"stats": {
+						"type": "object",
+						"properties": {
+							"aggregate": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"_id": {
+											"type": "string"
+										},
+										"avgCpuPct": {
+											"type": "number",
+											"nullable": true
+										},
+										"avgMemoryUsedBytes": {
+											"type": "number",
+											"nullable": true
+										},
+										"avgMemoryPct": {
+											"type": "number",
+											"nullable": true
+										},
+										"minRestartCount": {
+											"type": "number",
+											"nullable": true
+										},
+										"maxRestartCount": {
+											"type": "number",
+											"nullable": true
+										}
+									},
+									"required": ["_id", "avgCpuPct", "avgMemoryUsedBytes", "avgMemoryPct", "minRestartCount", "maxRestartCount"]
+								}
+							},
+							"restartsInRange": {
+								"type": "number"
+							},
+							"latest": {
+								"type": "object",
+								"nullable": true,
+								"properties": {
+									"container": {
+										"$ref": "#/components/schemas/DockerContainer"
+									},
+									"checkedAt": {
+										"type": "string"
+									}
+								},
+								"required": ["container", "checkedAt"]
+							}
+						},
+						"required": ["aggregate", "restartsInRange", "latest"]
+					}
+				},
+				"required": ["monitor", "stats"]
+			},
+			"DockerLogPage": {
+				"type": "object",
+				"properties": {
+					"logs": {
 						"type": "array",
 						"items": {
-							"type": "string"
+							"$ref": "#/components/schemas/DockerLog"
 						}
 					},
-					"tags": {
-						"type": "array",
-						"items": {
-							"type": "string"
-						}
-					},
-					"customUpCodes": {
-						"type": "array",
-						"items": {
-							"type": "number"
-						}
-					},
-					"secret": {
-						"type": "string"
-					},
-					"cpuAlertThreshold": {
-						"type": "number"
-					},
-					"memoryAlertThreshold": {
-						"type": "number"
-					},
-					"diskAlertThreshold": {
-						"type": "number"
-					},
-					"tempAlertThreshold": {
-						"type": "number"
-					},
-					"selectedDisks": {
-						"type": "array",
-						"items": {
-							"type": "string"
-						}
-					},
-					"gameId": {
-						"type": "string"
-					},
-					"grpcServiceName": {
-						"type": "string"
-					},
-					"group": {
+					"nextCursor": {
 						"type": "string",
 						"nullable": true
+					}
+				},
+				"required": ["logs", "nextCursor"]
+			},
+			"DockerLog": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
 					},
-					"geoCheckEnabled": {
-						"type": "boolean"
+					"metadata": {
+						"type": "object",
+						"properties": {
+							"monitorId": {
+								"type": "string"
+							},
+							"teamId": {
+								"type": "string"
+							},
+							"containerId": {
+								"type": "string"
+							},
+							"containerName": {
+								"type": "string"
+							}
+						},
+						"required": ["monitorId", "teamId", "containerId", "containerName"]
 					},
-					"geoCheckLocations": {
+					"lines": {
 						"type": "array",
 						"items": {
-							"type": "string",
-							"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
+							"type": "object",
+							"properties": {
+								"ts": {
+									"type": "string"
+								},
+								"stream": {
+									"type": "string",
+									"enum": ["stdout", "stderr"]
+								},
+								"text": {
+									"type": "string"
+								}
+							},
+							"required": ["ts", "stream", "text"]
 						}
 					},
-					"geoCheckInterval": {
-						"type": "number"
-					},
-					"dockerLogsEnabled": {
+					"gap": {
 						"type": "boolean"
 					},
-					"dockerAlertOnStopped": {
-						"type": "boolean"
-					},
-					"dockerAlertOnUnhealthy": {
-						"type": "boolean"
-					},
-					"dockerTlsCa": {
+					"checkedAt": {
 						"type": "string"
 					},
-					"dockerTlsCert": {
-						"type": "string"
-					},
-					"dockerTlsKeySet": {
-						"type": "boolean"
-					},
-					"dnsServer": {
-						"type": "string"
-					},
-					"dnsRecordType": {
-						"type": "string",
-						"enum": ["A", "AAAA", "CNAME", "MX", "TXT", "NS"]
-					},
-					"teamId": {
-						"type": "string"
-					},
-					"userId": {
+					"expiry": {
 						"type": "string"
 					},
 					"createdAt": {
@@ -867,75 +2376,82 @@
 					},
 					"updatedAt": {
 						"type": "string"
-					},
-					"lastEvaluatedAt": {
-						"type": "number"
 					}
 				},
-				"required": [
-					"_id",
-					"name",
-					"type",
-					"url",
-					"isActive",
-					"interval",
-					"status",
-					"statusWindowSize",
-					"statusWindowThreshold",
-					"ignoreTlsErrors",
-					"proxyMode",
-					"useAdvancedMatching",
-					"method",
-					"notifications",
-					"tags",
-					"cpuAlertThreshold",
-					"memoryAlertThreshold",
-					"diskAlertThreshold",
-					"tempAlertThreshold",
-					"selectedDisks",
-					"geoCheckEnabled",
-					"geoCheckLocations",
-					"geoCheckInterval",
-					"dockerLogsEnabled",
-					"dockerAlertOnStopped",
-					"dockerAlertOnUnhealthy",
-					"teamId",
-					"userId",
-					"createdAt",
-					"updatedAt",
-					"lastEvaluatedAt"
-				],
-				"additionalProperties": {
-					"nullable": true
+				"required": ["id", "metadata", "lines", "gap", "checkedAt", "expiry", "createdAt", "updatedAt"]
+			},
+			"Notification": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"userId": {
+						"type": "string"
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string",
+						"enum": [
+							"email",
+							"slack",
+							"discord",
+							"webhook",
+							"rocket_chat",
+							"pager_duty",
+							"matrix",
+							"teams",
+							"telegram",
+							"pushover",
+							"signalgrid",
+							"twilio",
+							"ntfy"
+						]
+					},
+					"notificationName": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"homeserverUrl": {
+						"type": "string"
+					},
+					"roomId": {
+						"type": "string"
+					},
+					"accessToken": {
+						"type": "string"
+					},
+					"accountSid": {
+						"type": "string"
+					},
+					"twilioPhoneNumber": {
+						"type": "string"
+					},
+					"topic": {
+						"type": "string"
+					},
+					"ntfyAuthType": {
+						"type": "string",
+						"enum": ["none", "token", "basic"]
+					},
+					"ntfyUsername": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					}
 				},
-				"example": {
-					"_id": "65f1c2a4d8b9e0123456789a",
-					"name": "Marketing site",
-					"description": "Production marketing site monitored from the EU region",
-					"type": "http",
-					"url": "https://www.example.com",
-					"port": 443,
-					"isActive": true,
-					"interval": 60000,
-					"status": "up",
-					"statusWindowSize": 5,
-					"statusWindowThreshold": 3,
-					"ignoreTlsErrors": false,
-					"useAdvancedMatching": false,
-					"notifications": ["65f1c2a4d8b9e0123456789b"],
-					"cpuAlertThreshold": 90,
-					"memoryAlertThreshold": 90,
-					"diskAlertThreshold": 90,
-					"tempAlertThreshold": 80,
-					"selectedDisks": [],
-					"geoCheckEnabled": false,
-					"geoCheckLocations": [],
-					"geoCheckInterval": 300000,
-					"teamId": "65f1c2a4d8b9e01234567890",
-					"userId": "65f1c2a4d8b9e01234567891",
-					"createdAt": "2026-04-01T10:00:00.000Z",
-					"updatedAt": "2026-04-15T14:30:00.000Z"
-				}
+				"required": ["id", "userId", "teamId", "type", "notificationName", "createdAt", "updatedAt"]
 			},
 			"NotificationChannelBody": {
 				"oneOf": [
@@ -1546,100 +3062,312 @@
 					"accessToken": "tk_your-ntfy-access-token"
 				}
 			},
-			"PublicStatusPagePayload": {
+			"Proxy": {
 				"type": "object",
 				"properties": {
-					"statusPage": {
+					"id": {
+						"type": "string"
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"protocol": {
+						"type": "string",
+						"enum": ["http", "https"]
+					},
+					"host": {
+						"type": "string"
+					},
+					"port": {
+						"type": "number"
+					},
+					"username": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					},
+					"hasPassword": {
+						"type": "boolean"
+					}
+				},
+				"required": ["id", "teamId", "name", "protocol", "host", "port", "createdAt", "updatedAt", "hasPassword"]
+			},
+			"WorkerJobsPage": {
+				"type": "object",
+				"properties": {
+					"jobs": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"monitorId": {
+									"type": "string"
+								},
+								"monitorType": {
+									"type": "string",
+									"nullable": true
+								},
+								"monitorInterval": {
+									"type": "number",
+									"nullable": true
+								},
+								"monitorActive": {
+									"type": "boolean",
+									"nullable": true
+								},
+								"lockedBy": {
+									"type": "string",
+									"nullable": true
+								},
+								"lockedUntil": {
+									"type": "number",
+									"nullable": true
+								},
+								"nextScheduledAt": {
+									"type": "number"
+								},
+								"runCount": {
+									"type": "number"
+								},
+								"failCount": {
+									"type": "number"
+								},
+								"failReason": {
+									"type": "string",
+									"nullable": true
+								},
+								"lastFinishedAt": {
+									"type": "number",
+									"nullable": true
+								}
+							},
+							"required": [
+								"monitorId",
+								"monitorType",
+								"monitorInterval",
+								"monitorActive",
+								"lockedBy",
+								"lockedUntil",
+								"nextScheduledAt",
+								"runCount",
+								"failCount",
+								"failReason",
+								"lastFinishedAt"
+							]
+						}
+					},
+					"count": {
+						"type": "number"
+					}
+				},
+				"required": ["jobs", "count"]
+			},
+			"WorkerMetrics": {
+				"type": "object",
+				"properties": {
+					"jobs": {
+						"type": "number"
+					},
+					"activeJobs": {
+						"type": "number"
+					},
+					"failingJobs": {
+						"type": "number"
+					},
+					"jobsWithFailures": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"monitorId": {
+									"type": "string"
+								},
+								"monitorUrl": {
+									"type": "string",
+									"nullable": true
+								},
+								"monitorType": {
+									"type": "string",
+									"nullable": true
+								},
+								"failedAt": {
+									"type": "number",
+									"nullable": true
+								},
+								"failCount": {
+									"type": "number"
+								},
+								"failReason": {
+									"type": "string",
+									"nullable": true
+								}
+							},
+							"required": ["monitorId", "monitorUrl", "monitorType", "failedAt", "failCount", "failReason"]
+						}
+					},
+					"totalRuns": {
+						"type": "number"
+					},
+					"totalFailures": {
+						"type": "number"
+					},
+					"workers": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/QueueWorker"
+						}
+					}
+				},
+				"required": ["jobs", "activeJobs", "failingJobs", "jobsWithFailures", "totalRuns", "totalFailures", "workers"]
+			},
+			"QueueWorker": {
+				"type": "object",
+				"properties": {
+					"workerId": {
+						"type": "string",
+						"description": "hostname:pid:uuid"
+					},
+					"mode": {
+						"type": "string",
+						"enum": ["primary", "worker"]
+					},
+					"processesJobs": {
+						"type": "boolean"
+					},
+					"lastSeenAt": {
+						"type": "number",
+						"description": "Epoch ms of the last heartbeat"
+					}
+				},
+				"required": ["workerId", "mode", "processesJobs", "lastSeenAt"]
+			},
+			"AppSettings": {
+				"type": "object",
+				"properties": {
+					"pagespeedKeySet": {
+						"type": "boolean"
+					},
+					"emailPasswordSet": {
+						"type": "boolean"
+					},
+					"globalProxy": {
+						"type": "object",
+						"nullable": true,
+						"properties": {
+							"id": {
+								"type": "string"
+							},
+							"name": {
+								"type": "string"
+							},
+							"host": {
+								"type": "string"
+							},
+							"port": {
+								"type": "number"
+							}
+						},
+						"required": ["id", "name", "host", "port"]
+					},
+					"settings": {
 						"type": "object",
 						"properties": {
 							"id": {
 								"type": "string"
 							},
-							"userId": {
+							"checkTTL": {
+								"type": "number"
+							},
+							"language": {
 								"type": "string"
 							},
-							"teamId": {
+							"systemEmailHost": {
 								"type": "string"
 							},
-							"type": {
-								"type": "array",
-								"items": {
-									"type": "string",
-									"enum": ["uptime", "infrastructure"]
+							"systemEmailPort": {
+								"type": "number"
+							},
+							"systemEmailAddress": {
+								"type": "string"
+							},
+							"systemEmailDisplayName": {
+								"type": "string"
+							},
+							"systemEmailUser": {
+								"type": "string"
+							},
+							"systemEmailConnectionHost": {
+								"type": "string"
+							},
+							"systemEmailTLSServername": {
+								"type": "string"
+							},
+							"systemEmailSecure": {
+								"type": "boolean"
+							},
+							"systemEmailPool": {
+								"type": "boolean"
+							},
+							"systemEmailIgnoreTLS": {
+								"type": "boolean"
+							},
+							"systemEmailRequireTLS": {
+								"type": "boolean"
+							},
+							"systemEmailRejectUnauthorized": {
+								"type": "boolean"
+							},
+							"showURL": {
+								"type": "boolean"
+							},
+							"singleton": {
+								"type": "boolean"
+							},
+							"globalThresholds": {
+								"type": "object",
+								"properties": {
+									"cpu": {
+										"type": "number"
+									},
+									"memory": {
+										"type": "number"
+									},
+									"disk": {
+										"type": "number"
+									},
+									"temperature": {
+										"type": "number"
+									}
 								}
 							},
-							"companyName": {
-								"type": "string"
+							"globalProxyEnabled": {
+								"type": "boolean"
 							},
-							"url": {
-								"type": "string"
-							},
-							"customDomain": {
+							"globalProxyId": {
 								"type": "string",
 								"nullable": true
 							},
-							"timezone": {
-								"type": "string"
+							"egressCheckEnabled": {
+								"type": "boolean"
 							},
-							"color": {
-								"type": "string"
-							},
-							"monitors": {
+							"egressCheckTargets": {
 								"type": "array",
 								"items": {
 									"type": "string"
 								}
 							},
-							"subMonitors": {
+							"egressNotifications": {
 								"type": "array",
 								"items": {
 									"type": "string"
 								}
-							},
-							"originalMonitors": {
-								"type": "array",
-								"items": {
-									"type": "string"
-								}
-							},
-							"logo": {
-								"type": "object",
-								"nullable": true,
-								"properties": {
-									"data": {
-										"type": "string"
-									},
-									"contentType": {
-										"type": "string"
-									}
-								},
-								"required": ["data", "contentType"]
-							},
-							"isPublished": {
-								"type": "boolean"
-							},
-							"showCharts": {
-								"type": "boolean"
-							},
-							"showUptimePercentage": {
-								"type": "boolean"
-							},
-							"showAdminLoginLink": {
-								"type": "boolean"
-							},
-							"showInfrastructure": {
-								"type": "boolean"
-							},
-							"customCSS": {
-								"type": "string"
-							},
-							"theme": {
-								"type": "string",
-								"enum": ["refined", "modern", "bold", "editorial", "minimal"]
-							},
-							"themeMode": {
-								"type": "string",
-								"enum": ["auto", "light", "dark"]
 							},
 							"createdAt": {
 								"type": "string"
@@ -1650,25 +3378,153 @@
 						},
 						"required": [
 							"id",
-							"userId",
-							"teamId",
-							"type",
-							"companyName",
-							"url",
-							"color",
-							"monitors",
-							"subMonitors",
-							"isPublished",
-							"showCharts",
-							"showUptimePercentage",
-							"showAdminLoginLink",
-							"showInfrastructure",
-							"customCSS",
-							"theme",
-							"themeMode",
+							"checkTTL",
+							"language",
+							"systemEmailSecure",
+							"systemEmailPool",
+							"systemEmailIgnoreTLS",
+							"systemEmailRequireTLS",
+							"systemEmailRejectUnauthorized",
+							"showURL",
+							"singleton",
+							"globalProxyEnabled",
+							"egressCheckEnabled",
+							"egressCheckTargets",
+							"egressNotifications",
 							"createdAt",
 							"updatedAt"
 						]
+					}
+				},
+				"required": ["pagespeedKeySet", "emailPasswordSet", "globalProxy", "settings"]
+			},
+			"StatusPage": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"userId": {
+						"type": "string"
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"type": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"enum": ["uptime", "infrastructure"]
+						}
+					},
+					"companyName": {
+						"type": "string"
+					},
+					"url": {
+						"type": "string"
+					},
+					"customDomain": {
+						"type": "string",
+						"nullable": true
+					},
+					"timezone": {
+						"type": "string"
+					},
+					"color": {
+						"type": "string"
+					},
+					"monitors": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"subMonitors": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"originalMonitors": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"logo": {
+						"type": "object",
+						"properties": {
+							"data": {
+								"type": "string"
+							},
+							"contentType": {
+								"type": "string"
+							}
+						},
+						"required": ["data", "contentType"]
+					},
+					"isPublished": {
+						"type": "boolean"
+					},
+					"showCharts": {
+						"type": "boolean"
+					},
+					"showUptimePercentage": {
+						"type": "boolean"
+					},
+					"showAdminLoginLink": {
+						"type": "boolean"
+					},
+					"showInfrastructure": {
+						"type": "boolean"
+					},
+					"customCSS": {
+						"type": "string"
+					},
+					"theme": {
+						"type": "string",
+						"enum": ["refined", "modern", "bold", "editorial", "minimal"]
+					},
+					"themeMode": {
+						"type": "string",
+						"enum": ["auto", "light", "dark"]
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"userId",
+					"teamId",
+					"type",
+					"companyName",
+					"url",
+					"customDomain",
+					"color",
+					"monitors",
+					"subMonitors",
+					"originalMonitors",
+					"isPublished",
+					"showCharts",
+					"showUptimePercentage",
+					"showAdminLoginLink",
+					"showInfrastructure",
+					"customCSS",
+					"theme",
+					"themeMode",
+					"createdAt",
+					"updatedAt"
+				]
+			},
+			"PublicStatusPagePayload": {
+				"type": "object",
+				"properties": {
+					"statusPage": {
+						"$ref": "#/components/schemas/StatusPage"
 					},
 					"monitors": {
 						"type": "array",
@@ -1727,6 +3583,205 @@
 											"performance": {
 												"type": "number"
 											},
+											"audits": {
+												"type": "object",
+												"properties": {
+													"cls": {
+														"type": "object",
+														"properties": {
+															"id": {
+																"type": "string"
+															},
+															"title": {
+																"type": "string"
+															},
+															"score": {
+																"type": "number",
+																"nullable": true
+															},
+															"displayValue": {
+																"type": "string"
+															},
+															"numericValue": {
+																"type": "number"
+															},
+															"numericUnit": {
+																"type": "string"
+															}
+														}
+													},
+													"si": {
+														"type": "object",
+														"properties": {
+															"id": {
+																"type": "string"
+															},
+															"title": {
+																"type": "string"
+															},
+															"score": {
+																"type": "number",
+																"nullable": true
+															},
+															"displayValue": {
+																"type": "string"
+															},
+															"numericValue": {
+																"type": "number"
+															},
+															"numericUnit": {
+																"type": "string"
+															}
+														}
+													},
+													"fcp": {
+														"type": "object",
+														"properties": {
+															"id": {
+																"type": "string"
+															},
+															"title": {
+																"type": "string"
+															},
+															"score": {
+																"type": "number",
+																"nullable": true
+															},
+															"displayValue": {
+																"type": "string"
+															},
+															"numericValue": {
+																"type": "number"
+															},
+															"numericUnit": {
+																"type": "string"
+															}
+														}
+													},
+													"lcp": {
+														"type": "object",
+														"properties": {
+															"id": {
+																"type": "string"
+															},
+															"title": {
+																"type": "string"
+															},
+															"score": {
+																"type": "number",
+																"nullable": true
+															},
+															"displayValue": {
+																"type": "string"
+															},
+															"numericValue": {
+																"type": "number"
+															},
+															"numericUnit": {
+																"type": "string"
+															}
+														}
+													},
+													"tbt": {
+														"type": "object",
+														"properties": {
+															"id": {
+																"type": "string"
+															},
+															"title": {
+																"type": "string"
+															},
+															"score": {
+																"type": "number",
+																"nullable": true
+															},
+															"displayValue": {
+																"type": "string"
+															},
+															"numericValue": {
+																"type": "number"
+															},
+															"numericUnit": {
+																"type": "string"
+															}
+														}
+													}
+												}
+											},
+											"cpu": {
+												"type": "object",
+												"properties": {
+													"physical_core": {
+														"type": "number"
+													},
+													"logical_core": {
+														"type": "number"
+													},
+													"frequency": {
+														"type": "number"
+													},
+													"current_frequency": {
+														"type": "number"
+													},
+													"temperature": {
+														"type": "array",
+														"items": {
+															"type": "number"
+														}
+													},
+													"usage_percent": {
+														"type": "number"
+													}
+												}
+											},
+											"memory": {
+												"type": "object",
+												"properties": {
+													"total_bytes": {
+														"type": "number"
+													},
+													"used_bytes": {
+														"type": "number"
+													},
+													"usage_percent": {
+														"type": "number"
+													}
+												}
+											},
+											"disk": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"device": {
+															"type": "string"
+														},
+														"total_bytes": {
+															"type": "number"
+														},
+														"used_bytes": {
+															"type": "number"
+														},
+														"usage_percent": {
+															"type": "number"
+														}
+													}
+												}
+											},
+											"host": {
+												"type": "object",
+												"properties": {
+													"os": {
+														"type": "string"
+													},
+													"platform": {
+														"type": "string"
+													},
+													"pretty_name": {
+														"type": "string"
+													}
+												}
+											},
 											"containerSummary": {
 												"type": "object",
 												"properties": {
@@ -1746,10 +3801,7 @@
 												"required": ["total", "running", "stopped", "unhealthy"]
 											}
 										},
-										"required": ["id", "status", "responseTime", "statusCode", "message", "createdAt"],
-										"additionalProperties": {
-											"nullable": true
-										}
+										"required": ["id", "status", "responseTime", "statusCode", "message", "createdAt"]
 									}
 								},
 								"url": {
@@ -1815,6 +3867,7 @@
 						"color": "#4169E1",
 						"monitors": ["65f1c2a4d8b9e0123456789a"],
 						"subMonitors": [],
+						"originalMonitors": [],
 						"isPublished": true,
 						"showCharts": true,
 						"showUptimePercentage": true,
@@ -1850,6 +3903,36 @@
 						}
 					]
 				}
+			},
+			"LogEntry": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"service": {
+						"type": "string"
+					},
+					"method": {
+						"type": "string"
+					},
+					"details": {
+						"type": "object",
+						"additionalProperties": {
+							"nullable": true
+						}
+					},
+					"stack": {
+						"type": "string"
+					},
+					"level": {
+						"type": "string"
+					},
+					"timestamp": {
+						"type": "string"
+					}
+				},
+				"required": ["message", "level", "timestamp"]
 			}
 		},
 		"parameters": {}
@@ -1900,28 +3983,7 @@
 											"type": "string"
 										},
 										"data": {
-											"type": "object",
-											"properties": {
-												"id": {
-													"type": "string"
-												},
-												"teamId": {
-													"type": "string"
-												},
-												"name": {
-													"type": "string"
-												},
-												"color": {
-													"type": "string"
-												},
-												"createdAt": {
-													"type": "string"
-												},
-												"updatedAt": {
-													"type": "string"
-												}
-											},
-											"required": ["id", "teamId", "name", "color", "createdAt", "updatedAt"]
+											"$ref": "#/components/schemas/Tag"
 										}
 									},
 									"required": ["success", "msg", "data"]
@@ -2028,28 +4090,7 @@
 										"data": {
 											"type": "array",
 											"items": {
-												"type": "object",
-												"properties": {
-													"id": {
-														"type": "string"
-													},
-													"teamId": {
-														"type": "string"
-													},
-													"name": {
-														"type": "string"
-													},
-													"color": {
-														"type": "string"
-													},
-													"createdAt": {
-														"type": "string"
-													},
-													"updatedAt": {
-														"type": "string"
-													}
-												},
-												"required": ["id", "teamId", "name", "color", "createdAt", "updatedAt"]
+												"$ref": "#/components/schemas/Tag"
 											}
 										}
 									},
@@ -2166,28 +4207,7 @@
 											"type": "string"
 										},
 										"data": {
-											"type": "object",
-											"properties": {
-												"id": {
-													"type": "string"
-												},
-												"teamId": {
-													"type": "string"
-												},
-												"name": {
-													"type": "string"
-												},
-												"color": {
-													"type": "string"
-												},
-												"createdAt": {
-													"type": "string"
-												},
-												"updatedAt": {
-													"type": "string"
-												}
-											},
-											"required": ["id", "teamId", "name", "color", "createdAt", "updatedAt"]
+											"$ref": "#/components/schemas/Tag"
 										}
 									},
 									"required": ["success", "msg", "data"]
@@ -2321,28 +4341,7 @@
 											"type": "string"
 										},
 										"data": {
-											"type": "object",
-											"properties": {
-												"id": {
-													"type": "string"
-												},
-												"teamId": {
-													"type": "string"
-												},
-												"name": {
-													"type": "string"
-												},
-												"color": {
-													"type": "string"
-												},
-												"createdAt": {
-													"type": "string"
-												},
-												"updatedAt": {
-													"type": "string"
-												}
-											},
-											"required": ["id", "teamId", "name", "color", "createdAt", "updatedAt"]
+											"$ref": "#/components/schemas/Tag"
 										}
 									},
 									"required": ["success", "msg", "data"]
@@ -2684,10 +4683,12 @@
 									"msg": "OK",
 									"data": {
 										"user": {
-											"_id": "65f1c2a4d8b9e0123456789a",
+											"id": "65f1c2a4d8b9e0123456789a",
 											"firstName": "Ada",
 											"lastName": "Lovelace",
 											"email": "ada@example.com",
+											"isActive": true,
+											"isVerified": true,
 											"role": ["admin"],
 											"teamId": "65f1c2a4d8b9e01234567890",
 											"createdAt": "2026-04-01T10:00:00.000Z",
@@ -2935,13 +4936,12 @@
 										},
 										"msg": {
 											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/AuthPayload"
 										}
 									},
-									"required": ["success", "msg"]
-								},
-								"example": {
-									"success": true,
-									"msg": "OK"
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -4110,10 +6110,19 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"totalChecks": {
+													"type": "number"
+												},
+												"downChecks": {
+													"type": "number"
+												}
+											},
+											"required": ["totalChecks", "downChecks"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -4279,10 +6288,22 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"checksCount": {
+													"type": "number"
+												},
+												"checks": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/Check"
+													}
+												}
+											},
+											"required": ["checksCount", "checks"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -4603,10 +6624,22 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"checksCount": {
+													"type": "number"
+												},
+												"checks": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/Check"
+													}
+												}
+											},
+											"required": ["checksCount", "checks"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -4715,13 +6748,18 @@
 										},
 										"msg": {
 											"type": "string"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"deletedCount": {
+													"type": "number"
+												}
+											},
+											"required": ["deletedCount"]
 										}
 									},
-									"required": ["success", "msg"]
-								},
-								"example": {
-									"success": true,
-									"msg": "OK"
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -4823,10 +6861,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/Diagnostics"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -5038,10 +7076,22 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"geoChecksCount": {
+													"type": "number"
+												},
+												"geoChecks": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/FlatGeoCheck"
+													}
+												}
+											},
+											"required": ["geoChecksCount", "geoChecks"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -5458,13 +7508,20 @@
 													"$ref": "#/components/schemas/Incident"
 												},
 												"monitor": {
-													"nullable": true
+													"$ref": "#/components/schemas/Monitor"
 												},
 												"user": {
-													"nullable": true
+													"anyOf": [
+														{
+															"$ref": "#/components/schemas/User"
+														},
+														{
+															"nullable": true
+														}
+													]
 												}
 											},
-											"required": ["incident"]
+											"required": ["incident", "monitor", "user"]
 										}
 									},
 									"required": ["success", "msg", "data"]
@@ -5844,10 +7901,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/Invite"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -5931,10 +7988,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/Invite"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -6089,12 +8146,13 @@
 										},
 										"msg": {
 											"type": "string"
-										},
-										"data": {
-											"nullable": true
 										}
 									},
 									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK"
 								}
 							}
 						}
@@ -6241,10 +8299,22 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"maintenanceWindows": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/MaintenanceWindow"
+													}
+												},
+												"maintenanceWindowCount": {
+													"type": "number"
+												}
+											},
+											"required": ["maintenanceWindows", "maintenanceWindowCount"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -6357,10 +8427,13 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/MaintenanceWindow"
+											}
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -6473,10 +8546,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/MaintenanceWindow"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -6637,10 +8710,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/MaintenanceWindow"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -6913,10 +8986,13 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/Monitor"
+											}
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -7129,10 +9205,58 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"summary": {
+													"type": "object",
+													"nullable": true,
+													"properties": {
+														"totalMonitors": {
+															"type": "number"
+														},
+														"upMonitors": {
+															"type": "number"
+														},
+														"downMonitors": {
+															"type": "number"
+														},
+														"pausedMonitors": {
+															"type": "number"
+														},
+														"initializingMonitors": {
+															"type": "number"
+														},
+														"maintenanceMonitors": {
+															"type": "number"
+														},
+														"breachedMonitors": {
+															"type": "number"
+														}
+													},
+													"required": [
+														"totalMonitors",
+														"upMonitors",
+														"downMonitors",
+														"pausedMonitors",
+														"initializingMonitors",
+														"maintenanceMonitors",
+														"breachedMonitors"
+													]
+												},
+												"count": {
+													"type": "number"
+												},
+												"monitors": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/Monitor"
+													}
+												}
+											},
+											"required": ["summary", "count", "monitors"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -7380,10 +9504,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/HardwareDetails"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -7506,10 +9630,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/PageSpeedDetails"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -7632,456 +9756,7 @@
 											"type": "string"
 										},
 										"data": {
-											"type": "object",
-											"properties": {
-												"monitor": {
-													"type": "object",
-													"properties": {
-														"name": {
-															"type": "string"
-														},
-														"description": {
-															"type": "string"
-														},
-														"type": {
-															"type": "string",
-															"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
-														},
-														"url": {
-															"type": "string"
-														},
-														"port": {
-															"type": "number"
-														},
-														"isActive": {
-															"type": "boolean"
-														},
-														"interval": {
-															"type": "number"
-														},
-														"status": {
-															"type": "string",
-															"enum": ["up", "down", "paused", "initializing", "maintenance", "breached"]
-														},
-														"statusWindowSize": {
-															"type": "number"
-														},
-														"statusWindowThreshold": {
-															"type": "number"
-														},
-														"ignoreTlsErrors": {
-															"type": "boolean"
-														},
-														"proxyMode": {
-															"type": "string",
-															"enum": ["inherit", "none", "custom"]
-														},
-														"proxyId": {
-															"type": "string"
-														},
-														"useAdvancedMatching": {
-															"type": "boolean"
-														},
-														"jsonPath": {
-															"type": "string"
-														},
-														"expectedValue": {
-															"type": "string"
-														},
-														"matchMethod": {
-															"type": "string",
-															"enum": ["equal", "include", "regex"]
-														},
-														"method": {
-															"type": "string",
-															"enum": ["GET", "HEAD"]
-														},
-														"notifications": {
-															"type": "array",
-															"items": {
-																"type": "string"
-															}
-														},
-														"tags": {
-															"type": "array",
-															"items": {
-																"type": "string"
-															}
-														},
-														"customUpCodes": {
-															"type": "array",
-															"items": {
-																"type": "number"
-															}
-														},
-														"secret": {
-															"type": "string"
-														},
-														"cpuAlertThreshold": {
-															"type": "number"
-														},
-														"memoryAlertThreshold": {
-															"type": "number"
-														},
-														"diskAlertThreshold": {
-															"type": "number"
-														},
-														"tempAlertThreshold": {
-															"type": "number"
-														},
-														"selectedDisks": {
-															"type": "array",
-															"items": {
-																"type": "string"
-															}
-														},
-														"gameId": {
-															"type": "string"
-														},
-														"grpcServiceName": {
-															"type": "string"
-														},
-														"group": {
-															"type": "string",
-															"nullable": true
-														},
-														"geoCheckEnabled": {
-															"type": "boolean"
-														},
-														"geoCheckLocations": {
-															"type": "array",
-															"items": {
-																"type": "string",
-																"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
-															}
-														},
-														"geoCheckInterval": {
-															"type": "number"
-														},
-														"dockerLogsEnabled": {
-															"type": "boolean"
-														},
-														"dockerAlertOnStopped": {
-															"type": "boolean"
-														},
-														"dockerAlertOnUnhealthy": {
-															"type": "boolean"
-														},
-														"dockerTlsCa": {
-															"type": "string"
-														},
-														"dockerTlsCert": {
-															"type": "string"
-														},
-														"dockerTlsKeySet": {
-															"type": "boolean"
-														},
-														"dnsServer": {
-															"type": "string"
-														},
-														"dnsRecordType": {
-															"type": "string",
-															"enum": ["A", "AAAA", "CNAME", "MX", "TXT", "NS"]
-														},
-														"teamId": {
-															"type": "string"
-														},
-														"userId": {
-															"type": "string"
-														},
-														"createdAt": {
-															"type": "string"
-														},
-														"updatedAt": {
-															"type": "string"
-														},
-														"lastEvaluatedAt": {
-															"type": "number"
-														},
-														"id": {
-															"type": "string"
-														}
-													},
-													"required": [
-														"name",
-														"type",
-														"url",
-														"isActive",
-														"interval",
-														"status",
-														"statusWindowSize",
-														"statusWindowThreshold",
-														"ignoreTlsErrors",
-														"proxyMode",
-														"useAdvancedMatching",
-														"method",
-														"notifications",
-														"tags",
-														"cpuAlertThreshold",
-														"memoryAlertThreshold",
-														"diskAlertThreshold",
-														"tempAlertThreshold",
-														"selectedDisks",
-														"geoCheckEnabled",
-														"geoCheckLocations",
-														"geoCheckInterval",
-														"dockerLogsEnabled",
-														"dockerAlertOnStopped",
-														"dockerAlertOnUnhealthy",
-														"teamId",
-														"userId",
-														"createdAt",
-														"updatedAt",
-														"lastEvaluatedAt",
-														"id"
-													],
-													"additionalProperties": {
-														"nullable": true
-													}
-												},
-												"stats": {
-													"type": "object",
-													"properties": {
-														"aggregateData": {
-															"type": "object",
-															"properties": {
-																"totalChecks": {
-																	"type": "number"
-																}
-															},
-															"required": ["totalChecks"]
-														},
-														"upChecks": {
-															"type": "object",
-															"properties": {
-																"totalChecks": {
-																	"type": "number"
-																}
-															},
-															"required": ["totalChecks"]
-														},
-														"aggregate": {
-															"type": "array",
-															"items": {
-																"type": "object",
-																"properties": {
-																	"_id": {
-																		"type": "string"
-																	},
-																	"avgResponseTime": {
-																		"type": "number",
-																		"nullable": true
-																	},
-																	"upCount": {
-																		"type": "number"
-																	},
-																	"totalCount": {
-																		"type": "number"
-																	},
-																	"avgRunning": {
-																		"type": "number",
-																		"nullable": true
-																	},
-																	"avgTotal": {
-																		"type": "number",
-																		"nullable": true
-																	},
-																	"avgUnhealthy": {
-																		"type": "number",
-																		"nullable": true
-																	}
-																},
-																"required": ["_id", "avgResponseTime", "upCount", "totalCount", "avgRunning", "avgTotal", "avgUnhealthy"]
-															}
-														},
-														"latest": {
-															"type": "object",
-															"nullable": true,
-															"properties": {
-																"containers": {
-																	"type": "array",
-																	"items": {
-																		"type": "object",
-																		"properties": {
-																			"id": {
-																				"type": "string"
-																			},
-																			"name": {
-																				"type": "string"
-																			},
-																			"image": {
-																				"type": "string"
-																			},
-																			"state": {
-																				"type": "string",
-																				"enum": ["created", "running", "paused", "restarting", "removing", "exited", "dead"]
-																			},
-																			"status": {
-																				"type": "string"
-																			},
-																			"health": {
-																				"type": "string",
-																				"enum": ["healthy", "unhealthy", "starting", "none"]
-																			},
-																			"cpuPct": {
-																				"type": "number"
-																			},
-																			"memoryUsedBytes": {
-																				"type": "number"
-																			},
-																			"memoryLimitBytes": {
-																				"type": "number"
-																			},
-																			"memoryPct": {
-																				"type": "number"
-																			},
-																			"restartCount": {
-																				"type": "number"
-																			},
-																			"startedAt": {
-																				"type": "string"
-																			},
-																			"ports": {
-																				"type": "array",
-																				"items": {
-																					"type": "object",
-																					"properties": {
-																						"privatePort": {
-																							"type": "number"
-																						},
-																						"protocol": {
-																							"type": "string",
-																							"enum": ["tcp", "udp", "sctp"]
-																						},
-																						"publicPort": {
-																							"type": "number"
-																						},
-																						"hostIp": {
-																							"type": "string"
-																						}
-																					},
-																					"required": ["privatePort", "protocol"]
-																				}
-																			},
-																			"mounts": {
-																				"type": "array",
-																				"items": {
-																					"type": "object",
-																					"properties": {
-																						"type": {
-																							"type": "string"
-																						},
-																						"name": {
-																							"type": "string"
-																						},
-																						"source": {
-																							"type": "string"
-																						},
-																						"destination": {
-																							"type": "string"
-																						},
-																						"mode": {
-																							"type": "string"
-																						},
-																						"rw": {
-																							"type": "boolean"
-																						}
-																					},
-																					"required": ["type", "source", "destination", "mode", "rw"]
-																				}
-																			}
-																		},
-																		"required": ["id", "name", "image", "state", "status", "health"]
-																	}
-																},
-																"summary": {
-																	"type": "object",
-																	"properties": {
-																		"total": {
-																			"type": "number"
-																		},
-																		"running": {
-																			"type": "number"
-																		},
-																		"stopped": {
-																			"type": "number"
-																		},
-																		"unhealthy": {
-																			"type": "number"
-																		}
-																	},
-																	"required": ["total", "running", "stopped", "unhealthy"]
-																},
-																"checkedAt": {
-																	"type": "string"
-																}
-															},
-															"required": ["containers", "checkedAt"]
-														}
-													},
-													"required": ["aggregateData", "upChecks", "aggregate", "latest"]
-												},
-												"monitorStats": {
-													"type": "object",
-													"nullable": true,
-													"properties": {
-														"id": {
-															"type": "string"
-														},
-														"monitorId": {
-															"type": "string"
-														},
-														"avgResponseTime": {
-															"type": "number"
-														},
-														"maxResponseTime": {
-															"type": "number"
-														},
-														"totalChecks": {
-															"type": "number"
-														},
-														"totalUpChecks": {
-															"type": "number"
-														},
-														"totalDownChecks": {
-															"type": "number"
-														},
-														"uptimePercentage": {
-															"type": "number"
-														},
-														"lastCheckTimestamp": {
-															"type": "number"
-														},
-														"lastResponseTime": {
-															"type": "number"
-														},
-														"timeOfLastFailure": {
-															"type": "number"
-														},
-														"createdAt": {
-															"type": "string"
-														},
-														"updatedAt": {
-															"type": "string"
-														}
-													},
-													"required": [
-														"id",
-														"monitorId",
-														"avgResponseTime",
-														"maxResponseTime",
-														"totalChecks",
-														"totalUpChecks",
-														"totalDownChecks",
-														"uptimePercentage",
-														"lastCheckTimestamp",
-														"lastResponseTime",
-														"createdAt",
-														"updatedAt"
-													]
-												}
-											},
-											"required": ["monitor", "stats", "monitorStats"]
+											"$ref": "#/components/schemas/DockerDetails"
 										}
 									},
 									"required": ["success", "msg", "data"]
@@ -8216,359 +9891,7 @@
 											"type": "string"
 										},
 										"data": {
-											"type": "object",
-											"properties": {
-												"monitor": {
-													"type": "object",
-													"properties": {
-														"name": {
-															"type": "string"
-														},
-														"description": {
-															"type": "string"
-														},
-														"type": {
-															"type": "string",
-															"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
-														},
-														"url": {
-															"type": "string"
-														},
-														"port": {
-															"type": "number"
-														},
-														"isActive": {
-															"type": "boolean"
-														},
-														"interval": {
-															"type": "number"
-														},
-														"status": {
-															"type": "string",
-															"enum": ["up", "down", "paused", "initializing", "maintenance", "breached"]
-														},
-														"statusWindowSize": {
-															"type": "number"
-														},
-														"statusWindowThreshold": {
-															"type": "number"
-														},
-														"ignoreTlsErrors": {
-															"type": "boolean"
-														},
-														"proxyMode": {
-															"type": "string",
-															"enum": ["inherit", "none", "custom"]
-														},
-														"proxyId": {
-															"type": "string"
-														},
-														"useAdvancedMatching": {
-															"type": "boolean"
-														},
-														"jsonPath": {
-															"type": "string"
-														},
-														"expectedValue": {
-															"type": "string"
-														},
-														"matchMethod": {
-															"type": "string",
-															"enum": ["equal", "include", "regex"]
-														},
-														"method": {
-															"type": "string",
-															"enum": ["GET", "HEAD"]
-														},
-														"notifications": {
-															"type": "array",
-															"items": {
-																"type": "string"
-															}
-														},
-														"tags": {
-															"type": "array",
-															"items": {
-																"type": "string"
-															}
-														},
-														"customUpCodes": {
-															"type": "array",
-															"items": {
-																"type": "number"
-															}
-														},
-														"secret": {
-															"type": "string"
-														},
-														"cpuAlertThreshold": {
-															"type": "number"
-														},
-														"memoryAlertThreshold": {
-															"type": "number"
-														},
-														"diskAlertThreshold": {
-															"type": "number"
-														},
-														"tempAlertThreshold": {
-															"type": "number"
-														},
-														"selectedDisks": {
-															"type": "array",
-															"items": {
-																"type": "string"
-															}
-														},
-														"gameId": {
-															"type": "string"
-														},
-														"grpcServiceName": {
-															"type": "string"
-														},
-														"group": {
-															"type": "string",
-															"nullable": true
-														},
-														"geoCheckEnabled": {
-															"type": "boolean"
-														},
-														"geoCheckLocations": {
-															"type": "array",
-															"items": {
-																"type": "string",
-																"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
-															}
-														},
-														"geoCheckInterval": {
-															"type": "number"
-														},
-														"dockerLogsEnabled": {
-															"type": "boolean"
-														},
-														"dockerAlertOnStopped": {
-															"type": "boolean"
-														},
-														"dockerAlertOnUnhealthy": {
-															"type": "boolean"
-														},
-														"dockerTlsCa": {
-															"type": "string"
-														},
-														"dockerTlsCert": {
-															"type": "string"
-														},
-														"dockerTlsKeySet": {
-															"type": "boolean"
-														},
-														"dnsServer": {
-															"type": "string"
-														},
-														"dnsRecordType": {
-															"type": "string",
-															"enum": ["A", "AAAA", "CNAME", "MX", "TXT", "NS"]
-														},
-														"teamId": {
-															"type": "string"
-														},
-														"userId": {
-															"type": "string"
-														},
-														"createdAt": {
-															"type": "string"
-														},
-														"updatedAt": {
-															"type": "string"
-														},
-														"lastEvaluatedAt": {
-															"type": "number"
-														},
-														"id": {
-															"type": "string"
-														}
-													},
-													"required": [
-														"name",
-														"type",
-														"url",
-														"isActive",
-														"interval",
-														"status",
-														"statusWindowSize",
-														"statusWindowThreshold",
-														"ignoreTlsErrors",
-														"proxyMode",
-														"useAdvancedMatching",
-														"method",
-														"notifications",
-														"tags",
-														"cpuAlertThreshold",
-														"memoryAlertThreshold",
-														"diskAlertThreshold",
-														"tempAlertThreshold",
-														"selectedDisks",
-														"geoCheckEnabled",
-														"geoCheckLocations",
-														"geoCheckInterval",
-														"dockerLogsEnabled",
-														"dockerAlertOnStopped",
-														"dockerAlertOnUnhealthy",
-														"teamId",
-														"userId",
-														"createdAt",
-														"updatedAt",
-														"lastEvaluatedAt",
-														"id"
-													],
-													"additionalProperties": {
-														"nullable": true
-													}
-												},
-												"stats": {
-													"type": "object",
-													"properties": {
-														"aggregate": {
-															"type": "array",
-															"items": {
-																"type": "object",
-																"properties": {
-																	"_id": {
-																		"type": "string"
-																	},
-																	"avgCpuPct": {
-																		"type": "number",
-																		"nullable": true
-																	},
-																	"avgMemoryUsedBytes": {
-																		"type": "number",
-																		"nullable": true
-																	},
-																	"avgMemoryPct": {
-																		"type": "number",
-																		"nullable": true
-																	},
-																	"minRestartCount": {
-																		"type": "number",
-																		"nullable": true
-																	},
-																	"maxRestartCount": {
-																		"type": "number",
-																		"nullable": true
-																	}
-																},
-																"required": ["_id", "avgCpuPct", "avgMemoryUsedBytes", "avgMemoryPct", "minRestartCount", "maxRestartCount"]
-															}
-														},
-														"restartsInRange": {
-															"type": "number"
-														},
-														"latest": {
-															"type": "object",
-															"nullable": true,
-															"properties": {
-																"container": {
-																	"type": "object",
-																	"properties": {
-																		"id": {
-																			"type": "string"
-																		},
-																		"name": {
-																			"type": "string"
-																		},
-																		"image": {
-																			"type": "string"
-																		},
-																		"state": {
-																			"type": "string",
-																			"enum": ["created", "running", "paused", "restarting", "removing", "exited", "dead"]
-																		},
-																		"status": {
-																			"type": "string"
-																		},
-																		"health": {
-																			"type": "string",
-																			"enum": ["healthy", "unhealthy", "starting", "none"]
-																		},
-																		"cpuPct": {
-																			"type": "number"
-																		},
-																		"memoryUsedBytes": {
-																			"type": "number"
-																		},
-																		"memoryLimitBytes": {
-																			"type": "number"
-																		},
-																		"memoryPct": {
-																			"type": "number"
-																		},
-																		"restartCount": {
-																			"type": "number"
-																		},
-																		"startedAt": {
-																			"type": "string"
-																		},
-																		"ports": {
-																			"type": "array",
-																			"items": {
-																				"type": "object",
-																				"properties": {
-																					"privatePort": {
-																						"type": "number"
-																					},
-																					"protocol": {
-																						"type": "string",
-																						"enum": ["tcp", "udp", "sctp"]
-																					},
-																					"publicPort": {
-																						"type": "number"
-																					},
-																					"hostIp": {
-																						"type": "string"
-																					}
-																				},
-																				"required": ["privatePort", "protocol"]
-																			}
-																		},
-																		"mounts": {
-																			"type": "array",
-																			"items": {
-																				"type": "object",
-																				"properties": {
-																					"type": {
-																						"type": "string"
-																					},
-																					"name": {
-																						"type": "string"
-																					},
-																					"source": {
-																						"type": "string"
-																					},
-																					"destination": {
-																						"type": "string"
-																					},
-																					"mode": {
-																						"type": "string"
-																					},
-																					"rw": {
-																						"type": "boolean"
-																					}
-																				},
-																				"required": ["type", "source", "destination", "mode", "rw"]
-																			}
-																		}
-																	},
-																	"required": ["id", "name", "image", "state", "status", "health"]
-																},
-																"checkedAt": {
-																	"type": "string"
-																}
-															},
-															"required": ["container", "checkedAt"]
-														}
-													},
-													"required": ["aggregate", "restartsInRange", "latest"]
-												}
-											},
-											"required": ["monitor", "stats"]
+											"$ref": "#/components/schemas/DockerContainerDetails"
 										}
 									},
 									"required": ["success", "msg", "data"]
@@ -8722,78 +10045,7 @@
 											"type": "string"
 										},
 										"data": {
-											"type": "object",
-											"properties": {
-												"logs": {
-													"type": "array",
-													"items": {
-														"type": "object",
-														"properties": {
-															"id": {
-																"type": "string"
-															},
-															"metadata": {
-																"type": "object",
-																"properties": {
-																	"monitorId": {
-																		"type": "string"
-																	},
-																	"teamId": {
-																		"type": "string"
-																	},
-																	"containerId": {
-																		"type": "string"
-																	},
-																	"containerName": {
-																		"type": "string"
-																	}
-																},
-																"required": ["monitorId", "teamId", "containerId", "containerName"]
-															},
-															"lines": {
-																"type": "array",
-																"items": {
-																	"type": "object",
-																	"properties": {
-																		"ts": {
-																			"type": "string"
-																		},
-																		"stream": {
-																			"type": "string",
-																			"enum": ["stdout", "stderr"]
-																		},
-																		"text": {
-																			"type": "string"
-																		}
-																	},
-																	"required": ["ts", "stream", "text"]
-																}
-															},
-															"gap": {
-																"type": "boolean"
-															},
-															"checkedAt": {
-																"type": "string"
-															},
-															"expiry": {
-																"type": "string"
-															},
-															"createdAt": {
-																"type": "string"
-															},
-															"updatedAt": {
-																"type": "string"
-															}
-														},
-														"required": ["id", "metadata", "lines", "gap", "checkedAt", "expiry", "createdAt", "updatedAt"]
-													}
-												},
-												"nextCursor": {
-													"type": "string",
-													"nullable": true
-												}
-											},
-											"required": ["logs", "nextCursor"]
+											"$ref": "#/components/schemas/DockerLogPage"
 										}
 									},
 									"required": ["success", "msg", "data"]
@@ -8974,10 +10226,38 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"groupedGeoChecks": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"bucketDate": {
+																"type": "string"
+															},
+															"continent": {
+																"type": "string",
+																"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
+															},
+															"avgResponseTime": {
+																"type": "number"
+															},
+															"totalChecks": {
+																"type": "number"
+															},
+															"uptimePercentage": {
+																"type": "number"
+															}
+														},
+														"required": ["bucketDate", "continent", "avgResponseTime", "totalChecks", "uptimePercentage"]
+													}
+												}
+											},
+											"required": ["groupedGeoChecks"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -9219,10 +10499,22 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"monitors": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/Monitor"
+													}
+												},
+												"failedCount": {
+													"type": "number"
+												}
+											},
+											"required": ["monitors", "failedCount"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -9335,10 +10627,16 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"certificateDate": {
+													"type": "string"
+												}
+											},
+											"required": ["certificateDate"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -9451,10 +10749,21 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"domain": {
+													"type": "string",
+													"nullable": true
+												},
+												"expiryDate": {
+													"type": "string",
+													"nullable": true
+												}
+											},
+											"required": ["domain", "expiryDate"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -9587,10 +10896,16 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"modifiedCount": {
+													"type": "number"
+												}
+											},
+											"required": ["modifiedCount"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -10160,10 +11475,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "number"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -10265,10 +11580,13 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/Monitor"
+											}
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -10662,10 +11980,22 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"imported": {
+													"type": "number"
+												},
+												"errors": {
+													"type": "array",
+													"items": {
+														"type": "string"
+													}
+												}
+											},
+											"required": ["imported", "errors"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -10767,10 +12097,44 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"additionalProperties": {
+												"type": "object",
+												"properties": {
+													"name": {
+														"type": "string"
+													},
+													"release_year": {
+														"type": "number"
+													},
+													"options": {
+														"type": "object",
+														"properties": {
+															"port": {
+																"type": "number"
+															},
+															"port_query": {
+																"type": "number"
+															},
+															"protocol": {
+																"type": "string"
+															}
+														}
+													},
+													"extra": {
+														"type": "object",
+														"properties": {
+															"old_id": {
+																"type": "string"
+															}
+														}
+													}
+												},
+												"required": ["name"]
+											}
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -11472,10 +12836,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/Notification"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -11591,12 +12955,13 @@
 										},
 										"msg": {
 											"type": "string"
-										},
-										"data": {
-											"nullable": true
 										}
 									},
 									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK"
 								}
 							}
 						}
@@ -11693,24 +13058,24 @@
 				},
 				"responses": {
 					"200": {
-						"description": "OK",
+						"description": "Send result",
 						"content": {
 							"application/json": {
 								"schema": {
 									"type": "object",
 									"properties": {
 										"success": {
-											"type": "boolean",
-											"enum": [true]
+											"type": "boolean"
 										},
 										"msg": {
 											"type": "string"
-										},
-										"data": {
-											"nullable": true
 										}
 									},
 									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "Notification sent successfully"
 								}
 							}
 						}
@@ -11812,10 +13177,13 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/Notification"
+											}
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -11928,10 +13296,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/Notification"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -12166,10 +13534,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/Notification"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -12306,44 +13674,7 @@
 											"type": "string"
 										},
 										"data": {
-											"type": "object",
-											"properties": {
-												"id": {
-													"type": "string"
-												},
-												"teamId": {
-													"type": "string"
-												},
-												"name": {
-													"type": "string"
-												},
-												"protocol": {
-													"type": "string",
-													"enum": ["http", "https"]
-												},
-												"host": {
-													"type": "string"
-												},
-												"port": {
-													"type": "number"
-												},
-												"username": {
-													"type": "string"
-												},
-												"hasPassword": {
-													"type": "boolean"
-												},
-												"createdAt": {
-													"type": "string"
-												},
-												"updatedAt": {
-													"type": "string"
-												}
-											},
-											"required": ["id", "teamId", "name", "protocol", "host", "port", "hasPassword", "createdAt", "updatedAt"],
-											"additionalProperties": {
-												"nullable": true
-											}
+											"$ref": "#/components/schemas/Proxy"
 										}
 									},
 									"required": ["success", "msg", "data"]
@@ -12446,10 +13777,13 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/Proxy"
+											}
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -12551,10 +13885,13 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/Proxy"
+											}
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -12667,44 +14004,7 @@
 											"type": "string"
 										},
 										"data": {
-											"type": "object",
-											"properties": {
-												"id": {
-													"type": "string"
-												},
-												"teamId": {
-													"type": "string"
-												},
-												"name": {
-													"type": "string"
-												},
-												"protocol": {
-													"type": "string",
-													"enum": ["http", "https"]
-												},
-												"host": {
-													"type": "string"
-												},
-												"port": {
-													"type": "number"
-												},
-												"username": {
-													"type": "string"
-												},
-												"hasPassword": {
-													"type": "boolean"
-												},
-												"createdAt": {
-													"type": "string"
-												},
-												"updatedAt": {
-													"type": "string"
-												}
-											},
-											"required": ["id", "teamId", "name", "protocol", "host", "port", "hasPassword", "createdAt", "updatedAt"],
-											"additionalProperties": {
-												"nullable": true
-											}
+											"$ref": "#/components/schemas/Proxy"
 										}
 									},
 									"required": ["success", "msg", "data"]
@@ -12816,49 +14116,13 @@
 										},
 										"msg": {
 											"type": "string"
-										},
-										"data": {
-											"type": "object",
-											"properties": {
-												"id": {
-													"type": "string"
-												},
-												"teamId": {
-													"type": "string"
-												},
-												"name": {
-													"type": "string"
-												},
-												"protocol": {
-													"type": "string",
-													"enum": ["http", "https"]
-												},
-												"host": {
-													"type": "string"
-												},
-												"port": {
-													"type": "number"
-												},
-												"username": {
-													"type": "string"
-												},
-												"hasPassword": {
-													"type": "boolean"
-												},
-												"createdAt": {
-													"type": "string"
-												},
-												"updatedAt": {
-													"type": "string"
-												}
-											},
-											"required": ["id", "teamId", "name", "protocol", "host", "port", "hasPassword", "createdAt", "updatedAt"],
-											"additionalProperties": {
-												"nullable": true
-											}
 										}
 									},
-									"required": ["success", "msg", "data"]
+									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK"
 								}
 							}
 						}
@@ -13033,44 +14297,7 @@
 											"type": "string"
 										},
 										"data": {
-											"type": "object",
-											"properties": {
-												"id": {
-													"type": "string"
-												},
-												"teamId": {
-													"type": "string"
-												},
-												"name": {
-													"type": "string"
-												},
-												"protocol": {
-													"type": "string",
-													"enum": ["http", "https"]
-												},
-												"host": {
-													"type": "string"
-												},
-												"port": {
-													"type": "number"
-												},
-												"username": {
-													"type": "string"
-												},
-												"hasPassword": {
-													"type": "boolean"
-												},
-												"createdAt": {
-													"type": "string"
-												},
-												"updatedAt": {
-													"type": "string"
-												}
-											},
-											"required": ["id", "teamId", "name", "protocol", "host", "port", "hasPassword", "createdAt", "updatedAt"],
-											"additionalProperties": {
-												"nullable": true
-											}
+											"$ref": "#/components/schemas/Proxy"
 										}
 									},
 									"required": ["success", "msg", "data"]
@@ -13197,10 +14424,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/WorkerJobsPage"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -13302,10 +14529,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/WorkerMetrics"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -13429,10 +14656,80 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"jobs": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"monitorId": {
+																"type": "string"
+															},
+															"monitorType": {
+																"type": "string",
+																"nullable": true
+															},
+															"monitorInterval": {
+																"type": "number",
+																"nullable": true
+															},
+															"monitorActive": {
+																"type": "boolean",
+																"nullable": true
+															},
+															"lockedBy": {
+																"type": "string",
+																"nullable": true
+															},
+															"lockedUntil": {
+																"type": "number",
+																"nullable": true
+															},
+															"nextScheduledAt": {
+																"type": "number"
+															},
+															"runCount": {
+																"type": "number"
+															},
+															"failCount": {
+																"type": "number"
+															},
+															"failReason": {
+																"type": "string",
+																"nullable": true
+															},
+															"lastFinishedAt": {
+																"type": "number",
+																"nullable": true
+															}
+														},
+														"required": [
+															"monitorId",
+															"monitorType",
+															"monitorInterval",
+															"monitorActive",
+															"lockedBy",
+															"lockedUntil",
+															"nextScheduledAt",
+															"runCount",
+															"failCount",
+															"failReason",
+															"lastFinishedAt"
+														]
+													}
+												},
+												"count": {
+													"type": "number"
+												},
+												"metrics": {
+													"$ref": "#/components/schemas/WorkerMetrics"
+												}
+											},
+											"required": ["jobs", "count", "metrics"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -13640,10 +14937,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/AppSettings"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -13871,10 +15168,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/AppSettings"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -14050,13 +15347,18 @@
 										},
 										"msg": {
 											"type": "string"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"messageId": {
+													"type": "string"
+												}
+											},
+											"required": ["messageId"]
 										}
 									},
-									"required": ["success", "msg"]
-								},
-								"example": {
-									"success": true,
-									"msg": "OK"
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -14158,10 +15460,13 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/StatusPage"
+											}
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -14376,10 +15681,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/StatusPage"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -14605,10 +15910,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/StatusPage"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -15044,10 +16349,64 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "object",
+											"properties": {
+												"incidents": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"id": {
+																"type": "string",
+																"example": "65f1c2a4d8b9e0123456789c"
+															},
+															"monitorId": {
+																"type": "string",
+																"example": "65f1c2a4d8b9e0123456789a"
+															},
+															"status": {
+																"type": "boolean",
+																"example": true,
+																"description": "true = resolved, false = ongoing"
+															},
+															"startTime": {
+																"type": "string",
+																"example": "2026-04-15T03:21:00.000Z"
+															},
+															"endTime": {
+																"type": "string",
+																"nullable": true,
+																"example": "2026-04-15T03:34:00.000Z"
+															},
+															"resolutionType": {
+																"type": "string",
+																"nullable": true,
+																"enum": ["automatic", "manual", null],
+																"example": "automatic"
+															},
+															"message": {
+																"type": "string",
+																"nullable": true,
+																"example": "HTTP 503 from origin"
+															},
+															"statusCode": {
+																"type": "number",
+																"nullable": true,
+																"example": 503
+															},
+															"createdAt": {
+																"type": "string",
+																"example": "2026-04-15T03:21:00.000Z"
+															}
+														},
+														"required": ["id", "monitorId", "status", "startTime", "endTime", "resolutionType", "message", "statusCode", "createdAt"]
+													}
+												}
+											},
+											"required": ["incidents"]
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -15103,10 +16462,13 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/LogEntry"
+											}
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}

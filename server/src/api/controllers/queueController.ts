@@ -32,8 +32,8 @@ class JobQueueController implements IJobQueueController {
 	};
 
 	flushQueue: Handler = async (req, res) => {
-		const data = await this.scheduler.flushQueues();
-		res.json({ success: true, msg: "Queue flushed successfully", data });
+		await this.scheduler.flushQueues();
+		res.json({ success: true, msg: "Queue flushed successfully" });
 	};
 }
 export default JobQueueController;

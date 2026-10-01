@@ -6,7 +6,7 @@ import type { IIncidentsRepository } from "@/domain/incidents/incident.repositor
 import type { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import type { IUsersRepository } from "@/domain/users/user.repository.interface.js";
 import type { Incident, IncidentSummary } from "@/domain/incidents/incident.type.js";
-import type { User } from "@/domain/users/user.type.js";
+import type { UserResponse } from "@/domain/users/user.type.js";
 import type { MonitorActionDecision } from "@/worker/worker.interface.js";
 import type { INotificationMessageBuilder } from "@/domain/notifications/notification.message-builder.js";
 import type { ILogger } from "@/utils/logger.js";
@@ -27,7 +27,7 @@ export interface IIncidentService {
 		resolutionType: string | undefined
 	): Promise<{ incidents: Incident[]; count: number }>;
 	getIncidentSummary(teamId: string, limit?: number): Promise<IncidentSummary>;
-	getIncidentById(incidentId: string, teamId: string): Promise<{ incident: Incident; monitor: Monitor; user: User | null }>;
+	getIncidentById(incidentId: string, teamId: string): Promise<{ incident: Incident; monitor: Monitor; user: UserResponse | null }>;
 }
 
 export class IncidentService implements IIncidentService {

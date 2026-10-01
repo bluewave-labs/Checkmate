@@ -8,7 +8,7 @@ import {
 	getChecksQueryValidation,
 	deleteChecksParamValidation,
 } from "@/api/validation/checkValidation.js";
-import { unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
+import { checksPageSchema, checksSummarySchema } from "@/domain/checks/check.schema.js";
 
 export const checkRoutes: RouteTable<ICheckController> = {
 	prefix: "/checks",
@@ -21,7 +21,7 @@ export const checkRoutes: RouteTable<ICheckController> = {
 			handler: "getChecksSummaryByTeamId",
 			summary: "Aggregate check summary for the caller's team",
 			query: getChecksSummaryByTeamIdQueryValidation,
-			response: unknownResponseSchema,
+			response: checksSummarySchema,
 		},
 		{
 			method: "get",
@@ -29,7 +29,7 @@ export const checkRoutes: RouteTable<ICheckController> = {
 			handler: "getChecksByTeam",
 			summary: "List checks across the team",
 			query: getTeamChecksQueryValidation,
-			response: unknownResponseSchema,
+			response: checksPageSchema,
 		},
 		{
 			method: "delete",
@@ -46,7 +46,7 @@ export const checkRoutes: RouteTable<ICheckController> = {
 			summary: "List checks for a monitor",
 			params: getChecksParamValidation,
 			query: getChecksQueryValidation,
-			response: unknownResponseSchema,
+			response: checksPageSchema,
 		},
 		{
 			method: "delete",
@@ -55,6 +55,7 @@ export const checkRoutes: RouteTable<ICheckController> = {
 			summary: "Delete checks for a monitor (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			params: deleteChecksParamValidation,
+			response: deletedCountResponseSchema,
 		},
 	],
 };

@@ -26,8 +26,6 @@ export const json = <T extends z.ZodType>(schema: T, example?: unknown) => ({
 
 export const errorJson = (description: string) => ({ description, content: json(errorEnvelope) });
 
-export const unknownResponseSchema = z.unknown();
-
 export const standardErrors = {
 	"401": { description: "Unauthorized", content: json(errorEnvelope) },
 	"403": { description: "Forbidden", content: json(errorEnvelope) },

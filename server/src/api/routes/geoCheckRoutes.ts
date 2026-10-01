@@ -1,7 +1,7 @@
 import { IGeoCheckController } from "@/api/controllers/geoCheckController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
-import { unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
 import { getChecksParamValidation, getChecksQueryValidation } from "@/api/validation/checkValidation.js";
+import { flatGeoChecksQueryResultSchema } from "@/domain/geo-checks/geo-check.schema.js";
 
 export const geoCheckRoutes: RouteTable<IGeoCheckController> = {
 	prefix: "/geo-checks",
@@ -15,7 +15,7 @@ export const geoCheckRoutes: RouteTable<IGeoCheckController> = {
 			summary: "Get geo check results for a monitor",
 			params: getChecksParamValidation,
 			query: getChecksQueryValidation,
-			response: unknownResponseSchema,
+			response: flatGeoChecksQueryResultSchema,
 		},
 	],
 };

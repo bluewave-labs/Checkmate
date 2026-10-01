@@ -1,14 +1,17 @@
 import { INotificationController } from "@/api/controllers/notificationController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
-import { unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
+import { json } from "@/api/routes/openapiHelpers.js";
 import {
 	createNotificationBodyValidation,
 	deleteNotificationParamValidation,
 	editNotificationParamValidation,
 	getNotificationByIdParamValidation,
+	notificationListResponseSchema,
 	testAllNotificationsBodyValidation,
 	testNotificationBodyValidation,
+	testNotificationResponseEnvelope,
 } from "@/api/validation/notificationValidation.js";
+import { notificationSchema } from "@/domain/notifications/notification.schema.js";
 
 export const notificationRoutes: RouteTable<INotificationController> = {
 	prefix: "/notifications",
@@ -22,7 +25,7 @@ export const notificationRoutes: RouteTable<INotificationController> = {
 			summary: "Create a notification channel (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			body: createNotificationBodyValidation,
-			response: unknownResponseSchema,
+			response: notificationSchema,
 		},
 		{
 			method: "post",
@@ -31,7 +34,6 @@ export const notificationRoutes: RouteTable<INotificationController> = {
 			summary: "Send a test alert through every notification channel for the team (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			body: testAllNotificationsBodyValidation,
-			response: unknownResponseSchema,
 		},
 		{
 			method: "post",
@@ -40,14 +42,23 @@ export const notificationRoutes: RouteTable<INotificationController> = {
 			summary: "Send a test alert through a single notification channel (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			body: testNotificationBodyValidation,
-			response: unknownResponseSchema,
+			spec: (d) => ({
+				...d,
+				responses: {
+					...d.responses,
+					"200": {
+						description: "Send result",
+						content: json(testNotificationResponseEnvelope, { success: true, msg: "Notification sent successfully" }),
+					},
+				},
+			}),
 		},
 		{
 			method: "get",
 			path: "/team",
 			handler: "getNotificationsByTeamId",
 			summary: "List notification channels for the caller's team",
-			response: unknownResponseSchema,
+			response: notificationListResponseSchema,
 		},
 		{
 			method: "get",
@@ -55,7 +66,7 @@ export const notificationRoutes: RouteTable<INotificationController> = {
 			handler: "getNotificationById",
 			summary: "Get a notification channel by id",
 			params: getNotificationByIdParamValidation,
-			response: unknownResponseSchema,
+			response: notificationSchema,
 		},
 		{
 			method: "delete",
@@ -73,7 +84,7 @@ export const notificationRoutes: RouteTable<INotificationController> = {
 			roles: ["admin", "superadmin"],
 			params: editNotificationParamValidation,
 			body: createNotificationBodyValidation,
-			response: unknownResponseSchema,
+			response: notificationSchema,
 		},
 	],
 };

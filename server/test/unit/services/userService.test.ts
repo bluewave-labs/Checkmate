@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { UserService } from "../../../src/domain/users/user.service.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { User, UserRole } from "../../../src/domain/users/user.type.ts";
+import { toUserResponse, type User, type UserRole } from "../../../src/domain/users/user.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -20,6 +20,8 @@ const makeUser = (overrides?: Partial<User>): User => ({
 	...overrides,
 });
 
+const makeUserResponse = (overrides: Partial<User> = {}) => toUserResponse(makeUser(overrides));
+
 const makeAppSettings = () => ({
 	jwtSecret: "test-secret",
 	jwtTTL: "99d" as const,
@@ -33,11 +35,11 @@ const makeAppSettings = () => ({
 const createService = (overrides?: Record<string, unknown>) => {
 	const logger = createMockLogger();
 	const usersRepository = {
-		create: jest.fn().mockResolvedValue(makeUser()),
+		create: jest.fn().mockResolvedValue(makeUserResponse()),
 		findByEmail: jest.fn().mockResolvedValue(makeUser()),
-		findById: jest.fn().mockResolvedValue(makeUser()),
-		findAll: jest.fn().mockResolvedValue([makeUser()]),
-		updateById: jest.fn().mockResolvedValue(makeUser()),
+		findById: jest.fn().mockResolvedValue(makeUserResponse()),
+		findAll: jest.fn().mockResolvedValue([makeUserResponse()]),
+		updateById: jest.fn().mockResolvedValue(makeUserResponse()),
 		deleteById: jest.fn().mockResolvedValue(makeUser()),
 		findSuperAdmin: jest.fn().mockResolvedValue(true),
 	};
@@ -139,7 +141,7 @@ describe("UserService", () => {
 				crypto: cryptoMock,
 			} = createService({
 				usersRepository: {
-					create: jest.fn().mockResolvedValue(makeUser({ role: ["superadmin"], teamId: "team-new" })),
+					create: jest.fn().mockResolvedValue(makeUserResponse({ role: ["superadmin"], teamId: "team-new" })),
 					findByEmail: jest.fn(),
 					findById: jest.fn(),
 					findAll: jest.fn(),
@@ -286,7 +288,7 @@ describe("UserService", () => {
 			const result = await service.createUser({ password: "pass", role: ["user"] }, "team-1", ["superadmin"], null);
 
 			expect(usersRepository.create).toHaveBeenCalledWith(expect.objectContaining({ teamId: "team-1" }), null);
-			expect(result.password).toBe("");
+			expect(result).not.toHaveProperty("password");
 		});
 
 		it("creates user without password when not provided", async () => {
@@ -328,7 +330,7 @@ describe("UserService", () => {
 			const result = await service.loginUser("test@example.com", "correct-password");
 
 			expect(result.token).toBe("jwt-token-123");
-			expect(result.user.password).toBe("");
+			expect(result.user).not.toHaveProperty("password");
 		});
 
 		it("throws on incorrect password", async () => {
@@ -480,7 +482,7 @@ describe("UserService", () => {
 			expect(usersRepository.updateById).toHaveBeenCalledWith("user-1", expect.objectContaining({ password: expect.any(String) }), null);
 			expect(recoveryTokensRepository.deleteManyByEmail).toHaveBeenCalledWith("test@example.com");
 			expect(result.token).toBe("jwt-token-123");
-			expect(result.user.password).toBe("");
+			expect(result.user).not.toHaveProperty("password");
 		});
 
 		it("throws when new password matches old password", async () => {
@@ -555,7 +557,7 @@ describe("UserService", () => {
 
 		it("throws when target is on a different team", async () => {
 			const { service, usersRepository } = createService();
-			(usersRepository.findById as jest.Mock).mockResolvedValue(makeUser({ teamId: "team-other" }));
+			(usersRepository.findById as jest.Mock).mockResolvedValue(makeUserResponse({ teamId: "team-other" }));
 
 			await expect(
 				service.deleteUserById({ actorId: "admin-1", actorTeamId: "team-1", actorRoles: ["superadmin"], targetUserId: "user-1" })
@@ -564,7 +566,7 @@ describe("UserService", () => {
 
 		it("throws when target is a demo user", async () => {
 			const { service, usersRepository } = createService();
-			(usersRepository.findById as jest.Mock).mockResolvedValue(makeUser({ role: ["demo"] }));
+			(usersRepository.findById as jest.Mock).mockResolvedValue(makeUserResponse({ role: ["demo"] }));
 
 			await expect(
 				service.deleteUserById({ actorId: "admin-1", actorTeamId: "team-1", actorRoles: ["superadmin"], targetUserId: "user-1" })
@@ -573,7 +575,7 @@ describe("UserService", () => {
 
 		it("throws when actor lacks permission to manage target role", async () => {
 			const { service, usersRepository } = createService();
-			(usersRepository.findById as jest.Mock).mockResolvedValue(makeUser({ role: ["superadmin"] }));
+			(usersRepository.findById as jest.Mock).mockResolvedValue(makeUserResponse({ role: ["superadmin"] }));
 
 			await expect(
 				service.deleteUserById({ actorId: "admin-1", actorTeamId: "team-1", actorRoles: ["admin"], targetUserId: "user-1" })
@@ -589,7 +591,7 @@ describe("UserService", () => {
 
 			const result = await service.getAllUsers();
 
-			expect(result).toEqual([makeUser()]);
+			expect(result).toEqual([makeUserResponse()]);
 			expect(usersRepository.findAll).toHaveBeenCalled();
 		});
 	});
@@ -602,7 +604,7 @@ describe("UserService", () => {
 
 			const result = await service.getUserById(["admin"], "user-1");
 
-			expect(result).toEqual(makeUser());
+			expect(result).toEqual(makeUserResponse());
 			expect(usersRepository.findById).toHaveBeenCalledWith("user-1");
 		});
 
@@ -611,7 +613,7 @@ describe("UserService", () => {
 
 			const result = await service.getUserById(["superadmin"], "user-1");
 
-			expect(result).toEqual(makeUser());
+			expect(result).toEqual(makeUserResponse());
 		});
 
 		it("throws for non-admin roles", async () => {
@@ -645,7 +647,7 @@ describe("UserService", () => {
 			// Ensure the stored password is hashed, not plaintext
 			const call = (usersRepository.updateById as jest.Mock).mock.calls[0] as any[];
 			expect(call[1].password).not.toBe("new-password");
-			expect(result).toEqual(makeUser());
+			expect(result).toEqual(makeUserResponse());
 		});
 	});
 });

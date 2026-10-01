@@ -7,18 +7,18 @@ import {
 	getTagByIdParamValidation,
 	editTagParamValidation,
 	deleteTagParamValidation,
-	tagResponseSchema,
 	tagListResponseSchema,
 } from "@/api/validation/index.js";
+import { tagSchema } from "@/domain/tags/tag.schema.js";
 
 export const tagRoutes: RouteTable<ITagsController> = {
 	prefix: "/tags",
 	tag: "tags",
 	auth: "jwt",
 	routes: [
-		{ method: "post", path: "/", handler: "createTag", summary: "Create a tag", body: createTagBodyValidation, response: tagResponseSchema },
+		{ method: "post", path: "/", handler: "createTag", summary: "Create a tag", body: createTagBodyValidation, response: tagSchema },
 		{ method: "get", path: "/team", handler: "getTagsByTeamId", summary: "List the team's tags", response: tagListResponseSchema },
-		{ method: "get", path: "/:id", handler: "getTagById", summary: "Get a tag", params: getTagByIdParamValidation, response: tagResponseSchema },
+		{ method: "get", path: "/:id", handler: "getTagById", summary: "Get a tag", params: getTagByIdParamValidation, response: tagSchema },
 		{
 			method: "patch",
 			path: "/:id",
@@ -26,7 +26,7 @@ export const tagRoutes: RouteTable<ITagsController> = {
 			summary: "Edit a tag",
 			params: editTagParamValidation,
 			body: editTagBodyValidation,
-			response: tagResponseSchema,
+			response: tagSchema,
 		},
 		{ method: "delete", path: "/:id", handler: "deleteTag", summary: "Delete a tag", params: deleteTagParamValidation },
 	],

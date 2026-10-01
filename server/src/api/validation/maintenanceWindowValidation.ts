@@ -2,6 +2,7 @@ import { z } from "zod";
 import { booleanCoercion } from "./shared.js";
 import { DurationUnits } from "@/domain/maintenance-windows/maintenance-window.type.js";
 import { SortOrders } from "@/types/query.js";
+import { maintenanceWindowSchema } from "@/domain/maintenance-windows/maintenance-window.schema.js";
 
 const dateToString = z.coerce.date().transform((d) => d.toISOString());
 
@@ -91,3 +92,10 @@ export const editMaintenanceByIdWindowBodyValidation = z
 			}
 		}
 	});
+
+export const maintenanceWindowListResponseSchema = z.array(maintenanceWindowSchema);
+
+export const maintenanceWindowPageResponseSchema = z.object({
+	maintenanceWindows: z.array(maintenanceWindowSchema),
+	maintenanceWindowCount: z.number(),
+});

@@ -85,8 +85,8 @@ class AuthController implements IAuthController {
 
 	requestRecovery: Handler = async (req, res) => {
 		const { email } = recoveryValidation.parse(req.body);
-		const msgId = await this.userService.requestRecovery(email);
-		res.json({ success: true, msg: "Password recovery email sent successfully", data: msgId });
+		await this.userService.requestRecovery(email);
+		res.json({ success: true, msg: "Password recovery email sent successfully" });
 	};
 
 	validateRecovery: Handler = async (req, res) => {

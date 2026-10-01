@@ -1,6 +1,6 @@
 import { IMonitorController } from "@/api/controllers/monitorController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
-import { okJson, unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
+import { okJson } from "@/api/routes/openapiHelpers.js";
 import {
 	getMonitorByIdParamValidation,
 	getMonitorByIdQueryValidation,
@@ -22,13 +22,27 @@ import {
 	getDockerContainerNameParamValidation,
 	getDockerContainerByNameQueryValidation,
 	getDockerContainerLogsQueryValidation,
-	dockerDetailsResponseSchema,
-	dockerContainerDetailsResponseSchema,
-	dockerContainerLogsResponseSchema,
-	monitorResponseSchema,
-	uptimeDetailsResponseSchema,
+	bulkPauseResponseSchema,
+	certificateResponseSchema,
+	demoMonitorsResponseSchema,
+	domainResponseSchema,
+	importMonitorsResponseSchema,
+	monitorListResponseSchema,
+	updateNotificationsResponseSchema,
 } from "@/api/validation/monitorValidation.js";
 import { updateNotificationsValidation } from "@/api/validation/notificationValidation.js";
+import { dockerLogPageSchema } from "@/domain/docker/docker-log.schema.js";
+import { groupedGeoCheckResultSchema } from "@/domain/geo-checks/geo-check.schema.js";
+import {
+	dockerContainerDetailsResultSchema,
+	dockerDetailsResultSchema,
+	gamesMapSchema,
+	hardwareDetailsResultSchema,
+	monitorResponseSchema,
+	monitorsWithChecksByTeamIdResultSchema,
+	pageSpeedDetailsResultSchema,
+	uptimeDetailsResultSchema,
+} from "@/domain/monitors/monitor.schema.js";
 
 export const monitorRoutes: RouteTable<IMonitorController> = {
 	prefix: "/monitors",
@@ -41,7 +55,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			handler: "getMonitorsByTeamId",
 			summary: "List monitors for the caller's team",
 			query: getMonitorsByTeamIdQueryValidation,
-			response: unknownResponseSchema,
+			response: monitorListResponseSchema,
 		},
 		{
 			method: "get",
@@ -49,7 +63,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			handler: "getMonitorsWithChecksByTeamId",
 			summary: "List team monitors with their most recent checks (paginated)",
 			query: getMonitorsWithChecksQueryValidation,
-			response: unknownResponseSchema,
+			response: monitorsWithChecksByTeamIdResultSchema,
 		},
 		{
 			method: "get",
@@ -58,7 +72,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Get uptime details for a monitor",
 			params: getUptimeDetailsByIdParamValidation,
 			query: getUptimeDetailsByIdQueryValidation,
-			response: uptimeDetailsResponseSchema,
+			response: uptimeDetailsResultSchema,
 		},
 		{
 			method: "get",
@@ -67,7 +81,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Get hardware metrics detail for a monitor",
 			params: getHardwareDetailsByIdParamValidation,
 			query: getHardwareDetailsByIdQueryValidation,
-			response: unknownResponseSchema,
+			response: hardwareDetailsResultSchema,
 		},
 		{
 			method: "get",
@@ -76,7 +90,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Get PageSpeed detail for a monitor",
 			params: getHardwareDetailsByIdParamValidation,
 			query: getHardwareDetailsByIdQueryValidation,
-			response: unknownResponseSchema,
+			response: pageSpeedDetailsResultSchema,
 		},
 		{
 			method: "get",
@@ -85,7 +99,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Get Docker host details for a monitor",
 			params: getDockerDetailsByIdParamValidation,
 			query: getDockerDetailsByIdQueryValidation,
-			response: dockerDetailsResponseSchema,
+			response: dockerDetailsResultSchema,
 		},
 		{
 			method: "get",
@@ -94,7 +108,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Get details for one container on a Docker host monitor",
 			params: getDockerContainerNameParamValidation,
 			query: getDockerContainerByNameQueryValidation,
-			response: dockerContainerDetailsResponseSchema,
+			response: dockerContainerDetailsResultSchema,
 		},
 		{
 			method: "get",
@@ -104,7 +118,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			roles: ["admin", "superadmin"],
 			params: getDockerContainerNameParamValidation,
 			query: getDockerContainerLogsQueryValidation,
-			response: dockerContainerLogsResponseSchema,
+			response: dockerLogPageSchema,
 		},
 		{
 			method: "get",
@@ -113,7 +127,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Get geo check results for a monitor",
 			params: getMonitorByIdParamValidation,
 			query: getMonitorByIdQueryValidation,
-			response: unknownResponseSchema,
+			response: groupedGeoCheckResultSchema,
 		},
 		{
 			method: "post",
@@ -131,7 +145,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Pause or resume several monitors (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			body: bulkPauseMonitorBodyValidation,
-			response: unknownResponseSchema,
+			response: bulkPauseResponseSchema,
 		},
 		{
 			method: "get",
@@ -139,7 +153,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			handler: "getMonitorCertificate",
 			summary: "Get SSL certificate info for a monitor",
 			params: getCertificateParamValidation,
-			response: unknownResponseSchema,
+			response: certificateResponseSchema,
 		},
 		{
 			method: "get",
@@ -147,7 +161,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			handler: "getMonitorDomain",
 			summary: "Get domain registration expiry for a monitor",
 			params: getDomainParamValidation,
-			response: unknownResponseSchema,
+			response: domainResponseSchema,
 		},
 		{
 			method: "patch",
@@ -156,7 +170,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Bulk update notifications across monitors (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			body: updateNotificationsValidation,
-			response: unknownResponseSchema,
+			response: updateNotificationsResponseSchema,
 		},
 		{
 			method: "post",
@@ -181,7 +195,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			handler: "addDemoMonitors",
 			summary: "Insert preconfigured demo monitors (admin/superadmin)",
 			roles: ["admin", "superadmin"],
-			response: unknownResponseSchema,
+			response: demoMonitorsResponseSchema,
 		},
 		{
 			method: "get",
@@ -189,7 +203,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			handler: "exportMonitorsToJSON",
 			summary: "Export all team monitors as JSON (admin/superadmin)",
 			roles: ["admin", "superadmin"],
-			response: unknownResponseSchema,
+			response: monitorListResponseSchema,
 		},
 		{
 			method: "post",
@@ -198,14 +212,14 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Import monitors from JSON (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			body: importMonitorsBodyValidation,
-			response: unknownResponseSchema,
+			response: importMonitorsResponseSchema,
 		},
 		{
 			method: "get",
 			path: "/games",
 			handler: "getAllGames",
 			summary: "List supported game-server types",
-			response: unknownResponseSchema,
+			response: gamesMapSchema,
 		},
 		{
 			method: "get",

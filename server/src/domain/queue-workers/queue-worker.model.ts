@@ -1,6 +1,14 @@
 import { Schema, model } from "mongoose";
-import { QueueModes } from "@/domain/app-settings/app-settings.type.js";
-import { QueueWorkerDocument } from "@/domain/queue-workers/queue-worker.type.js";
+import { QueueModes, type QueueMode } from "@/domain/app-settings/app-settings.type.js";
+
+interface QueueWorkerDocument {
+	_id: string;
+	mode: QueueMode;
+	processesJobs: boolean;
+	lastSeenAt: Date;
+	createdAt: Date;
+	updatedAt: Date;
+}
 
 // Single source of truth for worker liveness: the TTL that GCs stale records and
 // the window readers use to count a worker as alive. Heartbeat cadence must stay well below it.

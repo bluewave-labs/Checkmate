@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { NtfyAuthTypes, type NotificationChannel } from "@/domain/notifications/notification.type.js";
-
+import { notificationSchema } from "@/domain/notifications/notification.schema.js";
 //****************************************
 // Notification Validations
 //****************************************
@@ -244,6 +244,12 @@ export const createNotificationBodyValidation = z
 
 export const testNotificationBodyValidation = createNotificationBodyValidation;
 
+// The send result is the envelope's own success flag: a valid request whose delivery fails is a 200 with success false.
+export const testNotificationResponseEnvelope = z.object({
+	success: z.boolean(),
+	msg: z.string(),
+});
+
 export const deleteNotificationParamValidation = z.object({
 	id: z.string().min(1, "Notification ID is required"),
 });
@@ -291,3 +297,5 @@ export const updateNotificationsValidation = z
 			path: ["notificationIds"],
 		}
 	);
+
+export const notificationListResponseSchema = z.array(notificationSchema);

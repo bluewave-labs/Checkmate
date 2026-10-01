@@ -5,11 +5,11 @@ import {
 	getIncidentSummaryQueryValidation,
 	incidentIdParamValidation,
 	resolveIncidentBodyValidation,
-	incidentResponseSchema,
 	incidentListResponseSchema,
-	incidentSummaryResponseSchema,
 	incidentDetailResponseSchema,
 } from "@/api/validation/incidentValidation.js";
+
+import { incidentSchema, incidentSummarySchema } from "@/domain/incidents/incident.schema.js";
 
 export const incidentRoutes: RouteTable<IIncidentController> = {
 	prefix: "/incidents",
@@ -30,7 +30,7 @@ export const incidentRoutes: RouteTable<IIncidentController> = {
 			handler: "getIncidentSummary",
 			summary: "Incident summary for the caller's team",
 			query: getIncidentSummaryQueryValidation,
-			response: incidentSummaryResponseSchema,
+			response: incidentSummarySchema,
 		},
 		{
 			method: "get",
@@ -48,7 +48,7 @@ export const incidentRoutes: RouteTable<IIncidentController> = {
 			roles: ["admin", "superadmin"],
 			params: incidentIdParamValidation,
 			body: resolveIncidentBodyValidation,
-			response: incidentResponseSchema,
+			response: incidentSchema,
 		},
 	],
 };
