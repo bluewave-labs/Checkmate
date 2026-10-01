@@ -119,10 +119,12 @@
 				"required": ["user"],
 				"example": {
 					"user": {
-						"_id": "65f1c2a4d8b9e0123456789a",
+						"id": "65f1c2a4d8b9e0123456789a",
 						"firstName": "Ada",
 						"lastName": "Lovelace",
 						"email": "ada@example.com",
+						"isActive": true,
+						"isVerified": true,
 						"role": ["admin"],
 						"teamId": "65f1c2a4d8b9e01234567890",
 						"createdAt": "2026-04-01T10:00:00.000Z",
@@ -134,7 +136,7 @@
 			"User": {
 				"type": "object",
 				"properties": {
-					"_id": {
+					"id": {
 						"type": "string"
 					},
 					"firstName": {
@@ -146,18 +148,27 @@
 					"email": {
 						"type": "string"
 					},
+					"avatarImage": {
+						"type": "string"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"isVerified": {
+						"type": "boolean"
+					},
 					"role": {
 						"type": "array",
 						"items": {
-							"type": "string"
+							"type": "string",
+							"enum": ["user", "admin", "superadmin", "demo"]
 						}
 					},
 					"teamId": {
 						"type": "string"
 					},
-					"profileImage": {
-						"type": "string",
-						"nullable": true
+					"checkTTL": {
+						"type": "number"
 					},
 					"createdAt": {
 						"type": "string"
@@ -166,15 +177,14 @@
 						"type": "string"
 					}
 				},
-				"required": ["_id", "firstName", "lastName", "email", "role", "createdAt", "updatedAt"],
-				"additionalProperties": {
-					"nullable": true
-				},
+				"required": ["id", "firstName", "lastName", "email", "isActive", "isVerified", "role", "teamId", "createdAt", "updatedAt"],
 				"example": {
-					"_id": "65f1c2a4d8b9e0123456789a",
+					"id": "65f1c2a4d8b9e0123456789a",
 					"firstName": "Ada",
 					"lastName": "Lovelace",
 					"email": "ada@example.com",
+					"isActive": true,
+					"isVerified": true,
 					"role": ["admin"],
 					"teamId": "65f1c2a4d8b9e01234567890",
 					"createdAt": "2026-04-01T10:00:00.000Z",
@@ -3999,10 +4009,12 @@
 									"msg": "OK",
 									"data": {
 										"user": {
-											"_id": "65f1c2a4d8b9e0123456789a",
+											"id": "65f1c2a4d8b9e0123456789a",
 											"firstName": "Ada",
 											"lastName": "Lovelace",
 											"email": "ada@example.com",
+											"isActive": true,
+											"isVerified": true,
 											"role": ["admin"],
 											"teamId": "65f1c2a4d8b9e01234567890",
 											"createdAt": "2026-04-01T10:00:00.000Z",
@@ -4250,13 +4262,12 @@
 										},
 										"msg": {
 											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/AuthPayload"
 										}
 									},
-									"required": ["success", "msg"]
-								},
-								"example": {
-									"success": true,
-									"msg": "OK"
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}

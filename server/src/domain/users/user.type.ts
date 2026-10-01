@@ -1,3 +1,6 @@
+import type { z } from "zod";
+import type { userProfileImageSchema, userResponseSchema, userSchema } from "@/domain/users/user.schema.js";
+
 export const UserRoles = ["user", "admin", "superadmin", "demo"] as const;
 export type UserRole = (typeof UserRoles)[number];
 
@@ -12,24 +15,6 @@ export const canManageRole = (actorRole: UserRole, targetRole: UserRole): boolea
 	return RoleHierarchy[actorRole] > RoleHierarchy[targetRole];
 };
 
-export interface UserProfileImage {
-	data?: Buffer;
-	contentType?: string;
-}
-
-export interface User {
-	id: string;
-	firstName: string;
-	lastName: string;
-	email: string;
-	password: string;
-	avatarImage?: string;
-	profileImage?: UserProfileImage;
-	isActive: boolean;
-	isVerified: boolean;
-	role: UserRole[];
-	teamId: string;
-	checkTTL?: number;
-	createdAt: string;
-	updatedAt: string;
-}
+export type UserProfileImage = z.infer<typeof userProfileImageSchema>;
+export type User = z.infer<typeof userSchema>;
+export type UserResponse = z.infer<typeof userResponseSchema>;

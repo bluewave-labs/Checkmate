@@ -20,6 +20,11 @@ const makeUser = (overrides?: Partial<User>): User => ({
 	...overrides,
 });
 
+const makeUserResponse = (overrides: Partial<User> = {}) => {
+	const { password: _password, profileImage: _profileImage, ...rest } = makeUser(overrides);
+	return rest;
+};
+
 const makeAppSettings = () => ({
 	jwtSecret: "test-secret",
 	jwtTTL: "99d" as const,
@@ -286,7 +291,7 @@ describe("UserService", () => {
 			const result = await service.createUser({ password: "pass", role: ["user"] }, "team-1", ["superadmin"], null);
 
 			expect(usersRepository.create).toHaveBeenCalledWith(expect.objectContaining({ teamId: "team-1" }), null);
-			expect(result.password).toBe("");
+			expect(result).not.toHaveProperty("password");
 		});
 
 		it("creates user without password when not provided", async () => {
@@ -328,7 +333,7 @@ describe("UserService", () => {
 			const result = await service.loginUser("test@example.com", "correct-password");
 
 			expect(result.token).toBe("jwt-token-123");
-			expect(result.user.password).toBe("");
+			expect(result.user).not.toHaveProperty("password");
 		});
 
 		it("throws on incorrect password", async () => {
@@ -480,7 +485,7 @@ describe("UserService", () => {
 			expect(usersRepository.updateById).toHaveBeenCalledWith("user-1", expect.objectContaining({ password: expect.any(String) }), null);
 			expect(recoveryTokensRepository.deleteManyByEmail).toHaveBeenCalledWith("test@example.com");
 			expect(result.token).toBe("jwt-token-123");
-			expect(result.user.password).toBe("");
+			expect(result.user).not.toHaveProperty("password");
 		});
 
 		it("throws when new password matches old password", async () => {
@@ -589,7 +594,7 @@ describe("UserService", () => {
 
 			const result = await service.getAllUsers();
 
-			expect(result).toEqual([makeUser()]);
+			expect(result).toEqual([makeUserResponse()]);
 			expect(usersRepository.findAll).toHaveBeenCalled();
 		});
 	});
@@ -602,7 +607,7 @@ describe("UserService", () => {
 
 			const result = await service.getUserById(["admin"], "user-1");
 
-			expect(result).toEqual(makeUser());
+			expect(result).toEqual(makeUserResponse());
 			expect(usersRepository.findById).toHaveBeenCalledWith("user-1");
 		});
 
@@ -611,7 +616,7 @@ describe("UserService", () => {
 
 			const result = await service.getUserById(["superadmin"], "user-1");
 
-			expect(result).toEqual(makeUser());
+			expect(result).toEqual(makeUserResponse());
 		});
 
 		it("throws for non-admin roles", async () => {

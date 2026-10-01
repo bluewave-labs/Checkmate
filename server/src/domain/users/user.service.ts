@@ -4,7 +4,7 @@ import { IRecoveryTokensRepository } from "@/domain/recovery-tokens/recovery-tok
 import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
 import { IUsersRepository } from "@/domain/users/user.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
-import type { User } from "@/domain/users/user.type.js";
+import type { User, UserResponse } from "@/domain/users/user.type.js";
 import { canManageRole, type UserRole } from "@/domain/users/user.type.js";
 import bcrypt from "bcryptjs";
 import { AppError } from "@/utils/AppError.js";
@@ -20,23 +20,23 @@ const SERVICE_NAME = "userService";
 
 export interface IUserService {
 	issueToken(payload: Partial<User>, appSettings: EnvConfig): string;
-	registerUser(user: Partial<User>, inviteToken: string, file: Express.Multer.File | null): Promise<{ user: User; token: string }>;
-	createUser(userData: Partial<User>, teamId: string, actorRoles: UserRole[], file: Express.Multer.File | null): Promise<User>;
-	loginUser(email: string, password: string): Promise<{ user: User; token: string }>;
+	registerUser(user: Partial<User>, inviteToken: string, file: Express.Multer.File | null): Promise<{ user: UserResponse; token: string }>;
+	createUser(userData: Partial<User>, teamId: string, actorRoles: UserRole[], file: Express.Multer.File | null): Promise<UserResponse>;
+	loginUser(email: string, password: string): Promise<{ user: UserResponse; token: string }>;
 	editUser(
 		updates: Partial<User & { newPassword?: string; deleteProfileImage?: boolean }>,
 		file: Express.Multer.File | null,
 		currentUserId: string,
 		currentUserEmail: string
-	): Promise<User>;
+	): Promise<UserResponse>;
 	checkSuperadminExists(): Promise<boolean>;
 	requestRecovery(email: string): Promise<string>;
 	validateRecovery(recoveryToken: string): Promise<void>;
-	resetPassword(password: string, recoveryToken: string): Promise<{ user: User; token: string }>;
+	resetPassword(password: string, recoveryToken: string): Promise<{ user: UserResponse; token: string }>;
 	deleteUser(params: { userId: string; teamId: string; roles: UserRole[] }): Promise<void>;
 	deleteUserById(params: { actorId: string; actorTeamId: string; actorRoles: UserRole[]; targetUserId: string }): Promise<void>;
-	getAllUsers(): Promise<User[]>;
-	getUserById(roles: UserRole[], userId: string): Promise<User>;
+	getAllUsers(): Promise<UserResponse[]>;
+	getUserById(roles: UserRole[], userId: string): Promise<UserResponse>;
 	editUserById(userId: string, patch: Partial<User>): Promise<void>;
 	setPasswordByUserId(userId: string, password: string): Promise<User>;
 }
@@ -102,6 +102,8 @@ export class UserService implements IUserService {
 		this.settingsRepository = settingsRepository;
 		this.teamsRepository = teamsRepository;
 	}
+
+	private toResponse = ({ password: _password, profileImage: _profileImage, ...rest }: User): UserResponse => rest;
 
 	issueToken = (payload: Partial<User>, appSettings: EnvConfig) => {
 		return this.jwt.sign(payload, appSettings.jwtSecret, { expiresIn: appSettings.jwtTTL });
@@ -174,7 +176,7 @@ export class UserService implements IUserService {
 			});
 		}
 
-		return { user: newUser, token };
+		return { user: this.toResponse(newUser), token };
 	};
 
 	createUser = async (userData: Partial<User>, teamId: string, actorRoles: UserRole[], file: Express.Multer.File | null) => {
@@ -207,11 +209,9 @@ export class UserService implements IUserService {
 			details: { userId: newUser.id },
 		});
 
-		newUser.profileImage = undefined;
 		newUser.avatarImage = undefined;
-		newUser.password = "";
 
-		return newUser;
+		return this.toResponse(newUser);
 	};
 
 	loginUser = async (email: string, password: string) => {
@@ -234,7 +234,7 @@ export class UserService implements IUserService {
 		const token = this.issueToken(userWithoutPassword, appSettings);
 		// reset avatar image
 		userWithoutPassword.avatarImage = user.avatarImage;
-		return { user: userWithoutPassword, token };
+		return { user: this.toResponse(userWithoutPassword), token };
 	};
 
 	editUser = async (
@@ -258,7 +258,7 @@ export class UserService implements IUserService {
 			delete updates.newPassword;
 		}
 
-		return await this.usersRepository.updateById(currentUserId, updates, file);
+		return this.toResponse(await this.usersRepository.updateById(currentUserId, updates, file));
 	};
 
 	checkSuperadminExists = async () => {
@@ -315,7 +315,7 @@ export class UserService implements IUserService {
 
 		const token = this.issueToken(existingUser, await this.settingsService.getSettings());
 
-		return { user: existingUser, token };
+		return { user: this.toResponse(existingUser), token };
 	};
 
 	deleteUser = async ({ userId, teamId, roles }: { userId: string; teamId: string; roles: UserRole[] }) => {
@@ -383,14 +383,14 @@ export class UserService implements IUserService {
 	};
 
 	getAllUsers = async () => {
-		return await this.usersRepository.findAll();
+		return (await this.usersRepository.findAll()).map(this.toResponse);
 	};
 
 	getUserById = async (roles: UserRole[], userId: string) => {
 		if (!roles.includes("superadmin") && !roles.includes("admin")) {
 			throw new AppError({ message: "Insufficient permissions", service: SERVICE_NAME, status: 403 });
 		}
-		return await this.usersRepository.findById(userId);
+		return this.toResponse(await this.usersRepository.findById(userId));
 	};
 
 	editUserById = async (userId: string, patch: Partial<User>) => {
