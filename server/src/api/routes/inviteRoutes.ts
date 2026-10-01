@@ -2,6 +2,7 @@ import { IInviteController } from "@/api/controllers/inviteController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
 import { inviteBodyValidation, inviteVerificationBodyValidation } from "@/api/validation/authValidation.js";
 import { unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
+import { inviteSchema } from "@/domain/invites/invite.schema.js";
 
 export const inviteRoutes: RouteTable<IInviteController> = {
 	prefix: "/invite",
@@ -23,7 +24,7 @@ export const inviteRoutes: RouteTable<IInviteController> = {
 			summary: "Verify an invite token",
 			auth: "none",
 			body: inviteVerificationBodyValidation,
-			response: unknownResponseSchema,
+			response: inviteSchema,
 		},
 		{
 			method: "post",
@@ -32,7 +33,7 @@ export const inviteRoutes: RouteTable<IInviteController> = {
 			summary: "Create an invite token (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			body: inviteBodyValidation,
-			response: unknownResponseSchema,
+			response: inviteSchema,
 		},
 	],
 };

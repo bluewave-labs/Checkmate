@@ -1552,6 +1552,40 @@
 					"updatedAt": "2026-04-15T14:30:00.000Z"
 				}
 			},
+			"Invite": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"role": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"enum": ["user", "admin", "superadmin", "demo"]
+						}
+					},
+					"token": {
+						"type": "string"
+					},
+					"expiry": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					}
+				},
+				"required": ["id", "email", "teamId", "role", "token", "expiry", "createdAt", "updatedAt"]
+			},
 			"MaintenanceWindow": {
 				"type": "object",
 				"properties": {
@@ -7481,10 +7515,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/Invite"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -7568,10 +7602,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/Invite"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
