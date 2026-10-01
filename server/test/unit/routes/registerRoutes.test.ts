@@ -3,7 +3,7 @@ import { OpenAPIRegistry, type RouteConfig } from "@asteasolutions/zod-to-openap
 import { z } from "zod";
 import { registerRoutes } from "../../../openapi/registerRoutes.ts";
 import type { RouteTable } from "../../../src/api/routes/defineRoutes.ts";
-import { bearer, standardErrors } from "../../../src/api/routes/openapiHelpers.ts";
+import { bearer, errorJson } from "../../../src/api/routes/openapiHelpers.ts";
 
 type Controller = { list: unknown; create: unknown; read: unknown; resolve: unknown };
 
@@ -12,6 +12,8 @@ const setup = () => {
 	const routesOf = () => registry.definitions.filter((d) => d.type === "route").map((d) => (d as { route: RouteConfig }).route);
 	return { registry, routesOf };
 };
+
+const responsesOf = (route: RouteConfig) => Object.keys(route.responses);
 
 describe("registerRoutes", () => {
 	it("prefixes the path, converts :param to {param}, and strips a trailing slash", () => {
@@ -52,7 +54,7 @@ describe("registerRoutes", () => {
 		expect(routesOf().map((r) => r.security)).toEqual([bearer, undefined, undefined]);
 	});
 
-	it("gives bearer entries the standard errors and public entries only a 500", () => {
+	it("derives the error set from the guards each entry installs", () => {
 		const { registry, routesOf } = setup();
 		const table: RouteTable<Controller> = {
 			prefix: "/things",
@@ -60,16 +62,48 @@ describe("registerRoutes", () => {
 			auth: "jwt",
 			routes: [
 				{ method: "get", path: "/", handler: "list", summary: "List" },
+				{ method: "post", path: "/", handler: "create", summary: "Create", roles: ["admin"], body: z.object({ name: z.string() }) },
+				{ method: "post", path: "/logo", handler: "create", summary: "Upload", upload: "logo", body: z.object({}) },
 				{ method: "get", path: "/resolve", handler: "resolve", summary: "Resolve", auth: "none" },
+				{ method: "get", path: "/:url", handler: "read", summary: "Public", auth: "statusPage", params: z.object({ url: z.string() }) },
 			],
 		};
 
 		registerRoutes(registry, table);
 
-		const [secured, open] = routesOf();
-		expect(Object.keys(secured.responses)).toEqual(["200", "401", "403", "500"]);
-		expect(Object.keys(open.responses)).toEqual(["200", "500"]);
-		expect(open.responses["500"]).toEqual(standardErrors["500"]);
+		const [list, create, upload, open, publicPage] = routesOf();
+		expect(responsesOf(list)).toEqual(["200", "401", "429", "500"]);
+		expect(responsesOf(create)).toEqual(["200", "400", "401", "403", "429", "500"]);
+		expect(responsesOf(upload)).toEqual(["200", "400", "401", "413", "415", "429", "500"]);
+		expect(responsesOf(open)).toEqual(["200", "429", "500"]);
+		expect(responsesOf(publicPage)).toEqual(["200", "400", "401", "404", "429", "500"]);
+		expect(open.responses["500"]).toEqual(errorJson("Internal server error"));
+	});
+
+	it("adds the entry's errors to the derived set and lets them override a guard description", () => {
+		const { registry, routesOf } = setup();
+		const table: RouteTable<Controller> = {
+			prefix: "/things",
+			tag: "things",
+			auth: "jwt",
+			routes: [
+				{
+					method: "patch",
+					path: "/:id",
+					handler: "create",
+					summary: "Edit",
+					params: z.object({ id: z.string() }),
+					errors: { 400: "Name may not be empty", 404: "Thing not found", 409: "Name already in use" },
+				},
+			],
+		};
+
+		registerRoutes(registry, table);
+
+		const [edit] = routesOf();
+		expect(responsesOf(edit)).toEqual(["200", "400", "401", "404", "409", "429", "500"]);
+		expect(edit.responses["400"]).toEqual(errorJson("Name may not be empty"));
+		expect(edit.responses["404"]).toEqual(errorJson("Thing not found"));
 	});
 
 	it("documents the response as a data envelope when set and a no-data envelope when absent", () => {
@@ -147,7 +181,7 @@ describe("registerRoutes", () => {
 
 		const [registered] = routesOf();
 		expect(received?.path).toBe("/things/{id}");
-		expect(Object.keys(registered.responses)).toEqual(["200", "401", "403", "409", "500"]);
+		expect(responsesOf(registered)).toEqual(["200", "401", "409", "429", "500"]);
 		expect(registered.responses["409"]).toEqual({ description: "In use" });
 	});
 });

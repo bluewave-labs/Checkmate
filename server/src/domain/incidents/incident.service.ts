@@ -102,11 +102,11 @@ export class IncidentService implements IIncidentService {
 			const incident = await this.incidentsRepository.findActiveByIncidentId(incidentId, teamId);
 
 			if (!incident) {
-				throw new AppError({ message: "Incident not found", service: SERVICE_NAME, method: "resolveIncident" });
+				throw new AppError({ message: "Incident not found", status: 404, service: SERVICE_NAME, method: "resolveIncident" });
 			}
 
 			if (incident.status === false) {
-				throw new AppError({ message: "Incident is already resolved", service: SERVICE_NAME, method: "resolveIncident" });
+				throw new AppError({ message: "Incident is already resolved", status: 409, service: SERVICE_NAME, method: "resolveIncident" });
 			}
 
 			incident.resolutionType = "manual";

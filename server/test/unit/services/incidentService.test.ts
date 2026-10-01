@@ -271,14 +271,17 @@ describe("IncidentService", () => {
 			const { service, incidentsRepository } = createService();
 			(incidentsRepository.findActiveByIncidentId as jest.Mock).mockResolvedValue(null);
 
-			await expect(service.resolveIncident("inc-1", "user-1", "team-1")).rejects.toThrow("Incident not found");
+			await expect(service.resolveIncident("inc-1", "user-1", "team-1")).rejects.toMatchObject({ status: 404, message: "Incident not found" });
 		});
 
 		it("throws when incident is already resolved", async () => {
 			const { service, incidentsRepository } = createService();
 			(incidentsRepository.findActiveByIncidentId as jest.Mock).mockResolvedValue(makeIncident({ status: false }));
 
-			await expect(service.resolveIncident("inc-1", "user-1", "team-1")).rejects.toThrow("Incident is already resolved");
+			await expect(service.resolveIncident("inc-1", "user-1", "team-1")).rejects.toMatchObject({
+				status: 409,
+				message: "Incident is already resolved",
+			});
 		});
 
 		it("logs error and rethrows on unexpected failure", async () => {

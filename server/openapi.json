@@ -106,6 +106,18 @@
 				},
 				"required": ["id", "teamId", "name", "color", "createdAt", "updatedAt"]
 			},
+			"Error": {
+				"type": "object",
+				"properties": {
+					"status": {
+						"type": "number"
+					},
+					"msg": {
+						"type": "string"
+					}
+				},
+				"required": ["status", "msg"]
+			},
 			"AuthPayload": {
 				"type": "object",
 				"properties": {
@@ -3991,48 +4003,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"409": {
+						"description": "A tag with that name already exists",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -4042,20 +4048,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -4104,43 +4097,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"429": {
+						"description": "Too many requests",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -4150,20 +4117,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -4215,48 +4169,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Tag not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -4266,20 +4214,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -4349,48 +4284,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Tag not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -4400,20 +4329,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -4464,48 +4380,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Tag not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -4515,20 +4425,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -4603,25 +4500,62 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Email is required for the first user",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Invite not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"413": {
+						"description": "File too large",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"415": {
+						"description": "Unsupported file type",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"500": {
 						"description": "Internal server error",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -4700,25 +4634,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Invalid credentials",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "User not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -4728,20 +4679,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -4797,25 +4735,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "User not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"500": {
 						"description": "Internal server error",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -4868,25 +4823,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Recovery token not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"500": {
 						"description": "Internal server error",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -4946,25 +4918,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "New password cannot be the same as the old one",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Recovery token or user not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"500": {
 						"description": "Internal server error",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5006,25 +4995,22 @@
 							}
 						}
 					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"500": {
 						"description": "Internal server error",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5073,20 +5059,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5096,20 +5069,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5119,20 +5089,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5214,48 +5171,62 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
 					"403": {
-						"description": "Forbidden",
+						"description": "Caller lacks the role, or the target role is above the caller's",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"413": {
+						"description": "File too large",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"415": {
+						"description": "Unsupported file type",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5265,20 +5236,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5330,25 +5288,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5358,20 +5313,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5381,20 +5323,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5404,20 +5343,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5498,25 +5424,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5526,20 +5449,27 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "User not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5549,20 +5479,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5613,48 +5530,52 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Cannot delete your own account or a demo user",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
 					"403": {
-						"description": "Forbidden",
+						"description": "Caller lacks the role, the user is not on the team, or the user's role is above the caller's",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "User not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5664,20 +5585,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5747,25 +5655,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5775,20 +5680,27 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "User not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5798,20 +5710,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5898,48 +5797,72 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
 					"403": {
-						"description": "Forbidden",
+						"description": "Incorrect current password",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "User not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"413": {
+						"description": "File too large",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"415": {
+						"description": "Unsupported file type",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -5949,20 +5872,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -6002,25 +5912,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Demo user cannot be deleted",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -6030,20 +5937,27 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "User not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -6053,20 +5967,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -6127,48 +6028,32 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"429": {
+						"description": "Too many requests",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -6178,20 +6063,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -6308,48 +6180,32 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"429": {
+						"description": "Too many requests",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -6359,20 +6215,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -6422,20 +6265,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -6445,20 +6275,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -6468,20 +6295,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -6644,48 +6458,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Monitor not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -6695,20 +6503,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -6764,25 +6559,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -6792,20 +6584,27 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Monitor not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -6815,20 +6614,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -6874,20 +6660,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -6897,20 +6670,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -6920,20 +6690,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -7096,48 +6853,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Monitor not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -7147,20 +6898,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -7278,48 +7016,32 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"429": {
+						"description": "Too many requests",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -7329,20 +7051,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -7394,48 +7103,32 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"429": {
+						"description": "Too many requests",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -7445,20 +7138,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -7529,48 +7209,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Incident, monitor or resolving user not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -7580,20 +7254,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -7659,25 +7320,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -7687,20 +7345,37 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Incident not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Incident is already resolved",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -7710,20 +7385,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -7793,48 +7455,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invite email is required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
 					"403": {
-						"description": "Forbidden",
+						"description": "Caller lacks the role, or the invited role is above the caller's",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -7844,20 +7500,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -7909,25 +7552,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Invite not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"500": {
 						"description": "Internal server error",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -7996,48 +7656,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
 					"403": {
-						"description": "Forbidden",
+						"description": "Caller lacks the role, or the invited role is above the caller's",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -8047,20 +7701,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -8157,48 +7798,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
 					"403": {
-						"description": "Forbidden",
+						"description": "Caller lacks the role, or a monitor is not on the team",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -8208,20 +7843,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -8319,48 +7941,32 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"429": {
+						"description": "Too many requests",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -8370,20 +7976,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -8438,48 +8031,32 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"429": {
+						"description": "Too many requests",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -8489,20 +8066,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -8554,48 +8118,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Maintenance window not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -8605,20 +8163,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -8718,48 +8263,52 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
 					"403": {
-						"description": "Forbidden",
+						"description": "Caller lacks the role, or a monitor is not on the team",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Maintenance window not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -8769,20 +8318,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -8833,25 +8369,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -8861,20 +8394,27 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Maintenance window not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -8884,20 +8424,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -8997,48 +8524,32 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"429": {
+						"description": "Too many requests",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -9048,20 +8559,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -9261,48 +8759,32 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"429": {
+						"description": "Too many requests",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -9312,20 +8794,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -9386,48 +8855,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request, or the monitor is not an uptime monitor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Monitor or monitor stats not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -9437,20 +8900,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -9512,48 +8962,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request, or the monitor is not a hardware monitor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Monitor or monitor stats not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -9563,20 +9007,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -9638,48 +9069,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request, or the monitor is not a pagespeed monitor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Monitor or monitor stats not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -9689,20 +9114,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -9764,48 +9176,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request, or the monitor is not a Docker monitor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Monitor or monitor stats not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -9815,20 +9221,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -9899,48 +9292,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request, or the monitor is not a Docker monitor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Monitor not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -9950,20 +9337,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -10053,25 +9427,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request, or the monitor is not a Docker monitor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -10081,20 +9452,27 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Monitor not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -10104,20 +9482,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -10262,48 +9627,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Monitor not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -10313,20 +9672,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -10378,25 +9724,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -10406,20 +9749,27 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Monitor not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -10429,20 +9779,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -10519,25 +9856,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -10547,20 +9881,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -10570,20 +9901,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -10641,48 +9959,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Monitor not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -10692,20 +10004,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -10768,48 +10067,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Monitor not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -10819,20 +10112,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -10910,48 +10190,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request, or one or more monitor or notification ids are invalid",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
 					"403": {
-						"description": "Forbidden",
+						"description": "Caller lacks the role, or a notification belongs to another team",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -10961,20 +10235,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -11274,25 +10535,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -11302,20 +10560,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -11325,20 +10580,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -11383,20 +10625,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -11406,20 +10635,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -11429,20 +10655,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -11488,20 +10701,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -11511,20 +10711,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -11534,20 +10731,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -11591,25 +10775,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "No monitors to export",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -11619,20 +10800,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -11642,20 +10820,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -12000,25 +11165,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -12028,20 +11190,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -12051,20 +11210,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -12144,43 +11290,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"429": {
+						"description": "Too many requests",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -12190,20 +11310,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -12255,48 +11362,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Monitor not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -12306,20 +11407,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -12616,25 +11704,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -12644,20 +11729,37 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Monitor not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "A TLS Docker host needs a key, or a hardware monitor needs a Capture API secret",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -12667,20 +11769,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -12730,25 +11819,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -12758,20 +11844,27 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Monitor not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -12781,20 +11874,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -12844,25 +11924,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -12872,20 +11949,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -12895,20 +11969,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -12966,25 +12027,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request, or the monitor has no notifications",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -12994,20 +12052,27 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Monitor not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13017,20 +12082,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13080,25 +12132,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13108,20 +12157,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13131,20 +12177,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13193,43 +12226,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"429": {
+						"description": "Too many requests",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13239,20 +12246,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13304,48 +12298,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Notification not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13355,20 +12343,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13419,25 +12394,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13447,20 +12419,27 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Notification not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13470,20 +12449,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13542,25 +12508,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13570,20 +12533,27 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Notification not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13593,20 +12563,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13682,48 +12639,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"409": {
+						"description": "A proxy with that name already exists",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13733,20 +12684,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13793,20 +12731,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13816,20 +12741,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13839,20 +12761,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13901,43 +12810,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"429": {
+						"description": "Too many requests",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -13947,20 +12830,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14012,48 +12882,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Proxy not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14063,20 +12927,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14127,48 +12978,32 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Proxy not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14178,20 +13013,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14201,20 +13033,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14305,48 +13124,52 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"404": {
+						"description": "Proxy not found",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "A proxy with that name already exists",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14356,20 +13179,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14432,25 +13242,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14460,20 +13267,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14483,20 +13287,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14542,20 +13333,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14565,20 +13343,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14588,20 +13363,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14734,25 +13496,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14762,20 +13521,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14785,20 +13541,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14845,20 +13588,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14868,20 +13598,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14891,20 +13618,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14950,43 +13664,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"429": {
+						"description": "Too many requests",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -14996,20 +13684,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -15176,25 +13851,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -15204,20 +13876,27 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Referenced proxy does not exist",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -15227,20 +13906,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -15363,25 +14029,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -15391,20 +14054,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -15414,20 +14074,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -15476,43 +14123,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
 					},
-					"403": {
-						"description": "Forbidden",
+					"429": {
+						"description": "Too many requests",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -15522,20 +14143,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -15689,25 +14297,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request, or the custom domain matches the instance host",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -15717,20 +14322,37 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"413": {
+						"description": "File too large",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"415": {
+						"description": "Unsupported file type",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -15740,20 +14362,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -15918,25 +14527,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request, or the custom domain matches the instance host",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -15946,20 +14552,47 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Status page not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"413": {
+						"description": "File too large",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"415": {
+						"description": "Unsupported file type",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -15969,20 +14602,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -16033,25 +14653,22 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"401": {
 						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -16061,20 +14678,27 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Status page not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -16084,20 +14708,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -16173,28 +14784,42 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request, or no domain could be resolved",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"404": {
-						"description": "Status page not found"
+						"description": "Status page not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
 					},
 					"500": {
 						"description": "Internal server error",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -16271,28 +14896,62 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Status page is unpublished and the caller is not on its team",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"404": {
-						"description": "Status page not found"
+						"description": "Status page not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
 					},
 					"500": {
 						"description": "Internal server error",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -16411,25 +15070,62 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Status page is unpublished and the caller is not on its team",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Status page or monitor not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"500": {
 						"description": "Internal server error",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -16478,20 +15174,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -16501,20 +15184,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
@@ -16524,20 +15204,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"nullable": true
-										}
-									},
-									"required": ["success", "msg"]
+									"$ref": "#/components/schemas/Error"
 								}
 							}
 						}
