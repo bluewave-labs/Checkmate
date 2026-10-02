@@ -34,11 +34,12 @@ spec:
               containerPort: {{ .Values.worker.healthPort }}
           envFrom:
             - secretRef:
-                name: checkmate-secrets # DB_CONNECTION_STRING (+ JWT_SECRET/CLIENT_HOST for validateEnv)
+                name: checkmate-secrets # DB_CONNECTION_STRING (+ JWT_SECRET; CLIENT_HOST is set below)
           env:
-          # Secret default CLIENT_HOST is the non-URL "change_me"; override like the API so validateEnv passes.
+          # CLIENT_HOST is derived like the API's (see the checkmate.clientHost helper); worker
+          # mode still runs the shared env validation, which requires CLIENT_HOST to be a URL.
           - name: CLIENT_HOST
-            value: "{{ .Values.client.protocol }}://{{ .Values.client.ingress.host }}"
+            value: {{ include "checkmate.clientHost" . | trim | quote }}
           - name: QUEUE_MODE
             value: "worker"
           - name: HEALTH_PORT
