@@ -115,7 +115,8 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 			};
 		}
 
-		const isJson = contentType.includes("application/json");
+		const mediaType = contentType.split(";")[0]?.trim().toLowerCase() ?? "";
+		const isJson = mediaType === "application/json" || mediaType.endsWith("+json");
 
 		if (monitor.jsonPath && !isJson) {
 			return {
