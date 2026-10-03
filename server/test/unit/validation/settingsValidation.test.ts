@@ -64,9 +64,9 @@ describe("settingsValidation", () => {
 			expect(updateAppSettingsBodyValidation.parse({ egressNotifications: [] }).egressNotifications).toEqual([]);
 		});
 
-		it("accepts upper-case hex notification ids", () => {
+		it("lower-cases upper-case hex notification ids", () => {
 			const id = "64B7F0C2A1D2E3F4A5B6C7D8";
-			expect(updateAppSettingsBodyValidation.parse({ egressNotifications: [id] }).egressNotifications).toEqual([id]);
+			expect(updateAppSettingsBodyValidation.parse({ egressNotifications: [id] }).egressNotifications).toEqual(["64b7f0c2a1d2e3f4a5b6c7d8"]);
 		});
 
 		it("rejects notification ids that are not 24-character hex", () => {

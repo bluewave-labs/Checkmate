@@ -100,6 +100,8 @@ export class EmailProvider extends NotificationProvider {
 				return `Monitor ${message.monitor.name} container alert`;
 			case "container_resolved":
 				return `Monitor ${message.monitor.name} containers recovered`;
+			case "egress_recovered":
+				return "Checkmate outbound connectivity restored";
 			default:
 				return `Alert: ${message.monitor.name}`;
 		}
