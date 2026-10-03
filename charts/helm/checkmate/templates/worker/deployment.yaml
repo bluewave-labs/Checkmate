@@ -1,4 +1,3 @@
-{{- $api := include "checkmate.api" . | fromYaml -}}
 {{- if .Values.worker.enabled }}
 apiVersion: apps/v1
 kind: Deployment
@@ -6,7 +5,7 @@ metadata:
   name: checkmate-worker
 spec:
   {{- if not .Values.worker.autoscaling.enabled }}
-  replicas: {{ .Values.worker.replicas }} # omitted when autoscaling owns the replica count
+  replicas: {{ .Values.worker.replicas }}
   {{- end }}
   selector:
     matchLabels:
@@ -27,18 +26,17 @@ spec:
     {{- end }}
       containers:
         - name: worker
-          image: {{ include "checkmate.image" (dict "image" (.Values.worker.image | default $api.image) "tag" (.Values.worker.tag | default $api.tag) "root" $) }}
-          imagePullPolicy: {{ .Values.worker.imagePullPolicy | default $api.imagePullPolicy }}
+          image: {{ include "checkmate.image" (dict "image" (.Values.worker.image | default .Values.server.controllers.main.containers.main.image.repository) "tag" (.Values.worker.tag | default .Values.server.controllers.main.containers.main.image.tag) "root" $) }}
+          imagePullPolicy: {{ .Values.worker.imagePullPolicy }}
           ports:
             - name: health
               containerPort: {{ .Values.worker.healthPort }}
           envFrom:
             - secretRef:
-                name: checkmate-secrets # DB_CONNECTION_STRING (+ JWT_SECRET/CLIENT_HOST for validateEnv)
+                name: checkmate-secrets
           env:
-          # Secret default CLIENT_HOST is the non-URL "change_me"; override like the API so validateEnv passes.
           - name: CLIENT_HOST
-            value: "{{ .Values.client.protocol }}://{{ .Values.client.ingress.host }}"
+            value: {{ .Values.server.controllers.main.containers.main.env.CLIENT_HOST | quote }}
           - name: QUEUE_MODE
             value: "worker"
           - name: HEALTH_PORT
