@@ -9,6 +9,7 @@ import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { isStatusUp, peerAnsweredFromError } from "@/service/networkProviders/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import CacheableLookup from "cacheable-lookup";
+import { CookieJar } from "tough-cookie";
 import { HttpProxyAgent, HttpsProxyAgent } from "hpagent";
 import { CheckContext } from "@/types/network.js";
 
@@ -226,6 +227,10 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 				};
 
 		options.method = monitor.method;
+		// Fresh jar per check: cookies set during a redirect chain are sent on the next hop
+		// (cookie challenges answer Set-Cookie + 302 to the same URL), and nothing persists
+		// between checks.
+		options.cookieJar = new CookieJar();
 
 		try {
 			const response = await this.got<string>(url, options);

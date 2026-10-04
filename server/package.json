@@ -67,6 +67,7 @@
 		"ssl-checker": "2.0.10",
 		"swagger-ui-express": "5.0.1",
 		"tldts": "^7.4.10",
+		"tough-cookie": "5.1.2",
 		"whoiser": "^1.18.0",
 		"winston": "^3.13.0",
 		"ws": "^8.19.0",
