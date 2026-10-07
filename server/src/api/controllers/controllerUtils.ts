@@ -25,6 +25,10 @@ const WHOIS_TIMEOUT_MS = 10_000;
 const DOMAIN_EXPIRY_CACHE_POSITIVE_TTL_MS = 60 * 60 * 1000; // 1 hour
 const DOMAIN_EXPIRY_CACHE_NEGATIVE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 const EXPIRY_DATE_KEY_PATTERN = /(expiry date|expiration|paid-?till|registration expiration)/i;
+// TODO: remove once whoiser is upgraded to 2.x, which already has the current .tr server.
+const WHOIS_SERVER_OVERRIDES: Record<string, string> = {
+	tr: "whois.trabis.gov.tr",
+};
 
 export interface DomainExpiryResult {
 	domain: string | null;
@@ -87,16 +91,32 @@ export const extractDomainExpiryDate = (whoisData: object): string | null => {
 };
 
 const parseDomainExpiryValue = (raw: string): Date | null => {
+	const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+	const fromParts = (year: string | undefined, month: string | undefined, day: string | undefined): Date | null => {
+		const monthIndex = months.indexOf((month ?? "").toLowerCase());
+		if (monthIndex === -1) {
+			return null;
+		}
+		const parsed = new Date(Date.UTC(Number(year), monthIndex, Number(day)));
+		return Number.isNaN(parsed.getTime()) ? null : parsed;
+	};
+
 	// Some registries (e.g. Nominet for .uk) return "14-Feb-2027" style values.
-	const monthMatch = /^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/.exec(raw.trim());
-	if (monthMatch) {
-		const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
-		const monthIndex = months.indexOf((monthMatch[2] ?? "").toLowerCase());
-		if (monthIndex !== -1) {
-			const parsed = new Date(Date.UTC(Number(monthMatch[3]), monthIndex, Number(monthMatch[1])));
-			if (!Number.isNaN(parsed.getTime())) {
-				return parsed;
-			}
+	const dayFirst = /^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/.exec(raw.trim());
+	if (dayFirst) {
+		const parsed = fromParts(dayFirst[3], dayFirst[2], dayFirst[1]);
+		if (parsed) {
+			return parsed;
+		}
+	}
+
+	// TRABIS (.tr) returns "2029-Sep-01" style values, which Date() only parses by
+	// engine-specific leniency.
+	const yearFirst = /^(\d{4})-([A-Za-z]{3})-(\d{1,2})\.?$/.exec(raw.trim());
+	if (yearFirst) {
+		const parsed = fromParts(yearFirst[1], yearFirst[2], yearFirst[3]);
+		if (parsed) {
+			return parsed;
 		}
 	}
 
@@ -124,7 +144,11 @@ export const fetchMonitorDomain = async (
 		return cached;
 	}
 
-	const result = await client.domain(registrableDomain, { timeout: WHOIS_TIMEOUT_MS });
+	const serverOverride = WHOIS_SERVER_OVERRIDES[registrableDomain.split(".").pop() ?? ""];
+	const result = await client.domain(registrableDomain, {
+		timeout: WHOIS_TIMEOUT_MS,
+		...(serverOverride ? { host: serverOverride } : {}),
+	});
 	const firstServerData = Object.values(result)[0];
 	const expiryDate = extractDomainExpiryDate(
 		typeof firstServerData === "object" && firstServerData !== null && !Array.isArray(firstServerData) ? firstServerData : {}
