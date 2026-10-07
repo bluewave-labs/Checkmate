@@ -5142,7 +5142,7 @@
 										"format": "binary"
 									}
 								},
-								"required": ["firstName", "lastName", "email", "password", "role", "profileImage"]
+								"required": ["firstName", "lastName", "email", "role", "profileImage"]
 							}
 						}
 					}
