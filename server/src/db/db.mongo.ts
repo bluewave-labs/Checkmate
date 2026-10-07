@@ -6,7 +6,7 @@ import { ILogger } from "@/utils/logger.js";
 import { EnvConfig } from "@/domain/app-settings/app-settings.service.js";
 const SERVICE_NAME = "MongoDB";
 import { IDb } from "@/db/db.interface.js";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 
 class MongoDB implements IDb<Mongoose> {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -65,7 +65,7 @@ class MongoDB implements IDb<Mongoose> {
 
 	getConnection = async (): Promise<Mongoose> => {
 		if (this.db === null) {
-			throw new AppError({ message: "Database not connected", service: SERVICE_NAME, method: "getConnection" });
+			throw new AppError(internalError, { message: "Database not connected", service: SERVICE_NAME, method: "getConnection" });
 		}
 		return this.db;
 	};

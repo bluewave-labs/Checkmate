@@ -1,5 +1,4 @@
 import { RequestHandler } from "express";
-import { AppError } from "@/utils/AppError.js";
 import { Handler, requireTeamId, requireUserEmail, requireUserId, requireUserRoles } from "@/api/controllers/controllerUtils.js";
 
 import {
@@ -138,13 +137,7 @@ class AuthController implements IAuthController {
 	};
 
 	editUserById: Handler = async (req, res) => {
-		const actorRoles = requireUserRoles(req.user?.role);
 		const actorId = requireUserId(req.user?.id);
-
-		if (!actorRoles.includes("superadmin")) {
-			throw new AppError({ message: "Unauthorized", status: 403 });
-		}
-
 		const validatedParams = editUserByIdParamValidation.parse(req.params);
 		// If this is superadmin self edit, allow "superadmin" role
 		const validatedBody =
@@ -155,11 +148,6 @@ class AuthController implements IAuthController {
 	};
 
 	editUserPasswordById: Handler = async (req, res) => {
-		const actorRoles = requireUserRoles(req.user?.role);
-		if (!actorRoles.includes("superadmin")) {
-			throw new AppError({ message: "Unauthorized", status: 403 });
-		}
-
 		const validatedParams = editUserByIdParamValidation.parse(req.params);
 		const validatedBody = editUserPasswordByIdBodyValidation.parse(req.body);
 		await this.userService.setPasswordByUserId(validatedParams.userId, validatedBody.password);

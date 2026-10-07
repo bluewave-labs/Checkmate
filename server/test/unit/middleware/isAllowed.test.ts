@@ -2,6 +2,8 @@ import { describe, expect, it, jest } from "@jest/globals";
 import type { NextFunction, Request, Response } from "express";
 import { isAllowed } from "../../../src/api/middleware/isAllowed.ts";
 import { AppError } from "../../../src/utils/AppError.ts";
+import { middlewareErrors } from "../../../src/api/middleware/middleware.errors.ts";
+import { internalError } from "../../../src/utils/AppError.ts";
 
 describe("isAllowed middleware", () => {
 	it("calls next() without error when user has an allowed role", () => {
@@ -40,11 +42,11 @@ describe("isAllowed middleware", () => {
 		expect(next).toHaveBeenCalledTimes(1);
 		const error = (next as unknown as jest.Mock).mock.calls[0][0] as AppError;
 		expect(error).toBeInstanceOf(AppError);
-		expect(error.status).toBe(403);
-		expect(error.message).toBe("Unauthorized");
+		expect(error.definition).toBe(middlewareErrors.forbidden);
+		expect(error.message).toBe("Forbidden");
 	});
 
-	it("calls next(error) with 403 when req.user is undefined", () => {
+	it("calls next(error) with 500 when req.user is undefined", () => {
 		const middleware = isAllowed(["admin", "superadmin"]);
 		const req = {} as Request;
 		const res = {} as Response;
@@ -55,8 +57,8 @@ describe("isAllowed middleware", () => {
 		expect(next).toHaveBeenCalledTimes(1);
 		const error = (next as unknown as jest.Mock).mock.calls[0][0] as AppError;
 		expect(error).toBeInstanceOf(AppError);
-		expect(error.status).toBe(403);
-		expect(error.message).toBe("Unauthorized");
+		expect(error.definition).toBe(internalError);
+		expect(error.status).toBe(500);
 	});
 
 	it("calls next() when user has multiple roles and at least one matches", () => {

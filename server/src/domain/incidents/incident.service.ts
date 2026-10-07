@@ -11,6 +11,7 @@ import type { MonitorActionDecision } from "@/worker/worker.interface.js";
 import type { INotificationMessageBuilder } from "@/domain/notifications/notification.message-builder.js";
 import type { ILogger } from "@/utils/logger.js";
 import { DateRange } from "@/types/query.js";
+import { incidentErrors } from "@/domain/incidents/incident.errors.js";
 
 const SERVICE_NAME = "incidentService";
 export interface IIncidentService {
@@ -87,26 +88,14 @@ export class IncidentService implements IIncidentService {
 
 	resolveIncident = async (incidentId: string, userId: string, teamId: string, comment?: string, userEmail?: string) => {
 		try {
-			if (!incidentId) {
-				throw new AppError({ message: "No incident ID in request", service: SERVICE_NAME, method: "resolveIncident" });
-			}
-
-			if (!userId) {
-				throw new AppError({ message: "No user ID in request", service: SERVICE_NAME, method: "resolveIncident" });
-			}
-
-			if (!teamId) {
-				throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "resolveIncident" });
-			}
-
 			const incident = await this.incidentsRepository.findActiveByIncidentId(incidentId, teamId);
 
 			if (!incident) {
-				throw new AppError({ message: "Incident not found", status: 404, service: SERVICE_NAME, method: "resolveIncident" });
+				throw new AppError(incidentErrors.notFound, { service: SERVICE_NAME, method: "resolveIncident" });
 			}
 
 			if (incident.status === false) {
-				throw new AppError({ message: "Incident is already resolved", status: 409, service: SERVICE_NAME, method: "resolveIncident" });
+				throw new AppError(incidentErrors.alreadyResolved, { service: SERVICE_NAME, method: "resolveIncident" });
 			}
 
 			incident.resolutionType = "manual";
@@ -149,12 +138,7 @@ export class IncidentService implements IIncidentService {
 		resolutionType: string | undefined
 	) => {
 		try {
-			if (!teamId) {
-				throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "getIncidentsByTeam", status: 400 });
-			}
-
 			const startDate = getDateForRange(dateRange);
-
 			const parsedPage = page ?? 0;
 			const parsedRowsPerPage = rowsPerPage ?? 20;
 
@@ -186,10 +170,6 @@ export class IncidentService implements IIncidentService {
 
 	getIncidentSummary = async (teamId: string, limit?: number) => {
 		try {
-			if (!teamId) {
-				throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "getIncidentSummary", status: 400 });
-			}
-
 			const parsedLimit = limit ?? 10;
 			const summary = await this.incidentsRepository.findSummaryByTeamId(teamId, parsedLimit);
 

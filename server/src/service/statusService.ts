@@ -10,7 +10,7 @@ import {
 	type MonitorStatus,
 } from "@/domain/monitors/monitor.type.js";
 import type { StatusChangeResult } from "@/types/network.js";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger.js";
 import type { HardwareStatusMetrics } from "@/types/network.js";
 import { MAX_RECENT_CHECKS } from "@/domain/monitors/monitor.type.js";
@@ -249,7 +249,7 @@ export class StatusService implements IStatusService {
 				thresholdBreaches,
 			};
 		} catch (error: unknown) {
-			throw new AppError({
+			throw new AppError(internalError, {
 				message: `Failed to update monitor with id ${check.metadata.monitorId} with status: ${error instanceof Error ? error.message : "Unknown error"}`,
 				service: SERVICE_NAME,
 				method: "updateMonitorStatus",

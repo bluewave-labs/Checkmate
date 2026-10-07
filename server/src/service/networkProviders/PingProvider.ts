@@ -2,7 +2,7 @@ import { PingStatusPayload } from "@/types/network.js";
 import { IStatusProvider } from "./IStatusProvider.js";
 import { MonitorType, Monitor } from "@/domain/monitors/monitor.type.js";
 import { MonitorStatusResponse } from "@/types/network.js";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import ping from "ping";
 import * as net from "net";
 import { timeRequest } from "@/service/networkProviders/utils.js";
@@ -67,7 +67,7 @@ export class PingProvider implements IStatusProvider<PingStatusPayload> {
 			};
 		} catch (err: unknown) {
 			const message = err instanceof Error ? err.message : String(err);
-			throw new AppError({
+			throw new AppError(internalError, {
 				message,
 				service: SERVICE_NAME,
 				method: "handle",

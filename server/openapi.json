@@ -4501,7 +4501,7 @@
 						}
 					},
 					"400": {
-						"description": "Email is required for the first user",
+						"description": "Invalid request, or email is required for the first user",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -4736,7 +4736,7 @@
 						}
 					},
 					"400": {
-						"description": "Invalid request",
+						"description": "Invalid request, or email is not configured",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -4767,6 +4767,16 @@
 					},
 					"500": {
 						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"502": {
+						"description": "The mail server rejected the message",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -4919,7 +4929,7 @@
 						}
 					},
 					"400": {
-						"description": "New password cannot be the same as the old one",
+						"description": "Invalid request, or new password cannot be the same as the old one",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -4929,7 +4939,7 @@
 						}
 					},
 					"404": {
-						"description": "Recovery token or user not found",
+						"description": "Recovery token not found, or user not found",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5192,7 +5202,7 @@
 						}
 					},
 					"403": {
-						"description": "Caller lacks the role, or the target role is above the caller's",
+						"description": "Forbidden, or the target role is above the caller's",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5531,7 +5541,7 @@
 						}
 					},
 					"400": {
-						"description": "Cannot delete your own account or a demo user",
+						"description": "Invalid request, or cannot delete your own account from here, or demo user cannot be deleted",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5551,7 +5561,7 @@
 						}
 					},
 					"403": {
-						"description": "Caller lacks the role, the user is not on the team, or the user's role is above the caller's",
+						"description": "Forbidden, or the user is not on the caller's team, or the target role is above the caller's",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5818,7 +5828,7 @@
 						}
 					},
 					"403": {
-						"description": "Incorrect current password",
+						"description": "Forbidden, or incorrect current password",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -7230,7 +7240,7 @@
 						}
 					},
 					"404": {
-						"description": "Incident, monitor or resolving user not found",
+						"description": "Incident not found, or monitor not found, or user not found",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -7456,7 +7466,7 @@
 						}
 					},
 					"400": {
-						"description": "Invite email is required",
+						"description": "Invalid request, or invite email is required",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -7476,7 +7486,7 @@
 						}
 					},
 					"403": {
-						"description": "Caller lacks the role, or the invited role is above the caller's",
+						"description": "Forbidden, or the invited role is above the caller's",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -7677,7 +7687,7 @@
 						}
 					},
 					"403": {
-						"description": "Caller lacks the role, or the invited role is above the caller's",
+						"description": "Forbidden, or the invited role is above the caller's",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -7819,7 +7829,7 @@
 						}
 					},
 					"403": {
-						"description": "Caller lacks the role, or a monitor is not on the team",
+						"description": "Forbidden, or a monitor is not on the caller's team",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -8284,7 +8294,7 @@
 						}
 					},
 					"403": {
-						"description": "Caller lacks the role, or a monitor is not on the team",
+						"description": "Forbidden, or a monitor is not on the caller's team",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -8876,7 +8886,7 @@
 						}
 					},
 					"404": {
-						"description": "Monitor or monitor stats not found",
+						"description": "Monitor not found, or monitor stats not found",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -8983,7 +8993,7 @@
 						}
 					},
 					"404": {
-						"description": "Monitor or monitor stats not found",
+						"description": "Monitor not found, or monitor stats not found",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -9090,7 +9100,7 @@
 						}
 					},
 					"404": {
-						"description": "Monitor or monitor stats not found",
+						"description": "Monitor not found, or monitor stats not found",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -9197,7 +9207,7 @@
 						}
 					},
 					"404": {
-						"description": "Monitor or monitor stats not found",
+						"description": "Monitor not found, or monitor stats not found",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -10211,7 +10221,7 @@
 						}
 					},
 					"403": {
-						"description": "Caller lacks the role, or a notification belongs to another team",
+						"description": "Forbidden, or a notification belongs to another team",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -10557,6 +10567,16 @@
 					},
 					"403": {
 						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Docker TLS credentials need ENCRYPTION_KEY set on the server",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -11745,7 +11765,7 @@
 						}
 					},
 					"422": {
-						"description": "A TLS Docker host needs a key, or a hardware monitor needs a Capture API secret",
+						"description": "A TLS Docker host needs a key, or a hardware monitor needs a Capture API secret, or docker TLS credentials need ENCRYPTION_KEY set on the server",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -13009,7 +13029,7 @@
 						}
 					},
 					"409": {
-						"description": "Proxy is in use by monitors or set as the global proxy",
+						"description": "Proxy is in use by monitors, or proxy is set as the global proxy",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -14030,7 +14050,7 @@
 						}
 					},
 					"400": {
-						"description": "Invalid request",
+						"description": "Invalid request, or email is not configured",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -14071,6 +14091,16 @@
 					},
 					"500": {
 						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"502": {
+						"description": "The mail server rejected the message",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -15101,7 +15131,7 @@
 						}
 					},
 					"404": {
-						"description": "Status page or monitor not found",
+						"description": "Status page not found, or monitor not found on this status page",
 						"content": {
 							"application/json": {
 								"schema": {

@@ -2,6 +2,7 @@ import { IInviteController } from "@/api/controllers/inviteController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
 import { inviteBodyValidation, inviteVerificationBodyValidation } from "@/api/validation/authValidation.js";
 import { inviteSchema } from "@/domain/invites/invite.schema.js";
+import { inviteErrors } from "@/domain/invites/invite.errors.js";
 
 export const inviteRoutes: RouteTable<IInviteController> = {
 	prefix: "/invite",
@@ -13,7 +14,7 @@ export const inviteRoutes: RouteTable<IInviteController> = {
 			path: "/send",
 			handler: "sendInviteEmail",
 			summary: "Send an invite email (admin/superadmin)",
-			errors: { 400: "Invite email is required", 403: "Caller lacks the role, or the invited role is above the caller's" },
+			errors: [inviteErrors.emailRequired, inviteErrors.roleAboveCaller],
 			roles: ["admin", "superadmin"],
 			body: inviteBodyValidation,
 		},
@@ -22,7 +23,7 @@ export const inviteRoutes: RouteTable<IInviteController> = {
 			path: "/verify",
 			handler: "verifyInviteToken",
 			summary: "Verify an invite token",
-			errors: { 404: "Invite not found" },
+			errors: [inviteErrors.notFound],
 			auth: "none",
 			body: inviteVerificationBodyValidation,
 			response: inviteSchema,
@@ -32,7 +33,7 @@ export const inviteRoutes: RouteTable<IInviteController> = {
 			path: "/",
 			handler: "getInviteToken",
 			summary: "Create an invite token (admin/superadmin)",
-			errors: { 403: "Caller lacks the role, or the invited role is above the caller's" },
+			errors: [inviteErrors.roleAboveCaller],
 			roles: ["admin", "superadmin"],
 			body: inviteBodyValidation,
 			response: inviteSchema,

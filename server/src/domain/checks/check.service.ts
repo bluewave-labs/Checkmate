@@ -4,7 +4,6 @@ import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interf
 import type { Check, CheckErrorInfo, ChecksQueryResult, ChecksSummary, ILighthouseAudit } from "@/domain/checks/check.type.js";
 import type { DockerStatusPayload, MonitorPayloadMap, MonitorStatusResponse } from "@/types/network.js";
 import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
-import { AppError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger.js";
 import { CheckFilter, DateRange } from "@/types/query.js";
 
@@ -153,13 +152,6 @@ export class CheckService implements ICheckService {
 		status?: boolean;
 		filter: CheckFilter;
 	}) => {
-		if (!monitorId) {
-			throw new AppError({ message: "No monitor ID in request", service: SERVICE_NAME, method: "getChecksByMonitor", status: 400 });
-		}
-		if (!teamId) {
-			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "getChecksByMonitor", status: 400 });
-		}
-
 		// For verification, throws an error if monitor doesn't belong to team
 		await this.monitorsRepository.findById(monitorId, teamId);
 

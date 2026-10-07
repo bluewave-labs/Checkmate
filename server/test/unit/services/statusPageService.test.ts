@@ -286,7 +286,7 @@ describe("StatusPageService", () => {
 		it("never exposes secret or internal fields — even when showURL is ON (regression)", async () => {
 			const { service } = createService(true, "http://localhost:5173", true);
 
-			const { monitors } = await service.getPublicStatusPagePayload(publishedPage(), undefined);
+			const { monitors } = await service.getPublicStatusPagePayload(publishedPage());
 
 			expect(monitors).toHaveLength(1);
 			for (const field of SENSITIVE_FIELDS) {
@@ -297,7 +297,7 @@ describe("StatusPageService", () => {
 		it("withholds the same fields when showURL is OFF", async () => {
 			const { service } = createService(true, "http://localhost:5173", false);
 
-			const { monitors } = await service.getPublicStatusPagePayload(publishedPage(), undefined);
+			const { monitors } = await service.getPublicStatusPagePayload(publishedPage());
 
 			for (const field of SENSITIVE_FIELDS) {
 				expect(monitors[0]).not.toHaveProperty(field);
@@ -308,8 +308,8 @@ describe("StatusPageService", () => {
 			const withShowURL = createService(true, "http://localhost:5173", true);
 			const withoutShowURL = createService(true, "http://localhost:5173", false);
 
-			const shown = await withShowURL.service.getPublicStatusPagePayload(publishedPage(), undefined);
-			const hidden = await withoutShowURL.service.getPublicStatusPagePayload(publishedPage(), undefined);
+			const shown = await withShowURL.service.getPublicStatusPagePayload(publishedPage());
+			const hidden = await withoutShowURL.service.getPublicStatusPagePayload(publishedPage());
 
 			expect(shown.monitors[0]).toHaveProperty("url", "http://internal.example.com/health");
 			expect(shown.monitors[0]).toHaveProperty("port", 8080);
@@ -321,7 +321,7 @@ describe("StatusPageService", () => {
 		it("keeps the display fields the public themes consume", async () => {
 			const { service } = createService();
 
-			const { monitors } = await service.getPublicStatusPagePayload(publishedPage(), undefined);
+			const { monitors } = await service.getPublicStatusPagePayload(publishedPage());
 
 			expect(monitors[0]).toMatchObject({
 				id: "mon-1",
@@ -339,32 +339,15 @@ describe("StatusPageService", () => {
 			(monitorsRepo.findByIds as jest.Mock).mockResolvedValue([makeMonitor({ id: "mon-1" }), makeMonitor({ id: "mon-2" })]);
 			const page = makeStatusPage({ isPublished: true, monitors: ["mon-2", "mon-1"] });
 
-			const { monitors } = await service.getPublicStatusPagePayload(page, undefined);
+			const { monitors } = await service.getPublicStatusPagePayload(page);
 
 			expect(monitors.map((monitor) => monitor.id)).toEqual(["mon-2", "mon-1"]);
-		});
-
-		it("rejects an unpublished page for a mismatched or absent requester team (403)", async () => {
-			const { service } = createService();
-			const unpublished = makeStatusPage({ isPublished: false, teamId: "team-A" });
-
-			await expect(service.getPublicStatusPagePayload(unpublished, "team-B")).rejects.toMatchObject({ status: 403 });
-			await expect(service.getPublicStatusPagePayload(unpublished, undefined)).rejects.toMatchObject({ status: 403 });
-		});
-
-		it("serves an unpublished page to its own team", async () => {
-			const { service } = createService();
-			const unpublished = makeStatusPage({ isPublished: false, teamId: "team-A" });
-
-			const { monitors } = await service.getPublicStatusPagePayload(unpublished, "team-A");
-
-			expect(monitors).toHaveLength(1);
 		});
 
 		it("serves a published page to an anonymous requester", async () => {
 			const { service } = createService();
 
-			await expect(service.getPublicStatusPagePayload(publishedPage(), undefined)).resolves.toMatchObject({
+			await expect(service.getPublicStatusPagePayload(publishedPage())).resolves.toMatchObject({
 				statusPage: expect.objectContaining({ id: "sp-1" }),
 			});
 		});
@@ -373,8 +356,8 @@ describe("StatusPageService", () => {
 			it("omits range-mode fields and never queries buckets for the default (latest) range", async () => {
 				const { service, checksRepo, monitorsRepo } = createService();
 
-				const implicitLatest = await service.getPublicStatusPagePayload(publishedPage(), undefined);
-				const explicitLatest = await service.getPublicStatusPagePayload(publishedPage(), undefined, "latest");
+				const implicitLatest = await service.getPublicStatusPagePayload(publishedPage());
+				const explicitLatest = await service.getPublicStatusPagePayload(publishedPage(), "latest");
 
 				for (const payload of [implicitLatest, explicitLatest]) {
 					expect(payload).not.toHaveProperty("range");
@@ -397,7 +380,7 @@ describe("StatusPageService", () => {
 				]);
 				const page = makeStatusPage({ isPublished: true, timezone: "America/Toronto", monitors: ["mon-1", "mon-2"] });
 
-				const payload = await service.getPublicStatusPagePayload(page, undefined, "30d");
+				const payload = await service.getPublicStatusPagePayload(page, "30d");
 
 				expect(checksRepo.getDailyStatusBuckets).toHaveBeenCalledWith(["mon-1", "mon-2"], 30, "America/Toronto");
 				expect(monitorsRepo.findByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], { recentChecks: "latestHardware" });
@@ -414,20 +397,39 @@ describe("StatusPageService", () => {
 			it("falls back to Etc/UTC when the page has no timezone and defaults dailyChecks to empty", async () => {
 				const { service, checksRepo } = createService();
 
-				const payload = await service.getPublicStatusPagePayload(publishedPage(), undefined, "60d");
+				const payload = await service.getPublicStatusPagePayload(publishedPage(), "60d");
 
 				expect(checksRepo.getDailyStatusBuckets).toHaveBeenCalledWith(["mon-1"], 60, "Etc/UTC");
 				expect(payload.bucketTimezone).toBe("Etc/UTC");
 				expect(payload.monitors[0].dailyChecks).toEqual([]);
 			});
+		});
+	});
 
-			it("does not bypass the unpublished-page 403", async () => {
-				const { service, checksRepo } = createService();
-				const unpublished = makeStatusPage({ isPublished: false, teamId: "team-A" });
+	describe("getPublicStatusPageByUrl", () => {
+		it("rejects an unpublished page for a mismatched or absent requester team (403)", async () => {
+			const { service, repo } = createService();
+			(repo.findByUrl as jest.Mock).mockResolvedValue(makeStatusPage({ isPublished: false, teamId: "team-A" }));
 
-				await expect(service.getPublicStatusPagePayload(unpublished, undefined, "90d")).rejects.toMatchObject({ status: 403 });
-				expect(checksRepo.getDailyStatusBuckets).not.toHaveBeenCalled();
-			});
+			await expect(service.getPublicStatusPageByUrl("my-status-page", "team-B", "latest")).rejects.toMatchObject({ status: 403 });
+			await expect(service.getPublicStatusPageByUrl("my-status-page", undefined, "latest")).rejects.toMatchObject({ status: 403 });
+		});
+
+		it("serves an unpublished page to its own team", async () => {
+			const { service, repo } = createService();
+			(repo.findByUrl as jest.Mock).mockResolvedValue(makeStatusPage({ isPublished: false, teamId: "team-A" }));
+
+			const { monitors } = await service.getPublicStatusPageByUrl("my-status-page", "team-A", "latest");
+
+			expect(monitors).toHaveLength(1);
+		});
+
+		it("does not bypass the unpublished-page 403 for a range request", async () => {
+			const { service, repo, checksRepo } = createService();
+			(repo.findByUrl as jest.Mock).mockResolvedValue(makeStatusPage({ isPublished: false, teamId: "team-A" }));
+
+			await expect(service.getPublicStatusPageByUrl("my-status-page", undefined, "90d")).rejects.toMatchObject({ status: 403 });
+			expect(checksRepo.getDailyStatusBuckets).not.toHaveBeenCalled();
 		});
 	});
 

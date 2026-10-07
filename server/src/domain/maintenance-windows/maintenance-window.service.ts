@@ -5,6 +5,7 @@ import type { DurationUnit, MaintenanceWindow } from "@/domain/maintenance-windo
 import { AppError } from "@/utils/AppError.js";
 import { isWindowActive } from "@/utils/maintenanceWindow.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
+import { maintenanceWindowErrors } from "@/domain/maintenance-windows/maintenance-window.errors.js";
 
 const SERVICE_NAME = "maintenanceWindowService";
 
@@ -111,11 +112,9 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		const unauthorizedMonitors = monitors.filter((monitor) => monitor.teamId !== teamId);
 
 		if (unauthorizedMonitors.length > 0) {
-			throw new AppError({
-				message: "Unauthorized to create maintenance window for one or more monitors",
+			throw new AppError(maintenanceWindowErrors.monitorNotOnTeam, {
 				service: SERVICE_NAME,
 				method: "createMaintenanceWindow",
-				status: 403,
 			});
 		}
 
@@ -196,11 +195,9 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 			const monitorDocs = await this.monitorsRepository.findByIds(monitors, { recentChecks: "none" });
 			const unauthorizedMonitors = monitorDocs.filter((monitor) => monitor.teamId !== teamId);
 			if (unauthorizedMonitors.length > 0) {
-				throw new AppError({
-					message: "Unauthorized to edit maintenance window for one or more monitors",
+				throw new AppError(maintenanceWindowErrors.monitorNotOnTeam, {
 					service: SERVICE_NAME,
 					method: "editMaintenanceWindow",
-					status: 403,
 				});
 			}
 			update.monitorIds = monitors;

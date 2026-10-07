@@ -5,6 +5,7 @@ import { RecoveryTokenModel } from "@/domain/recovery-tokens/recovery-token.mode
 import crypto from "crypto";
 import { AppError } from "@/utils/AppError.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
+import { recoveryTokenErrors } from "@/domain/recovery-tokens/recovery-token.errors.js";
 const SERVICE_NAME = "MongoRecoveryTokensRepository";
 
 class MongoRecoveryTokensRepository implements IRecoveryTokensRepository {
@@ -32,7 +33,7 @@ class MongoRecoveryTokensRepository implements IRecoveryTokensRepository {
 	findByToken = async (token: string): Promise<RecoveryToken> => {
 		const recoveryToken = await RecoveryTokenModel.findOne({ token });
 		if (!recoveryToken) {
-			throw new AppError({ message: "Recovery token not found", service: SERVICE_NAME, status: 404 });
+			throw new AppError(recoveryTokenErrors.notFound, { service: SERVICE_NAME, method: "findByToken" });
 		}
 		return this.toEntity(recoveryToken);
 	};
