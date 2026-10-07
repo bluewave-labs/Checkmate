@@ -5,6 +5,7 @@ Welcome to the Checkmate documentation. This directory contains guides and refer
 ## Available Documentation
 
 ### Deployment & Configuration
+- **[Single sign-on (OIDC)](./sso-oidc.md)** - Delegate sign-in to Authentik, Keycloak, Okta, Entra or any OpenID Connect provider
 - **[Custom CA Trust Guide](./custom-ca-trust.md)** - Configure Checkmate to trust custom Certificate Authorities
 - **[Custom CA Quick Reference](./custom-ca-quick-reference.md)** - Quick setup guide for custom CA trust
 
