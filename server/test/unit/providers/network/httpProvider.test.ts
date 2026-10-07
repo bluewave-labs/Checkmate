@@ -1,5 +1,6 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { HttpProxyAgent, HttpsProxyAgent } from "hpagent";
+import { CookieJar } from "tough-cookie";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
 import { NETWORK_ERROR } from "../../../../src/types/network.ts";
 import type { Monitor } from "../../../../src/domain/monitors/monitor.type.ts";
@@ -167,6 +168,28 @@ describe("HttpProvider", () => {
 					headers: { Authorization: "Bearer my-token" },
 				})
 			);
+		});
+
+		it("passes a fresh cookie jar on every check", async () => {
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor());
+			await provider.handle(makeMonitor());
+
+			const jars = mockGot.mock.calls.slice(-2).map((call: any[]) => call[1].cookieJar);
+			expect(jars[0]).toBeInstanceOf(CookieJar);
+			expect(jars[1]).toBeInstanceOf(CookieJar);
+			expect(jars[0]).not.toBe(jars[1]);
+		});
+
+		it("ignores invalid cookies instead of failing the check", async () => {
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor());
+
+			expect((mockGot.mock.calls.at(-1) as any[])[1].ignoreInvalidCookies).toBe(true);
 		});
 
 		it("passes undefined headers when no secret", async () => {
