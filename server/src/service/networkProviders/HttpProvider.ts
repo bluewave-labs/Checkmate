@@ -227,10 +227,8 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 				};
 
 		options.method = monitor.method;
-		// Fresh jar per check: cookies set during a redirect chain are sent on the next hop
-		// (cookie challenges answer Set-Cookie + 302 to the same URL), and nothing persists
-		// between checks.
 		options.cookieJar = new CookieJar();
+		options.ignoreInvalidCookies = true;
 
 		try {
 			const response = await this.got<string>(url, options);

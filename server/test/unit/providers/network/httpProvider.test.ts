@@ -183,6 +183,15 @@ describe("HttpProvider", () => {
 			expect(jars[0]).not.toBe(jars[1]);
 		});
 
+		it("ignores invalid cookies instead of failing the check", async () => {
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor());
+
+			expect((mockGot.mock.calls.at(-1) as any[])[1].ignoreInvalidCookies).toBe(true);
+		});
+
 		it("passes undefined headers when no secret", async () => {
 			mockGot.mockResolvedValue(makeGotResponse());
 			const { provider } = createProvider();
