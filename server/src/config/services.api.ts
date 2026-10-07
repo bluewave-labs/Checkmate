@@ -8,12 +8,14 @@ import { IUserService, UserService } from "@/domain/users/user.service.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
 import { ProxiesService, IProxiesService } from "@/domain/proxies/proxy.service.js";
 import { EgressStateService, IEgressStateService } from "@/domain/egress/egress-state.service.js";
+import { ISsoService, SsoService } from "@/service/sso/ssoService.js";
 import { SharedServices } from "@/config/services.shared.js";
 
 // Third-party
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { games } from "gamedig";
+import * as openidClient from "openid-client";
 
 export interface ApiServices extends SharedServices {
 	worker: IJobScheduler; // control-plane handle only (DBQueueWorker in all-in-one, bare JobScheduler in API-only)
@@ -26,6 +28,7 @@ export interface ApiServices extends SharedServices {
 	diagnosticService: IDiagnosticService;
 	proxiesService: IProxiesService;
 	egressStateService: IEgressStateService;
+	ssoService: ISsoService;
 }
 
 export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): ApiServices => {
@@ -104,6 +107,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 	const diagnosticService = new DiagnosticService(db);
 	const proxiesService = new ProxiesService(proxiesRepository, monitorsRepository, settingsService);
 	const egressStateService = new EgressStateService(egressStateRepository, jobsRepository);
+	const ssoService = new SsoService({ oidc: openidClient, settingsService, jwt, logger });
 	return {
 		...shared,
 		worker: jobScheduler,
@@ -116,5 +120,6 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		diagnosticService,
 		proxiesService,
 		egressStateService,
+		ssoService,
 	};
 };

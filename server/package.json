@@ -61,6 +61,7 @@
 		"mongoose": "^8.3.3",
 		"multer": "2.4.0",
 		"nodemailer": "9.1.1",
+		"openid-client": "^6.8.8",
 		"ping": "0.4.4",
 		"re2": "^1.24.1",
 		"sharp": "0.35.4",
