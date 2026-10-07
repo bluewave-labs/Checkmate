@@ -25,9 +25,7 @@ const WHOIS_TIMEOUT_MS = 10_000;
 const DOMAIN_EXPIRY_CACHE_POSITIVE_TTL_MS = 60 * 60 * 1000; // 1 hour
 const DOMAIN_EXPIRY_CACHE_NEGATIVE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 const EXPIRY_DATE_KEY_PATTERN = /(expiry date|expiration|paid-?till|registration expiration)/i;
-// whoiser 1.x ships WHOIS servers that registries have since retired. The fix for these
-// is only in whoiser 2.0 (beta), so point it at the current server ourselves.
-// .tr: whois.nic.tr no longer resolves; IANA lists whois.trabis.gov.tr.
+// TODO: remove once whoiser is upgraded to 2.x, which already has the current .tr server.
 const WHOIS_SERVER_OVERRIDES: Record<string, string> = {
 	tr: "whois.trabis.gov.tr",
 };
