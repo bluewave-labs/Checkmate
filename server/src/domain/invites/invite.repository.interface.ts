@@ -6,6 +6,7 @@ export interface IInvitesRepository {
 	// fetch
 	findByToken(token: string): Promise<Invite>;
 	findByTokenAndDelete(token: string): Promise<Invite>;
+	findByEmailAndDelete(email: string): Promise<Invite | null>;
 	// update
 
 	// delete

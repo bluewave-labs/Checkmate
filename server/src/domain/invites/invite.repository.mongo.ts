@@ -36,6 +36,17 @@ class MongoInvitesRepository implements IInvitesRepository {
 		return this.toEntity(invite);
 	};
 
+	// For the SSO flow, where no invite is an ordinary outcome rather than a 404. Consumed atomically so
+	// two concurrent callbacks cannot both claim the same invite. Mongo's TTL reaper runs about once a
+	// minute, so the expiry is checked here rather than trusted to the index.
+	findByEmailAndDelete = async (email: string) => {
+		const invite = await InviteModel.findOneAndDelete({
+			email,
+			expiry: { $gt: new Date() },
+		});
+		return invite === null ? null : this.toEntity(invite);
+	};
+
 	findByTokenAndDelete = async (token: string) => {
 		const invite = await InviteModel.findOneAndDelete({
 			token,

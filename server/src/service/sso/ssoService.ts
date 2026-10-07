@@ -3,7 +3,7 @@ import type jwt from "jsonwebtoken";
 import { AppError } from "@/utils/AppError.js";
 import type { ILogger } from "@/utils/logger.js";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
-import type { OidcConfig, SsoErrorCode } from "@/types/sso.js";
+import type { OidcConfig, SsoClaims, SsoErrorCode } from "@/types/sso.js";
 
 const SERVICE_NAME = "SsoService";
 
@@ -23,6 +23,8 @@ export type OidcLib = Pick<
 	typeof openidClient,
 	| "discovery"
 	| "buildAuthorizationUrl"
+	| "authorizationCodeGrant"
+	| "fetchUserInfo"
 	| "randomPKCECodeVerifier"
 	| "calculatePKCECodeChallenge"
 	| "randomState"
@@ -50,9 +52,64 @@ type FlowTokenPayload = {
 	codeVerifier: string;
 };
 
+type RawProfileClaims = {
+	email?: string;
+	emailVerified?: boolean;
+	givenName?: string;
+	familyName?: string;
+	name?: string;
+};
+
+// UserModel requires a first and last name, and nameValidation caps each at 50 characters, so a
+// provider-supplied name has to be trimmed to fit rather than trusted as-is.
+const NAME_MAX_LENGTH = 50;
+
+const asString = (value: unknown): string | undefined => (typeof value === "string" && value.trim().length > 0 ? value.trim() : undefined);
+
+const readProfileClaims = (claims: Record<string, unknown>): RawProfileClaims => ({
+	email: asString(claims.email),
+	emailVerified: typeof claims.email_verified === "boolean" ? claims.email_verified : undefined,
+	givenName: asString(claims.given_name),
+	familyName: asString(claims.family_name),
+	name: asString(claims.name),
+});
+
+// NFKC first: lookalike forms (fullwidth characters, compatibility letters) would otherwise compare
+// as distinct addresses and, with auto-provisioning on, create a second account for the same person.
+const normalizeEmail = (email: string | undefined): string => (email ? email.normalize("NFKC").trim().toLowerCase() : "");
+
+const clampName = (value: string): string => value.slice(0, NAME_MAX_LENGTH);
+
+// Falls back through the claims a provider might supply, ending at the email local part, because
+// both name fields are required on the user document.
+const splitName = (claims: RawProfileClaims, email: string): { firstName: string; lastName: string } => {
+	if (claims.givenName || claims.familyName) {
+		return {
+			firstName: clampName(claims.givenName ?? claims.familyName ?? ""),
+			lastName: clampName(claims.familyName ?? claims.givenName ?? ""),
+		};
+	}
+	const parts = (claims.name ?? email.split("@")[0] ?? "").split(/\s+/).filter(Boolean);
+	const first = parts[0] ?? email;
+	const last = parts.length > 1 ? parts.slice(1).join(" ") : first;
+	return { firstName: clampName(first), lastName: clampName(last) };
+};
+
+const isFlowTokenPayload = (payload: unknown): payload is FlowTokenPayload => {
+	if (typeof payload !== "object" || payload === null) return false;
+	const candidate = payload as Record<string, unknown>;
+	return (
+		candidate.purpose === FLOW_TOKEN_PURPOSE &&
+		typeof candidate.state === "string" &&
+		typeof candidate.nonce === "string" &&
+		typeof candidate.codeVerifier === "string"
+	);
+};
+
 export interface ISsoService {
 	getPublicConfig(): SsoPublicConfig;
 	buildAuthorizationRequest(): Promise<SsoAuthorizationRequest>;
+	exchangeCallback(callbackUrl: URL, flowToken: string | undefined): Promise<SsoClaims>;
 }
 
 export class SsoService implements ISsoService {
@@ -117,12 +174,111 @@ export class SsoService implements ISsoService {
 		}
 	};
 
+	exchangeCallback = async (callbackUrl: URL, flowToken: string | undefined): Promise<SsoClaims> => {
+		const method = "exchangeCallback";
+		const oidc = this.requireConfig(method);
+		const flow = this.verifyFlowToken(flowToken, method);
+
+		let tokens: Awaited<ReturnType<OidcLib["authorizationCodeGrant"]>>;
+		let configuration: openidClient.Configuration;
+		try {
+			configuration = await this.getConfiguration(oidc);
+			// openid-client validates the id token here: signature against the provider's keys, plus
+			// iss, aud, exp and the nonce and state we bound to this flow.
+			tokens = await this.oidc.authorizationCodeGrant(configuration, callbackUrl, {
+				pkceCodeVerifier: flow.codeVerifier,
+				expectedNonce: flow.nonce,
+				expectedState: flow.state,
+				idTokenExpected: true,
+			});
+		} catch (error: unknown) {
+			throw this.rethrow(error, method, "exchange_failed", "Could not complete the single sign-on flow");
+		}
+
+		const idTokenClaims = tokens.claims();
+		if (!idTokenClaims) {
+			throw this.fail(method, "exchange_failed", "The identity provider did not return an ID token");
+		}
+
+		const claims = await this.resolveClaims(configuration, tokens, idTokenClaims, method);
+
+		// Checked before verification status, so an account with no email at all reports the accurate reason.
+		const email = normalizeEmail(claims.email);
+		if (!email) {
+			throw this.fail(method, "no_email", "The identity provider did not return an email address");
+		}
+
+		// An absent claim is treated as unverified: the point of the check is that the provider has
+		// asserted the address, and silence is not an assertion.
+		if (oidc.requireVerifiedEmail && claims.emailVerified !== true) {
+			throw this.fail(method, "email_unverified", "The identity provider has not verified this email address");
+		}
+
+		const { firstName, lastName } = splitName(claims, email);
+
+		return {
+			issuer: idTokenClaims.iss,
+			subject: idTokenClaims.sub,
+			email,
+			firstName,
+			lastName,
+		};
+	};
+
 	private requireConfig = (method: string): OidcConfig => {
 		const oidc = this.settingsService.getOidcConfig();
 		if (!oidc) {
 			throw this.fail(method, "not_configured", "Single sign-on is not configured");
 		}
 		return oidc;
+	};
+
+	// Azure and some Okta configurations leave email out of the id token and only expose it at the
+	// userinfo endpoint, so fall back there rather than failing an otherwise valid sign-in.
+	private resolveClaims = async (
+		configuration: openidClient.Configuration,
+		tokens: Awaited<ReturnType<OidcLib["authorizationCodeGrant"]>>,
+		idTokenClaims: openidClient.IDToken,
+		method: string
+	): Promise<RawProfileClaims> => {
+		const fromIdToken = readProfileClaims(idTokenClaims);
+		if (fromIdToken.email) {
+			return fromIdToken;
+		}
+
+		try {
+			const userInfo = await this.oidc.fetchUserInfo(configuration, tokens.access_token, idTokenClaims.sub);
+			const fromUserInfo = readProfileClaims(userInfo);
+			return { ...fromIdToken, ...fromUserInfo };
+		} catch (error: unknown) {
+			this.logger.warn({
+				message: error instanceof Error ? error.message : String(error),
+				service: SERVICE_NAME,
+				method,
+			});
+			return fromIdToken;
+		}
+	};
+
+	private verifyFlowToken = (flowToken: string | undefined, method: string): FlowTokenPayload => {
+		if (!flowToken) {
+			throw this.fail(method, "invalid_state", "This sign-in attempt has expired or was started in another browser");
+		}
+		const { jwtSecret } = this.settingsService.getSettings();
+		try {
+			const payload = this.jwt.verify(flowToken, jwtSecret);
+			if (!isFlowTokenPayload(payload)) {
+				throw new Error("Flow token payload is not an sso-flow token");
+			}
+			return payload;
+		} catch (error: unknown) {
+			this.logger.warn({
+				message: error instanceof Error ? error.message : String(error),
+				service: SERVICE_NAME,
+				method,
+			});
+			throw this.fail(method, "invalid_state", "This sign-in attempt has expired or was started in another browser");
+		}
 	};
 
 	private getConfiguration = (oidc: OidcConfig): Promise<openidClient.Configuration> => {

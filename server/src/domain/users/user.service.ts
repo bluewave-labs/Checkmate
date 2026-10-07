@@ -13,6 +13,7 @@ import { EnvConfig, ISettingsService } from "@/domain/app-settings/app-settings.
 import { ILogger } from "@/utils/logger.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
 import jwt from "jsonwebtoken";
+import type { SsoClaims, SsoErrorCode } from "@/types/sso.js";
 import crypto from "crypto";
 type CryptoType = typeof crypto;
 type JwtType = typeof jwt;
@@ -23,6 +24,7 @@ export interface IUserService {
 	registerUser(user: Partial<User>, inviteToken: string, file: Express.Multer.File | null): Promise<{ user: UserResponse; token: string }>;
 	createUser(userData: Partial<User>, teamId: string, actorRoles: UserRole[], file: Express.Multer.File | null): Promise<UserResponse>;
 	loginUser(email: string, password: string): Promise<{ user: UserResponse; token: string }>;
+	loginWithSso(claims: SsoClaims): Promise<{ user: UserResponse; token: string }>;
 	editUser(
 		updates: Partial<User & { newPassword?: string; deleteProfileImage?: boolean }>,
 		file: Express.Multer.File | null,
@@ -237,6 +239,86 @@ export class UserService implements IUserService {
 		const token = this.issueToken({ ...userResponse, avatarImage: "" }, appSettings);
 		return { user: userResponse, token };
 	};
+
+	// Resolution order: a previously linked provider subject, then a matching account by verified
+	// email, then a pending invite. Anything else is refused.
+	loginWithSso = async (claims: SsoClaims) => {
+		const method = "loginWithSso";
+
+		// SSO must never bootstrap an instance. registerUser grants superadmin to whoever registers
+		// first; mirroring that here would hand the instance to the first provider user to arrive.
+		// Local registration stays open while there is no superadmin, so this is not a lockout.
+		const superAdminExists = await this.usersRepository.findSuperAdmin();
+		if (!superAdminExists) {
+			throw this.ssoFail(method, "not_initialized", "Complete the Checkmate first-run setup before signing in with single sign-on");
+		}
+
+		const linked = await this.usersRepository.findBySsoSubject(claims.issuer, claims.subject);
+		if (linked) {
+			return this.issueSsoSession(linked, "linked");
+		}
+
+		const existing = await this.usersRepository.findByEmailOrNull(claims.email);
+		if (existing) {
+			// Remember the subject so the account survives an email change at the provider, and a
+			// recycled address cannot inherit it. Role and team are managed in Checkmate and left alone.
+			await this.usersRepository.updateById(existing.id, { ssoIssuer: claims.issuer, ssoSubject: claims.subject }, null);
+			return this.issueSsoSession(existing, "matched");
+		}
+
+		const invite = await this.invitesRepository.findByEmailAndDelete(claims.email);
+		if (invite) {
+			return this.provisionSsoUser(claims, invite.role.length > 0 ? invite.role : ["user"], invite.teamId, "invite");
+		}
+
+		// One opaque reason for every "no account" case, so this is not an account oracle.
+		throw this.ssoFail(method, "not_invited", "No Checkmate account matches this identity. Ask an administrator for an invite.");
+	};
+
+	private provisionSsoUser = async (claims: SsoClaims, role: UserRole[], teamId: string, via: string) => {
+		const newUser = await this.usersRepository.create(
+			{
+				firstName: claims.firstName,
+				lastName: claims.lastName,
+				email: claims.email,
+				role,
+				teamId,
+				ssoIssuer: claims.issuer,
+				ssoSubject: claims.subject,
+			},
+			null
+		);
+
+		this.logger.info({
+			message: "Provisioned a user from single sign-on",
+			service: SERVICE_NAME,
+			method: "loginWithSso",
+			details: { userId: newUser.id, role, teamId, via },
+		});
+
+		return this.issueSessionFor(newUser);
+	};
+
+	// Always maps through toUserResponse first: findByEmailOrNull and findBySsoSubject return the
+	// password hash, which must not end up inside a signed token.
+	private issueSsoSession = (user: User, via: string) => {
+		this.logger.info({
+			message: "User signed in with single sign-on",
+			service: SERVICE_NAME,
+			method: "loginWithSso",
+			details: { userId: user.id, via },
+		});
+		return this.issueSessionFor(toUserResponse(user));
+	};
+
+	private issueSessionFor = (userResponse: UserResponse) => {
+		const appSettings = this.settingsService.getSettings();
+		const token = this.issueToken({ ...userResponse, avatarImage: "" }, appSettings);
+		return { user: userResponse, token };
+	};
+
+	private ssoFail = (method: string, code: SsoErrorCode, message: string): AppError =>
+		new AppError({ message, status: 401, service: SERVICE_NAME, method, details: { code } });
 
 	editUser = async (
 		updates: Partial<User & { newPassword?: string; deleteProfileImage?: boolean }>,

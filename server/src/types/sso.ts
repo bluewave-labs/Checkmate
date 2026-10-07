@@ -16,6 +16,16 @@ export const SsoErrorCodes = [
 
 export type SsoErrorCode = (typeof SsoErrorCodes)[number];
 
+// The identity the provider asserted, already normalised. Deliberately not the raw claim set:
+// nothing downstream should be able to reach for a token or an arbitrary claim.
+export type SsoClaims = {
+	issuer: string;
+	subject: string;
+	email: string;
+	firstName: string;
+	lastName: string;
+};
+
 // Resolved OIDC configuration, or null when OIDC_ENABLED is false. Built once at boot from the
 // environment, so it cannot change midway through a redirect the way cached DB settings could.
 export type OidcConfig = {

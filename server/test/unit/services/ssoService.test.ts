@@ -21,6 +21,22 @@ const makeOidcConfig = (overrides?: Partial<OidcConfig>): OidcConfig => ({
 	...overrides,
 });
 
+const makeIdTokenClaims = (overrides?: Record<string, unknown>) => ({
+	iss: "https://auth.example.com/application/o/checkmate/",
+	sub: "provider-subject-1",
+	aud: "checkmate",
+	email: "Ada@Example.com",
+	email_verified: true,
+	given_name: "Ada",
+	family_name: "Lovelace",
+	...overrides,
+});
+
+const makeTokens = (claims: Record<string, unknown> | undefined = makeIdTokenClaims()) => ({
+	access_token: "access-token-123",
+	claims: () => claims,
+});
+
 const setup = (oidcConfig: OidcConfig | null = makeOidcConfig(), oidcOverrides?: Partial<OidcLib>) => {
 	const configuration = { timeout: 30 } as unknown as Awaited<ReturnType<OidcLib["discovery"]>>;
 	const oidc = {
@@ -31,13 +47,18 @@ const setup = (oidcConfig: OidcConfig | null = makeOidcConfig(), oidcOverrides?:
 		randomState: jest.fn().mockReturnValue("state-123"),
 		randomNonce: jest.fn().mockReturnValue("nonce-123"),
 		allowInsecureRequests: jest.fn(),
+		authorizationCodeGrant: jest.fn().mockResolvedValue(makeTokens()),
+		fetchUserInfo: jest.fn().mockResolvedValue({ sub: "provider-subject-1", email: "ada@example.com" }),
 		...oidcOverrides,
 	} as unknown as OidcLib;
 	const settingsService = {
 		getOidcConfig: jest.fn().mockReturnValue(oidcConfig),
 		getSettings: jest.fn().mockReturnValue({ jwtSecret: "test-secret" }),
 	};
-	const jwt = { sign: jest.fn().mockReturnValue("flow-token-123") };
+	const jwt = {
+		sign: jest.fn().mockReturnValue("flow-token-123"),
+		verify: jest.fn().mockReturnValue({ purpose: "sso-flow", state: "state-123", nonce: "nonce-123", codeVerifier: "verifier-123" }),
+	};
 	const logger = createMockLogger();
 	const service = new SsoService({
 		oidc,
@@ -189,5 +210,154 @@ describe("SsoService.buildAuthorizationRequest", () => {
 		const insecure = setup(makeOidcConfig({ allowInsecureIssuer: true }));
 		await insecure.service.buildAuthorizationRequest();
 		expect(insecure.oidc.allowInsecureRequests).toHaveBeenCalledWith(insecure.configuration);
+	});
+});
+
+// ── exchangeCallback ─────────────────────────────────────────────────────────
+
+const CALLBACK_URL = new URL("https://checkmate.example.com/api/v1/auth/sso/callback?code=abc&state=state-123");
+
+describe("SsoService.exchangeCallback", () => {
+	it("throws not_configured when sso is off", async () => {
+		const { service } = setup(null);
+		await expectSsoError(service.exchangeCallback(CALLBACK_URL, "flow-token-123"), "not_configured");
+	});
+
+	it("throws invalid_state when the flow cookie is missing", async () => {
+		const { service, oidc } = setup();
+		await expectSsoError(service.exchangeCallback(CALLBACK_URL, undefined), "invalid_state");
+		expect(oidc.authorizationCodeGrant).not.toHaveBeenCalled();
+	});
+
+	it("throws invalid_state when the flow token is expired or tampered with", async () => {
+		const { service, jwt } = setup();
+		(jwt.verify as jest.Mock).mockImplementation(() => {
+			throw new Error("jwt expired");
+		});
+		await expectSsoError(service.exchangeCallback(CALLBACK_URL, "flow-token-123"), "invalid_state");
+	});
+
+	// A token signed with the same secret but minted for a different purpose must not be accepted here.
+	it("throws invalid_state when the token is not an sso-flow token", async () => {
+		const { service, jwt } = setup();
+		(jwt.verify as jest.Mock).mockReturnValue({ id: "user-1", teamId: "team-1", role: ["superadmin"] });
+		await expectSsoError(service.exchangeCallback(CALLBACK_URL, "session-token"), "invalid_state");
+	});
+
+	it("binds the verifier, nonce and state from the flow token into the code exchange", async () => {
+		const { service, oidc, configuration } = setup();
+
+		await service.exchangeCallback(CALLBACK_URL, "flow-token-123");
+
+		expect(oidc.authorizationCodeGrant).toHaveBeenCalledWith(configuration, CALLBACK_URL, {
+			pkceCodeVerifier: "verifier-123",
+			expectedNonce: "nonce-123",
+			expectedState: "state-123",
+			idTokenExpected: true,
+		});
+	});
+
+	it("returns the subject, issuer, normalised email and name", async () => {
+		const { service } = setup();
+
+		await expect(service.exchangeCallback(CALLBACK_URL, "flow-token-123")).resolves.toEqual({
+			issuer: "https://auth.example.com/application/o/checkmate/",
+			subject: "provider-subject-1",
+			email: "ada@example.com",
+			firstName: "Ada",
+			lastName: "Lovelace",
+		});
+	});
+
+	it("rejects an email the provider says is unverified", async () => {
+		const authorizationCodeGrant = jest.fn().mockResolvedValue(makeTokens(makeIdTokenClaims({ email_verified: false })));
+		const { service } = setup(makeOidcConfig(), { authorizationCodeGrant: authorizationCodeGrant as never });
+		await expectSsoError(service.exchangeCallback(CALLBACK_URL, "flow-token-123"), "email_unverified");
+	});
+
+	// Silence is not an assertion: an absent claim is treated as unverified.
+	it("rejects a missing email_verified claim unless the operator opts out", async () => {
+		const authorizationCodeGrant = jest.fn().mockResolvedValue(makeTokens(makeIdTokenClaims({ email_verified: undefined })));
+
+		const strict = setup(makeOidcConfig(), { authorizationCodeGrant: authorizationCodeGrant as never });
+		await expectSsoError(strict.service.exchangeCallback(CALLBACK_URL, "flow-token-123"), "email_unverified");
+
+		const relaxed = setup(makeOidcConfig({ requireVerifiedEmail: false }), { authorizationCodeGrant: authorizationCodeGrant as never });
+		await expect(relaxed.service.exchangeCallback(CALLBACK_URL, "flow-token-123")).resolves.toMatchObject({ email: "ada@example.com" });
+	});
+
+	it("falls back to userinfo when the id token carries no email", async () => {
+		const authorizationCodeGrant = jest.fn().mockResolvedValue(makeTokens(makeIdTokenClaims({ email: undefined })));
+		const fetchUserInfo = jest.fn().mockResolvedValue({ sub: "provider-subject-1", email: "ada@example.com", email_verified: true });
+		const { service, oidc } = setup(makeOidcConfig(), {
+			authorizationCodeGrant: authorizationCodeGrant as never,
+			fetchUserInfo: fetchUserInfo as never,
+		});
+
+		await expect(service.exchangeCallback(CALLBACK_URL, "flow-token-123")).resolves.toMatchObject({ email: "ada@example.com" });
+		expect(oidc.fetchUserInfo).toHaveBeenCalledWith(expect.anything(), "access-token-123", "provider-subject-1");
+	});
+
+	it("throws no_email when neither the id token nor userinfo supplies one", async () => {
+		const authorizationCodeGrant = jest.fn().mockResolvedValue(makeTokens(makeIdTokenClaims({ email: undefined })));
+		const fetchUserInfo = jest.fn().mockResolvedValue({ sub: "provider-subject-1" });
+		const { service } = setup(makeOidcConfig(), {
+			authorizationCodeGrant: authorizationCodeGrant as never,
+			fetchUserInfo: fetchUserInfo as never,
+		});
+
+		await expectSsoError(service.exchangeCallback(CALLBACK_URL, "flow-token-123"), "no_email");
+	});
+
+	it("throws exchange_failed when the provider rejects the code", async () => {
+		const authorizationCodeGrant = jest.fn().mockRejectedValue(new Error("invalid_grant"));
+		const { service } = setup(makeOidcConfig(), { authorizationCodeGrant: authorizationCodeGrant as never });
+
+		const error = await expectSsoError(service.exchangeCallback(CALLBACK_URL, "flow-token-123"), "exchange_failed");
+		expect(error.message).not.toContain("invalid_grant");
+	});
+
+	it("throws exchange_failed when no id token comes back", async () => {
+		// Built inline: makeTokens() would fall back to its default claim set.
+		const authorizationCodeGrant = jest.fn().mockResolvedValue({ access_token: "access-token-123", claims: () => undefined });
+		const { service } = setup(makeOidcConfig(), { authorizationCodeGrant: authorizationCodeGrant as never });
+		await expectSsoError(service.exchangeCallback(CALLBACK_URL, "flow-token-123"), "exchange_failed");
+	});
+
+	// Lookalike forms would otherwise create a second account for the same person.
+	it("normalises the email to NFKC lowercase", async () => {
+		const authorizationCodeGrant = jest.fn().mockResolvedValue(makeTokens(makeIdTokenClaims({ email: "  ADA@Example.COM  " })));
+		const { service } = setup(makeOidcConfig(), { authorizationCodeGrant: authorizationCodeGrant as never });
+
+		await expect(service.exchangeCallback(CALLBACK_URL, "flow-token-123")).resolves.toMatchObject({ email: "ada@example.com" });
+	});
+
+	it("derives a name from the display name, then from the email local part", async () => {
+		const fromName = jest
+			.fn()
+			.mockResolvedValue(makeTokens(makeIdTokenClaims({ given_name: undefined, family_name: undefined, name: "Ada Lovelace" })));
+		const named = setup(makeOidcConfig(), { authorizationCodeGrant: fromName as never });
+		await expect(named.service.exchangeCallback(CALLBACK_URL, "flow-token-123")).resolves.toMatchObject({
+			firstName: "Ada",
+			lastName: "Lovelace",
+		});
+
+		const bare = jest.fn().mockResolvedValue(makeTokens(makeIdTokenClaims({ given_name: undefined, family_name: undefined, name: undefined })));
+		const anonymous = setup(makeOidcConfig(), { authorizationCodeGrant: bare as never });
+		await expect(anonymous.service.exchangeCallback(CALLBACK_URL, "flow-token-123")).resolves.toMatchObject({
+			firstName: "ada",
+			lastName: "ada",
+		});
+	});
+
+	// nameValidation caps names at 50 characters and the user document requires both fields.
+	it("clamps a provider-supplied name to the length the user document allows", async () => {
+		const long = "A".repeat(80);
+		const authorizationCodeGrant = jest.fn().mockResolvedValue(makeTokens(makeIdTokenClaims({ given_name: long, family_name: long })));
+		const { service } = setup(makeOidcConfig(), { authorizationCodeGrant: authorizationCodeGrant as never });
+
+		const claims = await service.exchangeCallback(CALLBACK_URL, "flow-token-123");
+		expect(claims.firstName).toHaveLength(50);
+		expect(claims.lastName).toHaveLength(50);
 	});
 });

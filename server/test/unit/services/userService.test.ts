@@ -42,9 +42,12 @@ const createService = (overrides?: Record<string, unknown>) => {
 		updateById: jest.fn().mockResolvedValue(makeUserResponse()),
 		deleteById: jest.fn().mockResolvedValue(makeUser()),
 		findSuperAdmin: jest.fn().mockResolvedValue(true),
+		findByEmailOrNull: jest.fn().mockResolvedValue(null),
+		findBySsoSubject: jest.fn().mockResolvedValue(null),
 	};
 	const invitesRepository = {
 		findByTokenAndDelete: jest.fn().mockResolvedValue({ role: ["user"], teamId: "team-1", email: "invited@example.com" }),
+		findByEmailAndDelete: jest.fn().mockResolvedValue(null),
 	};
 	const recoveryTokensRepository = {
 		create: jest.fn().mockResolvedValue({ token: "recovery-token-123", email: "test@example.com" }),
@@ -683,5 +686,114 @@ describe("UserService", () => {
 			expect(call[1].password).not.toBe("new-password");
 			expect(result).toEqual(makeUserResponse());
 		});
+	});
+});
+
+// ── loginWithSso ────────────────────────────────────────────────────────────
+
+const makeSsoClaims = (overrides?: Partial<Record<string, string>>) => ({
+	issuer: "https://auth.example.com/",
+	subject: "provider-subject-1",
+	email: "ada@example.com",
+	firstName: "Ada",
+	lastName: "Lovelace",
+	...overrides,
+});
+
+const expectSsoCode = async (promise: Promise<unknown>, code: string) => {
+	const error = (await promise.catch((caught: unknown) => caught)) as { details?: unknown };
+	expect(error.details).toEqual({ code });
+	return error;
+};
+
+describe("UserService.loginWithSso", () => {
+	// registerUser grants superadmin to whoever registers first. Mirroring that here would hand the
+	// instance to the first provider user to arrive.
+	it("refuses to bootstrap an instance that has no superadmin yet", async () => {
+		const { service, usersRepository } = createService();
+		(usersRepository.findSuperAdmin as jest.Mock).mockResolvedValue(false);
+
+		await expectSsoCode(service.loginWithSso(makeSsoClaims()), "not_initialized");
+		expect(usersRepository.create).not.toHaveBeenCalled();
+	});
+
+	it("signs in an account already linked to the provider subject", async () => {
+		const { service, usersRepository } = createService();
+		(usersRepository.findBySsoSubject as jest.Mock).mockResolvedValue(makeUser({ id: "user-9" }));
+
+		const result = await service.loginWithSso(makeSsoClaims());
+
+		expect(usersRepository.findBySsoSubject).toHaveBeenCalledWith("https://auth.example.com/", "provider-subject-1");
+		expect(result.token).toBe("jwt-token-123");
+		expect(usersRepository.findByEmailOrNull).not.toHaveBeenCalled();
+	});
+
+	it("links an existing account on first sign-in and remembers the subject", async () => {
+		const { service, usersRepository } = createService();
+		(usersRepository.findByEmailOrNull as jest.Mock).mockResolvedValue(makeUser({ id: "user-7" }));
+
+		const result = await service.loginWithSso(makeSsoClaims());
+
+		expect(usersRepository.updateById).toHaveBeenCalledWith(
+			"user-7",
+			{ ssoIssuer: "https://auth.example.com/", ssoSubject: "provider-subject-1" },
+			null
+		);
+		expect(result.token).toBe("jwt-token-123");
+	});
+
+	// Role and team are managed in Checkmate; a provider must not be able to change them.
+	it("does not alter the role or team of an account it links", async () => {
+		const { service, usersRepository } = createService();
+		(usersRepository.findByEmailOrNull as jest.Mock).mockResolvedValue(makeUser({ id: "user-7", role: ["admin"], teamId: "team-1" }));
+
+		await service.loginWithSso(makeSsoClaims());
+
+		const patch = (usersRepository.updateById as jest.Mock).mock.calls[0]?.[1] as Record<string, unknown>;
+		expect(patch).not.toHaveProperty("role");
+		expect(patch).not.toHaveProperty("teamId");
+	});
+
+	// findByEmailOrNull and findBySsoSubject both return the password hash.
+	it("never puts the password hash into the signed token", async () => {
+		const { service, usersRepository, jwt } = createService();
+		(usersRepository.findBySsoSubject as jest.Mock).mockResolvedValue(makeUser({ password: "$2a$10$secrethash" }));
+
+		const result = await service.loginWithSso(makeSsoClaims());
+
+		expect(result.user).not.toHaveProperty("password");
+		const [payload] = (jwt.sign as jest.Mock).mock.calls[0] as [Record<string, unknown>];
+		expect(payload).not.toHaveProperty("password");
+		expect(JSON.stringify(payload)).not.toContain("secrethash");
+	});
+
+	it("consumes a pending invite and creates a password-less user with its role and team", async () => {
+		const { service, usersRepository, invitesRepository } = createService();
+		(invitesRepository.findByEmailAndDelete as jest.Mock).mockResolvedValue({ role: ["admin"], teamId: "team-5", email: "ada@example.com" });
+
+		const result = await service.loginWithSso(makeSsoClaims());
+
+		expect(invitesRepository.findByEmailAndDelete).toHaveBeenCalledWith("ada@example.com");
+		expect(usersRepository.create).toHaveBeenCalledWith(
+			{
+				firstName: "Ada",
+				lastName: "Lovelace",
+				email: "ada@example.com",
+				role: ["admin"],
+				teamId: "team-5",
+				ssoIssuer: "https://auth.example.com/",
+				ssoSubject: "provider-subject-1",
+			},
+			null
+		);
+		expect(result.token).toBe("jwt-token-123");
+	});
+
+	// One opaque reason, so this cannot be used to probe which addresses have accounts.
+	it("refuses an identity with no account, no link and no invite", async () => {
+		const { service, usersRepository } = createService();
+
+		await expectSsoCode(service.loginWithSso(makeSsoClaims()), "not_invited");
+		expect(usersRepository.create).not.toHaveBeenCalled();
 	});
 });
