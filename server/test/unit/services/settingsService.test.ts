@@ -74,6 +74,7 @@ describe("SettingsService", () => {
 				dbConnectionString: "mongodb://localhost:27017/test_db",
 				dbType: "mongodb",
 				statusPageThemesEnabled: false,
+				oidc: null,
 				clientConfig: {},
 			});
 		});
@@ -267,6 +268,47 @@ describe("SettingsService", () => {
 			const service = new SettingsService(makeEnv());
 
 			await expect(service.removeEgressNotification("notif-1")).rejects.toThrow("Settings repository not initialized");
+		});
+	});
+});
+
+describe("SettingsService.getOidcConfig", () => {
+	it("is null when OIDC_ENABLED is false, so nothing changes for an instance that sets nothing", () => {
+		const service = new SettingsService(makeEnv());
+		expect(service.getOidcConfig()).toBeNull();
+		expect(service.getSettings().oidc).toBeNull();
+	});
+
+	it("resolves the environment into a config when enabled", () => {
+		const service = new SettingsService(
+			makeEnv({
+				OIDC_ENABLED: true,
+				OIDC_ISSUER: "https://auth.example.com/",
+				OIDC_CLIENT_ID: "checkmate",
+				OIDC_CLIENT_SECRET: "secret",
+				OIDC_REDIRECT_URI: "https://checkmate.example.com/api/v1/auth/sso/callback",
+				OIDC_SCOPES: "openid profile email",
+				OIDC_BUTTON_LABEL: "Sign in with Authentik",
+				OIDC_ALLOW_LOCAL_LOGIN: false,
+				OIDC_REQUIRE_VERIFIED_EMAIL: true,
+				OIDC_AUTO_PROVISION: false,
+				OIDC_DEFAULT_ROLE: "user",
+				OIDC_ALLOW_INSECURE_ISSUER: false,
+			})
+		);
+
+		expect(service.getOidcConfig()).toEqual({
+			issuer: "https://auth.example.com/",
+			clientId: "checkmate",
+			clientSecret: "secret",
+			redirectUri: "https://checkmate.example.com/api/v1/auth/sso/callback",
+			scopes: "openid profile email",
+			buttonLabel: "Sign in with Authentik",
+			allowLocalLogin: false,
+			requireVerifiedEmail: true,
+			autoProvision: false,
+			defaultRole: "user",
+			allowInsecureIssuer: false,
 		});
 	});
 });

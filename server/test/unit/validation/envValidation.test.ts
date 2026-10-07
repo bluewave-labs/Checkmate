@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import { randomBytes } from "node:crypto";
-import { encryptionKeyList } from "../../../src/config/envValidation.ts";
+import { encryptionKeyList, oidcEnvSchema } from "../../../src/config/envValidation.ts";
 
 const key = () => randomBytes(32).toString("base64");
 const decoded = (k: string) => Buffer.from(k, "base64");
@@ -65,5 +65,82 @@ describe("encryptionKeyList", () => {
 		for (const message of issueMessages(bad)) {
 			expect(message).not.toContain(bad);
 		}
+	});
+});
+
+describe("oidcEnvSchema", () => {
+	const enabled = {
+		OIDC_ENABLED: "true",
+		OIDC_ISSUER: "https://auth.example.com/application/o/checkmate/",
+		OIDC_CLIENT_ID: "checkmate",
+		OIDC_CLIENT_SECRET: "secret",
+		OIDC_REDIRECT_URI: "https://checkmate.example.com/api/v1/auth/sso/callback",
+	};
+
+	const messages = (input: Record<string, string>) => {
+		const result = oidcEnvSchema.safeParse(input);
+		expect(result.success).toBe(false);
+		return result.success ? [] : result.error.issues.map((issue) => issue.message);
+	};
+
+	const paths = (input: Record<string, string>) => {
+		const result = oidcEnvSchema.safeParse(input);
+		return result.success ? [] : result.error.issues.map((issue) => issue.path.join("."));
+	};
+
+	it("is off with safe defaults when nothing is set", () => {
+		const parsed = oidcEnvSchema.parse({});
+		expect(parsed.OIDC_ENABLED).toBe(false);
+		expect(parsed.OIDC_ALLOW_LOCAL_LOGIN).toBe(true);
+		expect(parsed.OIDC_REQUIRE_VERIFIED_EMAIL).toBe(true);
+		expect(parsed.OIDC_AUTO_PROVISION).toBe(false);
+		expect(parsed.OIDC_DEFAULT_ROLE).toBe("user");
+		expect(parsed.OIDC_SCOPES).toBe("openid profile email");
+	});
+
+	it("accepts a complete enabled configuration", () => {
+		expect(oidcEnvSchema.safeParse(enabled).success).toBe(true);
+	});
+
+	it("requires the client id, secret, issuer and redirect uri once enabled", () => {
+		expect(paths({ OIDC_ENABLED: "true" }).sort()).toEqual(["OIDC_CLIENT_ID", "OIDC_CLIENT_SECRET", "OIDC_ISSUER", "OIDC_REDIRECT_URI"]);
+	});
+
+	// validateEnv logs error.format() per named key and skips the root _errors bucket,
+	// so a cross-field issue without a path would fail the boot without saying why.
+	it("attaches every issue to a named field", () => {
+		expect(paths({ OIDC_ENABLED: "true" }).every((path) => path.length > 0)).toBe(true);
+	});
+
+	it("refuses to disable local login while sso is off, which would lock everyone out", () => {
+		expect(messages({ OIDC_ALLOW_LOCAL_LOGIN: "false" })).toEqual([
+			"OIDC_ALLOW_LOCAL_LOGIN cannot be false while OIDC_ENABLED is false; nobody could sign in",
+		]);
+		expect(oidcEnvSchema.safeParse({ ...enabled, OIDC_ALLOW_LOCAL_LOGIN: "false" }).success).toBe(true);
+	});
+
+	it("rejects an http issuer unless explicitly allowed", () => {
+		const insecure = { ...enabled, OIDC_ISSUER: "http://auth.lan/application/o/checkmate/" };
+		expect(paths(insecure)).toEqual(["OIDC_ISSUER"]);
+		expect(oidcEnvSchema.safeParse({ ...insecure, OIDC_ALLOW_INSECURE_ISSUER: "true" }).success).toBe(true);
+	});
+
+	it("rejects a malformed issuer, embedded credentials, and a query string", () => {
+		expect(paths({ ...enabled, OIDC_ISSUER: "not-a-url" })).toEqual(["OIDC_ISSUER"]);
+		expect(messages({ ...enabled, OIDC_ISSUER: "https://user:pass@auth.example.com/" })).toContain("OIDC_ISSUER must not embed credentials");
+		expect(messages({ ...enabled, OIDC_ISSUER: "https://auth.example.com/?realm=x" })).toContain(
+			"OIDC_ISSUER must not carry a query string or fragment"
+		);
+	});
+
+	it("allows an http redirect uri, which is normal for a local install", () => {
+		expect(oidcEnvSchema.safeParse({ ...enabled, OIDC_REDIRECT_URI: "http://localhost:52345/api/v1/auth/sso/callback" }).success).toBe(true);
+	});
+
+	// superadmin would make auto-provisioning mint an instance owner; a demo user cannot be deleted through the API.
+	it("only allows user and admin as the auto-provision role", () => {
+		expect(oidcEnvSchema.safeParse({ OIDC_DEFAULT_ROLE: "admin" }).success).toBe(true);
+		expect(oidcEnvSchema.safeParse({ OIDC_DEFAULT_ROLE: "superadmin" }).success).toBe(false);
+		expect(oidcEnvSchema.safeParse({ OIDC_DEFAULT_ROLE: "demo" }).success).toBe(false);
 	});
 });

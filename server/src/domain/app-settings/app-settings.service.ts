@@ -2,6 +2,7 @@ import { ISettingsRepository } from "@/domain/app-settings/app-settings-reposito
 import { Settings, SettingsUpdate, type ClientRuntimeConfig, type DbType, type QueueMode } from "@/domain/app-settings/app-settings.type.js";
 import { AppError } from "@/utils/AppError.js";
 import { ValidatedEnv } from "@/config/envValidation.js";
+import type { OidcConfig } from "@/types/sso.js";
 import type { StringValue } from "ms";
 const SERVICE_NAME = "SettingsService";
 
@@ -16,12 +17,14 @@ export type EnvConfig = {
 	queueMode: QueueMode;
 	queuePrimaryProcesses: boolean;
 	statusPageThemesEnabled: boolean;
+	oidc: OidcConfig | null;
 	clientConfig: ClientRuntimeConfig;
 };
 
 export interface ISettingsService {
 	getSettings(): EnvConfig;
 	areStatusPageThemesEnabled(): boolean;
+	getOidcConfig(): OidcConfig | null;
 	getDBSettings(): Promise<Settings>;
 	getCachedDBSettings(): Promise<Settings>;
 	updateDbSettings(newSettings: SettingsUpdate): Promise<Settings>;
@@ -29,6 +32,24 @@ export interface ISettingsService {
 }
 
 const DB_SETTINGS_CACHE_TTL_MS = 60_000;
+
+// envValidation guarantees the required fields are present whenever OIDC_ENABLED is true.
+const toOidcConfig = (env: ValidatedEnv): OidcConfig | null => {
+	if (!env.OIDC_ENABLED) return null;
+	return {
+		issuer: env.OIDC_ISSUER ?? "",
+		clientId: env.OIDC_CLIENT_ID ?? "",
+		clientSecret: env.OIDC_CLIENT_SECRET ?? "",
+		redirectUri: env.OIDC_REDIRECT_URI ?? "",
+		scopes: env.OIDC_SCOPES,
+		buttonLabel: env.OIDC_BUTTON_LABEL,
+		allowLocalLogin: env.OIDC_ALLOW_LOCAL_LOGIN,
+		requireVerifiedEmail: env.OIDC_REQUIRE_VERIFIED_EMAIL,
+		autoProvision: env.OIDC_AUTO_PROVISION,
+		defaultRole: env.OIDC_DEFAULT_ROLE,
+		allowInsecureIssuer: env.OIDC_ALLOW_INSECURE_ISSUER,
+	};
+};
 
 type CachedSettings = {
 	value: Promise<Settings>;
@@ -55,6 +76,7 @@ export class SettingsService implements ISettingsService {
 			queueMode: env.QUEUE_MODE,
 			queuePrimaryProcesses: env.QUEUE_PRIMARY_PROCESSES,
 			statusPageThemesEnabled: env.STATUS_PAGE_THEMES_ENABLED,
+			oidc: toOidcConfig(env),
 			clientConfig: {
 				...(env.CLIENT_CONFIG_API_BASE_URL && { apiBaseUrl: env.CLIENT_CONFIG_API_BASE_URL }),
 				...(env.CLIENT_CONFIG_CLIENT_HOST && { clientHost: env.CLIENT_CONFIG_CLIENT_HOST }),
@@ -73,6 +95,10 @@ export class SettingsService implements ISettingsService {
 
 	areStatusPageThemesEnabled() {
 		return this.settings.statusPageThemesEnabled;
+	}
+
+	getOidcConfig() {
+		return this.settings.oidc;
 	}
 
 	private getRepository(): ISettingsRepository {

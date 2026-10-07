@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { DbTypes, LogLevels, QueueModes } from "@/domain/app-settings/app-settings.type.js";
+import { UserRoles } from "@/domain/users/user.type.js";
 import { booleanCoercion } from "@/api/validation/shared.js";
 import { ILogger } from "@/utils/logger.js";
 
@@ -35,6 +36,81 @@ export const encryptionKeyList = z
 		});
 		return keys;
 	});
+
+// OIDC single sign-on. Off unless OIDC_ENABLED is true, so an instance that sets nothing behaves exactly as before.
+// Kept in the environment rather than the database settings: the client secret never reaches Mongo or an API
+// response, and "edit .env and restart" stays the recovery path when an identity provider breaks.
+const oidcEnvShape = {
+	OIDC_ENABLED: booleanCoercion.default(false),
+	OIDC_ISSUER: z.string().optional(),
+	OIDC_CLIENT_ID: z.string().optional(),
+	OIDC_CLIENT_SECRET: z.string().optional(),
+	// Explicit rather than built from the request: `trust proxy` is never set, so req.protocol and req.get("host")
+	// are wrong behind a TLS-terminating proxy, and this value has to be registered verbatim at the provider anyway.
+	OIDC_REDIRECT_URI: z.string().optional(),
+	OIDC_SCOPES: z.string().default("openid profile email"),
+	OIDC_BUTTON_LABEL: z.string().default("Single sign-on"),
+	OIDC_ALLOW_LOCAL_LOGIN: booleanCoercion.default(true),
+	OIDC_REQUIRE_VERIFIED_EMAIL: booleanCoercion.default(true),
+	OIDC_AUTO_PROVISION: booleanCoercion.default(false),
+	// superadmin is excluded so auto-provisioning can never mint an instance owner, and demo because a demo
+	// user cannot be deleted through the API.
+	OIDC_DEFAULT_ROLE: z.enum(UserRoles.filter((role) => role === "user" || role === "admin")).default("user"),
+	OIDC_ALLOW_INSECURE_ISSUER: booleanCoercion.default(false),
+};
+
+type OidcEnvInput = z.infer<z.ZodObject<typeof oidcEnvShape>>;
+
+// Issues carry an explicit path: validateEnv logs error.format() per named key and skips the root
+// `_errors` bucket, so a path-less issue would fail the boot with no reason printed.
+const refineOidcEnv = (env: OidcEnvInput, ctx: z.RefinementCtx) => {
+	const addIssue = (path: keyof typeof oidcEnvShape, message: string) => ctx.addIssue({ code: "custom", path: [path], message });
+
+	if (!env.OIDC_ENABLED) {
+		if (!env.OIDC_ALLOW_LOCAL_LOGIN) {
+			addIssue("OIDC_ALLOW_LOCAL_LOGIN", "OIDC_ALLOW_LOCAL_LOGIN cannot be false while OIDC_ENABLED is false; nobody could sign in");
+		}
+		return;
+	}
+
+	if (!env.OIDC_CLIENT_ID) addIssue("OIDC_CLIENT_ID", "OIDC_CLIENT_ID is required when OIDC_ENABLED is true");
+	if (!env.OIDC_CLIENT_SECRET) addIssue("OIDC_CLIENT_SECRET", "OIDC_CLIENT_SECRET is required when OIDC_ENABLED is true");
+
+	const urls = [
+		{ key: "OIDC_ISSUER", value: env.OIDC_ISSUER, requireHttps: !env.OIDC_ALLOW_INSECURE_ISSUER },
+		{ key: "OIDC_REDIRECT_URI", value: env.OIDC_REDIRECT_URI, requireHttps: false },
+	] as const;
+
+	for (const { key, value, requireHttps } of urls) {
+		if (!value) {
+			addIssue(key, `${key} is required when OIDC_ENABLED is true`);
+			continue;
+		}
+		let url: URL;
+		try {
+			url = new URL(value);
+		} catch {
+			addIssue(key, `${key} must be a valid URL`);
+			continue;
+		}
+		if (url.username || url.password) addIssue(key, `${key} must not embed credentials`);
+		if (requireHttps && url.protocol !== "https:") {
+			addIssue(key, `${key} must use https; set OIDC_ALLOW_INSECURE_ISSUER=true to allow http on a trusted network`);
+		}
+	}
+
+	if (env.OIDC_ISSUER) {
+		try {
+			const issuer = new URL(env.OIDC_ISSUER);
+			if (issuer.search || issuer.hash) addIssue("OIDC_ISSUER", "OIDC_ISSUER must not carry a query string or fragment");
+		} catch {
+			// Already reported above.
+		}
+	}
+};
+
+// Exported standalone so the cross-field rules are unit-testable; envSchema itself is not exported.
+export const oidcEnvSchema = z.object(oidcEnvShape).superRefine(refineOidcEnv);
 
 const envSchema = z.object({
 	// Server Configuration
@@ -72,12 +148,18 @@ const envSchema = z.object({
 
 	// Encryption
 	ENCRYPTION_KEY: encryptionKeyList,
+
+	// OIDC single sign-on
+	...oidcEnvShape,
 });
+
+// Cross-field rules live outside the object literal so z.infer below still sees a ZodObject.
+const envSchemaWithRefinements = envSchema.superRefine(refineOidcEnv);
 
 export type ValidatedEnv = z.infer<typeof envSchema>;
 
 export const validateEnv = (logger: ILogger): ValidatedEnv => {
-	const result = envSchema.safeParse(process.env);
+	const result = envSchemaWithRefinements.safeParse(process.env);
 
 	if (!result.success) {
 		logger.error({
