@@ -33,6 +33,8 @@ class MongoUsersRepository implements IUsersRepository {
 			role: doc.role ?? [],
 			teamId: toStringId(doc.teamId),
 			checkTTL: doc.checkTTL ?? undefined,
+			ssoIssuer: doc.ssoIssuer ?? undefined,
+			ssoSubject: doc.ssoSubject ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
@@ -68,6 +70,17 @@ class MongoUsersRepository implements IUsersRepository {
 			throw new AppError({ message: "User not found", service: SERVICE_NAME, status: 404 });
 		}
 		return this.toEntity(user);
+	};
+
+	// Unlike findByEmail, absence is an expected outcome here: the SSO flow asks whether an account exists yet.
+	findByEmailOrNull = async (email: string) => {
+		const user = await UserModel.findOne({ email: email }).select("-profileImage");
+		return user ? this.toEntity(user) : null;
+	};
+
+	findBySsoSubject = async (issuer: string, subject: string) => {
+		const user = await UserModel.findOne({ ssoIssuer: issuer, ssoSubject: subject }).select("-profileImage");
+		return user ? this.toEntity(user) : null;
 	};
 
 	findById = async (id: string) => {

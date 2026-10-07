@@ -11,7 +11,8 @@ export const userSchema = z.object({
 	firstName: z.string(),
 	lastName: z.string(),
 	email: z.string(),
-	password: z.string(),
+	// Absent for users that authenticate through an external identity provider
+	password: z.string().optional(),
 	avatarImage: z.string().optional(),
 	profileImage: userProfileImageSchema.optional(),
 	isActive: z.boolean(),
@@ -19,6 +20,9 @@ export const userSchema = z.object({
 	role: z.array(z.enum(UserRoles)),
 	teamId: z.string(),
 	checkTTL: z.number().optional(),
+	// Identity provider linkage; set on the first successful SSO login
+	ssoIssuer: z.string().optional(),
+	ssoSubject: z.string().optional(),
 	createdAt: z.string(),
 	updatedAt: z.string(),
 });
@@ -36,4 +40,6 @@ export const userExample = {
 	updatedAt: "2026-04-15T14:30:00.000Z",
 };
 
-export const userResponseSchema = userSchema.omit({ password: true, profileImage: true }).meta({ id: "User", example: userExample });
+export const userResponseSchema = userSchema
+	.omit({ password: true, profileImage: true, ssoIssuer: true, ssoSubject: true })
+	.meta({ id: "User", example: userExample });

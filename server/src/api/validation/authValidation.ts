@@ -44,7 +44,8 @@ export const newPasswordValidation = z.object({
 });
 
 export const inviteBodyValidation = z.object({
-	email: z.email("Must be a valid email address"),
+	// Lowercased to match how user emails are stored, so an invite can be looked up by email
+	email: lowercaseEmailValidation,
 	role: z.array(z.enum(UserRoles)).min(1, "At least one role is required"),
 	teamId: z.string().min(1, "Team ID is required"),
 });

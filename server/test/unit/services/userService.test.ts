@@ -341,6 +341,13 @@ describe("UserService", () => {
 
 			await expect(service.loginUser("test@example.com", "wrong-password")).rejects.toThrow("Incorrect password");
 		});
+
+		it("rejects an account that has no password", async () => {
+			const { service, usersRepository } = createService();
+			(usersRepository.findByEmail as jest.Mock).mockResolvedValue(makeUser({ password: undefined }));
+
+			await expect(service.loginUser("test@example.com", "any-password")).rejects.toThrow("This account signs in with single sign-on");
+		});
 	});
 
 	// ── editUser ────────────────────────────────────────────────────────────
@@ -383,6 +390,16 @@ describe("UserService", () => {
 			const call = (usersRepository.updateById as jest.Mock).mock.calls[0] as any[];
 			expect(call[1].newPassword).toBeUndefined();
 			expect(call[1].password).not.toBe("old-password");
+		});
+
+		it("rejects a password change on an account that has no password", async () => {
+			const { service, usersRepository } = createService();
+			(usersRepository.findByEmail as jest.Mock).mockResolvedValue(makeUser({ password: undefined }));
+
+			await expect(service.editUser({ password: "old", newPassword: "new" }, null, "user-1", "test@example.com")).rejects.toThrow(
+				"This account signs in with single sign-on"
+			);
+			expect(usersRepository.updateById).not.toHaveBeenCalled();
 		});
 
 		it("throws when current password is incorrect", async () => {
@@ -429,6 +446,15 @@ describe("UserService", () => {
 				})
 			);
 			expect(result).toBe("msg-id-123");
+		});
+
+		it("rejects an account that has no password without minting a token or sending mail", async () => {
+			const { service, usersRepository, recoveryTokensRepository, emailService } = createService();
+			(usersRepository.findByEmail as jest.Mock).mockResolvedValue(makeUser({ password: undefined }));
+
+			await expect(service.requestRecovery("test@example.com")).rejects.toThrow("This account signs in with single sign-on");
+			expect(recoveryTokensRepository.create).not.toHaveBeenCalled();
+			expect(emailService.sendEmail).not.toHaveBeenCalled();
 		});
 
 		it("throws when email HTML fails to build", async () => {
@@ -492,6 +518,14 @@ describe("UserService", () => {
 			(usersRepository.findByEmail as jest.Mock).mockResolvedValue(makeUser({ password: hashed }));
 
 			await expect(service.resetPassword("same-password", "recovery-token-123")).rejects.toThrow("New password cannot be same as old password");
+		});
+
+		it("rejects an account that has no password", async () => {
+			const { service, usersRepository } = createService();
+			(usersRepository.findByEmail as jest.Mock).mockResolvedValue(makeUser({ password: undefined }));
+
+			await expect(service.resetPassword("new-password", "recovery-token-123")).rejects.toThrow("This account signs in with single sign-on");
+			expect(usersRepository.updateById).not.toHaveBeenCalled();
 		});
 	});
 

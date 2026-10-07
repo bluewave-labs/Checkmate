@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { registerInviteTokenValidation } from "../../../src/api/validation/authValidation.ts";
+import { inviteBodyValidation, registerInviteTokenValidation } from "../../../src/api/validation/authValidation.ts";
 
 describe("authValidation", () => {
 	describe("registerInviteTokenValidation", () => {
@@ -17,6 +17,15 @@ describe("authValidation", () => {
 
 		it("rejects an array token", () => {
 			expect(() => registerInviteTokenValidation.parse(["a", "b"])).toThrow();
+		});
+	});
+
+	describe("inviteBodyValidation", () => {
+		// User emails are stored lowercased, so an invite has to be too or it can never be matched by email.
+		it("lowercases the email", () => {
+			const result = inviteBodyValidation.safeParse({ email: "Ada@Example.com", role: ["user"], teamId: "team-1" });
+			expect(result.success).toBe(true);
+			expect(result.data?.email).toBe("ada@example.com");
 		});
 	});
 });
