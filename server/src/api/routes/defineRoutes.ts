@@ -1,6 +1,7 @@
 import type { ZodType, ZodObject } from "zod";
 import type { UserRole } from "@/domain/users/user.type.js";
 import type { RouteConfig } from "@asteasolutions/zod-to-openapi";
+import { ErrorDefinition } from "@/utils/AppError.js";
 
 export type Method = "get" | "post" | "put" | "patch" | "delete";
 export type Auth = "jwt" | "statusPage" | "none";
@@ -19,7 +20,7 @@ export type RouteDef<C> = {
 	query?: ZodObject;
 	body?: ZodType;
 	response?: ZodType; // data schema; absent = okJsonNoData
-	errors?: Partial<Record<ServiceErrorStatus, string>>; // status to description, for errors thrown below the controller
+	errors?: readonly ErrorDefinition[];
 	spec?: (derived: RouteConfig) => RouteConfig;
 };
 

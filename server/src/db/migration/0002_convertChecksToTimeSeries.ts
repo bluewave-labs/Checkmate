@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
 import type { Document } from "mongodb";
+import { AppError, internalError } from "@/utils/AppError.js";
 
 const CHECKS_COLLECTION = "checks";
 const BACKUP_COLLECTION = "checks_backup";
 const FAILED_DOCS_COLLECTION = "checks_migration_failed";
 const BATCH_SIZE = 1000;
 const NAMESPACE_EXISTS_CODE = 48;
-
+const SERVICE_NAME = "db";
 interface MigrationStats {
 	totalSource: number;
 	totalMigrated: number;
@@ -16,7 +17,7 @@ interface MigrationStats {
 const getDb = () => {
 	const db = mongoose.connection.db;
 	if (!db) {
-		throw new Error("Database connection is not initialized");
+		throw new AppError(internalError, { message: "Database connection is not initialized", service: SERVICE_NAME, method: "getDb" });
 	}
 	return db;
 };
@@ -25,7 +26,11 @@ const restoreFromBackup = async () => {
 	const db = getDb();
 	const backupExists = await db.listCollections({ name: BACKUP_COLLECTION }).toArray();
 	if (backupExists.length === 0) {
-		throw new Error("Cannot restore: backup collection does not exist");
+		throw new AppError(internalError, {
+			message: "Cannot restore: backup collection does not exist",
+			service: SERVICE_NAME,
+			method: "restoreFromBackup",
+		});
 	}
 
 	const checksExists = await db.listCollections({ name: CHECKS_COLLECTION }).toArray();
@@ -51,7 +56,11 @@ const backupAndDropExistingCollection = async () => {
 
 	const backupExists = await db.listCollections({ name: BACKUP_COLLECTION }).toArray();
 	if (backupExists.length > 0) {
-		throw new Error(`Backup collection "${BACKUP_COLLECTION}" already exists. ` + `Please remove it manually before running migration.`);
+		throw new AppError(internalError, {
+			message: `Backup collection "${BACKUP_COLLECTION}" already exists. ` + `Please remove it manually before running migration.`,
+			service: SERVICE_NAME,
+			method: "backupAndDropExistingCollection",
+		});
 	}
 
 	await db

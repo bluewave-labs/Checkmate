@@ -2,7 +2,7 @@ import v8 from "v8";
 import os from "os";
 import { IDb } from "@/db/db.interface.js";
 import { Mongoose } from "mongoose";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import type { CollectionDiagnostics, Diagnostics, MongoDiagnostics } from "@/domain/diagnostics/diagnostic.type.js";
 
 const SERVICE_NAME = "diagnosticService";
@@ -57,7 +57,7 @@ export class DiagnosticService implements IDiagnosticService {
 			const mongo = await this.db.getConnection();
 			const db = mongo.connection.db;
 			if (!db) {
-				throw new AppError({ message: "Database connection is not available", service: SERVICE_NAME, method: "getMongoDBStats" });
+				throw new AppError(internalError, { message: "Database connection is not available", service: SERVICE_NAME, method: "getMongoOpsPerSecond" });
 			}
 			const sample = async (): Promise<MongoStats> => {
 				const res = await db.command({ serverStatus: 1 });
@@ -98,7 +98,7 @@ export class DiagnosticService implements IDiagnosticService {
 		const mongo = await this.db.getConnection();
 		const db = mongo.connection.db;
 		if (!db) {
-			throw new AppError({ message: "Database connection is not available", service: SERVICE_NAME, method: "getMongoDBStats" });
+			throw new AppError(internalError, { message: "Database connection is not available", service: SERVICE_NAME, method: "getMongoDBStats" });
 		}
 
 		const opsPerSecond = await this.getMongoOpsPerSecond();

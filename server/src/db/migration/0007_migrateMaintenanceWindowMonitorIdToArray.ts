@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import type { ILogger } from "@/utils/logger.js";
 import MaintenanceWindowModel from "../../domain/maintenance-windows/maintenance-window.model.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 
 type GroupResult = {
 	_id: {
@@ -28,7 +29,11 @@ export async function migrateMaintenanceWindowMonitorIdToArray(logger: ILogger):
 
 		const db = mongoose.connection.db;
 		if (!db) {
-			throw new Error("Database connection is not initialized");
+			throw new AppError(internalError, {
+				message: "Database connection is not initialized",
+				service: SERVICE_NAME,
+				method: "migrateMaintenanceWindowMonitorIdToArray",
+			});
 		}
 
 		// Group old-style docs by their scheduling key.

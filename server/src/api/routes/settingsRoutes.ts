@@ -2,6 +2,8 @@ import { ISettingsController } from "@/api/controllers/settingsController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
 import { appSettingsResponseSchema, testEmailResponseSchema, updateAppSettingsBodyValidation } from "@/api/validation/settingsValidation.js";
 import { sendTestEmailBodyValidation } from "@/api/validation/notificationValidation.js";
+import { appSettingsErrors } from "@/domain/app-settings/app-settings.errors.js";
+import { emailErrors } from "@/service/email.errors.js";
 
 export const settingsRoutes: RouteTable<ISettingsController> = {
 	prefix: "/settings",
@@ -20,7 +22,7 @@ export const settingsRoutes: RouteTable<ISettingsController> = {
 			path: "/",
 			handler: "updateAppSettings",
 			summary: "Update application settings (admin/superadmin)",
-			errors: { 422: "Referenced proxy does not exist" },
+			errors: [appSettingsErrors.proxyNotFound],
 			roles: ["admin", "superadmin"],
 			body: updateAppSettingsBodyValidation,
 			response: appSettingsResponseSchema,
@@ -30,6 +32,7 @@ export const settingsRoutes: RouteTable<ISettingsController> = {
 			path: "/test-email",
 			handler: "sendTestEmail",
 			summary: "Send a test email using current SMTP settings (admin/superadmin)",
+			errors: [emailErrors.notConfigured, emailErrors.sendFailed],
 			roles: ["admin", "superadmin"],
 			body: sendTestEmailBodyValidation,
 			response: testEmailResponseSchema,

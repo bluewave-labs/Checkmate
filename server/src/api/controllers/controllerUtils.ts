@@ -1,15 +1,17 @@
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { Monitor } from "@/domain/monitors/monitor.type.js";
 import { UserRole } from "@/domain/users/user.type.js";
 import sslChecker, { SSLDetails } from "ssl-checker";
 import * as whoiser from "whoiser";
 import { parse as parseDomain } from "tldts";
 import { Request, Response } from "express";
+
 type SSLCheckerType = typeof sslChecker;
 type WhoisModule = typeof whoiser;
-
-export type ApiEnvelope<T = unknown> = { success: boolean; msg: string; data?: T };
 export type Handler = (req: Request, res: Response<ApiEnvelope>) => Promise<void>;
+export type ApiEnvelope<T = unknown> = { success: boolean; msg: string; data?: T };
+
+const SERVICE_NAME = "controllerUtils";
 
 export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: Monitor): Promise<SSLDetails> => {
 	const monitorUrl = new URL(monitor.url);
@@ -136,34 +138,34 @@ export const fetchMonitorDomain = async (
 
 export const requireTeamId = (teamId?: string): string => {
 	if (!teamId) {
-		throw new AppError({ message: "Team ID is required", status: 400 });
+		throw new AppError(internalError, { message: "Team ID is required", service: SERVICE_NAME, method: "requireTeamId" });
 	}
 	return teamId;
 };
 
 export const requireUserId = (userId?: string): string => {
 	if (!userId) {
-		throw new AppError({ message: "User ID is required", status: 400 });
+		throw new AppError(internalError, { message: "User ID is required", service: SERVICE_NAME, method: "requireUserId" });
 	}
 	return userId;
 };
 export const requireUserEmail = (userEmail?: string): string => {
 	if (!userEmail) {
-		throw new AppError({ message: "User email is required", status: 400 });
+		throw new AppError(internalError, { message: "User email is required", service: SERVICE_NAME, method: "requireUserEmail" });
 	}
 	return userEmail;
 };
 
 export const requireFirstName = (firstName?: string): string => {
 	if (!firstName) {
-		throw new AppError({ message: "First name is required", status: 400 });
+		throw new AppError(internalError, { message: "First name is required", service: SERVICE_NAME, method: "requireFirstName" });
 	}
 	return firstName;
 };
 
 export const requireUserRoles = (userRoles?: UserRole[]): UserRole[] => {
 	if (!userRoles || userRoles.length === 0) {
-		throw new AppError({ message: "User roles are required", status: 400 });
+		throw new AppError(internalError, { message: "User roles are required", service: SERVICE_NAME, method: "requireUserRoles" });
 	}
 	return userRoles;
 };

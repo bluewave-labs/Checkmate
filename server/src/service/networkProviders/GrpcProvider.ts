@@ -1,7 +1,7 @@
 import { IStatusProvider } from "@/service/networkProviders/IStatusProvider.js";
 import { GrpcStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { timeRequest } from "@/service/networkProviders/utils.js";
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
@@ -65,10 +65,10 @@ export class GrpcProvider implements IStatusProvider<GrpcStatusPayload> {
 			const grpcServiceName = monitor.grpcServiceName || "";
 
 			if (!url) {
-				throw new AppError({ message: "Monitor host is required", service: SERVICE_NAME, method: "handle" });
+				throw new AppError(internalError, { message: "Monitor host is required", service: SERVICE_NAME, method: "handle" });
 			}
 			if (!port) {
-				throw new AppError({ message: "Monitor port is required", service: SERVICE_NAME, method: "handle" });
+				throw new AppError(internalError, { message: "Monitor port is required", service: SERVICE_NAME, method: "handle" });
 			}
 
 			const host = url.replace(/^https?:\/\//, "").split(/[/?#:]/)[0];
@@ -127,7 +127,7 @@ export class GrpcProvider implements IStatusProvider<GrpcStatusPayload> {
 								serviceName: grpcServiceName,
 								servingStatus: "UNKNOWN",
 							};
-							const grpcError = new AppError({
+							const grpcError = new AppError(internalError, {
 								message: grpcErr.details || grpcErr.message || "gRPC error",
 								service: SERVICE_NAME,
 								method: "handle",
@@ -183,7 +183,7 @@ export class GrpcProvider implements IStatusProvider<GrpcStatusPayload> {
 			};
 		} catch (err: unknown) {
 			const originalMessage = err instanceof Error ? err.message : String(err);
-			throw new AppError({
+			throw new AppError(internalError, {
 				message: originalMessage || "Error performing gRPC health check",
 				service: SERVICE_NAME,
 				method: "handle",

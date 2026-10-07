@@ -230,22 +230,6 @@ describe("GeoChecksService", () => {
 			expect(geoChecksRepository.findByMonitorId).toHaveBeenCalledWith("mon-1", "asc", "week", 3, 20, ["EU"]);
 		});
 
-		it("throws when monitorId is missing", async () => {
-			const { service } = createService();
-
-			await expect(
-				service.getGeoChecksByMonitor({ monitorId: "", teamId: "team-1", sortOrder: "desc", dateRange: "day", continent: "NA" as any })
-			).rejects.toThrow("No monitor ID in request");
-		});
-
-		it("throws when teamId is missing", async () => {
-			const { service } = createService();
-
-			await expect(
-				service.getGeoChecksByMonitor({ monitorId: "mon-1", teamId: "", sortOrder: "desc", dateRange: "day", continent: "NA" as any })
-			).rejects.toThrow("No team ID in request");
-		});
-
 		it("throws 404 when monitor is not found", async () => {
 			const { service, monitorsRepository } = createService();
 			(monitorsRepository.findById as jest.Mock).mockResolvedValue(null);

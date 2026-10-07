@@ -9,6 +9,7 @@ import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.r
 import type { IStatusPagesRepository } from "../../../src/domain/status-pages/status-page-repository.interface.ts";
 import type { IEncryptionService } from "../../../src/service/encryption/encryptionService.ts";
 import { AppError } from "../../../src/utils/AppError.ts";
+import { monitorErrors } from "../../../src/domain/monitors/monitor.errors.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 
 const createMonitorsRepositoryMock = () =>
@@ -1948,7 +1949,7 @@ describe("MonitorService", () => {
 			(monitorsRepository.findByTeamId as jest.Mock).mockResolvedValue([]);
 			const { service } = createService({ monitorsRepository });
 
-			await expect(service.exportMonitorsToJSON({ teamId: TEAM_ID })).rejects.toThrow("No monitors found to export.");
+			await expect(service.exportMonitorsToJSON({ teamId: TEAM_ID })).rejects.toMatchObject({ definition: monitorErrors.nothingToExport });
 		});
 	});
 
@@ -2093,7 +2094,7 @@ describe("MonitorService — Docker TLS credentials", () => {
 			await expectAppError(
 				() => service.editMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID, body: { ...tlsBody, dockerTlsKey: "" } }),
 				422,
-				/required for a TLS Docker host/
+				monitorErrors.dockerTlsKeyRequired.description
 			);
 			expect(monitorsRepository.updateById).not.toHaveBeenCalled();
 		});
@@ -2172,7 +2173,7 @@ describe("MonitorService — Docker TLS credentials", () => {
 			await expectAppError(
 				() => service.editMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID, body: { type: "docker", url: captureUrl } }),
 				422,
-				/Capture API secret is required/
+				monitorErrors.captureSecretRequired.description
 			);
 			expect(monitorsRepository.updateById).not.toHaveBeenCalled();
 		});
@@ -2198,7 +2199,7 @@ describe("MonitorService — Docker TLS credentials", () => {
 			await expectAppError(
 				() => service.editMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID, body: { type: "docker", secret: " " } }),
 				422,
-				/Capture API secret is required/
+				monitorErrors.captureSecretRequired.description
 			);
 			expect(monitorsRepository.updateById).not.toHaveBeenCalled();
 		});

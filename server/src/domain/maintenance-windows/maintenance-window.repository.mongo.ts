@@ -4,7 +4,13 @@ import { IMaintenanceWindowsRepository } from "./maintenance-window.repository.i
 import mongoose, { SortOrder } from "mongoose";
 import { AppError } from "@/utils/AppError.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
+import { maintenanceWindowErrors } from "@/domain/maintenance-windows/maintenance-window.errors.js";
+
+const SERVICE_NAME = "MaintenanceWindowsRepository";
+
 class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	private mapDocuments = (documents: MaintenanceWindowDocument[]): MaintenanceWindow[] => {
 		if (!documents?.length) {
 			return [];
@@ -46,7 +52,7 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 			teamId: teamId,
 		});
 		if (!maintenanceWindow) {
-			throw new AppError({ message: "Maintenance Window not found", status: 404 });
+			throw new AppError(maintenanceWindowErrors.notFound, { service: SERVICE_NAME, method: "findById" });
 		}
 		return this.toEntity(maintenanceWindow);
 	};
@@ -109,7 +115,7 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 			{ new: true, runValidators: true }
 		);
 		if (!updated) {
-			throw new AppError({ message: "Maintenance window not found or could not be updated", status: 404 });
+			throw new AppError(maintenanceWindowErrors.notFound, { service: SERVICE_NAME, method: "updateById" });
 		}
 
 		return this.toEntity(updated);
@@ -121,7 +127,7 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 			teamId: new mongoose.Types.ObjectId(teamId),
 		});
 		if (!deleted) {
-			throw new AppError({ message: "Maintenance window not found or could not be deleted", status: 404 });
+			throw new AppError(maintenanceWindowErrors.notFound, { service: SERVICE_NAME, method: "deleteById" });
 		}
 
 		return this.toEntity(deleted);

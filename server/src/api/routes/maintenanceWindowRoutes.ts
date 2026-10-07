@@ -12,6 +12,7 @@ import {
 	maintenanceWindowPageResponseSchema,
 } from "@/api/validation/maintenanceWindowValidation.js";
 import { maintenanceWindowSchema } from "@/domain/maintenance-windows/maintenance-window.schema.js";
+import { maintenanceWindowErrors } from "@/domain/maintenance-windows/maintenance-window.errors.js";
 
 export const maintenanceWindowRoutes: RouteTable<IMaintenanceWindowController> = {
 	prefix: "/maintenance-window",
@@ -23,7 +24,7 @@ export const maintenanceWindowRoutes: RouteTable<IMaintenanceWindowController> =
 			path: "/",
 			handler: "createMaintenanceWindows",
 			summary: "Create one or more maintenance windows (admin/superadmin)",
-			errors: { 403: "Caller lacks the role, or a monitor is not on the team" },
+			errors: [maintenanceWindowErrors.monitorNotOnTeam],
 			roles: ["admin", "superadmin"],
 			body: createMaintenanceWindowBodyValidation,
 		},
@@ -48,7 +49,7 @@ export const maintenanceWindowRoutes: RouteTable<IMaintenanceWindowController> =
 			path: "/:id",
 			handler: "getMaintenanceWindowById",
 			summary: "Get a maintenance window by id",
-			errors: { 404: "Maintenance window not found" },
+			errors: [maintenanceWindowErrors.notFound],
 			params: getMaintenanceWindowByIdParamValidation,
 			response: maintenanceWindowSchema,
 		},
@@ -57,7 +58,7 @@ export const maintenanceWindowRoutes: RouteTable<IMaintenanceWindowController> =
 			path: "/:id",
 			handler: "editMaintenanceWindow",
 			summary: "Edit a maintenance window (admin/superadmin)",
-			errors: { 403: "Caller lacks the role, or a monitor is not on the team", 404: "Maintenance window not found" },
+			errors: [maintenanceWindowErrors.monitorNotOnTeam, maintenanceWindowErrors.notFound],
 			roles: ["admin", "superadmin"],
 			params: editMaintenanceWindowByIdParamValidation,
 			body: editMaintenanceByIdWindowBodyValidation,
@@ -68,7 +69,7 @@ export const maintenanceWindowRoutes: RouteTable<IMaintenanceWindowController> =
 			path: "/:id",
 			handler: "deleteMaintenanceWindow",
 			summary: "Delete a maintenance window (admin/superadmin)",
-			errors: { 404: "Maintenance window not found" },
+			errors: [maintenanceWindowErrors.notFound],
 			roles: ["admin", "superadmin"],
 			params: deleteMaintenanceWindowByIdParamValidation,
 		},

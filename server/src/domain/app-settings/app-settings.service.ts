@@ -1,6 +1,6 @@
 import { ISettingsRepository } from "@/domain/app-settings/app-settings-repository.interface.js";
 import { Settings, SettingsUpdate, type ClientRuntimeConfig, type DbType, type QueueMode } from "@/domain/app-settings/app-settings.type.js";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { ValidatedEnv } from "@/config/envValidation.js";
 import type { StringValue } from "ms";
 const SERVICE_NAME = "SettingsService";
@@ -77,10 +77,10 @@ export class SettingsService implements ISettingsService {
 
 	private getRepository(): ISettingsRepository {
 		if (!this.settingsRepository) {
-			throw new AppError({
+			throw new AppError(internalError, {
 				message: "Settings repository not initialized. Call setRepository() after DB connect.",
-				status: 500,
 				service: SERVICE_NAME,
+				method: "getRepository",
 			});
 		}
 		return this.settingsRepository;
@@ -109,7 +109,7 @@ export class SettingsService implements ISettingsService {
 		}
 
 		if (!settings) {
-			throw new AppError({ message: "Settings not found", status: 500 });
+			throw new AppError(internalError, { message: "Settings not found", service: SERVICE_NAME, method: "getDBSettings" });
 		}
 
 		return settings;

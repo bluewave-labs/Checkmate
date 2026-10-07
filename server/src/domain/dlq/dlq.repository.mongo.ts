@@ -5,7 +5,13 @@ import type { IDLQRepository, DLQQueryFilters, DLQStatusCount } from "@/domain/d
 import mongoose from "mongoose";
 import { AppError } from "@/utils/AppError.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
+import { dlqErrors } from "@/domain/dlq/dlq.errors.js";
+
+const SERVICE_NAME = "DLQRepository";
+
 class MongoDLQRepository implements IDLQRepository {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	private toEntity = (doc: DLQItemDocument): DLQItem => {
 		return {
 			id: toStringId(doc._id),
@@ -101,7 +107,7 @@ class MongoDLQRepository implements IDLQRepository {
 			{ new: true, runValidators: true }
 		);
 		if (!updated) {
-			throw new AppError({ message: `DLQ item with id ${id} not found`, status: 404 });
+			throw new AppError(dlqErrors.notFound, { message: `DLQ item with id ${id} not found`, service: SERVICE_NAME, method: "updateById" });
 		}
 		return this.toEntity(updated);
 	};

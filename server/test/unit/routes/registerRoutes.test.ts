@@ -4,6 +4,7 @@ import { z } from "zod";
 import { registerRoutes } from "../../../openapi/registerRoutes.ts";
 import type { RouteTable } from "../../../src/api/routes/defineRoutes.ts";
 import { bearer, errorJson } from "../../../src/api/routes/openapiHelpers.ts";
+import { statusPageErrors } from "../../../src/domain/status-pages/status-page.errors.ts";
 
 type Controller = { list: unknown; create: unknown; read: unknown; resolve: unknown };
 
@@ -80,8 +81,11 @@ describe("registerRoutes", () => {
 		expect(open.responses["500"]).toEqual(errorJson("Internal server error"));
 	});
 
-	it("adds the entry's errors to the derived set and lets them override a guard description", () => {
+	it("adds the entry's definitions to the derived set and merges descriptions that share a status", () => {
 		const { registry, routesOf } = setup();
+		const nameEmpty = { status: 400, description: "Name may not be empty" };
+		const notFound = { status: 404, description: "Thing not found" };
+		const nameTaken = { status: 409, description: "Name already in use" };
 		const table: RouteTable<Controller> = {
 			prefix: "/things",
 			tag: "things",
@@ -93,7 +97,7 @@ describe("registerRoutes", () => {
 					handler: "create",
 					summary: "Edit",
 					params: z.object({ id: z.string() }),
-					errors: { 400: "Name may not be empty", 404: "Thing not found", 409: "Name already in use" },
+					errors: [nameEmpty, notFound, nameTaken],
 				},
 			],
 		};
@@ -102,8 +106,36 @@ describe("registerRoutes", () => {
 
 		const [edit] = routesOf();
 		expect(responsesOf(edit)).toEqual(["200", "400", "401", "404", "409", "429", "500"]);
-		expect(edit.responses["400"]).toEqual(errorJson("Name may not be empty"));
+		expect(edit.responses["400"]).toEqual(errorJson("Invalid request, or name may not be empty"));
 		expect(edit.responses["404"]).toEqual(errorJson("Thing not found"));
+		expect(edit.responses["409"]).toEqual(errorJson("Name already in use"));
+	});
+
+	it("describes a definition once when the entry lists one its guard already produces", () => {
+		const { registry, routesOf } = setup();
+		const table: RouteTable<Controller> = {
+			prefix: "/things",
+			tag: "things",
+			auth: "jwt",
+			routes: [
+				{
+					method: "get",
+					path: "/:url",
+					handler: "read",
+					summary: "Public",
+					auth: "statusPage",
+					params: z.object({ url: z.string() }),
+					errors: [statusPageErrors.unpublished, statusPageErrors.notFound],
+				},
+			],
+		};
+
+		registerRoutes(registry, table);
+
+		const [publicPage] = routesOf();
+		expect(responsesOf(publicPage)).toEqual(["200", "400", "401", "403", "404", "429", "500"]);
+		expect(publicPage.responses["404"]).toEqual(errorJson("Status page not found"));
+		expect(publicPage.responses["403"]).toEqual(errorJson("Status page is unpublished and the caller is not on its team"));
 	});
 
 	it("documents the response as a data envelope when set and a no-data envelope when absent", () => {

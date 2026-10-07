@@ -1,7 +1,7 @@
 import { IStatusProvider } from "@/service/networkProviders/IStatusProvider.js";
 import { WebSocketStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { timeRequest, peerAnsweredFromError } from "@/service/networkProviders/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import type WebSocket from "ws";
@@ -87,9 +87,8 @@ export class WebSocketProvider implements IStatusProvider<WebSocketStatusPayload
 			};
 		} catch (err: unknown) {
 			const originalMessage = err instanceof Error ? err.message : String(err);
-			throw new AppError({
+			throw new AppError(internalError, {
 				message: originalMessage || "Error performing WebSocket check",
-				status: 500,
 				service: SERVICE_NAME,
 				method: "handle",
 				details: { url: monitor.url },

@@ -2,39 +2,36 @@ import type { ZodObject } from "zod";
 import type { OpenAPIRegistry, RouteConfig } from "@asteasolutions/zod-to-openapi";
 import type { Auth, RouteDef, RouteTable } from "@/api/routes/defineRoutes.js";
 import { bearer, errorJson, json, multipart, okJson, okJsonNoData } from "@/api/routes/openapiHelpers.js";
+import { middlewareErrors } from "@/api/middleware/middleware.errors.js";
+import { statusPageErrors } from "@/domain/status-pages/status-page.errors.js";
+import { internalError, type ErrorDefinition } from "@/utils/AppError.js";
 
-const guardErrors = <C>(r: RouteDef<C>, auth: Auth): Record<string, string> => {
-	const errors: Record<string, string> = {};
-	if (r.params || r.query || r.body) errors["400"] = "Invalid request";
-	if (auth === "statusPage") {
-		errors["400"] = "Invalid request";
-		errors["404"] = "Status page not found";
-	}
-	if (auth !== "none") errors["401"] = "Unauthorized";
-	if (r.roles) errors["403"] = "Forbidden";
-	if (r.upload) {
-		errors["400"] = "Invalid request";
-		errors["413"] = "File too large";
-		errors["415"] = "Unsupported file type";
-	}
-	errors["429"] = "Too many requests";
-	errors["500"] = "Internal server error";
-	return errors;
+/** The errors an entry's middleware can produce before its handler runs. */
+export const guardErrors = <C>(r: RouteDef<C>, auth: Auth): ErrorDefinition[] => {
+	const guards: ErrorDefinition[] = [];
+	if (r.params || r.query || r.body || r.upload || auth === "statusPage") guards.push(middlewareErrors.invalidRequest);
+	if (auth === "statusPage") guards.push(statusPageErrors.notFound);
+	if (auth !== "none") guards.push(middlewareErrors.unauthenticated);
+	if (r.roles) guards.push(middlewareErrors.forbidden);
+	if (r.upload) guards.push(middlewareErrors.fileTooLarge, middlewareErrors.unsupportedFileType);
+	guards.push(middlewareErrors.tooManyRequests, internalError);
+	return guards;
 };
 
-const errorResponses = (descriptions: Record<string, string>): RouteConfig["responses"] =>
-	Object.fromEntries(
-		Object.entries(descriptions)
-			.sort(([a], [b]) => Number(a) - Number(b))
-			.map(([status, description]) => [status, errorJson(description)])
+const lowerFirst = (text: string): string => text.charAt(0).toLowerCase() + text.slice(1);
+
+const describe = (descriptions: string[]): string => descriptions.map((text, i) => (i === 0 ? text : lowerFirst(text))).join(", or ");
+
+/** One response per status: the guard's description first, then the entry's definitions, joined with ", or ". */
+const errorResponses = (guards: readonly ErrorDefinition[], definitions: readonly ErrorDefinition[]): RouteConfig["responses"] => {
+	const byStatus = new Map<number, string[]>();
+	for (const definition of [...guards, ...definitions.filter((d) => !guards.includes(d))]) {
+		byStatus.set(definition.status, [...(byStatus.get(definition.status) ?? []), definition.description]);
+	}
+	return Object.fromEntries(
+		[...byStatus.entries()].sort(([a], [b]) => a - b).map(([status, descriptions]) => [String(status), errorJson(describe(descriptions))])
 	);
-// Returns:
-// {
-// 	"400": { description: "Invalid request", content: { "application/json": { schema: errorEnvelope } } },
-// 	"401": { description: "Unauthorized", content: { "application/json": { schema: errorEnvelope } } },
-// 	"429": { description: "Too many requests", content: { "application/json": { schema: errorEnvelope } } },
-// 	"500": { description: "Internal server error", content: { "application/json": { schema: errorEnvelope } } },
-// }
+};
 
 export const registerRoutes = <C>(registry: OpenAPIRegistry, table: RouteTable<C>): void => {
 	for (const r of table.routes) {
@@ -54,7 +51,7 @@ export const registerRoutes = <C>(registry: OpenAPIRegistry, table: RouteTable<C
 			...(Object.keys(request).length > 0 ? { request } : {}),
 			responses: {
 				"200": r.response ? okJson(r.response) : okJsonNoData(),
-				...errorResponses({ ...guardErrors(r, auth), ...r.errors }),
+				...errorResponses(guardErrors(r, auth), r.errors ?? []),
 			},
 		};
 		registry.registerPath(r.spec ? r.spec(derived) : derived);

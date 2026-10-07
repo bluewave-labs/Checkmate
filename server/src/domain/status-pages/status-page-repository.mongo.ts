@@ -5,12 +5,17 @@ import mongoose from "mongoose";
 import { AppError } from "@/utils/AppError.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
+import { statusPageErrors } from "@/domain/status-pages/status-page.errors.js";
+
+const SERVICE_NAME = "StatusPagesRepository";
 // Type for update data that can include document-level fields (Buffer for logo)
 type StatusPageUpdateData = Partial<Omit<StatusPage, "id" | "userId" | "teamId" | "logo" | "createdAt" | "updatedAt">> & {
 	logo?: StatusPageLogoDocument | null;
 };
 
 class MongoStatusPagesRepository implements IStatusPagesRepository {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	private mapIdArray = (values?: Array<mongoose.Types.ObjectId | string>): string[] => {
 		return values?.map((value) => toStringId(value)) ?? [];
 	};
@@ -87,7 +92,7 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 			url,
 		});
 		if (!statusPage) {
-			throw new AppError({ message: "Status page not found", status: 404 });
+			throw new AppError(statusPageErrors.notFound, { service: SERVICE_NAME, method: "findByUrl" });
 		}
 		return this.toEntity(statusPage);
 		// Get status page
@@ -96,14 +101,14 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 	findByCustomDomain = async (customDomain: string): Promise<StatusPage> => {
 		const normalizedDomain = normalizeStatusPageDomain(customDomain);
 		if (!normalizedDomain) {
-			throw new AppError({ message: "Status page not found", status: 404 });
+			throw new AppError(statusPageErrors.notFound, { service: SERVICE_NAME, method: "findByCustomDomain" });
 		}
 
 		const statusPage = await StatusPageModel.findOne({
 			customDomain: normalizedDomain,
 		});
 		if (!statusPage) {
-			throw new AppError({ message: "Status page not found", status: 404 });
+			throw new AppError(statusPageErrors.notFound, { service: SERVICE_NAME, method: "findByCustomDomain" });
 		}
 		return this.toEntity(statusPage);
 	};
@@ -154,7 +159,7 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 		});
 
 		if (!statusPage) {
-			throw new AppError({ message: "Status page not found", status: 404 });
+			throw new AppError(statusPageErrors.notFound, { service: SERVICE_NAME, method: "updateById" });
 		}
 
 		return this.toEntity(statusPage);
@@ -163,7 +168,7 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 	deleteById = async (id: string, teamId: string): Promise<StatusPage> => {
 		const statusPage = await StatusPageModel.findOneAndDelete({ _id: id, teamId });
 		if (!statusPage) {
-			throw new AppError({ message: "Status page not found", status: 404 });
+			throw new AppError(statusPageErrors.notFound, { service: SERVICE_NAME, method: "deleteById" });
 		}
 		return this.toEntity(statusPage);
 	};

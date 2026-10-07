@@ -7,7 +7,8 @@ import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interf
 import type { User, UserResponse } from "@/domain/users/user.type.js";
 import { canManageRole, toUserResponse, type UserRole } from "@/domain/users/user.type.js";
 import bcrypt from "bcryptjs";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
+import { userErrors } from "@/domain/users/user.errors.js";
 import { IEmailService } from "@/service/emailService.js";
 import { EnvConfig, ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { ILogger } from "@/utils/logger.js";
@@ -122,7 +123,7 @@ export class UserService implements IUserService {
 			await this.settingsRepository.update({ jwtSecret });
 			// Create a new team
 			if (!user.email) {
-				throw new AppError({ message: "Email is required for first user", service: SERVICE_NAME, method: "registerUser", status: 400 });
+				throw new AppError(userErrors.firstUserEmailRequired, { service: SERVICE_NAME, method: "registerUser" });
 			}
 			const team = await this.teamsRepository.create(user.email);
 			user.teamId = team.id;
@@ -182,12 +183,7 @@ export class UserService implements IUserService {
 		for (const targetRole of targetRoles) {
 			const canManage = actorRoles.some((actorRole) => canManageRole(actorRole, targetRole));
 			if (!canManage) {
-				throw new AppError({
-					message: "You do not have permission to assign this role",
-					service: SERVICE_NAME,
-					method: "createUser",
-					status: 403,
-				});
+				throw new AppError(userErrors.roleAboveCaller, { service: SERVICE_NAME, method: "createUser" });
 			}
 		}
 
@@ -218,7 +214,7 @@ export class UserService implements IUserService {
 		const match = await bcrypt.compare(password, user.password);
 
 		if (match !== true) {
-			throw new AppError({ message: "Incorrect password", service: SERVICE_NAME, status: 401 });
+			throw new AppError(userErrors.invalidCredentials, { service: SERVICE_NAME, method: "loginUser" });
 		}
 
 		const userResponse = toUserResponse(user);
@@ -243,7 +239,7 @@ export class UserService implements IUserService {
 			// If not a match, throw a 403
 			// 403 instead of 401 to avoid triggering axios interceptor
 			if (!match) {
-				throw new AppError({ message: "Incorrect current password", service: SERVICE_NAME, status: 403 });
+				throw new AppError(userErrors.incorrectCurrentPassword, { service: SERVICE_NAME, method: "editUser" });
 			}
 			// If a match, update the password
 			updates.password = this.hashPassword(updates.newPassword);
@@ -273,11 +269,10 @@ export class UserService implements IUserService {
 			url,
 		});
 		if (!html) {
-			throw new AppError({
+			throw new AppError(internalError, {
 				message: "Failed to build password reset email HTML",
 				service: SERVICE_NAME,
 				method: "requestRecovery",
-				status: 500,
 			});
 		}
 		const msgId = await this.emailService.sendEmail(email, "Checkmate Password Reset", html);
@@ -295,7 +290,7 @@ export class UserService implements IUserService {
 
 		const match = await bcrypt.compare(password, existingUser.password);
 		if (match === true) {
-			throw new AppError({ message: "New password cannot be same as old password", service: SERVICE_NAME, status: 400 });
+			throw new AppError(userErrors.passwordUnchanged, { service: SERVICE_NAME, method: "resetPassword" });
 		}
 
 		const hashedPassword = this.hashPassword(password);
@@ -310,7 +305,7 @@ export class UserService implements IUserService {
 
 	deleteUser = async ({ userId, teamId, roles }: { userId: string; teamId: string; roles: UserRole[] }) => {
 		if (roles.includes("demo")) {
-			throw new AppError({ message: "Demo user cannot be deleted", service: SERVICE_NAME, method: "deleteUser", status: 400 });
+			throw new AppError(userErrors.demoUserProtected, { service: SERVICE_NAME, method: "deleteUser" });
 		}
 
 		if (roles.includes("superadmin")) {
@@ -335,17 +330,17 @@ export class UserService implements IUserService {
 		targetUserId: string;
 	}) => {
 		if (actorId === targetUserId) {
-			throw new AppError({ message: "Cannot delete your own account from here", service: SERVICE_NAME, method: "deleteUserById", status: 400 });
+			throw new AppError(userErrors.cannotDeleteSelf, { service: SERVICE_NAME, method: "deleteUserById" });
 		}
 
 		const targetUser = await this.usersRepository.findById(targetUserId);
 
 		if (targetUser.teamId !== actorTeamId) {
-			throw new AppError({ message: "User is not on your team", service: SERVICE_NAME, method: "deleteUserById", status: 403 });
+			throw new AppError(userErrors.notOnTeam, { service: SERVICE_NAME, method: "deleteUserById" });
 		}
 
 		if (targetUser.role.includes("demo")) {
-			throw new AppError({ message: "Demo user cannot be deleted", service: SERVICE_NAME, method: "deleteUserById", status: 400 });
+			throw new AppError(userErrors.demoUserProtected, { service: SERVICE_NAME, method: "deleteUserById" });
 		}
 
 		const targetRoles = targetUser.role;
@@ -354,12 +349,7 @@ export class UserService implements IUserService {
 		for (const targetRole of targetRoles) {
 			const canManage = actorRoles.some((actorRole) => canManageRole(actorRole, targetRole));
 			if (!canManage) {
-				throw new AppError({
-					message: "You do not have permission to remove this user",
-					service: SERVICE_NAME,
-					method: "deleteUserById",
-					status: 403,
-				});
+				throw new AppError(userErrors.roleAboveCaller, { service: SERVICE_NAME, method: "deleteUserById" });
 			}
 		}
 
@@ -377,9 +367,6 @@ export class UserService implements IUserService {
 	};
 
 	getUserById = async (roles: UserRole[], userId: string) => {
-		if (!roles.includes("superadmin") && !roles.includes("admin")) {
-			throw new AppError({ message: "Insufficient permissions", service: SERVICE_NAME, status: 403 });
-		}
 		return await this.usersRepository.findById(userId);
 	};
 

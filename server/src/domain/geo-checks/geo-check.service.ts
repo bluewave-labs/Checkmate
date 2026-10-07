@@ -7,6 +7,7 @@ import type { IGlobalPingService } from "@/service/globalPingService.js";
 import type { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";
 import { DateRange } from "@/types/query.js";
+import { monitorErrors } from "@/domain/monitors/monitor.errors.js";
 
 const SERVICE_NAME = "GeoChecksService";
 
@@ -160,30 +161,12 @@ export class GeoChecksService implements IGeoChecksService {
 		rowsPerPage?: number;
 		continent: GeoContinent | GeoContinent[];
 	}) => {
-		if (!monitorId) {
-			throw new AppError({
-				message: "No monitor ID in request",
-				service: SERVICE_NAME,
-				method: "getGeoChecksByMonitor",
-				status: 400,
-			});
-		}
-		if (!teamId) {
-			throw new AppError({
-				message: "No team ID in request",
-				service: SERVICE_NAME,
-				method: "getGeoChecksByMonitor",
-				status: 400,
-			});
-		}
-
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
-			throw new AppError({
+			throw new AppError(monitorErrors.notFound, {
 				message: `Monitor with ID ${monitorId} not found.`,
 				service: SERVICE_NAME,
 				method: "getGeoChecksByMonitor",
-				status: 404,
 			});
 		}
 

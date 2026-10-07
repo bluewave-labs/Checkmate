@@ -9,6 +9,7 @@ import {
 	deleteChecksParamValidation,
 } from "@/api/validation/checkValidation.js";
 import { checksPageSchema, checksSummarySchema } from "@/domain/checks/check.schema.js";
+import { monitorErrors } from "@/domain/monitors/monitor.errors.js";
 
 export const checkRoutes: RouteTable<ICheckController> = {
 	prefix: "/checks",
@@ -44,7 +45,7 @@ export const checkRoutes: RouteTable<ICheckController> = {
 			path: "/:monitorId",
 			handler: "getChecksByMonitor",
 			summary: "List checks for a monitor",
-			errors: { 404: "Monitor not found" },
+			errors: [monitorErrors.notFound],
 			params: getChecksParamValidation,
 			query: getChecksQueryValidation,
 			response: checksPageSchema,
@@ -54,7 +55,7 @@ export const checkRoutes: RouteTable<ICheckController> = {
 			path: "/:monitorId",
 			handler: "deleteChecks",
 			summary: "Delete checks for a monitor (admin/superadmin)",
-			errors: { 404: "Monitor not found" },
+			errors: [monitorErrors.notFound],
 			roles: ["admin", "superadmin"],
 			params: deleteChecksParamValidation,
 			response: deletedCountResponseSchema,

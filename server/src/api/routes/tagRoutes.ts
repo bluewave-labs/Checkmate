@@ -10,6 +10,7 @@ import {
 	tagListResponseSchema,
 } from "@/api/validation/index.js";
 import { tagSchema } from "@/domain/tags/tag.schema.js";
+import { tagErrors } from "@/domain/tags/tag.errors.js";
 
 export const tagRoutes: RouteTable<ITagsController> = {
 	prefix: "/tags",
@@ -21,7 +22,7 @@ export const tagRoutes: RouteTable<ITagsController> = {
 			path: "/",
 			handler: "createTag",
 			summary: "Create a tag",
-			errors: { 409: "A tag with that name already exists" },
+			errors: [tagErrors.nameTaken],
 			body: createTagBodyValidation,
 			response: tagSchema,
 		},
@@ -31,7 +32,7 @@ export const tagRoutes: RouteTable<ITagsController> = {
 			path: "/:id",
 			handler: "getTagById",
 			summary: "Get a tag",
-			errors: { 404: "Tag not found" },
+			errors: [tagErrors.notFound],
 			params: getTagByIdParamValidation,
 			response: tagSchema,
 		},
@@ -40,7 +41,7 @@ export const tagRoutes: RouteTable<ITagsController> = {
 			path: "/:id",
 			handler: "editTag",
 			summary: "Edit a tag",
-			errors: { 404: "Tag not found" },
+			errors: [tagErrors.notFound],
 			params: editTagParamValidation,
 			body: editTagBodyValidation,
 			response: tagSchema,
@@ -50,7 +51,7 @@ export const tagRoutes: RouteTable<ITagsController> = {
 			path: "/:id",
 			handler: "deleteTag",
 			summary: "Delete a tag",
-			errors: { 404: "Tag not found" },
+			errors: [tagErrors.notFound],
 			params: deleteTagParamValidation,
 		},
 	],

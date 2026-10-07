@@ -3,6 +3,7 @@ import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interf
 import { IProxiesRepository } from "@/domain/proxies/proxy.repository.interface.js";
 import { AppError } from "@/utils/AppError.js";
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
+import { proxyErrors } from "@/domain/proxies/proxy.errors.js";
 
 export interface IProxiesService {
 	createProxy(proxy: Partial<Proxy>, teamId: string): Promise<ProxyResponse>;
@@ -89,20 +90,19 @@ export class ProxiesService implements IProxiesService {
 		// Make sure proxy is not in use
 		const monitorsUsingProxy = await this.monitorsRepository.findMonitorCountByProxyId(proxyId);
 		if (monitorsUsingProxy > 0) {
-			throw new AppError({
+			throw new AppError(proxyErrors.inUseByMonitors, {
 				message: `Proxy still in use by ${monitorsUsingProxy} monitor${monitorsUsingProxy > 1 ? "s" : ""}`,
 				service: SERVICE_NAME,
-				status: 409,
+				method: "deleteProxy",
 			});
 		}
 
 		// Make sure this is not set as a global proxy
 		const settings = await this.settingsService.getDBSettings();
 		if (settings.globalProxyId === proxyId) {
-			throw new AppError({
-				message: "Proxy is set as the global proxy in settings",
+			throw new AppError(proxyErrors.isGlobalProxy, {
 				service: SERVICE_NAME,
-				status: 409,
+				method: "deleteProxy",
 			});
 		}
 		const raw = await this.proxiesRepository.deleteById(proxyId, teamId);

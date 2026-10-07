@@ -2,8 +2,9 @@ import { IUsersRepository } from "@/domain/users/user.repository.interface.js";
 import { UserModel, type UserDocument } from "@/domain/users/user.model.js";
 import { toUserResponse, type User, type UserProfileImage, type UserResponse } from "@/domain/users/user.type.js";
 import { GenerateAvatarImage } from "@/utils/imageProcessing.js";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
+import { userErrors } from "@/domain/users/user.errors.js";
 const SERVICE_NAME = "MongoUsersRepository";
 
 class MongoUsersRepository implements IUsersRepository {
@@ -57,7 +58,7 @@ class MongoUsersRepository implements IUsersRepository {
 		await newUser.save();
 		const sanitizedUser = await UserModel.findOne({ _id: newUser._id }).select("-password").select("-profileImage");
 		if (!sanitizedUser) {
-			throw new AppError({ message: "Failed to create user", service: SERVICE_NAME, status: 500 });
+			throw new AppError(internalError, { message: "Failed to create user", service: SERVICE_NAME, method: "create" });
 		}
 		return this.toResponse(sanitizedUser);
 	};
@@ -65,7 +66,7 @@ class MongoUsersRepository implements IUsersRepository {
 	findByEmail = async (email: string) => {
 		const user = await UserModel.findOne({ email: email }).select("-profileImage");
 		if (!user) {
-			throw new AppError({ message: "User not found", service: SERVICE_NAME, status: 404 });
+			throw new AppError(userErrors.notFound, { service: SERVICE_NAME, method: "findByEmail" });
 		}
 		return this.toEntity(user);
 	};
@@ -73,7 +74,7 @@ class MongoUsersRepository implements IUsersRepository {
 	findById = async (id: string) => {
 		const user = await UserModel.findById(id).select("-password").select("-profileImage");
 		if (!user) {
-			throw new AppError({ message: "User not found", service: SERVICE_NAME, status: 404 });
+			throw new AppError(userErrors.notFound, { service: SERVICE_NAME, method: "findById" });
 		}
 
 		return this.toResponse(user);
@@ -115,7 +116,7 @@ class MongoUsersRepository implements IUsersRepository {
 
 		const updatedUser = await UserModel.findOneAndUpdate({ _id: id }, updateQuery, { new: true }).select("-password").select("-profileImage");
 		if (!updatedUser) {
-			throw new AppError({ message: "User not found", service: SERVICE_NAME, status: 404 });
+			throw new AppError(userErrors.notFound, { service: SERVICE_NAME, method: "updateById" });
 		}
 		return this.toResponse(updatedUser);
 	};
@@ -123,7 +124,7 @@ class MongoUsersRepository implements IUsersRepository {
 	deleteById = async (id: string) => {
 		const deletedUser = await UserModel.findByIdAndDelete(id);
 		if (!deletedUser) {
-			throw new AppError({ message: "User not found", service: SERVICE_NAME, status: 404 });
+			throw new AppError(userErrors.notFound, { service: SERVICE_NAME, method: "deleteById" });
 		}
 		return this.toEntity(deletedUser);
 	};

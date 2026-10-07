@@ -2,7 +2,7 @@ import { IStatusProvider } from "@/service/networkProviders/IStatusProvider.js";
 import { GameStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { GameDig } from "gamedig";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import { ILogger } from "@/utils/logger.js";
 
@@ -70,7 +70,7 @@ export class GameProvider implements IStatusProvider<GameStatusPayload> {
 			};
 		} catch (err: unknown) {
 			const originalMessage = err instanceof Error ? err.message : String(err);
-			throw new AppError({
+			throw new AppError(internalError, {
 				message: originalMessage || "Error performing game server check",
 				service: SERVICE_NAME,
 				method: "handle",

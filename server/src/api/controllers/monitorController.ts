@@ -28,6 +28,9 @@ import { Handler, fetchMonitorCertificate, fetchMonitorDomain, requireTeamId, re
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorService } from "@/domain/monitors/monitor.service.js";
 import { INotificationsService } from "@/domain/notifications/notification.service.js";
+import { monitorErrors } from "@/domain/monitors/monitor.errors.js";
+
+const SERVICE_NAME = "monitorController";
 
 export interface IMonitorController {
 	getMonitorCertificate: RequestHandler;
@@ -55,6 +58,8 @@ export interface IMonitorController {
 	updateNotifications: RequestHandler;
 }
 class MonitorController implements IMonitorController {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	private monitorService: IMonitorService;
 	private notificationsService: INotificationsService;
 
@@ -253,9 +258,10 @@ class MonitorController implements IMonitorController {
 
 		const invalidIds = notificationIds.filter((id: string) => !validNotificationIds.includes(id));
 		if (invalidIds.length > 0) {
-			throw new AppError({
+			throw new AppError(monitorErrors.notificationNotOnTeam, {
 				message: `The following notification IDs are invalid or do not belong to your team: ${invalidIds.join(", ")}`,
-				status: 403,
+				service: SERVICE_NAME,
+				method: "updateNotifications",
 			});
 		}
 

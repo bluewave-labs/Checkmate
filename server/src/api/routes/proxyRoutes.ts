@@ -9,6 +9,7 @@ import {
 	getProxyByIdParamValidation,
 	proxyListResponseSchema,
 } from "@/api/validation/proxyValidation.js";
+import { proxyErrors } from "@/domain/proxies/proxy.errors.js";
 
 export const proxyRoutes: RouteTable<IProxiesController> = {
 	prefix: "/proxies",
@@ -21,7 +22,7 @@ export const proxyRoutes: RouteTable<IProxiesController> = {
 			handler: "createProxy",
 			summary: "Create a proxy for the caller's team",
 			body: createProxyBodyValidation,
-			errors: { 409: "A proxy with that name already exists" },
+			errors: [proxyErrors.nameTaken],
 			response: proxyResponseSchema,
 		},
 		{
@@ -45,7 +46,7 @@ export const proxyRoutes: RouteTable<IProxiesController> = {
 			handler: "getProxyById",
 			summary: "Get a proxy by id",
 			params: getProxyByIdParamValidation,
-			errors: { 404: "Proxy not found" },
+			errors: [proxyErrors.notFound],
 			response: proxyResponseSchema,
 		},
 		{
@@ -54,7 +55,7 @@ export const proxyRoutes: RouteTable<IProxiesController> = {
 			handler: "deleteProxy",
 			summary: "Delete a proxy by id",
 			params: deleteProxyParamValidation,
-			errors: { 404: "Proxy not found", 409: "Proxy is in use by monitors or set as the global proxy" },
+			errors: [proxyErrors.notFound, proxyErrors.inUseByMonitors, proxyErrors.isGlobalProxy],
 		},
 		{
 			method: "patch",
@@ -63,7 +64,7 @@ export const proxyRoutes: RouteTable<IProxiesController> = {
 			summary: "Edit a proxy by id",
 			params: editProxyParamValidation,
 			body: editProxyBodyValidation,
-			errors: { 404: "Proxy not found", 409: "A proxy with that name already exists" },
+			errors: [proxyErrors.notFound, proxyErrors.nameTaken],
 			response: proxyResponseSchema,
 		},
 	],

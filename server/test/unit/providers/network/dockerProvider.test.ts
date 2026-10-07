@@ -5,7 +5,7 @@ import type { IEncryptionService } from "../../../../src/service/encryption/encr
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
 import { NETWORK_ERROR } from "../../../../src/types/network.ts";
-import { AppError } from "../../../../src/utils/AppError.ts";
+import { AppError, internalError } from "../../../../src/utils/AppError.ts";
 import type { Monitor } from "../../../../src/domain/monitors/monitor.type.ts";
 import { DOCKER_LOG_TAIL_LINES } from "../../../../src/domain/docker/docker.type.ts";
 
@@ -429,9 +429,8 @@ describe("DockerProvider", () => {
 
 		it("returns a down check naming the key id when the stored key cannot be decrypted", async () => {
 			const decrypt = jest.fn(() => {
-				throw new AppError({
+				throw new AppError(internalError, {
 					message: "No encryption key matches ciphertext",
-					status: 500,
 					service: "EncryptionService",
 					method: "decrypt",
 					details: { keyId: "abc123" },
@@ -494,7 +493,7 @@ describe("DockerProvider", () => {
 			await expect(provider.handle(makeMonitor({ url: "not-a-url" }))).rejects.toMatchObject({
 				service: "DockerProvider",
 				method: "toDockerOptions",
-				status: 422,
+				status: 500,
 			});
 			await expect(provider.handle(makeMonitor({ url: "not-a-url" }))).rejects.toBeInstanceOf(AppError);
 		});

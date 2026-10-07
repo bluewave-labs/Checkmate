@@ -2,10 +2,13 @@ import mongoose from "mongoose";
 import { NotificationModel, type NotificationDocument } from "@/domain/notifications/notification.model.js";
 import { INotificationsRepository } from "@/domain/notifications/notification.repository.interface.js";
 import type { Notification } from "@/domain/notifications/notification.type.js";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
-
+import { notificationErrors } from "@/domain/notifications/notification.errors.js";
+const SERVICE_NAME = "NotificationsRepository";
 class MongoNotificationsRepository implements INotificationsRepository {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	private mapDocuments = (documents: NotificationDocument[]): Notification[] => {
 		if (!documents?.length) {
 			return [];
@@ -38,7 +41,7 @@ class MongoNotificationsRepository implements INotificationsRepository {
 	create = async (notificationData: Partial<Notification>) => {
 		const notification = await NotificationModel.create({ ...notificationData });
 		if (!notification) {
-			throw new AppError({ message: "Failed to create notification", status: 500 });
+			throw new AppError(internalError, { message: "Failed to create notification", service: SERVICE_NAME, method: "create" });
 		}
 		return this.toEntity(notification);
 	};
@@ -49,7 +52,7 @@ class MongoNotificationsRepository implements INotificationsRepository {
 			teamId: new mongoose.Types.ObjectId(teamId),
 		});
 		if (!notification) {
-			throw new AppError({ message: "Notification not found", status: 404 });
+			throw new AppError(notificationErrors.notFound, { service: SERVICE_NAME, method: "findById" });
 		}
 		return this.toEntity(notification);
 	};
@@ -75,7 +78,7 @@ class MongoNotificationsRepository implements INotificationsRepository {
 			{ new: true, runValidators: true }
 		);
 		if (!notification) {
-			throw new AppError({ message: "Notification not found or could not be updated", status: 404 });
+			throw new AppError(notificationErrors.notFound, { service: SERVICE_NAME, method: "updateById" });
 		}
 		return this.toEntity(notification);
 	};
@@ -86,7 +89,11 @@ class MongoNotificationsRepository implements INotificationsRepository {
 			teamId: new mongoose.Types.ObjectId(teamId),
 		});
 		if (!deleted) {
-			throw new AppError({ message: "Notification not found or could not be deleted", status: 404 });
+			throw new AppError(notificationErrors.notFound, {
+				message: "Notification not found or could not be deleted",
+				service: SERVICE_NAME,
+				method: "deleteById",
+			});
 		}
 		return this.toEntity(deleted);
 	};

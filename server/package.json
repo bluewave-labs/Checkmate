@@ -10,6 +10,7 @@
 		"test:unit": "NODE_OPTIONS=--experimental-vm-modules jest --coverage --collectCoverageFrom='src/**/*.ts' test/unit",
 		"test:unit:services": "NODE_OPTIONS=--experimental-vm-modules jest --coverage --collectCoverageFrom='src/service/**/*.ts' test/unit/services test/unit/providers/network test/unit/providers/notifications",
 		"test:integration": "NODE_OPTIONS=--experimental-vm-modules jest --no-coverage test/integration",
+		"test:route-errors": "NODE_OPTIONS=--experimental-vm-modules jest --no-coverage test/unit/routes/routeErrors.test.ts",
 		"start": "node --watch ./dist/index.js",
 		"dev": "nodemon --exec tsx src/index.js",
 		"worker": "QUEUE_MODE=worker node ./dist/index.js",

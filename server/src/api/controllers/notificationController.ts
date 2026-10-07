@@ -8,10 +8,13 @@ import {
 	editNotificationParamValidation,
 	testAllNotificationsBodyValidation,
 } from "@/api/validation/notificationValidation.js";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { INotificationsService } from "@/domain/notifications/notification.service.js";
 import { Handler, requireTeamId, requireUserId } from "./controllerUtils.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
+import { notificationErrors } from "@/domain/notifications/notification.errors.js";
+
+const SERVICE_NAME = "notificationController";
 
 export interface INotificationController {
 	testNotification: RequestHandler;
@@ -23,6 +26,7 @@ export interface INotificationController {
 	testAllNotifications: RequestHandler;
 }
 class NotificationController implements INotificationController {
+	static SERVICE_NAME = SERVICE_NAME;
 	private notificationsService: INotificationsService;
 	private monitorsRepository: IMonitorsRepository;
 	constructor(notificationsService: INotificationsService, monitorsRepository: IMonitorsRepository) {
@@ -88,11 +92,11 @@ class NotificationController implements INotificationController {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		const notifications = monitor.notifications || [];
 		if (notifications.length === 0) {
-			throw new AppError({ message: "No notifications", status: 400 });
+			throw new AppError(notificationErrors.noneConfigured, { service: SERVICE_NAME, method: "testAllNotifications" });
 		}
 		const result = await this.notificationsService.testAllNotifications(notifications);
 		if (!result) {
-			throw new AppError({ message: "Failed to send all notifications", status: 500 });
+			throw new AppError(internalError, { message: "Failed to send all notifications", service: SERVICE_NAME, method: "testAllNotifications" });
 		}
 		res.json({ success: true, msg: "All notifications sent successfully" });
 	};

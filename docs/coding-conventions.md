@@ -374,6 +374,21 @@ Each entity's shape is one Zod schema in `domain/<entity>/<entity>.schema.ts`. T
 
 The repository's `toEntity` must write the new field; the build fails until it does. Zod outside `api/validation/` is for response shapes only: request parsing stays in the validators, and services never call `.parse` on a response schema.
 
+## 12. Every `AppError` is built from a definition
+
+Client errors are `{ status, description }` literals in `domain/<entity>/<entity>.errors.ts` (middleware errors in `api/middleware/middleware.errors.ts`, email errors in `service/email.errors.ts`), thrown as `new AppError(<entity>Errors.<name>, { service, method, message?, details? })` and listed by reference in the route table's `errors`. Server errors throw `internalError` from `utils/AppError.ts`. The OpenAPI spec is generated from the definitions, and `npm run test:route-errors` fails when a route omits a definition its handler can throw, or lists one it cannot.
+
+**Why:** the status and the spec description come from the same value, so they cannot drift. A reviewer sees every error a route can return by reading its table entry.
+
+**How to apply:** when you add a throw:
+
+1. Add the definition to the entity's catalog if none fits. Reuse an existing one when the meaning is the same; `monitorErrors.notFound` is thrown from several repositories.
+2. Throw it with `service` and `method`. Pass `message` only when it adds something the description cannot, such as an id. Otherwise the description is the message.
+3. Add it to the `errors` array of every route entry whose handler can reach it, including entries in other domains' tables.
+4. Run `npm run test:route-errors`.
+
+Guard errors (validation 400, auth 401, role 403, upload 413 and 415, rate limit 429, and 500) are derived from the entry's fields by `registerRoutes` and are never listed.
+
 ---
 
 # Pre-PR checklist
@@ -399,5 +414,6 @@ Before opening a PR, grep your diff for the patterns below. Each item describes 
 - [ ] No provider test that uses `beforeEach` instead of inline `setup()` (rule 9).
 - [ ] No duplicated `z.enum([...])` literal that should reference a `types/*` const tuple (rule 10).
 - [ ] No new entity field missing from `domain/<entity>/<entity>.schema.ts` (rule 11).
+- [ ] No `new AppError({ ... })` with an object as the first argument; every throw names a definition, `internalError` for 500s (rule 12).
 
 A clean PR on these axes is a PR that ships without a normalize follow-up.

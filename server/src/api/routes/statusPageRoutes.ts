@@ -12,6 +12,7 @@ import {
 	statusPageListResponseSchema,
 } from "@/api/validation/statusPageValidation.js";
 import { publicStatusPagePayloadSchema, statusPageSchema } from "@/domain/status-pages/status-page.schema.js";
+import { statusPageErrors } from "@/domain/status-pages/status-page.errors.js";
 
 export const statusPageRoutes: RouteTable<IStatusPageController> = {
 	prefix: "/status-page",
@@ -30,7 +31,7 @@ export const statusPageRoutes: RouteTable<IStatusPageController> = {
 			path: "/",
 			handler: "createStatusPage",
 			summary: "Create a status page, logo upload optional (admin/superadmin)",
-			errors: { 400: "Invalid request, or the custom domain matches the instance host" },
+			errors: [statusPageErrors.customDomainIsHost],
 			roles: ["admin", "superadmin"],
 			upload: "logo",
 			body: createStatusPageBodyValidation,
@@ -41,7 +42,7 @@ export const statusPageRoutes: RouteTable<IStatusPageController> = {
 			path: "/:id",
 			handler: "updateStatusPage",
 			summary: "Update a status page, logo upload optional (admin/superadmin)",
-			errors: { 400: "Invalid request, or the custom domain matches the instance host", 404: "Status page not found" },
+			errors: [statusPageErrors.customDomainIsHost, statusPageErrors.notFound],
 			roles: ["admin", "superadmin"],
 			upload: "logo",
 			params: statusPageIdParamValidation,
@@ -53,7 +54,7 @@ export const statusPageRoutes: RouteTable<IStatusPageController> = {
 			path: "/resolve",
 			handler: "resolveStatusPageByDomain",
 			summary: "Resolve a published status page by custom domain",
-			errors: { 400: "Invalid request, or no domain could be resolved", 404: "Status page not found" },
+			errors: [statusPageErrors.domainRequired, statusPageErrors.notFound],
 			auth: "none",
 			query: resolveStatusPageQueryValidation,
 			response: publicStatusPagePayloadSchema,
@@ -63,7 +64,7 @@ export const statusPageRoutes: RouteTable<IStatusPageController> = {
 			path: "/:url",
 			handler: "getStatusPageByUrl",
 			summary: "Get a public status page by its URL slug",
-			errors: { 403: "Status page is unpublished and the caller is not on its team" },
+			errors: [statusPageErrors.unpublished, statusPageErrors.notFound],
 			auth: "statusPage",
 			params: getStatusPageParamValidation,
 			query: getStatusPageQueryValidation,
@@ -74,7 +75,7 @@ export const statusPageRoutes: RouteTable<IStatusPageController> = {
 			path: "/:url/incidents/:monitorId",
 			handler: "getPublicMonitorIncidents",
 			summary: "Get incidents for one monitor on a public status page",
-			errors: { 403: "Status page is unpublished and the caller is not on its team", 404: "Status page or monitor not found" },
+			errors: [statusPageErrors.unpublished, statusPageErrors.notFound, statusPageErrors.monitorNotOnPage],
 			auth: "statusPage",
 			params: getPublicMonitorIncidentsParamValidation,
 			query: getPublicMonitorIncidentsQueryValidation,
@@ -85,7 +86,7 @@ export const statusPageRoutes: RouteTable<IStatusPageController> = {
 			path: "/:id",
 			handler: "deleteStatusPage",
 			summary: "Delete a status page (admin/superadmin)",
-			errors: { 404: "Status page not found" },
+			errors: [statusPageErrors.notFound],
 			roles: ["admin", "superadmin"],
 			params: statusPageIdParamValidation,
 		},

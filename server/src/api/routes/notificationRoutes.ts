@@ -12,6 +12,8 @@ import {
 	testNotificationResponseEnvelope,
 } from "@/api/validation/notificationValidation.js";
 import { notificationSchema } from "@/domain/notifications/notification.schema.js";
+import { monitorErrors } from "@/domain/monitors/monitor.errors.js";
+import { notificationErrors } from "@/domain/notifications/notification.errors.js";
 
 export const notificationRoutes: RouteTable<INotificationController> = {
 	prefix: "/notifications",
@@ -32,7 +34,7 @@ export const notificationRoutes: RouteTable<INotificationController> = {
 			path: "/test/all",
 			handler: "testAllNotifications",
 			summary: "Send a test alert through every notification channel for the team (admin/superadmin)",
-			errors: { 400: "Invalid request, or the monitor has no notifications", 404: "Monitor not found" },
+			errors: [notificationErrors.noneConfigured, monitorErrors.notFound],
 			roles: ["admin", "superadmin"],
 			body: testAllNotificationsBodyValidation,
 		},
@@ -66,7 +68,7 @@ export const notificationRoutes: RouteTable<INotificationController> = {
 			path: "/:id",
 			handler: "getNotificationById",
 			summary: "Get a notification channel by id",
-			errors: { 404: "Notification not found" },
+			errors: [notificationErrors.notFound],
 			params: getNotificationByIdParamValidation,
 			response: notificationSchema,
 		},
@@ -75,7 +77,7 @@ export const notificationRoutes: RouteTable<INotificationController> = {
 			path: "/:id",
 			handler: "deleteNotification",
 			summary: "Delete a notification channel (admin/superadmin)",
-			errors: { 404: "Notification not found" },
+			errors: [notificationErrors.notFound],
 			roles: ["admin", "superadmin"],
 			params: deleteNotificationParamValidation,
 		},
@@ -84,7 +86,7 @@ export const notificationRoutes: RouteTable<INotificationController> = {
 			path: "/:id",
 			handler: "editNotification",
 			summary: "Edit a notification channel (admin/superadmin)",
-			errors: { 404: "Notification not found" },
+			errors: [notificationErrors.notFound],
 			roles: ["admin", "superadmin"],
 			params: editNotificationParamValidation,
 			body: createNotificationBodyValidation,

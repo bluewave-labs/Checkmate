@@ -124,7 +124,7 @@ The backend enforces a strict three-layer separation between HTTP handling, busi
 Request → Controller → Service → Repository → MongoDB (Mongoose)
 ```
 
-- **Controllers** (`/controllers`) handle HTTP concerns only. Each method is a plain `async` arrow that parses the request with a Zod schema, calls the appropriate service with the parse result, and writes `res.json({ success, msg, data })`. No wrapper is needed: Express 5 forwards rejected promises to `handleErrors`, which maps `ZodError` to 400 and `AppError` to its status. They contain no business logic.
+- **Controllers** (`/controllers`) handle HTTP concerns only. Each method is a plain `async` arrow that parses the request with a Zod schema, calls the appropriate service with the parse result, and writes `res.json({ success, msg, data })`. No wrapper is needed: Express 5 forwards rejected promises to `handleErrors`, which maps `ZodError` to 400 and `AppError` to its definition's status. They contain no business logic.
 - **Services** (`/service/business`) contain all business logic: deciding whether an incident should be created, whether a notification should fire, what state a monitor is in, etc.
 - **Repositories** (`/repositories`) are the sole layer that talks to MongoDB through Mongoose. They expose clean, reusable query methods (e.g. `findByMonitorId`, `createCheck`) so that services never construct raw DB queries directly.
 
@@ -183,6 +183,7 @@ Read `docs/coding-conventions.md` before touching any `.tsx` or `.ts` file. The 
 9. Provider tests at `server/test/unit/providers/network/<name>.test.ts`, `from "@jest/globals"`, `testStatusProviderContract`, inline `setup()` per test (not `beforeEach`).
 10. Centralize validation enums in `types/*` const tuples; never inline `z.enum([…])` more than once.
 11. Entity shapes are one Zod schema in `domain/<entity>/<entity>.schema.ts`; the TS type is inferred from it and the auto-generated OpenAPI spec reads it. New fields go there and in the Mongoose model, nowhere else.
+12. Every `AppError` is built from a definition: client errors from `domain/<entity>/<entity>.errors.ts`, server errors from `internalError`. Route tables list definitions by reference and the OpenAPI spec is generated from them; `npm run test:route-errors` checks both directions.
 
 ### Internationalization
 All user-facing strings must use the translation function:
