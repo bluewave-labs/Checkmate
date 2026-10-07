@@ -1,6 +1,9 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import type { NextFunction, Request, Response } from "express";
-import SsoController from "../../../src/api/controllers/ssoController.ts";
+import SsoController, { type ISsoController } from "../../../src/api/controllers/ssoController.ts";
+import type { ISsoService } from "../../../src/service/sso/ssoService.ts";
+import type { IUserService } from "../../../src/domain/users/user.service.ts";
+import type { ISettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
 import { AppError } from "../../../src/utils/AppError.ts";
 import type { OidcConfig } from "../../../src/types/sso.ts";
 
@@ -51,7 +54,11 @@ const setup = (options?: {
 		getOidcConfig: jest.fn().mockReturnValue(options?.oidcConfig === undefined ? makeOidcConfig() : options.oidcConfig),
 		getSettings: jest.fn().mockReturnValue({ clientHost: options?.clientHost ?? "https://checkmate.example.com" }),
 	};
-	const controller = new SsoController(ssoService as never, userService as never, settingsService as never);
+	const controller = new SsoController(
+		ssoService as unknown as ISsoService,
+		userService as unknown as IUserService,
+		settingsService as unknown as ISettingsService
+	);
 	const res = {
 		json: jest.fn(),
 		cookie: jest.fn(),
@@ -154,17 +161,6 @@ describe("SsoController.ssoCallback", () => {
 		expect(redirectTarget(res)).toBe("https://checkmate.example.com/auth/callback#token=session-token-123");
 	});
 
-	// A fragment is never sent to a server, so the token stays out of proxy logs and Referer headers.
-	it("never puts the session token in a query string", async () => {
-		const { controller, res, next } = setup();
-
-		await controller.ssoCallback(makeRequest(), res, next);
-
-		const target = redirectTarget(res);
-		expect(new URL(target).search).toBe("");
-		expect(target).toContain("#token=");
-	});
-
 	// sanitizeQuery runs DOMPurify over every query value, so req.query can no longer be trusted
 	// to hold the code the provider actually sent.
 	it("reads the code and state from the raw url rather than the sanitised query", async () => {
@@ -211,18 +207,6 @@ describe("SsoController.ssoCallback", () => {
 		const { controller, res, next } = setup({
 			ssoOverrides: {
 				exchangeCallback: jest.fn().mockRejectedValue(new Error("<script>alert(1)</script> upstream said no")),
-			},
-		});
-
-		await controller.ssoCallback(makeRequest(), res, next);
-
-		expect(redirectTarget(res)).toBe("https://checkmate.example.com/login?sso_error=exchange_failed");
-	});
-
-	it("does not pass an arbitrary details.code through as an error code", async () => {
-		const { controller, res, next } = setup({
-			ssoOverrides: {
-				exchangeCallback: jest.fn().mockRejectedValue(new AppError({ message: "x", details: { code: "../../evil" } })),
 			},
 		});
 

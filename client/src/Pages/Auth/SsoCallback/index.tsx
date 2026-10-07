@@ -11,10 +11,16 @@ const readTokenFromFragment = (): string =>
 
 // The token's payload is the user object the server signed (see UserService.issueToken), so the
 // user can be read straight out of it with no extra request and no jwt-decode dependency.
+// atob yields latin-1, so the bytes go through TextDecoder; otherwise a name like "Müller"
+// arrives mangled.
 const readUser = (token: string): User => {
 	const payload = token.split(".")[1];
 	if (!payload) throw new Error("Malformed session token");
-	return JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/"))) as User;
+	const bytes = Uint8Array.from(
+		atob(payload.replace(/-/g, "+").replace(/_/g, "/")),
+		(char) => char.charCodeAt(0)
+	);
+	return JSON.parse(new TextDecoder().decode(bytes)) as User;
 };
 
 const SsoCallbackPage = () => {

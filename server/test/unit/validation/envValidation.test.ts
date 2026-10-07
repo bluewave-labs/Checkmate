@@ -133,8 +133,17 @@ describe("oidcEnvSchema", () => {
 		);
 	});
 
-	it("allows an http redirect uri, which is normal for a local install", () => {
-		expect(oidcEnvSchema.safeParse({ ...enabled, OIDC_REDIRECT_URI: "http://localhost:52345/api/v1/auth/sso/callback" }).success).toBe(true);
+	// The redirect URI carries the authorization code back through the browser, so it is held to
+	// the same transport requirement as the issuer.
+	it("rejects an http redirect uri unless insecure issuers are allowed", () => {
+		const local = { ...enabled, OIDC_REDIRECT_URI: "http://localhost:52345/api/v1/auth/sso/callback" };
+		expect(paths(local)).toEqual(["OIDC_REDIRECT_URI"]);
+		expect(oidcEnvSchema.safeParse({ ...local, OIDC_ALLOW_INSECURE_ISSUER: "true" }).success).toBe(true);
+	});
+
+	// A wrong path would otherwise surface as an opaque invalid_grant on the first sign-in.
+	it("rejects a redirect uri that does not point at the callback route", () => {
+		expect(paths({ ...enabled, OIDC_REDIRECT_URI: "https://checkmate.example.com/callback" })).toEqual(["OIDC_REDIRECT_URI"]);
 	});
 
 	// superadmin would make auto-provisioning mint an instance owner; a demo user cannot be deleted through the API.

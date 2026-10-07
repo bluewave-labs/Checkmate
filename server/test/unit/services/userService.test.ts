@@ -3,6 +3,7 @@ import { AppError } from "../../../src/utils/AppError.ts";
 import { UserService } from "../../../src/domain/users/user.service.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import { toUserResponse, type User, type UserRole } from "../../../src/domain/users/user.type.ts";
+import type { SsoClaims } from "../../../src/types/sso.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -690,209 +691,225 @@ describe("UserService", () => {
 			expect(result).toEqual(makeUserResponse());
 		});
 	});
-});
 
-// ── loginWithSso ────────────────────────────────────────────────────────────
+	// ── loginWithSso ────────────────────────────────────────────────────────────
 
-const makeSsoClaims = (overrides?: Partial<Record<string, string>>) => ({
-	issuer: "https://auth.example.com/",
-	subject: "provider-subject-1",
-	email: "ada@example.com",
-	firstName: "Ada",
-	lastName: "Lovelace",
-	...overrides,
-});
-
-const expectSsoCode = async (promise: Promise<unknown>, code: string) => {
-	const error = (await promise.catch((caught: unknown) => caught)) as { details?: unknown };
-	expect(error.details).toEqual({ code });
-	return error;
-};
-
-describe("UserService.loginWithSso", () => {
-	// registerUser grants superadmin to whoever registers first. Mirroring that here would hand the
-	// instance to the first provider user to arrive.
-	it("refuses to bootstrap an instance that has no superadmin yet", async () => {
-		const { service, usersRepository } = createService();
-		(usersRepository.findSuperAdminTeamId as jest.Mock).mockResolvedValue(null);
-
-		await expectSsoCode(service.loginWithSso(makeSsoClaims()), "not_initialized");
-		expect(usersRepository.create).not.toHaveBeenCalled();
+	const makeSsoClaims = (overrides?: Partial<SsoClaims>): SsoClaims => ({
+		issuer: "https://auth.example.com/",
+		subject: "provider-subject-1",
+		email: "ada@example.com",
+		emailVerified: true,
+		firstName: "Ada",
+		lastName: "Lovelace",
+		...overrides,
 	});
 
-	it("signs in an account already linked to the provider subject", async () => {
-		const { service, usersRepository } = createService();
-		(usersRepository.findBySsoSubject as jest.Mock).mockResolvedValue(makeUser({ id: "user-9" }));
-
-		const result = await service.loginWithSso(makeSsoClaims());
-
-		expect(usersRepository.findBySsoSubject).toHaveBeenCalledWith("https://auth.example.com/", "provider-subject-1");
-		expect(result.token).toBe("jwt-token-123");
-		expect(usersRepository.findByEmailOrNull).not.toHaveBeenCalled();
-	});
-
-	it("links an existing account on first sign-in and remembers the subject", async () => {
-		const { service, usersRepository } = createService();
-		(usersRepository.findByEmailOrNull as jest.Mock).mockResolvedValue(makeUser({ id: "user-7" }));
-
-		const result = await service.loginWithSso(makeSsoClaims());
-
-		expect(usersRepository.updateById).toHaveBeenCalledWith(
-			"user-7",
-			{ ssoIssuer: "https://auth.example.com/", ssoSubject: "provider-subject-1" },
-			null
-		);
-		expect(result.token).toBe("jwt-token-123");
-	});
-
-	// Role and team are managed in Checkmate; a provider must not be able to change them.
-	it("does not alter the role or team of an account it links", async () => {
-		const { service, usersRepository } = createService();
-		(usersRepository.findByEmailOrNull as jest.Mock).mockResolvedValue(makeUser({ id: "user-7", role: ["admin"], teamId: "team-1" }));
-
-		await service.loginWithSso(makeSsoClaims());
-
-		const patch = (usersRepository.updateById as jest.Mock).mock.calls[0]?.[1] as Record<string, unknown>;
-		expect(patch).not.toHaveProperty("role");
-		expect(patch).not.toHaveProperty("teamId");
-	});
-
-	// findByEmailOrNull and findBySsoSubject both return the password hash.
-	it("never puts the password hash into the signed token", async () => {
-		const { service, usersRepository, jwt } = createService();
-		(usersRepository.findBySsoSubject as jest.Mock).mockResolvedValue(makeUser({ password: "$2a$10$secrethash" }));
-
-		const result = await service.loginWithSso(makeSsoClaims());
-
-		expect(result.user).not.toHaveProperty("password");
-		const [payload] = (jwt.sign as jest.Mock).mock.calls[0] as [Record<string, unknown>];
-		expect(payload).not.toHaveProperty("password");
-		expect(JSON.stringify(payload)).not.toContain("secrethash");
-	});
-
-	it("consumes a pending invite and creates a password-less user with its role and team", async () => {
-		const { service, usersRepository, invitesRepository } = createService();
-		(invitesRepository.findByEmailAndDelete as jest.Mock).mockResolvedValue({ role: ["admin"], teamId: "team-5", email: "ada@example.com" });
-
-		const result = await service.loginWithSso(makeSsoClaims());
-
-		expect(invitesRepository.findByEmailAndDelete).toHaveBeenCalledWith("ada@example.com");
-		expect(usersRepository.create).toHaveBeenCalledWith(
-			{
-				firstName: "Ada",
-				lastName: "Lovelace",
-				email: "ada@example.com",
-				role: ["admin"],
-				teamId: "team-5",
-				ssoIssuer: "https://auth.example.com/",
-				ssoSubject: "provider-subject-1",
-			},
-			null
-		);
-		expect(result.token).toBe("jwt-token-123");
-	});
-
-	// One opaque reason, so this cannot be used to probe which addresses have accounts.
-	it("refuses an identity with no account, no link and no invite", async () => {
-		const { service, usersRepository } = createService();
-
-		await expectSsoCode(service.loginWithSso(makeSsoClaims()), "not_invited");
-		expect(usersRepository.create).not.toHaveBeenCalled();
-	});
-});
-
-// ── OIDC_ALLOW_LOCAL_LOGIN=false ────────────────────────────────────────────
-
-describe("UserService with password sign-in disabled", () => {
-	const disabledLocalLogin = { allowLocalLogin: false };
-
-	const createDisabled = () => {
-		const created = createService();
-		(created.settingsService.getOidcConfig as jest.Mock).mockReturnValue(disabledLocalLogin);
-		return created;
+	const expectSsoCode = async (promise: Promise<unknown>, code: string) => {
+		const error = (await promise.catch((caught: unknown) => caught)) as { details?: unknown };
+		expect(error.details).toEqual({ code });
+		return error;
 	};
 
-	// Hiding the fields in the UI is cosmetic; these are the checks that actually close the door.
-	it.each([
-		["loginUser", (service: ReturnType<typeof createService>["service"]) => service.loginUser("test@example.com", "pw")],
-		["requestRecovery", (service: ReturnType<typeof createService>["service"]) => service.requestRecovery("test@example.com")],
-		["validateRecovery", (service: ReturnType<typeof createService>["service"]) => service.validateRecovery("token")],
-		["resetPassword", (service: ReturnType<typeof createService>["service"]) => service.resetPassword("new-password", "token")],
-	])("rejects %s", async (_name, call) => {
-		const { service } = createDisabled();
-		await expect(call(service)).rejects.toThrow("Password sign-in is disabled on this instance; use single sign-on");
+	describe("UserService.loginWithSso", () => {
+		// registerUser grants superadmin to whoever registers first. Mirroring that here would hand the
+		// instance to the first provider user to arrive.
+		it("refuses to bootstrap an instance that has no superadmin yet", async () => {
+			const { service, usersRepository } = createService();
+			(usersRepository.findSuperAdminTeamId as jest.Mock).mockResolvedValue(null);
+
+			await expectSsoCode(service.loginWithSso(makeSsoClaims()), "not_initialized");
+			expect(usersRepository.create).not.toHaveBeenCalled();
+		});
+
+		it("signs in an account already linked to the provider subject", async () => {
+			const { service, usersRepository } = createService();
+			(usersRepository.findBySsoSubject as jest.Mock).mockResolvedValue(makeUser({ id: "user-9" }));
+
+			const result = await service.loginWithSso(makeSsoClaims());
+
+			expect(usersRepository.findBySsoSubject).toHaveBeenCalledWith("https://auth.example.com/", "provider-subject-1");
+			expect(result.token).toBe("jwt-token-123");
+			expect(usersRepository.findByEmailOrNull).not.toHaveBeenCalled();
+		});
+
+		it("links an existing account on first sign-in and remembers the subject", async () => {
+			const { service, usersRepository } = createService();
+			(usersRepository.findByEmailOrNull as jest.Mock).mockResolvedValue(makeUser({ id: "user-7" }));
+
+			const result = await service.loginWithSso(makeSsoClaims());
+
+			expect(usersRepository.updateById).toHaveBeenCalledWith(
+				"user-7",
+				{ ssoIssuer: "https://auth.example.com/", ssoSubject: "provider-subject-1" },
+				null
+			);
+			expect(result.token).toBe("jwt-token-123");
+		});
+
+		// findByEmailOrNull and findBySsoSubject both return the password hash.
+		it("never puts the password hash into the signed token", async () => {
+			const { service, usersRepository, jwt } = createService();
+			(usersRepository.findBySsoSubject as jest.Mock).mockResolvedValue(makeUser({ password: "$2a$10$secrethash" }));
+
+			const result = await service.loginWithSso(makeSsoClaims());
+
+			expect(result.user).not.toHaveProperty("password");
+			const [payload] = (jwt.sign as jest.Mock).mock.calls[0] as [Record<string, unknown>];
+			expect(payload).not.toHaveProperty("password");
+			expect(JSON.stringify(payload)).not.toContain("secrethash");
+		});
+
+		it("consumes a pending invite and creates a password-less user with its role and team", async () => {
+			const { service, usersRepository, invitesRepository } = createService();
+			(invitesRepository.findByEmailAndDelete as jest.Mock).mockResolvedValue({ role: ["admin"], teamId: "team-5", email: "ada@example.com" });
+
+			const result = await service.loginWithSso(makeSsoClaims());
+
+			expect(invitesRepository.findByEmailAndDelete).toHaveBeenCalledWith("ada@example.com");
+			expect(usersRepository.create).toHaveBeenCalledWith(
+				{
+					firstName: "Ada",
+					lastName: "Lovelace",
+					email: "ada@example.com",
+					role: ["admin"],
+					teamId: "team-5",
+					ssoIssuer: "https://auth.example.com/",
+					ssoSubject: "provider-subject-1",
+				},
+				null
+			);
+			expect(result.token).toBe("jwt-token-123");
+		});
+
+		// One opaque reason, so this cannot be used to probe which addresses have accounts.
+		it("refuses an identity with no account, no link and no invite", async () => {
+			const { service, usersRepository } = createService();
+
+			await expectSsoCode(service.loginWithSso(makeSsoClaims()), "not_invited");
+			expect(usersRepository.create).not.toHaveBeenCalled();
+		});
 	});
 
-	it("uses 401 for login and 403 elsewhere, so the client does not bounce off the recovery page", async () => {
-		const { service } = createDisabled();
+	// ── OIDC_ALLOW_LOCAL_LOGIN=false ────────────────────────────────────────────
 
-		const login = (await service.loginUser("test@example.com", "pw").catch((error: unknown) => error)) as AppError;
-		const recovery = (await service.requestRecovery("test@example.com").catch((error: unknown) => error)) as AppError;
+	describe("UserService with password sign-in disabled", () => {
+		const disabledLocalLogin = { allowLocalLogin: false };
 
-		expect(login.status).toBe(401);
-		expect(recovery.status).toBe(403);
+		const createDisabled = () => {
+			const created = createService();
+			(created.settingsService.getOidcConfig as jest.Mock).mockReturnValue(disabledLocalLogin);
+			return created;
+		};
+
+		// Hiding the fields in the UI is cosmetic; these are the checks that actually close the door.
+		it.each([
+			["loginUser", (service: ReturnType<typeof createService>["service"]) => service.loginUser("test@example.com", "pw")],
+			["requestRecovery", (service: ReturnType<typeof createService>["service"]) => service.requestRecovery("test@example.com")],
+			["validateRecovery", (service: ReturnType<typeof createService>["service"]) => service.validateRecovery("token")],
+			["resetPassword", (service: ReturnType<typeof createService>["service"]) => service.resetPassword("new-password", "token")],
+		])("rejects %s", async (_name, call) => {
+			const { service } = createDisabled();
+			await expect(call(service)).rejects.toThrow("Password sign-in is disabled on this instance; use single sign-on");
+		});
+
+		it("uses 401 for login and 403 elsewhere, so the client does not bounce off the recovery page", async () => {
+			const { service } = createDisabled();
+
+			const login = (await service.loginUser("test@example.com", "pw").catch((error: unknown) => error)) as AppError;
+			const recovery = (await service.requestRecovery("test@example.com").catch((error: unknown) => error)) as AppError;
+
+			expect(login.status).toBe(401);
+			expect(recovery.status).toBe(403);
+		});
+
+		it("rejects invited registration but still allows first-run setup", async () => {
+			const invited = createDisabled();
+			await expect(invited.service.registerUser({ email: "a@b.com" }, "invite-token", null)).rejects.toThrow(
+				"Password sign-in is disabled on this instance; use single sign-on"
+			);
+
+			// Without this, an instance configured for SSO from the start could never be set up.
+			const firstRun = createDisabled();
+			(firstRun.usersRepository.findSuperAdmin as jest.Mock).mockResolvedValue(false);
+			await expect(firstRun.service.registerUser({ email: "a@b.com", password: "pw" }, "", null)).resolves.toBeDefined();
+		});
+
+		it("leaves every password path working when sso is off", async () => {
+			const { service } = createService();
+			await expect(service.requestRecovery("test@example.com")).resolves.toBe("msg-id-123");
+		});
 	});
 
-	it("rejects invited registration but still allows first-run setup", async () => {
-		const invited = createDisabled();
-		await expect(invited.service.registerUser({ email: "a@b.com" }, "invite-token", null)).rejects.toThrow(
-			"Password sign-in is disabled on this instance; use single sign-on"
-		);
+	// ── OIDC_AUTO_PROVISION ─────────────────────────────────────────────────────
 
-		// Without this, an instance configured for SSO from the start could never be set up.
-		const firstRun = createDisabled();
-		(firstRun.usersRepository.findSuperAdmin as jest.Mock).mockResolvedValue(false);
-		await expect(firstRun.service.registerUser({ email: "a@b.com", password: "pw" }, "", null)).resolves.toBeDefined();
+	describe("UserService.loginWithSso with auto-provisioning", () => {
+		const createAutoProvisioning = (defaultRole: "user" | "admin" = "user") => {
+			const created = createService();
+			(created.settingsService.getOidcConfig as jest.Mock).mockReturnValue({ allowLocalLogin: true, autoProvision: true, defaultRole });
+			return created;
+		};
+
+		// teamId is immutable on the user document, so a wrong team cannot be corrected through the API.
+		it("creates the account on the superadmin's team with the configured role", async () => {
+			const { service, usersRepository } = createAutoProvisioning("admin");
+
+			const result = await service.loginWithSso(makeSsoClaims());
+
+			expect(usersRepository.create).toHaveBeenCalledWith(
+				expect.objectContaining({ email: "ada@example.com", role: ["admin"], teamId: "team-1" }),
+				null
+			);
+			expect(result.token).toBe("jwt-token-123");
+		});
+
+		it("still prefers an existing account over creating a new one", async () => {
+			const { service, usersRepository } = createAutoProvisioning();
+			(usersRepository.findByEmailOrNull as jest.Mock).mockResolvedValue(makeUser({ id: "user-4" }));
+
+			await service.loginWithSso(makeSsoClaims());
+
+			expect(usersRepository.create).not.toHaveBeenCalled();
+		});
+
+		it("still refuses when the instance has no superadmin", async () => {
+			const { service, usersRepository } = createAutoProvisioning();
+			(usersRepository.findSuperAdminTeamId as jest.Mock).mockResolvedValue(null);
+
+			await expectSsoCode(service.loginWithSso(makeSsoClaims()), "not_initialized");
+			expect(usersRepository.create).not.toHaveBeenCalled();
+		});
 	});
 
-	it("leaves every password path working when sso is off", async () => {
-		const { service } = createService();
-		await expect(service.requestRecovery("test@example.com")).resolves.toBe("msg-id-123");
-	});
-});
+	describe("UserService.loginWithSso guards on an existing account", () => {
+		// The stored subject is what makes a recycled address safe: the previous holder's account keeps
+		// its link, and rebinding has to go through an administrator.
+		it("refuses an account already linked to a different provider identity", async () => {
+			const { service, usersRepository } = createService();
+			(usersRepository.findByEmailOrNull as jest.Mock).mockResolvedValue(
+				makeUser({ id: "user-7", ssoIssuer: "https://auth.example.com/", ssoSubject: "the-previous-holder" })
+			);
 
-// ── OIDC_AUTO_PROVISION ─────────────────────────────────────────────────────
+			await expectSsoCode(service.loginWithSso(makeSsoClaims({ subject: "a-new-person" })), "not_invited");
+			expect(usersRepository.updateById).not.toHaveBeenCalled();
+		});
 
-describe("UserService.loginWithSso with auto-provisioning", () => {
-	const createAutoProvisioning = (defaultRole: "user" | "admin" = "user") => {
-		const created = createService();
-		(created.settingsService.getOidcConfig as jest.Mock).mockReturnValue({ allowLocalLogin: true, autoProvision: true, defaultRole });
-		return created;
-	};
+		it("still signs in when the stored subject is the one presenting", async () => {
+			const { service, usersRepository } = createService();
+			(usersRepository.findByEmailOrNull as jest.Mock).mockResolvedValue(
+				makeUser({ id: "user-7", ssoIssuer: "https://auth.example.com/", ssoSubject: "provider-subject-1" })
+			);
 
-	it("is off by default, so an unknown identity is still refused", async () => {
-		const { service, usersRepository } = createService();
-		await expectSsoCode(service.loginWithSso(makeSsoClaims()), "not_invited");
-		expect(usersRepository.create).not.toHaveBeenCalled();
-	});
+			await expect(service.loginWithSso(makeSsoClaims())).resolves.toMatchObject({ token: "jwt-token-123" });
+		});
 
-	// teamId is immutable on the user document, so a wrong team cannot be corrected through the API.
-	it("creates the account on the superadmin's team with the configured role", async () => {
-		const { service, usersRepository } = createAutoProvisioning("admin");
+		// OIDC_REQUIRE_VERIFIED_EMAIL exists for providers that omit the claim. It must not also open up
+		// taking over an account that already exists, which is where the damage would be.
+		it("requires a verified address to claim an existing account even when the global check is relaxed", async () => {
+			const { service, usersRepository } = createService();
+			(usersRepository.findByEmailOrNull as jest.Mock).mockResolvedValue(makeUser({ id: "user-7", role: ["superadmin"] }));
 
-		const result = await service.loginWithSso(makeSsoClaims());
-
-		expect(usersRepository.create).toHaveBeenCalledWith(
-			expect.objectContaining({ email: "ada@example.com", role: ["admin"], teamId: "team-1" }),
-			null
-		);
-		expect(result.token).toBe("jwt-token-123");
-	});
-
-	it("still prefers an existing account over creating a new one", async () => {
-		const { service, usersRepository } = createAutoProvisioning();
-		(usersRepository.findByEmailOrNull as jest.Mock).mockResolvedValue(makeUser({ id: "user-4" }));
-
-		await service.loginWithSso(makeSsoClaims());
-
-		expect(usersRepository.create).not.toHaveBeenCalled();
-	});
-
-	it("still refuses when the instance has no superadmin", async () => {
-		const { service, usersRepository } = createAutoProvisioning();
-		(usersRepository.findSuperAdminTeamId as jest.Mock).mockResolvedValue(null);
-
-		await expectSsoCode(service.loginWithSso(makeSsoClaims()), "not_initialized");
-		expect(usersRepository.create).not.toHaveBeenCalled();
+			await expectSsoCode(service.loginWithSso(makeSsoClaims({ emailVerified: false })), "email_unverified");
+			expect(usersRepository.updateById).not.toHaveBeenCalled();
+		});
 	});
 });

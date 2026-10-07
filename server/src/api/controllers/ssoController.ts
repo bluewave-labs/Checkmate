@@ -74,9 +74,17 @@ class SsoController implements ISsoController {
 		}
 	};
 
-	// Read from the raw URL rather than req.query: sanitizeQuery runs DOMPurify over every query
-	// value, which rewrites an opaque authorization code and breaks the exchange.
-	private callbackUrl = (originalUrl: string): URL => new URL(originalUrl, this.canonicalOrigin() || "http://localhost");
+	// Built from the configured redirect URI rather than the received path, because openid-client
+	// derives the token request's redirect_uri from this URL and the provider requires it to match
+	// the authorization request exactly; behind a prefix-stripping proxy the two would differ.
+	// The query is taken from the raw URL rather than req.query, because sanitizeQuery runs
+	// DOMPurify over every query value and would rewrite an opaque authorization code.
+	private callbackUrl = (originalUrl: string): URL => {
+		const url = new URL(this.settingsService.getOidcConfig()?.redirectUri ?? "http://localhost");
+		const queryStart = originalUrl.indexOf("?");
+		url.search = queryStart === -1 ? "" : originalUrl.slice(queryStart + 1);
+		return url;
+	};
 
 	private canonicalOrigin = (): string => {
 		const oidc = this.settingsService.getOidcConfig();

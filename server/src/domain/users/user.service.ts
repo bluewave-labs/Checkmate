@@ -206,6 +206,9 @@ export class UserService implements IUserService {
 	};
 
 	createUser = async (userData: Partial<User>, teamId: string, actorRoles: UserRole[], file: Express.Multer.File | null) => {
+		if (userData.password) {
+			this.assertLocalLoginEnabled("createUser");
+		}
 		// Validate that the creator can assign the requested roles
 		const targetRoles = userData.role ?? [];
 		for (const targetRole of targetRoles) {
@@ -280,8 +283,21 @@ export class UserService implements IUserService {
 
 		const existing = await this.usersRepository.findByEmailOrNull(claims.email);
 		if (existing) {
-			// Remember the subject so the account survives an email change at the provider, and a
-			// recycled address cannot inherit it. Role and team are managed in Checkmate and left alone.
+			// Already bound to a different identity. This is what stops a recycled address: the
+			// previous holder's account keeps its link, and rebinding takes an administrator.
+			if (existing.ssoSubject && (existing.ssoIssuer !== claims.issuer || existing.ssoSubject !== claims.subject)) {
+				throw this.ssoFail(method, "not_invited", "This account is linked to a different single sign-on identity");
+			}
+
+			// Claiming an account that already exists always requires a verified address, even where
+			// OIDC_REQUIRE_VERIFIED_EMAIL has relaxed the global check. That setting exists for
+			// providers that omit the claim, and must not also open up taking over an admin account.
+			if (!claims.emailVerified) {
+				throw this.ssoFail(method, "email_unverified", "The identity provider has not verified this email address");
+			}
+
+			// Remember the subject so the account survives an email change at the provider.
+			// Role and team are managed in Checkmate and left alone.
 			await this.usersRepository.updateById(existing.id, { ssoIssuer: claims.issuer, ssoSubject: claims.subject }, null);
 			return this.issueSsoSession(existing, "matched");
 		}
@@ -513,6 +529,9 @@ export class UserService implements IUserService {
 	};
 
 	setPasswordByUserId = async (userId: string, password: string) => {
+		// Writing a password is a password entry point too: without this a superadmin could give an
+		// SSO-only account a hash that outlives the next flip of the flag.
+		this.assertLocalLoginEnabled("setPasswordByUserId");
 		const hashedPassword = this.hashPassword(password);
 		const updatedUser = await this.usersRepository.updateById(userId, { password: hashedPassword }, null);
 		return updatedUser;

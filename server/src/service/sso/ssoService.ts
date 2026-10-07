@@ -1,9 +1,11 @@
+import { z } from "zod";
 import type * as openidClient from "openid-client";
 import type jwt from "jsonwebtoken";
 import { AppError } from "@/utils/AppError.js";
 import type { ILogger } from "@/utils/logger.js";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
-import type { OidcConfig, SsoClaims, SsoErrorCode } from "@/types/sso.js";
+import { SSO_FLOW_TTL_SECONDS, type OidcConfig, type SsoClaims, type SsoErrorCode } from "@/types/sso.js";
+import { ssoConfigResponseSchema } from "@/api/validation/authValidation.js";
 
 const SERVICE_NAME = "SsoService";
 
@@ -11,8 +13,6 @@ const SERVICE_NAME = "SsoService";
 // request open and pin sockets; a sign-in redirect should fail fast and be retried by the user.
 const REQUEST_TIMEOUT_SECONDS = 5;
 
-// The flow token only has to survive the round trip to the provider and back.
-const FLOW_TOKEN_TTL_SECONDS = 600;
 const FLOW_TOKEN_PURPOSE = "sso-flow";
 
 type JwtType = typeof jwt;
@@ -39,18 +39,16 @@ export type SsoAuthorizationRequest = {
 
 // What the login page needs to decide whether to offer the button. Deliberately excludes the
 // issuer and client id: this endpoint is unauthenticated.
-export type SsoPublicConfig = {
-	enabled: boolean;
-	label: string;
-	localLoginDisabled: boolean;
-};
+export type SsoPublicConfig = z.infer<typeof ssoConfigResponseSchema>;
 
-type FlowTokenPayload = {
-	purpose: typeof FLOW_TOKEN_PURPOSE;
-	state: string;
-	nonce: string;
-	codeVerifier: string;
-};
+const flowTokenSchema = z.object({
+	purpose: z.literal(FLOW_TOKEN_PURPOSE),
+	state: z.string(),
+	nonce: z.string(),
+	codeVerifier: z.string(),
+});
+
+type FlowTokenPayload = z.infer<typeof flowTokenSchema>;
 
 type RawProfileClaims = {
 	email?: string;
@@ -60,8 +58,9 @@ type RawProfileClaims = {
 	name?: string;
 };
 
-// UserModel requires a first and last name, and nameValidation caps each at 50 characters, so a
-// provider-supplied name has to be trimmed to fit rather than trusted as-is.
+// UserModel requires both name fields. Request validation does not run on this path, so a
+// provider-supplied name is clamped here to the same 50 characters nameValidation allows,
+// keeping SSO users editable through the profile form afterwards.
 const NAME_MAX_LENGTH = 50;
 
 const asString = (value: unknown): string | undefined => (typeof value === "string" && value.trim().length > 0 ? value.trim() : undefined);
@@ -74,9 +73,11 @@ const readProfileClaims = (claims: Record<string, unknown>): RawProfileClaims =>
 	name: asString(claims.name),
 });
 
-// NFKC first: lookalike forms (fullwidth characters, compatibility letters) would otherwise compare
-// as distinct addresses and, with auto-provisioning on, create a second account for the same person.
-const normalizeEmail = (email: string | undefined): string => (email ? email.normalize("NFKC").trim().toLowerCase() : "");
+// Trim and lowercase only, matching lowercaseEmailValidation, which is how local accounts are
+// stored. Unicode compatibility folding is deliberately not applied: it maps separately-ownable
+// code points onto ASCII, and folding only the provider's side of the comparison could let a
+// lookalike address match an account it does not own.
+const normalizeEmail = (email: string | undefined): string => (email ? email.trim().toLowerCase() : "");
 
 const clampName = (value: string): string => value.slice(0, NAME_MAX_LENGTH);
 
@@ -89,21 +90,10 @@ const splitName = (claims: RawProfileClaims, email: string): { firstName: string
 			lastName: clampName(claims.familyName ?? claims.givenName ?? ""),
 		};
 	}
-	const parts = (claims.name ?? email.split("@")[0] ?? "").split(/\s+/).filter(Boolean);
+	const parts = (claims.name ?? email.split("@")[0] ?? email).split(/\s+/).filter(Boolean);
 	const first = parts[0] ?? email;
 	const last = parts.length > 1 ? parts.slice(1).join(" ") : first;
 	return { firstName: clampName(first), lastName: clampName(last) };
-};
-
-const isFlowTokenPayload = (payload: unknown): payload is FlowTokenPayload => {
-	if (typeof payload !== "object" || payload === null) return false;
-	const candidate = payload as Record<string, unknown>;
-	return (
-		candidate.purpose === FLOW_TOKEN_PURPOSE &&
-		typeof candidate.state === "string" &&
-		typeof candidate.nonce === "string" &&
-		typeof candidate.codeVerifier === "string"
-	);
 };
 
 export interface ISsoService {
@@ -120,10 +110,10 @@ export class SsoService implements ISsoService {
 	private jwt: JwtType;
 	private logger: ILogger;
 
-	// Discovery is one network round trip per sign-in otherwise. The in-flight promise is cached,
-	// not just the result, so concurrent sign-ins collapse to a single fetch. openid-client refreshes
-	// the provider's keys inside the Configuration, so this does not go stale.
-	private configuration: Promise<openidClient.Configuration> | null = null;
+	// Saves a discovery round trip on every sign-in. openid-client refreshes the provider's keys
+	// inside the Configuration, so this does not go stale. A failed discovery never assigns, so a
+	// provider outage does not disable sign-in until restart.
+	private configuration: openidClient.Configuration | null = null;
 
 	constructor({ oidc, settingsService, jwt, logger }: { oidc: OidcLib; settingsService: ISettingsService; jwt: JwtType; logger: ILogger }) {
 		this.oidc = oidc;
@@ -220,6 +210,7 @@ export class SsoService implements ISsoService {
 			issuer: idTokenClaims.iss,
 			subject: idTokenClaims.sub,
 			email,
+			emailVerified: claims.emailVerified === true,
 			firstName,
 			lastName,
 		};
@@ -249,7 +240,15 @@ export class SsoService implements ISsoService {
 		try {
 			const userInfo = await this.oidc.fetchUserInfo(configuration, tokens.access_token, idTokenClaims.sub);
 			const fromUserInfo = readProfileClaims(userInfo);
-			return { ...fromIdToken, ...fromUserInfo };
+			// Per field, not a spread: readProfileClaims materialises every key, so spreading would
+			// overwrite a claim the ID token did supply with the undefined userinfo left out.
+			return {
+				email: fromUserInfo.email ?? fromIdToken.email,
+				emailVerified: fromUserInfo.emailVerified ?? fromIdToken.emailVerified,
+				givenName: fromUserInfo.givenName ?? fromIdToken.givenName,
+				familyName: fromUserInfo.familyName ?? fromIdToken.familyName,
+				name: fromUserInfo.name ?? fromIdToken.name,
+			};
 		} catch (error: unknown) {
 			this.logger.warn({
 				message: error instanceof Error ? error.message : String(error),
@@ -266,11 +265,7 @@ export class SsoService implements ISsoService {
 		}
 		const { jwtSecret } = this.settingsService.getSettings();
 		try {
-			const payload = this.jwt.verify(flowToken, jwtSecret);
-			if (!isFlowTokenPayload(payload)) {
-				throw new Error("Flow token payload is not an sso-flow token");
-			}
-			return payload;
+			return flowTokenSchema.parse(this.jwt.verify(flowToken, jwtSecret));
 		} catch (error: unknown) {
 			this.logger.warn({
 				message: error instanceof Error ? error.message : String(error),
@@ -281,29 +276,22 @@ export class SsoService implements ISsoService {
 		}
 	};
 
-	private getConfiguration = (oidc: OidcConfig): Promise<openidClient.Configuration> => {
-		const cached = this.configuration;
-		if (cached) {
-			return cached;
-		}
-
-		const pending = this.discover(oidc);
-		this.configuration = pending;
-		// A failed discovery must not be cached, or one provider outage disables sign-in until restart.
-		pending.catch(() => {
-			if (this.configuration === pending) {
-				this.configuration = null;
-			}
-		});
-		return pending;
+	private getConfiguration = async (oidc: OidcConfig): Promise<openidClient.Configuration> => {
+		this.configuration ??= await this.discover(oidc);
+		return this.configuration;
 	};
 
 	private discover = async (oidc: OidcConfig): Promise<openidClient.Configuration> => {
-		const configuration = await this.oidc.discovery(new URL(oidc.issuer), oidc.clientId, oidc.clientSecret);
+		// The timeout has to be passed to discovery as well as set on the result: the discovery fetch
+		// is the first network call of a cold sign-in and would otherwise run under the 30s default.
+		// allowInsecureRequests likewise has to run via `execute`, during discovery — applying it to
+		// the returned configuration would be too late, since the discovery fetch itself is what
+		// rejects an http issuer.
+		const configuration = await this.oidc.discovery(new URL(oidc.issuer), oidc.clientId, oidc.clientSecret, undefined, {
+			timeout: REQUEST_TIMEOUT_SECONDS,
+			...(oidc.allowInsecureIssuer && { execute: [this.oidc.allowInsecureRequests] }),
+		});
 		configuration.timeout = REQUEST_TIMEOUT_SECONDS;
-		if (oidc.allowInsecureIssuer) {
-			this.oidc.allowInsecureRequests(configuration);
-		}
 		return configuration;
 	};
 
@@ -311,7 +299,7 @@ export class SsoService implements ISsoService {
 	// id, teamId or role, so verifyJWT's payload guard rejects it if anyone presents it as a Bearer token.
 	private signFlowToken = (payload: FlowTokenPayload): string => {
 		const { jwtSecret } = this.settingsService.getSettings();
-		return this.jwt.sign(payload, jwtSecret, { expiresIn: FLOW_TOKEN_TTL_SECONDS });
+		return this.jwt.sign(payload, jwtSecret, { expiresIn: SSO_FLOW_TTL_SECONDS });
 	};
 
 	private fail = (method: string, code: SsoErrorCode, message: string): AppError =>

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { DbTypes, LogLevels, QueueModes } from "@/domain/app-settings/app-settings.type.js";
-import { UserRoles } from "@/domain/users/user.type.js";
+import { OIDC_CALLBACK_PATH, OidcDefaultRoles } from "@/types/sso.js";
 import { booleanCoercion } from "@/api/validation/shared.js";
 import { ILogger } from "@/utils/logger.js";
 
@@ -49,13 +49,13 @@ const oidcEnvShape = {
 	// are wrong behind a TLS-terminating proxy, and this value has to be registered verbatim at the provider anyway.
 	OIDC_REDIRECT_URI: z.string().optional(),
 	OIDC_SCOPES: z.string().default("openid profile email"),
-	OIDC_BUTTON_LABEL: z.string().default("Single sign-on"),
+	// Empty by default so the login page falls back to its translated label; an operator who sets
+	// this overrides the translation in every locale, which is their call to make.
+	OIDC_BUTTON_LABEL: z.string().default(""),
 	OIDC_ALLOW_LOCAL_LOGIN: booleanCoercion.default(true),
 	OIDC_REQUIRE_VERIFIED_EMAIL: booleanCoercion.default(true),
 	OIDC_AUTO_PROVISION: booleanCoercion.default(false),
-	// superadmin is excluded so auto-provisioning can never mint an instance owner, and demo because a demo
-	// user cannot be deleted through the API.
-	OIDC_DEFAULT_ROLE: z.enum(UserRoles.filter((role) => role === "user" || role === "admin")).default("user"),
+	OIDC_DEFAULT_ROLE: z.enum(OidcDefaultRoles).default("user"),
 	OIDC_ALLOW_INSECURE_ISSUER: booleanCoercion.default(false),
 };
 
@@ -78,7 +78,7 @@ const refineOidcEnv = (env: OidcEnvInput, ctx: z.RefinementCtx) => {
 
 	const urls = [
 		{ key: "OIDC_ISSUER", value: env.OIDC_ISSUER, requireHttps: !env.OIDC_ALLOW_INSECURE_ISSUER },
-		{ key: "OIDC_REDIRECT_URI", value: env.OIDC_REDIRECT_URI, requireHttps: false },
+		{ key: "OIDC_REDIRECT_URI", value: env.OIDC_REDIRECT_URI, requireHttps: !env.OIDC_ALLOW_INSECURE_ISSUER },
 	] as const;
 
 	for (const { key, value, requireHttps } of urls) {
@@ -96,6 +96,18 @@ const refineOidcEnv = (env: OidcEnvInput, ctx: z.RefinementCtx) => {
 		if (url.username || url.password) addIssue(key, `${key} must not embed credentials`);
 		if (requireHttps && url.protocol !== "https:") {
 			addIssue(key, `${key} must use https; set OIDC_ALLOW_INSECURE_ISSUER=true to allow http on a trusted network`);
+		}
+	}
+
+	if (env.OIDC_REDIRECT_URI) {
+		try {
+			// Pinned because the route only exists at this path; a mismatch would otherwise surface
+			// as an opaque invalid_grant on the first sign-in rather than at boot.
+			if (new URL(env.OIDC_REDIRECT_URI).pathname !== OIDC_CALLBACK_PATH) {
+				addIssue("OIDC_REDIRECT_URI", `OIDC_REDIRECT_URI must end in ${OIDC_CALLBACK_PATH}`);
+			}
+		} catch {
+			// Already reported above.
 		}
 	}
 

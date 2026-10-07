@@ -11,10 +11,21 @@ export const SsoErrorCodes = [
 	"email_unverified",
 	"not_invited",
 	"not_initialized",
-	"rate_limited",
 ] as const;
 
 export type SsoErrorCode = (typeof SsoErrorCodes)[number];
+
+// Roles auto-provisioning may assign. superadmin is excluded so it can never mint an instance
+// owner, and demo because a demo user cannot be deleted through the API.
+export const OidcDefaultRoles = ["user", "admin"] as const satisfies readonly UserRole[];
+export type OidcDefaultRole = (typeof OidcDefaultRoles)[number];
+
+// How long a sign-in has to complete. The flow token's expiry and the cookie's max-age are both
+// derived from this, so they cannot drift apart and strand a user mid-flow.
+export const SSO_FLOW_TTL_SECONDS = 600;
+
+// Where the provider sends the browser back. Pinned so OIDC_REDIRECT_URI can be checked at boot.
+export const OIDC_CALLBACK_PATH = "/api/v1/auth/sso/callback";
 
 // The identity the provider asserted, already normalised. Deliberately not the raw claim set:
 // nothing downstream should be able to reach for a token or an arbitrary claim.
@@ -22,6 +33,9 @@ export type SsoClaims = {
 	issuer: string;
 	subject: string;
 	email: string;
+	// Carried through so account resolution can require it when taking over an existing account,
+	// even where OIDC_REQUIRE_VERIFIED_EMAIL has relaxed the global check.
+	emailVerified: boolean;
 	firstName: string;
 	lastName: string;
 };
@@ -38,6 +52,6 @@ export type OidcConfig = {
 	allowLocalLogin: boolean;
 	requireVerifiedEmail: boolean;
 	autoProvision: boolean;
-	defaultRole: Extract<UserRole, "user" | "admin">;
+	defaultRole: OidcDefaultRole;
 	allowInsecureIssuer: boolean;
 };

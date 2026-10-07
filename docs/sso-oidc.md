@@ -31,14 +31,14 @@ A "Single sign-on" button appears on the login page. Checkmate fetches everythin
 | `OIDC_ISSUER` | — | Issuer URL. Must be `https` unless `OIDC_ALLOW_INSECURE_ISSUER` is set, with no query string, fragment or embedded credentials. |
 | `OIDC_CLIENT_ID` | — | Required when enabled. |
 | `OIDC_CLIENT_SECRET` | — | Required when enabled. |
-| `OIDC_REDIRECT_URI` | — | Required when enabled, and must match the provider's registration exactly. |
+| `OIDC_REDIRECT_URI` | — | Required when enabled, and must match the provider's registration exactly. Must end in `/api/v1/auth/sso/callback`, and be `https` unless `OIDC_ALLOW_INSECURE_ISSUER` is set. |
 | `OIDC_SCOPES` | `openid profile email` | |
-| `OIDC_BUTTON_LABEL` | `Single sign-on` | Text on the login button. |
+| `OIDC_BUTTON_LABEL` | — | Overrides the translated button label, in every locale. |
 | `OIDC_ALLOW_LOCAL_LOGIN` | `true` | `false` disables email and password sign-in entirely. |
 | `OIDC_REQUIRE_VERIFIED_EMAIL` | `true` | See [Email addresses](#email-addresses). |
 | `OIDC_AUTO_PROVISION` | `false` | See [Who can sign in](#who-can-sign-in). |
 | `OIDC_DEFAULT_ROLE` | `user` | Role for auto-provisioned users. `user` or `admin` only. |
-| `OIDC_ALLOW_INSECURE_ISSUER` | `false` | Permits an `http://` issuer on a trusted network. |
+| `OIDC_ALLOW_INSECURE_ISSUER` | `false` | Permits `http://` for the issuer and the redirect URI, on a trusted network. |
 
 Misconfigurations are caught at boot: the server refuses to start and names the offending variable.
 
@@ -49,7 +49,7 @@ Set up an administrator account with email and password **before** enabling SSO.
 Once a provider identity has authenticated, Checkmate resolves it in this order:
 
 1. **An account already linked to this provider identity** — signed in.
-2. **An account with the same verified email** — signed in, and the provider's subject id is stored against it. Role and team are left alone; those are managed in Checkmate, not by the provider.
+2. **An account with the same verified email, not yet linked to anyone** — signed in, and the provider's subject id is stored against it. Role and team are left alone; those are managed in Checkmate, not by the provider. An account already linked to a *different* provider identity is refused, so re-linking takes an administrator.
 3. **A pending invite for that email** — the invite is consumed and an account is created with the invite's role and team.
 4. **`OIDC_AUTO_PROVISION=true`** — an account is created with `OIDC_DEFAULT_ROLE`, on the administrator's team.
 5. **Otherwise** — refused, with a message telling the person to ask an administrator for an invite.
@@ -75,7 +75,9 @@ Checkmate matches a provider identity to an account by email the first time, the
 
 Because that first match is by email, **only federate with a provider you trust to assert email addresses**. By default Checkmate requires the provider to say the address is verified, and treats a missing `email_verified` claim as unverified. If your provider does not emit the claim — some PocketID and Authentik setups do not — set `OIDC_REQUIRE_VERIFIED_EMAIL=false`, and be sure your provider does not let users set their own address.
 
-Addresses are compared after Unicode NFKC normalisation and lowercasing. Plus-addressing is *not* normalised: `ada+work@example.com` and `ada@example.com` are different accounts.
+Even with that setting off, **claiming an account that already exists always requires a verified address**. Relaxing the check lets people be provisioned from an invite; it never lets an unverified claim take over an existing account.
+
+Addresses are compared after trimming and lowercasing, matching how accounts are stored. Plus-addressing is not normalised: `ada+work@example.com` and `ada@example.com` are different accounts. Unicode compatibility folding is deliberately not applied, so an address using lookalike characters does not match the ASCII account it resembles.
 
 ## Disabling password sign-in
 
@@ -94,6 +96,8 @@ First-run setup stays available while no administrator account exists, so an ins
 - **No RP-initiated logout.** Signing out of Checkmate does not sign you out of the provider.
 - **`response_mode=query` only.** `form_post` is not supported.
 - **Sign-in always lands on the uptime dashboard**, rather than returning to the page you were on.
+- **Accounts created before this release from a mixed-case invite** may have a mixed-case email stored and will not be matched. An administrator can correct the address on the user's record.
+- **The callback page trusts the token it is handed** until the first API call rejects it. A crafted link can therefore make the UI briefly render as if signed in; no data is reachable, since every request is still authorised by the server.
 
 ## Troubleshooting
 
@@ -106,6 +110,8 @@ First-run setup stays available while no administrator account exists, so an ins
 **"Could not complete sign-in with your identity provider."** The code exchange failed. The underlying reason is in the server log — never in the browser, deliberately, since the provider controls that text. Usually the redirect URI registered at the provider does not match `OIDC_REDIRECT_URI` exactly, or the client secret is wrong.
 
 **"No Checkmate account matches this account."** The person has no account and no pending invite. See [Who can sign in](#who-can-sign-in).
+
+**"This account is linked to a different single sign-on identity."** The address matches an account already bound to another provider subject — usually a recycled address. An administrator should rename or remove the old account.
 
 **Certificate errors against an internal provider.** Trust the CA rather than disabling verification — there is no option to skip TLS checks. See the [Custom CA Trust Guide](./custom-ca-trust.md).
 
