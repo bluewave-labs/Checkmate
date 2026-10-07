@@ -7,6 +7,7 @@ import AuthLogin from "@/Pages/Auth/Login";
 import AuthRegister from "@/Pages/Auth/Register";
 import AuthForgotPassword from "@/Pages/Auth/Recovery";
 import AuthSetNewPassword from "@/Pages/Auth/SetNewPassword";
+import AuthSsoCallback from "@/Pages/Auth/SsoCallback";
 
 // Dashboard
 import Dashboard from "@/Pages/Dashboard";
@@ -302,6 +303,10 @@ const Routes = () => {
 				element={<AuthRegister />}
 			/>
 
+			<Route
+				path="/auth/callback"
+				element={<AuthSsoCallback />}
+			/>
 			<Route
 				path="/forgot-password"
 				element={<AuthForgotPassword />}

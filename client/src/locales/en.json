@@ -467,6 +467,21 @@
 						"text": "Don't have an account?",
 						"linkText": "Register here"
 					}
+				},
+				"sso": {
+					"divider": "or",
+					"submit": "Single sign-on",
+					"errors": {
+						"generic": "Single sign-on failed. Please try again.",
+						"not_configured": "Single sign-on is not configured on this instance.",
+						"invalid_state": "This sign-in attempt expired or was started in another browser. Please try again.",
+						"exchange_failed": "Could not complete sign-in with your identity provider. Please try again.",
+						"no_email": "Your identity provider did not share an email address.",
+						"email_unverified": "Your identity provider has not verified your email address.",
+						"not_invited": "No Checkmate account matches this account. Ask an administrator for an invite.",
+						"not_initialized": "Finish setting up Checkmate before signing in with single sign-on.",
+						"rate_limited": "Too many sign-in attempts. Please wait a moment and try again."
+					}
 				}
 			},
 			"register": {
