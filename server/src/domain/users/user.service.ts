@@ -51,6 +51,21 @@ export class UserService implements IUserService {
 		return bcrypt.hashSync(password, salt);
 	};
 
+	// Enforced here rather than on each route: every password-based entry point already funnels
+	// through this service, so one guard covers login, recovery and registration together.
+	// 403 rather than 401 outside the login page, because the client hard-redirects to /login on a 401.
+	private assertLocalLoginEnabled = (method: string, status = 403): void => {
+		const oidc = this.settingsService.getOidcConfig();
+		if (oidc && !oidc.allowLocalLogin) {
+			throw new AppError({
+				message: "Password sign-in is disabled on this instance; use single sign-on",
+				service: SERVICE_NAME,
+				method,
+				status,
+			});
+		}
+	};
+
 	// SSO-only accounts have no password hash. Every local-password path has to reject them here,
 	// or bcrypt.compare is handed undefined and surfaces a library error as a 500.
 	private requirePasswordHash = (user: User, method: string, status: number): string => {
@@ -123,6 +138,9 @@ export class UserService implements IUserService {
 		// If superAdmin exists, a token should be attached to all further register requests
 		const superAdminExists = await this.usersRepository.findSuperAdmin();
 		if (superAdminExists) {
+			// First-run registration stays open even with password sign-in disabled, otherwise an
+			// instance configured for SSO from the start could never be set up at all.
+			this.assertLocalLoginEnabled("registerUser");
 			const invite = await this.invitesRepository.findByTokenAndDelete(inviteToken);
 			user.role = invite.role ?? ["user"];
 			user.teamId = invite.teamId;
@@ -223,6 +241,7 @@ export class UserService implements IUserService {
 	};
 
 	loginUser = async (email: string, password: string) => {
+		this.assertLocalLoginEnabled("loginUser", 401);
 		// Check if user exists
 		const user = await this.usersRepository.findByEmail(email);
 		// Compare password
@@ -349,6 +368,7 @@ export class UserService implements IUserService {
 	};
 
 	requestRecovery = async (email: string) => {
+		this.assertLocalLoginEnabled("requestRecovery");
 		const user = await this.usersRepository.findByEmail(email);
 		// Reject before a token is minted: otherwise an SSO-only account could be given a password through recovery,
 		// re-enabling local login for it even when local login is disabled.
@@ -379,11 +399,13 @@ export class UserService implements IUserService {
 	};
 
 	validateRecovery = async (recoveryToken: string) => {
+		this.assertLocalLoginEnabled("validateRecovery");
 		// Throws if token not found, validating
 		await this.recoveryTokensRepository.findByToken(recoveryToken);
 	};
 
 	resetPassword = async (password: string, recoveryToken: string) => {
+		this.assertLocalLoginEnabled("resetPassword");
 		const existingToken = await this.recoveryTokensRepository.findByToken(recoveryToken);
 		const existingUser = await this.usersRepository.findByEmail(existingToken.email);
 

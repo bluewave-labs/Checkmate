@@ -1,4 +1,5 @@
 import { describe, expect, it, jest } from "@jest/globals";
+import { AppError } from "../../../src/utils/AppError.ts";
 import { UserService } from "../../../src/domain/users/user.service.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import { toUserResponse, type User, type UserRole } from "../../../src/domain/users/user.type.ts";
@@ -68,6 +69,7 @@ const createService = (overrides?: Record<string, unknown>) => {
 		sendEmail: jest.fn().mockResolvedValue("msg-id-123"),
 	};
 	const settingsService = {
+		getOidcConfig: jest.fn().mockReturnValue(null),
 		getSettings: jest.fn().mockReturnValue(makeAppSettings()),
 	};
 	const scheduler = {
@@ -795,5 +797,55 @@ describe("UserService.loginWithSso", () => {
 
 		await expectSsoCode(service.loginWithSso(makeSsoClaims()), "not_invited");
 		expect(usersRepository.create).not.toHaveBeenCalled();
+	});
+});
+
+// ── OIDC_ALLOW_LOCAL_LOGIN=false ────────────────────────────────────────────
+
+describe("UserService with password sign-in disabled", () => {
+	const disabledLocalLogin = { allowLocalLogin: false };
+
+	const createDisabled = () => {
+		const created = createService();
+		(created.settingsService.getOidcConfig as jest.Mock).mockReturnValue(disabledLocalLogin);
+		return created;
+	};
+
+	// Hiding the fields in the UI is cosmetic; these are the checks that actually close the door.
+	it.each([
+		["loginUser", (service: ReturnType<typeof createService>["service"]) => service.loginUser("test@example.com", "pw")],
+		["requestRecovery", (service: ReturnType<typeof createService>["service"]) => service.requestRecovery("test@example.com")],
+		["validateRecovery", (service: ReturnType<typeof createService>["service"]) => service.validateRecovery("token")],
+		["resetPassword", (service: ReturnType<typeof createService>["service"]) => service.resetPassword("new-password", "token")],
+	])("rejects %s", async (_name, call) => {
+		const { service } = createDisabled();
+		await expect(call(service)).rejects.toThrow("Password sign-in is disabled on this instance; use single sign-on");
+	});
+
+	it("uses 401 for login and 403 elsewhere, so the client does not bounce off the recovery page", async () => {
+		const { service } = createDisabled();
+
+		const login = (await service.loginUser("test@example.com", "pw").catch((error: unknown) => error)) as AppError;
+		const recovery = (await service.requestRecovery("test@example.com").catch((error: unknown) => error)) as AppError;
+
+		expect(login.status).toBe(401);
+		expect(recovery.status).toBe(403);
+	});
+
+	it("rejects invited registration but still allows first-run setup", async () => {
+		const invited = createDisabled();
+		await expect(invited.service.registerUser({ email: "a@b.com" }, "invite-token", null)).rejects.toThrow(
+			"Password sign-in is disabled on this instance; use single sign-on"
+		);
+
+		// Without this, an instance configured for SSO from the start could never be set up.
+		const firstRun = createDisabled();
+		(firstRun.usersRepository.findSuperAdmin as jest.Mock).mockResolvedValue(false);
+		await expect(firstRun.service.registerUser({ email: "a@b.com", password: "pw" }, "", null)).resolves.toBeDefined();
+	});
+
+	it("leaves every password path working when sso is off", async () => {
+		const { service } = createService();
+		await expect(service.requestRecovery("test@example.com")).resolves.toBe("msg-id-123");
 	});
 });
