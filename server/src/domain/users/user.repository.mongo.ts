@@ -141,6 +141,13 @@ class MongoUsersRepository implements IUsersRepository {
 		return this.toEntity(deletedUser);
 	};
 
+	// The team every auto-provisioned SSO user joins. Returning null doubles as "this instance has
+	// not been set up yet", which is the same condition findSuperAdmin reports.
+	findSuperAdminTeamId = async () => {
+		const superAdmin = await UserModel.findOne({ role: "superadmin" }).select("teamId");
+		return superAdmin?.teamId ? toStringId(superAdmin.teamId) : null;
+	};
+
 	findSuperAdmin = async () => {
 		const superAdmin = await UserModel.findOne({ role: "superadmin" });
 		if (superAdmin !== null) {

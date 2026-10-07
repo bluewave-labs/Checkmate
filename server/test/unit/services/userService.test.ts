@@ -43,6 +43,7 @@ const createService = (overrides?: Record<string, unknown>) => {
 		updateById: jest.fn().mockResolvedValue(makeUserResponse()),
 		deleteById: jest.fn().mockResolvedValue(makeUser()),
 		findSuperAdmin: jest.fn().mockResolvedValue(true),
+		findSuperAdminTeamId: jest.fn().mockResolvedValue("team-1"),
 		findByEmailOrNull: jest.fn().mockResolvedValue(null),
 		findBySsoSubject: jest.fn().mockResolvedValue(null),
 	};
@@ -713,7 +714,7 @@ describe("UserService.loginWithSso", () => {
 	// instance to the first provider user to arrive.
 	it("refuses to bootstrap an instance that has no superadmin yet", async () => {
 		const { service, usersRepository } = createService();
-		(usersRepository.findSuperAdmin as jest.Mock).mockResolvedValue(false);
+		(usersRepository.findSuperAdminTeamId as jest.Mock).mockResolvedValue(null);
 
 		await expectSsoCode(service.loginWithSso(makeSsoClaims()), "not_initialized");
 		expect(usersRepository.create).not.toHaveBeenCalled();
@@ -847,5 +848,51 @@ describe("UserService with password sign-in disabled", () => {
 	it("leaves every password path working when sso is off", async () => {
 		const { service } = createService();
 		await expect(service.requestRecovery("test@example.com")).resolves.toBe("msg-id-123");
+	});
+});
+
+// ── OIDC_AUTO_PROVISION ─────────────────────────────────────────────────────
+
+describe("UserService.loginWithSso with auto-provisioning", () => {
+	const createAutoProvisioning = (defaultRole: "user" | "admin" = "user") => {
+		const created = createService();
+		(created.settingsService.getOidcConfig as jest.Mock).mockReturnValue({ allowLocalLogin: true, autoProvision: true, defaultRole });
+		return created;
+	};
+
+	it("is off by default, so an unknown identity is still refused", async () => {
+		const { service, usersRepository } = createService();
+		await expectSsoCode(service.loginWithSso(makeSsoClaims()), "not_invited");
+		expect(usersRepository.create).not.toHaveBeenCalled();
+	});
+
+	// teamId is immutable on the user document, so a wrong team cannot be corrected through the API.
+	it("creates the account on the superadmin's team with the configured role", async () => {
+		const { service, usersRepository } = createAutoProvisioning("admin");
+
+		const result = await service.loginWithSso(makeSsoClaims());
+
+		expect(usersRepository.create).toHaveBeenCalledWith(
+			expect.objectContaining({ email: "ada@example.com", role: ["admin"], teamId: "team-1" }),
+			null
+		);
+		expect(result.token).toBe("jwt-token-123");
+	});
+
+	it("still prefers an existing account over creating a new one", async () => {
+		const { service, usersRepository } = createAutoProvisioning();
+		(usersRepository.findByEmailOrNull as jest.Mock).mockResolvedValue(makeUser({ id: "user-4" }));
+
+		await service.loginWithSso(makeSsoClaims());
+
+		expect(usersRepository.create).not.toHaveBeenCalled();
+	});
+
+	it("still refuses when the instance has no superadmin", async () => {
+		const { service, usersRepository } = createAutoProvisioning();
+		(usersRepository.findSuperAdminTeamId as jest.Mock).mockResolvedValue(null);
+
+		await expectSsoCode(service.loginWithSso(makeSsoClaims()), "not_initialized");
+		expect(usersRepository.create).not.toHaveBeenCalled();
 	});
 });

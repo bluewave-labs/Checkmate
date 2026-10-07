@@ -267,8 +267,9 @@ export class UserService implements IUserService {
 		// SSO must never bootstrap an instance. registerUser grants superadmin to whoever registers
 		// first; mirroring that here would hand the instance to the first provider user to arrive.
 		// Local registration stays open while there is no superadmin, so this is not a lockout.
-		const superAdminExists = await this.usersRepository.findSuperAdmin();
-		if (!superAdminExists) {
+		// The superadmin's team is also the team an auto-provisioned user joins, so one lookup serves both.
+		const superAdminTeamId = await this.usersRepository.findSuperAdminTeamId();
+		if (!superAdminTeamId) {
 			throw this.ssoFail(method, "not_initialized", "Complete the Checkmate first-run setup before signing in with single sign-on");
 		}
 
@@ -288,6 +289,14 @@ export class UserService implements IUserService {
 		const invite = await this.invitesRepository.findByEmailAndDelete(claims.email);
 		if (invite) {
 			return this.provisionSsoUser(claims, invite.role.length > 0 ? invite.role : ["user"], invite.teamId, "invite");
+		}
+
+		// Off by default. When on, anyone the provider accepts gets an account, so the role is capped
+		// at user or admin at boot and the team is the superadmin's: teamId is immutable, and a wrong
+		// one cannot be corrected through the API.
+		const oidc = this.settingsService.getOidcConfig();
+		if (oidc?.autoProvision) {
+			return this.provisionSsoUser(claims, [oidc.defaultRole], superAdminTeamId, "auto-provision");
 		}
 
 		// One opaque reason for every "no account" case, so this is not an account oracle.

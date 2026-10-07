@@ -14,4 +14,5 @@ export interface IUsersRepository {
 	deleteById(id: string): Promise<User>;
 	// other
 	findSuperAdmin(): Promise<boolean>;
+	findSuperAdminTeamId(): Promise<string | null>;
 }
