@@ -62,3 +62,13 @@ export const authPayloadResponseSchema = z
 	.meta({ id: "AuthPayload", example: { user: userExample, token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." } });
 
 export const superadminExistsResponseSchema = z.object({ superAdminExists: z.boolean() });
+
+// Unauthenticated: the login page reads this before anyone has a token, so it carries only what is
+// needed to render the button. Never the issuer, client id or secret.
+export const ssoConfigResponseSchema = z
+	.object({
+		enabled: z.boolean(),
+		label: z.string(),
+		localLoginDisabled: z.boolean(),
+	})
+	.meta({ id: "SsoConfig", example: { enabled: true, label: "Sign in with Authentik", localLoginDisabled: false } });

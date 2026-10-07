@@ -1,5 +1,6 @@
 import MonitorController from "../api/controllers/monitorController.js";
 import AuthController from "../api/controllers/authController.js";
+import SsoController from "../api/controllers/ssoController.js";
 import SettingsController from "../api/controllers/settingsController.js";
 import CheckController from "../api/controllers/checkController.js";
 import GeoCheckController from "../api/controllers/geoCheckController.js";
@@ -17,6 +18,7 @@ import { ApiServices } from "@/config/services.api.js";
 
 export interface InitializedControllers {
 	authController: AuthController;
+	ssoController: SsoController;
 	monitorController: MonitorController;
 	settingsController: SettingsController;
 	checkController: CheckController;
@@ -35,6 +37,7 @@ export interface InitializedControllers {
 export const initializeControllers = (apiServices: ApiServices): InitializedControllers => {
 	return {
 		authController: new AuthController(apiServices.userService),
+		ssoController: new SsoController(apiServices.ssoService, apiServices.userService, apiServices.settingsService),
 		monitorController: new MonitorController(apiServices.monitorService, apiServices.notificationsService),
 		settingsController: new SettingsController(
 			apiServices.settingsService,

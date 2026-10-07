@@ -1,7 +1,7 @@
 import type { Application } from "express";
 import { createVerifyJWT } from "../api/middleware/verifyJWT.js";
 import { createVerifyStatusPageAccess } from "../api/middleware/verifyStatusPageAccess.js";
-import { authApiLimiter } from "../api/middleware/rateLimiter.js";
+import { authApiLimiter, ssoApiLimiter } from "../api/middleware/rateLimiter.js";
 import type { InitializedControllers } from "./controllers.js";
 import type { ApiServices } from "@/config/services.api.js";
 
@@ -9,6 +9,7 @@ import { AuthMiddleware, buildRouter } from "@/api/routes/buildRouter.js";
 
 import { tagRoutes } from "@/api/routes/tagRoutes.js";
 import { authRoutes } from "@/api/routes/authRoutes.js";
+import { ssoRoutes } from "@/api/routes/ssoRoutes.js";
 import { checkRoutes } from "@/api/routes/checkRoutes.js";
 import { diagnosticRoutes } from "@/api/routes/diagnosticRoutes.js";
 import { geoCheckRoutes } from "@/api/routes/geoCheckRoutes.js";
@@ -31,6 +32,9 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 		statusPage: verifyStatusPageAccess,
 	};
 
+	// Registered before /api/v1/auth: Express matches mounts in order, so these routes are handled
+	// here and never reach the stricter shared auth limiter.
+	app.use("/api/v1/auth/sso", ssoApiLimiter, buildRouter(ssoRoutes, controllers.ssoController, middleware));
 	app.use("/api/v1/auth", authApiLimiter, buildRouter(authRoutes, controllers.authController, middleware));
 	app.use("/api/v1/monitors", buildRouter(monitorRoutes, controllers.monitorController, middleware));
 	app.use("/api/v1/settings", buildRouter(settingsRoutes, controllers.settingsController, middleware));

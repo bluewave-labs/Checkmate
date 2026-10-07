@@ -203,6 +203,26 @@
 					"updatedAt": "2026-04-15T14:30:00.000Z"
 				}
 			},
+			"SsoConfig": {
+				"type": "object",
+				"properties": {
+					"enabled": {
+						"type": "boolean"
+					},
+					"label": {
+						"type": "string"
+					},
+					"localLoginDisabled": {
+						"type": "boolean"
+					}
+				},
+				"required": ["enabled", "label", "localLoginDisabled"],
+				"example": {
+					"enabled": true,
+					"label": "Sign in with Authentik",
+					"localLoginDisabled": false
+				}
+			},
 			"Check": {
 				"type": "object",
 				"properties": {
@@ -5951,6 +5971,128 @@
 								}
 							}
 						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/sso": {
+			"get": {
+				"tags": ["auth"],
+				"summary": "Whether single sign-on is available, and how to label it",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/SsoConfig"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK",
+									"data": {
+										"enabled": false,
+										"label": "",
+										"localLoginDisabled": false
+									}
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/sso/start": {
+			"get": {
+				"tags": ["auth"],
+				"summary": "Begin single sign-on by redirecting to the identity provider",
+				"responses": {
+					"302": {
+						"description": "Redirect to the identity provider, or back to the login page when SSO is unavailable"
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/sso/callback": {
+			"get": {
+				"tags": ["auth"],
+				"summary": "Identity provider callback; redirects back to the application",
+				"responses": {
+					"302": {
+						"description": "Redirect to the application with a session token, or to the login page with an error code"
 					},
 					"429": {
 						"description": "Too many requests",

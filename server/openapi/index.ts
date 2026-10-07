@@ -6,6 +6,7 @@ import { OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
 import type { JsonObject } from "swagger-ui-express";
 import { registry } from "./registry.js";
 import { authRoutes } from "@/api/routes/authRoutes.js";
+import { ssoRoutes } from "@/api/routes/ssoRoutes.js";
 import { checkRoutes } from "@/api/routes/checkRoutes.js";
 import { diagnosticRoutes } from "@/api/routes/diagnosticRoutes.js";
 import { geoCheckRoutes } from "@/api/routes/geoCheckRoutes.js";
@@ -23,6 +24,7 @@ let cached: JsonObject | null = null;
 
 registerRoutes(registry, tagRoutes);
 registerRoutes(registry, authRoutes);
+registerRoutes(registry, ssoRoutes);
 registerRoutes(registry, checkRoutes);
 registerRoutes(registry, diagnosticRoutes);
 registerRoutes(registry, geoCheckRoutes);
