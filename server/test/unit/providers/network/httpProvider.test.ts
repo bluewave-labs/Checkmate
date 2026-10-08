@@ -145,12 +145,10 @@ describe("HttpProvider", () => {
 			expect(result.payload).toEqual({ status: "ok" });
 		});
 
-		it("accepts JSON when content-type contains multiple header values", async () => {
+		it("accepts JSON when content-type is a comma-joined multi-value header", async () => {
 			mockGot.mockResolvedValue(
 				makeGotResponse({
-					headers: {
-						"content-type": ["text/html", "application/json"],
-					},
+					headers: { "content-type": "text/html, application/json" },
 					body: '{"status":"ok"}',
 				})
 			);
@@ -416,6 +414,17 @@ describe("HttpProvider", () => {
 			expect(result.status).toBe(false);
 			expect(result.message).toBe("Mismatch");
 			expect(result.extracted).toBe("value");
+		});
+
+		it("validates against the raw body when JSON is parsed but no jsonPath is set", async () => {
+			const body = '{"status":"ok"}';
+			mockGot.mockResolvedValue(makeGotResponse({ headers: { "content-type": "application/health+json" }, body }));
+			const { provider, advancedMatcher } = createProvider();
+
+			const result = await provider.handle(makeMonitor({ useAdvancedMatching: true, matchMethod: "include", expectedValue: "ok" }));
+
+			expect(advancedMatcher.validate).toHaveBeenCalledWith(body, expect.anything());
+			expect(result.payload).toEqual({ status: "ok" });
 		});
 
 		it("sets status to false when status code is non-2xx even if matcher passes", async () => {

@@ -89,7 +89,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		monitor: Monitor,
 		opts: {
 			body: string;
-			contentType: string | string[];
+			contentType: string;
 			statusCode: number;
 			statusUp: boolean;
 			message: string;
@@ -115,13 +115,8 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 			};
 		}
 
-		const contentTypes = Array.isArray(contentType) ? contentType : [contentType];
-
-		const isJson = contentTypes.some((value) => {
-			const mediaType = value.split(";")[0]?.trim().toLowerCase() ?? "";
-
-			return mediaType.includes("application/json") || mediaType === "text/json" || mediaType.endsWith("+json");
-		});
+		const mediaType = contentType.split(";")[0]?.trim().toLowerCase() ?? "";
+		const isJson = mediaType.includes("application/json") || mediaType === "text/json" || mediaType.endsWith("+json");
 
 		if (monitor.jsonPath && !isJson) {
 			return {
@@ -149,7 +144,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 			payload = body;
 		}
 
-		const matchResult = this.advancedMatcher.validate<T | string>(payload, monitor);
+		const matchResult = this.advancedMatcher.validate<T | string>(monitor.jsonPath ? payload : body, monitor);
 
 		return {
 			monitorId: monitor.id,
