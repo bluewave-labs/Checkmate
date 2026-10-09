@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { Handler } from "@/api/controllers/controllerUtils.js";
+import { Handler, requireTeamId } from "@/api/controllers/controllerUtils.js";
 import { updateAppSettingsBodyValidation } from "@/api/validation/settingsValidation.js";
 import { sendTestEmailBodyValidation } from "@/api/validation/notificationValidation.js";
 import { AppError, internalError } from "@/utils/AppError.js";
@@ -9,6 +9,7 @@ import { IProxiesService } from "@/domain/proxies/proxy.service.js";
 import { IEgressStateService } from "@/domain/egress/egress-state.service.js";
 import { Settings } from "@/domain/app-settings/app-settings.type.js";
 import { appSettingsErrors } from "@/domain/app-settings/app-settings.errors.js";
+import { INotificationsService } from "@/domain/notifications/notification.service.js";
 
 const SERVICE_NAME = "SettingsController";
 
@@ -25,16 +26,19 @@ class SettingsController implements ISettingsController {
 	private emailService: IEmailService;
 	private proxiesService: IProxiesService;
 	private egressStateService: IEgressStateService;
+	private notificationsService: INotificationsService;
 	constructor(
 		settingsService: ISettingsService,
 		emailService: IEmailService,
 		proxiesService: IProxiesService,
-		egressStateService: IEgressStateService
+		egressStateService: IEgressStateService,
+		notificationsService: INotificationsService
 	) {
 		this.settingsService = settingsService;
 		this.emailService = emailService;
 		this.proxiesService = proxiesService;
 		this.egressStateService = egressStateService;
+		this.notificationsService = notificationsService;
 	}
 
 	buildAppSettings = async (dbSettings: Settings) => {
@@ -78,7 +82,26 @@ class SettingsController implements ISettingsController {
 		}
 
 		const previousSettings = await this.settingsService.getDBSettings();
-		const updatedSettings = await this.settingsService.updateDbSettings(validatedBody);
+		// Deduplicated once and persisted as such. Left undefined when absent, since an undefined key unsets the stored value.
+		const requestedIds = validatedBody.egressNotifications && [...new Set(validatedBody.egressNotifications)];
+		if (requestedIds && requestedIds.length > 0) {
+			// Only the caller's team's notifications can be selected; anything else is treated as not found.
+			const teamId = requireTeamId(req.user?.teamId);
+			const teamNotifications = await this.notificationsService.findNotificationsByTeamId(teamId);
+			const foundIds = new Set(teamNotifications.map((notification) => notification.id));
+			const missing = requestedIds.filter((id) => !foundIds.has(id));
+			if (missing.length > 0) {
+				throw new AppError(appSettingsErrors.notificationNotFound, {
+					message: `Referenced notification does not exist: ${missing.join(", ")}`,
+					service: SERVICE_NAME,
+					method: "updateAppSettings",
+				});
+			}
+		}
+
+		const updatedSettings = await this.settingsService.updateDbSettings(
+			requestedIds ? { ...validatedBody, egressNotifications: requestedIds } : validatedBody
+		);
 
 		// Switching the egress check on or off starts from a clean state: no degraded episode, no pending recovery job
 		if (validatedBody.egressCheckEnabled !== undefined && validatedBody.egressCheckEnabled !== previousSettings.egressCheckEnabled) {

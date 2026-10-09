@@ -1,5 +1,6 @@
 import { HardwareMetricKeys, type HardwareBreaches, type HardwareMetricKey, type Monitor } from "@/domain/monitors/monitor.type.js";
 import type { MonitorActionDecision } from "@/worker/worker.interface.js";
+import type { EgressState } from "@/domain/egress/egress.type.js";
 import type {
 	NotificationMessage,
 	NotificationType,
@@ -13,7 +14,17 @@ import type { Check } from "@/domain/checks/check.type.js";
 export interface INotificationMessageBuilder {
 	buildMessage(monitor: Monitor, check: Check, decision: MonitorActionDecision, clientHost: string): NotificationMessage;
 	buildThresholdBreachMessage(monitor: Monitor, check: Check, thresholdBreaches: HardwareBreaches | undefined): string;
+	buildEgressRecoveredMessage(state: EgressState, clientHost: string): NotificationMessage;
 }
+
+// The egress recovery alert is about the instance, not a monitor. Providers all read message.monitor,
+// so it is described with a synthetic MonitorInfo rather than widening the message shape.
+export const EGRESS_MONITOR_INFO = {
+	id: "egress",
+	name: "Checkmate instance egress",
+	type: "system",
+	status: "up",
+} as const;
 
 const SERVICE_NAME = "NotificationMessageBuilder";
 
@@ -71,6 +82,7 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 			case "container_resolved":
 				return "success";
 			case "threshold_resolved":
+			case "egress_recovered":
 				return "success";
 			case "test":
 				return "info";
@@ -176,6 +188,50 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		const summary = `All containers on "${monitor.name}" are back to normal.`;
 		const details = [`URL: ${monitor.url}`, `Status: Up`, `Type: ${monitor.type}`];
 		return { title, summary, details, timestamp: new Date() };
+	}
+
+	buildEgressRecoveredMessage(state: EgressState, clientHost: string): NotificationMessage {
+		const recoveredAt = state.lastRecoveredAt ? new Date(state.lastRecoveredAt) : new Date();
+		const degradedSince = state.degradedSince ? new Date(state.degradedSince) : null;
+		const targets = state.lastProbeResults.map((result) => result.target);
+
+		const sinceText = degradedSince ? degradedSince.toISOString() : "an unknown time";
+		const duration = degradedSince ? this.formatDuration(recoveredAt.getTime() - degradedSince.getTime()) : null;
+		const summary = `The Checkmate instance lost outbound connectivity at ${sinceText} and regained it at ${recoveredAt.toISOString()}${duration ? ` (down for ${duration})` : ""}. Monitor checks that failed during this period were not counted as outages.`;
+
+		const details = [`Degraded since: ${sinceText}`, `Recovered at: ${recoveredAt.toISOString()}`];
+		if (duration) {
+			details.push(`Duration: ${duration}`);
+		}
+		details.push(`Targets probed: ${targets.length > 0 ? targets.join(", ") : "none"}`);
+
+		return {
+			type: "egress_recovered",
+			severity: this.determineSeverity("egress_recovered"),
+			monitor: { ...EGRESS_MONITOR_INFO, url: clientHost },
+			content: {
+				title: "Outbound connectivity restored",
+				summary,
+				details,
+				timestamp: recoveredAt,
+			},
+			clientHost,
+			metadata: {
+				teamId: "",
+			},
+		};
+	}
+
+	private formatDuration(ms: number): string {
+		const totalSeconds = Math.max(0, Math.round(ms / 1000));
+		const hours = Math.floor(totalSeconds / 3600);
+		const minutes = Math.floor((totalSeconds % 3600) / 60);
+		const seconds = totalSeconds % 60;
+		const parts: string[] = [];
+		if (hours > 0) parts.push(`${hours}h`);
+		if (minutes > 0) parts.push(`${minutes}m`);
+		if (seconds > 0 || parts.length === 0) parts.push(`${seconds}s`);
+		return parts.join(" ");
 	}
 
 	private buildDefaultContent(monitor: Monitor): NotificationContent {

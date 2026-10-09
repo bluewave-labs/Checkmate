@@ -57,7 +57,15 @@ export interface AlertDiscordPayload {
  */
 
 export type NotificationType =
-	"monitor_down" | "monitor_up" | "threshold_breach" | "threshold_resolved" | "container_breach" | "container_resolved" | "test";
+	| "monitor_down"
+	| "monitor_up"
+	| "threshold_breach"
+	| "threshold_resolved"
+	| "container_breach"
+	| "container_resolved"
+	// Instance-level rather than monitor-scoped: sent once when the instance regains outbound connectivity.
+	| "egress_recovered"
+	| "test";
 
 export type NotificationSeverity = "critical" | "warning" | "info" | "success";
 
