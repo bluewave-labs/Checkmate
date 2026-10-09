@@ -1773,6 +1773,127 @@
 				},
 				"required": ["id", "monitorIds", "teamId", "active", "name", "duration", "durationUnit", "repeat", "start", "end", "createdAt", "updatedAt"]
 			},
+			"MonitorsDashboard": {
+				"type": "object",
+				"properties": {
+					"summary": {
+						"type": "object",
+						"properties": {
+							"totalMonitors": {
+								"type": "number"
+							},
+							"upMonitors": {
+								"type": "number"
+							},
+							"downMonitors": {
+								"type": "number"
+							},
+							"pausedMonitors": {
+								"type": "number"
+							},
+							"initializingMonitors": {
+								"type": "number"
+							},
+							"maintenanceMonitors": {
+								"type": "number"
+							},
+							"breachedMonitors": {
+								"type": "number"
+							}
+						},
+						"required": [
+							"totalMonitors",
+							"upMonitors",
+							"downMonitors",
+							"pausedMonitors",
+							"initializingMonitors",
+							"maintenanceMonitors",
+							"breachedMonitors"
+						]
+					},
+					"byType": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"type": {
+									"type": "string",
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+								},
+								"count": {
+									"type": "number"
+								}
+							},
+							"required": ["type", "count"]
+						}
+					},
+					"down": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"id": {
+									"type": "string"
+								},
+								"name": {
+									"type": "string"
+								},
+								"url": {
+									"type": "string"
+								},
+								"type": {
+									"type": "string",
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+								},
+								"status": {
+									"type": "string",
+									"enum": ["up", "down", "paused", "initializing", "maintenance", "breached"]
+								},
+								"uptimePercentage": {
+									"type": "number"
+								},
+								"lastCheckTimestamp": {
+									"type": "number"
+								}
+							},
+							"required": ["id", "name", "url", "type", "status", "uptimePercentage"]
+						}
+					},
+					"uptime": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"id": {
+									"type": "string"
+								},
+								"name": {
+									"type": "string"
+								},
+								"url": {
+									"type": "string"
+								},
+								"type": {
+									"type": "string",
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+								},
+								"status": {
+									"type": "string",
+									"enum": ["up", "down", "paused", "initializing", "maintenance", "breached"]
+								},
+								"uptimePercentage": {
+									"type": "number"
+								},
+								"lastCheckTimestamp": {
+									"type": "number"
+								}
+							},
+							"required": ["id", "name", "url", "type", "status", "uptimePercentage"]
+						}
+					}
+				},
+				"required": ["summary", "byType", "down", "uptime"]
+			},
 			"UptimeDetails": {
 				"type": "object",
 				"properties": {
@@ -8762,6 +8883,103 @@
 												}
 											},
 											"required": ["summary", "count", "monitors"]
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/monitors/team/dashboard": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Get aggregate dashboard data for the caller's team",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "integer",
+							"minimum": 1,
+							"maximum": 100
+						},
+						"required": false,
+						"name": "limit",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["asc", "desc"]
+						},
+						"required": false,
+						"name": "order",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/MonitorsDashboard"
 										}
 									},
 									"required": ["success", "msg", "data"]
