@@ -1,5 +1,5 @@
 import { Schema, model, type Types } from "mongoose";
-import type { StatusPage, StatusPageLogoDocument } from "@/domain/status-pages/status-page.type.js";
+import type { StatusPage } from "@/domain/status-pages/status-page.type.js";
 import {
 	DEFAULT_STATUS_PAGE_THEME,
 	DEFAULT_STATUS_PAGE_THEME_MODE,
@@ -7,6 +7,11 @@ import {
 	StatusPageThemes,
 	StatusPageTypes,
 } from "@/domain/status-pages/status-page.type.js";
+
+interface StatusPageLogoDocument {
+	data: Buffer;
+	contentType: string;
+}
 
 type StatusPageDocumentBase = Omit<
 	StatusPage,
@@ -143,6 +148,6 @@ StatusPageSchema.index(
 
 const StatusPageModel = model<StatusPageDocument>("StatusPage", StatusPageSchema);
 
-export type { StatusPageDocument };
+export type { StatusPageDocument, StatusPageLogoDocument };
 export { StatusPageModel };
 export default StatusPageModel;

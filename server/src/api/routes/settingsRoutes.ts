@@ -1,8 +1,9 @@
 import { ISettingsController } from "@/api/controllers/settingsController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
-import { unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
-import { updateAppSettingsBodyValidation } from "@/api/validation/settingsValidation.js";
+import { appSettingsResponseSchema, testEmailResponseSchema, updateAppSettingsBodyValidation } from "@/api/validation/settingsValidation.js";
 import { sendTestEmailBodyValidation } from "@/api/validation/notificationValidation.js";
+import { appSettingsErrors } from "@/domain/app-settings/app-settings.errors.js";
+import { emailErrors } from "@/service/email.errors.js";
 
 export const settingsRoutes: RouteTable<ISettingsController> = {
 	prefix: "/settings",
@@ -14,24 +15,27 @@ export const settingsRoutes: RouteTable<ISettingsController> = {
 			path: "/",
 			handler: "getAppSettings",
 			summary: "Get application settings",
-			response: unknownResponseSchema,
+			response: appSettingsResponseSchema,
 		},
 		{
 			method: "patch",
 			path: "/",
 			handler: "updateAppSettings",
 			summary: "Update application settings (admin/superadmin)",
+			errors: [appSettingsErrors.proxyNotFound, appSettingsErrors.notificationNotFound],
 			roles: ["admin", "superadmin"],
 			body: updateAppSettingsBodyValidation,
-			response: unknownResponseSchema,
+			response: appSettingsResponseSchema,
 		},
 		{
 			method: "post",
 			path: "/test-email",
 			handler: "sendTestEmail",
 			summary: "Send a test email using current SMTP settings (admin/superadmin)",
+			errors: [emailErrors.notConfigured, emailErrors.sendFailed],
 			roles: ["admin", "superadmin"],
 			body: sendTestEmailBodyValidation,
+			response: testEmailResponseSchema,
 		},
 	],
 };

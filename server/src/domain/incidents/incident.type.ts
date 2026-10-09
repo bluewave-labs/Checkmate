@@ -1,55 +1,17 @@
-// export type IncidentResolutionType = "automatic" | "manual" | null;
+import type { z } from "zod";
+import type {
+	incidentSchema,
+	incidentSummaryItemSchema,
+	incidentSummarySchema,
+	incidentSummaryTopMonitorSchema,
+	publicIncidentSchema,
+} from "@/domain/incidents/incident.schema.js";
 
 export const IncidentResolutionTypes = ["automatic", "manual"] as const;
 export type IncidentResolutionType = (typeof IncidentResolutionTypes)[number] | null;
 
-export interface Incident {
-	id: string;
-	monitorId: string;
-	teamId: string;
-	startTime: string;
-	endTime: string | null;
-	status: boolean;
-	message?: string | null;
-	statusCode?: number | null;
-	resolutionType: IncidentResolutionType;
-	resolvedBy?: string | null;
-	resolvedByEmail?: string | null;
-	comment?: string | null;
-	createdAt: string;
-	updatedAt: string;
-}
-
-export type PublicIncident = Pick<
-	Incident,
-	"id" | "monitorId" | "status" | "startTime" | "endTime" | "resolutionType" | "message" | "statusCode" | "createdAt"
->;
-
-export interface IncidentSummaryTopMonitor {
-	monitorId: string;
-	monitorName: string | null;
-	incidentCount: number;
-}
-
-export interface IncidentSummaryItem {
-	id: string;
-	monitorId: string;
-	monitorName: string | null;
-	status: boolean;
-	startTime: string;
-	endTime: string | null;
-	resolutionType: IncidentResolutionType;
-	message: string | null;
-	statusCode: number | null;
-	createdAt: string;
-}
-
-export interface IncidentSummary {
-	total: number;
-	totalActive: number;
-	totalManualResolutions: number;
-	totalAutomaticResolutions: number;
-	avgResolutionTimeHours: number;
-	topMonitor: IncidentSummaryTopMonitor | null;
-	latestIncidents: IncidentSummaryItem[];
-}
+export type Incident = z.infer<typeof incidentSchema>;
+export type PublicIncident = z.infer<typeof publicIncidentSchema>;
+export type IncidentSummaryTopMonitor = z.infer<typeof incidentSummaryTopMonitorSchema>;
+export type IncidentSummaryItem = z.infer<typeof incidentSummaryItemSchema>;
+export type IncidentSummary = z.infer<typeof incidentSummarySchema>;

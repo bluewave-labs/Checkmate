@@ -24,7 +24,7 @@ import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
 import { getHardwareUpChecks, getHardwareStats, getHardwareTotalChecks } from "@/domain/checks/check.hardware.aggregations.js";
 import { CheckFilter, DateRange } from "@/types/query.js";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import {
 	getDockerContainerLatestCheck,
@@ -76,6 +76,7 @@ class MongoChecksRepository implements IChecksRepository {
 			physical_core: cpu?.physical_core ?? 0,
 			logical_core: cpu?.logical_core ?? 0,
 			frequency: cpu?.frequency ?? 0,
+			current_frequency: cpu?.current_frequency ?? 0,
 			temperature: cpu?.temperature ?? [],
 			free_percent: cpu?.free_percent ?? 0,
 			usage_percent: cpu?.usage_percent ?? 0,
@@ -197,9 +198,8 @@ class MongoChecksRepository implements IChecksRepository {
 		// Map id to _id for MongoDB storage
 		const { id, metadata, ...rest } = check;
 		if (!metadata || !metadata.monitorId || !metadata.teamId) {
-			throw new AppError({
+			throw new AppError(internalError, {
 				message: `Check must have valid metadata with monitorId and teamId. Got: ${JSON.stringify({ id, metadata })}`,
-				status: 500,
 				service: SERVICE_NAME,
 				method: "toDocument",
 			});

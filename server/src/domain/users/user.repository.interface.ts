@@ -1,13 +1,13 @@
-import type { User } from "@/domain/users/user.type.js";
+import type { User, UserResponse } from "@/domain/users/user.type.js";
 export interface IUsersRepository {
 	// create
-	create(user: Partial<User>, imageFile?: Express.Multer.File | null): Promise<User>;
+	create(user: Partial<User>, imageFile?: Express.Multer.File | null): Promise<UserResponse>;
 	// fetch
 	findByEmail(email: string): Promise<User>;
-	findById(id: string): Promise<User>;
-	findAll(): Promise<User[]>;
+	findById(id: string): Promise<UserResponse>;
+	findAll(): Promise<UserResponse[]>;
 	// update
-	updateById(id: string, patch: Partial<User>, file?: Express.Multer.File | null): Promise<User>;
+	updateById(id: string, patch: Partial<User>, file?: Express.Multer.File | null): Promise<UserResponse>;
 	// delete
 	deleteById(id: string): Promise<User>;
 	// other

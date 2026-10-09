@@ -2,9 +2,15 @@ import { type MonitorStatsDocument, MonitorStatsModel } from "@/domain/monitor-s
 import type { CheckResultInput, MonitorStats } from "@/domain/monitor-stats/monitor-stats.type.js";
 import { IMonitorStatsRepository } from "@/domain/monitor-stats/monitor-stats.repository.interface.js";
 import mongoose from "mongoose";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
+import { monitorStatsErrors } from "@/domain/monitor-stats/monitor-stats.errors.js";
+
+const SERVICE_NAME = "MonitorStatsRepository";
+
 class MongoMonitorStatsRepository implements IMonitorStatsRepository {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	private toEntity = (doc: MonitorStatsDocument): MonitorStats => {
 		return {
 			id: toStringId(doc._id),
@@ -31,7 +37,7 @@ class MongoMonitorStatsRepository implements IMonitorStatsRepository {
 	findByMonitorId = async (monitorId: string): Promise<MonitorStats> => {
 		const monitorStats = await MonitorStatsModel.findOne({ monitorId: new mongoose.Types.ObjectId(monitorId) });
 		if (!monitorStats) {
-			throw new AppError({ message: "Monitor stats not found", status: 404 });
+			throw new AppError(monitorStatsErrors.notFound, { service: SERVICE_NAME, method: "findByMonitorId" });
 		}
 		return this.toEntity(monitorStats);
 	};
@@ -77,7 +83,11 @@ class MongoMonitorStatsRepository implements IMonitorStatsRepository {
 			setDefaultsOnInsert: true,
 		});
 		if (!updated) {
-			throw new AppError({ message: "Failed to apply check result to monitor stats", status: 500 });
+			throw new AppError(internalError, {
+				message: "Failed to apply check result to monitor stats",
+				service: SERVICE_NAME,
+				method: "updateByMonitorId",
+			});
 		}
 		return this.toEntity(updated);
 	};
@@ -85,7 +95,7 @@ class MongoMonitorStatsRepository implements IMonitorStatsRepository {
 	deleteByMonitorId = async (monitorId: string) => {
 		const deleted = await MonitorStatsModel.findOneAndDelete({ monitorId: new mongoose.Types.ObjectId(monitorId) });
 		if (!deleted) {
-			throw new AppError({ message: "Monitor stats not found", status: 404 });
+			throw new AppError(monitorStatsErrors.notFound, { service: SERVICE_NAME, method: "deleteByMonitorId" });
 		}
 		return this.toEntity(deleted);
 	};

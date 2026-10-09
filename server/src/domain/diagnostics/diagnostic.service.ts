@@ -2,7 +2,8 @@ import v8 from "v8";
 import os from "os";
 import { IDb } from "@/db/db.interface.js";
 import { Mongoose } from "mongoose";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
+import type { CollectionDiagnostics, Diagnostics, MongoDiagnostics } from "@/domain/diagnostics/diagnostic.type.js";
 
 const SERVICE_NAME = "diagnosticService";
 
@@ -20,42 +21,6 @@ export interface MongoOpsPerSecond {
 	updatesPerSecond: number;
 	deletesPerSecond: number;
 	writesPerSecond: number;
-}
-
-export interface CollectionDiagnostics {
-	name: string;
-	documentCount: number;
-	storageSize: number;
-	totalIndexSize: number;
-	totalSize: number;
-	bucketCount?: number;
-}
-
-export interface MongoDiagnostics {
-	readyState: number;
-	readsPerSecond: number;
-	insertsPerSecond: number;
-	updatesPerSecond: number;
-	deletesPerSecond: number;
-	writesPerSecond: number;
-	host: string;
-	port: number;
-	dbName: string;
-	totalSize: number;
-	collections: CollectionDiagnostics[];
-}
-
-export interface Diagnostics {
-	osStats: { totalMemoryBytes: number };
-	cpuUsage: { usagePercentage: number };
-	v8HeapStats: {
-		totalHeapSizeBytes: number;
-		usedHeapSizeBytes: number;
-		heapSizeLimitBytes: number;
-	};
-	eventLoopDelayMs: number;
-	uptimeMs: number;
-	mongoStats: MongoDiagnostics;
 }
 
 export interface IDiagnosticService {
@@ -92,7 +57,7 @@ export class DiagnosticService implements IDiagnosticService {
 			const mongo = await this.db.getConnection();
 			const db = mongo.connection.db;
 			if (!db) {
-				throw new AppError({ message: "Database connection is not available", service: SERVICE_NAME, method: "getMongoDBStats" });
+				throw new AppError(internalError, { message: "Database connection is not available", service: SERVICE_NAME, method: "getMongoOpsPerSecond" });
 			}
 			const sample = async (): Promise<MongoStats> => {
 				const res = await db.command({ serverStatus: 1 });
@@ -133,7 +98,7 @@ export class DiagnosticService implements IDiagnosticService {
 		const mongo = await this.db.getConnection();
 		const db = mongo.connection.db;
 		if (!db) {
-			throw new AppError({ message: "Database connection is not available", service: SERVICE_NAME, method: "getMongoDBStats" });
+			throw new AppError(internalError, { message: "Database connection is not available", service: SERVICE_NAME, method: "getMongoDBStats" });
 		}
 
 		const opsPerSecond = await this.getMongoOpsPerSecond();

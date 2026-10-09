@@ -1,7 +1,7 @@
 import { IJobQueueController } from "@/api/controllers/queueController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
-import { getQueueJobsQueryValidation } from "@/api/validation/queueValidation.js";
-import { unknownResponseSchema } from "@/api/routes/openapiHelpers.js";
+import { getQueueJobsQueryValidation, queueAllMetricsResponseSchema } from "@/api/validation/queueValidation.js";
+import { workerJobsPageSchema, workerMetricsSchema } from "@/worker/worker.schema.js";
 
 export const queueRoutes: RouteTable<IJobQueueController> = {
 	prefix: "/queue",
@@ -15,7 +15,7 @@ export const queueRoutes: RouteTable<IJobQueueController> = {
 			summary: "List queued monitor jobs (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			query: getQueueJobsQueryValidation,
-			response: unknownResponseSchema,
+			response: workerJobsPageSchema,
 		},
 		{
 			method: "get",
@@ -23,7 +23,7 @@ export const queueRoutes: RouteTable<IJobQueueController> = {
 			handler: "getMetrics",
 			summary: "Get queue runtime metrics (admin/superadmin)",
 			roles: ["admin", "superadmin"],
-			response: unknownResponseSchema,
+			response: workerMetricsSchema,
 		},
 		{
 			method: "get",
@@ -32,7 +32,7 @@ export const queueRoutes: RouteTable<IJobQueueController> = {
 			summary: "Get queue metrics across all monitors (admin/superadmin)",
 			roles: ["admin", "superadmin"],
 			query: getQueueJobsQueryValidation,
-			response: unknownResponseSchema,
+			response: queueAllMetricsResponseSchema,
 		},
 		{
 			method: "post",

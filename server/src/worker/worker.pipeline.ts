@@ -13,7 +13,7 @@ import { IProxyResolver } from "@/service/networkProviders/ProxyResolver.js";
 import { IProviderRegistry } from "@/service/networkProviders/providerRegistry.js";
 import { IStatusService } from "@/service/statusService.js";
 import { DockerStatusPayload, MonitorStatusResponse, StatusChangeResult } from "@/types/network.js";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger.js";
 import { isWindowActive } from "@/utils/maintenanceWindow.js";
 import { IReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
@@ -71,7 +71,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 
 	produce = async (monitor: Monitor) => {
 		if (!monitor.id) {
-			throw new AppError({ message: "No monitor id", service: SERVICE_NAME, method: "produce" });
+			throw new AppError(internalError, { message: "No monitor id", service: SERVICE_NAME, method: "produce" });
 		}
 		// ****************************
 		// Step 1:  Acquire
@@ -105,7 +105,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 
 		const status = await this.deps.providerRegistry.probe(monitor, { proxyUrl, dockerTlsKey });
 		if (!status) {
-			throw new Error("No network response");
+			throw new AppError(internalError, { message: "No network response", service: SERVICE_NAME, method: "produce" });
 		}
 
 		// ****************************

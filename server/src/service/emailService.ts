@@ -3,6 +3,7 @@ import { EmailTransportConfig } from "@/domain/app-settings/app-settings.type.js
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";
+import { emailErrors } from "@/service/email.errors.js";
 import fs from "node:fs";
 import path from "node:path";
 import nodemailer from "nodemailer";
@@ -141,9 +142,8 @@ export class EmailService implements IEmailService {
 		} = config;
 
 		if (!systemEmailHost) {
-			throw new AppError({
+			throw new AppError(emailErrors.notConfigured, {
 				message: "Email is not configured. Set the system email host in settings.",
-				status: 400,
 				service: SERVICE_NAME,
 				method: "sendEmail",
 			});
@@ -180,9 +180,8 @@ export class EmailService implements IEmailService {
 				details: { host: systemEmailHost, port: emailConfig.port },
 				stack: error instanceof Error ? error.stack : undefined,
 			});
-			throw new AppError({
+			throw new AppError(emailErrors.sendFailed, {
 				message: describeSmtpFailure(error, systemEmailHost, emailConfig.port),
-				status: 502,
 				service: SERVICE_NAME,
 				method: "sendEmail",
 				details: { cause },
@@ -207,9 +206,8 @@ export class EmailService implements IEmailService {
 				method: "sendEmail",
 				stack: error instanceof Error ? error.stack : undefined,
 			});
-			throw new AppError({
+			throw new AppError(emailErrors.sendFailed, {
 				message: "Failed to send email",
-				status: 502,
 				service: SERVICE_NAME,
 				method: "sendEmail",
 				details: { cause: error instanceof Error ? error.message : "Unknown error" },

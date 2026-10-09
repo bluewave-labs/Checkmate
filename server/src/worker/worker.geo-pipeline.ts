@@ -4,7 +4,7 @@ import { IMaintenanceWindowsRepository } from "@/domain/maintenance-windows/main
 import { isWindowActive } from "@/utils/maintenanceWindow.js";
 import { ILogger } from "@/utils/logger.js";
 import { IBufferService } from "@/service/bufferService.js";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { supportsGeoCheck } from "@/domain/monitors/monitor.type.js";
 import { IGeoChecksService } from "@/domain/geo-checks/geo-check.service.js";
 import { Job } from "@/domain/jobs/job.type.js";
@@ -46,7 +46,7 @@ export class GeoChecksPipeline implements IGeoChecksPipeline {
 		// Step 1a: Guards - skip if unsupported or not enabled
 
 		if (!monitor.id) {
-			throw new AppError({ message: "No monitor id", service: SERVICE_NAME, method: "run" });
+			throw new AppError(internalError, { message: "No monitor id", service: SERVICE_NAME, method: "run" });
 		}
 
 		if (!monitor.geoCheckEnabled) {

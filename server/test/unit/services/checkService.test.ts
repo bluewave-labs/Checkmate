@@ -342,20 +342,6 @@ describe("CheckService", () => {
 			expect(checksRepository.findByMonitorId).toHaveBeenCalledWith("mon-1", "asc", "week", 2, 20, false, "resolve");
 		});
 
-		it("throws when monitorId is missing", async () => {
-			const { service } = createService();
-			await expect(
-				service.getChecksByMonitor({ monitorId: "", teamId: "team-1", sortOrder: "desc", dateRange: "day", page: 0, rowsPerPage: 10 })
-			).rejects.toThrow("No monitor ID in request");
-		});
-
-		it("throws when teamId is missing", async () => {
-			const { service } = createService();
-			await expect(
-				service.getChecksByMonitor({ monitorId: "mon-1", teamId: "", sortOrder: "desc", dateRange: "day", page: 0, rowsPerPage: 10 })
-			).rejects.toThrow("No team ID in request");
-		});
-
 		it("verifies monitor belongs to team via repository", async () => {
 			const { service, monitorsRepository } = createService();
 

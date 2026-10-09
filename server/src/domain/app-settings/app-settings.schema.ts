@@ -1,0 +1,56 @@
+import { z } from "zod";
+
+export const settingsThresholdsSchema = z.object({
+	cpu: z.number().optional(),
+	memory: z.number().optional(),
+	disk: z.number().optional(),
+	temperature: z.number().optional(),
+});
+
+export const settingsSchema = z.object({
+	id: z.string(),
+	checkTTL: z.number(),
+	language: z.string(),
+	jwtSecret: z.string().optional(),
+	pagespeedApiKey: z.string().optional(),
+	systemEmailHost: z.string().optional(),
+	systemEmailPort: z.number().optional(),
+	systemEmailAddress: z.string().optional(),
+	systemEmailDisplayName: z.string().optional(),
+	systemEmailPassword: z.string().optional(),
+	systemEmailUser: z.string().optional(),
+	systemEmailConnectionHost: z.string().optional(),
+	systemEmailTLSServername: z.string().optional(),
+	systemEmailSecure: z.boolean(),
+	systemEmailPool: z.boolean(),
+	systemEmailIgnoreTLS: z.boolean(),
+	systemEmailRequireTLS: z.boolean(),
+	systemEmailRejectUnauthorized: z.boolean(),
+	showURL: z.boolean(),
+	singleton: z.boolean(),
+	version: z.number(),
+	globalThresholds: settingsThresholdsSchema.optional(),
+	globalProxyEnabled: z.boolean(),
+	globalProxyId: z.string().nullable().optional(),
+	egressCheckEnabled: z.boolean(),
+	egressCheckTargets: z.array(z.string()),
+	egressNotifications: z.array(z.string()),
+	createdAt: z.string(),
+	updatedAt: z.string(),
+});
+
+export const emailTransportConfigSchema = settingsSchema.pick({
+	systemEmailHost: true,
+	systemEmailPort: true,
+	systemEmailAddress: true,
+	systemEmailDisplayName: true,
+	systemEmailPassword: true,
+	systemEmailUser: true,
+	systemEmailConnectionHost: true,
+	systemEmailTLSServername: true,
+	systemEmailSecure: true,
+	systemEmailPool: true,
+	systemEmailIgnoreTLS: true,
+	systemEmailRequireTLS: true,
+	systemEmailRejectUnauthorized: true,
+});

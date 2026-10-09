@@ -1,12 +1,4 @@
-import type { UserRole } from "@/domain/users/user.type.js";
+import type { z } from "zod";
+import type { inviteSchema } from "@/domain/invites/invite.schema.js";
 
-export interface Invite {
-	id: string;
-	email: string;
-	teamId: string;
-	role: UserRole[];
-	token: string;
-	expiry: string;
-	createdAt: string;
-	updatedAt: string;
-}
+export type Invite = z.infer<typeof inviteSchema>;

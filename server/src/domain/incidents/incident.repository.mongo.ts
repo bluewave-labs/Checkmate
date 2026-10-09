@@ -3,10 +3,15 @@ import type { IncidentDocument } from "@/domain/incidents/incident.model.js";
 import type { Incident, IncidentSummary } from "@/domain/incidents/incident.type.js";
 import type { IIncidentsRepository } from "@/domain/incidents/incident.repository.interface.js";
 import mongoose from "mongoose";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
+import { incidentErrors } from "@/domain/incidents/incident.errors.js";
+
+const SERVICE_NAME = "IncidentsRepository";
 
 class MongoIncidentsRepository implements IIncidentsRepository {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	private buildMatchStage({
 		teamId,
 		startDate,
@@ -73,7 +78,7 @@ class MongoIncidentsRepository implements IIncidentsRepository {
 			teamId: new mongoose.Types.ObjectId(teamId),
 		});
 		if (!incident) {
-			throw new AppError({ message: `Incident with id ${incidentId} not found`, status: 404 });
+			throw new AppError(incidentErrors.notFound, { message: `Incident with id ${incidentId} not found`, service: SERVICE_NAME, method: "findById" });
 		}
 		return this.toEntity(incident);
 	};
@@ -142,7 +147,7 @@ class MongoIncidentsRepository implements IIncidentsRepository {
 			{ new: true, runValidators: true }
 		);
 		if (!updatedIncident) {
-			throw new AppError({ message: `Failed to update incident with id ${incidentId}`, status: 500 });
+			throw new AppError(internalError, { message: `Failed to update incident with id ${incidentId}`, service: SERVICE_NAME, method: "updateById" });
 		}
 		return this.toEntity(updatedIncident);
 	};

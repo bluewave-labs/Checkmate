@@ -5,11 +5,14 @@ import {
 	getIncidentSummaryQueryValidation,
 	incidentIdParamValidation,
 	resolveIncidentBodyValidation,
-	incidentResponseSchema,
 	incidentListResponseSchema,
-	incidentSummaryResponseSchema,
 	incidentDetailResponseSchema,
 } from "@/api/validation/incidentValidation.js";
+
+import { incidentSchema, incidentSummarySchema } from "@/domain/incidents/incident.schema.js";
+import { incidentErrors } from "@/domain/incidents/incident.errors.js";
+import { monitorErrors } from "@/domain/monitors/monitor.errors.js";
+import { userErrors } from "@/domain/users/user.errors.js";
 
 export const incidentRoutes: RouteTable<IIncidentController> = {
 	prefix: "/incidents",
@@ -30,13 +33,14 @@ export const incidentRoutes: RouteTable<IIncidentController> = {
 			handler: "getIncidentSummary",
 			summary: "Incident summary for the caller's team",
 			query: getIncidentSummaryQueryValidation,
-			response: incidentSummaryResponseSchema,
+			response: incidentSummarySchema,
 		},
 		{
 			method: "get",
 			path: "/:incidentId",
 			handler: "getIncidentById",
 			summary: "Get an incident by id",
+			errors: [incidentErrors.notFound, monitorErrors.notFound, userErrors.notFound],
 			params: incidentIdParamValidation,
 			response: incidentDetailResponseSchema,
 		},
@@ -46,9 +50,10 @@ export const incidentRoutes: RouteTable<IIncidentController> = {
 			handler: "resolveIncidentManually",
 			summary: "Manually resolve an incident (admin/superadmin)",
 			roles: ["admin", "superadmin"],
+			errors: [incidentErrors.notFound, incidentErrors.alreadyResolved],
 			params: incidentIdParamValidation,
 			body: resolveIncidentBodyValidation,
-			response: incidentResponseSchema,
+			response: incidentSchema,
 		},
 	],
 };

@@ -3,7 +3,7 @@ import { IStatusProvider } from "@/service/networkProviders/IStatusProvider.js";
 import dns from "dns";
 import type { Resolver } from "dns/promises";
 import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { timeRequest } from "@/service/networkProviders/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 
@@ -106,9 +106,8 @@ export class DNSProvider implements IStatusProvider<DNSStatusPayload> {
 			};
 		} catch (error: unknown) {
 			const originalMessage = error instanceof Error ? error.message : String(error);
-			throw new AppError({
+			throw new AppError(internalError, {
 				message: originalMessage || "Error performing DNS check",
-				status: 500,
 				service: SERVICE_NAME,
 				method: "handle",
 				details: { url: monitor.url },

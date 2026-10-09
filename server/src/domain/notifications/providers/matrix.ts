@@ -5,6 +5,7 @@ import type { AlertMatrixPayload, Notification } from "@/domain/notifications/no
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
 import { getTestMessage, incidentUrl } from "@/domain/notifications/providers/utils.js";
 import { randomUUID } from "crypto";
+import { AppError, internalError } from "@/utils/AppError.js";
 
 export class MatrixProvider extends NotificationProvider {
 	sendTestAlert = async (notification: Partial<Notification>) => {
@@ -90,7 +91,11 @@ export class MatrixProvider extends NotificationProvider {
 
 		const roomId = (response.body as { room_id?: string })?.room_id;
 		if (!roomId) {
-			throw new Error(`Matrix directory returned no room_id for alias ${roomIdOrAlias}`);
+			throw new AppError(internalError, {
+				message: `Matrix directory returned no room_id for alias ${roomIdOrAlias}`,
+				service: SERVICE_NAME,
+				method: "resolveRoomId",
+			});
 		}
 		return roomId;
 	};

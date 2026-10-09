@@ -12,11 +12,8 @@ export const successEnvelopeNoData = z.object({
 	msg: z.string(),
 });
 
-export const errorEnvelope = z.object({
-	success: z.literal(false),
-	msg: z.string(),
-	data: z.unknown().optional(),
-});
+export const errorEnvelope = z.object({ status: z.number(), msg: z.string() }).meta({ id: "Error" });
+export type ErrorBody = z.infer<typeof errorEnvelope>;
 
 export const bearer = [{ bearerAuth: [] }];
 
@@ -25,14 +22,6 @@ export const json = <T extends z.ZodType>(schema: T, example?: unknown) => ({
 });
 
 export const errorJson = (description: string) => ({ description, content: json(errorEnvelope) });
-
-export const unknownResponseSchema = z.unknown();
-
-export const standardErrors = {
-	"401": { description: "Unauthorized", content: json(errorEnvelope) },
-	"403": { description: "Forbidden", content: json(errorEnvelope) },
-	"500": { description: "Internal server error", content: json(errorEnvelope) },
-};
 
 export const okJson = <T extends z.ZodType>(data: T, description = "OK", example?: unknown) => ({
 	description,

@@ -1,8 +1,9 @@
 import { HardwareBreaches, Monitor } from "@/domain/monitors/monitor.type.js";
 import { Check } from "@/domain/checks/check.type.js";
 import { Job, JobType } from "@/domain/jobs/job.type.js";
-import { QueueWorker } from "@/domain/queue-workers/queue-worker.type.js";
 import type { QueueMode } from "@/domain/app-settings/app-settings.type.js";
+import type { z } from "zod";
+import type { workerJobFailureSchema, workerJobsPageSchema, workerJobSummarySchema, workerMetricsSchema } from "@/worker/worker.schema.js";
 
 export type JobHandler = (job: Job) => Promise<void>;
 export type JobHandlers = Record<JobType, JobHandler>;
@@ -21,48 +22,16 @@ export type MonitorEvaluation = {
 	decision: MonitorActionDecision;
 };
 
-export type WorkerJobFailure = {
-	monitorId: string | number;
-	monitorUrl: string | null;
-	monitorType: string | null;
-	failedAt: number | null;
-	failCount: number;
-	failReason: string | null;
-};
-
-export type WorkerMetrics = {
-	jobs: number;
-	activeJobs: number;
-	failingJobs: number;
-	jobsWithFailures: WorkerJobFailure[];
-	totalRuns: number;
-	totalFailures: number;
-	workers: QueueWorker[];
-};
-
-export type WorkerJobSummary = {
-	monitorId: string | number;
-	monitorType: string | null;
-	monitorInterval: number | null;
-	monitorActive: boolean | null;
-	lockedBy: string | null;
-	lockedUntil: number | null;
-	nextScheduledAt: number;
-	runCount: number;
-	failCount: number;
-	failReason: string | null;
-	lastFinishedAt: number | null;
-};
+export type WorkerJobFailure = z.infer<typeof workerJobFailureSchema>;
+export type WorkerMetrics = z.infer<typeof workerMetricsSchema>;
+export type WorkerJobSummary = z.infer<typeof workerJobSummarySchema>;
 
 export type WorkerJobsPagination = {
 	page?: number;
 	rowsPerPage?: number;
 };
 
-export type WorkerJobsPage = {
-	jobs: WorkerJobSummary[];
-	count: number;
-};
+export type WorkerJobsPage = z.infer<typeof workerJobsPageSchema>;
 
 export type WorkerHealth = {
 	workerId: string;

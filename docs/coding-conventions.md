@@ -361,19 +361,33 @@ Whenever the same string-set or shape constraint appears in two or more validato
 
 ---
 
-## 11. OpenAPI: response schemas live in the validator file
+## 11. OpenAPI: entity schemas live in the domain
 
-The OpenAPI `monitorObject` (and friends) are generated from a `monitorResponseSchema` Zod object exported from the validator file, not hand-built in `server/openapi/routes/`. When you add a field to the data model, add it to the response schema in the same edit.
+Each entity's shape is one Zod schema in `domain/<entity>/<entity>.schema.ts`. The TS type is `z.infer` of it in `<entity>.type.ts`, the route table references it as the `response`, and the OpenAPI spec is generated from it. Entities with a secret field (`User`, `Proxy`, `Monitor`) also export a `*ResponseSchema` that is `.omit()` of the entity schema and carries the component id. Shapes a route composes (lists, pages, envelopes) live in `api/validation/<entity>Validation.ts`.
 
-**Why:** the spec is auto-generated. If the response schema doesn't list a field, SDK consumers don't see it, even though the server returns it. That's a silent contract gap.
+**Why:** the spec is auto-generated. If the schema doesn't list a field, SDK consumers don't see it, even though the server returns it. One definition means the type, the mapper and the spec cannot drift from each other.
 
-**How to apply:** when you add an entity field, update three files in the same PR:
+**How to apply:** when you add an entity field, update two files in the same PR:
 
-1. `types/<entity>.ts` — add the field to the TS interface.
-2. `db/models/<Entity>.ts` — add the Mongoose schema entry (with `enum` if the value set is closed; rule 8).
-3. `validation/<entity>Validation.ts` — add the field to the response schema (and create/edit body schemas if it's user-settable).
+1. `domain/<entity>/<entity>.schema.ts` — add the field. Required or optional follows what the repository's `toEntity` writes. If the field is a secret, add it to the response schema's `.omit()`.
+2. `domain/<entity>/<entity>.model.ts` — add the Mongoose schema entry (with `enum` if the value set is closed; rule 8).
 
-The repository's `toEntity` helper also needs to surface the new field; that's part of the change, not a separate one.
+The repository's `toEntity` must write the new field; the build fails until it does. Zod outside `api/validation/` is for response shapes only: request parsing stays in the validators, and services never call `.parse` on a response schema.
+
+## 12. Every `AppError` is built from a definition
+
+Client errors are `{ status, description }` literals in `domain/<entity>/<entity>.errors.ts` (middleware errors in `api/middleware/middleware.errors.ts`, email errors in `service/email.errors.ts`), thrown as `new AppError(<entity>Errors.<name>, { service, method, message?, details? })` and listed by reference in the route table's `errors`. Server errors throw `internalError` from `utils/AppError.ts`. The OpenAPI spec is generated from the definitions, and `npm run test:route-errors` fails when a route omits a definition its handler can throw, or lists one it cannot.
+
+**Why:** the status and the spec description come from the same value, so they cannot drift. A reviewer sees every error a route can return by reading its table entry.
+
+**How to apply:** when you add a throw:
+
+1. Add the definition to the entity's catalog if none fits. Reuse an existing one when the meaning is the same; `monitorErrors.notFound` is thrown from several repositories.
+2. Throw it with `service` and `method`. Pass `message` only when it adds something the description cannot, such as an id. Otherwise the description is the message.
+3. Add it to the `errors` array of every route entry whose handler can reach it, including entries in other domains' tables.
+4. Run `npm run test:route-errors`.
+
+Guard errors (validation 400, auth 401, role 403, upload 413 and 415, rate limit 429, and 500) are derived from the entry's fields by `registerRoutes` and are never listed.
 
 ---
 
@@ -399,6 +413,7 @@ Before opening a PR, grep your diff for the patterns below. Each item describes 
 - [ ] No closed-set string field on a Mongoose schema without an `enum` (rule 8).
 - [ ] No provider test that uses `beforeEach` instead of inline `setup()` (rule 9).
 - [ ] No duplicated `z.enum([...])` literal that should reference a `types/*` const tuple (rule 10).
-- [ ] No new entity field missing from `monitorResponseSchema` (or peer response schema) for OpenAPI (rule 11).
+- [ ] No new entity field missing from `domain/<entity>/<entity>.schema.ts` (rule 11).
+- [ ] No `new AppError({ ... })` with an object as the first argument; every throw names a definition, `internalError` for 500s (rule 12).
 
 A clean PR on these axes is a PR that ships without a normalize follow-up.

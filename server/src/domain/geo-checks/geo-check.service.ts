@@ -1,13 +1,13 @@
-import type { GeoCheck } from "@/domain/geo-checks/geo-check.type.js";
+import type { FlatGeoChecksQueryResult, GeoCheck, GeoCheckResult, GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
 import type { Monitor } from "@/domain/monitors/monitor.type.js";
-import type { GeoCheckResult, GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
 import { Types } from "mongoose";
-import type { FlatGeoChecksQueryResult, IGeoChecksRepository } from "@/domain/geo-checks/geo-check.repository.interface.js";
+import type { IGeoChecksRepository } from "@/domain/geo-checks/geo-check.repository.interface.js";
 import type { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import type { IGlobalPingService } from "@/service/globalPingService.js";
 import type { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";
 import { DateRange } from "@/types/query.js";
+import { monitorErrors } from "@/domain/monitors/monitor.errors.js";
 
 const SERVICE_NAME = "GeoChecksService";
 
@@ -161,30 +161,12 @@ export class GeoChecksService implements IGeoChecksService {
 		rowsPerPage?: number;
 		continent: GeoContinent | GeoContinent[];
 	}) => {
-		if (!monitorId) {
-			throw new AppError({
-				message: "No monitor ID in request",
-				service: SERVICE_NAME,
-				method: "getGeoChecksByMonitor",
-				status: 400,
-			});
-		}
-		if (!teamId) {
-			throw new AppError({
-				message: "No team ID in request",
-				service: SERVICE_NAME,
-				method: "getGeoChecksByMonitor",
-				status: 400,
-			});
-		}
-
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
-			throw new AppError({
+			throw new AppError(monitorErrors.notFound, {
 				message: `Monitor with ID ${monitorId} not found.`,
 				service: SERVICE_NAME,
 				method: "getGeoChecksByMonitor",
-				status: 404,
 			});
 		}
 
