@@ -71,6 +71,10 @@
 		{
 			"name": "tags",
 			"description": "Labels for grouping and filtering monitors, team-scoped."
+		},
+		{
+			"name": "egress",
+			"description": "The instance's outbound connectivity self-check state."
 		}
 	],
 	"components": {
@@ -6028,9 +6032,12 @@
 												},
 												"downChecks": {
 													"type": "number"
+												},
+												"degradedChecks": {
+													"type": "number"
 												}
 											},
-											"required": ["totalChecks", "downChecks"]
+											"required": ["totalChecks", "downChecks", "degradedChecks"]
 										}
 									},
 									"required": ["success", "msg", "data"]
@@ -6121,7 +6128,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["all", "up", "down", "resolve"]
+							"enum": ["all", "up", "down", "resolve", "degraded"]
 						},
 						"required": false,
 						"name": "filter",
@@ -6371,7 +6378,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["all", "up", "down", "resolve"]
+							"enum": ["all", "up", "down", "resolve", "degraded"]
 						},
 						"required": false,
 						"name": "filter",
@@ -6766,7 +6773,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["all", "up", "down", "resolve"]
+							"enum": ["all", "up", "down", "resolve", "degraded"]
 						},
 						"required": false,
 						"name": "filter",
@@ -13902,7 +13909,7 @@
 						}
 					},
 					"422": {
-						"description": "Referenced proxy does not exist",
+						"description": "Referenced proxy does not exist, or referenced notification does not exist",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -15211,6 +15218,121 @@
 					},
 					"403": {
 						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/egress": {
+			"get": {
+				"tags": ["egress"],
+				"summary": "Get the instance's current egress self-check state",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string"
+												},
+												"status": {
+													"type": "string",
+													"enum": ["ok", "degraded"]
+												},
+												"degradedSince": {
+													"type": "string",
+													"nullable": true
+												},
+												"lastRecoveredAt": {
+													"type": "string",
+													"nullable": true
+												},
+												"lastProbeAt": {
+													"type": "string",
+													"nullable": true
+												},
+												"lastProbeResults": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"target": {
+																"type": "string"
+															},
+															"reachable": {
+																"type": "boolean"
+															},
+															"responseTime": {
+																"type": "number"
+															},
+															"message": {
+																"type": "string"
+															}
+														},
+														"required": ["target", "reachable", "responseTime"]
+													}
+												},
+												"createdAt": {
+													"type": "string"
+												},
+												"updatedAt": {
+													"type": "string"
+												}
+											},
+											"required": ["id", "status", "degradedSince", "lastRecoveredAt", "lastProbeAt", "lastProbeResults", "createdAt", "updatedAt"]
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {

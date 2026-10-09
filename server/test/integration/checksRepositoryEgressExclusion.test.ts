@@ -139,14 +139,14 @@ describe("MongoChecksRepository degraded-egress exclusion", () => {
 		expect(result.uptimePercentage).toBe(0.5);
 	});
 
-	it("excludes degraded checks from the team summary totals", async () => {
+	it("excludes degraded checks from the team summary totals and counts them on their own", async () => {
 		await seedCheck();
 		await seedCheck({ status: false });
 		await seedDegradedFailure();
 
 		const summary = await repo.findSummaryByTeamId(TEAM_ID.toString(), "day");
 
-		expect(summary).toEqual({ totalChecks: 2, downChecks: 1 });
+		expect(summary).toEqual({ totalChecks: 2, downChecks: 1, degradedChecks: 1 });
 	});
 
 	it("excludes degraded checks from the daily status buckets, dropping a day that saw nothing else", async () => {
@@ -172,6 +172,20 @@ describe("MongoChecksRepository degraded-egress exclusion", () => {
 
 		expect(checksCount).toBe(2);
 		expect(checks.map((check) => check.egressStatus).sort()).toEqual([undefined, "degraded"].sort());
+	});
+
+	it("selects only degraded checks under the degraded filter, for one monitor and for the team", async () => {
+		await seedCheck({ status: false });
+		await seedDegradedFailure();
+		await seedDegradedFailure({ metadata: { monitorId: new mongoose.Types.ObjectId(), teamId: TEAM_ID, type: "http" } });
+
+		const monitor = await repo.findByMonitorId(MONITOR_ID.toString(), "desc", "day", 0, 10, undefined, "degraded");
+		const team = await repo.findByTeamId("desc", "day", 0, 10, TEAM_ID.toString(), "degraded");
+
+		expect(monitor.checksCount).toBe(1);
+		expect(monitor.checks.every((check) => check.egressStatus === "degraded")).toBe(true);
+		expect(team.checksCount).toBe(2);
+		expect(team.checks.every((check) => check.egressStatus === "degraded")).toBe(true);
 	});
 
 	it("keeps degraded checks in the team listing and under the resolve filter", async () => {

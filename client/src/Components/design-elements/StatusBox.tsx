@@ -188,3 +188,14 @@ export const UpChecksBox = ({ n }: { n: number }) => {
 		/>
 	);
 };
+export const DegradedChecksBox = ({ n }: { n: number }) => {
+	const theme = useTheme();
+	const { t } = useTranslation();
+	return (
+		<StatusBox
+			label={t("pages.common.monitors.status.degraded")}
+			n={n}
+			color={theme.palette.warning.light}
+		/>
+	);
+};

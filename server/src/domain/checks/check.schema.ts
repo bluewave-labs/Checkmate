@@ -180,6 +180,7 @@ export const checksPageSchema = z.object({
 export const checksSummarySchema = z.object({
 	totalChecks: z.number(),
 	downChecks: z.number(),
+	degradedChecks: z.number(),
 });
 
 //****************************************

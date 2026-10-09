@@ -5,6 +5,7 @@ import {
 	TotalChecksBox,
 	UpChecksBox,
 	DownChecksBox,
+	DegradedChecksBox,
 } from "@/Components/design-elements";
 import { HeaderTimeRange } from "@/Components/common";
 import { Select } from "@/Components/inputs";
@@ -103,6 +104,7 @@ const Checks = () => {
 	const totalChecks = summaryResponse?.totalChecks || 0;
 	const downChecks = summaryResponse?.downChecks || 0;
 	const upChecks = totalChecks - (summaryResponse?.downChecks || 0);
+	const degradedChecks = summaryResponse?.degradedChecks || 0;
 
 	const noMonitors = !isLoadingMonitors && (monitorsResponse?.length ?? 0) === 0;
 	if (noMonitors) {
@@ -124,6 +126,7 @@ const Checks = () => {
 				<TotalChecksBox n={totalChecks} />
 				<UpChecksBox n={upChecks} />
 				<DownChecksBox n={downChecks || 0} />
+				{degradedChecks > 0 && <DegradedChecksBox n={degradedChecks} />}
 			</Stack>
 
 			<Stack
@@ -164,6 +167,9 @@ const Checks = () => {
 						<MenuItem value="all">{t("pages.checks.selects.status.all")}</MenuItem>
 						<MenuItem value="up">{t("pages.checks.selects.status.up")}</MenuItem>
 						<MenuItem value="down">{t("pages.checks.selects.status.down")}</MenuItem>
+						<MenuItem value="degraded">
+							{t("pages.checks.selects.status.degraded")}
+						</MenuItem>
 					</Select>
 				</Stack>
 				<HeaderTimeRange
