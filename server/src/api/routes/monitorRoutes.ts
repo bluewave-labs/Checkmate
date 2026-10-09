@@ -6,6 +6,7 @@ import {
 	getMonitorByIdQueryValidation,
 	getMonitorsByTeamIdQueryValidation,
 	getMonitorsWithChecksQueryValidation,
+	getDashboardByTeamIdQueryValidation,
 	getCertificateParamValidation,
 	getDomainParamValidation,
 	createMonitorBodyValidation,
@@ -34,6 +35,7 @@ import { updateNotificationsValidation } from "@/api/validation/notificationVali
 import { dockerLogPageSchema } from "@/domain/docker/docker-log.schema.js";
 import { groupedGeoCheckResultSchema } from "@/domain/geo-checks/geo-check.schema.js";
 import {
+	dashboardByTeamIdResultSchema,
 	dockerContainerDetailsResultSchema,
 	dockerDetailsResultSchema,
 	gamesMapSchema,
@@ -66,6 +68,14 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "List team monitors with their most recent checks (paginated)",
 			query: getMonitorsWithChecksQueryValidation,
 			response: monitorsWithChecksByTeamIdResultSchema,
+		},
+		{
+			method: "get",
+			path: "/team/dashboard",
+			handler: "getDashboardByTeamId",
+			summary: "Get aggregate dashboard data for the caller's team",
+			query: getDashboardByTeamIdQueryValidation,
+			response: dashboardByTeamIdResultSchema,
 		},
 		{
 			method: "get",

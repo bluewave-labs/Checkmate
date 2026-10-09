@@ -1,4 +1,12 @@
-import type { MonitorType, Monitor, MonitorStatus, MonitorsSummary, CheckSnapshot, MonitorScheduleFields } from "@/domain/monitors/monitor.type.js";
+import type {
+	MonitorType,
+	Monitor,
+	MonitorStatus,
+	MonitorsSummary,
+	CheckSnapshot,
+	MonitorScheduleFields,
+	DashboardByTeamIdResult,
+} from "@/domain/monitors/monitor.type.js";
 
 export interface TeamQueryConfig {
 	limit?: number;
@@ -62,6 +70,7 @@ export interface IMonitorsRepository {
 
 	// other
 	findMonitorsSummaryByTeamId(teamId: string, config?: SummaryConfig): Promise<MonitorsSummary>;
+	findDashboardByTeamId(teamId: string, config?: Pick<TeamQueryConfig, "limit" | "order">): Promise<DashboardByTeamIdResult>;
 	removeNotificationFromMonitors(notificationId: string): Promise<void>;
 	removeTagFromMonitors(tagId: string): Promise<void>;
 	updateNotifications(teamId: string, monitorIds: string[], notificationIds: string[], action: "add" | "remove" | "set"): Promise<number>;
