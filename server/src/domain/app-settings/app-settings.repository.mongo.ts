@@ -25,6 +25,7 @@ class MongoSettingsRepository implements ISettingsRepository {
 			systemEmailIgnoreTLS: doc.systemEmailIgnoreTLS ?? false,
 			systemEmailRequireTLS: doc.systemEmailRequireTLS ?? false,
 			systemEmailRejectUnauthorized: doc.systemEmailRejectUnauthorized ?? true,
+			systemEmailDisplayName: doc.systemEmailDisplayName ?? undefined,
 			showURL: doc.showURL ?? false,
 			singleton: doc.singleton,
 			version: doc.version ?? 1,
@@ -45,7 +46,7 @@ class MongoSettingsRepository implements ISettingsRepository {
 	};
 
 	findSingleton = async () => {
-		const settings = await AppSettingsModel.findOne({ singleton: true }).select("-__v -_id -createdAt -updatedAt -singleton").lean();
+		const settings = await AppSettingsModel.findOne({ singleton: true }).lean();
 		if (!settings) {
 			return null;
 		}
@@ -70,14 +71,9 @@ class MongoSettingsRepository implements ISettingsRepository {
 			...(Object.keys($unset).length > 0 && { $unset }),
 		};
 
-		await AppSettingsModel.findOneAndUpdate({}, update, {
-			upsert: true,
-		});
-
 		const updatedSettings = await AppSettingsModel.findOneAndUpdate({}, update, {
 			upsert: true,
 			new: true,
-			projection: "-__v -_id -createdAt -updatedAt -singleton",
 		});
 
 		return this.toEntity(updatedSettings);

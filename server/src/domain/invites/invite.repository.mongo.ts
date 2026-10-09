@@ -4,8 +4,13 @@ import { type InviteDocument, InviteModel } from "@/domain/invites/invite.model.
 import { AppError } from "@/utils/AppError.js";
 import crypto from "crypto";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
+import { inviteErrors } from "@/domain/invites/invite.errors.js";
+
+const SERVICE_NAME = "InvitesRepository";
 
 class MongoInvitesRepository implements IInvitesRepository {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	private toEntity = (doc: InviteDocument): Invite => {
 		return {
 			id: toStringId(doc._id),
@@ -31,7 +36,7 @@ class MongoInvitesRepository implements IInvitesRepository {
 			token,
 		});
 		if (invite === null) {
-			throw new AppError({ message: "Invite not found", status: 404 });
+			throw new AppError(inviteErrors.notFound, { service: SERVICE_NAME, method: "findByToken" });
 		}
 		return this.toEntity(invite);
 	};
@@ -41,7 +46,7 @@ class MongoInvitesRepository implements IInvitesRepository {
 			token,
 		});
 		if (invite === null) {
-			throw new AppError({ message: "Invite not found", status: 404 });
+			throw new AppError(inviteErrors.notFound, { service: SERVICE_NAME, method: "findByTokenAndDelete" });
 		}
 		return this.toEntity(invite);
 	};

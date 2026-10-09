@@ -1,6 +1,6 @@
 import { ILogger } from "@/utils/logger.js";
 import type * as nodeCrypto from "node:crypto";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "EncryptionService";
 
@@ -104,13 +104,7 @@ export class EncryptionService implements IEncryptionService {
 	};
 
 	private fail = (method: string, message: string, details?: Record<string, unknown>): AppError => {
-		return new AppError({
-			message,
-			status: 500,
-			service: SERVICE_NAME,
-			method,
-			details,
-		});
+		return new AppError(internalError, { message, service: SERVICE_NAME, method, details });
 	};
 
 	// Create an ID:Key pair for each key.

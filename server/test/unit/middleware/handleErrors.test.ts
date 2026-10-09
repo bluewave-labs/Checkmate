@@ -34,6 +34,29 @@ describe("handleErrors", () => {
 		expect(res.status).toHaveBeenCalledWith(415);
 	});
 
+	it("honours the status of a body-parser error so malformed JSON is a 400 and an oversized body a 413", () => {
+		const res = makeRes();
+		const malformed = Object.assign(new Error("Unexpected token } in JSON"), { status: 400, type: "entity.parse.failed" });
+		handleErrors(logger)(malformed, {} as Request, res, (() => {}) as NextFunction);
+		expect(res.status).toHaveBeenCalledWith(400);
+		expect(res.json).toHaveBeenCalledWith({ status: 400, msg: "Unexpected token } in JSON" });
+
+		const tooLarge = makeRes();
+		handleErrors(logger)(
+			Object.assign(new Error("request entity too large"), { status: 413, type: "entity.too.large" }),
+			{} as Request,
+			tooLarge,
+			(() => {}) as NextFunction
+		);
+		expect(tooLarge.status).toHaveBeenCalledWith(413);
+	});
+
+	it("does not honour a non-client status on an unknown error", () => {
+		const res = makeRes();
+		handleErrors(logger)(Object.assign(new Error("upstream"), { status: 503 }), {} as Request, res, (() => {}) as NextFunction);
+		expect(res.status).toHaveBeenCalledWith(500);
+	});
+
 	it("falls back to 500 for unknown errors", () => {
 		const res = makeRes();
 		handleErrors(logger)(new Error("boom"), {} as Request, res, (() => {}) as NextFunction);

@@ -5,6 +5,7 @@ import { makeNotification, makeMessage } from "../../../helpers/notificationMess
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
 import type { IEmailService } from "../../../../src/service/emailService.ts";
 import { AppError } from "../../../../src/utils/AppError.ts";
+import { emailErrors } from "../../../../src/service/email.errors.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -60,9 +61,8 @@ describe("EmailProvider", () => {
 
 		it("rethrows an AppError from sendEmail so the caller can report the reason", async () => {
 			const { provider, emailService, logger } = createProvider();
-			const error = new AppError({
+			const error = new AppError(emailErrors.notConfigured, {
 				message: "Email is not configured. Set the system email host in settings.",
-				status: 400,
 				details: { cause: "no host" },
 			});
 			(emailService.sendEmail as jest.Mock).mockRejectedValue(error);
@@ -113,9 +113,8 @@ describe("EmailProvider", () => {
 		it("returns false rather than throwing when sendEmail rejects with an AppError", async () => {
 			const { provider, emailService, logger } = createProvider();
 			(emailService.sendEmail as jest.Mock).mockRejectedValue(
-				new AppError({
+				new AppError(emailErrors.sendFailed, {
 					message: "SMTP verification failed for smtp.example.com:587: 535 Username and Password not accepted",
-					status: 502,
 					details: { cause: "ECONNREFUSED" },
 				})
 			);

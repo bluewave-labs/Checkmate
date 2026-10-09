@@ -1,9 +1,10 @@
 import { IUsersRepository } from "@/domain/users/user.repository.interface.js";
 import { UserModel, type UserDocument } from "@/domain/users/user.model.js";
-import type { User, UserProfileImage } from "@/domain/users/user.type.js";
+import { toUserResponse, type User, type UserProfileImage, type UserResponse } from "@/domain/users/user.type.js";
 import { GenerateAvatarImage } from "@/utils/imageProcessing.js";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
+import { userErrors } from "@/domain/users/user.errors.js";
 const SERVICE_NAME = "MongoUsersRepository";
 
 class MongoUsersRepository implements IUsersRepository {
@@ -38,6 +39,8 @@ class MongoUsersRepository implements IUsersRepository {
 		};
 	};
 
+	private toResponse = (doc: UserDocument): UserResponse => toUserResponse(this.toEntity(doc));
+
 	create = async (user: Partial<User>, imageFile: Express.Multer.File | null) => {
 		if (imageFile) {
 			// 1.  Save the full size image
@@ -55,15 +58,15 @@ class MongoUsersRepository implements IUsersRepository {
 		await newUser.save();
 		const sanitizedUser = await UserModel.findOne({ _id: newUser._id }).select("-password").select("-profileImage");
 		if (!sanitizedUser) {
-			throw new AppError({ message: "Failed to create user", service: SERVICE_NAME, status: 500 });
+			throw new AppError(internalError, { message: "Failed to create user", service: SERVICE_NAME, method: "create" });
 		}
-		return this.toEntity(sanitizedUser);
+		return this.toResponse(sanitizedUser);
 	};
 
 	findByEmail = async (email: string) => {
 		const user = await UserModel.findOne({ email: email }).select("-profileImage");
 		if (!user) {
-			throw new AppError({ message: "User not found", service: SERVICE_NAME, status: 404 });
+			throw new AppError(userErrors.notFound, { service: SERVICE_NAME, method: "findByEmail" });
 		}
 		return this.toEntity(user);
 	};
@@ -71,18 +74,22 @@ class MongoUsersRepository implements IUsersRepository {
 	findById = async (id: string) => {
 		const user = await UserModel.findById(id).select("-password").select("-profileImage");
 		if (!user) {
-			throw new AppError({ message: "User not found", service: SERVICE_NAME, status: 404 });
+			throw new AppError(userErrors.notFound, { service: SERVICE_NAME, method: "findById" });
 		}
 
-		return this.toEntity(user);
+		return this.toResponse(user);
 	};
 
 	findAll = async () => {
 		const users = await UserModel.find().select("-password").select("-profileImage");
-		return this.mapDocuments(users);
+		return users.map((doc) => this.toResponse(doc));
 	};
 
-	updateById = async (id: string, patch: Partial<User & { deleteProfileImage?: boolean }>, file?: Express.Multer.File | null): Promise<User> => {
+	updateById = async (
+		id: string,
+		patch: Partial<User & { deleteProfileImage?: boolean }>,
+		file?: Express.Multer.File | null
+	): Promise<UserResponse> => {
 		const candidateUser = { ...patch };
 		let unsetFields: Record<string, 1> | undefined;
 
@@ -109,15 +116,15 @@ class MongoUsersRepository implements IUsersRepository {
 
 		const updatedUser = await UserModel.findOneAndUpdate({ _id: id }, updateQuery, { new: true }).select("-password").select("-profileImage");
 		if (!updatedUser) {
-			throw new AppError({ message: "User not found", service: SERVICE_NAME, status: 404 });
+			throw new AppError(userErrors.notFound, { service: SERVICE_NAME, method: "updateById" });
 		}
-		return this.toEntity(updatedUser);
+		return this.toResponse(updatedUser);
 	};
 
 	deleteById = async (id: string) => {
 		const deletedUser = await UserModel.findByIdAndDelete(id);
 		if (!deletedUser) {
-			throw new AppError({ message: "User not found", service: SERVICE_NAME, status: 404 });
+			throw new AppError(userErrors.notFound, { service: SERVICE_NAME, method: "deleteById" });
 		}
 		return this.toEntity(deletedUser);
 	};
@@ -128,13 +135,6 @@ class MongoUsersRepository implements IUsersRepository {
 			return true;
 		}
 		return false;
-	};
-
-	private mapDocuments = (documents: UserDocument[]): User[] => {
-		if (!documents?.length) {
-			return [];
-		}
-		return documents.map((doc) => this.toEntity(doc));
 	};
 }
 

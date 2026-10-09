@@ -3,6 +3,7 @@ import { Tag } from "@/domain/tags/tag.type.js";
 import { TagDocument, TagModel } from "@/domain/tags/tag.model.js";
 import { AppError } from "@/utils/AppError.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
+import { tagErrors } from "@/domain/tags/tag.errors.js";
 
 const SERVICE_NAME = "TagsRepository";
 
@@ -26,7 +27,7 @@ class MongoTagsRepository implements ITagsRepository {
 			return this.toEntity(tag);
 		} catch (error) {
 			if (error && typeof error === "object" && (error as { code?: number }).code === 11000) {
-				throw new AppError({ message: `A tag named "${tagData.name}" already exists`, service: SERVICE_NAME, status: 409 });
+				throw new AppError(tagErrors.nameTaken, { message: `A tag named "${tagData.name}" already exists`, service: SERVICE_NAME, method: "create" });
 			}
 			throw error;
 		}
@@ -35,7 +36,7 @@ class MongoTagsRepository implements ITagsRepository {
 	async findById(tagId: string, teamId: string): Promise<Tag> {
 		const tag = await TagModel.findOne({ _id: tagId, teamId });
 		if (!tag) {
-			throw new AppError({ message: "Tag not found", service: SERVICE_NAME, status: 404 });
+			throw new AppError(tagErrors.notFound, { service: SERVICE_NAME, method: "findById" });
 		}
 		return this.toEntity(tag);
 	}
@@ -56,7 +57,7 @@ class MongoTagsRepository implements ITagsRepository {
 			{ new: true, runValidators: true }
 		);
 		if (!updatedTag) {
-			throw new AppError({ message: "Tag not found or could not be updated", service: SERVICE_NAME, status: 404 });
+			throw new AppError(tagErrors.notFound, { service: SERVICE_NAME, method: "updateById" });
 		}
 		return this.toEntity(updatedTag);
 	}
@@ -64,7 +65,7 @@ class MongoTagsRepository implements ITagsRepository {
 	async deleteById(tagId: string, teamId: string): Promise<Tag> {
 		const deletedTag = await TagModel.findOneAndDelete({ _id: tagId, teamId });
 		if (!deletedTag) {
-			throw new AppError({ message: "Tag not found or could not be deleted", service: SERVICE_NAME, status: 404 });
+			throw new AppError(tagErrors.notFound, { service: SERVICE_NAME, method: "deleteById" });
 		}
 		return this.toEntity(deletedTag);
 	}

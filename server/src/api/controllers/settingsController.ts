@@ -2,12 +2,13 @@ import { RequestHandler } from "express";
 import { Handler, requireTeamId } from "@/api/controllers/controllerUtils.js";
 import { updateAppSettingsBodyValidation } from "@/api/validation/settingsValidation.js";
 import { sendTestEmailBodyValidation } from "@/api/validation/notificationValidation.js";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { IEmailService } from "@/service/emailService.js";
 import { IProxiesService } from "@/domain/proxies/proxy.service.js";
 import { IEgressStateService } from "@/domain/egress/egress-state.service.js";
 import { Settings } from "@/domain/app-settings/app-settings.type.js";
+import { appSettingsErrors } from "@/domain/app-settings/app-settings.errors.js";
 import { INotificationsService } from "@/domain/notifications/notification.service.js";
 
 const SERVICE_NAME = "SettingsController";
@@ -19,6 +20,8 @@ export interface ISettingsController {
 }
 
 class SettingsController implements ISettingsController {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	private settingsService: ISettingsService;
 	private emailService: IEmailService;
 	private proxiesService: IProxiesService;
@@ -74,7 +77,7 @@ class SettingsController implements ISettingsController {
 		if (validatedBody.globalProxyId) {
 			const proxy = await this.proxiesService.getProxySummary(validatedBody.globalProxyId);
 			if (!proxy) {
-				throw new AppError({ message: "Referenced proxy does not exist", status: 422 });
+				throw new AppError(appSettingsErrors.proxyNotFound, { service: SERVICE_NAME, method: "updateAppSettings" });
 			}
 		}
 
@@ -88,7 +91,11 @@ class SettingsController implements ISettingsController {
 			const foundIds = new Set(teamNotifications.map((notification) => notification.id));
 			const missing = requestedIds.filter((id) => !foundIds.has(id));
 			if (missing.length > 0) {
-				throw new AppError({ message: `Referenced notification does not exist: ${missing.join(", ")}`, status: 422 });
+				throw new AppError(appSettingsErrors.notificationNotFound, {
+					message: `Referenced notification does not exist: ${missing.join(", ")}`,
+					service: SERVICE_NAME,
+					method: "updateAppSettings",
+				});
 			}
 		}
 
@@ -112,21 +119,14 @@ class SettingsController implements ISettingsController {
 
 		const html = await this.emailService.buildEmail("testEmailTemplate", context);
 		if (!html) {
-			throw new AppError({ message: "Failed to build email template.", status: 500, service: SERVICE_NAME, method: "sendTestEmail" });
+			throw new AppError(internalError, { message: "Failed to build email template.", service: SERVICE_NAME, method: "sendTestEmail" });
 		}
 		let messageId: string;
 		try {
 			messageId = await this.emailService.sendEmail(to, subject, html, transportConfig);
 		} catch (error: unknown) {
-			// Surface the underlying SMTP failure: diagnosing the settings is the whole
-			// point of the test email endpoint.
-			throw new AppError({
-				message: error instanceof AppError ? error.message : "Failed to send test email.",
-				status: error instanceof AppError ? error.status : 500,
-				service: SERVICE_NAME,
-				method: "sendTestEmail",
-				details: error instanceof AppError ? error.details : undefined,
-			});
+			if (error instanceof AppError) throw error;
+			throw new AppError(internalError, { message: "Failed to send test email.", service: SERVICE_NAME, method: "sendTestEmail" });
 		}
 
 		res.json({ success: true, msg: "Test email sent successfully", data: { messageId } });

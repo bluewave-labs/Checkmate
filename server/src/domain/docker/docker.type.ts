@@ -1,3 +1,12 @@
+import type { z } from "zod";
+import type {
+	dockerContainerInfoSchema,
+	dockerContainerMountSchema,
+	dockerContainerPortSchema,
+	dockerContainerSummarySchema,
+	dockerLogLineSchema,
+} from "@/domain/docker/docker.schema.js";
+
 export const DockerContainerStates = ["created", "running", "paused", "restarting", "removing", "exited", "dead"] as const;
 export type DockerContainerState = (typeof DockerContainerStates)[number];
 
@@ -11,56 +20,14 @@ export const DockerLogStreams = ["stdout", "stderr"] as const;
 export type DockerLogStream = (typeof DockerLogStreams)[number];
 
 export const DOCKER_LOG_TAIL_LINES = 200;
-
-export interface DockerLogLine {
-	ts: string;
-	stream: DockerLogStream;
-	text: string;
-}
-
 export interface DockerContainerLogs {
 	containerId: string;
 	containerName: string;
 	lines: DockerLogLine[];
 }
 
-export interface DockerContainerPort {
-	privatePort: number;
-	protocol: DockerPortProtocol;
-	publicPort?: number;
-	hostIp?: string;
-}
-
-export interface DockerContainerMount {
-	type: string; // open set: bind, volume, tmpfs, image, npipe, cluster, …
-	name?: string;
-	source: string;
-	destination: string;
-	mode: string;
-	rw: boolean;
-}
-
-export interface DockerContainerInfo {
-	id: string;
-	name: string;
-	image: string;
-	state: DockerContainerState;
-	status: string;
-	health: DockerHealthStatus;
-	cpuPct?: number; // fraction of one core (docker stats convention / 100); exceeds 1 when using multiple cores
-	memoryUsedBytes?: number;
-	memoryLimitBytes?: number;
-	memoryPct?: number; // 0-1 fraction of the memory limit
-	restartCount?: number;
-	startedAt?: string; // ISO date
-	ports?: DockerContainerPort[];
-	mounts?: DockerContainerMount[];
-	exitCode?: number;
-}
-
-export interface DockerContainerSummary {
-	total: number;
-	running: number;
-	stopped: number;
-	unhealthy: number;
-}
+export type DockerLogLine = z.infer<typeof dockerLogLineSchema>;
+export type DockerContainerPort = z.infer<typeof dockerContainerPortSchema>;
+export type DockerContainerMount = z.infer<typeof dockerContainerMountSchema>;
+export type DockerContainerInfo = z.infer<typeof dockerContainerInfoSchema>;
+export type DockerContainerSummary = z.infer<typeof dockerContainerSummarySchema>;

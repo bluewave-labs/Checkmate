@@ -9,6 +9,7 @@ import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { isStatusUp, peerAnsweredFromError } from "@/service/networkProviders/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import CacheableLookup from "cacheable-lookup";
+import { CookieJar } from "tough-cookie";
 import { HttpProxyAgent, HttpsProxyAgent } from "hpagent";
 import { CheckContext } from "@/types/network.js";
 
@@ -115,7 +116,8 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 			};
 		}
 
-		const isJson = contentType.includes("application/json");
+		const mediaType = contentType.split(";")[0]?.trim().toLowerCase() ?? "";
+		const isJson = mediaType.includes("application/json") || mediaType === "text/json" || mediaType.endsWith("+json");
 
 		if (monitor.jsonPath && !isJson) {
 			return {
@@ -143,7 +145,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 			payload = body;
 		}
 
-		const matchResult = this.advancedMatcher.validate<T | string>(payload, monitor);
+		const matchResult = this.advancedMatcher.validate<T | string>(monitor.jsonPath ? payload : body, monitor);
 
 		return {
 			monitorId: monitor.id,
@@ -226,6 +228,8 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 				};
 
 		options.method = monitor.method;
+		options.cookieJar = new CookieJar();
+		options.ignoreInvalidCookies = true;
 
 		try {
 			const response = await this.got<string>(url, options);

@@ -2,9 +2,10 @@ import type { Invite } from "@/domain/invites/invite.type.js";
 import type { UserRole } from "@/domain/users/user.type.js";
 import { canManageRole } from "@/domain/users/user.type.js";
 import type { IInvitesRepository } from "@/domain/invites/invite.repository.interface.js";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { ISettingsService } from "../app-settings/app-settings.service.js";
 import { IEmailService } from "@/service/emailService.js";
+import { inviteErrors } from "@/domain/invites/invite.errors.js";
 
 const SERVICE_NAME = "inviteService";
 
@@ -43,11 +44,10 @@ export class InviteService implements IInviteService {
 		for (const targetRole of inviteRoles) {
 			const canManage = userRoles.some((actorRole) => canManageRole(actorRole, targetRole));
 			if (!canManage) {
-				throw new AppError({
+				throw new AppError(inviteErrors.roleAboveCaller, {
 					message: "You do not have permission to create this invite",
 					service: SERVICE_NAME,
 					method: "getInviteToken",
-					status: 403,
 				});
 			}
 		}
@@ -59,22 +59,20 @@ export class InviteService implements IInviteService {
 	sendInviteEmail = async ({ invite, firstName, userRoles }: { invite: Partial<Invite>; firstName: string; userRoles: UserRole[] }) => {
 		const inviteRoles = invite.role ?? [];
 		if (!invite.email) {
-			throw new AppError({
+			throw new AppError(inviteErrors.emailRequired, {
 				message: "Invite email is required to send an invite",
 				service: SERVICE_NAME,
 				method: "sendInviteEmail",
-				status: 400,
 			});
 		}
 
 		for (const targetRole of inviteRoles) {
 			const canManage = userRoles.some((actorRole) => canManageRole(actorRole, targetRole));
 			if (!canManage) {
-				throw new AppError({
+				throw new AppError(inviteErrors.roleAboveCaller, {
 					message: "You do not have permission to create this invite",
 					service: SERVICE_NAME,
 					method: "sendInviteEmail",
-					status: 403,
 				});
 			}
 		}
@@ -88,22 +86,20 @@ export class InviteService implements IInviteService {
 		});
 
 		if (!html) {
-			throw new AppError({
+			throw new AppError(internalError, {
 				message: "Failed to build invite e-mail... Please verify your settings.",
 				service: SERVICE_NAME,
 				method: "sendInviteEmail",
-				status: 500,
 			});
 		}
 
 		try {
 			await this.emailService.sendEmail(invite.email, "Welcome to Uptime Monitor", html);
 		} catch (error: unknown) {
-			throw new AppError({
+			throw new AppError(internalError, {
 				message: "Failed to send invite e-mail... Please verify your settings.",
 				service: SERVICE_NAME,
 				method: "sendInviteEmail",
-				status: 500,
 				details: { cause: error instanceof Error ? error.message : "Unknown error" },
 			});
 		}

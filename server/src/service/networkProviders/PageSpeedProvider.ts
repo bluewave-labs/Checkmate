@@ -4,7 +4,9 @@ import { Monitor, MonitorType, DefaultPageSpeedStrategy } from "@/domain/monitor
 import { HttpProvider } from "@/service/networkProviders/HttpProvider.js";
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { ILogger } from "@/utils/logger.js";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
+
+const SERVICE_NAME = "PageSpeedProvider";
 
 export class PageSpeedProvider implements IStatusProvider<PageSpeedStatusPayload> {
 	readonly type = "pagespeed";
@@ -34,7 +36,7 @@ export class PageSpeedProvider implements IStatusProvider<PageSpeedStatusPayload
 			} else {
 				this.logger.warn({
 					message: "PageSpeed API key not found, performance may be throttled",
-					service: "PageSpeedProvider",
+					service: SERVICE_NAME,
 					method: "handle",
 					details: { url },
 				});
@@ -45,9 +47,9 @@ export class PageSpeedProvider implements IStatusProvider<PageSpeedStatusPayload
 				url: pageSpeedUrl,
 			});
 		} catch (err: unknown) {
-			throw new AppError({
+			throw new AppError(internalError, {
 				message: err instanceof Error ? err.message : "Error performing PageSpeed request",
-				service: "PageSpeedProvider",
+				service: SERVICE_NAME,
 				method: "handle",
 				details: { url: monitor.url },
 			});

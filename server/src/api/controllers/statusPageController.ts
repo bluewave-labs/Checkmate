@@ -14,6 +14,9 @@ import { AppError } from "@/utils/AppError.js";
 import { Handler, requireTeamId, requireUserId } from "@/api/controllers/controllerUtils.js";
 import { IStatusPageService } from "@/domain/status-pages/status-page.service.js";
 import { resolveStatusPageDomainFromRequest } from "@/utils/statusPageDomain.js";
+import { statusPageErrors } from "@/domain/status-pages/status-page.errors.js";
+
+const SERVICE_NAME = "StatusPageController";
 
 export interface IStatusPageController {
 	createStatusPage: RequestHandler;
@@ -26,6 +29,7 @@ export interface IStatusPageController {
 }
 
 class StatusPageController implements IStatusPageController {
+	static SERVICE_NAME = SERVICE_NAME;
 	private statusPageService: IStatusPageService;
 	constructor(statusPageService: IStatusPageService) {
 		this.statusPageService = statusPageService;
@@ -56,8 +60,7 @@ class StatusPageController implements IStatusPageController {
 	getStatusPageByUrl: Handler = async (req, res) => {
 		const { url } = getStatusPageParamValidation.parse(req.params);
 		const { range } = getStatusPageQueryValidation.parse(req.query);
-		const statusPage = await this.statusPageService.getStatusPageByUrl(url);
-		const data = await this.statusPageService.getPublicStatusPagePayload(statusPage, req.user?.teamId, range);
+		const data = await this.statusPageService.getPublicStatusPageByUrl(url, req.user?.teamId, range);
 		res.json({ success: true, msg: "Status page retrieved successfully", data });
 	};
 
@@ -72,15 +75,15 @@ class StatusPageController implements IStatusPageController {
 		const { range, domain: queryDomain } = resolveStatusPageQueryValidation.parse(req.query);
 		const domain = resolveStatusPageDomainFromRequest(req.hostname, queryDomain);
 		if (!domain) {
-			throw new AppError({ message: "Domain is required", status: 400 });
+			throw new AppError(statusPageErrors.domainRequired, { service: SERVICE_NAME, method: "resolveStatusPageByDomain" });
 		}
 
 		const statusPage = await this.statusPageService.getStatusPageByCustomDomain(domain);
 		if (!statusPage.isPublished) {
-			throw new AppError({ message: "Status page not found", status: 404 });
+			throw new AppError(statusPageErrors.notFound, { service: SERVICE_NAME, method: "resolveStatusPageByDomain" });
 		}
 
-		const data = await this.statusPageService.getPublicStatusPagePayload(statusPage, req.user?.teamId, range);
+		const data = await this.statusPageService.getPublicStatusPagePayload(statusPage, range);
 		res.json({ success: true, msg: "Status page retrieved successfully", data });
 	};
 

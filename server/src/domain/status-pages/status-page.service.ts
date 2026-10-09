@@ -19,6 +19,7 @@ import {
 import { AppError } from "@/utils/AppError.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
 import { Monitor } from "@/domain/monitors/monitor.type.js";
+import { statusPageErrors } from "@/domain/status-pages/status-page.errors.js";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -28,14 +29,18 @@ export interface IStatusPageService {
 	getStatusPageByUrl(url: string): Promise<StatusPage>;
 	getStatusPageByCustomDomain(customDomain: string): Promise<StatusPage>;
 	getStatusPagesByTeamId(teamId: string): Promise<StatusPage[]>;
-	getPublicStatusPagePayload(statusPage: StatusPage, requesterTeamId: string | undefined, range: StatusPageRange): Promise<PublicStatusPagePayload>;
+	getPublicStatusPageByUrl(url: string, requesterTeamId: string | undefined, range: StatusPageRange): Promise<PublicStatusPagePayload>;
+	getPublicStatusPagePayload(statusPage: StatusPage, range: StatusPageRange): Promise<PublicStatusPagePayload>;
 	getPublicMonitorIncidents(url: string, monitorId: string, date: string, requesterTeamId?: string): Promise<PublicIncident[]>;
 	updateStatusPage(id: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage>;
 
 	deleteStatusPage(statusPageId: string, teamId: string): Promise<StatusPage>;
 }
+const SERVICE_NAME = "StatusPageService";
 
 export class StatusPageService implements IStatusPageService {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	constructor(
 		private statusPagesRepository: IStatusPagesRepository,
 		private settingsService: ISettingsService,
@@ -51,10 +56,7 @@ export class StatusPageService implements IStatusPageService {
 
 		const clientHost = normalizeStatusPageDomain(this.settingsService.getSettings().clientHost);
 		if (clientHost && customDomain === clientHost) {
-			throw new AppError({
-				message: "Custom domain cannot match the Checkmate instance host",
-				status: 400,
-			});
+			throw new AppError(statusPageErrors.customDomainIsHost, { service: SERVICE_NAME, method: "assertCustomDomainAllowed" });
 		}
 	};
 
@@ -143,17 +145,21 @@ export class StatusPageService implements IStatusPageService {
 		return statusPages.map((sp) => this.normalizeTheme(sp));
 	};
 
-	getPublicStatusPagePayload = async (
-		statusPage: StatusPage,
+	getPublicStatusPageByUrl = async (
+		url: string,
 		requesterTeamId: string | undefined,
 		range: StatusPageRange = "latest"
 	): Promise<PublicStatusPagePayload> => {
+		const statusPage = await this.getStatusPageByUrl(url);
 		if (!statusPage.isPublished) {
 			if (!requesterTeamId || statusPage.teamId !== requesterTeamId) {
-				throw new AppError({ message: "Forbidden", status: 403 });
+				throw new AppError(statusPageErrors.unpublished, { service: SERVICE_NAME, method: "getPublicStatusPageByUrl" });
 			}
 		}
+		return this.getPublicStatusPagePayload(statusPage, range);
+	};
 
+	getPublicStatusPagePayload = async (statusPage: StatusPage, range: StatusPageRange = "latest"): Promise<PublicStatusPagePayload> => {
 		const dbSettings = await this.settingsService.getDBSettings();
 		const showURL = dbSettings.showURL;
 		const monitors = await this.monitorsRepository.findByIds(statusPage.monitors, { recentChecks: range === "latest" ? "all" : "latestHardware" });
@@ -195,13 +201,13 @@ export class StatusPageService implements IStatusPageService {
 		// Ensure the status page is public or the requester is the owner
 		if (!statusPage.isPublished) {
 			if (!requesterTeamId || statusPage.teamId !== requesterTeamId) {
-				throw new AppError({ message: "Forbidden", status: 403 });
+				throw new AppError(statusPageErrors.unpublished, { service: SERVICE_NAME, method: "getPublicMonitorIncidents" });
 			}
 		}
 
 		// Ensure the requested monitor actually belongs to this status page
 		if (!statusPage.monitors.includes(monitorId)) {
-			throw new AppError({ message: "Monitor not found on this status page", status: 404 });
+			throw new AppError(statusPageErrors.monitorNotOnPage, { service: SERVICE_NAME, method: "getPublicMonitorIncidents" });
 		}
 
 		const tz = statusPage.timezone ?? "Etc/UTC";

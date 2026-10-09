@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import type { ILogger } from "@/utils/logger.js";
 import StatusPageModel from "../../domain/status-pages/status-page.model.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 
 export async function migrateStatusPageTypeToArray(logger: ILogger): Promise<void> {
 	const SERVICE_NAME = "Migration:MigrateStatusPageTypeToArray";
@@ -10,7 +11,11 @@ export async function migrateStatusPageTypeToArray(logger: ILogger): Promise<voi
 
 		const db = mongoose.connection.db;
 		if (!db) {
-			throw new Error("Database connection is not initialized");
+			throw new AppError(internalError, {
+				message: "Database connection is not initialized",
+				service: SERVICE_NAME,
+				method: "migrateStatusPageTypeToArray",
+			});
 		}
 
 		const result = await StatusPageModel.updateMany(

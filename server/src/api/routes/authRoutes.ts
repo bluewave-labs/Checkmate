@@ -16,11 +16,14 @@ import {
 	editUserByIdParamValidation,
 	editUserPasswordByIdBodyValidation,
 	getUserByIdParamValidation,
-	userResponseExample,
-	userResponseSchema,
 	userListResponseSchema,
 } from "@/api/validation/userValidation.js";
-import { errorJson, json, okJson, standardErrors } from "@/api/routes/openapiHelpers.js";
+import { json, okJson } from "@/api/routes/openapiHelpers.js";
+import { userExample, userResponseSchema } from "@/domain/users/user.schema.js";
+import { userErrors } from "@/domain/users/user.errors.js";
+import { inviteErrors } from "@/domain/invites/invite.errors.js";
+import { recoveryTokenErrors } from "@/domain/recovery-tokens/recovery-token.errors.js";
+import { emailErrors } from "@/service/email.errors.js";
 
 export const authRoutes: RouteTable<IAuthController> = {
 	prefix: "/auth",
@@ -32,6 +35,7 @@ export const authRoutes: RouteTable<IAuthController> = {
 			path: "/register",
 			handler: "registerUser",
 			summary: "Register a new user (first user becomes superadmin)",
+			errors: [userErrors.firstUserEmailRequired, inviteErrors.notFound],
 			auth: "none",
 			upload: "profileImage",
 			body: registrationBodyValidation,
@@ -42,6 +46,7 @@ export const authRoutes: RouteTable<IAuthController> = {
 			path: "/login",
 			handler: "loginUser",
 			summary: "Log in",
+			errors: [userErrors.invalidCredentials, userErrors.notFound],
 			auth: "none",
 			body: loginValidation,
 			response: authPayloadResponseSchema,
@@ -49,9 +54,8 @@ export const authRoutes: RouteTable<IAuthController> = {
 				...d,
 				request: { body: { content: json(loginValidation, { email: "ada@example.com", password: "S3cure!Passw0rd" }) } },
 				responses: {
-					"200": okJson(authPayloadResponseSchema, "OK", { user: userResponseExample, token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }),
-					"401": errorJson("Invalid credentials"),
-					"500": standardErrors["500"],
+					...d.responses,
+					"200": okJson(authPayloadResponseSchema, "OK", { user: userExample, token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }),
 				},
 			}),
 		},
@@ -60,6 +64,7 @@ export const authRoutes: RouteTable<IAuthController> = {
 			path: "/recovery/request",
 			handler: "requestRecovery",
 			summary: "Request a password recovery email",
+			errors: [userErrors.notFound, emailErrors.notConfigured, emailErrors.sendFailed],
 			auth: "none",
 			body: recoveryValidation,
 			spec: (d) => ({ ...d, request: { body: { content: json(recoveryValidation, { email: "ada@example.com" }) } } }),
@@ -69,6 +74,7 @@ export const authRoutes: RouteTable<IAuthController> = {
 			path: "/recovery/validate",
 			handler: "validateRecovery",
 			summary: "validate a password recovery token",
+			errors: [recoveryTokenErrors.notFound],
 			auth: "none",
 			body: recoveryTokenBodyValidation,
 		},
@@ -77,8 +83,10 @@ export const authRoutes: RouteTable<IAuthController> = {
 			path: "/recovery/reset",
 			handler: "resetPassword",
 			summary: "Reset password using a recovery token",
+			errors: [userErrors.passwordUnchanged, recoveryTokenErrors.notFound, userErrors.notFound],
 			auth: "none",
 			body: newPasswordValidation,
+			response: authPayloadResponseSchema,
 		},
 		{
 			method: "get",
@@ -102,11 +110,15 @@ export const authRoutes: RouteTable<IAuthController> = {
 			path: "/users",
 			handler: "createUser",
 			summary: "Create a new user (superadmin)",
+			errors: [userErrors.roleAboveCaller],
 			roles: ["superadmin"],
 			upload: "profileImage",
 			body: createUserBodyValidation,
 			response: userResponseSchema,
-			spec: (d) => ({ ...d, responses: { "201": okJson(userResponseSchema, "User created"), ...standardErrors } }),
+			spec: (d) => {
+				const { "200": _ok, ...errors } = d.responses;
+				return { ...d, responses: { "201": okJson(userResponseSchema, "User created"), ...errors } };
+			},
 		},
 		{
 			method: "get",
@@ -116,13 +128,14 @@ export const authRoutes: RouteTable<IAuthController> = {
 			roles: ["admin", "superadmin"],
 			params: getUserByIdParamValidation,
 			response: userResponseSchema,
-			spec: (d) => ({ ...d, responses: { ...d.responses, "404": errorJson("User not found") } }),
+			errors: [userErrors.notFound],
 		},
 		{
 			method: "patch",
 			path: "/users/:userId",
 			handler: "editUserById",
 			summary: "Edit a user (superadmin)",
+			errors: [userErrors.notFound],
 			roles: ["superadmin"],
 			params: editUserByIdParamValidation,
 			body: editUserByIdBodyValidation,
@@ -132,6 +145,7 @@ export const authRoutes: RouteTable<IAuthController> = {
 			path: "/users/:userId/password",
 			handler: "editUserPasswordById",
 			summary: "Change a user's password (superadmin)",
+			errors: [userErrors.notFound],
 			roles: ["superadmin"],
 			params: editUserByIdParamValidation,
 			body: editUserPasswordByIdBodyValidation,
@@ -141,6 +155,7 @@ export const authRoutes: RouteTable<IAuthController> = {
 			path: "/users/:userId",
 			handler: "deleteUserById",
 			summary: "Delete a user (admin/superadmin)",
+			errors: [userErrors.cannotDeleteSelf, userErrors.demoUserProtected, userErrors.notOnTeam, userErrors.roleAboveCaller, userErrors.notFound],
 			roles: ["admin", "superadmin"],
 			params: getUserByIdParamValidation,
 		},
@@ -149,6 +164,7 @@ export const authRoutes: RouteTable<IAuthController> = {
 			path: "/user",
 			handler: "editUser",
 			summary: "Edit the currently authenticated user",
+			errors: [userErrors.incorrectCurrentPassword, userErrors.notFound],
 			roles: ["admin", "superadmin", "user"],
 			upload: "profileImage",
 			body: editUserBodyValidation,
@@ -159,6 +175,7 @@ export const authRoutes: RouteTable<IAuthController> = {
 			path: "/user",
 			handler: "deleteUser",
 			summary: "Delete the currently authenticated user",
+			errors: [userErrors.demoUserProtected, userErrors.notFound],
 			roles: ["admin", "superadmin", "user"],
 		},
 	],

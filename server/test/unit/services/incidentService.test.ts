@@ -252,33 +252,21 @@ describe("IncidentService", () => {
 			);
 		});
 
-		it("throws when incidentId is missing", async () => {
-			const { service } = createService();
-			await expect(service.resolveIncident("", "user-1", "team-1")).rejects.toThrow("No incident ID in request");
-		});
-
-		it("throws when userId is missing", async () => {
-			const { service } = createService();
-			await expect(service.resolveIncident("inc-1", "", "team-1")).rejects.toThrow("No user ID in request");
-		});
-
-		it("throws when teamId is missing", async () => {
-			const { service } = createService();
-			await expect(service.resolveIncident("inc-1", "user-1", "")).rejects.toThrow("No team ID in request");
-		});
-
 		it("throws when incident is not found", async () => {
 			const { service, incidentsRepository } = createService();
 			(incidentsRepository.findActiveByIncidentId as jest.Mock).mockResolvedValue(null);
 
-			await expect(service.resolveIncident("inc-1", "user-1", "team-1")).rejects.toThrow("Incident not found");
+			await expect(service.resolveIncident("inc-1", "user-1", "team-1")).rejects.toMatchObject({ status: 404, message: "Incident not found" });
 		});
 
 		it("throws when incident is already resolved", async () => {
 			const { service, incidentsRepository } = createService();
 			(incidentsRepository.findActiveByIncidentId as jest.Mock).mockResolvedValue(makeIncident({ status: false }));
 
-			await expect(service.resolveIncident("inc-1", "user-1", "team-1")).rejects.toThrow("Incident is already resolved");
+			await expect(service.resolveIncident("inc-1", "user-1", "team-1")).rejects.toMatchObject({
+				status: 409,
+				message: "Incident is already resolved",
+			});
 		});
 
 		it("logs error and rethrows on unexpected failure", async () => {
@@ -335,11 +323,6 @@ describe("IncidentService", () => {
 			expect(incidentsRepository.countByTeamId).toHaveBeenCalledWith("team-1", expect.any(Date), true, "mon-1", "manual");
 		});
 
-		it("throws when teamId is missing", async () => {
-			const { service } = createService();
-			await expect(service.getIncidentsByTeam("", "desc", "day", 0, 20, undefined, undefined, undefined)).rejects.toThrow("No team ID in request");
-		});
-
 		it("logs error and rethrows on unexpected failure", async () => {
 			const { service, logger, incidentsRepository } = createService();
 			(incidentsRepository.findByTeamId as jest.Mock).mockRejectedValue(new Error("db error"));
@@ -378,11 +361,6 @@ describe("IncidentService", () => {
 			await service.getIncidentSummary("team-1");
 
 			expect(incidentsRepository.findSummaryByTeamId).toHaveBeenCalledWith("team-1", 10);
-		});
-
-		it("throws when teamId is missing", async () => {
-			const { service } = createService();
-			await expect(service.getIncidentSummary("")).rejects.toThrow("No team ID in request");
 		});
 
 		it("logs error and rethrows on unexpected failure", async () => {

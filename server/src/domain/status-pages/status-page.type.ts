@@ -1,5 +1,11 @@
-import { DailyCheckBucket } from "@/domain/checks/check.type.js";
-import type { Monitor } from "@/domain/monitors/monitor.type.js";
+import type { z } from "zod";
+import type {
+	publicStatusPageMonitorSchema,
+	publicStatusPagePayloadSchema,
+	statusPageLogoSchema,
+	statusPageSchema,
+} from "@/domain/status-pages/status-page.schema.js";
+
 export const StatusPageTypes = ["uptime", "infrastructure"] as const;
 export type StatusPageType = (typeof StatusPageTypes)[number];
 
@@ -20,52 +26,8 @@ export const STATUS_PAGE_RANGE_DAYS: Record<StatusPageDayRange, number> = {
 	"60d": 60,
 	"90d": 90,
 };
-export interface StatusPageLogo {
-	data: string;
-	contentType: string;
-}
 
-export interface StatusPageLogoDocument {
-	data: Buffer;
-	contentType: string;
-}
-
-export interface StatusPage {
-	id: string;
-	userId: string;
-	teamId: string;
-	type: StatusPageType[];
-	companyName: string;
-	url: string;
-	customDomain?: string | null;
-	timezone?: string;
-	color: string;
-	monitors: string[];
-	subMonitors: string[];
-	originalMonitors?: string[];
-	logo?: StatusPageLogo | null;
-	isPublished: boolean;
-	showCharts: boolean;
-	showUptimePercentage: boolean;
-	showAdminLoginLink: boolean;
-	showInfrastructure: boolean;
-	customCSS: string;
-	theme: StatusPageTheme;
-	themeMode: StatusPageThemeMode;
-	createdAt: string;
-	updatedAt: string;
-}
-
-export type PublicStatusPageMonitor = Pick<Monitor, "id" | "name" | "type" | "status" | "uptimePercentage" | "recentChecks"> & {
-	url?: string;
-	port?: number;
-	dailyChecks?: DailyCheckBucket[]; // Only present when range !== "latest"
-};
-
-export interface PublicStatusPagePayload {
-	statusPage: StatusPage;
-	monitors: PublicStatusPageMonitor[];
-	range?: StatusPageDayRange;
-	bucketTimezone?: string;
-	checkTTLDays?: number;
-}
+export type StatusPageLogo = z.infer<typeof statusPageLogoSchema>;
+export type StatusPage = z.infer<typeof statusPageSchema>;
+export type PublicStatusPageMonitor = z.infer<typeof publicStatusPageMonitorSchema>;
+export type PublicStatusPagePayload = z.infer<typeof publicStatusPagePayloadSchema>;
