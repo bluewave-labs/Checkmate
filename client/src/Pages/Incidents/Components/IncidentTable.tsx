@@ -113,7 +113,7 @@ export const IncidentsTable = ({
 				id: "startTime",
 				content: t("pages.incidents.table.headers.startTime"),
 				render: (row) => {
-					return formatDateWithTz(row.createdAt, "YYYY-MM-DD HH:mm:ss A", uiTimezone);
+					return formatDateWithTz(row.createdAt, "YYYY-MM-DD hh:mm:ss A", uiTimezone);
 				},
 			},
 			{
@@ -121,7 +121,7 @@ export const IncidentsTable = ({
 				content: t("pages.incidents.table.headers.endTime"),
 				render: (row) => {
 					if (row.endTime) {
-						return formatDateWithTz(row.endTime, "YYYY-MM-DD HH:mm:ss A", uiTimezone);
+						return formatDateWithTz(row.endTime, "YYYY-MM-DD hh:mm:ss A", uiTimezone);
 					}
 					return "-";
 				},

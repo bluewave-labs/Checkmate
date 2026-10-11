@@ -23,7 +23,7 @@ export const ThemedChartTooltip = ({ check }: { check: CheckSnapshot }) => {
 				variant="caption"
 				sx={{ opacity: 0.8 }}
 			>
-				{formatDateWithTz(check.createdAt, "ddd, MMMM D, YYYY, HH:mm A", timezone)}
+				{formatDateWithTz(check.createdAt, "ddd, MMMM D, YYYY, hh:mm A", timezone)}
 			</Typography>
 		</Stack>
 	);

@@ -43,7 +43,7 @@ export const GeoChecksTable = ({
 			id: "date",
 			content: t("common.table.headers.dateTime"),
 			render: (row) => {
-				return formatDateWithTz(row.createdAt, "ddd, MMMM D, YYYY, HH:mm A", uiTimezone);
+				return formatDateWithTz(row.createdAt, "ddd, MMMM D, YYYY, hh:mm A", uiTimezone);
 			},
 		},
 		{
