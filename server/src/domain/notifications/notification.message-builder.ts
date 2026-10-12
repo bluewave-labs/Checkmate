@@ -9,9 +9,12 @@ import type {
 } from "@/domain/notifications/notification.type.js";
 import { describeContainerBreach, findContainerBreaches } from "@/domain/docker/docker-alert.js";
 import type { Check } from "@/domain/checks/check.type.js";
+import type { Notification } from "@/domain/notifications/notification.type.js";
+import { decodeHtmlEntities } from "@/domain/notifications/providers/utils.js";
 
 export interface INotificationMessageBuilder {
 	buildMessage(monitor: Monitor, check: Check, decision: MonitorActionDecision, clientHost: string): NotificationMessage;
+	applyCustomization(message: NotificationMessage, notification: Notification): NotificationMessage;
 	buildThresholdBreachMessage(monitor: Monitor, check: Check, thresholdBreaches: HardwareBreaches | undefined): string;
 }
 
@@ -41,6 +44,46 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 				teamId: monitor.teamId,
 			},
 		};
+	}
+
+	applyCustomization(message: NotificationMessage, notification: Notification): NotificationMessage {
+		const customized: NotificationMessage = {
+			...message,
+			monitor: { ...message.monitor },
+			content: {
+				...message.content,
+				details: message.content.details ? [...message.content.details] : undefined,
+				thresholds: message.content.thresholds ? [...message.content.thresholds] : undefined,
+			},
+		};
+
+		if (notification.showDetails === false) {
+			customized.content.details = [];
+			customized.content.thresholds = [];
+		}
+
+		if (notification.showMonitorUrl === false) {
+			customized.monitor.url = "";
+			customized.content.details = (customized.content.details ?? []).filter((detail) => !detail.startsWith("URL:"));
+		}
+
+		if (notification.customTitle?.trim()) {
+			customized.content.title = this.renderTemplate(decodeHtmlEntities(notification.customTitle), customized);
+		}
+
+		if (notification.customBody?.trim()) {
+			customized.content.summary = this.renderTemplate(decodeHtmlEntities(notification.customBody), customized);
+		}
+
+		return customized;
+	}
+
+	private renderTemplate(template: string, message: NotificationMessage): string {
+		return template
+			.replaceAll("{{monitor_name}}", message.monitor.name)
+			.replaceAll("{{monitor_url}}", message.monitor.url)
+			.replaceAll("{{monitor_type}}", message.monitor.type)
+			.replaceAll("{{status}}", message.monitor.status);
 	}
 
 	private determineNotificationType(decision: MonitorActionDecision, monitor: Monitor): NotificationType {

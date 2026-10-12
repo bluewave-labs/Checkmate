@@ -57,6 +57,11 @@ const NotificationSchema = new Schema<NotificationDocument>(
 		topic: { type: String },
 		ntfyAuthType: { type: String, enum: NtfyAuthTypes },
 		ntfyUsername: { type: String },
+		customTitle: { type: String },
+		customBody: { type: String },
+		pingContent: { type: String },
+		showMonitorUrl: { type: Boolean },
+		showDetails: { type: Boolean },
 	},
 	{
 		timestamps: true,

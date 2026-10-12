@@ -33,6 +33,11 @@ class MongoNotificationsRepository implements INotificationsRepository {
 			topic: doc.topic ?? undefined,
 			ntfyAuthType: doc.ntfyAuthType ?? undefined,
 			ntfyUsername: doc.ntfyUsername ?? undefined,
+			customTitle: doc.customTitle ?? undefined,
+			customBody: doc.customBody ?? undefined,
+			pingContent: doc.pingContent ?? undefined,
+			showMonitorUrl: doc.showMonitorUrl ?? undefined,
+			showDetails: doc.showDetails ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
