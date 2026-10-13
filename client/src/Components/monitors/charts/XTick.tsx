@@ -1,8 +1,14 @@
-import { formatDateWithTz, tickDateFormatLookup } from "@/Utils/TimeUtils";
-import { useSelector } from "react-redux";
+import { type DateFormat } from "@/Utils/TimeUtils";
 import { Text } from "recharts";
 import { useTheme } from "@mui/material";
-import type { RootState } from "@/Types/state";
+import { useFormatDate } from "@/Hooks/useFormatDate";
+
+const TICK_FORMATS: Record<string, DateFormat> = {
+	recent: "time",
+	day: "time",
+	week: "dateTimeShort",
+	month: "dateShort",
+};
 
 type XTickProps = {
 	x: number;
@@ -12,9 +18,8 @@ type XTickProps = {
 };
 
 export const XTick = ({ x, y, payload, range }: XTickProps) => {
-	const format = tickDateFormatLookup(range);
 	const theme = useTheme();
-	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
+	const formatDate = useFormatDate();
 	return (
 		<Text
 			x={x}
@@ -24,7 +29,7 @@ export const XTick = ({ x, y, payload, range }: XTickProps) => {
 			fontSize={11}
 			fontWeight={400}
 		>
-			{formatDateWithTz(payload?.value, format, uiTimezone)}
+			{formatDate(payload?.value, TICK_FORMATS[range] ?? "dateTimeShort")}
 		</Text>
 	);
 };

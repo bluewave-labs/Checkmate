@@ -45,33 +45,8 @@ export const formatDateWithTz = (
 	}
 };
 
-export const tickDateFormatLookup = (range: string) => {
-	const tickFormatLookup: Record<string, string> = {
-		recent: "h:mm A",
-		day: "h:mm A",
-		week: "MM/D, h:mm A",
-		month: "ddd. M/D",
-	};
-	const format = tickFormatLookup[range];
-	if (format === undefined) {
-		return "";
-	}
-	return format;
-};
-
-export const tooltipDateFormatLookup = (range: string) => {
-	const dateFormatLookup: Record<string, string> = {
-		recent: "ddd. MMMM D, YYYY, hh:mm A",
-		day: "ddd. MMMM D, YYYY, hh:mm A",
-		week: "ddd. MMMM D, YYYY, hh:mm A",
-		month: "ddd. MMMM D, YYYY",
-	};
-	const format = dateFormatLookup[range];
-	if (format === undefined) {
-		return "";
-	}
-	return format;
-};
+export const tooltipDateFormatLookup = (range: string): DateFormat =>
+	range === "month" ? "date" : "dateTime";
 
 export const formatTimestamp = (timestamp: string | number | null): string => {
 	if (!timestamp) return "-";

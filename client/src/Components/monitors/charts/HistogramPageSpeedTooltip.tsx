@@ -1,17 +1,15 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { formatDateWithTz } from "@/Utils/TimeUtils";
 import type { TooltipProps } from "recharts";
 import { useTheme } from "@mui/material/styles";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/Types/state";
+import { useFormatDate } from "@/Hooks/useFormatDate";
 
 export const HistogramPageSpeedTooltip = ({
 	active,
 	payload,
 }: TooltipProps<number, string>) => {
-	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 	const theme = useTheme();
+	const formatDate = useFormatDate();
 
 	if (!active || !payload || payload.length === 0) {
 		return null;
@@ -30,9 +28,7 @@ export const HistogramPageSpeedTooltip = ({
 				p: theme.spacing(4),
 			}}
 		>
-			<Typography>
-				{formatDateWithTz(data?.date, "ddd, MMMM D, YYYY, hh:mm A", uiTimezone)}
-			</Typography>
+			<Typography>{formatDate(data?.date, "dateTime")}</Typography>
 			<Typography>Score: {data?.score}</Typography>
 		</Stack>
 	);

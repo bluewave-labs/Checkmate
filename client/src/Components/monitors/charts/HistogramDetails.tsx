@@ -15,15 +15,14 @@ import type { TooltipProps } from "recharts";
 import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 import Typography from "@mui/material/Typography";
 import { XTick } from "@/Components/monitors/charts/XTick";
-import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-import { formatDateWithTz, formatMs, tooltipDateFormatLookup } from "@/Utils/TimeUtils";
+import { formatMs, tooltipDateFormatLookup } from "@/Utils/TimeUtils";
 import { useTheme } from "@mui/material/styles";
 import type { Theme } from "@mui/material/styles";
 import type { GroupedCheck, GroupedUptimeCheck } from "@/Types/Check";
-import type { RootState } from "@/Types/state";
 import { computeYAxisCap } from "@/Components/monitors/charts/ChartUtils";
 
+import { useFormatDate } from "@/Hooks/useFormatDate";
 import { useMemo, useState } from "react";
 import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 import {
@@ -38,7 +37,6 @@ type DetailsCheck = GroupedCheck &
 type ResponseTimeToolTipProps = TooltipProps<ValueType, NameType> & {
 	range: string;
 	theme: Theme;
-	uiTimezone: string;
 };
 
 const ResponseTimeToolTip = ({
@@ -47,9 +45,9 @@ const ResponseTimeToolTip = ({
 	label,
 	range,
 	theme,
-	uiTimezone,
 }: ResponseTimeToolTipProps) => {
 	const { t } = useTranslation();
+	const formatDate = useFormatDate();
 	if (!label) return null;
 	if (!payload) return null;
 	if (!active) return null;
@@ -58,7 +56,7 @@ const ResponseTimeToolTip = ({
 	const responseTime = payload[0]?.payload?.avgResponseTime ?? 0;
 	return (
 		<BaseBox sx={{ py: theme.spacing(2), px: theme.spacing(4) }}>
-			<Typography>{formatDateWithTz(String(label), format, uiTimezone)}</Typography>
+			<Typography>{formatDate(String(label), format)}</Typography>
 			<Typography>
 				{t("common.charts.histogram.responseTime", {
 					value: formatMs(responseTime),
@@ -71,7 +69,6 @@ const ResponseTimeToolTip = ({
 type TimingPhaseToolTipProps = TooltipProps<ValueType, NameType> & {
 	range: string;
 	theme: Theme;
-	uiTimezone: string;
 };
 
 const TimingPhasesToolTip = ({
@@ -79,16 +76,16 @@ const TimingPhasesToolTip = ({
 	payload,
 	range,
 	theme,
-	uiTimezone,
 }: TimingPhaseToolTipProps) => {
 	const { t } = useTranslation();
+	const formatDate = useFormatDate();
 	if (!active || !payload?.length) return null;
 	const bucket = payload[0].payload as GroupedUptimeCheck;
 	const total = PHASE_KEYS.reduce((sum, key) => sum + bucket[key], 0);
 	const format = tooltipDateFormatLookup(range);
 	return (
 		<BaseBox sx={{ py: theme.spacing(2), px: theme.spacing(4) }}>
-			<Typography>{formatDateWithTz(bucket.bucketDate, format, uiTimezone)}</Typography>
+			<Typography>{formatDate(bucket.bucketDate, format)}</Typography>
 			<Typography>
 				{t("common.charts.histogram.total", { value: formatMs(total) })}
 			</Typography>
@@ -124,7 +121,6 @@ export const HistogramDetails = ({
 
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 	const yMax = useMemo(() => {
 		const totals = checks.map((check) => {
 			const phaseSum = PHASE_KEYS.reduce((sum, key) => sum + (check[key] ?? 0), 0);
@@ -234,7 +230,6 @@ export const HistogramDetails = ({
 									{...props}
 									range={range}
 									theme={theme}
-									uiTimezone={uiTimezone}
 								/>
 							)}
 						/>
@@ -245,7 +240,6 @@ export const HistogramDetails = ({
 									{...props}
 									range={range}
 									theme={theme}
-									uiTimezone={uiTimezone}
 								/>
 							)}
 						/>
