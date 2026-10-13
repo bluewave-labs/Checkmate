@@ -74,6 +74,25 @@ describe("handleErrors", () => {
 		expect(localLogger.error).not.toHaveBeenCalled();
 	});
 
+	it("logs the request method and path, without the query string", () => {
+		const localLogger = createMockLogger();
+		const req = { method: "GET", originalUrl: "/api/v1/monitors/certificate/abc123?token=secret" } as Request;
+		handleErrors(localLogger)(new Error("connect ETIMEDOUT"), req, makeRes(), (() => {}) as NextFunction);
+		expect(localLogger.error).toHaveBeenCalledWith(
+			expect.objectContaining({ service: "unknownService", details: { request: "GET /api/v1/monitors/certificate/abc123" } })
+		);
+	});
+
+	it("keeps existing details alongside the request", () => {
+		const localLogger = createMockLogger();
+		const req = { method: "POST", originalUrl: "/api/v1/monitors" } as Request;
+		const error = z.object({ name: z.string().min(1) }).safeParse({ name: "" }).error!;
+		handleErrors(localLogger)(error, req, makeRes(), (() => {}) as NextFunction);
+		expect(localLogger.warn).toHaveBeenCalledWith(
+			expect.objectContaining({ details: expect.objectContaining({ request: "POST /api/v1/monitors", issues: expect.any(Array) }) })
+		);
+	});
+
 	it("logs 4xx AppErrors at warn and 5xx at error", () => {
 		const localLogger = createMockLogger();
 		handleErrors(localLogger)(new AppError({ status: 404, message: "missing" }), {} as Request, makeRes(), (() => {}) as NextFunction);
