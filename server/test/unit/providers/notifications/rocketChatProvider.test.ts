@@ -1,6 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import type { MonitorType } from "../../../../src/domain/monitors/monitor.type.ts";
 import type { NotificationSeverity } from "../../../../src/domain/notifications/notification.type.ts";
+import { EGRESS_MONITOR_INFO } from "../../../../src/domain/notifications/notification.message-builder.ts";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
 import { makeMessage, makeMessageWithIncident, makeMessageWithThresholds, makeNotification } from "../../../helpers/notificationMessage.ts";
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
@@ -151,6 +152,18 @@ describe("RocketChatProvider", () => {
 		const { provider } = createProvider();
 
 		await provider.sendMessage(makeNotification({ type: "rocket_chat" }), makeMessage({ clientHost }));
+
+		const payload = mockGotPost.mock.calls[0][1].json;
+		expect(payload.attachments[0]).not.toHaveProperty("title_link");
+	});
+
+	it("omits title_link for the egress message, whose type has no details page", async () => {
+		const { provider } = createProvider();
+
+		await provider.sendMessage(
+			makeNotification({ type: "rocket_chat" }),
+			makeMessage({ type: "egress_recovered", severity: "success", monitor: { ...EGRESS_MONITOR_INFO, url: "https://app.example.com" } })
+		);
 
 		const payload = mockGotPost.mock.calls[0][1].json;
 		expect(payload.attachments[0]).not.toHaveProperty("title_link");
