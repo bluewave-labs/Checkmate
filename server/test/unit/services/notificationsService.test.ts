@@ -18,6 +18,7 @@ const createNotificationsRepo = () => ({
 	create: jest.fn(),
 	findById: jest.fn(),
 	findNotificationsByIds: jest.fn(),
+	findNotificationsByIdsForTeam: jest.fn(),
 	findByTeamId: jest.fn(),
 	updateById: jest.fn(),
 	deleteById: jest.fn(),
@@ -439,6 +440,37 @@ describe("NotificationsService", () => {
 
 			const result = await service.findNotificationsByTeamId("team-1");
 			expect(result).toBe(notifications);
+		});
+	});
+
+	describe("assertNotificationsExistForTeam", () => {
+		it("skips the repository for an empty list", async () => {
+			const { service, notificationsRepository } = createService();
+
+			await expect(service.assertNotificationsExistForTeam([], "team-1")).resolves.toBeUndefined();
+			expect(notificationsRepository.findNotificationsByIdsForTeam).not.toHaveBeenCalled();
+		});
+
+		it("resolves when every id belongs to the team", async () => {
+			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findNotificationsByIdsForTeam as jest.Mock).mockResolvedValue([
+				makeNotification({ id: "notif-1" }),
+				makeNotification({ id: "notif-2" }),
+			]);
+
+			await expect(service.assertNotificationsExistForTeam(["notif-1", "notif-2"], "team-1")).resolves.toBeUndefined();
+			expect(notificationsRepository.findNotificationsByIdsForTeam).toHaveBeenCalledWith(["notif-1", "notif-2"], "team-1");
+		});
+
+		it("rejects naming the ids the team does not have", async () => {
+			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findNotificationsByIdsForTeam as jest.Mock).mockResolvedValue([makeNotification({ id: "notif-1" })]);
+
+			await expect(service.assertNotificationsExistForTeam(["notif-1", "notif-2"], "team-1")).rejects.toMatchObject({
+				status: 422,
+				message: "Referenced notification does not exist: notif-2",
+			});
+			expect(notificationsRepository.findNotificationsByIdsForTeam).toHaveBeenCalledWith(["notif-1", "notif-2"], "team-1");
 		});
 	});
 

@@ -85,18 +85,7 @@ class SettingsController implements ISettingsController {
 		// Deduplicated once and persisted as such. Left undefined when absent, since an undefined key unsets the stored value.
 		const requestedIds = validatedBody.egressNotifications && [...new Set(validatedBody.egressNotifications)];
 		if (requestedIds && requestedIds.length > 0) {
-			// Only the caller's team's notifications can be selected; anything else is treated as not found.
-			const teamId = requireTeamId(req.user?.teamId);
-			const teamNotifications = await this.notificationsService.findNotificationsByTeamId(teamId);
-			const foundIds = new Set(teamNotifications.map((notification) => notification.id));
-			const missing = requestedIds.filter((id) => !foundIds.has(id));
-			if (missing.length > 0) {
-				throw new AppError(appSettingsErrors.notificationNotFound, {
-					message: `Referenced notification does not exist: ${missing.join(", ")}`,
-					service: SERVICE_NAME,
-					method: "updateAppSettings",
-				});
-			}
+			await this.notificationsService.assertNotificationsExistForTeam(requestedIds, requireTeamId(req.user?.teamId));
 		}
 
 		const updatedSettings = await this.settingsService.updateDbSettings(
