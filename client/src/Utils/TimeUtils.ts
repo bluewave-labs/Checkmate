@@ -178,3 +178,54 @@ export const enumerateDays = (days: number, timeZone: string): string[] => {
 		new Date(todayUtc - (days - 1 - i) * DAY_MS).toISOString().slice(0, 10)
 	);
 };
+
+export const DATE_FORMATS = {
+	// Wed, Oct 4, 2026, 14:19
+	dateTime: {
+		weekday: "short",
+		year: "numeric",
+		month: "short",
+		day: "numeric",
+		hour: "numeric",
+		minute: "2-digit",
+	},
+	// Oct 4, 2026, 14:19:05
+	dateTimeSeconds: {
+		year: "numeric",
+		month: "short",
+		day: "numeric",
+		hour: "numeric",
+		minute: "2-digit",
+		second: "2-digit",
+	},
+	// Oct 4, 14:19
+	dateTimeShort: { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" },
+	// Oct 4, 2026
+	date: { year: "numeric", month: "short", day: "numeric" },
+	// Oct 4
+	dateShort: { month: "short", day: "numeric" },
+	// 14:19
+	time: { hour: "numeric", minute: "2-digit" },
+} satisfies Record<string, Intl.DateTimeFormatOptions>;
+export type DateFormat = keyof typeof DATE_FORMATS;
+
+export const TIME_FORMATS = ["auto", "12h", "24h"] as const;
+export type TimeFormat = (typeof TIME_FORMATS)[number];
+
+const HOUR_CYCLES = { auto: undefined, "12h": "h12", "24h": "h23" } as const;
+
+export const formatDate = (
+	value: string | number | Date | null | undefined,
+	format: DateFormat,
+	options: { timeZone?: string; locale: string; timeFormat: TimeFormat }
+): string => {
+	if (value === null || value === undefined || value === "") return "-";
+	const date = new Date(value);
+	if (Number.isNaN(date.getTime())) return "-";
+	return date.toLocaleString(options.locale, {
+		...DATE_FORMATS[format],
+		timeZone: resolveTimezone(options.timeZone),
+		hourCycle: HOUR_CYCLES[options.timeFormat],
+		calendar: "gregory",
+	});
+};
