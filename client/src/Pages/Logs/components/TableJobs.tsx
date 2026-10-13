@@ -1,11 +1,12 @@
 import { Table, Pagination } from "@/Components/design-elements";
 import { Typography, useTheme } from "@mui/material";
-import { formatDuration, formatTimestamp } from "@/Utils/TimeUtils";
+import { formatDuration } from "@/Utils/TimeUtils";
 
 import { useTranslation } from "react-i18next";
 import type { QueueJobFailure, QueueJobSummary, QueueMetrics } from "@/Types/Queue";
 import type { Header } from "@/Components/design-elements";
 import type { TablePaginationProps } from "@mui/material/TablePagination";
+import { useFormatDate } from "@/Hooks/useFormatDate";
 
 type QueueJobWithId = QueueJobSummary & { id: string | number };
 
@@ -28,6 +29,7 @@ export const TableJobs = ({
 }: TableJobsProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
+	const formatDate = useFormatDate();
 
 	const jobsWithId: QueueJobWithId[] = jobs.map((job) => ({
 		...job,
@@ -90,7 +92,7 @@ export const TableJobs = ({
 			id: "lastFinishedAt",
 			content: t("pages.logs.table.headers.lastFinishedAt"),
 			render: (row) => {
-				const lastFinishedAt = formatTimestamp(row.lastFinishedAt) ?? "-";
+				const lastFinishedAt = formatDate(row.lastFinishedAt, "dateTimeSeconds");
 				return (
 					<Typography
 						title={lastFinishedAt}
@@ -105,7 +107,7 @@ export const TableJobs = ({
 			id: "nextScheduledAt",
 			content: t("pages.logs.table.headers.nextScheduledAt"),
 			render: (row) => {
-				const nextScheduledAt = formatTimestamp(row.nextScheduledAt) ?? "-";
+				const nextScheduledAt = formatDate(row.nextScheduledAt, "dateTimeSeconds");
 				return (
 					<Typography
 						title={nextScheduledAt}
@@ -174,6 +176,7 @@ interface TableFailedJobsProps {
 export const TableFailedJobs = ({ metrics }: TableFailedJobsProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
+	const formatDate = useFormatDate();
 	if (!metrics) {
 		return null;
 	}
@@ -215,7 +218,7 @@ export const TableFailedJobs = ({ metrics }: TableFailedJobsProps) => {
 			id: "failedAt",
 			content: t("pages.logs.table.headers.lastFailedAt"),
 			render: (row) => {
-				return <Typography>{formatTimestamp(row.failedAt)}</Typography>;
+				return <Typography>{formatDate(row.failedAt, "dateTimeSeconds")}</Typography>;
 			},
 		},
 		{

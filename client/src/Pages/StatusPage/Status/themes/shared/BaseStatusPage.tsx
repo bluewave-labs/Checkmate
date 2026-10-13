@@ -80,6 +80,7 @@ export interface SlotProps<S extends BaseStyles = BaseStyles> {
 	logoSrc: string | null;
 	overall: OverallStatus;
 	monitorCount: number;
+	bucketTimezone: string;
 	styles: S;
 }
 
@@ -140,6 +141,7 @@ export const BaseStatusPage = ({
 					logoSrc={logoSrc}
 					overall={overall}
 					monitorCount={monitors.length}
+					bucketTimezone={bucketTimezone}
 					styles={styles}
 				/>
 			</Stack>
@@ -149,6 +151,7 @@ export const BaseStatusPage = ({
 				logoSrc={logoSrc}
 				overall={overall}
 				monitorCount={monitors.length}
+				bucketTimezone={bucketTimezone}
 				styles={styles}
 			/>
 
@@ -238,7 +241,7 @@ export const BaseStatusPage = ({
 
 					const cells =
 						range === "latest"
-							? checksToCells(monitor.recentChecks ?? [])
+							? checksToCells(monitor.recentChecks ?? [], bucketTimezone)
 							: dailyBucketsToCells(
 									monitor.dailyChecks ?? [],
 									STATUS_PAGE_RANGE_DAYS[range],

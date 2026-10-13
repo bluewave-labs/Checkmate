@@ -1189,11 +1189,17 @@
 			},
 			"form": {
 				"timezone": {
-					"title": "显示时区",
-					"description": "选择应用程序中用于显示日期和时间的时区。",
+					"title": "日期和时间",
+					"description": "选择在整个应用中显示日期和时间所使用的时区和时钟格式。",
 					"option": {
 						"timezone": {
-							"label": "显示时区"
+							"label": "显示时区",
+							"browserDefault": "浏览器默认 ({{timezone}})"
+						},
+						"timeFormat": {
+							"label": "时间格式",
+							"24h": "24 小时制",
+							"12h": "12 小时制"
 						}
 					}
 				},

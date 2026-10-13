@@ -1477,11 +1477,17 @@
 			},
 			"form": {
 				"timezone": {
-					"title": "Fuso horário de exibição",
-					"description": "Selecione o fuso horário usado para exibir datas e horários em toda a aplicação.",
+					"title": "Data e hora",
+					"description": "Escolha o fuso horário e o formato de relógio usados para exibir datas e horas em todo o aplicativo.",
 					"option": {
 						"timezone": {
-							"label": "Fuso horário de exibição"
+							"label": "Fuso horário de exibição",
+							"browserDefault": "Padrão do navegador ({{timezone}})"
+						},
+						"timeFormat": {
+							"label": "Formato de hora",
+							"24h": "24 horas",
+							"12h": "12 horas"
 						}
 					}
 				},

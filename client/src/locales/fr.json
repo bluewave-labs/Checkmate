@@ -1188,11 +1188,17 @@
 			},
 			"form": {
 				"timezone": {
-					"title": "Fuseau horaire d'affichage",
-					"description": "Sélectionnez le fuseau horaire utilisé pour afficher les dates et heures dans l'application.",
+					"title": "Date et heure",
+					"description": "Choisissez le fuseau horaire et le format d'horloge utilisés pour afficher les dates et heures dans toute l'application.",
 					"option": {
 						"timezone": {
-							"label": "Fuseau horaire d'affichage"
+							"label": "Fuseau horaire d'affichage",
+							"browserDefault": "Valeur par défaut du navigateur ({{timezone}})"
+						},
+						"timeFormat": {
+							"label": "Format de l'heure",
+							"24h": "24 heures",
+							"12h": "12 heures"
 						}
 					}
 				},

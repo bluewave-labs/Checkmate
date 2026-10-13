@@ -8,9 +8,8 @@ import Box from "@mui/material/Box";
 import type { Header } from "@/Components/design-elements";
 import type { FlatGeoCheck } from "@/Types/GeoCheck";
 import { useTranslation } from "react-i18next";
-import { formatDateWithTz, formatMs } from "@/Utils/TimeUtils";
-import type { RootState } from "@/Types/state";
-import { useSelector } from "react-redux";
+import { formatMs } from "@/Utils/TimeUtils";
+import { useFormatDate } from "@/Hooks/useFormatDate";
 
 export const GeoChecksTable = ({
 	geoChecks,
@@ -28,7 +27,7 @@ export const GeoChecksTable = ({
 	setRowsPerPage: (rowsPerPage: number) => void;
 }) => {
 	const { t } = useTranslation();
-	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
+	const formatDate = useFormatDate();
 
 	const headers: Header<FlatGeoCheck>[] = [
 		{
@@ -43,7 +42,7 @@ export const GeoChecksTable = ({
 			id: "date",
 			content: t("common.table.headers.dateTime"),
 			render: (row) => {
-				return formatDateWithTz(row.createdAt, "ddd, MMMM D, YYYY, hh:mm A", uiTimezone);
+				return formatDate(row.createdAt, "dateTime");
 			},
 		},
 		{

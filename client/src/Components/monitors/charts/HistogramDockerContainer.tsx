@@ -7,24 +7,22 @@ import type { DockerContainerStats } from "@/Types/Monitor";
 import type { TooltipProps } from "recharts";
 import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 import type { Theme } from "@mui/material/styles";
-import type { RootState } from "@/Types/state";
 
 // Hooks
 import { useTheme } from "@mui/material";
 import { Fragment, useId } from "react";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 
 // Utils
 import { createGradient } from "@/Components/monitors/charts/ChartUtils";
-import { tooltipDateFormatLookup, formatDateWithTz } from "@/Utils/TimeUtils";
+import { tooltipDateFormatLookup } from "@/Utils/TimeUtils";
 import type { DateRange } from "@/Types/Query";
+import { useFormatDate } from "@/Hooks/useFormatDate";
 
 type DockerHistogramToolTipProps = TooltipProps<ValueType, NameType> & {
 	dataKey: string;
 	range: string;
 	theme: Theme;
-	uiTimezone: string;
 	valueFormatter: (value: number) => string;
 	labelKey: string;
 };
@@ -35,11 +33,11 @@ const DockerHistogramToolTip = ({
 	payload,
 	range,
 	theme,
-	uiTimezone,
 	valueFormatter,
 	labelKey,
 }: DockerHistogramToolTipProps) => {
 	const { t } = useTranslation();
+	const formatDate = useFormatDate();
 	if (!payload) return null;
 	if (!active) return null;
 	const format = tooltipDateFormatLookup(range);
@@ -48,7 +46,7 @@ const DockerHistogramToolTip = ({
 
 	return (
 		<BaseBox sx={{ py: theme.spacing(2), px: theme.spacing(4) }}>
-			<Typography>{formatDateWithTz(ts, format, uiTimezone)}</Typography>
+			<Typography>{formatDate(ts, format)}</Typography>
 			<Typography>{t(labelKey, { value: valueFormatter(dataPoint) })}</Typography>
 		</BaseBox>
 	);
@@ -79,7 +77,6 @@ export const HistogramDockerContainer = ({
 	const uniqueId = useId();
 	const theme = useTheme();
 	const gradientId = `gradient-${uniqueId}`;
-	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 	return (
 		<BaseChart
 			icon="null"
@@ -111,7 +108,6 @@ export const HistogramDockerContainer = ({
 									{...props}
 									range={range}
 									theme={theme}
-									uiTimezone={uiTimezone}
 									dataKey={dataKey}
 									valueFormatter={formatter}
 									labelKey={labelKey}

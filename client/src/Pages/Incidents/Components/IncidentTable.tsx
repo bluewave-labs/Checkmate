@@ -7,13 +7,11 @@ import type { Monitor } from "@/Types/Monitor";
 import type { ActionMenuItem } from "@/Components/actions-menu";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { formatDateWithTz } from "@/Utils/TimeUtils";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/Types/state";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import { getMonitorPath } from "@/Utils/MonitorUtils";
+import { useFormatDate } from "@/Hooks/useFormatDate";
 
 interface IncidentsTableProps {
 	title?: string;
@@ -42,7 +40,7 @@ export const IncidentsTable = ({
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const navigate = useNavigate();
-	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
+	const formatDate = useFormatDate();
 
 	const getActions = (incident: Incident): ActionMenuItem[] => {
 		const monitor = monitors?.find((m) => m.id === incident.monitorId);
@@ -113,7 +111,7 @@ export const IncidentsTable = ({
 				id: "startTime",
 				content: t("pages.incidents.table.headers.startTime"),
 				render: (row) => {
-					return formatDateWithTz(row.createdAt, "YYYY-MM-DD hh:mm:ss A", uiTimezone);
+					return formatDate(row.createdAt, "dateTime");
 				},
 			},
 			{
@@ -121,7 +119,7 @@ export const IncidentsTable = ({
 				content: t("pages.incidents.table.headers.endTime"),
 				render: (row) => {
 					if (row.endTime) {
-						return formatDateWithTz(row.endTime, "YYYY-MM-DD hh:mm:ss A", uiTimezone);
+						return formatDate(row.endTime, "dateTime");
 					}
 					return "-";
 				},
