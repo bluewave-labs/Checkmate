@@ -12,6 +12,8 @@ import type { NotificationChannel } from "@/domain/notifications/notification.ty
 import { CLIENT_HOST_FALLBACK } from "@/domain/notifications/providers/utils.js";
 import type { EgressState } from "@/domain/egress/egress.type.js";
 import type { Check } from "@/domain/checks/check.type.js";
+import { appSettingsErrors } from "@/domain/app-settings/app-settings.errors.js";
+import { AppError } from "@/utils/AppError.js";
 
 export type NotificationProviderRegistry = Record<NotificationChannel, INotificationProvider>;
 
@@ -19,6 +21,7 @@ export interface INotificationsService {
 	createNotification: (notificationData: Partial<Notification>, userId: string, teamId: string) => Promise<Notification>;
 	findById: (id: string, teamId: string) => Promise<Notification>;
 	findNotificationsByTeamId: (teamId: string) => Promise<Notification[]>;
+	assertNotificationsExistForTeam: (ids: string[], teamId: string) => Promise<void>;
 	updateById(id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification>;
 	deleteById: (id: string, teamId: string) => Promise<Notification>;
 	handleNotifications: (monitor: Monitor, check: Check, decision: MonitorActionDecision) => Promise<boolean>;
@@ -211,6 +214,21 @@ export class NotificationsService implements INotificationsService {
 
 	findNotificationsByTeamId = async (teamId: string): Promise<Notification[]> => {
 		return await this.notificationsRepository.findByTeamId(teamId);
+	};
+
+	// Only the team's own notifications can be referenced; an id from another team is reported as missing, not forbidden.
+	assertNotificationsExistForTeam = async (ids: string[], teamId: string): Promise<void> => {
+		if (ids.length === 0) return;
+		const found = await this.notificationsRepository.findNotificationsByIdsForTeam(ids, teamId);
+		const foundIds = new Set(found.map((notification) => notification.id));
+		const missing = ids.filter((id) => !foundIds.has(id));
+		if (missing.length > 0) {
+			throw new AppError(appSettingsErrors.notificationNotFound, {
+				message: `Referenced notification does not exist: ${missing.join(", ")}`,
+				service: SERVICE_NAME,
+				method: "assertNotificationsExistForTeam",
+			});
+		}
 	};
 
 	updateById = async (id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification> => {

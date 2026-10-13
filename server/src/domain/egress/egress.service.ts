@@ -282,7 +282,16 @@ export class EgressService implements IEgressService {
 		// surface as a generic queue failure for a job that has completed.
 		const notificationIds = settings.egressNotifications ?? [];
 		try {
-			await this.notificationsService.sendEgressRecoveredNotification(recovered, notificationIds);
+			const delivered = await this.notificationsService.sendEgressRecoveredNotification(recovered, notificationIds);
+			if (!delivered) {
+				// Providers catch their own delivery errors and return false, so this is the only trace of a lost alert.
+				this.logger.warn({
+					message: "Egress recovered but at least one notification channel failed to deliver",
+					service: SERVICE_NAME,
+					method: "checkRecovery",
+					details: { notificationIds },
+				});
+			}
 		} catch (error: unknown) {
 			this.logger.error({
 				message: `Egress recovered but the notification could not be sent: ${error instanceof Error ? error.message : String(error)}`,

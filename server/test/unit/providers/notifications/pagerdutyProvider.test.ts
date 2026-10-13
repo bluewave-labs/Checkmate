@@ -106,12 +106,18 @@ describe("PagerDutyProvider", () => {
 			const { provider } = createProvider();
 			await provider.sendMessage(
 				makeNotification() as any,
-				makeMessage({ type: "egress_recovered", severity: "success", monitor: { ...EGRESS_MONITOR_INFO, url: "https://app.example.com" } })
+				makeMessage({
+					type: "egress_recovered",
+					severity: "success",
+					monitor: { ...EGRESS_MONITOR_INFO, url: "https://app.example.com" },
+					content: { title: "Outbound connectivity restored", summary: "", details: [], timestamp: new Date("2026-01-01T10:05:00.000Z") },
+				})
 			);
 			const payload = mockGotPost.mock.calls[0][1].json;
 			expect(payload.event_action).toBe("trigger");
 			expect(payload.payload.severity).toBe("info");
-			expect(payload.dedup_key).toBe("checkmate-egress");
+			// One key per recovery, so successive recoveries do not dedup into one alert that nothing resolves
+			expect(payload.dedup_key).toBe("checkmate-egress-2026-01-01T10:05:00.000Z");
 		});
 
 		it("includes threshold info in summary and custom_details", async () => {

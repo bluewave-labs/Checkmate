@@ -422,6 +422,25 @@ describe("EgressService", () => {
 			);
 		});
 
+		it("warns when a channel reports a failed delivery without throwing", async () => {
+			const { service, defaults } = createService({
+				egressStateRepository: degradedRepository(),
+				networkService: { requestStatus: statusFor(["1.1.1.1"]) },
+				notificationsService: { sendEgressRecoveredNotification: jest.fn().mockResolvedValue(false) },
+			});
+
+			await expect(service.checkRecovery(makeJob())).resolves.toBeUndefined();
+
+			expect(defaults.logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({
+					message: expect.stringContaining("failed to deliver"),
+					method: "checkRecovery",
+					details: { notificationIds: ["notif-1"] },
+				})
+			);
+			expect(defaults.logger.error).not.toHaveBeenCalled();
+		});
+
 		it("releases the job but does not log a recovery when another process already recorded it", async () => {
 			const { service, defaults } = createService({
 				egressStateRepository: degradedRepository({ markRecovered: jest.fn().mockResolvedValue(null) }),

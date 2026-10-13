@@ -1,5 +1,5 @@
 const SERVICE_NAME = "RocketChatProvider";
-import { getMonitorPath, type MonitorType } from "@/domain/monitors/monitor.type.js";
+import { getMonitorPath, MonitorTypes, type MonitorType } from "@/domain/monitors/monitor.type.js";
 import type { Notification, NotificationMessage } from "@/domain/notifications/notification.type.js";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
 import { CLIENT_HOST_FALLBACK, getTestMessage } from "@/domain/notifications/providers/utils.js";
@@ -139,7 +139,13 @@ export class RocketChatProvider extends NotificationProvider {
 			return undefined;
 		}
 
-		return `${clientHost}/${getMonitorPath(message.monitor.type as MonitorType)}/${message.monitor.id}`;
+		// Instance-level messages (egress) describe the instance with a type that has no details page: no link.
+		const type = message.monitor.type;
+		if (!MonitorTypes.some((t) => t === type)) {
+			return undefined;
+		}
+
+		return `${clientHost}/${getMonitorPath(type as MonitorType)}/${message.monitor.id}`;
 	}
 
 	private severityColor(severity: NotificationMessage["severity"]): string {
