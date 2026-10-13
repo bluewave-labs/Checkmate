@@ -30,7 +30,7 @@ export const ThemedChartTooltip = ({
 				{formatDate(check.createdAt, "dateTime", {
 					timeZone: timezone,
 					locale: i18n.resolvedLanguage ?? "en",
-					timeFormat: "auto",
+					timeFormat: "24h",
 				})}
 			</Typography>
 		</Stack>

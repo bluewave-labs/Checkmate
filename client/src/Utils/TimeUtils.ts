@@ -48,12 +48,6 @@ export const formatDateWithTz = (
 export const tooltipDateFormatLookup = (range: string): DateFormat =>
 	range === "month" ? "date" : "dateTime";
 
-export const formatTimestamp = (timestamp: string | number | null): string => {
-	if (!timestamp) return "-";
-	const date = new Date(timestamp);
-	return date.toLocaleString();
-};
-
 const DISPLAY_UNITS = [MS_PER_DAY, MS_PER_HOUR, MS_PER_MINUTE, MS_PER_SECOND];
 
 // pretty-ms floors seconds-and-above and truncates fractional ms, so values

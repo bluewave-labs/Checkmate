@@ -17,7 +17,7 @@ export const EditorialHero = ({
 			formatDate(new Date(), "date", {
 				timeZone: bucketTimezone,
 				locale: i18n.resolvedLanguage ?? "en",
-				timeFormat: "auto",
+				timeFormat: "24h",
 			}),
 		[bucketTimezone, i18n.resolvedLanguage]
 	);

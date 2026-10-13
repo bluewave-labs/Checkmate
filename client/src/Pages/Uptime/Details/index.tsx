@@ -109,10 +109,7 @@ const UptimeDetailsPage = () => {
 	);
 
 	const domainExpiry = useMemo(() => {
-		if (!domainData?.expiryDate) {
-			return undefined;
-		}
-		return formatDate(domainData.expiryDate, "date");
+		return formatDate(domainData?.expiryDate, "date");
 	}, [domainData, formatDate]);
 
 	const checksUrl = useMemo(() => {

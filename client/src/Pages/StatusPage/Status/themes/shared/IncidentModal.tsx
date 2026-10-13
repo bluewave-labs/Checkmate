@@ -33,7 +33,7 @@ export const IncidentModal = ({
 		formatDate(value, "time", {
 			timeZone: timezone,
 			locale: i18n.resolvedLanguage ?? "en",
-			timeFormat: "auto",
+			timeFormat: "24h",
 		});
 
 	const open = Boolean(monitorId && date);

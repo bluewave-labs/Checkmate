@@ -87,7 +87,7 @@ const initialState: UIState = {
 	},
 	mode: initialMode,
 	showURL: false,
-	timezone: "America/Toronto",
+	timezone: "",
 	timeFormat: "24h",
 	distributedUptimeEnabled: false,
 	language: "en",
