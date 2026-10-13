@@ -1,12 +1,8 @@
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import prettyMilliseconds from "pretty-ms";
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
 dayjs.extend(customParseFormat);
 dayjs.extend(duration);
 
@@ -28,22 +24,6 @@ export const SYSTEM_TIMEZONE = resolveSystemTimezone();
 
 export const resolveTimezone = (preferred?: string | null): string =>
 	preferred?.trim() || SYSTEM_TIMEZONE;
-
-export const formatDateWithTz = (
-	timestamp: string,
-	format: string,
-	timezone?: string
-) => {
-	if (!timestamp) {
-		return "Unknown time";
-	}
-	const tz = resolveTimezone(timezone);
-	try {
-		return dayjs(timestamp).tz(tz).format(format);
-	} catch {
-		return dayjs(timestamp).utc().format(format);
-	}
-};
 
 export const tooltipDateFormatLookup = (range: string): DateFormat =>
 	range === "month" ? "date" : "dateTime";
