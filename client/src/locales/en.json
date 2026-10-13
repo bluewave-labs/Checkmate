@@ -1481,11 +1481,17 @@
 			},
 			"form": {
 				"timezone": {
-					"title": "Display timezone",
-					"description": "Select the timezone used to display dates and times throughout the application.",
+					"title": "Date and time",
+					"description": "Choose the timezone and clock format used to display dates and times throughout the application.",
 					"option": {
 						"timezone": {
-							"label": "Display timezone"
+							"label": "Display timezone",
+							"browserDefault": "Browser default ({{timezone}})"
+						},
+						"timeFormat": {
+							"label": "Time format",
+							"24h": "24-hour",
+							"12h": "12-hour"
 						}
 					}
 				},

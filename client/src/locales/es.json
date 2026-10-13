@@ -1188,11 +1188,17 @@
 			},
 			"form": {
 				"timezone": {
-					"title": "Zona horaria de visualización",
-					"description": "Seleccione la zona horaria utilizada para mostrar fechas y horas en toda la aplicación.",
+					"title": "Fecha y hora",
+					"description": "Elija la zona horaria y el formato de reloj que se usan para mostrar fechas y horas en toda la aplicación.",
 					"option": {
 						"timezone": {
-							"label": "Zona horaria de visualización"
+							"label": "Zona horaria de visualización",
+							"browserDefault": "Predeterminado del navegador ({{timezone}})"
+						},
+						"timeFormat": {
+							"label": "Formato de hora",
+							"24h": "24 horas",
+							"12h": "12 horas"
 						}
 					}
 				},

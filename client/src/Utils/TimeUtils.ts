@@ -178,10 +178,10 @@ export const DATE_FORMATS = {
 } satisfies Record<string, Intl.DateTimeFormatOptions>;
 export type DateFormat = keyof typeof DATE_FORMATS;
 
-export const TIME_FORMATS = ["auto", "12h", "24h"] as const;
+export const TIME_FORMATS = ["24h", "12h"] as const;
 export type TimeFormat = (typeof TIME_FORMATS)[number];
 
-const HOUR_CYCLES = { auto: undefined, "12h": "h12", "24h": "h23" } as const;
+const HOUR_CYCLES = { "12h": "h12", "24h": "h23" } as const;
 
 export const formatDate = (
 	value: string | number | Date | null | undefined,

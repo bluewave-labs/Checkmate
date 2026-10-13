@@ -1188,11 +1188,17 @@
 			},
 			"form": {
 				"timezone": {
-					"title": "Zona horària de visualització",
-					"description": "Selecciona la zona horària que s'usa per mostrar dates i hores a tota l'aplicació.",
+					"title": "Data i hora",
+					"description": "Trieu el fus horari i el format de rellotge que s'utilitzen per mostrar dates i hores a tota l'aplicació.",
 					"option": {
 						"timezone": {
-							"label": "Zona horària de visualització"
+							"label": "Zona horària de visualització",
+							"browserDefault": "Predeterminat del navegador ({{timezone}})"
+						},
+						"timeFormat": {
+							"label": "Format d'hora",
+							"24h": "24 hores",
+							"12h": "12 hores"
 						}
 					}
 				},

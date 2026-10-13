@@ -1389,13 +1389,19 @@
 					"title": "Progi globalne"
 				},
 				"timezone": {
-					"description": "Wybierz strefę czasową używaną do wyświetlania dat i godzin w całej aplikacji.",
+					"description": "Wybierz strefę czasową i format zegara używane do wyświetlania dat i godzin w całej aplikacji.",
 					"option": {
 						"timezone": {
-							"label": "Wyświetlanie strefy czasowej"
+							"label": "Wyświetlanie strefy czasowej",
+							"browserDefault": "Domyślna przeglądarki ({{timezone}})"
+						},
+						"timeFormat": {
+							"label": "Format czasu",
+							"24h": "24-godzinny",
+							"12h": "12-godzinny"
 						}
 					},
-					"title": "Wyświetlana strefa czasowa"
+					"title": "Data i godzina"
 				},
 				"ui": {
 					"description": "Przełączaj między trybem jasnym i ciemnym, zmieniaj język lub dostosuj typ wyświetlania wykresu.",

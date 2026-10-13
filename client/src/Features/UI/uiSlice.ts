@@ -132,10 +132,9 @@ const uiSlice = createSlice({
 			state.showURL = action.payload;
 		},
 
+		// An empty timezone means "use the browser timezone" (see resolveTimezone)
 		setTimezone: (state, action: PayloadAction<{ timezone: string }>) => {
-			if (action.payload.timezone) {
-				state.timezone = action.payload.timezone;
-			}
+			state.timezone = action.payload.timezone;
 		},
 		setTimeFormat: (state, action: PayloadAction<TimeFormat>) => {
 			state.timeFormat = action.payload;
