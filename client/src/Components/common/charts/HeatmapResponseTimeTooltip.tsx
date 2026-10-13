@@ -54,7 +54,7 @@ export const HeatmapResponseTimeTooltip = ({
 					}}
 				>
 					<Typography>
-						{formatDateWithTz(check?.createdAt, "ddd, MMMM D, YYYY, HH:mm A", uiTimezone)}
+						{formatDateWithTz(check?.createdAt, "ddd, MMMM D, YYYY, hh:mm A", uiTimezone)}
 					</Typography>
 					<Typography>
 						{t("common.labels.responseTime")}:{" "}

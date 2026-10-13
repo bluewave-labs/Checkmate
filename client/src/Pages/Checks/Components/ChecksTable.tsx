@@ -58,7 +58,7 @@ export const ChecksTable = ({
 				render: (row) => {
 					return formatDateWithTz(
 						row.createdAt,
-						"ddd, MMMM D, YYYY, HH:mm A",
+						"ddd, MMMM D, YYYY, hh:mm A",
 						uiTimezone
 					);
 				},
