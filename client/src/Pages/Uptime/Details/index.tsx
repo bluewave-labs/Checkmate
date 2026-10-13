@@ -18,7 +18,6 @@ import { useTheme } from "@mui/material/styles";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { useGet } from "@/Hooks/UseApi";
 import { type MonitorDetailsResponse, supportsGeoCheck } from "@/Types/Monitor";
 import type { ChecksResponse } from "@/Types/Check";
@@ -27,13 +26,10 @@ import type {
 	FlatGeoChecksResponse,
 	GeoContinent,
 } from "@/Types/GeoCheck";
-import type { RootState } from "@/Types/state";
-import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { t } from "i18next";
 import { Typography } from "@mui/material";
 import type { DateRange } from "@/Types/Query";
-
-const certificateDateFormat = "MMM D, YYYY h A";
+import { useFormatDate } from "@/Hooks/useFormatDate";
 
 interface CertificateResponse {
 	certificateDate: string;
@@ -47,9 +43,8 @@ interface DomainResponse {
 const UptimeDetailsPage = () => {
 	const theme = useTheme();
 	const isAdmin = useIsAdmin();
+	const formatDate = useFormatDate();
 	const { monitorId } = useParams<{ monitorId: string }>();
-	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
-
 	const [page, setPage] = useState<number>(0);
 	const [rowsPerPage, setRowsPerPage] = useState<number>(5);
 	const [geoPage, setGeoPage] = useState<number>(0);
@@ -96,17 +91,8 @@ const UptimeDetailsPage = () => {
 	);
 
 	const certificateExpiry = useMemo(() => {
-		if (!certificateData?.certificateDate) {
-			return undefined;
-		}
-		return (
-			formatDateWithTz(
-				certificateData.certificateDate,
-				certificateDateFormat,
-				uiTimezone
-			) ?? "N/A"
-		);
-	}, [certificateData, uiTimezone]);
+		return formatDate(certificateData?.certificateDate, "date");
+	}, [certificateData, formatDate]);
 
 	// Domain expiry fetch - only for HTTP monitors
 	const domainUrl = useMemo(() => {
@@ -126,10 +112,8 @@ const UptimeDetailsPage = () => {
 		if (!domainData?.expiryDate) {
 			return undefined;
 		}
-		return (
-			formatDateWithTz(domainData.expiryDate, certificateDateFormat, uiTimezone) ?? "N/A"
-		);
-	}, [domainData, uiTimezone]);
+		return formatDate(domainData.expiryDate, "date");
+	}, [domainData, formatDate]);
 
 	const checksUrl = useMemo(() => {
 		if (!monitorId || !monitor?.type) {
