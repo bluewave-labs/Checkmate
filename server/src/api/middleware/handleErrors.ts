@@ -38,10 +38,17 @@ const describeError = (error: unknown): ErrorReport => {
 	return { status: 500, message: error instanceof Error ? error.message : "Server error", service: "unknownService", method: "unknownMethod" };
 };
 
+const describeRequest = (req: Request): string | undefined => {
+	if (!req.method || !req.originalUrl) return undefined;
+	return `${req.method} ${req.originalUrl.split("?")[0]}`;
+};
+
 const handleErrors = (logger: ILogger) => (error: unknown, req: Request, res: Response, _next: NextFunction) => {
 	const report = describeError(error);
 	const level = report.status < 500 ? "warn" : "error";
-	logger[level]({ ...report, stack: error instanceof Error ? error.stack : undefined });
+	const request = describeRequest(req);
+	const details = request ? { request, ...report.details } : report.details;
+	logger[level]({ ...report, details, stack: error instanceof Error ? error.stack : undefined });
 	const body: ErrorBody = { status: report.status, msg: report.message };
 	res.status(body.status).json(body);
 };
