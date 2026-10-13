@@ -8,7 +8,6 @@ import { Agent as HttpAgent } from "http";
 import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { isStatusUp, peerAnsweredFromError } from "@/service/networkProviders/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
-import CacheableLookup from "cacheable-lookup";
 import { CookieJar } from "tough-cookie";
 import { HttpProxyAgent, HttpsProxyAgent } from "hpagent";
 import { CheckContext } from "@/types/network.js";
@@ -29,9 +28,8 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		private got: Got,
 		private advancedMatcher: IAdvancedMatcher
 	) {
-		const cacheable = new CacheableLookup({ maxTtl: 300, errorTtl: 30 });
 		this.got = got.extend({
-			dnsCache: cacheable,
+			dnsCache: true,
 			timeout: {
 				request: 30000,
 			},
@@ -241,7 +239,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 				statusCode: response.statusCode,
 				statusUp,
 				message: response.statusMessage ?? "OK",
-				responseTime: response.timings.phases.total ?? 0,
+				responseTime: response.timings?.phases.total ?? 0,
 				timings: response.timings,
 			});
 		} catch (error: unknown) {
