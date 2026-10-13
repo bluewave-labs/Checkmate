@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@/Types/state";
 import { setRowsPerPage } from "@/Features/UI/uiSlice";
-import { formatTimestamp } from "@/Utils/TimeUtils";
+import { useFormatDate } from "@/Hooks/useFormatDate";
 
 type LogWithId = Log & { id: number };
 
@@ -46,6 +46,7 @@ const LevelBadge = ({ level }: { level: LogLevel }) => {
 export const TableLogs = ({ logs, logCount, page, setPage }: TableLogsProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
+	const formatDate = useFormatDate();
 	const dispatch = useDispatch();
 	const rowsPerPage = useSelector(
 		(state: RootState) => state?.ui?.logs?.rowsPerPage ?? 15
@@ -57,7 +58,7 @@ export const TableLogs = ({ logs, logCount, page, setPage }: TableLogsProps) => 
 			content: t("pages.logs.table.headers.timestamp"),
 			render: (row) => (
 				<Typography sx={{ fontFamily: theme.typography.fontFamilyMonospace }}>
-					{formatTimestamp(row.timestamp)}
+					{formatDate(row.timestamp, "dateTimeSeconds")}
 				</Typography>
 			),
 		},

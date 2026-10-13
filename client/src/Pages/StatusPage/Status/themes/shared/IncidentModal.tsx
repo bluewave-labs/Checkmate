@@ -9,9 +9,9 @@ import { useTranslation } from "react-i18next";
 import { useGet } from "@/Hooks/UseApi";
 import { useTheme } from "@mui/material";
 import { SPACING } from "@/Utils/Theme/constants";
-import { formatDateWithTz } from "@/Utils/TimeUtils";
 
 import type { Incident } from "@/Types/Incident";
+import { formatDate } from "@/Utils/TimeUtils";
 interface IncidentModalProps {
 	url: string;
 	monitorId: string | null;
@@ -28,7 +28,14 @@ export const IncidentModal = ({
 	onClose,
 }: IncidentModalProps) => {
 	const theme = useTheme();
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
+	const formatTime = (value: string) =>
+		formatDate(value, "time", {
+			timeZone: timezone,
+			locale: i18n.resolvedLanguage ?? "en",
+			timeFormat: "auto",
+		});
+
 	const open = Boolean(monitorId && date);
 
 	const { data, isLoading, error } = useGet<{ incidents: Incident[] }>(
@@ -92,9 +99,9 @@ export const IncidentModal = ({
 									variant="body2"
 									color={theme.palette.text.secondary}
 								>
-									{formatDateWithTz(incident.startTime, "h:mm A", timezone)} -{" "}
+									{formatTime(incident.startTime)} -{" "}
 									{incident.endTime
-										? formatDateWithTz(incident.endTime, "h:mm A", timezone)
+										? formatTime(incident.endTime)
 										: t("pages.statusPages.monitorsList.incidents.ongoing")}
 								</Typography>
 							</Stack>

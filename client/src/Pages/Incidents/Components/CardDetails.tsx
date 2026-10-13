@@ -9,10 +9,8 @@ import { useTranslation } from "react-i18next";
 import type { Incident } from "@/Types/Incident";
 import type { Monitor } from "@/Types/Monitor";
 import { useTheme } from "@mui/material";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/Types/state";
-import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { getIncidentsDuration } from "@/Pages/Incidents/utils";
+import { useFormatDate } from "@/Hooks/useFormatDate";
 
 interface CardDetailsProps {
 	incident: Incident | null;
@@ -41,7 +39,7 @@ const Cell = ({ children }: { children: React.ReactNode }) => (
 export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
+	const formatDate = useFormatDate();
 
 	if (!incident) {
 		return null;
@@ -116,9 +114,7 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 							<Cell>{t("pages.incidents.dialog.details.startedAt")}</Cell>
 						</Grid>
 						<Grid size={4}>
-							<Cell>
-								{formatDateWithTz(incident.startTime, "D MMM YYYY, h:mm A", uiTimezone)}
-							</Cell>
+							<Cell>{formatDate(incident.startTime, "dateTime")}</Cell>
 						</Grid>
 						<Grid size={2}>
 							<Cell>{t("pages.incidents.dialog.details.statusCode")}</Cell>
@@ -161,11 +157,7 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 								<Cell>{t("pages.incidents.dialog.details.resolvedAt")}</Cell>
 							</Grid>
 							<Grid size={10}>
-								<Cell>
-									{incident.endTime
-										? formatDateWithTz(incident.endTime, "D MMM YYYY, h:mm A", uiTimezone)
-										: "N/A"}
-								</Cell>
+								<Cell>{formatDate(incident.endTime, "dateTime")}</Cell>
 							</Grid>
 							<Grid size={2}>
 								<Cell>{t("pages.incidents.dialog.details.resolutionType")}</Cell>

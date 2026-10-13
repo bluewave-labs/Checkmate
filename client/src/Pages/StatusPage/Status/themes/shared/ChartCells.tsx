@@ -81,7 +81,10 @@ const padCells = (cells: ChartCell[], length: number): ChartCell[] => [
 	),
 ];
 
-export const checksToCells = (checks: CheckSnapshot[]): ChartCell[] => {
+export const checksToCells = (
+	checks: CheckSnapshot[],
+	bucketTimezone: string
+): ChartCell[] => {
 	const source = checks.slice(-MAX_RECENT_CHECKS);
 	const heights = computeBarHeights(source);
 	const cells = source.map(
@@ -91,7 +94,12 @@ export const checksToCells = (checks: CheckSnapshot[]): ChartCell[] => {
 			heatKind: classifyResponseTime(check.status, check.responseTime),
 			heightPct: heights[i] ?? MIN_HEIGHT_PCT,
 			responseTime: check.responseTime ?? 0,
-			tooltip: <ThemedChartTooltip check={check} />,
+			tooltip: (
+				<ThemedChartTooltip
+					check={check}
+					timezone={bucketTimezone}
+				/>
+			),
 			ariaLabel: `${formatMs(check.responseTime)}, ${check.status ? "up" : "down"}`,
 			severity: 0,
 			date: null,
