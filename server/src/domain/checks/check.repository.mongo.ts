@@ -10,8 +10,8 @@ import type {
 	CheckMemoryInfo,
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
+	CheckTimings,
 	DockerContainerStats,
-	GotTimings,
 	HardwareCheckStats,
 } from "@/domain/checks/check.type.js";
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
@@ -47,7 +47,7 @@ class MongoChecksRepository implements IChecksRepository {
 	}
 
 	private toEntity = (doc: CheckDocument): Check => {
-		const mapTimings = (timings?: GotTimings): GotTimings => {
+		const mapTimings = (timings?: CheckTimings): CheckTimings => {
 			const phases = timings?.phases ?? {
 				wait: 0,
 				dns: 0,

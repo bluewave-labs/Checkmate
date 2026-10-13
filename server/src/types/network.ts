@@ -6,7 +6,7 @@ import type {
 	CheckHostInfo,
 	CheckMemoryInfo,
 	CheckNetworkInterfaceInfo,
-	GotTimings,
+	CheckTimings,
 	ILighthouseAudit,
 } from "@/domain/checks/check.type.js";
 import { DockerContainerInfo, DockerContainerLogs, DockerContainerSummary } from "@/domain/docker/docker.type.js";
@@ -41,7 +41,7 @@ export interface MonitorStatusResponse<
 	peerResponded?: boolean;
 	responseTime?: number;
 	payload?: T | string | null;
-	timings?: GotTimings;
+	timings?: CheckTimings;
 	first_byte_took?: number;
 	body_read_took?: number;
 	dns_took?: number;
