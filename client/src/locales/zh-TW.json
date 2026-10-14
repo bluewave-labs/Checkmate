@@ -992,6 +992,12 @@
 			"header": {
 				"title": "日誌與佇列",
 				"description": "在一處查看伺服器日誌、監視器作業佇列和執行時診斷。"
+			},
+			"entry": {
+				"error": "錯誤",
+				"errorDetails": "錯誤詳細資訊",
+				"details": "詳細資訊",
+				"context": "上下文"
 			}
 		},
 		"maintenanceWindow": {

@@ -993,6 +993,12 @@
 			"header": {
 				"title": "日志与队列",
 				"description": "在一处查看服务器日志、监控器作业队列和运行时诊断。"
+			},
+			"entry": {
+				"error": "错误",
+				"errorDetails": "错误详细信息",
+				"details": "详细信息",
+				"context": "上下文"
 			}
 		},
 		"maintenanceWindow": {

@@ -993,6 +993,12 @@
 			"header": {
 				"title": "Protokolle & Warteschlange",
 				"description": "Serverprotokolle, Monitor-Warteschlange und Laufzeitdiagnosen an einem Ort."
+			},
+			"entry": {
+				"error": "Fehler",
+				"errorDetails": "Fehlerdetails",
+				"details": "Details",
+				"context": "Kontext"
 			}
 		},
 		"maintenanceWindow": {

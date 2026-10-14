@@ -992,6 +992,12 @@
 			"header": {
 				"title": "Günlükler ve kuyruk",
 				"description": "Sunucu günlüklerini, izleyici iş kuyruğunu ve çalışma zamanı tanılarını tek bir yerde inceleyin."
+			},
+			"entry": {
+				"error": "Hata",
+				"errorDetails": "Hata ayrıntıları",
+				"details": "Ayrıntılar",
+				"context": "Bağlam"
 			}
 		},
 		"maintenanceWindow": {

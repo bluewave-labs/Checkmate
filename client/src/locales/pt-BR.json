@@ -1250,6 +1250,12 @@
 			"header": {
 				"title": "Logs e fila",
 				"description": "Inspecione logs do servidor, fila de tarefas de monitor e diagnósticos de runtime em um só lugar."
+			},
+			"entry": {
+				"error": "Erro",
+				"errorDetails": "Detalhes do erro",
+				"details": "Detalhes",
+				"context": "Contexto"
 			}
 		},
 		"maintenanceWindow": {

@@ -992,6 +992,12 @@
 			"header": {
 				"title": "Registres i cua",
 				"description": "Inspecciona els registres del servidor, la cua de feines del monitor i els diagnòstics d'execució en un sol lloc."
+			},
+			"entry": {
+				"error": "Error",
+				"errorDetails": "Detalls de l'error",
+				"details": "Detalls",
+				"context": "Context"
 			}
 		},
 		"maintenanceWindow": {

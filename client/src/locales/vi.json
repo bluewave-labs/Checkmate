@@ -992,6 +992,12 @@
 			"header": {
 				"title": "Nhật ký & hàng đợi",
 				"description": "Kiểm tra nhật ký máy chủ, hàng đợi công việc giám sát và chẩn đoán runtime tại một nơi."
+			},
+			"entry": {
+				"error": "Lỗi",
+				"errorDetails": "Chi tiết lỗi",
+				"details": "Chi tiết",
+				"context": "Ngữ cảnh"
 			}
 		},
 		"maintenanceWindow": {

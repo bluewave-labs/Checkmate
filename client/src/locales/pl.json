@@ -1045,7 +1045,13 @@
 				"queue": "Kolejka zadań"
 			},
 			"workers": "Pracownicy",
-			"workersExplainers": "Wyświetla procesy workerów.  Identyfikatory workerów są skrócone, najedź, aby zobaczyć pełny identyfikator"
+			"workersExplainers": "Wyświetla procesy workerów.  Identyfikatory workerów są skrócone, najedź, aby zobaczyć pełny identyfikator",
+			"entry": {
+				"error": "Błąd",
+				"errorDetails": "Szczegóły błędu",
+				"details": "Szczegóły",
+				"context": "Kontekst"
+			}
 		},
 		"maintenanceWindow": {
 			"fallback": {

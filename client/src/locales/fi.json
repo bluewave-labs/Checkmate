@@ -992,6 +992,12 @@
 			"header": {
 				"title": "Lokit ja jono",
 				"description": "Tarkasta palvelinlokit, monitorin työjono ja ajonaikaiset diagnostiikat yhdestä paikasta."
+			},
+			"entry": {
+				"error": "Virhe",
+				"errorDetails": "Virheen tiedot",
+				"details": "Tiedot",
+				"context": "Konteksti"
 			}
 		},
 		"maintenanceWindow": {

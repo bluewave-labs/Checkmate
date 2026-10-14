@@ -992,6 +992,12 @@
 			"header": {
 				"title": "Journaux et file",
 				"description": "Inspectez les journaux serveur, la file des tâches de moniteur et les diagnostics d'exécution au même endroit."
+			},
+			"entry": {
+				"error": "Erreur",
+				"errorDetails": "Détails de l'erreur",
+				"details": "Détails",
+				"context": "Contexte"
 			}
 		},
 		"maintenanceWindow": {

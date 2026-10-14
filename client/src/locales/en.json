@@ -1254,6 +1254,12 @@
 			"header": {
 				"title": "Logs & queue",
 				"description": "Inspect server logs, the monitor job queue, and runtime diagnostics in one place."
+			},
+			"entry": {
+				"error": "Error",
+				"errorDetails": "Error details",
+				"details": "Details",
+				"context": "Context"
 			}
 		},
 		"maintenanceWindow": {

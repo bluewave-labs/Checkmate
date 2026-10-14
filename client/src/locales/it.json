@@ -1080,6 +1080,12 @@
 			"header": {
 				"title": "Log e coda",
 				"description": "Ispeziona i log del server, la coda dei job del monitor e la diagnostica runtime in un unico posto."
+			},
+			"entry": {
+				"error": "Errore",
+				"errorDetails": "Dettagli dell'errore",
+				"details": "Dettagli",
+				"context": "Contesto"
 			}
 		},
 		"maintenanceWindow": {

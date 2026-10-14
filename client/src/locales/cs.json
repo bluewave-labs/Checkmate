@@ -992,6 +992,12 @@
 			"header": {
 				"title": "Protokoly a fronta",
 				"description": "Zkontrolujte serverové protokoly, frontu úloh monitoru a diagnostiku v jednom místě."
+			},
+			"entry": {
+				"error": "Chyba",
+				"errorDetails": "Podrobnosti chyby",
+				"details": "Podrobnosti",
+				"context": "Kontext"
 			}
 		},
 		"maintenanceWindow": {

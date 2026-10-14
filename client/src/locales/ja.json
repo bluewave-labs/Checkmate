@@ -992,6 +992,12 @@
 			"header": {
 				"title": "ログとキュー",
 				"description": "サーバーログ、モニタージョブキュー、ランタイム診断を一か所で確認できます。"
+			},
+			"entry": {
+				"error": "エラー",
+				"errorDetails": "エラーの詳細",
+				"details": "詳細",
+				"context": "コンテキスト"
 			}
 		},
 		"maintenanceWindow": {

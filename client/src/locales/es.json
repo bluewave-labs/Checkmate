@@ -992,6 +992,12 @@
 			"header": {
 				"title": "Registros y cola",
 				"description": "Inspecciona registros del servidor, la cola de trabajos del monitor y los diagnósticos de runtime en un solo lugar."
+			},
+			"entry": {
+				"error": "Error",
+				"errorDetails": "Detalles del error",
+				"details": "Detalles",
+				"context": "Contexto"
 			}
 		},
 		"maintenanceWindow": {
