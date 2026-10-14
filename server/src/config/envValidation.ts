@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DbTypes, LogLevels, QueueModes } from "@/domain/app-settings/app-settings.type.js";
+import { DbTypes, LogLevels, NodeEnvs, QueueModes } from "@/domain/app-settings/app-settings.type.js";
 import { booleanCoercion } from "@/api/validation/shared.js";
 import { ILogger } from "@/utils/logger.js";
 
@@ -41,8 +41,8 @@ const envSchema = z.object({
 	PORT: z.string().default("52345"),
 	// Port for worker health checks
 	HEALTH_PORT: z.string().default("52346"),
-	NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-	LOG_LEVEL: z.enum(LogLevels).default("debug"),
+	NODE_ENV: z.enum(NodeEnvs, { error: "NODE_ENV is required: development, production or test" }),
+	LOG_LEVEL: z.enum(LogLevels).default("info"),
 
 	// Database
 	DB_CONNECTION_STRING: z.string().min(1, "Database connection string is required"),

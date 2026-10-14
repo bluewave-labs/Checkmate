@@ -6,7 +6,7 @@ export const createMockLogger = () => ({
 	warn: jest.fn(),
 	error: jest.fn(),
 	debug: jest.fn(),
-	cacheLog: jest.fn(),
 	getLogs: jest.fn().mockReturnValue([]),
-	buildLogEntry: jest.fn().mockReturnValue({ level: "info", timestamp: new Date().toISOString() }),
+	configure: jest.fn(),
+	flush: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
 });

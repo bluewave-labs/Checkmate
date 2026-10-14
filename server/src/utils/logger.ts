@@ -2,125 +2,90 @@ import { createLogger, format, transports, Logger as WinstonLogger } from "winst
 import type { Logform } from "winston";
 import type { z } from "zod";
 import type { logConfigSchema, logEntrySchema } from "@/utils/logger.schema.js";
-import dotenv from "dotenv";
-dotenv.config();
+import { LogLevel } from "@/domain/app-settings/app-settings.type.js";
 
 const SERVICE_NAME = "Logger";
+const MAX_CACHE_SIZE = 1000;
+const FLUSH_TIMEOUT_MS = 2000;
+const LEVEL_PRIORITY: Record<LogLevel, number> = { error: 0, warn: 1, info: 2, debug: 3 };
 
 type LogConfig = z.infer<typeof logConfigSchema>;
 type LogEntry = z.infer<typeof logEntrySchema>;
+
+export type LoggerOptions = {
+	level: LogLevel;
+	json: boolean;
+};
 
 export interface ILogger {
 	info(config: LogConfig): void;
 	warn(config: LogConfig): void;
 	error(config: LogConfig): void;
 	debug(config: LogConfig): void;
-	cacheLog(entry: LogEntry): void;
 	getLogs(): LogEntry[];
-	buildLogEntry(level: string, config: LogConfig): LogEntry;
-	setLogLevel(level: string): void;
+	configure(options: LoggerOptions): void;
+	flush(): Promise<void>;
 }
+
+const jsonFormat = format.json();
+
+const prettyFormat = format.combine(
+	format.colorize(),
+	format.printf((info: Logform.TransformableInfo) => {
+		const { timestamp, level, message, service, method, details, stack } = info;
+		let line = `${String(timestamp)} ${level}:`;
+		if (service) line += ` [${String(service)}]`;
+		if (method) line += `(${String(method)})`;
+		line += ` ${String(message)}`;
+		if (details) line += ` ${JSON.stringify(details)}`;
+		if (typeof stack === "string") line += `\n${stack}`;
+		return line;
+	})
+);
+
+const buildTransports = ({ json }: LoggerOptions) => [new transports.Console({ format: json ? jsonFormat : prettyFormat })];
 
 class Logger implements ILogger {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: WinstonLogger;
-	private logCache: LogEntry[];
-	private maxCacheSize: number;
+	private logCache: LogEntry[] = [];
+	private level: LogLevel = "info";
 
-	constructor() {
-		this.logCache = [];
-		this.maxCacheSize = 1000;
-		const consoleFormat = format.printf((info: Logform.TransformableInfo) => {
-			const { level, service, method, details, timestamp, stack } = info;
-			const message = info.message as string;
-			let formattedMessage: string = message;
-			let formattedDetails: string | undefined;
-
-			if (typeof message === "object" && message !== null) {
-				formattedMessage = JSON.stringify(message, null, 2);
-			}
-
-			if (typeof details === "object" && details !== null) {
-				formattedDetails = JSON.stringify(details, null, 2);
-			}
-
-			let msg = `${timestamp} ${level}:`;
-			if (service) msg += ` [${service}]`;
-			if (method) msg += `(${method})`;
-			if (formattedMessage) msg += ` ${formattedMessage}`;
-			if (formattedDetails) msg += ` (details: ${formattedDetails})`;
-
-			if (typeof stack === "string") {
-				const stackTrace = stack.split("\n").map((line: string) => {
-					const match = line.match(/at\s+(.+?)\s+\((.+?):(\d+):(\d+)\)/);
-					if (match) {
-						return {
-							function: match[1],
-							file: match[2],
-							line: parseInt(match[3] ?? "0", 10),
-							column: parseInt(match[4] ?? "0", 10),
-						};
-					}
-					return line.trim();
-				});
-				msg += ` (stack: ${JSON.stringify(stackTrace, null, 2)})`;
-			}
-
-			return msg;
-		});
-
-		this.logger = createLogger({
-			level: "info",
-			format: format.combine(format.timestamp()),
-			transports: [
-				new transports.Console({
-					format: format.combine(format.colorize(), format.prettyPrint(), format.json(), consoleFormat),
-				}),
-				new transports.File({
-					format: format.combine(format.json()),
-					filename: "app.log",
-				}),
-			],
-		});
+	constructor(options: LoggerOptions = { level: "info", json: false }) {
+		this.level = options.level;
+		this.logger = createLogger({ level: options.level, transports: buildTransports(options) });
 	}
 
-	info(config: LogConfig) {
-		const logEntry = this.buildLogEntry("info", config);
-		this.cacheLog(logEntry);
-		this.logger.info(logEntry);
+	configure(options: LoggerOptions) {
+		this.level = options.level;
+		this.logger.configure({ level: options.level, transports: buildTransports(options) });
 	}
 
-	warn(config: LogConfig) {
-		const logEntry = this.buildLogEntry("warn", config);
-		this.cacheLog(logEntry);
-		this.logger.warn(logEntry);
-	}
-
-	error(config: LogConfig) {
-		const logEntry = this.buildLogEntry("error", config);
-		this.cacheLog(logEntry);
-		this.logger.error(logEntry);
-	}
-
-	debug(config: LogConfig) {
-		const logEntry = this.buildLogEntry("debug", config);
-		this.cacheLog(logEntry);
-		this.logger.debug(logEntry);
-	}
-
-	cacheLog(entry: LogEntry) {
-		this.logCache.push(entry);
-		if (this.logCache.length > this.maxCacheSize) {
-			this.logCache.shift();
-		}
-	}
+	info = (config: LogConfig) => this.log("info", config);
+	warn = (config: LogConfig) => this.log("warn", config);
+	error = (config: LogConfig) => this.log("error", config);
+	debug = (config: LogConfig) => this.log("debug", config);
 
 	getLogs() {
-		return this.logCache;
+		return [...this.logCache];
 	}
 
-	buildLogEntry(level: string, config: LogConfig): LogEntry {
+	flush(): Promise<void> {
+		return new Promise((resolve) => {
+			const timer = setTimeout(resolve, FLUSH_TIMEOUT_MS);
+			this.logger.once("finish", () => {
+				// Winston is done; wait for stdout to drain before the caller exits
+				process.stdout.write("", () => {
+					clearTimeout(timer);
+					resolve();
+				});
+			});
+			this.logger.end();
+		});
+	}
+
+	private buildLogEntry(level: LogLevel, config: LogConfig): LogEntry {
 		return {
 			level,
 			message: config.message,
@@ -132,8 +97,18 @@ class Logger implements ILogger {
 		};
 	}
 
-	setLogLevel(level: string): void {
-		this.logger.level = level || "info";
+	private cacheLog(entry: LogEntry) {
+		this.logCache.push(entry);
+		if (this.logCache.length > MAX_CACHE_SIZE) {
+			this.logCache.shift();
+		}
+	}
+
+	private log(level: LogLevel, config: LogConfig) {
+		if (LEVEL_PRIORITY[level] > LEVEL_PRIORITY[this.level]) return;
+		const entry = this.buildLogEntry(level, config);
+		this.cacheLog(entry);
+		this.logger.log(entry);
 	}
 }
 

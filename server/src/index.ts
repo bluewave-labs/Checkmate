@@ -9,6 +9,7 @@ import { validateEnv } from "@/config/envValidation.js";
 import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs";
+import "dotenv/config";
 
 import Logger, { ILogger } from "@/utils/logger.js";
 import { SettingsService } from "@/domain/app-settings/app-settings.service.js";
@@ -23,9 +24,9 @@ const startApp = async () => {
 	// Basic setup
 	// ***********************
 
-	logger = new Logger();
+	logger = new Logger({ level: "info", json: process.env.NODE_ENV === "production" });
 	const env = validateEnv(logger);
-	logger.setLogLevel(env.LOG_LEVEL);
+	logger.configure({ level: env.LOG_LEVEL, json: env.NODE_ENV === "production" });
 	const settingsService = new SettingsService(env);
 	const envSettings = settingsService.getSettings();
 	const { queueMode, queuePrimaryProcesses } = envSettings;

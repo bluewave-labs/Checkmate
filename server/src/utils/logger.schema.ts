@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { LogLevels } from "@/domain/app-settings/app-settings.type.js";
 
 export const logConfigSchema = z.object({
 	message: z.string(),
@@ -10,7 +11,7 @@ export const logConfigSchema = z.object({
 
 export const logEntrySchema = logConfigSchema
 	.extend({
-		level: z.string(),
+		level: z.enum(LogLevels),
 		timestamp: z.string(),
 	})
 	.meta({ id: "LogEntry" });

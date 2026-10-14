@@ -4,8 +4,12 @@ export type DbType = (typeof DbTypes)[number];
 export const QueueModes = ["primary", "worker"] as const;
 export type QueueMode = (typeof QueueModes)[number];
 
+export const NodeEnvs = ["development", "production", "test"] as const;
+export type NodeEnv = (typeof NodeEnvs)[number];
+
 export const LogLevels = ["error", "warn", "info", "debug"] as const;
 export type LogLevel = (typeof LogLevels)[number];
+
 import type { z } from "zod";
 import type { emailTransportConfigSchema, settingsSchema, settingsThresholdsSchema } from "./app-settings.schema.js";
 

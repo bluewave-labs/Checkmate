@@ -17,6 +17,11 @@ export const initShutdownListener = (server: Server | null, shutdownTargets: Shu
 
 	let isShuttingDown = false;
 
+	const exit = async (code: number) => {
+		await logger.flush();
+		process.exit(code);
+	};
+
 	const shutdown = async (exitCode: number = 0) => {
 		if (isShuttingDown) {
 			return;
@@ -31,7 +36,7 @@ export const initShutdownListener = (server: Server | null, shutdownTargets: Shu
 			await shutdownTargets.healthServer?.close();
 			await shutdownTargets.db.disconnect();
 			logger.info({ message: "Graceful shutdown complete" });
-			process.exit(exitCode);
+			await exit(exitCode);
 		} catch (error) {
 			const err = error as Error;
 			logger.error({
@@ -40,7 +45,7 @@ export const initShutdownListener = (server: Server | null, shutdownTargets: Shu
 				method: "shutdown",
 				stack: err.stack,
 			});
-			process.exit(1);
+			await exit(1);
 		}
 	};
 	process.on("SIGUSR2", () => shutdown(0));
