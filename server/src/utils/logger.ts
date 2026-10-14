@@ -40,7 +40,7 @@ const formatError = (error: SerializedError): string => {
 const prettyFormat = format.combine(
 	format.colorize(),
 	format.printf((info: Logform.TransformableInfo) => {
-		const { timestamp, level, message, service, method, details, context, error, stack } = info;
+		const { timestamp, level, message, service, method, details, context, error } = info;
 		let line = `${String(timestamp)} ${level}:`;
 		if (service) line += ` [${String(service)}]`;
 		if (method) line += `(${String(method)})`;
@@ -48,8 +48,7 @@ const prettyFormat = format.combine(
 		if (details) line += ` ${JSON.stringify(details)}`;
 		if (context) line += ` ${JSON.stringify(context)}`;
 		const parsedError = serializedErrorSchema.safeParse(error);
-		const trace = parsedError.success ? formatError(parsedError.data) : typeof stack === "string" ? stack : undefined;
-		if (trace) line += `\n${trace}`;
+		if (parsedError.success) line += `\n${formatError(parsedError.data)}`;
 		return line;
 	})
 );
@@ -107,7 +106,6 @@ class Logger implements ILogger {
 			...(context && { context: { ...context } }),
 			...(config.details && { details: redactRecord(config.details) }),
 			...(config.error !== undefined && { error: redactError(serializeError(config.error)) }),
-			...(config.stack && { stack: redactString(config.stack) }),
 		};
 	}
 

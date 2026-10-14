@@ -111,14 +111,15 @@ describe("EmailService", () => {
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "ENOENT: no such file",
+					message: "Failed to load email template welcomeEmail",
 					service: "EmailService",
 					method: "loadTemplate",
+					error: expect.objectContaining({ message: "ENOENT: no such file" }),
 				})
 			);
 		});
 
-		it("logs 'Unknown error' for non-Error thrown values in loadTemplate", () => {
+		it("passes non-Error thrown values in loadTemplate through as error", () => {
 			const failFs = {
 				readFileSync: jest.fn().mockImplementation(() => {
 					throw "string error";
@@ -129,8 +130,8 @@ describe("EmailService", () => {
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Unknown error",
-					stack: undefined,
+					message: "Failed to load email template welcomeEmail",
+					error: "string error",
 				})
 			);
 		});
@@ -174,9 +175,10 @@ describe("EmailService", () => {
 			expect(result).toBeUndefined();
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Template nonExistentTemplate not found",
+					message: "Failed to build email from template nonExistentTemplate",
 					service: "EmailService",
 					method: "buildEmail",
+					error: expect.objectContaining({ message: "Template nonExistentTemplate not found" }),
 				})
 			);
 		});
@@ -190,7 +192,8 @@ describe("EmailService", () => {
 			expect(result).toBeUndefined();
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Template welcomeEmailTemplate not found",
+					message: "Failed to build email from template welcomeEmailTemplate",
+					error: expect.objectContaining({ message: "Template welcomeEmailTemplate not found" }),
 				})
 			);
 		});
@@ -206,13 +209,14 @@ describe("EmailService", () => {
 			expect(result).toBeUndefined();
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "MJML parse error",
+					message: "Failed to build email from template welcomeEmailTemplate",
 					method: "buildEmail",
+					error: expect.objectContaining({ message: "MJML parse error" }),
 				})
 			);
 		});
 
-		it("logs 'Unknown error' for non-Error thrown values in buildEmail", async () => {
+		it("passes non-Error thrown values in buildEmail through as error", async () => {
 			const mjml = jest.fn().mockImplementation(() => {
 				throw null;
 			}) as any;
@@ -223,9 +227,9 @@ describe("EmailService", () => {
 			expect(result).toBeUndefined();
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Unknown error",
+					message: "Failed to build email from template welcomeEmailTemplate",
 					method: "buildEmail",
-					stack: undefined,
+					error: null,
 				})
 			);
 		});
@@ -339,10 +343,11 @@ describe("EmailService", () => {
 			);
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Email transporter verification failed: SMTP auth failed",
+					message: "Email transporter verification failed",
 					service: "EmailService",
 					method: "verifyTransporter",
 					details: { host: "smtp.example.com", port: 587 },
+					error: expect.objectContaining({ message: "SMTP auth failed" }),
 				})
 			);
 		});
@@ -401,14 +406,14 @@ describe("EmailService", () => {
 			});
 		});
 
-		it("logs stack as undefined when verification fails with non-Error", async () => {
+		it("passes a non-Error verification failure through as error", async () => {
 			const transporter = createMockTransporter();
 			(transporter.verify as jest.Mock).mockRejectedValue("connection refused");
 			const nodemailer = createMockNodemailer(transporter);
 			const { service, logger } = createService({ nodemailer });
 
 			await expect(service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig())).rejects.toThrow();
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ error: "connection refused" }));
 		});
 
 		it("throws and logs error when sendMail throws", async () => {
@@ -423,14 +428,15 @@ describe("EmailService", () => {
 			});
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Recipient rejected",
+					message: "Failed to send email",
 					service: "EmailService",
 					method: "sendEmail",
+					error: expect.objectContaining({ message: "Recipient rejected" }),
 				})
 			);
 		});
 
-		it("logs 'Unknown error' for non-Error thrown values in sendMail", async () => {
+		it("passes non-Error thrown values in sendMail through as error", async () => {
 			const transporter = createMockTransporter();
 			(transporter.sendMail as jest.Mock).mockRejectedValue(42);
 			const nodemailer = createMockNodemailer(transporter);
@@ -441,9 +447,9 @@ describe("EmailService", () => {
 			});
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Unknown error",
+					message: "Failed to send email",
 					method: "sendEmail",
-					stack: undefined,
+					error: 42,
 				})
 			);
 		});

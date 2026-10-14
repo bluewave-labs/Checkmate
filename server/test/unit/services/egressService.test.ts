@@ -314,7 +314,13 @@ describe("EgressService", () => {
 			const result = await service.assessAfterFailure();
 
 			expect(result).toBeNull();
-			expect(defaults.logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "db down", method: "assessAfterFailure" }));
+			expect(defaults.logger.error).toHaveBeenCalledWith(
+				expect.objectContaining({
+					message: "Egress assessment failed",
+					method: "assessAfterFailure",
+					error: expect.objectContaining({ message: "db down" }),
+				})
+			);
 		});
 	});
 

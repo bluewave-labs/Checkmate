@@ -410,7 +410,8 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 				message: `Failed to read logs for container ${containerName}`,
 				service: SERVICE_NAME,
 				method: "toContainerLogs",
-				details: { containerId: summary.Id, error: error instanceof Error ? error.message : String(error) },
+				details: { containerId: summary.Id },
+				error,
 			});
 			return null;
 		}

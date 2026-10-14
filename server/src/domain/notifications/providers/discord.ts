@@ -20,12 +20,11 @@ export class DiscordProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as Error;
 			this.logger.warn({
 				message: "Discord test alert failed",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
-				stack: err?.stack,
+				error,
 			});
 			return false;
 		}
@@ -53,12 +52,11 @@ export class DiscordProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as Error;
 			this.logger.warn({
 				message: "Discord notification failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",
-				stack: err?.stack,
+				error,
 			});
 			return false;
 		}

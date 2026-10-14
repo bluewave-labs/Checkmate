@@ -110,12 +110,13 @@ const startApp = async () => {
 	initShutdownListener(server, { ...services, healthServer });
 };
 
-startApp().catch((error) => {
+startApp().catch(async (error) => {
 	logger.error({
-		message: error.message,
+		message: "Failed to start app",
 		service: SERVICE_NAME,
 		method: "startApp",
-		stack: error.stack,
+		error,
 	});
+	await logger.flush();
 	process.exit(1);
 });

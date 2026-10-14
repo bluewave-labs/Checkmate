@@ -93,22 +93,22 @@ describe("handleErrors", () => {
 		);
 	});
 
-	it("logs a 4xx error at debug without a stack", () => {
+	it("logs a 4xx error at debug without the error", () => {
 		const localLogger = createMockLogger();
 		handleErrors(localLogger)(new AppError({ status: 404, message: "missing" }), {} as Request, makeRes(), (() => {}) as NextFunction);
 		expect(localLogger.debug).toHaveBeenCalledTimes(1);
-		expect(localLogger.debug).toHaveBeenCalledWith(expect.objectContaining({ status: 404, stack: undefined }));
+		expect(localLogger.debug).toHaveBeenCalledWith(expect.objectContaining({ status: 404 }));
+		expect(localLogger.debug.mock.calls[0]?.[0]).not.toHaveProperty("error");
 		expect(localLogger.warn).not.toHaveBeenCalled();
 		expect(localLogger.error).not.toHaveBeenCalled();
 	});
 
-	it("logs a 5xx error at error with a stack", () => {
+	it("logs a 5xx error at error with the error", () => {
 		const localLogger = createMockLogger();
 		const error = new AppError({ status: 500, message: "boom" });
 		handleErrors(localLogger)(error, {} as Request, makeRes(), (() => {}) as NextFunction);
 		expect(localLogger.error).toHaveBeenCalledTimes(1);
-		expect(localLogger.error).toHaveBeenCalledWith(expect.objectContaining({ status: 500, stack: error.stack }));
-		expect(error.stack).toEqual(expect.any(String));
+		expect(localLogger.error).toHaveBeenCalledWith(expect.objectContaining({ status: 500, error }));
 		expect(localLogger.debug).not.toHaveBeenCalled();
 	});
 });

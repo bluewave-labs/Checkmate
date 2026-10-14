@@ -331,7 +331,10 @@ describe("NotificationsService", () => {
 			expect(result).toBe(false);
 			expect(slackProvider.sendTestAlert).toHaveBeenCalled();
 			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({ message: "Test notification failed: Email is not configured. Set the system email host in settings." })
+				expect.objectContaining({
+					message: "Test notification failed",
+					error: expect.objectContaining({ message: "Email is not configured. Set the system email host in settings." }),
+				})
 			);
 		});
 	});

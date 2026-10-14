@@ -59,8 +59,7 @@ const runMigrations = async (logger: ILogger) => {
 		}
 		logger.info({ message: "Migrations completed", service: "Migrations" });
 	} catch (error) {
-		const err = error as Error;
-		logger.error({ message: "Migration failed", service: "Migrations", details: { error: err?.message }, stack: err?.stack });
+		logger.error({ message: "Migration failed", service: "Migrations", error });
 		throw error;
 	}
 };

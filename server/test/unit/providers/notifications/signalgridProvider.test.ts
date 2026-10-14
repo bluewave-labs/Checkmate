@@ -52,14 +52,16 @@ describe("SignalgridProvider", () => {
 			mockGotPost.mockRejectedValue(new Error("fail"));
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeNotification())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ method: "sendTestAlert", details: { error: "fail" } }));
+			expect(logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({ method: "sendTestAlert", error: expect.objectContaining({ message: "fail" }) })
+			);
 		});
 
 		it("handles non-Error thrown values in sendTestAlert", async () => {
 			mockGotPost.mockRejectedValue("string error");
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeNotification())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined, details: { error: "unknown error" } }));
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ error: "string error" }));
 		});
 	});
 
@@ -124,7 +126,7 @@ describe("SignalgridProvider", () => {
 			mockGotPost.mockRejectedValue(42);
 			const { provider, logger } = createProvider();
 			expect(await provider.sendMessage(makeNotification() as any, makeMessage())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ details: { error: "unknown error" } }));
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ error: 42 }));
 		});
 
 		it("includes thresholds in text", async () => {

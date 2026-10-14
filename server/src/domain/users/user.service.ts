@@ -159,18 +159,18 @@ export class UserService implements IUserService {
 			}
 			this.emailService.sendEmail(newUser.email, "Welcome to Uptime Monitor", html).catch((error: unknown) => {
 				this.logger.warn({
-					message: error instanceof Error ? error.message : "Unknown error",
+					message: "Failed to send welcome email",
 					service: SERVICE_NAME,
 					method: "registerUser",
-					stack: error instanceof Error ? error.stack : undefined,
+					error,
 				});
 			});
 		} catch (error: unknown) {
 			this.logger.warn({
-				message: error instanceof Error ? error.message : "Unknown error",
+				message: "Failed to build welcome email",
 				service: SERVICE_NAME,
 				method: "registerUser",
-				stack: error instanceof Error ? error.stack : undefined,
+				error,
 			});
 		}
 

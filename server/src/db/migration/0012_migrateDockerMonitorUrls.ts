@@ -29,8 +29,7 @@ export async function migrateDockerMonitorUrls(logger: ILogger): Promise<void> {
 
 		logger.info({ service: SERVICE_NAME, message: `Migrated ${result.modifiedCount} docker monitors to host urls` });
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		logger.error({ service: SERVICE_NAME, message: `Error migrating docker monitor urls: ${errorMessage}` });
+		logger.error({ message: "Migrating docker monitor urls failed", service: SERVICE_NAME, error });
 		throw error;
 	}
 }

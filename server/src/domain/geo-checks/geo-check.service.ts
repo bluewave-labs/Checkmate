@@ -113,8 +113,8 @@ export class GeoChecksService implements IGeoChecksService {
 				message: "Error executing geo check",
 				service: SERVICE_NAME,
 				method: "buildGeoCheck",
-				details: { monitorId: monitor.id, error: error instanceof Error ? error.message : "Unknown error" },
-				stack: error instanceof Error ? error.stack : undefined,
+				details: { monitorId: monitor.id },
+				error,
 			});
 			return null;
 		}

@@ -34,10 +34,11 @@ export class GameProvider implements IStatusProvider<GameStatusPayload> {
 				})
 				.catch((error: unknown) => {
 					this.logger.warn({
-						message: error instanceof Error ? error.message : String(error),
+						message: "Game server query failed",
 						service: SERVICE_NAME,
 						method: "handle",
 						details: { host, port, gameId },
+						error,
 					});
 					return undefined;
 				});

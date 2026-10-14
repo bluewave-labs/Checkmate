@@ -71,8 +71,7 @@ export async function cleanupDuplicateMonitorStatsForUniqueIndex(logger: ILogger
 			message: `Cleanup complete. Deleted ${totalDeleted} duplicate MonitorStats documents`,
 		});
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		logger.error({ service: SERVICE_NAME, message: `Error during MonitorStats dedupe: ${errorMessage}` });
+		logger.error({ message: "MonitorStats dedupe failed", service: SERVICE_NAME, error });
 		throw error;
 	}
 }

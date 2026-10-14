@@ -1319,12 +1319,12 @@ describe("MonitorService", () => {
 			);
 		});
 
-		it("logs a resume failure with undefined stack when rejection is not an Error instance", async () => {
+		it("logs a resume failure with the raw rejection when it is not an Error instance", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			const monitors = [makeMonitor({ id: "m1", isActive: true })];
 			(monitorsRepository.bulkTogglePause as jest.Mock).mockResolvedValue(monitors);
 			const jobQueue = createJobQueueMock();
-			// Reject with a non-Error value to exercise the `instanceof Error` false branch
+			// Reject with a non-Error value; it is passed through to the logger unchanged
 			(jobQueue.resumeJob as jest.Mock).mockRejectedValueOnce("queue blew up");
 
 			const logger = createMockLogger();
@@ -1342,7 +1342,7 @@ describe("MonitorService", () => {
 				message: "Failed to sync job queue for monitor m1 during bulk resume",
 				service: "MonitorService",
 				method: "bulkPauseMonitors",
-				stack: undefined,
+				error: "queue blew up",
 			});
 		});
 
@@ -1462,12 +1462,12 @@ describe("MonitorService", () => {
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
 					message: expect.stringContaining("Error deleting monitor stats"),
-					stack: expect.any(String),
+					error: expect.any(Error),
 				})
 			);
 		});
 
-		it("logs warning with undefined stack when monitorStats deletion fails with non-Error", async () => {
+		it("logs warning with the raw value when monitorStats deletion fails with non-Error", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			const checksRepository = createChecksRepositoryMock();
 			const monitorStatsRepository = createMonitorStatsRepositoryMock();
@@ -1499,7 +1499,7 @@ describe("MonitorService", () => {
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
 					message: expect.stringContaining("Error deleting monitor stats"),
-					stack: undefined,
+					error: "string error",
 				})
 			);
 		});
@@ -1536,7 +1536,7 @@ describe("MonitorService", () => {
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
 					message: expect.stringContaining("Error deleting checks"),
-					stack: expect.any(String),
+					error: expect.any(Error),
 				})
 			);
 		});
@@ -1573,7 +1573,7 @@ describe("MonitorService", () => {
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
 					message: expect.stringContaining("Error deleting checks"),
-					stack: undefined,
+					error: 42,
 				})
 			);
 		});
@@ -1610,7 +1610,7 @@ describe("MonitorService", () => {
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
 					message: expect.stringContaining("Error removing monitor"),
-					stack: expect.any(String),
+					error: expect.any(Error),
 				})
 			);
 		});
@@ -1647,7 +1647,7 @@ describe("MonitorService", () => {
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
 					message: expect.stringContaining("Error removing monitor"),
-					stack: undefined,
+					error: "oops",
 				})
 			);
 		});
@@ -1684,7 +1684,7 @@ describe("MonitorService", () => {
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
 					message: expect.stringContaining("Error deleting incidents"),
-					stack: expect.any(String),
+					error: expect.any(Error),
 				})
 			);
 		});
@@ -1721,7 +1721,7 @@ describe("MonitorService", () => {
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
 					message: expect.stringContaining("Error deleting incidents"),
-					stack: undefined,
+					error: null,
 				})
 			);
 		});
@@ -1758,7 +1758,7 @@ describe("MonitorService", () => {
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
 					message: expect.stringContaining("Error deleting geo checks"),
-					stack: expect.any(String),
+					error: expect.any(Error),
 				})
 			);
 		});
@@ -1795,7 +1795,7 @@ describe("MonitorService", () => {
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
 					message: expect.stringContaining("Error deleting geo checks"),
-					stack: undefined,
+					error: { code: 500 },
 				})
 			);
 		});
@@ -1872,7 +1872,7 @@ describe("MonitorService", () => {
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
 					message: expect.stringContaining("Error deleting checks"),
-					stack: expect.any(String),
+					error: expect.any(Error),
 				})
 			);
 			expect(jobQueue.deleteJob).toHaveBeenCalledTimes(1);
@@ -1918,7 +1918,7 @@ describe("MonitorService", () => {
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
 					message: expect.stringContaining("Error deleting associated records"),
-					stack: undefined,
+					error: "string error",
 				})
 			);
 		});

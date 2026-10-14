@@ -212,7 +212,13 @@ describe("UserService", () => {
 			const result = await service.registerUser({ password: "pass" }, "invite-token", null);
 
 			expect(result.user).toBeDefined();
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ method: "registerUser", message: "SMTP auth failed" }));
+			expect(logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({
+					method: "registerUser",
+					message: "Failed to send welcome email",
+					error: expect.objectContaining({ message: "SMTP auth failed" }),
+				})
+			);
 		});
 
 		it("uses default role when invite has no role", async () => {
@@ -248,10 +254,12 @@ describe("UserService", () => {
 			await service.registerUser({ password: "pass" }, "invite-token", null);
 			await new Promise((r) => setTimeout(r, 10));
 
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "SMTP down" }));
+			expect(logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({ message: "Failed to send welcome email", error: expect.objectContaining({ message: "SMTP down" }) })
+			);
 		});
 
-		it("logs 'Unknown error' when sendEmail rejects with non-Error", async () => {
+		it("passes a non-Error sendEmail rejection through as error", async () => {
 			const { service, logger } = createService({
 				emailService: {
 					buildEmail: jest.fn().mockResolvedValue("<html>ok</html>"),
@@ -262,10 +270,10 @@ describe("UserService", () => {
 			await service.registerUser({ password: "pass" }, "invite-token", null);
 			await new Promise((r) => setTimeout(r, 10));
 
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error" }));
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to send welcome email", error: "string error" }));
 		});
 
-		it("logs 'Unknown error' when buildEmail throws non-Error", async () => {
+		it("passes a non-Error buildEmail throw through as error", async () => {
 			const { service, logger } = createService({
 				emailService: {
 					buildEmail: jest.fn().mockRejectedValue(42),
@@ -276,7 +284,7 @@ describe("UserService", () => {
 			const result = await service.registerUser({ password: "pass" }, "invite-token", null);
 
 			expect(result.user).toBeDefined();
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error" }));
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to build welcome email", error: 42 }));
 		});
 	});
 

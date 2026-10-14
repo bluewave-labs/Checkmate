@@ -77,10 +77,10 @@ export class BufferService implements IBufferService {
 				await this.flushDockerLogsBuffer();
 			} catch (error: unknown) {
 				this.logger.error({
-					message: error instanceof Error ? error.message : "Unknown error",
+					message: "Scheduled buffer flush failed",
 					service: this.SERVICE_NAME,
 					method: "scheduleNextFlush",
-					stack: error instanceof Error ? error.stack : undefined,
+					error,
 				});
 			} finally {
 				// Schedule the next flush only after the current one completes
@@ -100,10 +100,10 @@ export class BufferService implements IBufferService {
 			await this.ingest(batch);
 		} catch (error: unknown) {
 			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
+				message: "Failed to flush check buffer",
 				service: this.SERVICE_NAME,
 				method: "flushBuffer",
-				stack: error instanceof Error ? error.stack : undefined,
+				error,
 			});
 			// Batch is already cleared from the buffer; dropping it prevents infinite retry loops
 		}
@@ -122,10 +122,10 @@ export class BufferService implements IBufferService {
 			}
 		} catch (error: unknown) {
 			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
+				message: "Failed to flush geo check buffer",
 				service: this.SERVICE_NAME,
 				method: "flushGeoBuffer",
-				stack: error instanceof Error ? error.stack : undefined,
+				error,
 			});
 			// Clear buffer even on error to prevent infinite retry loops
 			this.geoBuffer = [];
@@ -148,10 +148,10 @@ export class BufferService implements IBufferService {
 			await this.dockerLogsService.createDockerLogs(batch);
 		} catch (error: unknown) {
 			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
+				message: "Failed to flush docker log buffer",
 				service: this.SERVICE_NAME,
 				method: "flushDockerLogsBuffer",
-				stack: error instanceof Error ? error.stack : undefined,
+				error,
 			});
 		}
 	}

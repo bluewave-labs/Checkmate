@@ -688,7 +688,7 @@ export class MonitorService implements IMonitorService {
 					message: `Failed to sync job queue for monitor ${monitors[index]?.id || "unknown"} during bulk ${pause ? "pause" : "resume"}`,
 					service: SERVICE_NAME,
 					method: "bulkPauseMonitors",
-					stack: result.reason instanceof Error ? result.reason.stack : undefined,
+					error: result.reason,
 				});
 			}
 		});
@@ -701,14 +701,14 @@ export class MonitorService implements IMonitorService {
 			this.logger.warn({
 				message: `Error deleting checks for monitor ${monitor.id} with name ${monitor.name}`,
 				service: SERVICE_NAME,
-				stack: err instanceof Error ? err.stack : undefined,
+				error: err,
 			});
 		});
 		await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id).catch((err: unknown) => {
 			this.logger.warn({
 				message: `Error removing monitor ${monitor.id} with name ${monitor.name} from status pages`,
 				service: SERVICE_NAME,
-				stack: err instanceof Error ? err.stack : undefined,
+				error: err,
 			});
 		});
 
@@ -716,7 +716,7 @@ export class MonitorService implements IMonitorService {
 			this.logger.warn({
 				message: `Error deleting incidents for monitor ${monitor.id} with name ${monitor.name}`,
 				service: SERVICE_NAME,
-				stack: err instanceof Error ? err.stack : undefined,
+				error: err,
 			});
 		});
 
@@ -724,7 +724,7 @@ export class MonitorService implements IMonitorService {
 			this.logger.warn({
 				message: `Error deleting geo checks for monitor ${monitor.id} with name ${monitor.name}`,
 				service: SERVICE_NAME,
-				stack: err instanceof Error ? err.stack : undefined,
+				error: err,
 			});
 		});
 
@@ -732,7 +732,7 @@ export class MonitorService implements IMonitorService {
 			this.logger.warn({
 				message: `Error deleting docker logs for monitor ${monitor.id} with name ${monitor.name}`,
 				service: SERVICE_NAME,
-				stack: err instanceof Error ? err.stack : undefined,
+				error: err,
 			});
 		});
 
@@ -740,7 +740,7 @@ export class MonitorService implements IMonitorService {
 			this.logger.warn({
 				message: `Error deleting monitor stats for monitor ${monitor.id} with name ${monitor.name}`,
 				service: SERVICE_NAME,
-				stack: err instanceof Error ? err.stack : undefined,
+				error: err,
 			});
 		});
 	};
@@ -765,7 +765,7 @@ export class MonitorService implements IMonitorService {
 						message: `Error deleting associated records for monitor ${monitor.id} with name ${monitor.name}`,
 						service: SERVICE_NAME,
 						method: "deleteAllMonitors",
-						stack: error instanceof Error ? error.stack : undefined,
+						error,
 					});
 				}
 			})

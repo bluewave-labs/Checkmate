@@ -90,7 +90,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 			}
 			return true;
 		} catch (error: unknown) {
-			this.logger.warn({ message: error instanceof Error ? error.message : String(error), service: SERVICE_NAME, method: "renewLock" });
+			this.logger.warn({ message: `Failed to renew lock on job ${job.id}`, service: SERVICE_NAME, method: "renewLock", error });
 			return true;
 		}
 	};
@@ -110,15 +110,17 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 			}
 		} catch (error: unknown) {
 			this.logger.warn({
-				message: error instanceof Error ? error.message : String(error),
+				message: `Job ${job.id} failed`,
 				service: SERVICE_NAME,
 				method: `runJob:${job.type}`,
+				error,
 			});
 			await this.jobsRepository.recordFailure(job.id, error, Date.now()).catch((recordError: unknown) => {
 				this.logger.error({
-					message: `recordFailure failed for job ${job.id}: ${recordError instanceof Error ? recordError.message : String(recordError)}`,
+					message: `recordFailure failed for job ${job.id}`,
 					service: SERVICE_NAME,
 					method: `runJob:${job.type}`,
+					error: recordError,
 				});
 			}); // Record failure and release lock
 		} finally {
@@ -142,9 +144,10 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 						.catch((error: unknown) => {
 							// defensive, runJob already catches
 							this.logger.error({
-								message: error instanceof Error ? error.message : String(error),
+								message: `Unhandled error running job ${job.id}`,
 								service: SERVICE_NAME,
 								method: `runJob:${type}`,
+								error,
 							});
 						})
 						.finally(() => {
@@ -155,9 +158,10 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 				this.pollMs[type] = capacity > 0 && jobs.length === 0 ? Math.min(this.pollMs[type] * 2, POLL_MAX_MS) : POLL_MS;
 			} catch (error: unknown) {
 				this.logger.error({
-					message: error instanceof Error ? error.message : String(error),
+					message: `Job loop tick failed for ${type}`,
 					service: SERVICE_NAME,
 					method: `loop:${type}`,
+					error,
 				});
 			}
 			// Clearing the flag and re-arming run synchronously (no await between), so wake() can never interleave here.

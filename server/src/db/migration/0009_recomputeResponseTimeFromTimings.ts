@@ -207,10 +207,10 @@ export async function recomputeResponseTimeFromTimings(logger: ILogger): Promise
 			await restoreFromBackup();
 			logger.error({ service: SERVICE_NAME, message: "Migration failed, checks restored from backup" });
 		} catch (restoreError) {
-			const restoreMessage = restoreError instanceof Error ? restoreError.message : String(restoreError);
 			logger.error({
+				message: `Migration failed AND rollback failed — original data is preserved in ${BACKUP_COLLECTION}`,
 				service: SERVICE_NAME,
-				message: `Migration failed AND rollback failed (${restoreMessage}) — original data is preserved in ${BACKUP_COLLECTION}`,
+				error: restoreError,
 			});
 		}
 		throw error;

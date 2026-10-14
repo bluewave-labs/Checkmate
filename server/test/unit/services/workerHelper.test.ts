@@ -132,16 +132,18 @@ describe("WorkerHelper", () => {
 			const job = helper.getCleanupOrphanedJob();
 
 			await expect(job()).rejects.toThrow("db down");
-			expect(defaults.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "db down" }));
+			expect(defaults.logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({ message: "Cleanup of orphaned data failed", error: expect.objectContaining({ message: "db down" }) })
+			);
 		});
 
-		it("logs 'Unknown error' for non-Error exceptions", async () => {
+		it("passes non-Error exceptions through as error", async () => {
 			const { helper, defaults } = createHelper();
 			(defaults.teamsRepository.findAllTeamIds as jest.Mock).mockRejectedValue(null);
 			const job = helper.getCleanupOrphanedJob();
 
 			await expect(job()).rejects.toBeNull();
-			expect(defaults.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error", stack: undefined }));
+			expect(defaults.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Cleanup of orphaned data failed", error: null }));
 		});
 	});
 
@@ -176,17 +178,19 @@ describe("WorkerHelper", () => {
 
 			await job(); // Should not throw
 
-			expect(defaults.logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "db error" }));
+			expect(defaults.logger.error).toHaveBeenCalledWith(
+				expect.objectContaining({ message: "Check retention cleanup failed", error: expect.objectContaining({ message: "db error" }) })
+			);
 		});
 
-		it("logs 'Unknown error' for non-Error exceptions", async () => {
+		it("passes non-Error exceptions through as error", async () => {
 			const { helper, defaults } = createHelper({
 				settingsService: { getDBSettings: jest.fn().mockRejectedValue("boom") },
 			});
 			const job = helper.getCleanupRetentionJob();
 			await job();
 
-			expect(defaults.logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error", stack: undefined }));
+			expect(defaults.logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Check retention cleanup failed", error: "boom" }));
 		});
 	});
 

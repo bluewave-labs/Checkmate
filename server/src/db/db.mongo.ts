@@ -54,10 +54,10 @@ class MongoDB implements IDb<Mongoose> {
 			});
 		} catch (error: unknown) {
 			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
+				message: "Failed to connect to MongoDB",
 				service: SERVICE_NAME,
 				method: "connect",
-				stack: error instanceof Error ? error.stack : undefined,
+				error,
 			});
 			throw error;
 		}
@@ -78,10 +78,10 @@ class MongoDB implements IDb<Mongoose> {
 			return;
 		} catch (error: unknown) {
 			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
+				message: "Failed to disconnect from MongoDB",
 				service: SERVICE_NAME,
 				method: "disconnect",
-				stack: error instanceof Error ? error.stack : undefined,
+				error,
 			});
 		}
 	};

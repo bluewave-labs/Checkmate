@@ -149,10 +149,11 @@ export class NotificationsService implements INotificationsService {
 		const tasks = notifications.map((notification) =>
 			this.sendTestNotification(notification).catch((error: unknown) => {
 				this.logger.warn({
-					message: `Test notification failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+					message: "Test notification failed",
 					service: SERVICE_NAME,
 					method: "testAllNotifications",
 					details: { notificationId: notification.id, type: notification.type },
+					error,
 				});
 				return false;
 			})

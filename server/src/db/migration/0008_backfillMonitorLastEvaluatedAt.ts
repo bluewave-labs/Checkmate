@@ -34,8 +34,7 @@ export async function backfillMonitorLastEvaluatedAt(logger: ILogger): Promise<v
 			message: `Backfilled lastEvaluatedAt on ${result.modifiedCount} monitors`,
 		});
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		logger.error({ service: SERVICE_NAME, message: `Error backfilling lastEvaluatedAt: ${errorMessage}` });
+		logger.error({ message: "Backfilling lastEvaluatedAt failed", service: SERVICE_NAME, error });
 		throw error;
 	}
 }

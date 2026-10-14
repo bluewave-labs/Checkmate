@@ -54,8 +54,7 @@ export async function fixInfrastructureThresholds(logger: ILogger): Promise<void
 			message: `Fixed ${updatedCount} monitors — thresholds updated from 0/5 to 100`,
 		});
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		logger.error({ service: SERVICE_NAME, message: `Error fixing thresholds: ${errorMessage}` });
+		logger.error({ message: "Fixing thresholds failed", service: SERVICE_NAME, error });
 		throw error;
 	}
 }

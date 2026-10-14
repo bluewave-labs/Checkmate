@@ -45,10 +45,10 @@ export class StatusService implements IStatusService {
 			});
 		} catch (error: unknown) {
 			this.logger.warn({
+				message: "Failed to update running monitor stats",
 				service: SERVICE_NAME,
-				message: error instanceof Error ? error.message : "Unknown error",
 				method: "tryUpdateRunningStats",
-				stack: error instanceof Error ? error.stack : undefined,
+				error,
 			});
 		}
 	};

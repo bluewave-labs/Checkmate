@@ -121,8 +121,7 @@ export async function slimRecentChecks(logger: ILogger): Promise<void> {
 
 		logger.info({ service: SERVICE_NAME, message: `Slimmed recentChecks on ${result.modifiedCount} monitors` });
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		logger.error({ service: SERVICE_NAME, message: `Error slimming recentChecks: ${errorMessage}` });
+		logger.error({ message: "Slimming recentChecks failed", service: SERVICE_NAME, error });
 		throw error;
 	}
 }

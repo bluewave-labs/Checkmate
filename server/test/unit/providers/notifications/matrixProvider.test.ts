@@ -63,7 +63,7 @@ describe("MatrixProvider", () => {
 			mockGotPut.mockRejectedValue({ message: "custom obj" });
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeNotification())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ error: { message: "custom obj" } }));
 		});
 	});
 

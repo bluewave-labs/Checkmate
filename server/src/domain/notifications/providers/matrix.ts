@@ -56,12 +56,11 @@ export class MatrixProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as Error;
 			this.logger.warn({
-				message: `Matrix notification failed : ${err.message}`,
+				message: "Matrix notification failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",
-				stack: err.stack,
+				error,
 			});
 			return false;
 		}

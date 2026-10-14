@@ -275,16 +275,21 @@ describe("IncidentService", () => {
 
 			await expect(service.resolveIncident("inc-1", "user-1", "team-1")).rejects.toThrow("db error");
 			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({ service: "incidentService", method: "resolveIncident", message: "db error" })
+				expect.objectContaining({
+					service: "incidentService",
+					method: "resolveIncident",
+					message: "Failed to resolve incident",
+					error: expect.objectContaining({ message: "db error" }),
+				})
 			);
 		});
 
-		it("logs 'Unknown error' for non-Error exceptions", async () => {
+		it("passes non-Error exceptions through as error", async () => {
 			const { service, logger, incidentsRepository } = createService();
 			(incidentsRepository.findActiveByIncidentId as jest.Mock).mockRejectedValue("string error");
 
 			await expect(service.resolveIncident("inc-1", "user-1", "team-1")).rejects.toBe("string error");
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error", stack: undefined }));
+			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to resolve incident", error: "string error" }));
 		});
 	});
 
@@ -331,12 +336,12 @@ describe("IncidentService", () => {
 			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ service: "incidentService", method: "getIncidentsByTeam" }));
 		});
 
-		it("logs 'Unknown error' for non-Error exceptions", async () => {
+		it("passes non-Error exceptions through as error", async () => {
 			const { service, logger, incidentsRepository } = createService();
 			(incidentsRepository.findByTeamId as jest.Mock).mockRejectedValue(42);
 
 			await expect(service.getIncidentsByTeam("team-1", "desc", "day", 0, 20, undefined, undefined, undefined)).rejects.toBe(42);
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error", stack: undefined }));
+			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to get incidents for team", error: 42 }));
 		});
 	});
 
@@ -371,12 +376,12 @@ describe("IncidentService", () => {
 			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ service: "incidentService", method: "getIncidentSummary" }));
 		});
 
-		it("logs 'Unknown error' for non-Error exceptions", async () => {
+		it("passes non-Error exceptions through as error", async () => {
 			const { service, logger, incidentsRepository } = createService();
 			(incidentsRepository.findSummaryByTeamId as jest.Mock).mockRejectedValue("boom");
 
 			await expect(service.getIncidentSummary("team-1")).rejects.toBe("boom");
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error", stack: undefined }));
+			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to get incident summary", error: "boom" }));
 		});
 	});
 
@@ -421,12 +426,12 @@ describe("IncidentService", () => {
 			);
 		});
 
-		it("logs 'Unknown error' for non-Error exceptions", async () => {
+		it("passes non-Error exceptions through as error", async () => {
 			const { service, logger, incidentsRepository } = createService();
 			(incidentsRepository.findById as jest.Mock).mockRejectedValue(null);
 
 			await expect(service.getIncidentById("inc-1", "team-1")).rejects.toBeNull();
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error", stack: undefined }));
+			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to get incident", error: null }));
 		});
 	});
 });

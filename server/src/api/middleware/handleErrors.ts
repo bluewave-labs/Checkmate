@@ -48,8 +48,7 @@ const handleErrors = (logger: ILogger) => (error: unknown, req: Request, res: Re
 	const isServerError = report.status >= 500;
 	const request = describeRequest(req);
 	const details = request ? { request, ...report.details } : report.details;
-	const stack = isServerError && error instanceof Error ? error.stack : undefined;
-	logger[isServerError ? "error" : "debug"]({ ...report, details, stack });
+	logger[isServerError ? "error" : "debug"]({ ...report, details, ...(isServerError && { error }) });
 	const body: ErrorBody = { status: report.status, msg: report.message };
 	res.status(body.status).json(body);
 };

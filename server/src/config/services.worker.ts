@@ -37,7 +37,6 @@ import { GameProvider } from "@/service/networkProviders/GameProvider.js";
 import { GrpcProvider } from "@/service/networkProviders/GrpcProvider.js";
 import { WebSocketProvider } from "@/service/networkProviders/WebSocketProvider.js";
 import { DNSProvider } from "@/service/networkProviders/DNSProvider.js";
-import { AppError } from "@/utils/AppError.js";
 import { WorkerPipeline } from "@/worker/worker.pipeline.js";
 export interface WorkerServices {
 	worker: IQueueWorker;
@@ -180,10 +179,10 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		});
 	} catch (error: unknown) {
 		logger.warn({
-			message: `Could not rotate Docker TLS secrets: ${error instanceof Error ? error.message : String(error)}`,
+			message: "Could not rotate Docker TLS secrets",
 			service: "WorkerServices",
 			method: "buildWorker",
-			details: { ...(error instanceof AppError ? error.details : {}) },
+			error,
 		});
 	}
 

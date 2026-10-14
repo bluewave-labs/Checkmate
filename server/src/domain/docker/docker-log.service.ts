@@ -89,7 +89,8 @@ export class DockerLogsService implements IDockerLogsService {
 					message: `Failed to build docker logs for container ${containerName}`,
 					service: SERVICE_NAME,
 					method: "buildDockerLogs",
-					details: { monitorId: status.monitorId, containerId, error: error instanceof Error ? error.message : String(error) },
+					details: { monitorId: status.monitorId, containerId },
+					error,
 				});
 			}
 		}

@@ -196,9 +196,10 @@ export class WorkerPipeline implements IWorkerPipeline {
 					// The checks are already stored, so a failed arm is retried on the next ingest rather than dropped
 					this.unarmed.set(monitorId, pendingChecks);
 					this.deps.logger.error({
-						message: `Could not arm evaluation for monitor ${monitorId}, retrying on next ingest: ${error instanceof Error ? error.message : String(error)}`,
+						message: `Could not arm evaluation for monitor ${monitorId}, retrying on next ingest`,
 						service: SERVICE_NAME,
 						method: "ingestChecks",
+						error,
 					});
 					return false;
 				})

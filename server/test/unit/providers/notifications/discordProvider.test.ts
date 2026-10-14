@@ -52,7 +52,7 @@ describe("DiscordProvider", () => {
 			mockGotPost.mockRejectedValue(undefined);
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeNotification())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ error: undefined }));
 		});
 	});
 
@@ -83,7 +83,7 @@ describe("DiscordProvider", () => {
 			mockGotPost.mockRejectedValue(undefined);
 			const { provider, logger } = createProvider();
 			expect(await provider.sendMessage(makeNotification() as any, makeMessage())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ error: undefined }));
 		});
 
 		it("includes threshold breaches in embed fields", async () => {

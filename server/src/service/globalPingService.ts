@@ -109,7 +109,7 @@ export class GlobalPingService implements IGlobalPingService {
 				message: "GlobalPing API unavailable, skipping geo check",
 				service: SERVICE_NAME,
 				method: "createMeasurement",
-				stack: error instanceof Error ? error.stack : undefined,
+				error,
 			});
 			return null;
 		}
@@ -158,7 +158,7 @@ export class GlobalPingService implements IGlobalPingService {
 					message: "Error polling GlobalPing API",
 					service: SERVICE_NAME,
 					method: "pollForResults",
-					stack: error instanceof Error ? error.stack : undefined,
+					error,
 				});
 				return [];
 			}

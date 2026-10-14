@@ -204,10 +204,10 @@ export class EgressService implements IEgressService {
 		} catch (error: unknown) {
 			// The egress check must never break check production; treat an internal failure as "unknown" and carry on.
 			this.logger.error({
-				message: error instanceof Error ? error.message : String(error),
+				message: "Egress assessment failed",
 				service: SERVICE_NAME,
 				method: "assessAfterFailure",
-				stack: error instanceof Error ? error.stack : undefined,
+				error,
 			});
 			return null;
 		}

@@ -52,8 +52,8 @@ export class ProxyResolver implements IProxyResolver {
 				monitorId: monitor.id,
 				proxyMode: monitor.proxyMode,
 				proxyId: monitor.proxyId,
-				...(error instanceof Error ? { error: error.message } : {}),
 			},
+			...(error !== undefined && { error }),
 		});
 	}
 

@@ -83,10 +83,10 @@ export class EmailService implements IEmailService {
 				return this.compile(templateContent);
 			} catch (error: unknown) {
 				this.logger.error({
-					message: error instanceof Error ? error.message : "Unknown error",
+					message: `Failed to load email template ${templateName}`,
 					service: SERVICE_NAME,
 					method: "loadTemplate",
-					stack: error instanceof Error ? error.stack : undefined,
+					error,
 				});
 			}
 		};
@@ -110,10 +110,10 @@ export class EmailService implements IEmailService {
 			return html.html;
 		} catch (error: unknown) {
 			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
+				message: `Failed to build email from template ${template}`,
 				service: SERVICE_NAME,
 				method: "buildEmail",
-				stack: error instanceof Error ? error.stack : undefined,
+				error,
 			});
 		}
 	};
@@ -174,11 +174,11 @@ export class EmailService implements IEmailService {
 		} catch (error: unknown) {
 			const cause = error instanceof Error ? error.message : "Unknown error";
 			this.logger.warn({
-				message: `Email transporter verification failed: ${cause}`,
+				message: "Email transporter verification failed",
 				service: SERVICE_NAME,
 				method: "verifyTransporter",
 				details: { host: systemEmailHost, port: emailConfig.port },
-				stack: error instanceof Error ? error.stack : undefined,
+				error,
 			});
 			throw new AppError(emailErrors.sendFailed, {
 				message: describeSmtpFailure(error, systemEmailHost, emailConfig.port),
@@ -201,10 +201,10 @@ export class EmailService implements IEmailService {
 			return info.messageId;
 		} catch (error: unknown) {
 			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
+				message: "Failed to send email",
 				service: SERVICE_NAME,
 				method: "sendEmail",
-				stack: error instanceof Error ? error.stack : undefined,
+				error,
 			});
 			throw new AppError(emailErrors.sendFailed, {
 				message: "Failed to send email",

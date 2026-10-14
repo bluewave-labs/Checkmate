@@ -127,8 +127,9 @@ describe("GameProvider", () => {
 		);
 		expect(logger.warn).toHaveBeenCalledWith(
 			expect.objectContaining({
-				message: "Server offline",
+				message: "Game server query failed",
 				method: "handle",
+				error: expect.objectContaining({ message: "Server offline" }),
 			})
 		);
 	});
@@ -139,7 +140,7 @@ describe("GameProvider", () => {
 
 		await provider.handle(makeMonitor());
 
-		expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "string error" }));
+		expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Game server query failed", error: "string error" }));
 	});
 
 	it("uses empty string as host when url is undefined", async () => {

@@ -1,6 +1,5 @@
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { IEncryptionService } from "@/service/encryption/encryptionService.js";
-import { AppError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger.js";
 
 const SERVICE_NAME = "SecretsRotationService";
@@ -43,10 +42,11 @@ export class SecretsRotationService implements ISecretsRotationService {
 			} catch (error: unknown) {
 				result.skipped += 1;
 				this.logger.warn({
-					message: `Could not reencrypt Docker TLS key for monitor ${id}: ${error instanceof Error ? error.message : String(error)}`,
+					message: `Could not reencrypt Docker TLS key for monitor ${id}`,
 					service: SERVICE_NAME,
 					method: "run",
-					details: { monitorId: id, ...(error instanceof AppError ? error.details : {}) },
+					details: { monitorId: id },
+					error,
 				});
 			}
 		}

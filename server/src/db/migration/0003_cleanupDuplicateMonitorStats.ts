@@ -74,8 +74,7 @@ export async function cleanupDuplicateMonitorStats(logger: ILogger): Promise<voi
 			message: `Cleanup complete. Deleted ${totalDeleted} duplicate MonitorStats documents`,
 		});
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		logger.error({ service: SERVICE_NAME, message: `Error during MonitorStats cleanup: ${errorMessage}` });
+		logger.error({ message: "MonitorStats cleanup failed", service: SERVICE_NAME, error });
 		throw error;
 	}
 }

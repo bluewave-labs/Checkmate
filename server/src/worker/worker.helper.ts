@@ -172,10 +172,10 @@ export class WorkerHelper implements IWorkerHelper {
 				});
 			} catch (error: unknown) {
 				this.logger.warn({
-					message: error instanceof Error ? error.message : "Unknown error",
+					message: "Cleanup of orphaned data failed",
 					service: SERVICE_NAME,
 					method: "getCleanupOrphanedJob",
-					stack: error instanceof Error ? error.stack : undefined,
+					error,
 				});
 				throw error;
 			}
@@ -207,10 +207,10 @@ export class WorkerHelper implements IWorkerHelper {
 				});
 			} catch (error: unknown) {
 				this.logger.error({
-					message: error instanceof Error ? error.message : "Unknown error",
+					message: "Check retention cleanup failed",
 					service: SERVICE_NAME,
 					method: "getCleanupRetentionJob",
-					stack: error instanceof Error ? error.stack : undefined,
+					error,
 				});
 			}
 		};

@@ -133,12 +133,13 @@ describe("GeoChecksService", () => {
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
 					message: "Error executing geo check",
-					details: expect.objectContaining({ error: "API error" }),
+					details: { monitorId: expect.any(String) },
+					error: expect.objectContaining({ message: "API error" }),
 				})
 			);
 		});
 
-		it("logs 'Unknown error' for non-Error exceptions", async () => {
+		it("passes non-Error exceptions through as error", async () => {
 			const { service, logger } = createService({
 				globalPingService: {
 					createMeasurement: jest.fn().mockRejectedValue("string error"),
@@ -149,7 +150,7 @@ describe("GeoChecksService", () => {
 			const result = await service.buildGeoCheck(makeMonitor());
 
 			expect(result).toBeNull();
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ details: expect.objectContaining({ error: "Unknown error" }) }));
+			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ error: "string error" }));
 		});
 	});
 

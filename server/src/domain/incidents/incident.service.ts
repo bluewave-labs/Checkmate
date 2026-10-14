@@ -117,11 +117,11 @@ export class IncidentService implements IIncidentService {
 			return resolvedIncident;
 		} catch (error: unknown) {
 			this.logger.error({
+				message: "Failed to resolve incident",
 				service: SERVICE_NAME,
 				method: "resolveIncident",
-				message: error instanceof Error ? error.message : "Unknown error",
 				details: { id: incidentId },
-				stack: error instanceof Error ? error.stack : undefined,
+				error,
 			});
 			throw error;
 		}
@@ -158,11 +158,11 @@ export class IncidentService implements IIncidentService {
 			return { incidents, count };
 		} catch (error: unknown) {
 			this.logger.error({
+				message: "Failed to get incidents for team",
 				service: SERVICE_NAME,
 				method: "getIncidentsByTeam",
-				message: error instanceof Error ? error.message : "Unknown error",
 				details: { teamId },
-				stack: error instanceof Error ? error.stack : undefined,
+				error,
 			});
 			throw error;
 		}
@@ -176,11 +176,11 @@ export class IncidentService implements IIncidentService {
 			return summary;
 		} catch (error: unknown) {
 			this.logger.error({
+				message: "Failed to get incident summary",
 				service: SERVICE_NAME,
 				method: "getIncidentSummary",
-				message: error instanceof Error ? error.message : "Unknown error",
 				details: { teamId },
-				stack: error instanceof Error ? error.stack : undefined,
+				error,
 			});
 			throw error;
 		}
@@ -197,11 +197,11 @@ export class IncidentService implements IIncidentService {
 			return { incident, monitor, user };
 		} catch (error: unknown) {
 			this.logger.error({
+				message: "Failed to get incident",
 				service: SERVICE_NAME,
 				method: "getIncidentById",
-				message: error instanceof Error ? error.message : "Unknown error",
 				details: { incidentId },
-				stack: error instanceof Error ? error.stack : undefined,
+				error,
 			});
 			throw error;
 		}

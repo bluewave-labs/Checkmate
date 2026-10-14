@@ -16,10 +16,10 @@ export class ReactorDispatcher implements IReactorDispatcher {
 
 	private logFailure(reactor: IMonitorReactor, evaluation: MonitorEvaluation, error: unknown) {
 		this.logger.error({
+			message: `Reactor ${reactor.name} failed for monitor ${evaluation.monitor.id}`,
 			service: SERVICE_NAME,
 			method: "dispatch",
-			message: `Reactor ${reactor.name} failed for monitor ${evaluation.monitor.id}: ${error instanceof Error ? error.message : String(error)}`,
-			stack: error instanceof Error ? error.stack : undefined,
+			error,
 		});
 	}
 

@@ -112,8 +112,7 @@ export async function migrateMaintenanceWindowMonitorIdToArray(logger: ILogger):
 			message: `bulkWrite result: modified=${result.modifiedCount}, deleted=${result.deletedCount}`,
 		});
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		logger.error({ service: SERVICE_NAME, message: `Error during MaintenanceWindow migration: ${errorMessage}` });
+		logger.error({ message: "MaintenanceWindow migration failed", service: SERVICE_NAME, error });
 		throw error;
 	}
 }

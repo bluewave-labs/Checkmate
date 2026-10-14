@@ -41,11 +41,10 @@ export class EmailProvider extends NotificationProvider {
 			return true;
 		} catch (error: unknown) {
 			this.logger.warn({
-				message: `Email test alert failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+				message: "Email test alert failed",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
-				details: error instanceof AppError ? error.details : undefined,
-				stack: error instanceof Error ? error.stack : undefined,
+				error,
 			});
 			if (error instanceof AppError) throw error;
 			return false;
@@ -76,11 +75,10 @@ export class EmailProvider extends NotificationProvider {
 			return true;
 		} catch (error: unknown) {
 			this.logger.warn({
-				message: `Email notification failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+				message: "Email notification failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",
-				details: error instanceof AppError ? error.details : undefined,
-				stack: error instanceof Error ? error.stack : undefined,
+				error,
 			});
 			return false;
 		}

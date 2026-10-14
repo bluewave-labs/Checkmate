@@ -154,13 +154,13 @@ describe("GlobalPingService", () => {
 			);
 		});
 
-		it("logs stack as undefined for non-Error thrown values", async () => {
+		it("passes non-Error thrown values through as the error", async () => {
 			const { service, logger } = createService();
 			mockGotPost.mockRejectedValue("string error");
 
 			await service.createMeasurement("http", "https://example.com", ["NA"] as GeoContinent[]);
 
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
+			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ error: "string error" }));
 		});
 
 		it("supports ping monitor type", async () => {
@@ -273,13 +273,13 @@ describe("GlobalPingService", () => {
 			);
 		});
 
-		it("logs stack as undefined for non-Error thrown values in poll", async () => {
+		it("passes non-Error thrown values through as the error in poll", async () => {
 			const { service, logger } = createService();
 			mockGotGet.mockRejectedValue(42);
 
 			await service.pollForResults("meas-123");
 
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
+			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ error: 42 }));
 		});
 
 		it("returns empty array and logs warning on timeout", async () => {

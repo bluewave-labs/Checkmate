@@ -56,7 +56,9 @@ describe("EmailProvider", () => {
 			const { provider, emailService, logger } = createProvider();
 			(emailService.sendEmail as jest.Mock).mockRejectedValue(new Error("SMTP auth failed"));
 			expect(await provider.sendTestAlert(makeNotification())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Email test alert failed: SMTP auth failed" }));
+			expect(logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({ message: "Email test alert failed", error: expect.objectContaining({ message: "SMTP auth failed" }) })
+			);
 		});
 
 		it("rethrows an AppError from sendEmail so the caller can report the reason", async () => {
@@ -70,8 +72,8 @@ describe("EmailProvider", () => {
 			await expect(provider.sendTestAlert(makeNotification())).rejects.toBe(error);
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Email test alert failed: Email is not configured. Set the system email host in settings.",
-					details: { cause: "no host" },
+					message: "Email test alert failed",
+					error,
 				})
 			);
 		});
@@ -107,7 +109,9 @@ describe("EmailProvider", () => {
 			const { provider, emailService, logger } = createProvider();
 			(emailService.sendEmail as jest.Mock).mockRejectedValue(new Error("SMTP auth failed"));
 			expect(await provider.sendMessage(makeNotification() as any, makeMessage())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Email notification failed: SMTP auth failed" }));
+			expect(logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({ message: "Email notification failed", error: expect.objectContaining({ message: "SMTP auth failed" }) })
+			);
 		});
 
 		it("returns false rather than throwing when sendEmail rejects with an AppError", async () => {
@@ -121,8 +125,11 @@ describe("EmailProvider", () => {
 			expect(await provider.sendMessage(makeNotification() as any, makeMessage())).toBe(false);
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Email notification failed: SMTP verification failed for smtp.example.com:587: 535 Username and Password not accepted",
-					details: { cause: "ECONNREFUSED" },
+					message: "Email notification failed",
+					error: expect.objectContaining({
+						message: "SMTP verification failed for smtp.example.com:587: 535 Username and Password not accepted",
+						details: { cause: "ECONNREFUSED" },
+					}),
 				})
 			);
 		});

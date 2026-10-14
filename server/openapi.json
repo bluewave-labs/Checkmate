@@ -3934,17 +3934,74 @@
 							"nullable": true
 						}
 					},
-					"stack": {
-						"type": "string"
-					},
 					"level": {
-						"type": "string"
+						"type": "string",
+						"enum": ["error", "warn", "info", "debug"]
 					},
 					"timestamp": {
 						"type": "string"
+					},
+					"context": {
+						"type": "object",
+						"properties": {
+							"requestId": {
+								"type": "string"
+							},
+							"userId": {
+								"type": "string"
+							},
+							"teamId": {
+								"type": "string"
+							},
+							"jobId": {
+								"type": "string"
+							},
+							"jobType": {
+								"type": "string"
+							},
+							"monitorId": {
+								"type": "string"
+							}
+						}
+					},
+					"error": {
+						"$ref": "#/components/schemas/SerializedError"
 					}
 				},
 				"required": ["message", "level", "timestamp"]
+			},
+			"SerializedError": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"message": {
+						"type": "string"
+					},
+					"stack": {
+						"type": "string"
+					},
+					"status": {
+						"type": "number"
+					},
+					"service": {
+						"type": "string"
+					},
+					"method": {
+						"type": "string"
+					},
+					"details": {
+						"type": "object",
+						"additionalProperties": {
+							"nullable": true
+						}
+					},
+					"cause": {
+						"$ref": "#/components/schemas/SerializedError"
+					}
+				},
+				"required": ["name", "message"]
 			}
 		},
 		"parameters": {}
@@ -9958,7 +10015,8 @@
 											"type": "object",
 											"properties": {
 												"certificateDate": {
-													"type": "string"
+													"type": "string",
+													"nullable": true
 												}
 											},
 											"required": ["certificateDate"]

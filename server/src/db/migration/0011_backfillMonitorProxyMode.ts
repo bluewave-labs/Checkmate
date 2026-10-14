@@ -20,8 +20,7 @@ export async function backfillMonitorProxyMode(logger: ILogger): Promise<void> {
 			message: `Backfilled proxyMode on ${result.modifiedCount} monitors`,
 		});
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		logger.error({ service: SERVICE_NAME, message: `Error backfilling proxyMode: ${errorMessage}` });
+		logger.error({ message: "Backfilling proxyMode failed", service: SERVICE_NAME, error });
 		throw error;
 	}
 }

@@ -252,7 +252,7 @@ describe("TeamsProvider", () => {
 			mockPost.mockRejectedValue(null);
 			const result = await provider.sendMessage(createNotification(), createMessage());
 			expect(result).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ error: null }));
 		});
 
 		it("includes details section in Adaptive Card when details are present", async () => {
@@ -288,7 +288,7 @@ describe("TeamsProvider", () => {
 			mockPost.mockRejectedValue(null);
 			const result = await provider.sendTestAlert(createNotification());
 			expect(result).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ error: null }));
 		});
 	});
 });

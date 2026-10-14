@@ -22,14 +22,11 @@ export class TelegramProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const errMsg = error instanceof Error ? error.message : "unknown error";
-			const errStack = error instanceof Error ? error.stack : undefined;
 			this.logger.warn({
 				message: "Telegram test alert failed",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
-				stack: errStack,
-				details: { error: errMsg },
+				error,
 			});
 			return false;
 		}
@@ -59,14 +56,11 @@ export class TelegramProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const errMsg = error instanceof Error ? error.message : "unknown error";
-			const errStack = error instanceof Error ? error.stack : undefined;
 			this.logger.warn({
 				message: "Telegram alert failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",
-				stack: errStack,
-				details: { error: errMsg },
+				error,
 			});
 			return false;
 		}

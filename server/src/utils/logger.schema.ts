@@ -1,18 +1,21 @@
 import { z } from "zod";
 import { LogLevels } from "@/domain/app-settings/app-settings.type.js";
 
-export const serializedErrorSchema = z.object({
-	name: z.string(),
-	message: z.string(),
-	stack: z.string().optional(),
-	status: z.number().optional(),
-	service: z.string().optional(),
-	method: z.string().optional(),
-	details: z.record(z.string(), z.unknown()).optional(),
-	get cause() {
-		return serializedErrorSchema.optional();
-	},
-});
+// The id makes the OpenAPI generator emit a $ref for the recursive `cause` instead of overflowing the stack
+export const serializedErrorSchema = z
+	.object({
+		name: z.string(),
+		message: z.string(),
+		stack: z.string().optional(),
+		status: z.number().optional(),
+		service: z.string().optional(),
+		method: z.string().optional(),
+		details: z.record(z.string(), z.unknown()).optional(),
+		get cause() {
+			return serializedErrorSchema.optional();
+		},
+	})
+	.meta({ id: "SerializedError" });
 
 export const logContextSchema = z.object({
 	requestId: z.string().optional(),
@@ -29,8 +32,6 @@ export const logConfigSchema = z.object({
 	method: z.string().optional(),
 	details: z.record(z.string(), z.unknown()).optional(),
 	error: z.unknown().optional(),
-	/** @deprecated pass `error` instead; removed once call sites are migrated */
-	stack: z.string().optional(),
 });
 
 export const logEntrySchema = logConfigSchema

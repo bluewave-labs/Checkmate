@@ -64,9 +64,10 @@ export class HealthServer implements IHealthServer {
 				res.end(body);
 			} catch (error: unknown) {
 				this.logger.warn({
-					message: error instanceof Error ? error.message : String(error),
+					message: "Failed to collect metrics",
 					service: SERVICE_NAME,
 					method: "metrics",
+					error,
 				});
 				res.writeHead(500).end();
 			}

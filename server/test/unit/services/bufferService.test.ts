@@ -211,8 +211,9 @@ describe("BufferService", () => {
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "DB down",
+					message: "Failed to flush check buffer",
 					method: "flushBuffer",
+					error: expect.objectContaining({ message: "DB down" }),
 				})
 			);
 
@@ -232,13 +233,14 @@ describe("BufferService", () => {
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "unexpected",
+					message: "Scheduled buffer flush failed",
 					method: "scheduleNextFlush",
+					error: expect.objectContaining({ message: "unexpected" }),
 				})
 			);
 		});
 
-		it("logs 'Unknown error' when flush throws non-Error past its own catch", async () => {
+		it("passes a non-Error thrown past flush's own catch through as error", async () => {
 			const { service, logger } = createService();
 			service.flushBuffer = jest.fn<() => Promise<void>>().mockRejectedValueOnce("string error");
 
@@ -246,9 +248,9 @@ describe("BufferService", () => {
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Unknown error",
+					message: "Scheduled buffer flush failed",
 					method: "scheduleNextFlush",
-					stack: undefined,
+					error: "string error",
 				})
 			);
 		});
@@ -304,8 +306,9 @@ describe("BufferService", () => {
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "DB write failed",
+					message: "Failed to flush check buffer",
 					method: "flushBuffer",
+					error: expect.objectContaining({ message: "DB write failed" }),
 				})
 			);
 			// Buffer should be cleared: the failed batch is not handed over again
@@ -313,7 +316,7 @@ describe("BufferService", () => {
 			expect(ingest).toHaveBeenNthCalledWith(2, []);
 		});
 
-		it("logs 'Unknown error' for non-Error thrown values", async () => {
+		it("passes non-Error thrown values through as error", async () => {
 			const { service, ingest, logger } = createService();
 			ingest.mockRejectedValue(null);
 			service.addToBuffer(makeCheck());
@@ -322,9 +325,9 @@ describe("BufferService", () => {
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Unknown error",
+					message: "Failed to flush check buffer",
 					method: "flushBuffer",
-					stack: undefined,
+					error: null,
 				})
 			);
 		});
@@ -378,8 +381,9 @@ describe("BufferService", () => {
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "DB error",
+					message: "Failed to flush geo check buffer",
 					method: "flushGeoBuffer",
+					error: expect.objectContaining({ message: "DB error" }),
 				})
 			);
 			// Buffer should be cleared
@@ -387,7 +391,7 @@ describe("BufferService", () => {
 			expect(geoChecksService.createGeoChecks).toHaveBeenCalledTimes(1);
 		});
 
-		it("logs 'Unknown error' for non-Error thrown values", async () => {
+		it("passes non-Error thrown values through as error", async () => {
 			const { service, geoChecksService, logger } = createService();
 			(geoChecksService.createGeoChecks as jest.Mock).mockRejectedValue(undefined);
 			service.addGeoCheckToBuffer(makeGeoCheck());
@@ -396,9 +400,9 @@ describe("BufferService", () => {
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Unknown error",
+					message: "Failed to flush geo check buffer",
 					method: "flushGeoBuffer",
-					stack: undefined,
+					error: undefined,
 				})
 			);
 		});
@@ -452,7 +456,13 @@ describe("BufferService", () => {
 			await service.flushDockerLogsBuffer();
 
 			expect(dockerLogsService.createDockerLogs).toHaveBeenCalledTimes(1);
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "DB error", method: "flushDockerLogsBuffer" }));
+			expect(logger.error).toHaveBeenCalledWith(
+				expect.objectContaining({
+					message: "Failed to flush docker log buffer",
+					method: "flushDockerLogsBuffer",
+					error: expect.objectContaining({ message: "DB error" }),
+				})
+			);
 		});
 	});
 

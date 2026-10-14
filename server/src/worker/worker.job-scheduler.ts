@@ -206,17 +206,19 @@ export class JobScheduler implements IJobScheduler {
 			if (this.stopped) return; // Don't re-register if shutting down
 			this.heartbeatInFlight = this.queueWorkersRepository.upsert(this.workerId, this.queueMode, this.processesJobs).catch((error: unknown) => {
 				this.logger.warn({
-					message: error instanceof Error ? error.message : String(error),
+					message: "Failed to register worker heartbeat",
 					service: SERVICE_NAME,
 					method: "heartbeat",
+					error,
 				});
 			});
 			await this.heartbeatInFlight;
 		} catch (error: unknown) {
 			this.logger.warn({
-				message: error instanceof Error ? error.message : String(error),
+				message: "Worker heartbeat failed",
 				service: SERVICE_NAME,
 				method: "heartbeat",
+				error,
 			});
 		}
 	};

@@ -23,14 +23,11 @@ export class PushoverProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const errMsg = error instanceof Error ? error.message : "unknown error";
-			const errStack = error instanceof Error ? error.stack : undefined;
 			this.logger.warn({
 				message: "Pushover test alert failed",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
-				stack: errStack,
-				details: { error: errMsg },
+				error,
 			});
 			return false;
 		}
@@ -61,14 +58,11 @@ export class PushoverProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const errMsg = error instanceof Error ? error.message : "unknown error";
-			const errStack = error instanceof Error ? error.stack : undefined;
 			this.logger.warn({
 				message: "Pushover alert failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",
-				stack: errStack,
-				details: { error: errMsg },
+				error,
 			});
 			return false;
 		}

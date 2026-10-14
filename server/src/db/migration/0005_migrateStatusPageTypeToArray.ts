@@ -43,8 +43,7 @@ export async function migrateStatusPageTypeToArray(logger: ILogger): Promise<voi
 			message: `Migration complete. Converted ${result.modifiedCount} StatusPage document(s) from string type to array type`,
 		});
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		logger.error({ service: SERVICE_NAME, message: `Error during StatusPage type migration: ${errorMessage}` });
+		logger.error({ message: "StatusPage type migration failed", service: SERVICE_NAME, error });
 		throw error;
 	}
 }

@@ -3,7 +3,7 @@ import type { Notification } from "@/domain/notifications/notification.type.js";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
 import { getTestMessage, incidentUrl } from "@/domain/notifications/providers/utils.js";
-import got, { HTTPError } from "got";
+import got from "got";
 
 // Types for Adaptive Card elements
 type TextBlock = {
@@ -87,12 +87,11 @@ export class TeamsProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as HTTPError;
 			this.logger.warn({
 				message: "Teams test alert failed",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
-				stack: err?.stack,
+				error,
 			});
 			return false;
 		}
@@ -120,12 +119,11 @@ export class TeamsProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as HTTPError;
 			this.logger.warn({
 				message: "Teams alert failed via sendMessage",
 				service: SERVICE_NAME,
 				method: "sendMessage",
-				stack: err?.stack,
+				error,
 			});
 			return false;
 		}
