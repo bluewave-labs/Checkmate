@@ -24,7 +24,7 @@ const startApp = async () => {
 	// Basic setup
 	// ***********************
 
-	logger = new Logger({ level: "info", json: process.env.NODE_ENV === "production" });
+	logger = new Logger({ level: "info", json: (process.env.NODE_ENV ?? "production") === "production" });
 	const env = validateEnv(logger);
 	logger.configure({ level: env.LOG_LEVEL, json: env.NODE_ENV === "production" });
 	const settingsService = new SettingsService(env);

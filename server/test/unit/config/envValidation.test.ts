@@ -28,11 +28,17 @@ afterEach(() => {
 });
 
 describe("validateEnv", () => {
-	it("fails and exits with code 1 when NODE_ENV is missing", () => {
+	it("defaults NODE_ENV to production and warns when it is missing", () => {
 		const { logger, exit } = setup({ ...REQUIRED, NODE_ENV: undefined });
-		expect(() => validateEnv(logger)).toThrow(ExitCalled);
-		expect(exit).toHaveBeenCalledWith(1);
-		expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("NODE_ENV") }));
+		expect(validateEnv(logger).NODE_ENV).toBe("production");
+		expect(exit).not.toHaveBeenCalled();
+		expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("NODE_ENV is not set") }));
+	});
+
+	it("does not warn when NODE_ENV is set", () => {
+		const { logger } = setup(REQUIRED);
+		validateEnv(logger);
+		expect(logger.warn).not.toHaveBeenCalled();
 	});
 
 	it("fails when NODE_ENV has an unknown value", () => {

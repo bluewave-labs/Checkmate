@@ -41,7 +41,8 @@ const envSchema = z.object({
 	PORT: z.string().default("52345"),
 	// Port for worker health checks
 	HEALTH_PORT: z.string().default("52346"),
-	NODE_ENV: z.enum(NodeEnvs, { error: "NODE_ENV is required: development, production or test" }),
+	// Unset defaults to production so upgrades without it keep running with production behaviour; validateEnv warns
+	NODE_ENV: z.enum(NodeEnvs).default("production"),
 	LOG_LEVEL: z.enum(LogLevels).default("info"),
 
 	// Database
@@ -103,6 +104,14 @@ export const validateEnv = (logger: ILogger): ValidatedEnv => {
 			service: "Server",
 		});
 		process.exit(1);
+	}
+
+	if (process.env.NODE_ENV === undefined) {
+		logger.warn({
+			message: 'NODE_ENV is not set, defaulting to "production". Set NODE_ENV=development for local development.',
+			method: "validateEnv",
+			service: "Server",
+		});
 	}
 
 	const legacyClientVars = Object.keys(process.env).filter((key) => key.startsWith("UPTIME_APP_"));
