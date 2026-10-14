@@ -45,7 +45,6 @@ const LevelBadge = ({ level }: { level: LogLevel }) => {
 	);
 };
 
-// Stack (or name: message) of the error, then each cause beneath it, matching the server's console format
 const formatError = (error: LogError): string => {
 	const head = error.stack ?? `${error.name}: ${error.message}`;
 	return error.cause ? `${head}\nCaused by: ${formatError(error.cause)}` : head;

@@ -240,7 +240,6 @@ class MongoChecksRepository implements IChecksRepository {
 			case "all":
 				return {};
 			default: {
-				// Exhaustive: adding a CheckFilter value without a case here is a compile error
 				const unreachable: never = filter;
 				return unreachable;
 			}

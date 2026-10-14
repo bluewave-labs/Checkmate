@@ -44,7 +44,6 @@ const isTrustProxyEntry = (entry: string): boolean => {
 	return prefix === undefined || /^\d+$/.test(prefix);
 };
 
-// Unset leaves trust proxy off. Validated here because Express only rejects a bad value when it compiles it, as a startup crash
 export const trustProxySetting = z
 	.string()
 	.optional()
@@ -72,7 +71,6 @@ const envSchema = z.object({
 	PORT: z.string().default("52345"),
 	// Port for worker health checks
 	HEALTH_PORT: z.string().default("52346"),
-	// Unset defaults to production so upgrades without it keep running with production behaviour; validateEnv warns
 	NODE_ENV: z.enum(NodeEnvs).default("production"),
 	LOG_LEVEL: z.enum(LogLevels).default("info"),
 

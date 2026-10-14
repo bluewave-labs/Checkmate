@@ -341,7 +341,6 @@ describe("EmailService", () => {
 			await expect(service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig())).rejects.toThrow(
 				"SMTP host smtp.example.com:587 failed verification."
 			);
-			// The caller logs the thrown AppError; logging here too would record every SMTP failure twice
 			expect(logger.warn).not.toHaveBeenCalled();
 			expect(logger.error).not.toHaveBeenCalled();
 		});
@@ -412,27 +411,22 @@ describe("EmailService", () => {
 			expect(logger.warn).not.toHaveBeenCalled();
 		});
 
-		it("throws and logs error when sendMail throws", async () => {
+		it("throws with the original error as cause, without logging it, when sendMail throws", async () => {
 			const transporter = createMockTransporter();
-			(transporter.sendMail as jest.Mock).mockRejectedValue(new Error("Recipient rejected"));
+			const original = new Error("Recipient rejected");
+			(transporter.sendMail as jest.Mock).mockRejectedValue(original);
 			const nodemailer = createMockNodemailer(transporter);
 			const { service, logger } = createService({ nodemailer });
 
 			await expect(service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig())).rejects.toMatchObject({
 				message: "Failed to send email",
 				details: { cause: "Recipient rejected" },
+				cause: original,
 			});
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "Failed to send email",
-					service: "EmailService",
-					method: "sendEmail",
-					error: expect.objectContaining({ message: "Recipient rejected" }),
-				})
-			);
+			expect(logger.error).not.toHaveBeenCalled();
 		});
 
-		it("passes non-Error thrown values in sendMail through as error", async () => {
+		it("keeps a non-Error sendMail failure as the cause", async () => {
 			const transporter = createMockTransporter();
 			(transporter.sendMail as jest.Mock).mockRejectedValue(42);
 			const nodemailer = createMockNodemailer(transporter);
@@ -440,14 +434,9 @@ describe("EmailService", () => {
 
 			await expect(service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig())).rejects.toMatchObject({
 				details: { cause: "Unknown error" },
+				cause: 42,
 			});
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "Failed to send email",
-					method: "sendEmail",
-					error: 42,
-				})
-			);
+			expect(logger.error).not.toHaveBeenCalled();
 		});
 
 		// ── from-header formatting ───────────────────────────────────────

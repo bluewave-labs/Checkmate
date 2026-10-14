@@ -10,11 +10,9 @@ export type NodeEnv = (typeof NodeEnvs)[number];
 export const LogLevels = ["error", "warn", "info", "debug"] as const;
 export type LogLevel = (typeof LogLevels)[number];
 
-// Named address ranges Express accepts in "trust proxy"
 export const TrustProxyKeywords = ["loopback", "linklocal", "uniquelocal"] as const;
 export type TrustProxyKeyword = (typeof TrustProxyKeywords)[number];
 
-// Express "trust proxy": a hop count, or the addresses (IPs, CIDRs, keywords) of trusted proxies
 export type TrustProxy = number | string[];
 
 import type { z } from "zod";

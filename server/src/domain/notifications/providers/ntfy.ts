@@ -85,8 +85,7 @@ export class NtfyProvider extends NotificationProvider {
 	 * Returns the Authorization header for the configured auth type, or null when the
 	 * credentials are incomplete. Null is treated as a send failure rather than falling
 	 * back to an anonymous post, so a misconfigured channel surfaces instead of quietly
-	 * publishing to a topic the server may leave world-readable. Missing credentials log at
-	 * `level`: error for a real alert, debug for a test, whose result the UI already shows.
+	 * publishing to a topic the server may leave world-readable.
 	 */
 	private buildAuthHeaders(notification: Partial<Notification>, method: string, level: LogLevel): Record<string, string> | null {
 		const { ntfyAuthType, accessToken, ntfyUsername } = notification;

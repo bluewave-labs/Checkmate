@@ -29,7 +29,6 @@ export const TabLogs = () => {
 			return log.level === selectedLogLevel;
 		})
 		.reverse()
-		// Ids start at 1: the table treats an id of 0 as missing, so row 0 could not expand
 		.map((log, idx) => ({ ...log, id: idx + 1 }));
 
 	const paginatedLogs =

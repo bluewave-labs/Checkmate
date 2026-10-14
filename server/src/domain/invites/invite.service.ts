@@ -101,6 +101,7 @@ export class InviteService implements IInviteService {
 				service: SERVICE_NAME,
 				method: "sendInviteEmail",
 				details: { cause: error instanceof Error ? error.message : "Unknown error" },
+				cause: error,
 			});
 		}
 	};

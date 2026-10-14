@@ -115,7 +115,6 @@ describe("CheckService", () => {
 				const check = service.toCheck(makeStatusResponse({ type: "pagespeed", payload: undefined } as any));
 
 				expect(check).toBeUndefined();
-				// The pipeline logs the skipped check; toCheck itself stays quiet
 				expect(logger.warn).not.toHaveBeenCalled();
 			});
 

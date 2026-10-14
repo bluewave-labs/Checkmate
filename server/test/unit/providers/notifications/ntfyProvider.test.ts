@@ -190,7 +190,6 @@ describe("NtfyProvider", () => {
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeNtfyNotification({ ntfyAuthType: "token", accessToken: "" }))).toBe(false);
 			expect(mockGotPost).not.toHaveBeenCalled();
-			// The UI shows a test's result, so missing credentials on a test only log at debug
 			expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining({ method: "sendTestAlert" }));
 			expect(logger.error).not.toHaveBeenCalled();
 		});

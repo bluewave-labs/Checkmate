@@ -1324,7 +1324,6 @@ describe("MonitorService", () => {
 			const monitors = [makeMonitor({ id: "m1", isActive: true })];
 			(monitorsRepository.bulkTogglePause as jest.Mock).mockResolvedValue(monitors);
 			const jobQueue = createJobQueueMock();
-			// Reject with a non-Error value; it is passed through to the logger unchanged
 			(jobQueue.resumeJob as jest.Mock).mockRejectedValueOnce("queue blew up");
 
 			const logger = createMockLogger();

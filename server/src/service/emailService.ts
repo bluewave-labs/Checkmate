@@ -172,13 +172,13 @@ export class EmailService implements IEmailService {
 		try {
 			await this.transporter.verify();
 		} catch (error: unknown) {
-			// Not logged here: the caller logs the thrown AppError, which already names the host and port
 			const cause = error instanceof Error ? error.message : "Unknown error";
 			throw new AppError(emailErrors.sendFailed, {
 				message: describeSmtpFailure(error, systemEmailHost, emailConfig.port),
 				service: SERVICE_NAME,
 				method: "sendEmail",
 				details: { cause },
+				cause: error,
 			});
 		}
 
@@ -194,17 +194,12 @@ export class EmailService implements IEmailService {
 			});
 			return info.messageId;
 		} catch (error: unknown) {
-			this.logger.error({
-				message: "Failed to send email",
-				service: SERVICE_NAME,
-				method: "sendEmail",
-				error,
-			});
 			throw new AppError(emailErrors.sendFailed, {
 				message: "Failed to send email",
 				service: SERVICE_NAME,
 				method: "sendEmail",
 				details: { cause: error instanceof Error ? error.message : "Unknown error" },
+				cause: error,
 			});
 		}
 	};

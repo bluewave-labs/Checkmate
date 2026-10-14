@@ -79,7 +79,6 @@ describe("GeoChecksService", () => {
 			const result = await service.buildGeoCheck(makeMonitor({ geoCheckLocations: [] }));
 
 			expect(result).toBeNull();
-			// The geo pipeline logs this before calling buildGeoCheck
 			expect(logger.warn).not.toHaveBeenCalled();
 		});
 
@@ -89,7 +88,6 @@ describe("GeoChecksService", () => {
 			const result = await service.buildGeoCheck(makeMonitor({ geoCheckLocations: undefined as any }));
 
 			expect(result).toBeNull();
-			// The geo pipeline logs this before calling buildGeoCheck
 			expect(logger.warn).not.toHaveBeenCalled();
 		});
 

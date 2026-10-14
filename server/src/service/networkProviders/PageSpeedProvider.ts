@@ -10,7 +10,6 @@ const SERVICE_NAME = "PageSpeedProvider";
 
 export class PageSpeedProvider implements IStatusProvider<PageSpeedStatusPayload> {
 	readonly type = "pagespeed";
-	// The missing-key warning would otherwise repeat on every PageSpeed check
 	private warnedMissingKey = false;
 	constructor(
 		private httpProvider: HttpProvider,

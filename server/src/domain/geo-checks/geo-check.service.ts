@@ -62,7 +62,6 @@ export class GeoChecksService implements IGeoChecksService {
 				return null;
 			}
 
-			// The geo pipeline already logs this before calling buildGeoCheck
 			if (!monitor.geoCheckLocations || monitor.geoCheckLocations.length === 0) {
 				return null;
 			}

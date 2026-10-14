@@ -9,8 +9,6 @@ import type { ILogger } from "../../src/utils/logger.ts";
 import { createMockLogger } from "../helpers/createMockLogger.ts";
 
 // ── Real-Mongo harness ─────────────────────────────────────────────────────────
-// The check filters become $match stages, so what each one returns can only be
-// checked against a live mongod.
 
 let mongod: MongoMemoryServer;
 
@@ -44,7 +42,6 @@ const seedCheck = (overrides: Record<string, unknown> = {}) =>
 		...overrides,
 	});
 
-// One up check, one down check with an HTTP status, one down check from a network error
 const seedMixedChecks = async () => {
 	await seedCheck({ status: true, statusCode: 200 });
 	await seedCheck({ status: false, statusCode: 500 });

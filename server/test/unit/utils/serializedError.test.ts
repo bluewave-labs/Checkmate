@@ -43,3 +43,24 @@ describe("serializeError", () => {
 		expect(serializeError(value)).toEqual({ name: "NonError", message });
 	});
 });
+
+describe("AppError cause", () => {
+	it("is serialized as the cause chain, so a wrapped error's own message survives", () => {
+		const original = Object.assign(new Error("Invalid login: 535 5.7.8 Authentication failed"), { code: "EAUTH" });
+		const wrapped = new AppError(
+			{ status: 502, description: "The mail server rejected the message" },
+			{ message: "Failed to send email", cause: original }
+		);
+		expect(serializeError(wrapped)).toEqual(
+			expect.objectContaining({
+				message: "Failed to send email",
+				status: 502,
+				cause: expect.objectContaining({ message: "Invalid login: 535 5.7.8 Authentication failed" }),
+			})
+		);
+	});
+
+	it("has no cause when none is given", () => {
+		expect(new AppError({ status: 404, description: "Not found" }).cause).toBeUndefined();
+	});
+});

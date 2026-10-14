@@ -192,7 +192,6 @@ export class EgressService implements IEgressService {
 			// while ok, which the job's first run removes, rather than a degraded state that nothing is polling.
 			await this.scheduleRecoveryCheck(true);
 			const degraded = await this.egressStateRepository.markDegraded(results, now);
-			// Only the worker that recorded the transition warns; the others saw the same event
 			this.logger[degraded ? "warn" : "debug"]({
 				message: degraded
 					? "Instance egress degraded: every reliability target is unreachable. Monitor failures will not be counted until it recovers"

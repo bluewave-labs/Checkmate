@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { LogLevels } from "@/domain/app-settings/app-settings.type.js";
 
-// The id makes the OpenAPI generator emit a $ref for the recursive `cause` instead of overflowing the stack
 export const serializedErrorSchema = z
 	.object({
 		name: z.string(),

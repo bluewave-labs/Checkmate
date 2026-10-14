@@ -112,7 +112,6 @@ describe("TRUST_PROXY", () => {
 	});
 
 	describe("applied to Express", () => {
-		// Every parsed value must be one Express accepts, and req.ip must follow X-Forwarded-For only when trusted
 		const ipSeenBy = async (trustProxy: ReturnType<typeof trustProxySetting.parse>) => {
 			const app = express();
 			if (trustProxy !== undefined) app.set("trust proxy", trustProxy);

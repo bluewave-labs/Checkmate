@@ -8,9 +8,6 @@ type WriteTarget = { write: (...args: unknown[]) => boolean };
 const isWriteTarget = (value: unknown): value is WriteTarget =>
 	typeof value === "object" && value !== null && typeof Reflect.get(value, "write") === "function";
 
-// Winston's Console transport writes through console._stdout when it exists, otherwise console.log.
-// In Jest worker processes console._stdout is Jest's own object rather than process.stdout, so capture both.
-// Tests await logger.flush() before reading, so every pending write has reached the transport.
 const captureOutput = () => {
 	const lines: string[] = [];
 	const record = (chunk: unknown, ...rest: unknown[]) => {
@@ -56,7 +53,6 @@ describe("Logger", () => {
 			const { lines, logger } = setup();
 			logger.configure({ level: "debug", json: true });
 			logger.debug({ message: "now visible" });
-			// Let the transport write before configure replaces it
 			await new Promise((resolve) => setImmediate(resolve));
 			logger.configure({ level: "error", json: true });
 			logger.warn({ message: "now hidden" });
@@ -176,6 +172,39 @@ describe("Logger", () => {
 			const logger = setup();
 			logger.info({ message: "last line" });
 			await expect(logger.flush()).resolves.toBeUndefined();
+		});
+
+		it("returns the same promise when called again", async () => {
+			const setup = () => {
+				captureOutput();
+				return new Logger({ level: "info", json: true });
+			};
+			const logger = setup();
+			const first = logger.flush();
+			expect(logger.flush()).toBe(first);
+			await first;
+		});
+
+		it("writes lines logged after flush straight to stdout instead of the closed stream", async () => {
+			const setup = () => {
+				const lines = captureOutput();
+				const logger = new Logger({ level: "info", json: false });
+				const uncaught = jest.fn();
+				process.on("uncaughtException", uncaught);
+				return { lines, logger, uncaught };
+			};
+			const { lines, logger, uncaught } = setup();
+			await logger.flush();
+			lines.length = 0;
+
+			logger.error({ message: "late failure", service: "Shutdown", error: new Error("boom") });
+			await new Promise((resolve) => setImmediate(resolve));
+			process.off("uncaughtException", uncaught);
+
+			expect(uncaught).not.toHaveBeenCalled();
+			expect(lines).toHaveLength(1);
+			expect(JSON.parse(lines[0] ?? "")).toEqual(expect.objectContaining({ level: "error", message: "late failure", service: "Shutdown" }));
+			expect(logger.getLogs().at(-1)?.message).toBe("late failure");
 		});
 	});
 });

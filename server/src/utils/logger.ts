@@ -61,6 +61,7 @@ class Logger implements ILogger {
 	private logger: WinstonLogger;
 	private logCache: LogEntry[] = [];
 	private level: LogLevel = "info";
+	private flushing: Promise<void> | null = null;
 
 	constructor(options: LoggerOptions = { level: "info", json: false }) {
 		this.level = options.level;
@@ -82,10 +83,10 @@ class Logger implements ILogger {
 	}
 
 	flush(): Promise<void> {
-		return new Promise((resolve) => {
+		if (this.flushing) return this.flushing;
+		this.flushing = new Promise((resolve) => {
 			const timer = setTimeout(resolve, FLUSH_TIMEOUT_MS);
 			this.logger.once("finish", () => {
-				// Winston is done; wait for stdout to drain before the caller exits
 				process.stdout.write("", () => {
 					clearTimeout(timer);
 					resolve();
@@ -93,6 +94,7 @@ class Logger implements ILogger {
 			});
 			this.logger.end();
 		});
+		return this.flushing;
 	}
 
 	private buildLogEntry(level: LogLevel, config: LogConfig): LogEntry {
@@ -120,6 +122,10 @@ class Logger implements ILogger {
 		if (LEVEL_PRIORITY[level] > LEVEL_PRIORITY[this.level]) return;
 		const entry = this.buildLogEntry(level, config);
 		this.cacheLog(entry);
+		if (this.flushing) {
+			process.stdout.write(`${JSON.stringify(entry)}\n`);
+			return;
+		}
 		this.logger.log(entry);
 	}
 }

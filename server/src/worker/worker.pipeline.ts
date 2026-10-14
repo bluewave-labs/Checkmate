@@ -20,7 +20,6 @@ import { IReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { JobHandler, MonitorActionDecision, MonitorEvaluation } from "@/worker/worker.interface.js";
 
 const SERVICE_NAME = "WorkerPipeline";
-// Caps the check IDs listed in a log line; the count in the message is always exact
 const MAX_LOGGED_CHECK_IDS = 20;
 
 // The three entry points: the queue calls the two handlers, the buffer calls ingestChecks.

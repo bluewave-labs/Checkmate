@@ -37,7 +37,6 @@ export class MatrixProvider extends NotificationProvider {
 		return this.sendMessageWithBody(notification, body, "sendMessage");
 	};
 
-	// A test is started from the UI, which shows the result, so only a real alert logs at error
 	private sendMessageWithBody = async (
 		notification: Partial<Notification>,
 		body: unknown,

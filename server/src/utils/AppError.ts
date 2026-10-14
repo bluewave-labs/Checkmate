@@ -3,6 +3,7 @@ export interface AppErrorConfig {
 	service?: string;
 	method?: string;
 	details?: Record<string, unknown> | undefined;
+	cause?: unknown;
 }
 export type ErrorDefinition = {
 	readonly status: number;
@@ -20,8 +21,8 @@ export class AppError extends Error {
 	readonly method: string;
 	readonly details: Record<string, unknown> | undefined;
 
-	constructor(definition: ErrorDefinition, { message, service = "unknownService", method = "unknownMethod", details }: AppErrorConfig = {}) {
-		super(message ?? definition.description);
+	constructor(definition: ErrorDefinition, { message, service = "unknownService", method = "unknownMethod", details, cause }: AppErrorConfig = {}) {
+		super(message ?? definition.description, cause === undefined ? undefined : { cause });
 		this.status = definition.status;
 		this.definition = definition;
 		this.service = service;
