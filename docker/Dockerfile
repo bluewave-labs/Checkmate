@@ -38,6 +38,8 @@ RUN npm run build
 
 COPY --from=frontend-build /app/client/dist ./public
 
+ENV NODE_ENV=production
+
 USER node
 
 EXPOSE 52345 52346
