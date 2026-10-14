@@ -42,7 +42,7 @@ export class SecretsRotationService implements ISecretsRotationService {
 			} catch (error: unknown) {
 				result.skipped += 1;
 				this.logger.warn({
-					message: `Could not reencrypt Docker TLS key for monitor ${id}`,
+					message: "Could not reencrypt Docker TLS key",
 					service: SERVICE_NAME,
 					method: "run",
 					details: { monitorId: id },

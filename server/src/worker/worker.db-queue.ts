@@ -85,12 +85,12 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		try {
 			const held = await this.jobsRepository.renewLocks([job.id], Date.now());
 			if (held === 0) {
-				this.logger.warn({ message: `Lost lock on job ${job.id}, stopping renewal`, service: SERVICE_NAME, method: "renewLock" });
+				this.logger.warn({ message: "Lost job lock, stopping renewal", service: SERVICE_NAME, method: "renewLock", details: { jobId: job.id } });
 				return false;
 			}
 			return true;
 		} catch (error: unknown) {
-			this.logger.warn({ message: `Failed to renew lock on job ${job.id}`, service: SERVICE_NAME, method: "renewLock", error });
+			this.logger.warn({ message: "Failed to renew job lock", service: SERVICE_NAME, method: "renewLock", details: { jobId: job.id }, error });
 			return true;
 		}
 	};
@@ -110,16 +110,18 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 			}
 		} catch (error: unknown) {
 			this.logger.warn({
-				message: `Job ${job.id} failed`,
+				message: "Job failed",
 				service: SERVICE_NAME,
 				method: `runJob:${job.type}`,
+				details: { jobId: job.id },
 				error,
 			});
 			await this.jobsRepository.recordFailure(job.id, error, Date.now()).catch((recordError: unknown) => {
 				this.logger.error({
-					message: `recordFailure failed for job ${job.id}`,
+					message: "Failed to record job failure",
 					service: SERVICE_NAME,
 					method: `runJob:${job.type}`,
+					details: { jobId: job.id },
 					error: recordError,
 				});
 			}); // Record failure and release lock
@@ -144,9 +146,10 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 						.catch((error: unknown) => {
 							// defensive, runJob already catches
 							this.logger.error({
-								message: `Unhandled error running job ${job.id}`,
+								message: "Unhandled error running job",
 								service: SERVICE_NAME,
 								method: `runJob:${type}`,
+								details: { jobId: job.id },
 								error,
 							});
 						})
@@ -158,9 +161,10 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 				this.pollMs[type] = capacity > 0 && jobs.length === 0 ? Math.min(this.pollMs[type] * 2, POLL_MAX_MS) : POLL_MS;
 			} catch (error: unknown) {
 				this.logger.error({
-					message: `Job loop tick failed for ${type}`,
+					message: "Job loop tick failed",
 					service: SERVICE_NAME,
 					method: `loop:${type}`,
+					details: { jobType: type },
 					error,
 				});
 			}

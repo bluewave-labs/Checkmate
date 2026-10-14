@@ -685,9 +685,10 @@ export class MonitorService implements IMonitorService {
 			if (result.status === "rejected") {
 				failedCount++;
 				this.logger.error({
-					message: `Failed to sync job queue for monitor ${monitors[index]?.id || "unknown"} during bulk ${pause ? "pause" : "resume"}`,
+					message: "Failed to sync job queue during bulk pause or resume",
 					service: SERVICE_NAME,
 					method: "bulkPauseMonitors",
+					details: { monitorId: monitors[index]?.id, pause },
 					error: result.reason,
 				});
 			}
@@ -699,53 +700,59 @@ export class MonitorService implements IMonitorService {
 	private deleteMonitorChildren = async (monitor: Monitor, teamId: string) => {
 		await this.checksRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
 			this.logger.warn({
-				message: `Error deleting checks for monitor ${monitor.id} with name ${monitor.name}`,
+				message: "Error deleting checks for monitor",
 				service: SERVICE_NAME,
 				method: "deleteMonitorChildren",
+				details: { monitorId: monitor.id, monitorName: monitor.name },
 				error: err,
 			});
 		});
 		await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id).catch((err: unknown) => {
 			this.logger.warn({
-				message: `Error removing monitor ${monitor.id} with name ${monitor.name} from status pages`,
+				message: "Error removing monitor from status pages",
 				service: SERVICE_NAME,
 				method: "deleteMonitorChildren",
+				details: { monitorId: monitor.id, monitorName: monitor.name },
 				error: err,
 			});
 		});
 
 		await this.incidentsRepository.deleteByMonitorId(monitor.id, teamId).catch((err: unknown) => {
 			this.logger.warn({
-				message: `Error deleting incidents for monitor ${monitor.id} with name ${monitor.name}`,
+				message: "Error deleting incidents for monitor",
 				service: SERVICE_NAME,
 				method: "deleteMonitorChildren",
+				details: { monitorId: monitor.id, monitorName: monitor.name },
 				error: err,
 			});
 		});
 
 		await this.geoChecksRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
 			this.logger.warn({
-				message: `Error deleting geo checks for monitor ${monitor.id} with name ${monitor.name}`,
+				message: "Error deleting geo checks for monitor",
 				service: SERVICE_NAME,
 				method: "deleteMonitorChildren",
+				details: { monitorId: monitor.id, monitorName: monitor.name },
 				error: err,
 			});
 		});
 
 		await this.dockerLogsRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
 			this.logger.warn({
-				message: `Error deleting docker logs for monitor ${monitor.id} with name ${monitor.name}`,
+				message: "Error deleting docker logs for monitor",
 				service: SERVICE_NAME,
 				method: "deleteMonitorChildren",
+				details: { monitorId: monitor.id, monitorName: monitor.name },
 				error: err,
 			});
 		});
 
 		await this.monitorStatsRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
 			this.logger.warn({
-				message: `Error deleting monitor stats for monitor ${monitor.id} with name ${monitor.name}`,
+				message: "Error deleting monitor stats for monitor",
 				service: SERVICE_NAME,
 				method: "deleteMonitorChildren",
+				details: { monitorId: monitor.id, monitorName: monitor.name },
 				error: err,
 			});
 		});
@@ -768,9 +775,10 @@ export class MonitorService implements IMonitorService {
 					await this.scheduler.deleteJob(monitor);
 				} catch (error: unknown) {
 					this.logger.warn({
-						message: `Error deleting associated records for monitor ${monitor.id} with name ${monitor.name}`,
+						message: "Error deleting associated records for monitor",
 						service: SERVICE_NAME,
 						method: "deleteAllMonitors",
+						details: { monitorId: monitor.id, monitorName: monitor.name },
 						error,
 					});
 				}

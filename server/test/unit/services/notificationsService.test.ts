@@ -193,7 +193,7 @@ describe("NotificationsService", () => {
 
 			expect(result).toBe(false);
 			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({ message: expect.stringContaining("Unknown notification type: carrier_pigeon") })
+				expect.objectContaining({ message: "Unknown notification type", details: { type: "carrier_pigeon" } })
 			);
 		});
 

@@ -83,9 +83,10 @@ export class EmailService implements IEmailService {
 				return this.compile(templateContent);
 			} catch (error: unknown) {
 				this.logger.error({
-					message: `Failed to load email template ${templateName}`,
+					message: "Failed to load email template",
 					service: SERVICE_NAME,
 					method: "loadTemplate",
+					details: { templateName },
 					error,
 				});
 			}
@@ -110,9 +111,10 @@ export class EmailService implements IEmailService {
 			return html.html;
 		} catch (error: unknown) {
 			this.logger.error({
-				message: `Failed to build email from template ${template}`,
+				message: "Failed to build email from template",
 				service: SERVICE_NAME,
 				method: "buildEmail",
+				details: { template },
 				error,
 			});
 		}

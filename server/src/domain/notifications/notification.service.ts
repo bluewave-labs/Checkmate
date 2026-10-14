@@ -80,9 +80,10 @@ export class NotificationsService implements INotificationsService {
 		const provider = this.providers[notification.type];
 		if (!provider) {
 			this.logger.error({
-				message: `Unknown notification type: ${notification.type}`,
+				message: "Unknown notification type",
 				service: SERVICE_NAME,
 				method: "send",
+				details: { type: notification.type },
 			});
 			return false;
 		}
@@ -135,9 +136,10 @@ export class NotificationsService implements INotificationsService {
 		const provider = this.providers[type];
 		if (!provider) {
 			this.logger.debug({
-				message: `Unknown notification type: ${notification.type}`,
+				message: "Unknown notification type",
 				service: SERVICE_NAME,
 				method: "sendTestNotification",
+				details: { type: notification.type },
 			});
 			return false;
 		}

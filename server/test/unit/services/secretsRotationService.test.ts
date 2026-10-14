@@ -91,7 +91,7 @@ describe("SecretsRotationService", () => {
 		expect(repository.updateDockerTlsKey).not.toHaveBeenCalled();
 		expect(logger.warn).toHaveBeenCalledWith(
 			expect.objectContaining({
-				message: "Could not reencrypt Docker TLS key for monitor m-unknown",
+				message: "Could not reencrypt Docker TLS key",
 				service: "SecretsRotationService",
 				details: { monitorId: "m-unknown" },
 				error: expect.objectContaining({ details: { keyId: unknown.currentKeyId() } }),
@@ -116,7 +116,7 @@ describe("SecretsRotationService", () => {
 		expect(encryptionService.decrypt(updatedKeyFor(repository, "m-stale"))).toBe(PLAINTEXT);
 		expect(logger.warn).toHaveBeenCalledWith(
 			expect.objectContaining({
-				message: "Could not reencrypt Docker TLS key for monitor m-broken",
+				message: "Could not reencrypt Docker TLS key",
 				details: { monitorId: "m-broken" },
 				error: expect.objectContaining({ message: expect.stringContaining("Ciphertext failed authentication") }),
 			})

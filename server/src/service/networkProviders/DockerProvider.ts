@@ -291,10 +291,10 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 			info.exitCode = this.exitCodeFromStatus(summary.Status);
 			info.health = this.healthFromStatus(summary.Status);
 			this.logger.debug({
-				message: `Failed to inspect container ${info.name}`,
+				message: "Failed to inspect container",
 				service: SERVICE_NAME,
 				method: "toContainerInfo",
-				details: { containerId: summary.Id },
+				details: { containerId: summary.Id, containerName: info.name },
 			});
 		}
 
@@ -407,10 +407,10 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 			return { containerId: summary.Id, containerName, lines: this.parseLogBuffer(buffer) };
 		} catch (error: unknown) {
 			this.logger.debug({
-				message: `Failed to read logs for container ${containerName}`,
+				message: "Failed to read container logs",
 				service: SERVICE_NAME,
 				method: "toContainerLogs",
-				details: { containerId: summary.Id },
+				details: { containerId: summary.Id, containerName },
 				error,
 			});
 			return null;

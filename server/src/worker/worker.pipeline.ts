@@ -118,10 +118,10 @@ export class WorkerPipeline implements IWorkerPipeline {
 		const check = this.deps.checkService.toCheck(status);
 		if (!check) {
 			this.deps.logger.warn({
-				message: `No check could be built for monitor ${monitor.id}`,
+				message: "No check could be built",
 				service: SERVICE_NAME,
 				method: "produce",
-				details: { code: status.code, message: status.message },
+				details: { code: status.code, message: status.message, monitorId: monitor.id },
 			});
 			return null;
 		}
@@ -197,9 +197,10 @@ export class WorkerPipeline implements IWorkerPipeline {
 					// The checks are already stored, so a failed arm is retried on the next ingest rather than dropped
 					this.unarmed.set(monitorId, pendingChecks);
 					this.deps.logger.error({
-						message: `Could not arm evaluation for monitor ${monitorId}, retrying on next ingest`,
+						message: "Could not arm evaluation, retrying on next ingest",
 						service: SERVICE_NAME,
 						method: "ingestChecks",
+						details: { monitorId },
 						error,
 					});
 					return false;
@@ -233,9 +234,10 @@ export class WorkerPipeline implements IWorkerPipeline {
 			if (!leaseHeld) {
 				// Another worker has claimed this row and is evaluating the remaining ids; stop here so nothing is applied twice
 				this.deps.logger.info({
-					message: `Lost lease on ${job.id} after check ${check.id}, stopping`,
+					message: "Lost evaluation lease, stopping",
 					service: SERVICE_NAME,
 					method: "handleEvaluate",
+					details: { jobId: job.id, checkId: check.id },
 				});
 				return;
 			}

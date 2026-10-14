@@ -312,7 +312,7 @@ describe("DBQueueWorker", () => {
 				// the failing failure-write is caught and logged, not thrown
 				expect(mocks.jobsRepository.recordFailure).toHaveBeenCalledWith(job.id, expect.any(Error), expect.any(Number));
 				expect(mocks.logger.error).toHaveBeenCalledWith(
-					expect.objectContaining({ message: expect.stringContaining("recordFailure failed for job check:m1") })
+					expect.objectContaining({ message: "Failed to record job failure", details: { jobId: "check:m1" } })
 				);
 				expect(unhandled).toEqual([]); // nothing escaped to the process
 				expect(worker.getHealth().inFlight).toBe(0); // slot freed despite the double failure
@@ -339,7 +339,7 @@ describe("DBQueueWorker", () => {
 			expect(mocks.jobsRepository.recordSuccess).toHaveBeenCalled();
 			expect(mocks.jobsRepository.recordFailure).toHaveBeenCalledWith(job.id, expect.any(Error), expect.any(Number));
 			expect(mocks.logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({ message: expect.stringContaining("recordFailure failed for job check:m1") })
+				expect.objectContaining({ message: "Failed to record job failure", details: { jobId: "check:m1" } })
 			);
 			expect(worker.getHealth().inFlight).toBe(0);
 		});
@@ -435,7 +435,7 @@ describe("DBQueueWorker", () => {
 
 			await jest.advanceTimersByTimeAsync(LOCK_RENEW_MS);
 			expect(mocks.jobsRepository.renewLocks).toHaveBeenCalledTimes(1); // lease lost → renewal timer stops
-			expect(mocks.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Lost lock") }));
+			expect(mocks.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Lost job lock, stopping renewal" }));
 
 			// A second interval passes without another renewal attempt.
 			await jest.advanceTimersByTimeAsync(LOCK_RENEW_MS);

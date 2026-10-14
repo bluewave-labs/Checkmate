@@ -86,10 +86,10 @@ export class DockerLogsService implements IDockerLogsService {
 				});
 			} catch (error: unknown) {
 				this.logger.debug({
-					message: `Failed to build docker logs for container ${containerName}`,
+					message: "Failed to build docker logs",
 					service: SERVICE_NAME,
 					method: "buildDockerLogs",
-					details: { monitorId: status.monitorId, containerId },
+					details: { monitorId: status.monitorId, containerId, containerName },
 					error,
 				});
 			}

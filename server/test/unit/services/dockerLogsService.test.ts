@@ -82,6 +82,8 @@ describe("DockerLogsService", () => {
 
 		expect(result).toHaveLength(1);
 		expect(result[0]?.metadata.containerId).toBe("good");
-		expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to build docker logs for container bad-container" }));
+		expect(logger.debug).toHaveBeenCalledWith(
+			expect.objectContaining({ message: "Failed to build docker logs", details: expect.objectContaining({ containerName: "bad-container" }) })
+		);
 	});
 });

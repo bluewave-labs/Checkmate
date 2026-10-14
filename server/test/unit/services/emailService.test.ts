@@ -111,7 +111,8 @@ describe("EmailService", () => {
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Failed to load email template welcomeEmail",
+					message: "Failed to load email template",
+					details: { templateName: "welcomeEmail" },
 					service: "EmailService",
 					method: "loadTemplate",
 					error: expect.objectContaining({ message: "ENOENT: no such file" }),
@@ -130,7 +131,8 @@ describe("EmailService", () => {
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Failed to load email template welcomeEmail",
+					message: "Failed to load email template",
+					details: { templateName: "welcomeEmail" },
 					error: "string error",
 				})
 			);
@@ -175,7 +177,8 @@ describe("EmailService", () => {
 			expect(result).toBeUndefined();
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Failed to build email from template nonExistentTemplate",
+					message: "Failed to build email from template",
+					details: { template: "nonExistentTemplate" },
 					service: "EmailService",
 					method: "buildEmail",
 					error: expect.objectContaining({ message: "Template nonExistentTemplate not found" }),
@@ -192,7 +195,8 @@ describe("EmailService", () => {
 			expect(result).toBeUndefined();
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Failed to build email from template welcomeEmailTemplate",
+					message: "Failed to build email from template",
+					details: { template: "welcomeEmailTemplate" },
 					error: expect.objectContaining({ message: "Template welcomeEmailTemplate not found" }),
 				})
 			);
@@ -209,7 +213,8 @@ describe("EmailService", () => {
 			expect(result).toBeUndefined();
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Failed to build email from template welcomeEmailTemplate",
+					message: "Failed to build email from template",
+					details: { template: "welcomeEmailTemplate" },
 					method: "buildEmail",
 					error: expect.objectContaining({ message: "MJML parse error" }),
 				})
@@ -227,7 +232,8 @@ describe("EmailService", () => {
 			expect(result).toBeUndefined();
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Failed to build email from template welcomeEmailTemplate",
+					message: "Failed to build email from template",
+					details: { template: "welcomeEmailTemplate" },
 					method: "buildEmail",
 					error: null,
 				})

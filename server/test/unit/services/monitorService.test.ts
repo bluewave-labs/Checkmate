@@ -1307,14 +1307,16 @@ describe("MonitorService", () => {
 			expect(logger.error).toHaveBeenCalledTimes(2);
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: expect.stringContaining("Failed to sync job queue for monitor m1"),
+					message: "Failed to sync job queue during bulk pause or resume",
 					method: "bulkPauseMonitors",
+					details: { monitorId: "m1", pause: true },
 				})
 			);
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: expect.stringContaining("Failed to sync job queue for monitor m3"),
+					message: "Failed to sync job queue during bulk pause or resume",
 					method: "bulkPauseMonitors",
+					details: { monitorId: "m3", pause: true },
 				})
 			);
 		});
@@ -1338,14 +1340,15 @@ describe("MonitorService", () => {
 			expect(result.failedCount).toBe(1);
 			expect(logger.error).toHaveBeenCalledTimes(1);
 			expect(logger.error).toHaveBeenCalledWith({
-				message: "Failed to sync job queue for monitor m1 during bulk resume",
+				message: "Failed to sync job queue during bulk pause or resume",
 				service: "MonitorService",
 				method: "bulkPauseMonitors",
+				details: { monitorId: "m1", pause: false },
 				error: "queue blew up",
 			});
 		});
 
-		it("logs 'unknown' when the failing monitor has no id", async () => {
+		it("logs an empty monitorId when the failing monitor has no id", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			const monitors = [makeMonitor({ id: "", isActive: false })];
 			(monitorsRepository.bulkTogglePause as jest.Mock).mockResolvedValue(monitors);
@@ -1364,12 +1367,13 @@ describe("MonitorService", () => {
 			expect(result.failedCount).toBe(1);
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Failed to sync job queue for monitor unknown during bulk pause",
+					message: "Failed to sync job queue during bulk pause or resume",
+					details: { monitorId: "", pause: true },
 				})
 			);
 		});
 
-		it("logs 'unknown' when the failing monitor at the rejected index is nullish", async () => {
+		it("logs no monitorId when the failing monitor at the rejected index is nullish", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			// Defensive: bulkTogglePause returns an array containing a nullish entry; the
 			// inner map throws TypeError, the forEach hits the `?.` short-circuit branch.
@@ -1386,7 +1390,8 @@ describe("MonitorService", () => {
 			expect(result.failedCount).toBe(1);
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Failed to sync job queue for monitor unknown during bulk pause",
+					message: "Failed to sync job queue during bulk pause or resume",
+					details: { monitorId: undefined, pause: true },
 				})
 			);
 		});

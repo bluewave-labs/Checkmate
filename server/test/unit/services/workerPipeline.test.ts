@@ -654,7 +654,9 @@ describe("WorkerPipeline", () => {
 			expect(deps.statusService.updateMonitorStatus).toHaveBeenCalledTimes(2);
 			expect(deps.dispatcher.dispatch).toHaveBeenCalledTimes(2);
 			expect(deps.jobsRepository.pullEvaluated).toHaveBeenCalledTimes(2); // no trailing sweep either
-			expect(deps.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Lost lease") }));
+			expect(deps.logger.info).toHaveBeenCalledWith(
+				expect.objectContaining({ message: "Lost evaluation lease, stopping", details: { jobId: job.id, checkId: "c2" } })
+			);
 		});
 
 		it("pulls ids whose check no longer exists so they do not sit on the row forever", async () => {

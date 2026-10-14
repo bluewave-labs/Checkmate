@@ -660,7 +660,9 @@ describe("DockerProvider", () => {
 			const result = await provider.handle(makeMonitor({ dockerLogsEnabled: true }));
 
 			expect(result.payload?.logs).toEqual([]);
-			expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to read logs for container my-container" }));
+			expect(logger.debug).toHaveBeenCalledWith(
+				expect.objectContaining({ message: "Failed to read container logs", details: expect.objectContaining({ containerName: "my-container" }) })
+			);
 		});
 
 		it("requests a bounded timestamped tail for every container state", async () => {
