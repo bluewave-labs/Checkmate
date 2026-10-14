@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-
+import { addLogContext } from "@/utils/logContext.js";
 import jwt from "jsonwebtoken";
 import { AppError, internalError } from "@/utils/AppError.js";
 import { middlewareErrors } from "@/api/middleware/middleware.errors.js";
@@ -49,6 +49,7 @@ export const createVerifyJWT = (settingsService: ISettingsService) => {
 				return;
 			} else if (isUser(decoded)) {
 				req.user = decoded;
+				addLogContext({ userId: decoded.id, teamId: decoded.teamId });
 				next();
 			} else {
 				next(new AppError(middlewareErrors.unauthenticated, { message: "Invalid token payload", service: SERVICE_NAME, method: "verifyJWT" }));

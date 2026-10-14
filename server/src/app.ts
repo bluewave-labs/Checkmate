@@ -15,6 +15,7 @@ import { createStatusPageCorsOrigin } from "@/api/middleware/statusPageCorsOrigi
 import { isPublicStatusPageApiPath } from "@/api/middleware/statusPagePublicApiPath.js";
 import { createStatusPageDocumentCsp } from "@/api/middleware/statusPageDocumentCsp.js";
 import { ApiServices } from "@/config/services.api.js";
+import { requestContext } from "./api/middleware/requestContext.js";
 
 export const createApp = ({
 	apiServices: services,
@@ -36,10 +37,13 @@ export const createApp = ({
 		methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
 		allowedHeaders: ["Content-Type", "Authorization", "Accept-Language"],
 		credentials: true,
+		exposedHeaders: ["X-Request-Id"],
 	};
 	const publicStatusPageCorsOrigin = createStatusPageCorsOrigin(allowedOrigin, services.statusPagesRepository);
 
 	const devMode = envSettings.nodeEnv === "development";
+
+	app.use(requestContext(services.logger));
 	app.use(generalApiLimiter(devMode));
 
 	app.use((req, res, next) => {

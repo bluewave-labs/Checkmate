@@ -1,8 +1,11 @@
 import { createLogger, format, transports, Logger as WinstonLogger } from "winston";
 import type { Logform } from "winston";
 import type { z } from "zod";
-import type { logConfigSchema, logEntrySchema } from "@/utils/logger.schema.js";
+import { serializedErrorSchema, type logConfigSchema, type logEntrySchema } from "@/utils/logger.schema.js";
 import { LogLevel } from "@/domain/app-settings/app-settings.type.js";
+import { getLogContext } from "@/utils/logContext.js";
+import { redactError, redactRecord, redactString } from "@/utils/redact.js";
+import { type SerializedError, serializeError } from "@/utils/serializedError.js";
 
 const SERVICE_NAME = "Logger";
 const MAX_CACHE_SIZE = 1000;
@@ -29,16 +32,24 @@ export interface ILogger {
 
 const jsonFormat = format.json();
 
+const formatError = (error: SerializedError): string => {
+	const head = error.stack ?? `${error.name}: ${error.message}`;
+	return error.cause ? `${head}\nCaused by: ${formatError(error.cause)}` : head;
+};
+
 const prettyFormat = format.combine(
 	format.colorize(),
 	format.printf((info: Logform.TransformableInfo) => {
-		const { timestamp, level, message, service, method, details, stack } = info;
+		const { timestamp, level, message, service, method, details, context, error, stack } = info;
 		let line = `${String(timestamp)} ${level}:`;
 		if (service) line += ` [${String(service)}]`;
 		if (method) line += `(${String(method)})`;
 		line += ` ${String(message)}`;
 		if (details) line += ` ${JSON.stringify(details)}`;
-		if (typeof stack === "string") line += `\n${stack}`;
+		if (context) line += ` ${JSON.stringify(context)}`;
+		const parsedError = serializedErrorSchema.safeParse(error);
+		const trace = parsedError.success ? formatError(parsedError.data) : typeof stack === "string" ? stack : undefined;
+		if (trace) line += `\n${trace}`;
 		return line;
 	})
 );
@@ -86,14 +97,17 @@ class Logger implements ILogger {
 	}
 
 	private buildLogEntry(level: LogLevel, config: LogConfig): LogEntry {
+		const context = getLogContext();
 		return {
 			level,
-			message: config.message,
+			timestamp: new Date().toISOString(),
+			message: redactString(config.message),
 			service: config.service,
 			method: config.method,
-			details: config.details,
-			stack: config.stack,
-			timestamp: new Date().toISOString(),
+			...(context && { context: { ...context } }),
+			...(config.details && { details: redactRecord(config.details) }),
+			...(config.error !== undefined && { error: redactError(serializeError(config.error)) }),
+			...(config.stack && { stack: redactString(config.stack) }),
 		};
 	}
 

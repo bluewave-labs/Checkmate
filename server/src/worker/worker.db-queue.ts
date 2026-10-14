@@ -9,6 +9,7 @@ import { QueueMode } from "@/domain/app-settings/app-settings.type.js";
 import { JobScheduler } from "@/worker/worker.job-scheduler.js";
 import { IBufferService } from "@/service/bufferService.js";
 import { POLL_MS } from "@/worker/worker.job-scheduler.js";
+import { runWithLogContext } from "@/utils/logContext.js";
 const SERVICE_NAME = "JobQueue";
 const POLL_MAX_MS = 5000; // back off poll interval to 5s if no jobs
 const LOCK_RENEW_MS = LOCK_MS / 3; // renew an in-flight job's lock at 1/3 the lease, so it survives two missed renewals
@@ -137,7 +138,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 				const jobs = await this.jobsRepository.claimDueBatch(type, capacity, Date.now());
 				for (const job of jobs) {
 					this.inFlight[type]++; // stay within concurrency limits
-					this.runJob(job)
+					runWithLogContext({ jobId: job.id, jobType: job.type, ...(job.refId && { monitorId: job.refId }) }, () => this.runJob(job))
 						.catch((error: unknown) => {
 							// defensive, runJob already catches
 							this.logger.error({
