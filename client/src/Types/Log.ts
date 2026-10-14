@@ -7,7 +7,6 @@ export interface Log {
 	service?: string;
 	method?: string;
 	details?: Record<string, unknown>;
-	stack?: string;
 	level: LogLevel;
 	timestamp: string;
 }
