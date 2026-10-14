@@ -45,10 +45,11 @@ const describeRequest = (req: Request): string | undefined => {
 
 const handleErrors = (logger: ILogger) => (error: unknown, req: Request, res: Response, _next: NextFunction) => {
 	const report = describeError(error);
-	const level = report.status < 500 ? "warn" : "error";
+	const isServerError = report.status >= 500;
 	const request = describeRequest(req);
 	const details = request ? { request, ...report.details } : report.details;
-	logger[level]({ ...report, details, stack: error instanceof Error ? error.stack : undefined });
+	const stack = isServerError && error instanceof Error ? error.stack : undefined;
+	logger[isServerError ? "error" : "debug"]({ ...report, details, stack });
 	const body: ErrorBody = { status: report.status, msg: report.message };
 	res.status(body.status).json(body);
 };

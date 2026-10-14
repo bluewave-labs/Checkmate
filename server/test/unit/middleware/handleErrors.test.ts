@@ -63,14 +63,14 @@ describe("handleErrors", () => {
 		expect(res.status).toHaveBeenCalledWith(500);
 	});
 
-	it("maps a ZodError to 400 with a readable message and logs at warn", () => {
+	it("maps a ZodError to 400 with a readable message and logs at debug", () => {
 		const res = makeRes();
 		const localLogger = createMockLogger();
 		const error = z.object({ name: z.string().min(1) }).safeParse({ name: "" }).error!;
 		handleErrors(localLogger)(error, {} as Request, res, (() => {}) as NextFunction);
 		expect(res.status).toHaveBeenCalledWith(400);
 		expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ status: 400, msg: expect.stringContaining("name:") }));
-		expect(localLogger.warn).toHaveBeenCalledWith(expect.objectContaining({ service: "validation" }));
+		expect(localLogger.debug).toHaveBeenCalledWith(expect.objectContaining({ service: "validation" }));
 		expect(localLogger.error).not.toHaveBeenCalled();
 	});
 
@@ -88,17 +88,27 @@ describe("handleErrors", () => {
 		const req = { method: "POST", originalUrl: "/api/v1/monitors" } as Request;
 		const error = z.object({ name: z.string().min(1) }).safeParse({ name: "" }).error!;
 		handleErrors(localLogger)(error, req, makeRes(), (() => {}) as NextFunction);
-		expect(localLogger.warn).toHaveBeenCalledWith(
+		expect(localLogger.debug).toHaveBeenCalledWith(
 			expect.objectContaining({ details: expect.objectContaining({ request: "POST /api/v1/monitors", issues: expect.any(Array) }) })
 		);
 	});
 
-	it("logs 4xx AppErrors at warn and 5xx at error", () => {
+	it("logs a 4xx error at debug without a stack", () => {
 		const localLogger = createMockLogger();
 		handleErrors(localLogger)(new AppError({ status: 404, message: "missing" }), {} as Request, makeRes(), (() => {}) as NextFunction);
-		expect(localLogger.warn).toHaveBeenCalledTimes(1);
+		expect(localLogger.debug).toHaveBeenCalledTimes(1);
+		expect(localLogger.debug).toHaveBeenCalledWith(expect.objectContaining({ status: 404, stack: undefined }));
+		expect(localLogger.warn).not.toHaveBeenCalled();
 		expect(localLogger.error).not.toHaveBeenCalled();
-		handleErrors(localLogger)(new AppError({ status: 500, message: "boom" }), {} as Request, makeRes(), (() => {}) as NextFunction);
+	});
+
+	it("logs a 5xx error at error with a stack", () => {
+		const localLogger = createMockLogger();
+		const error = new AppError({ status: 500, message: "boom" });
+		handleErrors(localLogger)(error, {} as Request, makeRes(), (() => {}) as NextFunction);
 		expect(localLogger.error).toHaveBeenCalledTimes(1);
+		expect(localLogger.error).toHaveBeenCalledWith(expect.objectContaining({ status: 500, stack: error.stack }));
+		expect(error.stack).toEqual(expect.any(String));
+		expect(localLogger.debug).not.toHaveBeenCalled();
 	});
 });
