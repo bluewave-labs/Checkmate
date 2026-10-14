@@ -89,7 +89,7 @@ curl -O https://raw.githubusercontent.com/bluewave-labs/checkmate/master/docker/
 JWT_SECRET="$(openssl rand -hex 32)" docker compose up -d
 ```
 
-Then open http://localhost:52345. If the app is reached at another origin (domain or LAN IP), set `CLIENT_HOST` accordingly. To build the image yourself, run `docker build -f docker/Dockerfile -t checkmate .` from a checkout. For TLS, put any reverse proxy (Caddy, Traefik, nginx) in front of port 52345.
+Then open http://localhost:52345. If the app is reached at another origin (domain or LAN IP), set `CLIENT_HOST` accordingly. To build the image yourself, run `docker build -f docker/Dockerfile -t checkmate .` from a checkout. For TLS, put any reverse proxy (Caddy, Traefik, nginx) in front of port 52345 and set `TRUST_PROXY=1`, so each client gets its own rate limit instead of sharing the proxy's.
 
 There are also 1-click installation options like [Repocloud](https://repocloud.io/details/Checkmate),
 [Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [Easypanel](https://easypanel.io/templates/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) or [Cloudzy](https://cloudzy.com/marketplace/checkmate). Note that the Helm chart has not yet been migrated to the all-in-one image: it still deploys the legacy `checkmate-client`, `checkmate-backend` and `checkmate-mongo` images, pinned at v3.8.1.
@@ -107,11 +107,12 @@ The image is configured entirely through environment variables on the server con
 | `ENCRYPTION_KEY` | No | Encrypts stored Docker TLS client keys at rest; generate one with `openssl rand -base64 32`. Comma-separated list: the first key encrypts, every key decrypts. Must be identical on the API and every worker. To rotate without downtime, deploy `OLD_KEY,NEW_KEY` everywhere, then `NEW_KEY,OLD_KEY` everywhere, wait for the worker to re-encrypt every row, then drop `OLD_KEY`. |
 | `PORT` | No | Port the API and web client are served on (default `52345`) |
 | `HEALTH_PORT` | No | Port for the `/livez`, `/readyz` and `/metrics` endpoints, served by any process that runs the job worker (default `52346`) |
-| `NODE_ENV` | No | `development`, `production` or `test`. The image sets `production`; override only for local testing. `production` enables the general API rate limiter and one-line JSON logs. Required when running the server outside the image |
+| `NODE_ENV` | No | `development`, `production` or `test` (default `production`, with a startup warning when unset). `production` enables the general API rate limiter and one-line JSON logs; set `development` for local development |
 | `LOG_LEVEL` | No | Server log level: `error`, `warn`, `info`, or `debug` (default `info`) |
 | `TOKEN_TTL` | No | Lifetime of issued auth tokens, e.g. `12h` or `7d` (default `99d`) |
 | `QUEUE_MODE` | No | `primary` (default) runs the API, the web client and the job scheduler; `worker` runs a job-processing worker only, with no API |
 | `QUEUE_PRIMARY_PROCESSES` | No | `true` (default) or `false`. Whether a `primary` node also processes monitoring jobs itself; set `false` when dedicated `worker` nodes handle all checks. Ignored in `worker` mode |
+| `TRUST_PROXY` | No | Set when running behind a reverse proxy, so rate limiting and logs see each client's IP instead of the proxy's. `1` trusts one proxy hop; or list the proxy addresses, e.g. `10.0.0.0/8` or `loopback, uniquelocal`. Leave unset when clients connect directly, otherwise they can spoof `X-Forwarded-For` |
 | `STATUS_PAGE_THEMES_ENABLED` | No | `true` (default) or `false`. When `false`, status pages ignore theme settings and always render the default theme |
 
 The web client needs no configuration by default: it calls the API on the same origin it was served from (`/api/v1`). For setups where the defaults don't apply — for example, the API is reached through a different origin than the page — the server renders overrides into the client at runtime via these optional variables:

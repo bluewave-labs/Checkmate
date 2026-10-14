@@ -29,6 +29,8 @@ services:
     restart: always
     env_file:
       - server-prod.env
+    environment:
+      TRUST_PROXY: "1" # behind the nginx gateway
     stop_grace_period: 60s
     healthcheck:
       test:
@@ -75,6 +77,8 @@ services:
     restart: always
     env_file:
       - server-staging.env
+    environment:
+      TRUST_PROXY: "1" # behind the nginx gateway
     stop_grace_period: 60s
     healthcheck:
       test:

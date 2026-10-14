@@ -1,5 +1,6 @@
+import { isIP } from "node:net";
 import { z } from "zod";
-import { DbTypes, LogLevels, NodeEnvs, QueueModes } from "@/domain/app-settings/app-settings.type.js";
+import { DbTypes, LogLevels, NodeEnvs, QueueModes, TrustProxyKeywords, type TrustProxy } from "@/domain/app-settings/app-settings.type.js";
 import { booleanCoercion } from "@/api/validation/shared.js";
 import { ILogger } from "@/utils/logger.js";
 
@@ -36,6 +37,36 @@ export const encryptionKeyList = z
 		return keys;
 	});
 
+const isTrustProxyEntry = (entry: string): boolean => {
+	if ((TrustProxyKeywords as readonly string[]).includes(entry)) return true;
+	const [address, prefix, ...rest] = entry.split("/");
+	if (rest.length > 0 || !address || isIP(address) === 0) return false;
+	return prefix === undefined || /^\d+$/.test(prefix);
+};
+
+// Unset leaves trust proxy off. Validated here because Express only rejects a bad value when it compiles it, as a startup crash
+export const trustProxySetting = z
+	.string()
+	.optional()
+	.transform((raw, ctx): TrustProxy | undefined => {
+		const value = raw?.trim();
+		if (!value) return undefined;
+		if (/^\d+$/.test(value)) return Number(value);
+		const entries = value
+			.split(",")
+			.map((entry) => entry.trim())
+			.filter((entry) => entry.length > 0);
+		const invalid = entries.filter((entry) => !isTrustProxyEntry(entry));
+		if (invalid.length > 0) {
+			ctx.addIssue({
+				code: "custom",
+				message: `TRUST_PROXY must be a hop count such as 1, or a comma-separated list of IPs, CIDRs or ${TrustProxyKeywords.join("/")}. Invalid: ${invalid.join(", ")}`,
+			});
+			return z.NEVER;
+		}
+		return entries;
+	});
+
 const envSchema = z.object({
 	// Server Configuration
 	PORT: z.string().default("52345"),
@@ -67,6 +98,7 @@ const envSchema = z.object({
 
 	// Optional
 	ORIGIN: z.string().optional(),
+	TRUST_PROXY: trustProxySetting,
 
 	// Feature flags
 	STATUS_PAGE_THEMES_ENABLED: booleanCoercion.default(true),
