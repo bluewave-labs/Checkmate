@@ -24,7 +24,7 @@ export class SignalgridProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
+			this.logger.debug({
 				message: "Signalgrid test alert failed",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
@@ -59,8 +59,8 @@ export class SignalgridProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
-				message: "Signalgrid alert failed",
+			this.logger.error({
+				message: "Signalgrid notification failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",
 				error,

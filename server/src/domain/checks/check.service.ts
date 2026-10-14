@@ -74,12 +74,8 @@ export class CheckService implements ICheckService {
 
 		if (type === "pagespeed") {
 			const pageSpeedPayload = payload as PageSpeedStatusPayload | undefined;
+			// No payload means the PageSpeed request failed; the caller logs the skipped check
 			if (!pageSpeedPayload) {
-				this.logger.warn({
-					message: "Failed to build check",
-					service: SERVICE_NAME,
-					method: "toCheck",
-				});
 				return undefined;
 			}
 			const categories = pageSpeedPayload.lighthouseResult?.categories ?? {};

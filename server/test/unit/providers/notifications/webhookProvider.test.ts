@@ -37,7 +37,7 @@ describe("WebhookProvider", () => {
 			mockGotPost.mockRejectedValue(new Error("fail"));
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeNotification())).toBe(false);
-			expect(logger.warn).toHaveBeenCalled();
+			expect(logger.debug).toHaveBeenCalled();
 		});
 
 		it("handles non-Error thrown values", async () => {
@@ -65,7 +65,7 @@ describe("WebhookProvider", () => {
 			mockGotPost.mockRejectedValue(new Error("fail"));
 			const { provider, logger } = createProvider();
 			expect(await provider.sendMessage(makeNotification() as any, makeMessage())).toBe(false);
-			expect(logger.warn).toHaveBeenCalled();
+			expect(logger.error).toHaveBeenCalled();
 		});
 
 		it("handles non-Error thrown values in sendMessage", async () => {

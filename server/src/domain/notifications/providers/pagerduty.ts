@@ -25,7 +25,7 @@ export class PagerDutyProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
+			this.logger.debug({
 				message: "PagerDuty test alert failed",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
@@ -40,7 +40,7 @@ export class PagerDutyProvider extends NotificationProvider {
 	 */
 	async sendMessage(notification: Notification, message: NotificationMessage): Promise<boolean> {
 		if (!notification.address) {
-			this.logger.warn({
+			this.logger.error({
 				message: "PagerDuty notification missing routing key",
 				service: SERVICE_NAME,
 				method: "sendMessage",
@@ -55,13 +55,13 @@ export class PagerDutyProvider extends NotificationProvider {
 				...this.gotRequestOptions(),
 			});
 			this.logger.info({
-				message: "[NEW] PagerDuty notification sent via sendMessage",
+				message: "PagerDuty notification sent",
 				service: SERVICE_NAME,
 				method: "sendMessage",
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
+			this.logger.error({
 				message: "PagerDuty notification failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",

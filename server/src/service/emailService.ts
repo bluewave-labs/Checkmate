@@ -172,14 +172,8 @@ export class EmailService implements IEmailService {
 		try {
 			await this.transporter.verify();
 		} catch (error: unknown) {
+			// Not logged here: the caller logs the thrown AppError, which already names the host and port
 			const cause = error instanceof Error ? error.message : "Unknown error";
-			this.logger.warn({
-				message: "Email transporter verification failed",
-				service: SERVICE_NAME,
-				method: "verifyTransporter",
-				details: { host: systemEmailHost, port: emailConfig.port },
-				error,
-			});
 			throw new AppError(emailErrors.sendFailed, {
 				message: describeSmtpFailure(error, systemEmailHost, emailConfig.port),
 				service: SERVICE_NAME,

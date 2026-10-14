@@ -19,7 +19,7 @@ export class EmailProvider extends NotificationProvider {
 		const html = await buildTestEmail(this.emailService);
 
 		if (!notification.address) {
-			this.logger.warn({
+			this.logger.debug({
 				message: "Missing address",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
@@ -28,7 +28,7 @@ export class EmailProvider extends NotificationProvider {
 		}
 
 		if (!html) {
-			this.logger.warn({
+			this.logger.error({
 				message: "Failed to build test email content",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
@@ -40,7 +40,7 @@ export class EmailProvider extends NotificationProvider {
 			await this.emailService.sendEmail(notification.address, subject, html);
 			return true;
 		} catch (error: unknown) {
-			this.logger.warn({
+			this.logger.debug({
 				message: "Email test alert failed",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
@@ -60,7 +60,7 @@ export class EmailProvider extends NotificationProvider {
 		const html = await this.buildEmailFromMessage(message);
 
 		if (!html) {
-			this.logger.warn({
+			this.logger.error({
 				message: "Failed to build email content",
 				service: SERVICE_NAME,
 				method: "sendMessage",
@@ -74,7 +74,7 @@ export class EmailProvider extends NotificationProvider {
 			await this.emailService.sendEmail(notification.address, subject, html);
 			return true;
 		} catch (error: unknown) {
-			this.logger.warn({
+			this.logger.error({
 				message: "Email notification failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",

@@ -55,7 +55,7 @@ describe("NtfyProvider", () => {
 			mockGotPost.mockRejectedValue(new Error("fail"));
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeNtfyNotification())).toBe(false);
-			expect(logger.warn).toHaveBeenCalled();
+			expect(logger.debug).toHaveBeenCalled();
 		});
 	});
 
@@ -94,7 +94,7 @@ describe("NtfyProvider", () => {
 			mockGotPost.mockRejectedValue(new Error("fail"));
 			const { provider, logger } = createProvider();
 			expect(await provider.sendMessage(makeNtfyNotification() as any, makeMessage())).toBe(false);
-			expect(logger.warn).toHaveBeenCalled();
+			expect(logger.error).toHaveBeenCalled();
 		});
 
 		it("includes threshold breaches in text", async () => {
@@ -167,7 +167,7 @@ describe("NtfyProvider", () => {
 			const notification = makeNtfyNotification({ ntfyAuthType: "token", accessToken: "" });
 			expect(await provider.sendMessage(notification as any, makeMessage())).toBe(false);
 			expect(mockGotPost).not.toHaveBeenCalled();
-			expect(logger.warn).toHaveBeenCalled();
+			expect(logger.error).toHaveBeenCalled();
 		});
 
 		it("refuses to send unauthenticated when basic auth has no username", async () => {
@@ -175,7 +175,7 @@ describe("NtfyProvider", () => {
 			const notification = makeNtfyNotification({ ntfyAuthType: "basic", accessToken: "s3cret" });
 			expect(await provider.sendMessage(notification as any, makeMessage())).toBe(false);
 			expect(mockGotPost).not.toHaveBeenCalled();
-			expect(logger.warn).toHaveBeenCalled();
+			expect(logger.error).toHaveBeenCalled();
 		});
 
 		it("refuses to send unauthenticated when basic auth has no password", async () => {
@@ -183,13 +183,16 @@ describe("NtfyProvider", () => {
 			const notification = makeNtfyNotification({ ntfyAuthType: "basic", ntfyUsername: "alice", accessToken: "" });
 			expect(await provider.sendMessage(notification as any, makeMessage())).toBe(false);
 			expect(mockGotPost).not.toHaveBeenCalled();
-			expect(logger.warn).toHaveBeenCalled();
+			expect(logger.error).toHaveBeenCalled();
 		});
 
 		it("refuses to send an unauthenticated test alert when credentials are incomplete", async () => {
-			const { provider } = createProvider();
+			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeNtfyNotification({ ntfyAuthType: "token", accessToken: "" }))).toBe(false);
 			expect(mockGotPost).not.toHaveBeenCalled();
+			// The UI shows a test's result, so missing credentials on a test only log at debug
+			expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining({ method: "sendTestAlert" }));
+			expect(logger.error).not.toHaveBeenCalled();
 		});
 	});
 });

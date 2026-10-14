@@ -266,7 +266,7 @@ describe("EgressService", () => {
 
 			expect(result).toBe("degraded");
 			expect(defaults.jobsRepository.upsertCleanupJob).toHaveBeenCalledWith(expect.objectContaining({ id: "egress", intervalMs: 5_000 }));
-			expect(defaults.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("already recorded") }));
+			expect(defaults.logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("already recorded") }));
 		});
 
 		it("does not mark degraded when the recovery job cannot be scheduled", async () => {

@@ -125,7 +125,7 @@ describe("GameProvider", () => {
 				responseTime: 0,
 			})
 		);
-		expect(logger.warn).toHaveBeenCalledWith(
+		expect(logger.debug).toHaveBeenCalledWith(
 			expect.objectContaining({
 				message: "Game server query failed",
 				method: "handle",
@@ -140,7 +140,7 @@ describe("GameProvider", () => {
 
 		await provider.handle(makeMonitor());
 
-		expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Game server query failed", error: "string error" }));
+		expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: "Game server query failed", error: "string error" }));
 	});
 
 	it("uses empty string as host when url is undefined", async () => {

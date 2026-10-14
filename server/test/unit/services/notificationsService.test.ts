@@ -185,19 +185,19 @@ describe("NotificationsService", () => {
 			}
 		});
 
-		it("returns false and logs warning for unknown notification type", async () => {
+		it("returns false and logs for unknown notification type", async () => {
 			const { service, notificationsRepository, logger } = createService();
 			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([makeNotification({ type: "carrier_pigeon" as any })]);
 
 			const result = await service.handleNotifications(makeMonitor(), makeCheck(), makeDecision());
 
 			expect(result).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(
+			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({ message: expect.stringContaining("Unknown notification type: carrier_pigeon") })
 			);
 		});
 
-		it("returns false and logs warning when notificationMessage is undefined", async () => {
+		it("returns false and logs when notificationMessage is undefined", async () => {
 			const notificationMessageBuilder = createMessageBuilder();
 			notificationMessageBuilder.buildMessage.mockReturnValue(undefined);
 			const { service, notificationsRepository, logger } = createService({ notificationMessageBuilder });
@@ -206,7 +206,7 @@ describe("NotificationsService", () => {
 			const result = await service.handleNotifications(makeMonitor(), makeCheck(), makeDecision());
 
 			expect(result).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Notification message not provided" }));
+			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Notification message not provided" }));
 		});
 
 		it("handles monitors with no notification IDs", async () => {
@@ -231,7 +231,7 @@ describe("NotificationsService", () => {
 			const result = await service.handleNotifications(makeMonitor(), makeCheck(), makeDecision());
 
 			expect(result).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("1 success, 1 failure") }));
+			expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("1 success, 1 failure") }));
 		});
 
 		it("uses fallback clientHost when settings.clientHost is empty", async () => {
@@ -330,7 +330,7 @@ describe("NotificationsService", () => {
 
 			expect(result).toBe(false);
 			expect(slackProvider.sendTestAlert).toHaveBeenCalled();
-			expect(logger.warn).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				expect.objectContaining({
 					message: "Test notification failed",
 					error: expect.objectContaining({ message: "Email is not configured. Set the system email host in settings." }),

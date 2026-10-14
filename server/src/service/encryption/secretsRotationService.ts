@@ -23,7 +23,7 @@ export class SecretsRotationService implements ISecretsRotationService {
 		if (rows.length === 0) return result;
 
 		if (!this.encryptionService.isConfigured()) {
-			this.logger.warn({
+			this.logger.error({
 				message: `${rows.length} monitor(s) have a stored Docker TLS key but ENCRYPTION_KEY is not set; their checks will fail until it is`,
 				service: SERVICE_NAME,
 				method: "run",

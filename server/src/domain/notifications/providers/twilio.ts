@@ -24,7 +24,7 @@ export class TwilioProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
+			this.logger.debug({
 				message: "Twilio test alert failed",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
@@ -60,8 +60,8 @@ export class TwilioProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
-				message: "Twilio SMS alert failed",
+			this.logger.error({
+				message: "Twilio notification failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",
 				error,

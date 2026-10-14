@@ -18,7 +18,7 @@ export class MatrixProvider extends NotificationProvider {
 			msgtype: "m.text",
 			body: getTestMessage(),
 		};
-		return await this.sendMessageWithBody(notification, body);
+		return await this.sendMessageWithBody(notification, body, "sendTestAlert");
 	};
 
 	sendMessage = async (notification: Notification, message: NotificationMessage): Promise<boolean> => {
@@ -34,10 +34,15 @@ export class MatrixProvider extends NotificationProvider {
 			format: "org.matrix.custom.html",
 			formatted_body: htmlText,
 		};
-		return this.sendMessageWithBody(notification, body);
+		return this.sendMessageWithBody(notification, body, "sendMessage");
 	};
 
-	private sendMessageWithBody = async (notification: Partial<Notification>, body: unknown): Promise<boolean> => {
+	// A test is started from the UI, which shows the result, so only a real alert logs at error
+	private sendMessageWithBody = async (
+		notification: Partial<Notification>,
+		body: unknown,
+		method: "sendTestAlert" | "sendMessage"
+	): Promise<boolean> => {
 		const { homeserverUrl, accessToken, roomId } = notification;
 		const baseUrl = this.normalizeHomeserverUrl(homeserverUrl as string);
 
@@ -56,10 +61,11 @@ export class MatrixProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
-				message: "Matrix notification failed",
+			const isTest = method === "sendTestAlert";
+			this.logger[isTest ? "debug" : "error"]({
+				message: isTest ? "Matrix test alert failed" : "Matrix notification failed",
 				service: SERVICE_NAME,
-				method: "sendMessage",
+				method,
 				error,
 			});
 			return false;

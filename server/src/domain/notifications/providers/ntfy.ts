@@ -4,6 +4,7 @@ import { NotificationProvider } from "@/domain/notifications/providers/INotifica
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
 import { getTestMessage, incidentUrl } from "@/domain/notifications/providers/utils.js";
 import got from "got";
+import type { LogLevel } from "@/domain/app-settings/app-settings.type.js";
 
 export class NtfyProvider extends NotificationProvider {
 	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
@@ -11,7 +12,7 @@ export class NtfyProvider extends NotificationProvider {
 			return false;
 		}
 
-		const authHeaders = this.buildAuthHeaders(notification, "sendTestAlert");
+		const authHeaders = this.buildAuthHeaders(notification, "sendTestAlert", "debug");
 		if (authHeaders === null) {
 			return false;
 		}
@@ -28,7 +29,7 @@ export class NtfyProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
+			this.logger.debug({
 				message: "ntfy test alert failed",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
@@ -43,7 +44,7 @@ export class NtfyProvider extends NotificationProvider {
 			return false;
 		}
 
-		const authHeaders = this.buildAuthHeaders(notification, "sendMessage");
+		const authHeaders = this.buildAuthHeaders(notification, "sendMessage", "error");
 		if (authHeaders === null) {
 			return false;
 		}
@@ -66,8 +67,8 @@ export class NtfyProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
-				message: "ntfy alert failed",
+			this.logger.error({
+				message: "ntfy notification failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",
 				error,
@@ -84,9 +85,10 @@ export class NtfyProvider extends NotificationProvider {
 	 * Returns the Authorization header for the configured auth type, or null when the
 	 * credentials are incomplete. Null is treated as a send failure rather than falling
 	 * back to an anonymous post, so a misconfigured channel surfaces instead of quietly
-	 * publishing to a topic the server may leave world-readable.
+	 * publishing to a topic the server may leave world-readable. Missing credentials log at
+	 * `level`: error for a real alert, debug for a test, whose result the UI already shows.
 	 */
-	private buildAuthHeaders(notification: Partial<Notification>, method: string): Record<string, string> | null {
+	private buildAuthHeaders(notification: Partial<Notification>, method: string, level: LogLevel): Record<string, string> | null {
 		const { ntfyAuthType, accessToken, ntfyUsername } = notification;
 
 		if (!ntfyAuthType || ntfyAuthType === "none") {
@@ -95,21 +97,21 @@ export class NtfyProvider extends NotificationProvider {
 
 		if (ntfyAuthType === "token") {
 			if (!accessToken) {
-				this.logMissingCredentials("access token", method);
+				this.logMissingCredentials("access token", method, level);
 				return null;
 			}
 			return { Authorization: `Bearer ${accessToken}` };
 		}
 
 		if (!ntfyUsername || !accessToken) {
-			this.logMissingCredentials("username and password", method);
+			this.logMissingCredentials("username and password", method, level);
 			return null;
 		}
 		return { Authorization: `Basic ${Buffer.from(`${ntfyUsername}:${accessToken}`).toString("base64")}` };
 	}
 
-	private logMissingCredentials(missing: string, method: string): void {
-		this.logger.warn({
+	private logMissingCredentials(missing: string, method: string, level: LogLevel): void {
+		this.logger[level]({
 			message: `ntfy notification is configured for authentication but is missing its ${missing}`,
 			service: SERVICE_NAME,
 			method,

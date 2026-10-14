@@ -31,7 +31,7 @@ export class RocketChatProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
+			this.logger.debug({
 				message: "Rocket.Chat test alert failed",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
@@ -72,7 +72,7 @@ export class RocketChatProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
+			this.logger.error({
 				message: "Rocket.Chat notification failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",

@@ -15,7 +15,7 @@ import { createStatusPageCorsOrigin } from "@/api/middleware/statusPageCorsOrigi
 import { isPublicStatusPageApiPath } from "@/api/middleware/statusPagePublicApiPath.js";
 import { createStatusPageDocumentCsp } from "@/api/middleware/statusPageDocumentCsp.js";
 import { ApiServices } from "@/config/services.api.js";
-import { requestContext } from "./api/middleware/requestContext.js";
+import { requestContext } from "@/api/middleware/requestContext.js";
 
 export const createApp = ({
 	apiServices: services,

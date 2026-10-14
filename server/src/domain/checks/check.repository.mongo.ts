@@ -237,13 +237,13 @@ class MongoChecksRepository implements IChecksRepository {
 				return { status: false };
 			case "resolve":
 				return { status: false, statusCode: NETWORK_ERROR };
-			default:
-				this.logger.warn({
-					message: "invalid filter",
-					service: SERVICE_NAME,
-					method: "filterToMatch",
-				});
+			case "all":
 				return {};
+			default: {
+				// Exhaustive: adding a CheckFilter value without a case here is a compile error
+				const unreachable: never = filter;
+				return unreachable;
+			}
 		}
 	};
 

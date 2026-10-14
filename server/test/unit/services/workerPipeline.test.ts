@@ -654,7 +654,7 @@ describe("WorkerPipeline", () => {
 			expect(deps.statusService.updateMonitorStatus).toHaveBeenCalledTimes(2);
 			expect(deps.dispatcher.dispatch).toHaveBeenCalledTimes(2);
 			expect(deps.jobsRepository.pullEvaluated).toHaveBeenCalledTimes(2); // no trailing sweep either
-			expect(deps.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Lost lease") }));
+			expect(deps.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Lost lease") }));
 		});
 
 		it("pulls ids whose check no longer exists so they do not sit on the row forever", async () => {
@@ -668,6 +668,27 @@ describe("WorkerPipeline", () => {
 			expect(deps.statusService.updateMonitorStatus).toHaveBeenCalledTimes(1);
 			expect(deps.jobsRepository.pullEvaluated).toHaveBeenCalledWith(job.id, ["c1"]);
 			expect(deps.jobsRepository.pullEvaluated).toHaveBeenCalledWith(job.id, ["c-gone"]);
+			expect(deps.logger.info).toHaveBeenCalledWith(
+				expect.objectContaining({ message: "Dropping 1 pending checks with no stored check", details: { jobId: job.id, checkIds: ["c-gone"] } })
+			);
+		});
+
+		it("logs the exact count of dropped ids but lists at most 20 of them", async () => {
+			const goneIds = Array.from({ length: 25 }, (_, i) => `gone-${i}`);
+			const job = makeEvaluateJob(...goneIds);
+			const { pipeline, deps } = createPipeline({
+				checksRepository: { findUnevaluatedByMonitorId: jest.fn<any>().mockResolvedValue([]) },
+			});
+
+			await pipeline.handleEvaluate(job);
+
+			expect(deps.jobsRepository.pullEvaluated).toHaveBeenCalledWith(job.id, goneIds);
+			expect(deps.logger.info).toHaveBeenCalledWith(
+				expect.objectContaining({
+					message: "Dropping 25 pending checks with no stored check",
+					details: { jobId: job.id, checkIds: goneIds.slice(0, 20) },
+				})
+			);
 		});
 
 		it("reads the monitor once and threads the post-write monitor across the backlog", async () => {

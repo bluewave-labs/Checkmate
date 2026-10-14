@@ -10,6 +10,8 @@ const SERVICE_NAME = "PageSpeedProvider";
 
 export class PageSpeedProvider implements IStatusProvider<PageSpeedStatusPayload> {
 	readonly type = "pagespeed";
+	// The missing-key warning would otherwise repeat on every PageSpeed check
+	private warnedMissingKey = false;
 	constructor(
 		private httpProvider: HttpProvider,
 		private settingsService: ISettingsService,
@@ -33,7 +35,9 @@ export class PageSpeedProvider implements IStatusProvider<PageSpeedStatusPayload
 
 			if (apiKey) {
 				pageSpeedUrl += `&key=${apiKey}`;
-			} else {
+				this.warnedMissingKey = false;
+			} else if (!this.warnedMissingKey) {
+				this.warnedMissingKey = true;
 				this.logger.warn({
 					message: "PageSpeed API key not found, performance may be throttled",
 					service: SERVICE_NAME,

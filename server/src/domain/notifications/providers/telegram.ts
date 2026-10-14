@@ -22,7 +22,7 @@ export class TelegramProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
+			this.logger.debug({
 				message: "Telegram test alert failed",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
@@ -56,8 +56,8 @@ export class TelegramProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
-				message: "Telegram alert failed",
+			this.logger.error({
+				message: "Telegram notification failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",
 				error,

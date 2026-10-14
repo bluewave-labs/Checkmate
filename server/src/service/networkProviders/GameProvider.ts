@@ -33,7 +33,7 @@ export class GameProvider implements IStatusProvider<GameStatusPayload> {
 					port: port ?? 0,
 				})
 				.catch((error: unknown) => {
-					this.logger.warn({
+					this.logger.debug({
 						message: "Game server query failed",
 						service: SERVICE_NAME,
 						method: "handle",

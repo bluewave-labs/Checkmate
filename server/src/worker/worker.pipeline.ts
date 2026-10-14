@@ -20,6 +20,8 @@ import { IReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { JobHandler, MonitorActionDecision, MonitorEvaluation } from "@/worker/worker.interface.js";
 
 const SERVICE_NAME = "WorkerPipeline";
+// Caps the check IDs listed in a log line; the count in the message is always exact
+const MAX_LOGGED_CHECK_IDS = 20;
 
 // The three entry points: the queue calls the two handlers, the buffer calls ingestChecks.
 // produce and evaluateCheck stay public on the class so tests can drive one stage without the queue or the buffer.
@@ -231,7 +233,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 			const leaseHeld = await this.deps.jobsRepository.pullEvaluated(job.id, [check.id]);
 			if (!leaseHeld) {
 				// Another worker has claimed this row and is evaluating the remaining ids; stop here so nothing is applied twice
-				this.deps.logger.warn({
+				this.deps.logger.info({
 					message: `Lost lease on ${job.id} after check ${check.id}, stopping`,
 					service: SERVICE_NAME,
 					method: "handleEvaluate",
@@ -245,10 +247,11 @@ export class WorkerPipeline implements IWorkerPipeline {
 		const found = new Set(checks.map((check) => check.id));
 		const missing = pendingCheckIds.filter((checkId) => !found.has(checkId));
 		if (missing.length > 0) {
-			this.deps.logger.warn({
-				message: `Dropping ${missing.length} pending checks with no stored check: ${missing.join(", ")}`,
+			this.deps.logger.info({
+				message: `Dropping ${missing.length} pending checks with no stored check`,
 				service: SERVICE_NAME,
 				method: "handleEvaluate",
+				details: { jobId: job.id, checkIds: missing.slice(0, MAX_LOGGED_CHECK_IDS) },
 			});
 			await this.deps.jobsRepository.pullEvaluated(job.id, missing);
 		}

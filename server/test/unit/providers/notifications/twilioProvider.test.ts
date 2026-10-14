@@ -65,7 +65,7 @@ describe("TwilioProvider", () => {
 			mockGotPost.mockRejectedValue(new Error("fail"));
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeTwilioNotification())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				expect.objectContaining({ method: "sendTestAlert", error: expect.objectContaining({ message: "fail" }) })
 			);
 		});
@@ -74,7 +74,7 @@ describe("TwilioProvider", () => {
 			mockGotPost.mockRejectedValue("string error");
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeTwilioNotification())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ error: "string error" }));
+			expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining({ error: "string error" }));
 		});
 	});
 
@@ -104,14 +104,14 @@ describe("TwilioProvider", () => {
 			mockGotPost.mockRejectedValue(new Error("fail"));
 			const { provider, logger } = createProvider();
 			expect(await provider.sendMessage(makeTwilioNotification() as any, makeMessage())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ method: "sendMessage" }));
+			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ method: "sendMessage" }));
 		});
 
 		it("handles non-Error thrown values in sendMessage", async () => {
 			mockGotPost.mockRejectedValue(42);
 			const { provider, logger } = createProvider();
 			expect(await provider.sendMessage(makeTwilioNotification() as any, makeMessage())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ error: 42 }));
+			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ error: 42 }));
 		});
 
 		it("includes thresholds in text", async () => {

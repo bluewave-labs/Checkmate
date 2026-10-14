@@ -77,7 +77,7 @@ describe("RocketChatProvider", () => {
 		const result = await provider.sendTestAlert(makeNotification({ type: "rocket_chat" }));
 
 		expect(result).toBe(false);
-		expect(logger.warn).toHaveBeenCalledWith(
+		expect(logger.debug).toHaveBeenCalledWith(
 			expect.objectContaining({
 				message: "Rocket.Chat test alert failed",
 				service: "RocketChatProvider",
@@ -263,7 +263,7 @@ describe("RocketChatProvider", () => {
 		const result = await provider.sendMessage(makeNotification({ type: "rocket_chat" }), makeMessage());
 
 		expect(result).toBe(false);
-		expect(logger.warn).toHaveBeenCalledWith(
+		expect(logger.error).toHaveBeenCalledWith(
 			expect.objectContaining({
 				message: "Rocket.Chat notification failed",
 				service: "RocketChatProvider",

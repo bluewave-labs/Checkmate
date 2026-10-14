@@ -93,12 +93,12 @@ describe("TeamsProvider", () => {
 			expect(card.body[0].text).toBe("This is a test notification from Checkmate");
 		});
 
-		it("returns false and logs warning on HTTP error", async () => {
+		it("returns false and logs on HTTP error", async () => {
 			mockPost.mockRejectedValue(new Error("Network error"));
 			const notification = createNotification();
 			const result = await provider.sendTestAlert(notification);
 			expect(result).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				expect.objectContaining({
 					message: "Teams test alert failed",
 					service: "TeamsProvider",
@@ -235,14 +235,14 @@ describe("TeamsProvider", () => {
 			}
 		});
 
-		it("returns false and logs warning on HTTP error", async () => {
+		it("returns false and logs on HTTP error", async () => {
 			mockPost.mockRejectedValue(new Error("502 Bad Gateway"));
 			const notification = createNotification();
 			const result = await provider.sendMessage(notification, createMessage());
 			expect(result).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(
+			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Teams alert failed via sendMessage",
+					message: "Teams notification failed",
 					service: "TeamsProvider",
 				})
 			);
@@ -252,7 +252,7 @@ describe("TeamsProvider", () => {
 			mockPost.mockRejectedValue(null);
 			const result = await provider.sendMessage(createNotification(), createMessage());
 			expect(result).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ error: null }));
+			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ error: null }));
 		});
 
 		it("includes details section in Adaptive Card when details are present", async () => {
@@ -288,7 +288,7 @@ describe("TeamsProvider", () => {
 			mockPost.mockRejectedValue(null);
 			const result = await provider.sendTestAlert(createNotification());
 			expect(result).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ error: null }));
+			expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining({ error: null }));
 		});
 	});
 });

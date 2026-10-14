@@ -64,31 +64,33 @@ describe("GeoChecksService", () => {
 			expect(result!.expiry).toBeDefined();
 		});
 
-		it("returns null and warns when monitor has no URL", async () => {
+		it("returns null and logs an error when monitor has no URL", async () => {
 			const { service, logger } = createService();
 
 			const result = await service.buildGeoCheck(makeMonitor({ url: "" }));
 
 			expect(result).toBeNull();
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Monitor missing URL for geo check" }));
+			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Monitor missing URL for geo check" }));
 		});
 
-		it("returns null and warns when geoCheckLocations is empty", async () => {
+		it("returns null without logging when geoCheckLocations is empty", async () => {
 			const { service, logger } = createService();
 
 			const result = await service.buildGeoCheck(makeMonitor({ geoCheckLocations: [] }));
 
 			expect(result).toBeNull();
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Monitor missing geo check locations" }));
+			// The geo pipeline logs this before calling buildGeoCheck
+			expect(logger.warn).not.toHaveBeenCalled();
 		});
 
-		it("returns null and warns when geoCheckLocations is undefined", async () => {
+		it("returns null without logging when geoCheckLocations is undefined", async () => {
 			const { service, logger } = createService();
 
 			const result = await service.buildGeoCheck(makeMonitor({ geoCheckLocations: undefined as any }));
 
 			expect(result).toBeNull();
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Monitor missing geo check locations" }));
+			// The geo pipeline logs this before calling buildGeoCheck
+			expect(logger.warn).not.toHaveBeenCalled();
 		});
 
 		it("returns null when createMeasurement returns null (API unavailable)", async () => {

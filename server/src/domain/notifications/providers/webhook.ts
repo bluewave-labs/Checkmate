@@ -29,8 +29,8 @@ export class WebhookProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
-				message: "Webhook alert failed",
+			this.logger.error({
+				message: "Webhook notification failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",
 				error,
@@ -105,7 +105,7 @@ export class WebhookProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
+			this.logger.debug({
 				message: "Webhook test alert failed",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",

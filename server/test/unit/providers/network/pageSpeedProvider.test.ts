@@ -92,6 +92,28 @@ describe("PageSpeedProvider", () => {
 		);
 	});
 
+	it("warns about a missing API key only once across checks", async () => {
+		const { provider, logger } = createProvider({ apiKey: undefined });
+
+		await provider.handle(makeMonitor());
+		await provider.handle(makeMonitor());
+		await provider.handle(makeMonitor());
+
+		expect(logger.warn).toHaveBeenCalledTimes(1);
+	});
+
+	it("warns again if the API key is removed after being configured", async () => {
+		const { provider, settingsService, logger } = createProvider({ apiKey: undefined });
+		const getSettings = settingsService.getCachedDBSettings as jest.Mock;
+
+		await provider.handle(makeMonitor());
+		getSettings.mockResolvedValueOnce({ pagespeedApiKey: "my-key" });
+		await provider.handle(makeMonitor());
+		await provider.handle(makeMonitor());
+
+		expect(logger.warn).toHaveBeenCalledTimes(2);
+	});
+
 	it("encodes the monitor URL in the PageSpeed API URL", async () => {
 		const { provider, httpProvider } = createProvider({ apiKey: "key" });
 

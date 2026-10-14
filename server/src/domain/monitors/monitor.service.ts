@@ -701,6 +701,7 @@ export class MonitorService implements IMonitorService {
 			this.logger.warn({
 				message: `Error deleting checks for monitor ${monitor.id} with name ${monitor.name}`,
 				service: SERVICE_NAME,
+				method: "deleteMonitorChildren",
 				error: err,
 			});
 		});
@@ -708,6 +709,7 @@ export class MonitorService implements IMonitorService {
 			this.logger.warn({
 				message: `Error removing monitor ${monitor.id} with name ${monitor.name} from status pages`,
 				service: SERVICE_NAME,
+				method: "deleteMonitorChildren",
 				error: err,
 			});
 		});
@@ -716,6 +718,7 @@ export class MonitorService implements IMonitorService {
 			this.logger.warn({
 				message: `Error deleting incidents for monitor ${monitor.id} with name ${monitor.name}`,
 				service: SERVICE_NAME,
+				method: "deleteMonitorChildren",
 				error: err,
 			});
 		});
@@ -724,6 +727,7 @@ export class MonitorService implements IMonitorService {
 			this.logger.warn({
 				message: `Error deleting geo checks for monitor ${monitor.id} with name ${monitor.name}`,
 				service: SERVICE_NAME,
+				method: "deleteMonitorChildren",
 				error: err,
 			});
 		});
@@ -732,6 +736,7 @@ export class MonitorService implements IMonitorService {
 			this.logger.warn({
 				message: `Error deleting docker logs for monitor ${monitor.id} with name ${monitor.name}`,
 				service: SERVICE_NAME,
+				method: "deleteMonitorChildren",
 				error: err,
 			});
 		});
@@ -740,6 +745,7 @@ export class MonitorService implements IMonitorService {
 			this.logger.warn({
 				message: `Error deleting monitor stats for monitor ${monitor.id} with name ${monitor.name}`,
 				service: SERVICE_NAME,
+				method: "deleteMonitorChildren",
 				error: err,
 			});
 		});

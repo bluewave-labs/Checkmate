@@ -85,7 +85,7 @@ export class DockerLogsService implements IDockerLogsService {
 					updatedAt: checkedAt,
 				});
 			} catch (error: unknown) {
-				this.logger.warn({
+				this.logger.debug({
 					message: `Failed to build docker logs for container ${containerName}`,
 					service: SERVICE_NAME,
 					method: "buildDockerLogs",

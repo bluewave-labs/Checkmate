@@ -68,7 +68,7 @@ export class NotificationsService implements INotificationsService {
 		notificationMessage: NotificationMessage | undefined
 	): Promise<boolean> => {
 		if (!notificationMessage) {
-			this.logger.warn({
+			this.logger.error({
 				message: "Notification message not provided",
 				service: SERVICE_NAME,
 				method: "send",
@@ -79,7 +79,7 @@ export class NotificationsService implements INotificationsService {
 		// Route to provider based on notification type
 		const provider = this.providers[notification.type];
 		if (!provider) {
-			this.logger.warn({
+			this.logger.error({
 				message: `Unknown notification type: ${notification.type}`,
 				service: SERVICE_NAME,
 				method: "send",
@@ -104,7 +104,7 @@ export class NotificationsService implements INotificationsService {
 		const succeeded = outcomes.filter(Boolean).length;
 		const failed = outcomes.length - succeeded;
 		if (failed > 0) {
-			this.logger.warn({
+			this.logger.debug({
 				message: `Notification send completed with ${succeeded} success, ${failed} failure(s)`,
 				service: SERVICE_NAME,
 				method: "sendNotifications",
@@ -124,7 +124,7 @@ export class NotificationsService implements INotificationsService {
 	sendTestNotification = async (notification: Partial<Notification>) => {
 		const type = notification.type;
 		if (!type) {
-			this.logger.warn({
+			this.logger.debug({
 				message: "Notification type not provided",
 				service: SERVICE_NAME,
 				method: "sendTestNotification",
@@ -134,7 +134,7 @@ export class NotificationsService implements INotificationsService {
 
 		const provider = this.providers[type];
 		if (!provider) {
-			this.logger.warn({
+			this.logger.debug({
 				message: `Unknown notification type: ${notification.type}`,
 				service: SERVICE_NAME,
 				method: "sendTestNotification",
@@ -148,7 +148,7 @@ export class NotificationsService implements INotificationsService {
 		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
 		const tasks = notifications.map((notification) =>
 			this.sendTestNotification(notification).catch((error: unknown) => {
-				this.logger.warn({
+				this.logger.debug({
 					message: "Test notification failed",
 					service: SERVICE_NAME,
 					method: "testAllNotifications",

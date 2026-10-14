@@ -56,14 +56,14 @@ describe("MatrixProvider", () => {
 			mockGotPut.mockRejectedValue(new Error("fail"));
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeNotification())).toBe(false);
-			expect(logger.warn).toHaveBeenCalled();
+			expect(logger.debug).toHaveBeenCalled();
 		});
 
 		it("handles non-Error thrown values", async () => {
 			mockGotPut.mockRejectedValue({ message: "custom obj" });
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeNotification())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ error: { message: "custom obj" } }));
+			expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining({ error: { message: "custom obj" } }));
 		});
 	});
 
@@ -86,7 +86,7 @@ describe("MatrixProvider", () => {
 			mockGotPut.mockRejectedValue(new Error("fail"));
 			const { provider, logger } = createProvider();
 			expect(await provider.sendMessage(makeNotification() as any, makeMessage())).toBe(false);
-			expect(logger.warn).toHaveBeenCalled();
+			expect(logger.error).toHaveBeenCalled();
 		});
 
 		it("includes threshold breaches", async () => {
@@ -193,7 +193,7 @@ describe("MatrixProvider", () => {
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeNotification({ roomId: "#missing:example.com" }))).toBe(false);
 			expect(mockGotPut).not.toHaveBeenCalled();
-			expect(logger.warn).toHaveBeenCalled();
+			expect(logger.debug).toHaveBeenCalled();
 		});
 
 		it("returns false when the directory response carries no room_id", async () => {
@@ -201,7 +201,7 @@ describe("MatrixProvider", () => {
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeNotification({ roomId: "#alerts:example.com" }))).toBe(false);
 			expect(mockGotPut).not.toHaveBeenCalled();
-			expect(logger.warn).toHaveBeenCalled();
+			expect(logger.debug).toHaveBeenCalled();
 		});
 
 		it("strips a trailing slash from the homeserver URL", async () => {

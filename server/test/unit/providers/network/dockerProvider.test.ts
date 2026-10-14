@@ -270,7 +270,7 @@ describe("DockerProvider", () => {
 
 			expect(result.status).toBe(true);
 			expect(result.code).toBe(207);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Capture returned 1 partial Docker collection error(s)" }));
+			expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: "Capture returned 1 partial Docker collection error(s)" }));
 		});
 
 		it("marks fatal Capture Docker errors down", async () => {
@@ -654,13 +654,13 @@ describe("DockerProvider", () => {
 			expect(Buffer.byteLength(text?.replace(" …[truncated]", "") ?? "", "utf8")).toBeLessThanOrEqual(4096);
 		});
 
-		it("isolates a logs failure and warns", async () => {
+		it("isolates a logs failure and logs it at debug", async () => {
 			const { provider, logger } = setup({ logs: jest.fn().mockRejectedValue(new Error("logs failed")) });
 
 			const result = await provider.handle(makeMonitor({ dockerLogsEnabled: true }));
 
 			expect(result.payload?.logs).toEqual([]);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to read logs for container my-container" }));
+			expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to read logs for container my-container" }));
 		});
 
 		it("requests a bounded timestamped tail for every container state", async () => {
@@ -704,7 +704,7 @@ describe("DockerProvider", () => {
 			expect(result.status).toBe(true);
 			expect(result.payload?.containers).toHaveLength(1);
 			expect(result.payload?.containers[0]?.restartCount).toBeUndefined();
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Failed to inspect") }));
+			expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Failed to inspect") }));
 		});
 
 		it.each([

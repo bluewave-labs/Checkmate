@@ -341,15 +341,9 @@ describe("EmailService", () => {
 			await expect(service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig())).rejects.toThrow(
 				"SMTP host smtp.example.com:587 failed verification."
 			);
-			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "Email transporter verification failed",
-					service: "EmailService",
-					method: "verifyTransporter",
-					details: { host: "smtp.example.com", port: 587 },
-					error: expect.objectContaining({ message: "SMTP auth failed" }),
-				})
-			);
+			// The caller logs the thrown AppError; logging here too would record every SMTP failure twice
+			expect(logger.warn).not.toHaveBeenCalled();
+			expect(logger.error).not.toHaveBeenCalled();
 		});
 
 		it.each([
@@ -406,14 +400,16 @@ describe("EmailService", () => {
 			});
 		});
 
-		it("passes a non-Error verification failure through as error", async () => {
+		it("rethrows a non-Error verification failure without logging it", async () => {
 			const transporter = createMockTransporter();
 			(transporter.verify as jest.Mock).mockRejectedValue("connection refused");
 			const nodemailer = createMockNodemailer(transporter);
 			const { service, logger } = createService({ nodemailer });
 
-			await expect(service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig())).rejects.toThrow();
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ error: "connection refused" }));
+			await expect(service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig())).rejects.toMatchObject({
+				details: { cause: "Unknown error" },
+			});
+			expect(logger.warn).not.toHaveBeenCalled();
 		});
 
 		it("throws and logs error when sendMail throws", async () => {

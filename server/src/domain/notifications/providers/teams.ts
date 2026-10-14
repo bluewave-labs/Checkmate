@@ -87,7 +87,7 @@ export class TeamsProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
+			this.logger.debug({
 				message: "Teams test alert failed",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
@@ -113,14 +113,14 @@ export class TeamsProvider extends NotificationProvider {
 				...this.gotRequestOptions(),
 			});
 			this.logger.info({
-				message: "Teams notification sent via sendMessage",
+				message: "Teams notification sent",
 				service: SERVICE_NAME,
 				method: "sendMessage",
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
-				message: "Teams alert failed via sendMessage",
+			this.logger.error({
+				message: "Teams notification failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",
 				error,

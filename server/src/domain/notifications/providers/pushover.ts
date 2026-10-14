@@ -23,7 +23,7 @@ export class PushoverProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
+			this.logger.debug({
 				message: "Pushover test alert failed",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
@@ -58,8 +58,8 @@ export class PushoverProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
-				message: "Pushover alert failed",
+			this.logger.error({
+				message: "Pushover notification failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",
 				error,

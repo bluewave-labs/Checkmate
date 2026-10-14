@@ -62,7 +62,7 @@ export class GeoChecksPipeline implements IGeoChecksPipeline {
 		}
 
 		if (!monitor.geoCheckLocations || monitor.geoCheckLocations.length === 0) {
-			this.logger.warn({
+			this.logger.debug({
 				message: `No geo check locations configured for monitor ${monitor.id}`,
 				service: SERVICE_NAME,
 				method: "run",
@@ -88,7 +88,7 @@ export class GeoChecksPipeline implements IGeoChecksPipeline {
 		// Step 2a: Build geo check, return null if fail
 		const geoCheck = await this.geoChecksService.buildGeoCheck(monitor);
 		if (!geoCheck) {
-			this.logger.warn({
+			this.logger.debug({
 				message: `No geo check could be built for monitor ${monitor.id}`,
 				service: SERVICE_NAME,
 				method: "run",

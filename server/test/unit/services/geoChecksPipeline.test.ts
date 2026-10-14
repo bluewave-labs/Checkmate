@@ -114,16 +114,16 @@ describe("GeoChecksPipeline", () => {
 		expect(defaults.geoChecksService.buildGeoCheck).not.toHaveBeenCalled();
 	});
 
-	it("warns when geoCheckLocations is empty", async () => {
+	it("logs at debug when geoCheckLocations is empty", async () => {
 		const { pipeline, defaults } = createGeoPipeline();
 		await pipeline.run(geoMonitor({ geoCheckLocations: [] }));
-		expect(defaults.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("No geo check locations") }));
+		expect(defaults.logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("No geo check locations") }));
 	});
 
-	it("warns when geoCheckLocations is undefined", async () => {
+	it("logs at debug when geoCheckLocations is undefined", async () => {
 		const { pipeline, defaults } = createGeoPipeline();
 		await pipeline.run(geoMonitor({ geoCheckLocations: undefined as any }));
-		expect(defaults.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("No geo check locations") }));
+		expect(defaults.logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("No geo check locations") }));
 	});
 
 	it("skips when in maintenance window", async () => {
@@ -135,10 +135,10 @@ describe("GeoChecksPipeline", () => {
 		expect(defaults.geoChecksService.buildGeoCheck).not.toHaveBeenCalled();
 	});
 
-	it("warns when buildGeoCheck returns null", async () => {
+	it("logs at debug when buildGeoCheck returns null", async () => {
 		const { pipeline, defaults } = createGeoPipeline();
 		await pipeline.run(geoMonitor());
-		expect(defaults.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("No geo check could be built") }));
+		expect(defaults.logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("No geo check could be built") }));
 	});
 
 	it("adds geo check to buffer on success", async () => {

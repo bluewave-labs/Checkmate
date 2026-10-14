@@ -124,7 +124,7 @@ describe("SecretsRotationService", () => {
 		expect(logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: "Docker TLS key rotation: 1 re-encrypted, 1 skipped, 2 scanned" }));
 	});
 
-	it("warns and skips every row when ENCRYPTION_KEY is not configured", async () => {
+	it("logs an error and skips every row when ENCRYPTION_KEY is not configured", async () => {
 		const rows = [
 			{ id: "m-1", dockerTlsKey: encryptionServiceFor([newKey()]).encrypt(PLAINTEXT) },
 			{ id: "m-2", dockerTlsKey: encryptionServiceFor([newKey()]).encrypt(PLAINTEXT) },
@@ -135,8 +135,8 @@ describe("SecretsRotationService", () => {
 
 		expect(result).toEqual({ scanned: 2, reencrypted: 0, skipped: 2 });
 		expect(repository.updateDockerTlsKey).not.toHaveBeenCalled();
-		expect(logger.warn).toHaveBeenCalledTimes(1);
-		expect(logger.warn).toHaveBeenCalledWith(
+		expect(logger.error).toHaveBeenCalledTimes(1);
+		expect(logger.error).toHaveBeenCalledWith(
 			expect.objectContaining({
 				message: "2 monitor(s) have a stored Docker TLS key but ENCRYPTION_KEY is not set; their checks will fail until it is",
 				service: "SecretsRotationService",

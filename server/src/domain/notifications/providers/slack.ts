@@ -21,7 +21,7 @@ export class SlackProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
+			this.logger.debug({
 				message: "Slack test alert failed",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
@@ -50,14 +50,14 @@ export class SlackProvider extends NotificationProvider {
 				...this.gotRequestOptions(),
 			});
 			this.logger.info({
-				message: "[NEW] Slack notification sent via sendMessage",
+				message: "Slack notification sent",
 				service: SERVICE_NAME,
 				method: "sendMessage",
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
-				message: "[NEW] Slack alert failed via sendMessage",
+			this.logger.error({
+				message: "Slack notification failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",
 				error,

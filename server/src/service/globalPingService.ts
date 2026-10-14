@@ -143,10 +143,11 @@ export class GlobalPingService implements IGlobalPingService {
 				}
 
 				if (measurement.status === "failed") {
-					this.logger.warn({
-						message: `GlobalPing measurement failed: ${measurementId}`,
+					this.logger.debug({
+						message: "GlobalPing measurement failed",
 						service: SERVICE_NAME,
 						method: "pollForResults",
+						details: { measurementId },
 					});
 					return [];
 				}
@@ -165,8 +166,8 @@ export class GlobalPingService implements IGlobalPingService {
 		}
 
 		// Timeout reached
-		this.logger.warn({
-			message: `GlobalPing measurement polling timeout: ${measurementId}`,
+		this.logger.debug({
+			message: "GlobalPing measurement polling timed out",
 			service: SERVICE_NAME,
 			method: "pollForResults",
 			details: { measurementId, timeoutMs },

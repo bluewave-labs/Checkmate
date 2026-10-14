@@ -20,7 +20,7 @@ export class DiscordProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
+			this.logger.debug({
 				message: "Discord test alert failed",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
@@ -32,7 +32,7 @@ export class DiscordProvider extends NotificationProvider {
 
 	async sendMessage(notification: Notification, message: NotificationMessage): Promise<boolean> {
 		if (!notification.address) {
-			this.logger.warn({
+			this.logger.error({
 				message: "Discord notification missing webhook URL",
 				service: SERVICE_NAME,
 				method: "sendMessage",
@@ -52,7 +52,7 @@ export class DiscordProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			this.logger.warn({
+			this.logger.error({
 				message: "Discord notification failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",

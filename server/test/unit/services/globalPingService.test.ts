@@ -230,10 +230,11 @@ describe("GlobalPingService", () => {
 			const results = await service.pollForResults("meas-123");
 
 			expect(results).toEqual([]);
-			expect(logger.warn).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: expect.stringContaining("failed"),
+					message: "GlobalPing measurement failed",
 					method: "pollForResults",
+					details: { measurementId: "meas-123" },
 				})
 			);
 		});
@@ -282,7 +283,7 @@ describe("GlobalPingService", () => {
 			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ error: 42 }));
 		});
 
-		it("returns empty array and logs warning on timeout", async () => {
+		it("returns empty array and logs on timeout", async () => {
 			const { service, logger } = createService();
 			// Always return in-progress so we hit the timeout
 			mockGotGet.mockImplementation(async () => ({ body: { status: "in-progress" } }));
@@ -295,9 +296,9 @@ describe("GlobalPingService", () => {
 			const results = await promise;
 
 			expect(results).toEqual([]);
-			expect(logger.warn).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: expect.stringContaining("timeout"),
+					message: "GlobalPing measurement polling timed out",
 					method: "pollForResults",
 					details: expect.objectContaining({ measurementId: "meas-123", timeoutMs: 100 }),
 				})

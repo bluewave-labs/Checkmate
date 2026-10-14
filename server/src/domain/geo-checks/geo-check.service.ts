@@ -53,7 +53,7 @@ export class GeoChecksService implements IGeoChecksService {
 	async buildGeoCheck(monitor: Monitor): Promise<GeoCheck | null> {
 		try {
 			if (!monitor.url) {
-				this.logger.warn({
+				this.logger.error({
 					message: "Monitor missing URL for geo check",
 					service: SERVICE_NAME,
 					method: "buildGeoCheck",
@@ -62,13 +62,8 @@ export class GeoChecksService implements IGeoChecksService {
 				return null;
 			}
 
+			// The geo pipeline already logs this before calling buildGeoCheck
 			if (!monitor.geoCheckLocations || monitor.geoCheckLocations.length === 0) {
-				this.logger.warn({
-					message: "Monitor missing geo check locations",
-					service: SERVICE_NAME,
-					method: "buildGeoCheck",
-					details: { monitorId: monitor.id },
-				});
 				return null;
 			}
 

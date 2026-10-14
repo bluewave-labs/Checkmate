@@ -220,7 +220,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		const fatalError = errors.find((error) => error.metric.some((metric) => CAPTURE_FATAL_ERROR_METRICS.has(metric)));
 		if (fatalError) return this.failed(monitor, NETWORK_ERROR, fatalError.err, response.responseTime ?? 0);
 		if (errors.length > 0) {
-			this.logger.warn({
+			this.logger.debug({
 				message: `Capture returned ${errors.length} partial Docker collection error(s)`,
 				service: SERVICE_NAME,
 				method: "handleCapture",
@@ -290,7 +290,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		} else {
 			info.exitCode = this.exitCodeFromStatus(summary.Status);
 			info.health = this.healthFromStatus(summary.Status);
-			this.logger.warn({
+			this.logger.debug({
 				message: `Failed to inspect container ${info.name}`,
 				service: SERVICE_NAME,
 				method: "toContainerInfo",
@@ -406,7 +406,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 				.logs({ follow: false, stdout: true, stderr: true, timestamps: true, tail: DOCKER_LOG_TAIL_LINES });
 			return { containerId: summary.Id, containerName, lines: this.parseLogBuffer(buffer) };
 		} catch (error: unknown) {
-			this.logger.warn({
+			this.logger.debug({
 				message: `Failed to read logs for container ${containerName}`,
 				service: SERVICE_NAME,
 				method: "toContainerLogs",
