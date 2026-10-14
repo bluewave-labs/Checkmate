@@ -8,7 +8,7 @@ export type ThrowScanner = {
 	throwSitesOf: (controllerFile: string, handler: string) => ThrowSite[];
 };
 
-export const definitionId = (file: string, expression: string): string => `${file}#${expression}`;
+export const definitionId = (file: string, expression: string): string => `${file.replaceAll("\\", "/")}#${expression}`;
 
 /**
  * Builds a TypeScript program over the server and walks call graphs from controller handlers
