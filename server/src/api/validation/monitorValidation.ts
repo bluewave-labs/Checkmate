@@ -421,7 +421,7 @@ export const bulkPauseResponseSchema = z.object({
 });
 
 export const certificateResponseSchema = z.object({
-	certificateDate: z.string(),
+	certificateDate: z.string().nullable(),
 });
 
 export const domainResponseSchema = z.object({

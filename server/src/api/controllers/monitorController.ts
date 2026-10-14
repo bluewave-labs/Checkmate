@@ -73,7 +73,7 @@ class MonitorController implements IMonitorController {
 		const teamId = requireTeamId(req.user?.teamId);
 		const monitor = await this.monitorService.getMonitorById({ teamId, monitorId });
 		const certificate = await fetchMonitorCertificate(sslChecker, monitor);
-		const data = { certificateDate: new Date(certificate.validTo) };
+		const data = { certificateDate: certificate === null ? null : new Date(certificate.validTo) };
 		res.json({ success: true, msg: "SSL certificate retrieved successfully", data });
 	};
 
