@@ -3997,8 +3997,36 @@
 							"nullable": true
 						}
 					},
+					"code": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "number"
+							}
+						]
+					},
+					"errno": {
+						"type": "number"
+					},
+					"syscall": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"port": {
+						"type": "number"
+					},
 					"cause": {
 						"$ref": "#/components/schemas/SerializedError"
+					},
+					"errors": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/SerializedError"
+						}
 					}
 				},
 				"required": ["name", "message"]

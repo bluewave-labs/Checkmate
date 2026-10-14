@@ -1,4 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
+import mongoose from "mongoose";
 import { redact, redactError, redactRecord, redactString } from "../../../src/utils/redact.ts";
 
 describe("redactString", () => {
@@ -14,6 +15,19 @@ describe("redactString", () => {
 
 	it("masks credentials in a URL", () => {
 		expect(redactString("connect mongodb://admin:hunter2@db:27017/uptime")).toBe("connect mongodb://[REDACTED]@db:27017/uptime");
+	});
+
+	it.each([
+		["an empty username", "redis://:s3cret@cache:6379", "redis://[REDACTED]@cache:6379"],
+		["an @ in the password", "mongodb://admin:p@ss@db:27017/uptime", "mongodb://[REDACTED]@db:27017/uptime"],
+		["a token with no password", "https://ghp_abc123@github.com/org/repo.git", "https://[REDACTED]@github.com/org/repo.git"],
+	])("masks URL credentials with %s", (_name, input, expected) => {
+		expect(redactString(`failed ${input}`)).toBe(`failed ${expected}`);
+	});
+
+	it("leaves an @ in a URL path alone", () => {
+		const text = "GET https://medium.com/@someone/post returned 404";
+		expect(redactString(text)).toBe(text);
 	});
 
 	it("masks every occurrence", () => {
@@ -48,6 +62,16 @@ describe("redact", () => {
 	it("keeps primitives, null and dates as they are", () => {
 		const date = new Date(0);
 		expect(redact({ count: 3, ok: true, none: null, at: date })).toEqual({ count: 3, ok: true, none: null, at: date });
+	});
+
+	it("serializes values with toJSON the way JSON.stringify would", () => {
+		const objectId = new mongoose.Types.ObjectId("65f1c2a4d8b9e0123456789a");
+		expect(redact({ monitorId: objectId })).toEqual({ monitorId: "65f1c2a4d8b9e0123456789a" });
+		expect(redact({ data: Buffer.from("hi") })).toEqual({ data: { type: "Buffer", data: [104, 105] } });
+	});
+
+	it("redacts credentials in a URL object", () => {
+		expect(redact({ target: new URL("https://user:pw@example.com/path") })).toEqual({ target: "https://[REDACTED]@example.com/path" });
 	});
 
 	it("stops descending past the depth limit", () => {

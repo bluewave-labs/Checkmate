@@ -5,8 +5,8 @@ const MAX_DEPTH = 6;
 
 const SENSITIVE_KEY = /pass(word)?|secret|token|authorization|cookie|api[-_]?key|webhook/i;
 
-// user:pass@ in any URL
-const URL_CREDENTIALS = /(\b[a-z][a-z0-9+.-]*:\/\/)[^\s/@:]+:[^\s/@]+@/gi;
+// userinfo in any URL, up to the last @ before the path
+const URL_CREDENTIALS = /(\b[a-z][a-z0-9+.-]*:\/\/)[^\s/?#]*@/gi;
 
 const SECRET_URL_PATHS = [
 	/(hooks\.slack\.com\/services\/)[^\s"'<>]+/gi,
@@ -24,6 +24,8 @@ export const redact = (value: unknown, depth = 0): unknown => {
 	if (value instanceof Date) return value;
 	if (value instanceof Error) return redact(serializeError(value), depth + 1);
 	if (Array.isArray(value)) return value.map((item) => redact(item, depth + 1));
+	const toJSON: unknown = Reflect.get(value, "toJSON");
+	if (typeof toJSON === "function") return redact(toJSON.call(value), depth + 1);
 	return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, SENSITIVE_KEY.test(key) ? REDACTED : redact(item, depth + 1)]));
 };
 
@@ -35,5 +37,7 @@ export const redactError = (error: SerializedError): SerializedError => ({
 	message: redactString(error.message),
 	...(error.stack && { stack: redactString(error.stack) }),
 	...(error.details && { details: redactRecord(error.details) }),
+	...(error.address && { address: redactString(error.address) }),
 	...(error.cause && { cause: redactError(error.cause) }),
+	...(error.errors && { errors: error.errors.map(redactError) }),
 });

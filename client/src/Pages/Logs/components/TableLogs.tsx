@@ -46,8 +46,13 @@ const LevelBadge = ({ level }: { level: LogLevel }) => {
 };
 
 const formatError = (error: LogError): string => {
-	const head = error.stack ?? `${error.name}: ${error.message}`;
-	return error.cause ? `${head}\nCaused by: ${formatError(error.cause)}` : head;
+	const location = error.address === undefined || error.port === undefined ? error.address : `${error.address}:${error.port}`;
+	const system = [error.code, error.syscall, location].filter((part) => part !== undefined).join(" ");
+	const parts = [error.stack ?? `${error.name}: ${error.message}`];
+	if (system) parts.push(`(${system})`);
+	error.errors?.forEach((inner, index) => parts.push(`Error ${index + 1}: ${formatError(inner)}`));
+	if (error.cause) parts.push(`Caused by: ${formatError(error.cause)}`);
+	return parts.join("\n");
 };
 
 const hasEntryDetails = (log: Log) => Boolean(log.error || log.details || log.context);

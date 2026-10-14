@@ -161,6 +161,26 @@ describe("Logger", () => {
 			expect(output).toContain("Error: inner");
 			expect(output).toContain("Caused by: Error: root");
 		});
+
+		it("writes system error fields and the inner errors of an AggregateError when json is false", async () => {
+			const setup = () => {
+				const lines = captureOutput();
+				const logger = new Logger({ level: "info", json: false });
+				return { lines, logger };
+			};
+			const { lines, logger } = setup();
+			const refused = Object.assign(new Error("connect ECONNREFUSED 127.0.0.1:25"), {
+				code: "ECONNREFUSED",
+				syscall: "connect",
+				address: "127.0.0.1",
+				port: 25,
+			});
+			logger.error({ message: "Failed to send email", error: new AggregateError([refused], "") });
+			await logger.flush();
+			const output = lines.join("");
+			expect(output).toContain("Error 1: Error: connect ECONNREFUSED 127.0.0.1:25");
+			expect(output).toContain("(ECONNREFUSED connect 127.0.0.1:25)");
+		});
 	});
 
 	describe("flush", () => {

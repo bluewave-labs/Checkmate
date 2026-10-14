@@ -10,7 +10,13 @@ export interface LogError {
 	service?: string;
 	method?: string;
 	details?: Record<string, unknown>;
+	code?: string | number;
+	errno?: number;
+	syscall?: string;
+	address?: string;
+	port?: number;
 	cause?: LogError;
+	errors?: LogError[];
 }
 
 export interface LogContext {

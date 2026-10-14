@@ -10,8 +10,16 @@ export const serializedErrorSchema = z
 		service: z.string().optional(),
 		method: z.string().optional(),
 		details: z.record(z.string(), z.unknown()).optional(),
+		code: z.union([z.string(), z.number()]).optional(),
+		errno: z.number().optional(),
+		syscall: z.string().optional(),
+		address: z.string().optional(),
+		port: z.number().optional(),
 		get cause() {
 			return serializedErrorSchema.optional();
+		},
+		get errors() {
+			return z.array(serializedErrorSchema).optional();
 		},
 	})
 	.meta({ id: "SerializedError" });

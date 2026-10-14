@@ -64,3 +64,44 @@ describe("AppError cause", () => {
 		expect(new AppError({ status: 404, description: "Not found" }).cause).toBeUndefined();
 	});
 });
+
+describe("system error fields", () => {
+	it("captures code, errno, syscall, address and port", () => {
+		const error = Object.assign(new Error("connect ECONNREFUSED 127.0.0.1:27017"), {
+			code: "ECONNREFUSED",
+			errno: -111,
+			syscall: "connect",
+			address: "127.0.0.1",
+			port: 27017,
+		});
+		expect(serializeError(error)).toEqual(
+			expect.objectContaining({ code: "ECONNREFUSED", errno: -111, syscall: "connect", address: "127.0.0.1", port: 27017 })
+		);
+	});
+
+	it("keeps a numeric code", () => {
+		expect(serializeError(Object.assign(new Error("duplicate key"), { code: 11000 })).code).toBe(11000);
+	});
+
+	it("ignores fields of the wrong type", () => {
+		const result = serializeError(Object.assign(new Error("odd"), { code: { nested: true }, port: "80" }));
+		expect(result).not.toHaveProperty("code");
+		expect(result).not.toHaveProperty("port");
+	});
+
+	it("serializes the inner errors of an AggregateError, so an empty message still says what failed", () => {
+		const v4 = Object.assign(new Error("connect ECONNREFUSED 127.0.0.1:25"), { code: "ECONNREFUSED", address: "127.0.0.1", port: 25 });
+		const v6 = Object.assign(new Error("connect ECONNREFUSED ::1:25"), { code: "ECONNREFUSED", address: "::1", port: 25 });
+		const result = serializeError(new AggregateError([v4, v6], ""));
+		expect(result.message).toBe("");
+		expect(result.errors).toEqual([
+			expect.objectContaining({ code: "ECONNREFUSED", address: "127.0.0.1", port: 25 }),
+			expect.objectContaining({ code: "ECONNREFUSED", address: "::1", port: 25 }),
+		]);
+	});
+
+	it("keeps at most five inner errors", () => {
+		const inner = Array.from({ length: 8 }, (_, i) => new Error(`attempt ${i}`));
+		expect(serializeError(new AggregateError(inner, "all failed")).errors).toHaveLength(5);
+	});
+});
