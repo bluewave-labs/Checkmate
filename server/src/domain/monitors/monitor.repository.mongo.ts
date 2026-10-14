@@ -1,7 +1,7 @@
 import { MonitorModel } from "@/domain/monitors/monitor.model.js";
 import type { MonitorDocument, CheckSnapshotDocument } from "@/domain/monitors/monitor.model.js";
 import type { CheckSnapshot } from "@/domain/checks/check.type.js";
-import type { Monitor, MonitorScheduleFields, MonitorStatus, MonitorsSummary } from "@/domain/monitors/monitor.type.js";
+import { normalizeIntervalMs, type Monitor, type MonitorScheduleFields, type MonitorStatus, type MonitorsSummary } from "@/domain/monitors/monitor.type.js";
 import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import { MongoBulkWriteError } from "mongodb";
 import { AppError, internalError } from "@/utils/AppError.js";
@@ -56,9 +56,9 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			id: doc._id.toString(),
 			type: doc.type,
 			isActive: doc.isActive,
-			interval: doc.interval,
+			interval: normalizeIntervalMs(doc.interval),
 			geoCheckEnabled: doc.geoCheckEnabled ?? false,
-			geoCheckInterval: doc.geoCheckInterval ?? 300000,
+			geoCheckInterval: normalizeIntervalMs(doc.geoCheckInterval ?? 300000),
 		}));
 	};
 
@@ -466,7 +466,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			url: doc.url,
 			port: doc.port ?? undefined,
 			isActive: doc.isActive,
-			interval: doc.interval,
+			interval: normalizeIntervalMs(doc.interval),
 			uptimePercentage: doc.uptimePercentage ?? undefined,
 			notifications: notificationIds,
 			tags: tagIds,
@@ -488,7 +488,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			recentChecks: (doc.recentChecks ?? []).map((check: CheckSnapshotDocument) => toCheckSnapshot(check)),
 			geoCheckEnabled: doc.geoCheckEnabled ?? false,
 			geoCheckLocations: doc.geoCheckLocations ?? [],
-			geoCheckInterval: doc.geoCheckInterval ?? 300000,
+			geoCheckInterval: doc.geoCheckInterval ? normalizeIntervalMs(doc.geoCheckInterval) : 300000,
 			dockerLogsEnabled: doc.dockerLogsEnabled ?? false,
 			dockerAlertOnStopped: doc.dockerAlertOnStopped ?? false,
 			dockerAlertOnUnhealthy: doc.dockerAlertOnUnhealthy ?? false,

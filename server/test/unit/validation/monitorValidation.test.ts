@@ -871,4 +871,47 @@ describe("monitorValidation — docker alert switches", () => {
 			expect(parsed.dockerAlertOnUnhealthy).toBe(false);
 		});
 	});
+
+	describe("interval normalization", () => {
+		it("normalizes interval in seconds to milliseconds in createMonitorBodyValidation", () => {
+			const parsed = createMonitorBodyValidation.parse({
+				name: "Web Test",
+				type: "http",
+				url: "https://example.com",
+				interval: 300, // 5 min in seconds
+			});
+			expect(parsed.interval).toBe(300000);
+		});
+
+		it("preserves interval already in milliseconds in createMonitorBodyValidation", () => {
+			const parsed = createMonitorBodyValidation.parse({
+				name: "Web Test",
+				type: "http",
+				url: "https://example.com",
+				interval: 60000,
+			});
+			expect(parsed.interval).toBe(60000);
+		});
+
+		it("normalizes interval in seconds to milliseconds in editMonitorBodyValidation", () => {
+			const parsed = editMonitorBodyValidation.parse({
+				interval: 60, // 1 min in seconds
+			});
+			expect(parsed.interval).toBe(60000);
+		});
+
+		it("normalizes interval in seconds to milliseconds in importMonitorsBodyValidation", () => {
+			const parsed = importMonitorsBodyValidation.parse({
+				monitors: [
+					{
+						name: "Imported Check",
+						type: "http",
+						url: "https://example.com",
+						interval: 300,
+					},
+				],
+			});
+			expect(parsed.monitors[0].interval).toBe(300000);
+		});
+	});
 });
