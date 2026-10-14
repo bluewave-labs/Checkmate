@@ -107,8 +107,8 @@ The image is configured entirely through environment variables on the server con
 | `ENCRYPTION_KEY` | No | Encrypts stored Docker TLS client keys at rest; generate one with `openssl rand -base64 32`. Comma-separated list: the first key encrypts, every key decrypts. Must be identical on the API and every worker. To rotate without downtime, deploy `OLD_KEY,NEW_KEY` everywhere, then `NEW_KEY,OLD_KEY` everywhere, wait for the worker to re-encrypt every row, then drop `OLD_KEY`. |
 | `PORT` | No | Port the API and web client are served on (default `52345`) |
 | `HEALTH_PORT` | No | Port for the `/livez`, `/readyz` and `/metrics` endpoints, served by any process that runs the job worker (default `52346`) |
-| `NODE_ENV` | No | `development`, `production` or `test` (default `development`). `development` disables the general API rate limiter; set `production` on real deployments |
-| `LOG_LEVEL` | No | Server log level: `error`, `warn`, `info`, or `debug` (default `debug`) |
+| `NODE_ENV` | No | `development`, `production` or `test`. The image sets `production`; override only for local testing. `production` enables the general API rate limiter and one-line JSON logs. Required when running the server outside the image |
+| `LOG_LEVEL` | No | Server log level: `error`, `warn`, `info`, or `debug` (default `info`) |
 | `TOKEN_TTL` | No | Lifetime of issued auth tokens, e.g. `12h` or `7d` (default `99d`) |
 | `QUEUE_MODE` | No | `primary` (default) runs the API, the web client and the job scheduler; `worker` runs a job-processing worker only, with no API |
 | `QUEUE_PRIMARY_PROCESSES` | No | `true` (default) or `false`. Whether a `primary` node also processes monitoring jobs itself; set `false` when dedicated `worker` nodes handle all checks. Ignored in `worker` mode |

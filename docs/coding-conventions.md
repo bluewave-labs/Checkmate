@@ -389,6 +389,33 @@ Client errors are `{ status, description }` literals in `domain/<entity>/<entity
 
 Guard errors (validation 400, auth 401, role 403, upload 413 and 415, rate limit 429, and 500) are derived from the entry's fields by `registerRoutes` and are never listed.
 
+## 13. Log levels and caught errors
+
+Pick the level by what the reader has to do, not by how bad the event sounds:
+
+| Level | Use for |
+| --- | --- |
+| `error` | Something failed and a human needs to act: a 5xx, lost data, a failed migration, an alert that was not delivered. |
+| `warn` | Degraded but handled: a retry is scheduled, a fallback was used, or misconfiguration has a safe default. |
+| `info` | Lifecycle events: startup, shutdown, migrations, cleanup summaries, state changes. |
+| `debug` | Per-check, per-job and per-request detail, including client errors (4xx) and results the user already sees elsewhere. |
+
+A monitor's target failing is the product working, not the server failing: the result is recorded as a check and shown in the UI, so log it at `debug`. A test alert the user started from the UI is `debug` for the same reason; a real alert that was not delivered is `error`.
+
+Pass a caught value as `error`, never as `message: error.message` or `stack: error.stack`. The logger serializes it (stack, `cause` chain, `AppError` fields) and redacts secrets. Keep `message` a fixed description of what failed, so lines can be searched and grouped.
+
+```ts
+// Wrong
+this.logger.warn({ message: error instanceof Error ? error.message : "Unknown error", service: SERVICE_NAME, method: "flush" });
+
+// Right
+this.logger.error({ message: "Failed to flush check buffer", service: SERVICE_NAME, method: "flush", error });
+```
+
+**Why:** at the default `LOG_LEVEL=info`, every `warn` and `error` line is something an operator reads. A level that matches the action keeps undelivered alerts visible and per-check noise out of the way.
+
+**How to apply:** don't log and rethrow, since the caller logs what it catches. Don't log the same event at two layers. A configuration warning that would repeat on every check is logged once per process.
+
 ---
 
 # Pre-PR checklist
@@ -415,5 +442,6 @@ Before opening a PR, grep your diff for the patterns below. Each item describes 
 - [ ] No duplicated `z.enum([...])` literal that should reference a `types/*` const tuple (rule 10).
 - [ ] No new entity field missing from `domain/<entity>/<entity>.schema.ts` (rule 11).
 - [ ] No `new AppError({ ... })` with an object as the first argument; every throw names a definition, `internalError` for 500s (rule 12).
+- [ ] No `message: error.message` or `stack: error.stack` in a log call; caught values go in `error`, and the level follows the table in rule 13.
 
 A clean PR on these axes is a PR that ships without a normalize follow-up.

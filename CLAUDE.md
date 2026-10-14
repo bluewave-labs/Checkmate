@@ -44,6 +44,7 @@ docker run -d -p 27017:27017 -v uptime_mongo_data:/data/db --name uptime_databas
 
 ### Server `.env` (minimum required)
 ```env
+NODE_ENV="development"
 CLIENT_HOST="http://localhost:5173"
 JWT_SECRET="my_secret_key_change_this"
 DB_CONNECTION_STRING="mongodb://localhost:27017/uptime_db"
@@ -184,6 +185,7 @@ Read `docs/coding-conventions.md` before touching any `.tsx` or `.ts` file. The 
 10. Centralize validation enums in `types/*` const tuples; never inline `z.enum([…])` more than once.
 11. Entity shapes are one Zod schema in `domain/<entity>/<entity>.schema.ts`; the TS type is inferred from it and the auto-generated OpenAPI spec reads it. New fields go there and in the Mongoose model, nowhere else.
 12. Every `AppError` is built from a definition: client errors from `domain/<entity>/<entity>.errors.ts`, server errors from `internalError`. Route tables list definitions by reference and the OpenAPI spec is generated from them; `npm run test:route-errors` checks both directions.
+13. Log levels follow rule 13: `error` needs a human, `warn` is degraded but handled, `info` is lifecycle, `debug` is per-check/request detail (a monitor target failing is `debug`). Pass caught values as `error`, with a fixed `message`.
 
 ### Internationalization
 All user-facing strings must use the translation function:
