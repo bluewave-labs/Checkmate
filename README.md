@@ -92,7 +92,7 @@ JWT_SECRET="$(openssl rand -hex 32)" docker compose up -d
 Then open http://localhost:52345. If the app is reached at another origin (domain or LAN IP), set `CLIENT_HOST` accordingly. To build the image yourself, run `docker build -f docker/Dockerfile -t checkmate .` from a checkout. For TLS, put any reverse proxy (Caddy, Traefik, nginx) in front of port 52345.
 
 There are also 1-click installation options like [Repocloud](https://repocloud.io/details/Checkmate),
-[Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [Easypanel](https://easypanel.io/templates/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host), [Cloudzy](https://cloudzy.com/marketplace/checkmate) or [Pethost](https://pethost.dev/templates/checkmate/). Note that the Helm chart has not yet been migrated to the all-in-one image: it still deploys the legacy `checkmate-client`, `checkmate-backend` and `checkmate-mongo` images, pinned at v3.8.1.
+[Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [Easypanel](https://easypanel.io/templates/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (South Africa), [Cloudzy](https://cloudzy.com/marketplace/checkmate) or [Pethost](https://pethost.dev/templates/checkmate/). Note that the Helm chart has not yet been migrated to the all-in-one image: it still deploys the legacy `checkmate-client`, `checkmate-backend` and `checkmate-mongo` images, pinned at v3.8.1.
 
 
 ### Configuration
@@ -126,7 +126,7 @@ The web client needs no configuration by default: it calls the API on the same o
 
 See full installation instructions in the [Checkmate documentation portal](https://checkmate.so/docs). 
 
-Alternatively, you can also use [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md) (legacy images, pinned at v3.8.1), [Sive Host](https://sive.host) (South Africa), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Pethost](https://pethost.dev/templates/checkmate/) or [Pikapods](https://www.pikapods.com/) to quickly spin off a Checkmate instance. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
+Alternatively, any of the [1-click installation options](#installation) listed above can spin up a Checkmate instance quickly. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
 
 ### Using a Custom CA
 
