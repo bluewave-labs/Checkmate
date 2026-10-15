@@ -1,24 +1,31 @@
 import type { z } from "zod";
 import pino, { type Logger as PinoLogger } from "pino";
-import { logConfigSchema, logEntrySchema } from "@/utils/logger/logger.schema.js";
+import type { logConfigSchema, logEntrySchema } from "@/utils/logger/logger.schema.js";
 import { logContext } from "@/utils/logger/logContext.js";
-import { RequestHandler } from "express";
+import type { RequestHandler } from "express";
 import { randomUUID } from "node:crypto";
 import { pinoHttp } from "pino-http";
+import type { LogLevel } from "@/domain/app-settings/app-settings.type.js";
 
+export type LogFields = Record<string, unknown>;
 type LogConfig = z.infer<typeof logConfigSchema>;
 type LogEntry = z.infer<typeof logEntrySchema>;
+type LogMethod = {
+	(config: LogConfig): void; // legacy will be removed
+	(fields: LogFields, message: string): void;
+	(message: string): void;
+};
 
 export interface ILogger {
-	info(config: LogConfig): void;
-	warn(config: LogConfig): void;
-	error(config: LogConfig): void;
-	debug(config: LogConfig): void;
+	info: LogMethod;
+	warn: LogMethod;
+	error: LogMethod;
+	debug: LogMethod;
 	cacheLog(entry: LogEntry): void;
 	getLogs(): LogEntry[];
-	buildLogEntry(level: string, config: LogConfig): LogEntry;
-	setLogLevel(level: string): void;
+	setLogLevel(level: LogLevel): void;
 	httpMiddleware(): RequestHandler;
+	child(bindings: LogFields): ILogger;
 }
 
 const MAX_CACHE_SIZE = 1000;
@@ -43,7 +50,14 @@ class Logger implements ILogger {
 	private pino: PinoLogger;
 	private logCache: LogEntry[] = [];
 
-	constructor() {
+	// A child wraps a pino child and shares the parent's cache, so getLogs() is the same on every logger.
+	// Its lines still reach the cache: pino children write to the root logger's multistream.
+	constructor(parent?: { pino: PinoLogger; logCache: LogEntry[] }) {
+		if (parent) {
+			this.pino = parent.pino;
+			this.logCache = parent.logCache;
+			return;
+		}
 		const cacheStream = {
 			write: (line: string) => {
 				try {
@@ -76,17 +90,17 @@ class Logger implements ILogger {
 		);
 	}
 
-	info(config: LogConfig) {
-		this.write("info", config);
+	info(a: LogConfig | LogFields | string, b?: string) {
+		this.write("info", a, b);
 	}
-	warn(config: LogConfig) {
-		this.write("warn", config);
+	warn(a: LogConfig | LogFields | string, b?: string) {
+		this.write("warn", a, b);
 	}
-	error(config: LogConfig) {
-		this.write("error", config);
+	error(a: LogConfig | LogFields | string, b?: string) {
+		this.write("error", a, b);
 	}
-	debug(config: LogConfig) {
-		this.write("debug", config);
+	debug(a: LogConfig | LogFields | string, b?: string) {
+		this.write("debug", a, b);
 	}
 
 	cacheLog(entry: LogEntry) {
@@ -100,17 +114,14 @@ class Logger implements ILogger {
 		return this.logCache;
 	}
 
-	setLogLevel(level: string): void {
+	setLogLevel(level: LogLevel): void {
 		this.pino.level = level || "info";
 	}
 
-	buildLogEntry(level: string, config: LogConfig): LogEntry {
-		return { level, ...config, timestamp: new Date().toISOString() };
-	}
-
-	private write(level: "info" | "warn" | "error" | "debug", config: LogConfig) {
-		const { message, service, method, details, stack } = config;
-		// Under err so pino-pretty lays the stack out on separate lines, and legacy and new-style errors share one shape
+	private write(level: LogLevel, a: LogConfig | LogFields | string, b?: string) {
+		if (typeof a === "string") return this.pino[level](a);
+		if (typeof b === "string") return this.pino[level](a, b);
+		const { message, service, method, details, stack } = a as LogConfig;
 		this.pino[level]({ service, method, details, ...(stack && { err: { stack } }) }, message);
 	}
 
@@ -137,6 +148,10 @@ class Logger implements ILogger {
 				res: (res) => ({ statusCode: res.statusCode }), // the default also logs response headers
 			},
 		});
+	}
+
+	child(bindings: LogFields): ILogger {
+		return new Logger({ pino: this.pino.child(bindings), logCache: this.logCache });
 	}
 
 	private toLogEntry(line: Record<string, unknown>): LogEntry {

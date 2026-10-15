@@ -3,6 +3,7 @@ import express from "express";
 import type { AddressInfo } from "node:net";
 import Logger from "../../../src/utils/logger/logger.ts";
 import { logContext } from "../../../src/utils/logger/logContext.ts";
+import { createMockLogger } from "../../helpers/createMockLogger.ts";
 
 // Captures what the logger writes to stdout. pino's multistream calls process.stdout.write per line.
 const setup = (level = "debug") => {
@@ -278,5 +279,118 @@ describe("Logger.httpMiddleware", () => {
 		} finally {
 			await close();
 		}
+	});
+});
+
+describe("Logger call forms", () => {
+	it("writes (fields, message) with the fields at the top level", () => {
+		const { logger, parsed } = setup();
+
+		logger.warn({ notificationIds: ["n1", "n2"] }, "channel failed to deliver");
+
+		const [entry] = parsed();
+		expect(entry).toMatchObject({ level: "warn", message: "channel failed to deliver", notificationIds: ["n1", "n2"] });
+		expect(entry).not.toHaveProperty("details");
+	});
+
+	it("writes a message on its own", () => {
+		const { logger, parsed } = setup();
+
+		logger.info("server started");
+
+		expect(parsed()[0]).toMatchObject({ level: "info", message: "server started" });
+	});
+
+	it("serializes an error passed as err", () => {
+		const { logger, parsed } = setup();
+
+		logger.error({ err: new Error("boom") }, "send failed");
+
+		expect(parsed()[0]?.err).toMatchObject({ type: "Error", message: "boom", stack: expect.stringContaining("Error: boom") });
+		expect(logger.getLogs()[0]?.stack).toEqual(expect.stringContaining("Error: boom"));
+	});
+
+	it("caches both forms in the same LogEntry shape", () => {
+		const { logger } = setup();
+
+		logger.info({ message: "legacy", service: "TestService", details: { a: 1 } });
+		logger.child({ service: "TestService" }).info({ a: 1 }, "new");
+
+		const [legacy, current] = logger.getLogs();
+		expect(legacy).toMatchObject({ message: "legacy", service: "TestService", details: { a: 1 } });
+		expect(current).toMatchObject({ message: "new", service: "TestService", details: { a: 1 } });
+	});
+
+	it("still accepts the legacy object alongside the new forms", () => {
+		const { logger, parsed } = setup();
+
+		logger.info({ message: "legacy", service: "TestService", method: "run" });
+		logger.info({ a: 1 }, "new");
+
+		expect(parsed().map((entry) => entry.message)).toEqual(["legacy", "new"]);
+		expect(parsed()[0]).toMatchObject({ service: "TestService", method: "run" });
+	});
+});
+
+describe("Logger.child", () => {
+	it("adds its bindings to its own lines only", () => {
+		const { logger, parsed } = setup();
+		const child = logger.child({ service: "ChildService" });
+
+		child.info("from child");
+		logger.info("from parent");
+
+		const [fromChild, fromParent] = parsed();
+		expect(fromChild).toMatchObject({ service: "ChildService", message: "from child" });
+		expect(fromParent).not.toHaveProperty("service");
+	});
+
+	it("keeps both sets of bindings on a child of a child", () => {
+		const { logger, parsed } = setup();
+
+		logger.child({ service: "ChildService" }).child({ monitorId: "m1" }).info("nested");
+
+		expect(parsed()[0]).toMatchObject({ service: "ChildService", monitorId: "m1", message: "nested" });
+	});
+
+	it("writes into the parent's cache and shares getLogs()", () => {
+		const { logger } = setup();
+		const child = logger.child({ service: "ChildService" });
+
+		child.info({ a: 1 }, "from child");
+
+		expect(child.getLogs()).toBe(logger.getLogs());
+		expect(logger.getLogs()).toEqual([expect.objectContaining({ message: "from child", service: "ChildService", details: { a: 1 } })]);
+	});
+
+	it("follows the root logger's level", () => {
+		const { logger, parsed } = setup("warn");
+
+		logger.child({ service: "ChildService" }).info("dropped");
+		logger.child({ service: "ChildService" }).warn("kept");
+
+		expect(parsed().map((entry) => entry.message)).toEqual(["kept"]);
+	});
+
+	it("carries the current log context like the root logger", () => {
+		const { logger, parsed } = setup();
+		const child = logger.child({ service: "ChildService" });
+
+		logContext.run({ jobId: "check:m1", jobType: "check" }, () => child.info("in job"));
+
+		expect(parsed()[0]).toMatchObject({ service: "ChildService", jobId: "check:m1", jobType: "check" });
+	});
+});
+
+describe("createMockLogger", () => {
+	it("returns itself from child(), so assertions on a migrated service's logger still hit the same spies", () => {
+		const mock = createMockLogger();
+
+		const child = mock.child({ service: "TestService" });
+		child.warn({ a: 1 }, "message");
+
+		expect(child).toBe(mock);
+		expect(mock.child).toHaveBeenCalledWith({ service: "TestService" });
+		expect(mock.warn).toHaveBeenCalledWith({ a: 1 }, "message");
 	});
 });
