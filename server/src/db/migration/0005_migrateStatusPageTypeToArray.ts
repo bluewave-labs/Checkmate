@@ -5,9 +5,10 @@ import { AppError, internalError } from "@/utils/AppError.js";
 
 export async function migrateStatusPageTypeToArray(logger: ILogger): Promise<void> {
 	const SERVICE_NAME = "Migration:MigrateStatusPageTypeToArray";
+	const log = logger.child({ service: SERVICE_NAME });
 
 	try {
-		logger.info({ service: SERVICE_NAME, message: "Starting migration of StatusPage type field from string to array" });
+		log.info("Starting migration of StatusPage type field from string to array");
 
 		const db = mongoose.connection.db;
 		if (!db) {
@@ -34,17 +35,13 @@ export async function migrateStatusPageTypeToArray(logger: ILogger): Promise<voi
 		);
 
 		if (result.modifiedCount === 0) {
-			logger.info({ service: SERVICE_NAME, message: "No StatusPage documents needed migration" });
+			log.info("No StatusPage documents needed migration");
 			return;
 		}
 
-		logger.info({
-			service: SERVICE_NAME,
-			message: `Migration complete. Converted ${result.modifiedCount} StatusPage document(s) from string type to array type`,
-		});
+		log.info({ modifiedCount: result.modifiedCount }, "Migration complete, converted StatusPage documents from string type to array type");
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		logger.error({ service: SERVICE_NAME, message: `Error during StatusPage type migration: ${errorMessage}` });
+		log.error({ err: error }, "Error during StatusPage type migration");
 		throw error;
 	}
 }

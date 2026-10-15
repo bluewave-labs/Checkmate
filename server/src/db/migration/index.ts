@@ -34,12 +34,13 @@ const migrations: MigrationEntry[] = [
 ];
 
 const runMigrations = async (logger: ILogger) => {
+	const log = logger.child({ service: "Migrations" });
 	try {
-		logger.info({ message: "Running migrations", service: "Migrations" });
+		log.info("Running migrations");
 		for (const migration of migrations) {
 			const exists = await MigrationModel.findOne({ name: migration.name, status: "completed" });
 			if (exists) {
-				logger.info({ message: `Skipping ${migration.name}`, service: "Migrations" });
+				log.info({ migration: migration.name }, "Skipping migration");
 				continue;
 			}
 
@@ -50,17 +51,16 @@ const runMigrations = async (logger: ILogger) => {
 					{ status: "completed", completedAt: new Date(), error: undefined },
 					{ upsert: true }
 				);
-				logger.info({ message: `Completed ${migration.name}`, service: "Migrations" });
+				log.info({ migration: migration.name }, "Completed migration");
 			} catch (error) {
 				const err = error as Error;
 				await MigrationModel.findOneAndUpdate({ name: migration.name }, { status: "failed", error: err?.message }, { upsert: true });
 				throw error;
 			}
 		}
-		logger.info({ message: "Migrations completed", service: "Migrations" });
+		log.info("Migrations completed");
 	} catch (error) {
-		const err = error as Error;
-		logger.error({ message: "Migration failed", service: "Migrations", details: { error: err?.message }, stack: err?.stack });
+		log.error({ err: error }, "Migration failed");
 		throw error;
 	}
 };

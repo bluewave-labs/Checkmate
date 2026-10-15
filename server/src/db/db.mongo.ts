@@ -12,11 +12,13 @@ class MongoDB implements IDb<Mongoose> {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: ILogger;
+	private rootLogger: ILogger; // passed to runMigrations which creates its own children
 	private envSettings: EnvConfig;
 	private db: Mongoose | null;
 
 	constructor(logger: ILogger, envSettings: EnvConfig) {
-		this.logger = logger;
+		this.rootLogger = logger;
+		this.logger = logger.child({ service: SERVICE_NAME });
 		this.envSettings = envSettings;
 		this.db = null;
 	}
@@ -38,7 +40,7 @@ class MongoDB implements IDb<Mongoose> {
 			// the unique index on MonitorStats.monitorId is enforced, otherwise databases
 			// with stray duplicates (caused by the pre-fix race in updateRunningStats)
 			// will crash at startup when the unique index fails to build.
-			await runMigrations(this.logger);
+			await runMigrations(this.rootLogger);
 
 			// Sync indexes
 			const models = mongoose.modelNames();
@@ -47,18 +49,9 @@ class MongoDB implements IDb<Mongoose> {
 				await model.syncIndexes();
 			}
 
-			this.logger.info({
-				message: "Connected to MongoDB",
-				service: SERVICE_NAME,
-				method: "connect",
-			});
+			this.logger.info("Connected to MongoDB");
 		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
-				service: SERVICE_NAME,
-				method: "connect",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.error({ err: error }, "Failed to connect to MongoDB");
 			throw error;
 		}
 	};
@@ -72,17 +65,12 @@ class MongoDB implements IDb<Mongoose> {
 
 	disconnect = async () => {
 		try {
-			this.logger.info({ message: "Disconnecting from MongoDB", service: SERVICE_NAME, method: "disconnect" });
+			this.logger.info("Disconnecting from MongoDB");
 			await mongoose.disconnect();
-			this.logger.info({ message: "Disconnected from MongoDB", service: SERVICE_NAME, method: "disconnect" });
+			this.logger.info("Disconnected from MongoDB");
 			return;
 		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
-				service: SERVICE_NAME,
-				method: "disconnect",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.error({ err: error }, "Failed to disconnect from MongoDB");
 		}
 	};
 }

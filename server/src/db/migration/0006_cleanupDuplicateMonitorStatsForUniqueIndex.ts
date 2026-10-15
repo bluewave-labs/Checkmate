@@ -13,9 +13,10 @@ import type { ILogger } from "@/utils/logger/logger.js";
  */
 export async function cleanupDuplicateMonitorStatsForUniqueIndex(logger: ILogger): Promise<void> {
 	const SERVICE_NAME = "Migration:CleanupDuplicateMonitorStatsForUniqueIndex";
+	const log = logger.child({ service: SERVICE_NAME });
 
 	try {
-		logger.info({ service: SERVICE_NAME, message: "Starting pre-unique-index dedupe of MonitorStats" });
+		log.info("Starting pre-unique-index dedupe of MonitorStats");
 
 		const duplicates = await MonitorStatsModel.aggregate([
 			{
@@ -29,14 +30,11 @@ export async function cleanupDuplicateMonitorStatsForUniqueIndex(logger: ILogger
 		]);
 
 		if (duplicates.length === 0) {
-			logger.info({ service: SERVICE_NAME, message: "No duplicate MonitorStats found" });
+			log.info("No duplicate MonitorStats found");
 			return;
 		}
 
-		logger.info({
-			service: SERVICE_NAME,
-			message: `Found ${duplicates.length} monitors with duplicate stats`,
-		});
+		log.info({ count: duplicates.length }, "Found monitors with duplicate stats");
 
 		let totalDeleted = 0;
 
@@ -59,20 +57,13 @@ export async function cleanupDuplicateMonitorStatsForUniqueIndex(logger: ILogger
 				const result = await MonitorStatsModel.deleteMany({ _id: { $in: toDelete } });
 				totalDeleted += result.deletedCount ?? 0;
 
-				logger.debug({
-					service: SERVICE_NAME,
-					message: `Deleted ${result.deletedCount} duplicate stats for monitor ${monitorId}`,
-				});
+				log.debug({ monitorId, deletedCount: result.deletedCount }, "Deleted duplicate stats for monitor");
 			}
 		}
 
-		logger.info({
-			service: SERVICE_NAME,
-			message: `Cleanup complete. Deleted ${totalDeleted} duplicate MonitorStats documents`,
-		});
+		log.info({ totalDeleted }, "Cleanup complete, deleted duplicate MonitorStats documents");
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		logger.error({ service: SERVICE_NAME, message: `Error during MonitorStats dedupe: ${errorMessage}` });
+		log.error({ err: error }, "Error during MonitorStats dedupe");
 		throw error;
 	}
 }
