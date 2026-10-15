@@ -18,6 +18,8 @@ export const NotificationChannels = [
 ] as const;
 export type NotificationChannel = (typeof NotificationChannels)[number];
 
+// Channels that we don't want to send egress recovery alerts
+// Currently only pager duty due to incident creation without a follow up closing event
 export const EgressExcludedChannels = ["pager_duty"] as const satisfies readonly NotificationChannel[];
 
 // ntfy servers accept either a bearer access token or HTTP basic credentials.
