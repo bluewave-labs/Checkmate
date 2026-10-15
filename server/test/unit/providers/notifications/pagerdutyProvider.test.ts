@@ -2,7 +2,6 @@ import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
 import { makeNotification, makeMessage, makeMessageWithThresholds } from "../../../helpers/notificationMessage.ts";
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
-import { EGRESS_MONITOR_INFO } from "../../../../src/domain/notifications/notification.message-builder.ts";
 
 const mockGotPost = jest.fn().mockResolvedValue({});
 jest.unstable_mockModule("got", () => ({ default: { post: mockGotPost } }));
@@ -100,24 +99,6 @@ describe("PagerDutyProvider", () => {
 			const { provider } = createProvider();
 			await provider.sendMessage(makeNotification() as any, makeMessage({ type: "container_breach" }));
 			expect(mockGotPost.mock.calls[0][1].json.event_action).toBe("trigger");
-		});
-
-		it("uses 'trigger' with 'info' severity for egress_recovered", async () => {
-			const { provider } = createProvider();
-			await provider.sendMessage(
-				makeNotification() as any,
-				makeMessage({
-					type: "egress_recovered",
-					severity: "success",
-					monitor: { ...EGRESS_MONITOR_INFO, url: "https://app.example.com" },
-					content: { title: "Outbound connectivity restored", summary: "", details: [], timestamp: new Date("2026-01-01T10:05:00.000Z") },
-				})
-			);
-			const payload = mockGotPost.mock.calls[0][1].json;
-			expect(payload.event_action).toBe("trigger");
-			expect(payload.payload.severity).toBe("info");
-			// One key per recovery, so successive recoveries do not dedup into one alert that nothing resolves
-			expect(payload.dedup_key).toBe("checkmate-egress-2026-01-01T10:05:00.000Z");
 		});
 
 		it("includes threshold info in summary and custom_details", async () => {

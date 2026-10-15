@@ -1,5 +1,5 @@
 import type { Monitor } from "@/domain/monitors/monitor.type.js";
-import type { Notification } from "@/domain/notifications/notification.type.js";
+import { EgressExcludedChannels, type Notification } from "@/domain/notifications/notification.type.js";
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { INotificationsRepository } from "@/domain/notifications/notification.repository.interface.js";
@@ -144,10 +144,27 @@ export class NotificationsService implements INotificationsService {
 			return true;
 		}
 
+		const isExcluded = (notification: Notification) => EgressExcludedChannels.some((channel) => channel === notification.type);
+
+		const skipped = notifications.filter(isExcluded);
+		const eligible = notifications.filter((notification) => !isExcluded(notification));
+
+		if (skipped.length > 0) {
+			this.logger.warn({
+				message: "Egress recovered; skipping notification channels that cannot receive egress alerts",
+				service: SERVICE_NAME,
+				method: "sendEgressRecoveredNotification",
+				details: { skippedIds: skipped.map((notification) => notification.id) },
+			});
+		}
+		if (eligible.length === 0) {
+			return true;
+		}
+
 		const clientHost = this.resolveClientHost();
 		const notificationMessage = this.notificationMessageBuilder.buildEgressRecoveredMessage(state, clientHost);
 
-		return await this.sendToAll(notifications, notificationMessage, "sendEgressRecoveredNotification");
+		return await this.sendToAll(eligible, notificationMessage, "sendEgressRecoveredNotification");
 	};
 
 	handleNotifications = async (monitor: Monitor, check: Check, decision: MonitorActionDecision) => {
@@ -225,6 +242,12 @@ export class NotificationsService implements INotificationsService {
 		if (missing.length > 0) {
 			throw new AppError(appSettingsErrors.notificationNotFound, {
 				message: `Referenced notification does not exist: ${missing.join(", ")}`,
+				service: SERVICE_NAME,
+				method: "assertNotificationsExistForTeam",
+			});
+		}
+		if (found.some((notification) => EgressExcludedChannels.some((channel) => channel === notification.type))) {
+			throw new AppError(appSettingsErrors.notificationChannelNotSupported, {
 				service: SERVICE_NAME,
 				method: "assertNotificationsExistForTeam",
 			});
