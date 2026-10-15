@@ -7,6 +7,8 @@ import { getTestMessage } from "@/domain/notifications/providers/utils.js";
 import { AlertPagerDutyPayload } from "@/domain/notifications/notification.type.js";
 
 export class PagerDutyProvider extends NotificationProvider {
+	protected readonly serviceName = SERVICE_NAME;
+
 	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
 		try {
 			await got.post("https://events.pagerduty.com/v2/enqueue", {
@@ -25,13 +27,7 @@ export class PagerDutyProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: "PagerDuty test alert failed",
-				service: SERVICE_NAME,
-				method: "sendTestAlert",
-				stack: err?.stack,
-			});
+			this.logger.warn({ err: error }, "PagerDuty test alert failed");
 			return false;
 		}
 	}
@@ -41,11 +37,7 @@ export class PagerDutyProvider extends NotificationProvider {
 	 */
 	async sendMessage(notification: Notification, message: NotificationMessage): Promise<boolean> {
 		if (!notification.address) {
-			this.logger.warn({
-				message: "PagerDuty notification missing routing key",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-			});
+			this.logger.warn("PagerDuty notification missing routing key");
 			return false;
 		}
 
@@ -55,20 +47,10 @@ export class PagerDutyProvider extends NotificationProvider {
 				json: payload,
 				...this.gotRequestOptions(),
 			});
-			this.logger.info({
-				message: "[NEW] PagerDuty notification sent via sendMessage",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-			});
+			this.logger.info("PagerDuty notification sent");
 			return true;
 		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: "PagerDuty notification failed",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-				stack: err?.stack,
-			});
+			this.logger.warn({ err: error }, "PagerDuty notification failed");
 			return false;
 		}
 	}

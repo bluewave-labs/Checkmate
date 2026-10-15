@@ -78,13 +78,8 @@ describe("RocketChatProvider", () => {
 		const result = await provider.sendTestAlert(makeNotification({ type: "rocket_chat" }));
 
 		expect(result).toBe(false);
-		expect(logger.warn).toHaveBeenCalledWith(
-			expect.objectContaining({
-				message: "Rocket.Chat test alert failed",
-				service: "RocketChatProvider",
-				method: "sendTestAlert",
-			})
-		);
+		expect(logger.warn).toHaveBeenCalledWith({ err: new Error("network failure") }, "Rocket.Chat test alert failed");
+		expect(logger.child).toHaveBeenCalledWith({ service: "RocketChatProvider" });
 	});
 
 	it("sends a rich monitor attachment without webhook overrides", async () => {
@@ -276,12 +271,7 @@ describe("RocketChatProvider", () => {
 		const result = await provider.sendMessage(makeNotification({ type: "rocket_chat" }), makeMessage());
 
 		expect(result).toBe(false);
-		expect(logger.warn).toHaveBeenCalledWith(
-			expect.objectContaining({
-				message: "Rocket.Chat notification failed",
-				service: "RocketChatProvider",
-				method: "sendMessage",
-			})
-		);
+		expect(logger.warn).toHaveBeenCalledWith({ err: new Error("network failure") }, "Rocket.Chat notification failed");
+		expect(logger.child).toHaveBeenCalledWith({ service: "RocketChatProvider" });
 	});
 });

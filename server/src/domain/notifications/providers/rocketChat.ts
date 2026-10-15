@@ -16,6 +16,8 @@ type RocketChatAttachment = {
 type RocketChatPayload = { text: string; attachments: [RocketChatAttachment] };
 
 export class RocketChatProvider extends NotificationProvider {
+	protected readonly serviceName = SERVICE_NAME;
+
 	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
 		if (!notification.address) {
 			return false;
@@ -31,13 +33,7 @@ export class RocketChatProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: "Rocket.Chat test alert failed",
-				service: SERVICE_NAME,
-				method: "sendTestAlert",
-				stack: err?.stack,
-			});
+			this.logger.warn({ err: error }, "Rocket.Chat test alert failed");
 			return false;
 		}
 	}
@@ -73,13 +69,7 @@ export class RocketChatProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: "Rocket.Chat notification failed",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-				stack: err?.stack,
-			});
+			this.logger.warn({ err: error }, "Rocket.Chat notification failed");
 			return false;
 		}
 	}
