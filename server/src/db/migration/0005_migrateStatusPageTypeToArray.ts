@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 import StatusPageModel from "../../domain/status-pages/status-page.model.js";
 import { AppError, internalError } from "@/utils/AppError.js";
 

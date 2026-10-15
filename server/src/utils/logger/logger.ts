@@ -1,6 +1,10 @@
 import type { z } from "zod";
 import pino, { type Logger as PinoLogger } from "pino";
-import type { logConfigSchema, logEntrySchema } from "./logger.schema.js";
+import { logConfigSchema, logEntrySchema } from "@/utils/logger/logger.schema.js";
+import { logContext } from "@/utils/logger/logContext.js";
+import { RequestHandler } from "express";
+import { randomUUID } from "node:crypto";
+import { pinoHttp } from "pino-http";
 
 type LogConfig = z.infer<typeof logConfigSchema>;
 type LogEntry = z.infer<typeof logEntrySchema>;
@@ -14,9 +18,11 @@ export interface ILogger {
 	getLogs(): LogEntry[];
 	buildLogEntry(level: string, config: LogConfig): LogEntry;
 	setLogLevel(level: string): void;
+	httpMiddleware(): RequestHandler;
 }
 
 const MAX_CACHE_SIZE = 1000;
+const REQUEST_ID_PATTERN = /^[\w.-]{1,128}$/;
 
 // Secret-bearing field names used in the app. Matched at the top level (new call shape), one level down and two
 // levels down (legacy calls nest fields under `details`).
@@ -41,7 +47,9 @@ class Logger implements ILogger {
 		const cacheStream = {
 			write: (line: string) => {
 				try {
-					this.cacheLog(this.toLogEntry(JSON.parse(line)));
+					const parsed = JSON.parse(line);
+					if ("httpRequest" in parsed) return; // Don't cache pino-http request lines
+					this.cacheLog(this.toLogEntry(parsed));
 				} catch {
 					// A line that is not JSON is never produced by pino, ignore
 				}
@@ -59,6 +67,7 @@ class Logger implements ILogger {
 				base: undefined, // omit pid and hostname
 				serializers: { err: pino.stdSerializers.errWithCause },
 				redact: { paths: REDACT_PATHS, censor: "[Redacted]" },
+				mixin: () => logContext.getStore() ?? {},
 			},
 			pino.multistream([
 				{ stream: process.stdout, level: "debug" },
@@ -105,17 +114,43 @@ class Logger implements ILogger {
 		this.pino[level]({ service, method, details, ...(stack && { err: { stack } }) }, message);
 	}
 
+	httpMiddleware(): RequestHandler {
+		return pinoHttp({
+			logger: this.pino,
+			genReqId: (req, res) => {
+				const incoming = req.headers["x-request-id"];
+				const id = typeof incoming === "string" && REQUEST_ID_PATTERN.test(incoming) ? incoming : randomUUID();
+				res.setHeader("X-Request-Id", id);
+				return id;
+			},
+			autoLogging: { ignore: (req) => !req.url?.startsWith("/api/") },
+			customLogLevel: (_req, res, err) => {
+				if (err || res.statusCode >= 500) return "error";
+				if (res.statusCode >= 400) return "warn";
+				return "debug";
+			},
+			// Names unique to request lines, so the pretty-print ignore list and the cache filter can't catch app fields
+			customAttributeKeys: { req: "httpRequest", res: "httpResponse", responseTime: "httpDurationMs" },
+			customSuccessMessage: (req, res, responseTime) => `${req.method} ${req.url} ${res.statusCode} ${Math.round(responseTime)}ms`,
+			serializers: {
+				req: (req) => ({ id: req.id, method: req.method, url: req.url }), // no headers, no body
+				res: (res) => ({ statusCode: res.statusCode }), // the default also logs response headers
+			},
+		});
+	}
+
 	private toLogEntry(line: Record<string, unknown>): LogEntry {
 		const { level, message, timestamp, service, method, details, stack, err, ...rest } = line;
 		const errStack = typeof err === "object" && err !== null ? (err as { stack?: unknown }).stack : undefined;
-		const extra = Object.keys(rest).length > 0 ? rest : undefined;
+		// TODO: remove the merge once the legacy call shape is gone
+		const merged = { ...rest, ...(details as Record<string, unknown> | undefined) };
 		return {
 			level: String(level),
 			message: String(message ?? ""),
 			timestamp: String(timestamp),
 			service: typeof service === "string" ? service : undefined,
 			method: typeof method === "string" ? method : undefined,
-			details: (details as Record<string, unknown> | undefined) ?? extra,
+			details: Object.keys(merged).length > 0 ? merged : undefined,
 			stack: typeof stack === "string" ? stack : typeof errStack === "string" ? errStack : undefined,
 		};
 	}

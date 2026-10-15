@@ -6,7 +6,7 @@ import { INotificationsRepository } from "@/domain/notifications/notification.re
 import { INotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
 import type { MonitorActionDecision } from "@/worker/worker.interface.js";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import type { INotificationMessageBuilder } from "@/domain/notifications/notification.message-builder.js";
 import type { NotificationChannel } from "@/domain/notifications/notification.type.js";
 import { CLIENT_HOST_FALLBACK } from "@/domain/notifications/providers/utils.js";

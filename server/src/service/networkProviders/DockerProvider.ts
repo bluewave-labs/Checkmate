@@ -21,7 +21,7 @@ import {
 	DockerPortProtocols,
 } from "@/domain/docker/docker.type.js";
 import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { AppError, internalError } from "@/utils/AppError.js";
 import Dockerode from "dockerode";
 import { timeRequest, peerAnsweredFromError } from "@/service/networkProviders/utils.js";

@@ -1,5 +1,5 @@
 import { MonitorStatsModel } from "../../domain/monitor-stats/monitor-stats.model.js";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 
 /**
  * Cleanup duplicate MonitorStats documents

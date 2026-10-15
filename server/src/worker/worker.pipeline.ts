@@ -14,7 +14,7 @@ import { IProviderRegistry } from "@/service/networkProviders/providerRegistry.j
 import { IStatusService } from "@/service/statusService.js";
 import { DockerStatusPayload, MonitorStatusResponse, StatusChangeResult } from "@/types/network.js";
 import { AppError, internalError } from "@/utils/AppError.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { isWindowActive } from "@/utils/maintenanceWindow.js";
 import { IReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { JobHandler, MonitorActionDecision, MonitorEvaluation } from "@/worker/worker.interface.js";

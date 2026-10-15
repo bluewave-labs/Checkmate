@@ -6,7 +6,7 @@ import { jobId, type Job, type JobSeed } from "@/domain/jobs/job.type.js";
 import type { IProviderRegistry } from "@/service/networkProviders/providerRegistry.js";
 import type { IProxyResolver } from "@/service/networkProviders/ProxyResolver.js";
 import type { INotificationsService } from "@/domain/notifications/notification.service.js";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 import {
 	EGRESS_RECOVERY_POLL_SECONDS,
 	DEFAULT_EGRESS_TARGETS,

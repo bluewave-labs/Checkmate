@@ -1,5 +1,5 @@
 import { IDb } from "@/db/db.interface.js";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 import type { Server } from "http";
 import { Mongoose } from "mongoose";
 import { IJobScheduler } from "@/worker/worker.interface.js";

@@ -3,7 +3,7 @@ import { MonitorStatusResponse, PageSpeedStatusPayload } from "@/types/network.j
 import { Monitor, MonitorType, DefaultPageSpeedStrategy } from "@/domain/monitors/monitor.type.js";
 import { HttpProvider } from "@/service/networkProviders/HttpProvider.js";
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { AppError, internalError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "PageSpeedProvider";

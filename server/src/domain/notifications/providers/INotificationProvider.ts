@@ -1,6 +1,6 @@
 import type { Notification } from "@/domain/notifications/notification.type.js";
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import type { OptionsOfJSONResponseBody } from "got";
 
 export const DEFAULT_NOTIFICATION_TIMEOUT_MS = 30_000;

@@ -2,7 +2,7 @@ import { Mongoose } from "mongoose";
 import mongoose from "mongoose";
 import AppSettings from "@/domain/app-settings/app-settings.model.js";
 import { runMigrations } from "@/db/migration/index.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { EnvConfig } from "@/domain/app-settings/app-settings.service.js";
 const SERVICE_NAME = "MongoDB";
 import { IDb } from "@/db/db.interface.js";

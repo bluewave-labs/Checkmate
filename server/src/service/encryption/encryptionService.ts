@@ -1,4 +1,4 @@
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import type * as nodeCrypto from "node:crypto";
 import { AppError, internalError } from "@/utils/AppError.js";
 

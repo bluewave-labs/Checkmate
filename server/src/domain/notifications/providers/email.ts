@@ -4,7 +4,7 @@ import { NotificationProvider } from "@/domain/notifications/providers/INotifica
 import { AppError } from "@/utils/AppError.js";
 import { buildTestEmail } from "@/domain/notifications/providers/utils.js";
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 import { IEmailService } from "@/service/emailService.js";
 export class EmailProvider extends NotificationProvider {
 	private emailService: IEmailService;

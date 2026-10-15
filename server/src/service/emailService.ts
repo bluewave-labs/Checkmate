@@ -1,7 +1,7 @@
 import { fileURLToPath } from "url";
 import { EmailTransportConfig } from "@/domain/app-settings/app-settings.type.js";
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { AppError } from "@/utils/AppError.js";
 import { emailErrors } from "@/service/email.errors.js";
 import fs from "node:fs";

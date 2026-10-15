@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { DbTypes, LogLevels, QueueModes } from "@/domain/app-settings/app-settings.type.js";
 import { booleanCoercion } from "@/api/validation/shared.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 
 // Padded standard base64 of exactly 32 bytes, as produced by `openssl rand -base64 32`
 const ENCRYPTION_KEY_ENTRY = /^[A-Za-z0-9+/]{43}=$/;

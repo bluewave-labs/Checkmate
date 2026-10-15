@@ -1,4 +1,4 @@
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { MonitorEvaluation } from "@/worker/worker.interface.js";
 import { IMonitorReactor } from "@/worker/reactors/reactor.interface.js";
 

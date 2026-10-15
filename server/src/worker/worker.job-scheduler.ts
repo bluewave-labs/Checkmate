@@ -7,7 +7,7 @@ import { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.rep
 import { WorkerJobsPagination, WorkerJobSummary, WorkerMetrics } from "@/worker/worker.interface.js";
 import { WORKER_STALE_MS } from "@/domain/queue-workers/queue-worker.model.js";
 import { QueueMode } from "@/domain/app-settings/app-settings.type.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 
 export const POLL_MS = 250; // base poll interval while a loop is actively claiming work
 const SERVICE_NAME = "JobScheduler";
