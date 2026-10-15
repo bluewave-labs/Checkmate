@@ -11,16 +11,21 @@ type WhoisModule = typeof whoiser;
 export type Handler = (req: Request, res: Response<ApiEnvelope>) => Promise<void>;
 export type ApiEnvelope<T = unknown> = { success: boolean; msg: string; data?: T };
 
+const CERTIFICATE_TIMEOUT_MS = 10_000;
 const SERVICE_NAME = "controllerUtils";
 
-export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: Monitor): Promise<SSLDetails> => {
+export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: Monitor): Promise<SSLDetails | null> => {
 	const monitorUrl = new URL(monitor.url);
-	const hostname = monitorUrl.hostname;
-	const cert = await checker(hostname);
-	if (cert?.validTo === null || cert?.validTo === undefined) {
-		throw new Error("Certificate not found");
+	const port = monitorUrl.port ? Number(monitorUrl.port) : 443;
+	try {
+		const cert = await checker(monitorUrl.hostname, { port, timeout: CERTIFICATE_TIMEOUT_MS });
+		if (cert?.validTo === null || cert?.validTo === undefined) {
+			throw new Error("Certificate not found");
+		}
+		return cert;
+	} catch {
+		return null;
 	}
-	return cert;
 };
 
 const WHOIS_TIMEOUT_MS = 10_000;
