@@ -516,3 +516,53 @@ describe("error serialization: URLs in messages", () => {
 		expect((parsed()[0]?.err as Record<string, Record<string, string>>).cause.message).toBe("POST https://hooks.example/[Redacted] failed");
 	});
 });
+
+describe("reserved field names", () => {
+	// The types reject these keys at compile time; this covers values the types miss.
+	it("renames message, level and timestamp fields instead of writing the keys twice", () => {
+		const { logger, lines } = setup();
+		const loose: Record<string, unknown> = { message: "status text", level: "high", timestamp: 123, code: 500 };
+
+		logger.warn(loose as never, "No check could be built");
+
+		const line = lines[0] ?? "";
+		for (const key of ["message", "level", "timestamp"]) {
+			expect(line.split(`"${key}":`)).toHaveLength(2); // the key appears exactly once
+		}
+		expect(JSON.parse(line)).toMatchObject({
+			level: "warn",
+			message: "No check could be built",
+			field_message: "status text",
+			field_level: "high",
+			field_timestamp: 123,
+			code: 500,
+		});
+	});
+
+	it("leaves a legacy call's service alone", () => {
+		const { logger, parsed } = setup();
+
+		logger.info({ message: "legacy", service: "LegacyService" });
+
+		expect(parsed()[0]).toMatchObject({ service: "LegacyService", message: "legacy" });
+		expect(parsed()[0]).not.toHaveProperty("field_service");
+	});
+
+	it("does not rename child bindings or the log context", () => {
+		const { logger, parsed } = setup();
+
+		logContext.run({ reqId: "r1" }, () => logger.child({ service: "ChildService" }).info({ a: 1 }, "fine"));
+
+		const entry = parsed()[0];
+		expect(entry).toMatchObject({ service: "ChildService", reqId: "r1", a: 1, message: "fine" });
+		expect(Object.keys(entry ?? {}).some((key) => key.startsWith("field_"))).toBe(false);
+	});
+
+	it("passes fields without reserved keys through unchanged", () => {
+		const { logger, parsed } = setup();
+
+		logger.info({ monitorId: "m1", details: { message: "nested is fine" } }, "ok");
+
+		expect(parsed()[0]).toMatchObject({ monitorId: "m1", details: { message: "nested is fine" }, message: "ok" });
+	});
+});
