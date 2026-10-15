@@ -50,6 +50,15 @@ export class UserService implements IUserService {
 		return bcrypt.hashSync(password, salt);
 	};
 
+	// SSO-only accounts have no password hash. Every local-password path has to reject them here,
+	// or bcrypt.compare is handed undefined and surfaces a library error as a 500.
+	private requirePasswordHash = (user: User, method: string, status: number): string => {
+		if (!user.password) {
+			throw new AppError({ message: "This account signs in with single sign-on", service: SERVICE_NAME, method, status });
+		}
+		return user.password;
+	};
+
 	private emailService: IEmailService;
 	private settingsService: ISettingsService;
 	private logger: ILogger;
@@ -211,7 +220,7 @@ export class UserService implements IUserService {
 		// Check if user exists
 		const user = await this.usersRepository.findByEmail(email);
 		// Compare password
-		const match = await bcrypt.compare(password, user.password);
+		const match = await bcrypt.compare(password, this.requirePasswordHash(user, "loginUser", 401));
 
 		if (match !== true) {
 			throw new AppError(userErrors.invalidCredentials, { service: SERVICE_NAME, method: "loginUser" });
@@ -235,7 +244,7 @@ export class UserService implements IUserService {
 		if (updates.password && updates.newPassword) {
 			updates.email = currentUserEmail;
 			const user = await this.usersRepository.findByEmail(currentUserEmail);
-			const match = await bcrypt.compare(updates.password, user.password);
+			const match = await bcrypt.compare(updates.password, this.requirePasswordHash(user, "editUser", 403));
 			// If not a match, throw a 403
 			// 403 instead of 401 to avoid triggering axios interceptor
 			if (!match) {
@@ -255,6 +264,9 @@ export class UserService implements IUserService {
 
 	requestRecovery = async (email: string) => {
 		const user = await this.usersRepository.findByEmail(email);
+		// Reject before a token is minted: otherwise an SSO-only account could be given a password through recovery,
+		// re-enabling local login for it even when local login is disabled.
+		this.requirePasswordHash(user, "requestRecovery", 400);
 
 		// Delete existing tokens
 		await this.recoveryTokensRepository.deleteManyByEmail(email);
@@ -288,7 +300,7 @@ export class UserService implements IUserService {
 		const existingToken = await this.recoveryTokensRepository.findByToken(recoveryToken);
 		const existingUser = await this.usersRepository.findByEmail(existingToken.email);
 
-		const match = await bcrypt.compare(password, existingUser.password);
+		const match = await bcrypt.compare(password, this.requirePasswordHash(existingUser, "resetPassword", 400));
 		if (match === true) {
 			throw new AppError(userErrors.passwordUnchanged, { service: SERVICE_NAME, method: "resetPassword" });
 		}

@@ -4,6 +4,8 @@ export interface IUsersRepository {
 	create(user: Partial<User>, imageFile?: Express.Multer.File | null): Promise<UserResponse>;
 	// fetch
 	findByEmail(email: string): Promise<User>;
+	findByEmailOrNull(email: string): Promise<User | null>;
+	findBySsoSubject(issuer: string, subject: string): Promise<User | null>;
 	findById(id: string): Promise<UserResponse>;
 	findAll(): Promise<UserResponse[]>;
 	// update

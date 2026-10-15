@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { editUserBodyValidation } from "../../../src/api/validation/userValidation.ts";
+import { createUserBodyValidation, editUserBodyValidation } from "../../../src/api/validation/userValidation.ts";
 
 const validPassword = "OldPass1!";
 const validNewPassword = "NewPass1!";
@@ -62,6 +62,23 @@ describe("editUserBodyValidation", () => {
 
 	it("rejects a non-boolean deleteProfileImage value", () => {
 		const result = editUserBodyValidation.safeParse({ deleteProfileImage: "banana" });
+		expect(result.success).toBe(false);
+	});
+});
+
+describe("createUserBodyValidation", () => {
+	const body = { firstName: "Ada", lastName: "Lovelace", email: "Ada@Example.com", role: ["user"] };
+
+	// An admin pre-creating an account for someone who will sign in through SSO has no password to set.
+	it("accepts a body with no password", () => {
+		const result = createUserBodyValidation.safeParse(body);
+		expect(result.success).toBe(true);
+		expect(result.data?.password).toBeUndefined();
+		expect(result.data?.email).toBe("ada@example.com");
+	});
+
+	it("still rejects a password that is present but weak", () => {
+		const result = createUserBodyValidation.safeParse({ ...body, password: "short" });
 		expect(result.success).toBe(false);
 	});
 });
