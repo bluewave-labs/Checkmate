@@ -7,7 +7,11 @@ import { randomUUID } from "node:crypto";
 import { pinoHttp } from "pino-http";
 import type { LogLevel } from "@/domain/app-settings/app-settings.type.js";
 
-export type LogFields = Record<string, unknown>;
+// Keys the logger writes itself; a field with the same name would be written twice
+type ReservedLogKey = "message" | "level" | "timestamp" | "service";
+export type LogFields = Record<string, unknown> & { [K in ReservedLogKey]?: never };
+// child() is where `service` is set
+export type LogBindings = Record<string, unknown> & { [K in Exclude<ReservedLogKey, "service">]?: never };
 type LogConfig = z.infer<typeof logConfigSchema>;
 type LogEntry = z.infer<typeof logEntrySchema>;
 type LogMethod = {
@@ -25,10 +29,24 @@ export interface ILogger {
 	getLogs(): LogEntry[];
 	setLogLevel(level: LogLevel): void;
 	httpMiddleware(): RequestHandler;
-	child(bindings: LogFields): ILogger;
+	child(bindings: LogBindings): ILogger;
 }
 
 const MAX_CACHE_SIZE = 1000;
+
+// Renamed reserved fields at runtime for fields the types miss TODO add "service"
+const RESERVED_FIELDS = ["message", "level", "timestamp"] as const;
+
+const renameReservedFields = (fields: Record<string, unknown>): Record<string, unknown> => {
+	const clashes = RESERVED_FIELDS.filter((key) => key in fields);
+	if (clashes.length === 0) return fields;
+	const renamed = { ...fields };
+	for (const key of clashes) {
+		renamed[`field_${key}`] = renamed[key];
+		delete renamed[key];
+	}
+	return renamed;
+};
 const REQUEST_ID_PATTERN = /^[\w.-]{1,128}$/;
 
 // Secret-bearing field names used in the app. Matched at the top level (new call shape), one level down and two
@@ -109,6 +127,7 @@ class Logger implements ILogger {
 				timestamp: () => `,"timestamp":"${new Date().toISOString()}"`,
 				formatters: {
 					level: (label) => ({ level: label }),
+					log: renameReservedFields,
 				},
 				base: undefined, // omit pid and hostname
 				serializers: { err: serializeError },
@@ -183,7 +202,7 @@ class Logger implements ILogger {
 		});
 	}
 
-	child(bindings: LogFields): ILogger {
+	child(bindings: LogBindings): ILogger {
 		return new Logger({ pino: this.pino.child(bindings), logCache: this.logCache });
 	}
 
