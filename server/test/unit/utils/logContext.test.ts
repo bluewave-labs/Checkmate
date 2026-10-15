@@ -10,7 +10,9 @@ describe("withLogContext", () => {
 	});
 
 	it("merges nested contexts, with the inner value winning", () => {
-		const nested = withLogContext({ reqId: "outer", jobId: "j1" }, () => withLogContext({ reqId: "inner", jobType: "check" }, () => logContext.getStore()));
+		const nested = withLogContext({ reqId: "outer", jobId: "j1" }, () =>
+			withLogContext({ reqId: "inner", jobType: "check" }, () => logContext.getStore())
+		);
 
 		expect(nested).toEqual({ reqId: "inner", jobId: "j1", jobType: "check" });
 	});
