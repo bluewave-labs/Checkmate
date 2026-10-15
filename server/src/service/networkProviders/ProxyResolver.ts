@@ -1,7 +1,7 @@
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { Monitor } from "@/domain/monitors/monitor.type.js";
 import { IProxiesRepository } from "@/domain/proxies/proxy.repository.interface.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { Proxy } from "@/domain/proxies/proxy.type.js";
 
 export interface IProxyResolver {

@@ -1,6 +1,6 @@
 import { IQueueWorker, JobHandlers } from "@/worker/worker.interface.js";
 import { type Job, type JobType, LOCK_MS } from "@/domain/jobs/job.type.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.repository.interface.js";

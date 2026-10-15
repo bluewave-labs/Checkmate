@@ -1,6 +1,6 @@
 import http from "http";
 import { IQueueWorker, WorkerHealth } from "@/worker/worker.interface.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 
 const SERVICE_NAME = "HealthServer";
 const DEFAULT_HEALTH_PORT = 52346;

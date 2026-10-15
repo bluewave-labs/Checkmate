@@ -9,7 +9,7 @@ import { IMonitorStatsRepository } from "@/domain/monitor-stats/monitor-stats.re
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
 import { IEgressService } from "@/domain/egress/egress.service.js";
 import type { Job } from "@/domain/jobs/job.type.js";

@@ -4,7 +4,7 @@ import { Types } from "mongoose";
 import type { IGeoChecksRepository } from "@/domain/geo-checks/geo-check.repository.interface.js";
 import type { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import type { IGlobalPingService } from "@/service/globalPingService.js";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 import { AppError } from "@/utils/AppError.js";
 import { DateRange } from "@/types/query.js";
 import { monitorErrors } from "@/domain/monitors/monitor.errors.js";

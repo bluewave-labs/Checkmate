@@ -2,7 +2,7 @@ import { Monitor } from "@/domain/monitors/monitor.type.js";
 import { JobHandler, MonitorEvaluation } from "@/worker/worker.interface.js";
 import { IMaintenanceWindowsRepository } from "@/domain/maintenance-windows/maintenance-window.repository.interface.js";
 import { isWindowActive } from "@/utils/maintenanceWindow.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { IBufferService } from "@/service/bufferService.js";
 import { AppError, internalError } from "@/utils/AppError.js";
 import { supportsGeoCheck } from "@/domain/monitors/monitor.type.js";

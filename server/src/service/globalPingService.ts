@@ -1,7 +1,7 @@
 import type { GeoContinent, GeoCheckResult, GeoCheckTimings, GeoCheckLocation } from "@/domain/geo-checks/geo-check.type.js";
 import { supportsGeoCheck, type HttpStatusCode } from "@/domain/monitors/monitor.type.js";
 import { MonitorType } from "@/domain/monitors/monitor.type.js";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 import got from "got";
 import { isStatusUp } from "@/service/networkProviders/utils.js";
 

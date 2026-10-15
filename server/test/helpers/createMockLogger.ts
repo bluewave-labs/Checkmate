@@ -9,4 +9,5 @@ export const createMockLogger = () => ({
 	cacheLog: jest.fn(),
 	getLogs: jest.fn().mockReturnValue([]),
 	buildLogEntry: jest.fn().mockReturnValue({ level: "info", timestamp: new Date().toISOString() }),
+	httpMiddleware: jest.fn(() => (_req: unknown, _res: unknown, next: () => void) => next()),
 });

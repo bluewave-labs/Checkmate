@@ -1,5 +1,5 @@
 import { MonitorModel } from "../../domain/monitors/monitor.model.js";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 
 /**
  * Rewrite docker monitor urls from the old container-name semantics to host urls.

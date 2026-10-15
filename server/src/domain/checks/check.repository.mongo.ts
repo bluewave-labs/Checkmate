@@ -19,7 +19,7 @@ import { CheckModel, type CheckDocument } from "@/domain/checks/check.model.js";
 import { EXCLUDE_DEGRADED_EGRESS_MATCH } from "@/domain/checks/check.query.js";
 import mongoose from "mongoose";
 import { getDateFormat, getDateForRange } from "@/utils/dataUtils.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
 import { getHardwareUpChecks, getHardwareStats, getHardwareTotalChecks } from "@/domain/checks/check.hardware.aggregations.js";

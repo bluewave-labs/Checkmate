@@ -11,7 +11,7 @@ import { recomputeResponseTimeFromTimings } from "./0009_recomputeResponseTimeFr
 import { slimRecentChecks } from "./0010_slimRecentChecks.js";
 import { backfillMonitorProxyMode } from "./0011_backfillMonitorProxyMode.js";
 import { migrateDockerMonitorUrls } from "./0012_migrateDockerMonitorUrls.js";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 
 type MigrationEntry = {
 	name: string;
