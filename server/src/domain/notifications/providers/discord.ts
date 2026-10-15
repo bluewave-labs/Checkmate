@@ -6,6 +6,8 @@ import type { NotificationMessage, NotificationSeverity } from "@/domain/notific
 import got from "got";
 
 export class DiscordProvider extends NotificationProvider {
+	protected readonly serviceName = SERVICE_NAME;
+
 	sendTestAlert = async (notification: Partial<Notification>) => {
 		if (!notification.address) {
 			return false;
@@ -20,24 +22,14 @@ export class DiscordProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: "Discord test alert failed",
-				service: SERVICE_NAME,
-				method: "sendTestAlert",
-				stack: err?.stack,
-			});
+			this.logger.warn({ err: error }, "Discord test alert failed");
 			return false;
 		}
 	};
 
 	async sendMessage(notification: Notification, message: NotificationMessage): Promise<boolean> {
 		if (!notification.address) {
-			this.logger.warn({
-				message: "Discord notification missing webhook URL",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-			});
+			this.logger.warn("Discord notification missing webhook URL");
 			return false;
 		}
 
@@ -53,13 +45,7 @@ export class DiscordProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: "Discord notification failed",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-				stack: err?.stack,
-			});
+			this.logger.warn({ err: error }, "Discord notification failed");
 			return false;
 		}
 	}

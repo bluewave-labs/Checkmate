@@ -207,9 +207,7 @@ describe("NotificationsService", () => {
 			const result = await service.handleNotifications(makeMonitor(), makeCheck(), makeDecision());
 
 			expect(result).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({ message: expect.stringContaining("Unknown notification type: carrier_pigeon") })
-			);
+			expect(logger.warn).toHaveBeenCalledWith({ type: "carrier_pigeon" }, "Unknown notification type");
 		});
 
 		it("returns false and logs warning when notificationMessage is undefined", async () => {
@@ -221,7 +219,7 @@ describe("NotificationsService", () => {
 			const result = await service.handleNotifications(makeMonitor(), makeCheck(), makeDecision());
 
 			expect(result).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Notification message not provided" }));
+			expect(logger.warn).toHaveBeenCalledWith("Notification message not provided");
 		});
 
 		it("handles monitors with no notification IDs", async () => {
@@ -246,7 +244,7 @@ describe("NotificationsService", () => {
 			const result = await service.handleNotifications(makeMonitor(), makeCheck(), makeDecision());
 
 			expect(result).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("1 success, 1 failure") }));
+			expect(logger.warn).toHaveBeenCalledWith({ succeeded: 1, failed: 1 }, "Notification send completed with failures");
 		});
 
 		it("uses fallback clientHost when settings.clientHost is empty", async () => {
@@ -346,7 +344,8 @@ describe("NotificationsService", () => {
 			expect(result).toBe(false);
 			expect(slackProvider.sendTestAlert).toHaveBeenCalled();
 			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({ message: "Test notification failed: Email is not configured. Set the system email host in settings." })
+				expect.objectContaining({ err: new Error("Email is not configured. Set the system email host in settings."), type: "email" }),
+				"Test notification failed"
 			);
 		});
 	});
@@ -381,7 +380,7 @@ describe("NotificationsService", () => {
 			expect(result).toBe(true);
 			expect(notificationsRepository.findNotificationsByIds).not.toHaveBeenCalled();
 			expect(notificationMessageBuilder.buildEgressRecoveredMessage).not.toHaveBeenCalled();
-			expect(logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("no notification channels") }));
+			expect(logger.info).toHaveBeenCalledWith("Egress recovered but no notification channels are configured for it");
 		});
 
 		it("warns without building a message when none of the configured notifications exist", async () => {
@@ -392,7 +391,10 @@ describe("NotificationsService", () => {
 
 			expect(result).toBe(true);
 			expect(notificationMessageBuilder.buildEgressRecoveredMessage).not.toHaveBeenCalled();
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ details: { notificationIds: ["notif-deleted"] } }));
+			expect(logger.warn).toHaveBeenCalledWith(
+				{ notificationIds: ["notif-deleted"] },
+				"Egress recovered but none of the configured notification channels exist"
+			);
 		});
 
 		it("returns false when any provider fails", async () => {
@@ -417,7 +419,10 @@ describe("NotificationsService", () => {
 			expect(result).toBe(true);
 			expect(emailProvider.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ id: "notif-1" }), expect.anything());
 			expect(pagerDutyProvider.sendMessage).not.toHaveBeenCalled();
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ details: { skippedIds: ["notif-2"] } }));
+			expect(logger.warn).toHaveBeenCalledWith(
+				{ skippedIds: ["notif-2"] },
+				"Egress recovered; skipping notification channels that cannot receive egress alerts"
+			);
 		});
 
 		it("returns true without building a message when only excluded channels are configured", async () => {

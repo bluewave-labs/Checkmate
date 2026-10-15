@@ -6,12 +6,14 @@ import { getTestMessage, incidentUrl } from "@/domain/notifications/providers/ut
 import got from "got";
 
 export class NtfyProvider extends NotificationProvider {
+	protected readonly serviceName = SERVICE_NAME;
+
 	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
 		if (!notification.address || !notification.topic) {
 			return false;
 		}
 
-		const authHeaders = this.buildAuthHeaders(notification, "sendTestAlert");
+		const authHeaders = this.buildAuthHeaders(notification);
 		if (authHeaders === null) {
 			return false;
 		}
@@ -28,13 +30,7 @@ export class NtfyProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: "ntfy test alert failed",
-				service: SERVICE_NAME,
-				method: "sendTestAlert",
-				stack: err?.stack,
-			});
+			this.logger.warn({ err: error }, "ntfy test alert failed");
 			return false;
 		}
 	}
@@ -44,7 +40,7 @@ export class NtfyProvider extends NotificationProvider {
 			return false;
 		}
 
-		const authHeaders = this.buildAuthHeaders(notification, "sendMessage");
+		const authHeaders = this.buildAuthHeaders(notification);
 		if (authHeaders === null) {
 			return false;
 		}
@@ -60,20 +56,10 @@ export class NtfyProvider extends NotificationProvider {
 				},
 				...this.gotRequestOptions(),
 			});
-			this.logger.info({
-				message: "ntfy notification sent",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-			});
+			this.logger.info("ntfy notification sent");
 			return true;
 		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: "ntfy alert failed",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-				stack: err?.stack,
-			});
+			this.logger.warn({ err: error }, "ntfy alert failed");
 			return false;
 		}
 	}
@@ -88,7 +74,7 @@ export class NtfyProvider extends NotificationProvider {
 	 * back to an anonymous post, so a misconfigured channel surfaces instead of quietly
 	 * publishing to a topic the server may leave world-readable.
 	 */
-	private buildAuthHeaders(notification: Partial<Notification>, method: string): Record<string, string> | null {
+	private buildAuthHeaders(notification: Partial<Notification>): Record<string, string> | null {
 		const { ntfyAuthType, accessToken, ntfyUsername } = notification;
 
 		if (!ntfyAuthType || ntfyAuthType === "none") {
@@ -97,25 +83,21 @@ export class NtfyProvider extends NotificationProvider {
 
 		if (ntfyAuthType === "token") {
 			if (!accessToken) {
-				this.logMissingCredentials("access token", method);
+				this.logMissingCredentials("access token");
 				return null;
 			}
 			return { Authorization: `Bearer ${accessToken}` };
 		}
 
 		if (!ntfyUsername || !accessToken) {
-			this.logMissingCredentials("username and password", method);
+			this.logMissingCredentials("username and password");
 			return null;
 		}
 		return { Authorization: `Basic ${Buffer.from(`${ntfyUsername}:${accessToken}`).toString("base64")}` };
 	}
 
-	private logMissingCredentials(missing: string, method: string): void {
-		this.logger.warn({
-			message: `ntfy notification is configured for authentication but is missing its ${missing}`,
-			service: SERVICE_NAME,
-			method,
-		});
+	private logMissingCredentials(missing: string): void {
+		this.logger.warn({ missing }, "ntfy notification is configured for authentication but is missing a credential");
 	}
 
 	private buildNtfyText(message: NotificationMessage): string {
