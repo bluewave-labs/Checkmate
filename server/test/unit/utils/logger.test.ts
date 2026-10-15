@@ -170,6 +170,9 @@ describe("Logger.httpMiddleware", () => {
 			logger.info({ message: "handler line" });
 			res.json({ ok: true });
 		});
+		app.get("/api/v1/health", (_req, res) => {
+			res.json({ ok: true });
+		});
 		app.get("/static.js", (_req, res) => {
 			res.send("// js");
 		});
@@ -242,10 +245,11 @@ describe("Logger.httpMiddleware", () => {
 		}
 	});
 
-	it("does not log non-API requests", async () => {
+	it("does not log non-API requests or the health probe", async () => {
 		const { request, requestLines, close } = await setupApp();
 		try {
 			await request("/static.js");
+			await request("/api/v1/health");
 
 			expect(requestLines()).toHaveLength(0);
 		} finally {

@@ -123,7 +123,7 @@ class Logger implements ILogger {
 				res.setHeader("X-Request-Id", id);
 				return id;
 			},
-			autoLogging: { ignore: (req) => !req.url?.startsWith("/api/") },
+			autoLogging: { ignore: (req) => !req.url?.startsWith("/api/") || req.url.startsWith("/api/v1/health") },
 			customLogLevel: (_req, res, err) => {
 				if (err || res.statusCode >= 500) return "error";
 				if (res.statusCode >= 400) return "warn";
