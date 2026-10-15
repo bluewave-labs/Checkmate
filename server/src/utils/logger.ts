@@ -1,11 +1,6 @@
-import { createLogger, format, transports, Logger as WinstonLogger } from "winston";
-import type { Logform } from "winston";
 import type { z } from "zod";
-import type { logConfigSchema, logEntrySchema } from "@/utils/logger.schema.js";
-import dotenv from "dotenv";
-dotenv.config();
-
-const SERVICE_NAME = "Logger";
+import pino, { type Logger as PinoLogger } from "pino";
+import type { logConfigSchema, logEntrySchema } from "./logger.schema.js";
 
 type LogConfig = z.infer<typeof logConfigSchema>;
 type LogEntry = z.infer<typeof logEntrySchema>;
@@ -21,97 +16,73 @@ export interface ILogger {
 	setLogLevel(level: string): void;
 }
 
-class Logger implements ILogger {
-	static SERVICE_NAME = SERVICE_NAME;
+const MAX_CACHE_SIZE = 1000;
 
-	private logger: WinstonLogger;
-	private logCache: LogEntry[];
-	private maxCacheSize: number;
+// Secret-bearing field names used in the app. Matched at the top level (new call shape), one level down and two
+// levels down (legacy calls nest fields under `details`).
+const SECRET_KEYS = [
+	"password",
+	"newPassword",
+	"accessToken",
+	"secret",
+	"jwtSecret",
+	"systemEmailPassword",
+	"pagespeedApiKey",
+	"dockerTlsKey",
+	"token",
+];
+const REDACT_PATHS = SECRET_KEYS.flatMap((key) => [key, `*.${key}`, `*.*.${key}`]);
+
+class Logger implements ILogger {
+	private pino: PinoLogger;
+	private logCache: LogEntry[] = [];
 
 	constructor() {
-		this.logCache = [];
-		this.maxCacheSize = 1000;
-		const consoleFormat = format.printf((info: Logform.TransformableInfo) => {
-			const { level, service, method, details, timestamp, stack } = info;
-			const message = info.message as string;
-			let formattedMessage: string = message;
-			let formattedDetails: string | undefined;
+		const cacheStream = {
+			write: (line: string) => {
+				try {
+					this.cacheLog(this.toLogEntry(JSON.parse(line)));
+				} catch {
+					// A line that is not JSON is never produced by pino, ignore
+				}
+			},
+		};
 
-			if (typeof message === "object" && message !== null) {
-				formattedMessage = JSON.stringify(message, null, 2);
-			}
-
-			if (typeof details === "object" && details !== null) {
-				formattedDetails = JSON.stringify(details, null, 2);
-			}
-
-			let msg = `${timestamp} ${level}:`;
-			if (service) msg += ` [${service}]`;
-			if (method) msg += `(${method})`;
-			if (formattedMessage) msg += ` ${formattedMessage}`;
-			if (formattedDetails) msg += ` (details: ${formattedDetails})`;
-
-			if (typeof stack === "string") {
-				const stackTrace = stack.split("\n").map((line: string) => {
-					const match = line.match(/at\s+(.+?)\s+\((.+?):(\d+):(\d+)\)/);
-					if (match) {
-						return {
-							function: match[1],
-							file: match[2],
-							line: parseInt(match[3] ?? "0", 10),
-							column: parseInt(match[4] ?? "0", 10),
-						};
-					}
-					return line.trim();
-				});
-				msg += ` (stack: ${JSON.stringify(stackTrace, null, 2)})`;
-			}
-
-			return msg;
-		});
-
-		this.logger = createLogger({
-			level: "info",
-			format: format.combine(format.timestamp()),
-			transports: [
-				new transports.Console({
-					format: format.combine(format.colorize(), format.prettyPrint(), format.json(), consoleFormat),
-				}),
-				new transports.File({
-					format: format.combine(format.json()),
-					filename: "app.log",
-				}),
-			],
-		});
+		this.pino = pino(
+			{
+				level: "info",
+				messageKey: "message",
+				timestamp: () => `,"timestamp":"${new Date().toISOString()}"`,
+				formatters: {
+					level: (label) => ({ level: label }),
+				},
+				base: undefined, // omit pid and hostname
+				serializers: { err: pino.stdSerializers.errWithCause },
+				redact: { paths: REDACT_PATHS, censor: "[Redacted]" },
+			},
+			pino.multistream([
+				{ stream: process.stdout, level: "debug" },
+				{ stream: cacheStream, level: "debug" },
+			])
+		);
 	}
 
 	info(config: LogConfig) {
-		const logEntry = this.buildLogEntry("info", config);
-		this.cacheLog(logEntry);
-		this.logger.info(logEntry);
+		this.write("info", config);
 	}
-
 	warn(config: LogConfig) {
-		const logEntry = this.buildLogEntry("warn", config);
-		this.cacheLog(logEntry);
-		this.logger.warn(logEntry);
+		this.write("warn", config);
 	}
-
 	error(config: LogConfig) {
-		const logEntry = this.buildLogEntry("error", config);
-		this.cacheLog(logEntry);
-		this.logger.error(logEntry);
+		this.write("error", config);
 	}
-
 	debug(config: LogConfig) {
-		const logEntry = this.buildLogEntry("debug", config);
-		this.cacheLog(logEntry);
-		this.logger.debug(logEntry);
+		this.write("debug", config);
 	}
 
 	cacheLog(entry: LogEntry) {
 		this.logCache.push(entry);
-		if (this.logCache.length > this.maxCacheSize) {
+		if (this.logCache.length > MAX_CACHE_SIZE) {
 			this.logCache.shift();
 		}
 	}
@@ -120,20 +91,33 @@ class Logger implements ILogger {
 		return this.logCache;
 	}
 
-	buildLogEntry(level: string, config: LogConfig): LogEntry {
-		return {
-			level,
-			message: config.message,
-			service: config.service,
-			method: config.method,
-			details: config.details,
-			stack: config.stack,
-			timestamp: new Date().toISOString(),
-		};
+	setLogLevel(level: string): void {
+		this.pino.level = level || "info";
 	}
 
-	setLogLevel(level: string): void {
-		this.logger.level = level || "info";
+	buildLogEntry(level: string, config: LogConfig): LogEntry {
+		return { level, ...config, timestamp: new Date().toISOString() };
+	}
+
+	private write(level: "info" | "warn" | "error" | "debug", config: LogConfig) {
+		const { message, service, method, details, stack } = config;
+		// Under err so pino-pretty lays the stack out on separate lines, and legacy and new-style errors share one shape
+		this.pino[level]({ service, method, details, ...(stack && { err: { stack } }) }, message);
+	}
+
+	private toLogEntry(line: Record<string, unknown>): LogEntry {
+		const { level, message, timestamp, service, method, details, stack, err, ...rest } = line;
+		const errStack = typeof err === "object" && err !== null ? (err as { stack?: unknown }).stack : undefined;
+		const extra = Object.keys(rest).length > 0 ? rest : undefined;
+		return {
+			level: String(level),
+			message: String(message ?? ""),
+			timestamp: String(timestamp),
+			service: typeof service === "string" ? service : undefined,
+			method: typeof method === "string" ? method : undefined,
+			details: (details as Record<string, unknown> | undefined) ?? extra,
+			stack: typeof stack === "string" ? stack : typeof errStack === "string" ? errStack : undefined,
+		};
 	}
 }
 

@@ -1,3 +1,4 @@
+import "dotenv/config"; // first, so .env is loaded before any module reads process.env
 import { buildShared } from "@/config/services.shared.js";
 import { buildApi } from "@/config/services.api.js";
 import { buildWorker } from "@/config/services.worker.js";
