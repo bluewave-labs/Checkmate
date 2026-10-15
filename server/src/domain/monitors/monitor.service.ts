@@ -2,6 +2,7 @@ import { type Monitor } from "@/domain/monitors/monitor.type.js";
 import type {
 	MonitorType,
 	MonitorsWithChecksByTeamIdResult,
+	DashboardByTeamIdResult,
 	UptimeDetailsResult,
 	HardwareDetailsResult,
 	PageSpeedDetailsResult,
@@ -115,6 +116,7 @@ export interface IMonitorService {
 		field?: string;
 		order?: "asc" | "desc";
 	}): Promise<MonitorsWithChecksByTeamIdResult>;
+	getDashboardByTeamId(args: { teamId: string; limit?: number; order?: "asc" | "desc" }): Promise<DashboardByTeamIdResult>;
 	getAllGames(): GamesMap;
 
 	// update
@@ -597,6 +599,18 @@ export class MonitorService implements IMonitorService {
 			return monitor;
 		});
 		return { summary: summary ?? null, count, monitors: monitorsWithChecks };
+	};
+
+	getDashboardByTeamId = async ({
+		teamId,
+		limit,
+		order,
+	}: {
+		teamId: string;
+		limit?: number;
+		order?: "asc" | "desc";
+	}): Promise<DashboardByTeamIdResult> => {
+		return await this.monitorsRepository.findDashboardByTeamId(teamId, { limit, order });
 	};
 
 	getAllGames = (): GamesMap => {

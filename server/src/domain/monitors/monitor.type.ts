@@ -6,12 +6,15 @@ import { isDockerSocketUrl } from "@/utils/dockerHost.js";
 
 import type { z } from "zod";
 import type {
+	dashboardByTeamIdResultSchema,
+	dashboardMonitorSchema,
 	dockerContainerDetailsResultSchema,
 	dockerDetailsResultSchema,
 	gameSchema,
 	gamesMapSchema,
 	hardwareDetailsResultSchema,
 	monitorSchema,
+	monitorTypeCountSchema,
 	monitorsSummarySchema,
 	monitorsWithChecksByTeamIdResultSchema,
 	pageSpeedDetailsResultSchema,
@@ -119,10 +122,14 @@ export const HttpMethods = ["GET", "HEAD"] as const;
 export type HttpMethod = (typeof HttpMethods)[number];
 
 export const MAX_RECENT_CHECKS = 50;
+export const DASHBOARD_DEFAULT_LIMIT = 5;
 
 export type Monitor = z.infer<typeof monitorSchema>;
 export type MonitorsSummary = z.infer<typeof monitorsSummarySchema>;
 export type MonitorsWithChecksByTeamIdResult = z.infer<typeof monitorsWithChecksByTeamIdResultSchema>;
+export type DashboardMonitor = z.infer<typeof dashboardMonitorSchema>;
+export type MonitorTypeCount = z.infer<typeof monitorTypeCountSchema>;
+export type DashboardByTeamIdResult = z.infer<typeof dashboardByTeamIdResultSchema>;
 export type UptimeDetailsResult = z.infer<typeof uptimeDetailsResultSchema>;
 export type HardwareDetailsResult = z.infer<typeof hardwareDetailsResultSchema>;
 export type DockerDetailsResult = z.infer<typeof dockerDetailsResultSchema>;

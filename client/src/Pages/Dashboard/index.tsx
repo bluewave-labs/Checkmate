@@ -1,4 +1,4 @@
-import { Fragment, useMemo, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useMemo, useState, type ReactNode } from "react";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
@@ -8,9 +8,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { BasePage } from "@/Components/design-elements/BasePage";
 import { Button } from "@/Components/inputs";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { useMonitorListController } from "@/Hooks/useMonitorListController";
-import { MonitorTypes, type MonitorTypeCount } from "@/Types/Monitor";
-import { setDashboardVisibleCards } from "@/Features/UI/uiSlice";
+import { setDashboardVisibleCards, setDashboardData } from "@/Features/UI/uiSlice";
+import { useGet } from "@/Hooks/UseApi";
+import type { DashboardResponse } from "@/Types/Dashboard";
 import type { RootState, AppDispatch } from "@/store";
 
 import { MonitorStatusCard } from "@/Pages/Dashboard/components/cards/MonitorStatusCard";
@@ -30,33 +30,35 @@ const Dashboard = () => {
 	);
 	const visibleCards = useMemo(() => new Set(visibleCardsList), [visibleCardsList]);
 
-	const { monitors, summary } = useMonitorListController({
-		types: [...MonitorTypes],
-		checksLimit: 1,
-		refreshInterval: 30000,
-		rowsPerPageTable: "dashboard",
-		rowsPerPageDefault: 100,
-	});
+	const dashboard = useSelector((state: RootState) => state.ui.dashboardData);
 
-	const monitorsByType = useMemo<MonitorTypeCount[]>(() => {
-		const countMap = new Map<MonitorTypeCount["type"], number>();
-		(monitors ?? []).forEach((m) =>
-			countMap.set(m.type, (countMap.get(m.type) ?? 0) + 1)
-		);
-		return [...countMap.entries()]
-			.map(([type, count]) => ({ type, count }))
-			.sort((a, b) => b.count - a.count);
-	}, [monitors]);
+	const { data, error } = useGet<DashboardResponse>(
+		"/monitors/team/dashboard",
+		{},
+		{ refreshInterval: 30000, keepPreviousData: true }
+	);
+
+	useEffect(() => {
+		if (data) dispatch(setDashboardData(data));
+	}, [data, dispatch]);
 
 	const cardComponents: Record<DashboardCardKey, ReactNode> = {
-		monitorStatus: <MonitorStatusCard summary={summary} />,
-		currentlyDown: <CurrentlyDownCard monitors={monitors ?? []} />,
-		uptime: <UptimeCard monitors={monitors ?? []} />,
-		monitorsByType: <MonitorsByTypeCard monitorsByType={monitorsByType} />,
+		monitorStatus: <MonitorStatusCard summary={dashboard?.summary ?? null} />,
+		currentlyDown: (
+			<CurrentlyDownCard
+				monitors={dashboard?.down ?? []}
+				total={dashboard?.summary.downMonitors ?? 0}
+			/>
+		),
+		uptime: <UptimeCard monitors={dashboard?.uptime ?? []} />,
+		monitorsByType: <MonitorsByTypeCard monitorsByType={dashboard?.byType ?? []} />,
 	};
 
 	return (
-		<BasePage headerKey="dashboard">
+		<BasePage
+			headerKey="dashboard"
+			error={!!error}
+		>
 			<Stack gap={theme.spacing(LAYOUT.SM)}>
 				<Stack
 					direction="row"
