@@ -46,6 +46,38 @@ const SECRET_KEYS = [
 ];
 const REDACT_PATHS = SECRET_KEYS.flatMap((key) => [key, `*.${key}`, `*.*.${key}`]);
 
+// Whitelisted error keys to avoid logging full library errors
+const ERROR_KEYS = new Set(["type", "message", "stack", "code", "errno", "syscall", "status", "statusCode", "details", "cause", "aggregateErrors"]);
+
+// Keep scheme and host only: webhook paths and queries are credentials
+const URL_PATTERN = /\b(https?:\/\/)(?:[^\s/?#@]+@)?([^\s/?#@]+)([^\s"'<>)]*)/gi;
+const maskUrls = (text: string): string =>
+	text.replace(URL_PATTERN, (_match, scheme: string, host: string, rest: string) => `${scheme}${host}${rest ? "/[Redacted]" : ""}`);
+
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
+
+const pickErrorKeys = (serialized: Record<string, unknown>): Record<string, unknown> => {
+	const picked: Record<string, unknown> = {};
+	for (const [key, value] of Object.entries(serialized)) {
+		if (!ERROR_KEYS.has(key)) continue;
+		if (key === "cause") {
+			picked.cause = isRecord(value) ? pickErrorKeys(value) : value;
+		} else if (key === "aggregateErrors" && Array.isArray(value)) {
+			picked.aggregateErrors = value.map((item) => (isRecord(item) ? pickErrorKeys(item) : item));
+		} else if ((key === "message" || key === "stack") && typeof value === "string") {
+			picked[key] = maskUrls(value);
+		} else {
+			picked[key] = value;
+		}
+	}
+	return picked;
+};
+
+export const serializeError = (error: unknown): unknown => {
+	if (!isRecord(error)) return error;
+	return pickErrorKeys(pino.stdSerializers.errWithCause(error as unknown as Error) as unknown as Record<string, unknown>);
+};
+
 class Logger implements ILogger {
 	private pino: PinoLogger;
 	private logCache: LogEntry[] = [];
@@ -79,7 +111,7 @@ class Logger implements ILogger {
 					level: (label) => ({ level: label }),
 				},
 				base: undefined, // omit pid and hostname
-				serializers: { err: pino.stdSerializers.errWithCause },
+				serializers: { err: serializeError },
 				redact: { paths: REDACT_PATHS, censor: "[Redacted]" },
 				mixin: () => logContext.getStore() ?? {},
 			},
@@ -146,6 +178,7 @@ class Logger implements ILogger {
 			serializers: {
 				req: (req) => ({ id: req.id, method: req.method, url: req.url }), // no headers, no body
 				res: (res) => ({ statusCode: res.statusCode }), // the default also logs response headers
+				err: serializeError, // pino-http ignores the logger's serializer
 			},
 		});
 	}
