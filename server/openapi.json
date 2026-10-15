@@ -13902,7 +13902,7 @@
 						}
 					},
 					"422": {
-						"description": "Referenced proxy does not exist",
+						"description": "Referenced proxy does not exist, or referenced notification does not exist",
 						"content": {
 							"application/json": {
 								"schema": {

@@ -58,7 +58,14 @@ export const updateAppSettingsBodyValidation = z
 
 		egressCheckEnabled: z.boolean().optional(),
 		egressCheckTargets: z.array(egressTargetValidation).max(MAX_EGRESS_TARGETS).optional(), // empty list falls back to DEFAULT_EGRESS_TARGETS
-		egressNotifications: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid notification id")).optional(),
+		egressNotifications: z
+			.array(
+				z
+					.string()
+					.regex(/^[0-9a-fA-F]{24}$/, "Invalid notification id")
+					.transform((id) => id.toLowerCase())
+			)
+			.optional(), // lower-cased so duplicates differing only in case collapse and ids match stored notification ids
 	})
 	.strip()
 	.superRefine((body, ctx) => {
