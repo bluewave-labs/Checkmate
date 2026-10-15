@@ -1344,6 +1344,20 @@
 					"description": "Configure your Matrix homeserver connection for notifications.",
 					"title": "Matrix configuration"
 				},
+				"messageContent": {
+					"description": "Optional overrides. Leave blank to use the default alert text. You can use {{monitor_name}}, {{monitor_url}}, {{monitor_type}} and {{status}}. Discord only renders @mentions in the body, never in the title.",
+					"helperPing": "Sent as plain text above the embed, e.g. <@123456789> or <@&987654321>. This is what actually pings.",
+					"helperVariables": "{{monitor_name}} {{monitor_url}} {{monitor_type}} {{status}}",
+					"optionBody": "Custom body",
+					"optionPing": "Ping message (outside embed)",
+					"optionShowDetails": "Show details and thresholds",
+					"optionShowUrl": "Show monitor URL",
+					"optionTitle": "Custom title",
+					"placeholderBody": "e.g. {{monitor_name}} is {{status}}",
+					"placeholderPing": "e.g. <@755846766653341756>",
+					"placeholderTitle": "e.g. Alert: {{monitor_name}}",
+					"title": "Message content"
+				},
 				"notificationName": {
 					"description": "A descriptive name for the notification channel",
 					"optionName": "Channel name",
@@ -1423,6 +1437,10 @@
 					"placeholderServerUrl": "https://ntfy.sh",
 					"optionTopic": "Topic",
 					"placeholderTopic": "checkmate-alerts"
+				},
+				"preview": {
+					"description": "Live preview of the Discord embed for a down alert with a sample monitor.",
+					"title": "Preview"
 				}
 			},
 			"table": {

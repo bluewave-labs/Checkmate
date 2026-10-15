@@ -86,7 +86,8 @@ export class NotificationsService implements INotificationsService {
 			});
 			return false;
 		}
-		return await provider.sendMessage(notification, notificationMessage);
+		const customizedMessage = this.notificationMessageBuilder.applyCustomization(notificationMessage, notification);
+		return await provider.sendMessage(notification, customizedMessage);
 	};
 
 	private sendNotifications = async (monitor: Monitor, check: Check, decision: MonitorActionDecision) => {
