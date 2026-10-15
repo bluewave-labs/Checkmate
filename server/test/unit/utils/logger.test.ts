@@ -1,7 +1,10 @@
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import express from "express";
+import got from "got";
+import http from "node:http";
 import type { AddressInfo } from "node:net";
 import Logger from "../../../src/utils/logger/logger.ts";
+import { AppError } from "../../../src/utils/AppError.ts";
 import { logContext } from "../../../src/utils/logger/logContext.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 
@@ -392,5 +395,124 @@ describe("createMockLogger", () => {
 		expect(child).toBe(mock);
 		expect(mock.child).toHaveBeenCalledWith({ service: "TestService" });
 		expect(mock.warn).toHaveBeenCalledWith({ a: 1 }, "message");
+	});
+});
+
+describe("error serialization", () => {
+	// A real got failure: the error carries the request options (URL, headers, body) as enumerable properties.
+	const failedGotRequest = async () => {
+		const server = http.createServer((_req, res) => {
+			res.statusCode = 500;
+			res.end("nope");
+		});
+		server.listen(0);
+		await new Promise((resolve) => server.once("listening", resolve));
+		const url = `http://127.0.0.1:${(server.address() as AddressInfo).port}/hooks/SECRET-WEBHOOK-TOKEN`;
+		try {
+			await got.post(url, { json: { routing_key: "SECRET-BODY-KEY" }, headers: { Authorization: "Bearer SECRET-HEADER" }, retry: { limit: 0 } });
+			throw new Error("expected the request to fail");
+		} catch (error) {
+			return error;
+		} finally {
+			await new Promise((resolve) => server.close(resolve));
+		}
+	};
+
+	it("drops a got error's request options, keeping message, stack and code", async () => {
+		const { logger, lines, parsed } = setup();
+		const error = await failedGotRequest();
+
+		logger.warn({ err: error }, "Webhook alert failed");
+
+		expect(lines[0]).not.toContain("SECRET-WEBHOOK-TOKEN");
+		expect(lines[0]).not.toContain("SECRET-HEADER");
+		expect(lines[0]).not.toContain("SECRET-BODY-KEY");
+		const err = parsed()[0]?.err as Record<string, unknown>;
+		expect(Object.keys(err).sort()).toEqual(["code", "message", "stack", "type"]);
+		expect(err).toMatchObject({ type: "HTTPError", code: "ERR_NON_2XX_3XX_RESPONSE", message: expect.stringContaining("500") });
+	});
+
+	it("drops unlisted properties on causes too", () => {
+		const { logger, parsed } = setup();
+		const cause = Object.assign(new Error("inner"), { options: { url: "https://hooks.example/SECRET" } });
+		const error = Object.assign(new Error("outer", { cause }), { options: { url: "https://hooks.example/SECRET" } });
+
+		logger.error({ err: error }, "failed");
+
+		const err = parsed()[0]?.err as Record<string, Record<string, unknown>>;
+		expect(err).not.toHaveProperty("options");
+		expect(err.cause).toMatchObject({ type: "Error", message: "inner" });
+		expect(err.cause).not.toHaveProperty("options");
+	});
+
+	it("keeps an AppError's status and details", () => {
+		const { logger, parsed } = setup();
+		const error = new AppError({ status: 422, description: "Invalid" }, { message: "bad input", details: { field: "name" } });
+
+		logger.warn({ err: error }, "rejected");
+
+		expect(parsed()[0]?.err).toMatchObject({ message: "bad input", status: 422, details: { field: "name" } });
+	});
+
+	it("keeps a system error's code, errno and syscall", () => {
+		const { logger, parsed } = setup();
+		const error = Object.assign(new Error("connect ECONNREFUSED 127.0.0.1:1"), { code: "ECONNREFUSED", errno: -111, syscall: "connect" });
+
+		logger.error({ err: error }, "connect failed");
+
+		expect(parsed()[0]?.err).toMatchObject({ code: "ECONNREFUSED", errno: -111, syscall: "connect" });
+	});
+
+	it("still logs a legacy call's stack under err", () => {
+		const { logger, parsed } = setup();
+
+		logger.error({ message: "legacy", stack: "Error: boom\n    at a (x.ts:1:1)" });
+
+		expect(parsed()[0]?.err).toEqual({ stack: "Error: boom\n    at a (x.ts:1:1)" });
+	});
+
+	it("passes a non-object err through unchanged", () => {
+		const { logger, parsed } = setup();
+
+		logger.warn({ err: "plain string" }, "odd");
+
+		expect(parsed()[0]?.err).toBe("plain string");
+	});
+});
+
+describe("error serialization: URLs in messages", () => {
+	it.each([
+		["a webhook path", "POST https://hooks.slack.com/services/T0/B0/XXXX failed", "POST https://hooks.slack.com/[Redacted] failed"],
+		["a query string", "GET https://api.example.com?token=abc failed", "GET https://api.example.com/[Redacted] failed"],
+		["credentials in the URL", "GET https://user:pass@db.example.com/x failed", "GET https://db.example.com/[Redacted] failed"],
+		["a bare host", "connect to https://example.com failed", "connect to https://example.com failed"],
+		["a host with a port", "POST http://127.0.0.1:8080/hook failed", "POST http://127.0.0.1:8080/[Redacted] failed"],
+		["a URL in parentheses", "failed (https://example.com/secret)", "failed (https://example.com/[Redacted])"],
+	])("masks %s", (_label, message, expected) => {
+		const { logger, parsed } = setup();
+
+		logger.error({ err: new Error(message) }, "failed");
+
+		const err = parsed()[0]?.err as Record<string, string>;
+		expect(err.message).toBe(expected);
+		expect(err.stack.split("\n")[0]).toBe(`Error: ${expected}`);
+	});
+
+	it("masks URLs in a legacy call's stack", () => {
+		const { logger, lines } = setup();
+
+		logger.warn({ message: "Webhook alert failed", stack: "HTTPError: POST https://hooks.example/SECRET\n    at a (x.ts:1:1)" });
+
+		expect(lines[0]).not.toContain("SECRET");
+		expect(lines[0]).toContain("https://hooks.example/[Redacted]");
+	});
+
+	it("masks URLs in a cause's message", () => {
+		const { logger, parsed } = setup();
+		const error = new Error("outer", { cause: new Error("POST https://hooks.example/SECRET failed") });
+
+		logger.error({ err: error }, "failed");
+
+		expect((parsed()[0]?.err as Record<string, Record<string, string>>).cause.message).toBe("POST https://hooks.example/[Redacted] failed");
 	});
 });
