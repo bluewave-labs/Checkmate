@@ -12,9 +12,10 @@ import type { ILogger } from "@/utils/logger/logger.js";
  */
 export async function migrateDockerMonitorUrls(logger: ILogger): Promise<void> {
 	const SERVICE_NAME = "Migration:MigrateDockerMonitorUrls";
+	const log = logger.child({ service: SERVICE_NAME });
 
 	try {
-		logger.info({ service: SERVICE_NAME, message: "Starting docker monitor url migration" });
+		log.info("Starting docker monitor url migration");
 
 		const result = await MonitorModel.updateMany({ type: "docker", url: { $not: /^(unix:\/\/|\/)/ } }, [
 			{
@@ -27,10 +28,9 @@ export async function migrateDockerMonitorUrls(logger: ILogger): Promise<void> {
 			},
 		]);
 
-		logger.info({ service: SERVICE_NAME, message: `Migrated ${result.modifiedCount} docker monitors to host urls` });
+		log.info({ modifiedCount: result.modifiedCount }, "Migrated docker monitors to host urls");
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		logger.error({ service: SERVICE_NAME, message: `Error migrating docker monitor urls: ${errorMessage}` });
+		log.error({ err: error }, "Error migrating docker monitor urls");
 		throw error;
 	}
 }
