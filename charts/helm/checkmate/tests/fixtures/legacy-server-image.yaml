@@ -1,0 +1,4 @@
+# Legacy server.* block (pre-0.2.0 rename) pinning the retired backend image.
+# The prechecks must see through the server.* -> api.* compatibility merge.
+server:
+  image: ghcr.io/bluewave-labs/checkmate-backend
