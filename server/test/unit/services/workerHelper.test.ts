@@ -106,13 +106,13 @@ describe("WorkerHelper", () => {
 			expect(defaults.geoChecksRepository.deleteByMonitorIdsNotIn).toHaveBeenCalledWith(["m1"]);
 			expect(defaults.dockerLogsRepository.deleteByMonitorIdsNotIn).toHaveBeenCalledWith(["m1"]);
 			expect(defaults.jobsRepository.deleteByMonitorIdsNotIn).toHaveBeenCalledWith(["m1"]);
-			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("2 orphaned monitors") }));
-			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("3 orphaned monitor stats") }));
-			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("4 orphaned checks") }));
-			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("1 orphaned incidents") }));
-			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("5 orphaned geo checks") }));
-			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("7 orphaned docker logs") }));
-			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("6 orphaned jobs") }));
+			expect(defaults.logger.info).toHaveBeenCalledWith({ count: 2 }, "Deleted orphaned monitors");
+			expect(defaults.logger.info).toHaveBeenCalledWith({ count: 3 }, "Deleted orphaned monitor stats");
+			expect(defaults.logger.info).toHaveBeenCalledWith({ count: 4 }, "Deleted orphaned checks");
+			expect(defaults.logger.info).toHaveBeenCalledWith({ count: 1 }, "Deleted orphaned incidents");
+			expect(defaults.logger.info).toHaveBeenCalledWith({ count: 5 }, "Deleted orphaned geo checks");
+			expect(defaults.logger.info).toHaveBeenCalledWith({ count: 7 }, "Deleted orphaned docker logs");
+			expect(defaults.logger.info).toHaveBeenCalledWith({ count: 6 }, "Deleted orphaned jobs");
 		});
 
 		it("skips info logs when no orphaned data is found", async () => {
@@ -120,10 +120,9 @@ describe("WorkerHelper", () => {
 			const job = helper.getCleanupOrphanedJob();
 			await job();
 
-			const infoMessages = (defaults.logger.info as jest.Mock).mock.calls.map((c: any) => c[0].message);
-			expect(infoMessages).toContain("Starting cleanup of orphaned data");
-			expect(infoMessages).toContain("Cleanup of orphaned data completed");
-			expect(infoMessages).not.toContain(expect.stringContaining("orphaned monitors"));
+			// (message) or (fields, message): the message is whichever argument is the string
+			const infoMessages = (defaults.logger.info as jest.Mock).mock.calls.map((c: any) => (typeof c[0] === "string" ? c[0] : c[1]));
+			expect(infoMessages).toEqual(["Starting cleanup of orphaned data", "Cleanup of orphaned data completed"]);
 		});
 
 		it("logs warning and rethrows on error", async () => {
@@ -132,16 +131,16 @@ describe("WorkerHelper", () => {
 			const job = helper.getCleanupOrphanedJob();
 
 			await expect(job()).rejects.toThrow("db down");
-			expect(defaults.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "db down" }));
+			expect(defaults.logger.warn).toHaveBeenCalledWith({ err: new Error("db down") }, "Cleanup of orphaned data failed");
 		});
 
-		it("logs 'Unknown error' for non-Error exceptions", async () => {
+		it("logs a non-Error thrown value under err", async () => {
 			const { helper, defaults } = createHelper();
 			(defaults.teamsRepository.findAllTeamIds as jest.Mock).mockRejectedValue(null);
 			const job = helper.getCleanupOrphanedJob();
 
 			await expect(job()).rejects.toBeNull();
-			expect(defaults.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error", stack: undefined }));
+			expect(defaults.logger.warn).toHaveBeenCalledWith({ err: null }, "Cleanup of orphaned data failed");
 		});
 	});
 
@@ -154,7 +153,10 @@ describe("WorkerHelper", () => {
 			await job();
 
 			expect(defaults.checkService.deleteOlderThan).toHaveBeenCalledWith(expect.any(Date));
-			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Deleted") }));
+			expect(defaults.logger.info).toHaveBeenCalledWith(
+				expect.objectContaining({ count: expect.any(Number), cutoff: expect.any(String) }),
+				"Deleted checks older than the retention cutoff"
+			);
 		});
 
 		it("skips cleanup when checkTTL is sentinel value (366)", async () => {
@@ -165,7 +167,7 @@ describe("WorkerHelper", () => {
 			await job();
 
 			expect(defaults.checkService.deleteOlderThan).not.toHaveBeenCalled();
-			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("unlimited") }));
+			expect(defaults.logger.info).toHaveBeenCalledWith("Check TTL is set to unlimited, skipping cleanup");
 		});
 
 		it("logs error on failure without rethrowing", async () => {
@@ -176,17 +178,17 @@ describe("WorkerHelper", () => {
 
 			await job(); // Should not throw
 
-			expect(defaults.logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "db error" }));
+			expect(defaults.logger.error).toHaveBeenCalledWith({ err: new Error("db error") }, "Retention cleanup failed");
 		});
 
-		it("logs 'Unknown error' for non-Error exceptions", async () => {
+		it("logs a non-Error thrown value under err", async () => {
 			const { helper, defaults } = createHelper({
 				settingsService: { getDBSettings: jest.fn().mockRejectedValue("boom") },
 			});
 			const job = helper.getCleanupRetentionJob();
 			await job();
 
-			expect(defaults.logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error", stack: undefined }));
+			expect(defaults.logger.error).toHaveBeenCalledWith({ err: "boom" }, "Retention cleanup failed");
 		});
 	});
 

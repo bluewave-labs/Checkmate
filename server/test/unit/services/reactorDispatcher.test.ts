@@ -71,7 +71,7 @@ describe("ReactorDispatcher", () => {
 		await expect(dispatcher.dispatch(evaluation)).resolves.toBeUndefined();
 
 		expect(good.react).toHaveBeenCalled();
-		expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("db error") }));
+		expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ err: new Error("db error"), reactor: "incident" }), "Reactor failed");
 	});
 
 	it("isolates a rejecting non-blocking reactor (fire-and-forget)", async () => {
@@ -82,6 +82,6 @@ describe("ReactorDispatcher", () => {
 		await dispatcher.dispatch(evaluation);
 		await new Promise((r) => setTimeout(r, 10)); // let the detached catch run
 
-		expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("smtp down") }));
+		expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ err: new Error("smtp down"), reactor: "notification" }), "Reactor failed");
 	});
 });
