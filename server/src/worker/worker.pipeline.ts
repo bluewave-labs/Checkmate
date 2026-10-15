@@ -50,7 +50,11 @@ export class WorkerPipeline implements IWorkerPipeline {
 
 	private unarmed: Map<string, PendingCheck[]> = new Map();
 
-	constructor(private deps: WorkerPipelineDependencies) {}
+	private logger: ILogger;
+
+	constructor(private deps: WorkerPipelineDependencies) {
+		this.logger = deps.logger.child({ service: SERVICE_NAME });
+	}
 
 	private isInMaintenanceWindow = async (monitorId: string, teamId: string) => {
 		const windows = await this.deps.maintenanceWindowsRepository.findByMonitorId(monitorId, teamId);
@@ -80,11 +84,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 		// Step 1a:  Maintenance window gate - skip if in maintenance
 		const maintenanceWindowActive = await this.isInMaintenanceWindow(monitor.id, monitor.teamId);
 		if (maintenanceWindowActive) {
-			this.deps.logger.debug({
-				message: `Monitor ${monitor.id} is in maintenance window`,
-				service: SERVICE_NAME,
-				method: "produce",
-			});
+			this.logger.debug({ monitorId: monitor.id }, "Monitor is in maintenance window");
 			if (monitor.status !== "maintenance") {
 				// Clear the status window to avoid incidents being created on next check
 				await this.deps.monitorsRepository.updateById(monitor.id, monitor.teamId, { status: "maintenance", statusWindow: [] });
@@ -116,12 +116,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 		// Built before the egress assessment below so that the probe's duration stays out of `createdAt`.
 		const check = this.deps.checkService.toCheck(status);
 		if (!check) {
-			this.deps.logger.warn({
-				message: `No check could be built for monitor ${monitor.id}`,
-				service: SERVICE_NAME,
-				method: "produce",
-				details: { code: status.code, message: status.message },
-			});
+			this.logger.warn({ monitorId: monitor.id, code: status.code, statusMessage: status.message }, "No check could be built for monitor");
 			return null;
 		}
 
@@ -195,11 +190,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 				this.deps.jobsRepository.upsertEvaluate(monitorId, pendingChecks, now).catch((error: unknown) => {
 					// The checks are already stored, so a failed arm is retried on the next ingest rather than dropped
 					this.unarmed.set(monitorId, pendingChecks);
-					this.deps.logger.error({
-						message: `Could not arm evaluation for monitor ${monitorId}, retrying on next ingest: ${error instanceof Error ? error.message : String(error)}`,
-						service: SERVICE_NAME,
-						method: "ingestChecks",
-					});
+					this.logger.error({ err: error, monitorId }, "Could not arm evaluation for monitor, retrying on next ingest");
 					return false;
 				})
 			);
@@ -230,11 +221,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 			const leaseHeld = await this.deps.jobsRepository.pullEvaluated(job.id, [check.id]);
 			if (!leaseHeld) {
 				// Another worker has claimed this row and is evaluating the remaining ids; stop here so nothing is applied twice
-				this.deps.logger.warn({
-					message: `Lost lease on ${job.id} after check ${check.id}, stopping`,
-					service: SERVICE_NAME,
-					method: "handleEvaluate",
-				});
+				this.logger.warn({ checkId: check.id }, "Lost job lease after check, stopping");
 				return;
 			}
 			current = evaluation.monitor; // fresh statusWindow/status/counters for the next check
@@ -244,11 +231,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 		const found = new Set(checks.map((check) => check.id));
 		const missing = pendingCheckIds.filter((checkId) => !found.has(checkId));
 		if (missing.length > 0) {
-			this.deps.logger.warn({
-				message: `Dropping ${missing.length} pending checks with no stored check: ${missing.join(", ")}`,
-				service: SERVICE_NAME,
-				method: "handleEvaluate",
-			});
+			this.logger.warn({ count: missing.length, checkIds: missing }, "Dropping pending checks with no stored check");
 			await this.deps.jobsRepository.pullEvaluated(job.id, missing);
 		}
 	};
@@ -257,11 +240,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 	// It is left out of the status window, running stats and monitor status entirely, so that no incident
 	// opens for it and no spurious "resolved"/"up" fires once egress returns.
 	private skipDegradedEgressCheck = (check: Check, monitor: Monitor): MonitorEvaluation => {
-		this.deps.logger.debug({
-			message: `Skipping evaluation of check ${check.id} for monitor ${monitor.id}: instance egress was degraded`,
-			service: SERVICE_NAME,
-			method: "evaluateCheck",
-		});
+		this.logger.debug({ checkId: check.id, monitorId: monitor.id }, "Skipping evaluation of check, instance egress was degraded");
 
 		return {
 			monitor,

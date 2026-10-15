@@ -16,14 +16,17 @@ const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 
 export class JobScheduler implements IJobScheduler {
 	static SERVICE_NAME = SERVICE_NAME;
+	protected logger: ILogger;
 	constructor(
 		protected jobsRepository: IJobsRepository,
 		protected queueWorkersRepository: IQueueWorkersRepository,
 		protected monitorsRepository: IMonitorsRepository,
 		protected queueMode: QueueMode,
-		protected logger: ILogger,
+		logger: ILogger,
 		protected readonly workerId: string // same id MongoJobsRepository stamps into lockedBy
-	) {}
+	) {
+		this.logger = logger.child({ service: SERVICE_NAME });
+	}
 
 	private heartbeatInFlight: Promise<void> = Promise.resolve();
 
@@ -205,19 +208,11 @@ export class JobScheduler implements IJobScheduler {
 		try {
 			if (this.stopped) return; // Don't re-register if shutting down
 			this.heartbeatInFlight = this.queueWorkersRepository.upsert(this.workerId, this.queueMode, this.processesJobs).catch((error: unknown) => {
-				this.logger.warn({
-					message: error instanceof Error ? error.message : String(error),
-					service: SERVICE_NAME,
-					method: "heartbeat",
-				});
+				this.logger.warn({ err: error }, "Heartbeat failed");
 			});
 			await this.heartbeatInFlight;
 		} catch (error: unknown) {
-			this.logger.warn({
-				message: error instanceof Error ? error.message : String(error),
-				service: SERVICE_NAME,
-				method: "heartbeat",
-			});
+			this.logger.warn({ err: error }, "Heartbeat failed");
 		}
 	};
 

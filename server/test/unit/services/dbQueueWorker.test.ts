@@ -312,9 +312,7 @@ describe("DBQueueWorker", () => {
 
 				// the failing failure-write is caught and logged, not thrown
 				expect(mocks.jobsRepository.recordFailure).toHaveBeenCalledWith(job.id, expect.any(Error), expect.any(Number));
-				expect(mocks.logger.error).toHaveBeenCalledWith(
-					expect.objectContaining({ message: expect.stringContaining("recordFailure failed for job check:m1") })
-				);
+				expect(mocks.logger.error).toHaveBeenCalledWith({ err: new Error("mongo unavailable") }, "Failed to record job failure");
 				expect(unhandled).toEqual([]); // nothing escaped to the process
 				expect(worker.getHealth().inFlight).toBe(0); // slot freed despite the double failure
 			} finally {
@@ -339,9 +337,7 @@ describe("DBQueueWorker", () => {
 			// success write is attempted, its rejection falls into the catch, and the failure write is too
 			expect(mocks.jobsRepository.recordSuccess).toHaveBeenCalled();
 			expect(mocks.jobsRepository.recordFailure).toHaveBeenCalledWith(job.id, expect.any(Error), expect.any(Number));
-			expect(mocks.logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({ message: expect.stringContaining("recordFailure failed for job check:m1") })
-			);
+			expect(mocks.logger.error).toHaveBeenCalledWith({ err: new Error("mongo still unavailable") }, "Failed to record job failure");
 			expect(worker.getHealth().inFlight).toBe(0);
 		});
 
@@ -436,7 +432,7 @@ describe("DBQueueWorker", () => {
 
 			await jest.advanceTimersByTimeAsync(LOCK_RENEW_MS);
 			expect(mocks.jobsRepository.renewLocks).toHaveBeenCalledTimes(1); // lease lost → renewal timer stops
-			expect(mocks.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Lost lock") }));
+			expect(mocks.logger.warn).toHaveBeenCalledWith("Lost job lock, stopping renewal");
 
 			// A second interval passes without another renewal attempt.
 			await jest.advanceTimersByTimeAsync(LOCK_RENEW_MS);
@@ -761,7 +757,7 @@ describe("DBQueueWorker", () => {
 			await worker.drain();
 
 			expect(mocks.bufferService.shutdown).toHaveBeenCalledTimes(1);
-			expect(mocks.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("drained") }));
+			expect(mocks.logger.info).toHaveBeenCalledWith({ workerId: "worker-1" }, "Worker drained");
 			// Loops must not claim again after draining.
 			await jest.advanceTimersByTimeAsync(POLL_MS * 4);
 			expect(mocks.jobsRepository.claimDueBatch.mock.calls.length).toBe(claimsBefore);
@@ -803,7 +799,10 @@ describe("DBQueueWorker", () => {
 			await jest.advanceTimersByTimeAsync(DRAIN_TIMEOUT_MS + DRAIN_POLL_MS);
 			await draining;
 
-			expect(mocks.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("timed out") }));
+			expect(mocks.logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({ inFlight: expect.any(Number) }),
+				"Draining timed out, locks will expire and jobs will be reclaimed"
+			);
 			expect(mocks.bufferService.shutdown).toHaveBeenCalledTimes(1);
 
 			gate.resolve(); // release the stuck job for cleanup

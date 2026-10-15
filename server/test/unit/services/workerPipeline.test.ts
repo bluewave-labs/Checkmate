@@ -289,7 +289,10 @@ describe("WorkerPipeline", () => {
 			const result = await pipeline.produce(makeMonitor());
 
 			expect(result).toBeNull();
-			expect(deps.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("No check could be built") }));
+			expect(deps.logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({ monitorId: expect.any(String) }),
+				"No check could be built for monitor"
+			);
 			expect(deps.bufferService.addToBuffer).not.toHaveBeenCalled();
 		});
 
@@ -563,7 +566,10 @@ describe("WorkerPipeline", () => {
 
 			await pipeline.ingestChecks([makeCheck({ id: "c1" })]);
 			expect(deps.checkService.createChecks).toHaveBeenCalledTimes(1);
-			expect(deps.logger.error).toHaveBeenCalledWith(expect.objectContaining({ method: "ingestChecks" }));
+			expect(deps.logger.error).toHaveBeenCalledWith(
+				expect.objectContaining({ err: new Error("arm failed") }),
+				"Could not arm evaluation for monitor, retrying on next ingest"
+			);
 
 			await pipeline.ingestChecks([]); // nothing new, only the retry runs
 			expect(deps.checkService.createChecks).toHaveBeenCalledTimes(1);
@@ -654,7 +660,7 @@ describe("WorkerPipeline", () => {
 			expect(deps.statusService.updateMonitorStatus).toHaveBeenCalledTimes(2);
 			expect(deps.dispatcher.dispatch).toHaveBeenCalledTimes(2);
 			expect(deps.jobsRepository.pullEvaluated).toHaveBeenCalledTimes(2); // no trailing sweep either
-			expect(deps.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Lost lease") }));
+			expect(deps.logger.warn).toHaveBeenCalledWith({ checkId: "c2" }, "Lost job lease after check, stopping");
 		});
 
 		it("pulls ids whose check no longer exists so they do not sit on the row forever", async () => {
@@ -750,7 +756,10 @@ describe("WorkerPipeline", () => {
 			expect(result.monitor).toBe(monitor);
 			expect(result).not.toHaveProperty("statusChange");
 			expect(result.decision).toEqual({ transition: null });
-			expect(deps.logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("egress was degraded") }));
+			expect(deps.logger.debug).toHaveBeenCalledWith(
+				{ checkId: check.id, monitorId: monitor.id },
+				"Skipping evaluation of check, instance egress was degraded"
+			);
 		});
 
 		it("evaluates a check flagged with egress ok as normal", async () => {
