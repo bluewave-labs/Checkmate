@@ -9,8 +9,8 @@ export type LogLevel = (typeof LogLevels)[number];
 import type { z } from "zod";
 import type { emailTransportConfigSchema, settingsSchema, settingsThresholdsSchema } from "./app-settings.schema.js";
 
-// Rendered into GET /config.js as window.__CHECKMATE_CONFIG__; keys left unset
-// fall back to the client's same-origin defaults.
+// Rendered into GET /config.js as window.__CHECKMATE_CONFIG__. API and logging
+// keys may be omitted; clientHost is populated from the canonical CLIENT_HOST.
 export type ClientRuntimeConfig = {
 	apiBaseUrl?: string;
 	clientHost?: string;
