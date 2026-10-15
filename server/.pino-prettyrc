@@ -1,0 +1,7 @@
+{
+	"messageKey": "message",
+	"timestampKey": "timestamp",
+	"translateTime": "SYS:HH:MM:ss.l",
+	"messageFormat": "{if service}[{service}] {end}{message}",
+	"ignore": "service,method,reqId,jobId"
+}
