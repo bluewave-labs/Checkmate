@@ -166,7 +166,7 @@ describe("JobScheduler", () => {
 	describe("shutdown (registry deregistration)", () => {
 		it("awaits an in-flight heartbeat before deregistering, so the delete is the last write", async () => {
 			const order: string[] = [];
-			let resolveUpsert: () => void = () => { };
+			let resolveUpsert: () => void = () => {};
 			const upsert = jest.fn<any>().mockImplementation(
 				() =>
 					new Promise<void>((res) => {

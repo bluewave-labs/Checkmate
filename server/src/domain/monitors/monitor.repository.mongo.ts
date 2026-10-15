@@ -1,7 +1,13 @@
 import { MonitorModel } from "@/domain/monitors/monitor.model.js";
 import type { MonitorDocument, CheckSnapshotDocument } from "@/domain/monitors/monitor.model.js";
 import type { CheckSnapshot } from "@/domain/checks/check.type.js";
-import { normalizeIntervalMs, type Monitor, type MonitorScheduleFields, type MonitorStatus, type MonitorsSummary } from "@/domain/monitors/monitor.type.js";
+import {
+	normalizeIntervalMs,
+	type Monitor,
+	type MonitorScheduleFields,
+	type MonitorStatus,
+	type MonitorsSummary,
+} from "@/domain/monitors/monitor.type.js";
 import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import { MongoBulkWriteError } from "mongodb";
 import { AppError, internalError } from "@/utils/AppError.js";

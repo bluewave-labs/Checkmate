@@ -23,7 +23,7 @@ export class JobScheduler implements IJobScheduler {
 		protected queueMode: QueueMode,
 		protected logger: ILogger,
 		protected readonly workerId: string // same id MongoJobsRepository stamps into lockedBy
-	) { }
+	) {}
 
 	private heartbeatInFlight: Promise<void> = Promise.resolve();
 
