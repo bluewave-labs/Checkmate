@@ -514,7 +514,9 @@ describe("NotificationsService", () => {
 
 		it("reports missing ids before unsupported channels", async () => {
 			const { service, notificationsRepository } = createService();
-			(notificationsRepository.findNotificationsByIdsForTeam as jest.Mock).mockResolvedValue([makeNotification({ id: "notif-2", type: "pager_duty" })]);
+			(notificationsRepository.findNotificationsByIdsForTeam as jest.Mock).mockResolvedValue([
+				makeNotification({ id: "notif-2", type: "pager_duty" }),
+			]);
 
 			await expect(service.assertNotificationsExistForTeam(["notif-1", "notif-2"], "team-1")).rejects.toMatchObject({
 				message: "Referenced notification does not exist: notif-1",
