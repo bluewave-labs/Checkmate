@@ -5,6 +5,7 @@ import type { Job } from "../../../src/domain/jobs/job.type.ts";
 import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { QueueMode } from "../../../src/domain/app-settings/app-settings.type.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
+import { logContext } from "../../../src/utils/logger/logContext.ts";
 
 // ── Notes ──────────────────────────────────────────────────────────────────────
 //
@@ -443,6 +444,94 @@ describe("DBQueueWorker", () => {
 
 			gate.resolve();
 			await jest.advanceTimersByTimeAsync(1);
+		});
+	});
+
+	// ── log context: every line written while a job runs carries its id and type ──
+
+	describe("log context", () => {
+		const claimOnce = (...jobs: Job[]) => {
+			const pending = [...jobs];
+			return jest.fn<any>(async (type: string) => {
+				const matching = pending.filter((job) => job.type === type);
+				for (const job of matching) pending.splice(pending.indexOf(job), 1);
+				return matching;
+			});
+		};
+
+		it("runs the handler inside the job's log context", async () => {
+			const job = makeJob({ id: "check:m1", type: "check" });
+			let seen: unknown;
+			const check = jest.fn<any>(async () => {
+				seen = logContext.getStore();
+			});
+			await start({
+				mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) }, handlers: makeHandlers({ check }) },
+			});
+
+			expect(check).toHaveBeenCalledWith(job);
+			expect(seen).toEqual({ jobId: "check:m1", jobType: "check" });
+		});
+
+		it("gives concurrent jobs their own context", async () => {
+			const first = makeJob({ id: "check:m1", refId: "m1" });
+			const second = makeJob({ id: "check:m2", refId: "m2" });
+			const seen: unknown[] = [];
+			const check = jest.fn<any>(async () => {
+				await Promise.resolve(); // interleave the two jobs
+				seen.push(logContext.getStore());
+			});
+			await start({
+				mocks: {
+					jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(first, second) },
+					handlers: makeHandlers({ check }),
+				},
+			});
+
+			expect(seen).toEqual(
+				expect.arrayContaining([
+					{ jobId: "check:m1", jobType: "check" },
+					{ jobId: "check:m2", jobType: "check" },
+				])
+			);
+			expect(seen).toHaveLength(2);
+		});
+
+		it("logs a handler failure inside the job's context", async () => {
+			const job = makeJob({ id: "check:m1", type: "check" });
+			const logger = createMockLogger();
+			const contextAtWarn: unknown[] = [];
+			logger.warn.mockImplementation(() => {
+				contextAtWarn.push(logContext.getStore());
+			});
+			await start({
+				mocks: {
+					logger,
+					jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) },
+					handlers: makeHandlers({ check: jest.fn<any>().mockRejectedValue(new Error("network down")) }),
+				},
+			});
+
+			expect(contextAtWarn).toEqual([{ jobId: "check:m1", jobType: "check" }]);
+		});
+
+		// The lock renewal timer is not tested here: setInterval callbacks keep the context they were created in under
+		// real timers, but Jest's fake timers run them from advanceTimersByTimeAsync, outside it. The renewal interval
+		// (LOCK_MS / 3, 20s) is too long to wait for with real timers in this suite.
+
+		it("does not leak a job's context into the poll loop", async () => {
+			const job = makeJob({ id: "check:m1", type: "check" });
+			const contextAtClaim: unknown[] = [];
+			const claim = claimOnce(job);
+			const claimDueBatch = jest.fn<any>(async (type: string, ...rest: unknown[]) => {
+				contextAtClaim.push(logContext.getStore());
+				return claim(type, ...rest);
+			});
+			await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch } } });
+			await jest.advanceTimersByTimeAsync(POLL_MS); // a second tick, after the job ran
+
+			expect(contextAtClaim.length).toBeGreaterThan(1);
+			expect(contextAtClaim.every((store) => store === undefined)).toBe(true);
 		});
 	});
 
