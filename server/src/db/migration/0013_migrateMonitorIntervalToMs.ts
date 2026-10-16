@@ -1,6 +1,6 @@
 import { MonitorModel } from "../../domain/monitors/monitor.model.js";
 import JobModel from "../../domain/jobs/job.model.js";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 import { MIN_MONITOR_INTERVAL_MS } from "@/domain/monitors/monitor.type.js";
 
 /**
@@ -15,9 +15,10 @@ import { MIN_MONITOR_INTERVAL_MS } from "@/domain/monitors/monitor.type.js";
  */
 export async function migrateMonitorIntervalToMs(logger: ILogger): Promise<void> {
 	const SERVICE_NAME = "Migration:MigrateMonitorIntervalToMs";
+	const log = logger.child({ service: SERVICE_NAME });
 
 	try {
-		logger.info({ service: SERVICE_NAME, message: "Starting monitor interval migration to milliseconds" });
+		log.info("Starting monitor interval migration to milliseconds");
 
 		// 1. Update monitors where interval < MIN_MONITOR_INTERVAL_MS or interval == 86400
 		const monitorResult = await MonitorModel.updateMany(
@@ -48,13 +49,12 @@ export async function migrateMonitorIntervalToMs(logger: ILogger): Promise<void>
 			]
 		);
 
-		logger.info({
-			service: SERVICE_NAME,
-			message: `Migrated ${monitorResult.modifiedCount} monitors and ${jobResult.modifiedCount} check jobs to millisecond intervals`,
-		});
+		log.info(
+			{ modifiedMonitors: monitorResult.modifiedCount, modifiedJobs: jobResult.modifiedCount },
+			`Migrated ${monitorResult.modifiedCount} monitors and ${jobResult.modifiedCount} check jobs to millisecond intervals`
+		);
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		logger.error({ service: SERVICE_NAME, message: `Error migrating monitor intervals: ${errorMessage}` });
+		log.error({ err: error }, "Error migrating monitor intervals");
 		throw error;
 	}
 }

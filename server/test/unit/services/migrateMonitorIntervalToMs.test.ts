@@ -1,19 +1,14 @@
-import { jest } from "@jest/globals";
+import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { migrateMonitorIntervalToMs } from "@/db/migration/0013_migrateMonitorIntervalToMs.js";
 import { MonitorModel } from "@/domain/monitors/monitor.model.js";
 import JobModel from "@/domain/jobs/job.model.js";
-import type { ILogger } from "@/utils/logger.js";
+import { createMockLogger } from "../../helpers/createMockLogger.js";
 
 describe("0013_migrateMonitorIntervalToMs", () => {
-	let mockLogger: ILogger;
+	let mockLogger: ReturnType<typeof createMockLogger>;
 
 	beforeEach(() => {
-		mockLogger = {
-			info: jest.fn(),
-			error: jest.fn(),
-			warn: jest.fn(),
-			debug: jest.fn(),
-		} as unknown as ILogger;
+		mockLogger = createMockLogger();
 		jest.clearAllMocks();
 	});
 
@@ -34,7 +29,7 @@ describe("0013_migrateMonitorIntervalToMs", () => {
 			upsertedId: null,
 		} as any);
 
-		await migrateMonitorIntervalToMs(mockLogger);
+		await migrateMonitorIntervalToMs(mockLogger as any);
 
 		expect(updateManyMonitorsSpy).toHaveBeenCalledWith(
 			{
@@ -64,20 +59,20 @@ describe("0013_migrateMonitorIntervalToMs", () => {
 		);
 
 		expect(mockLogger.info).toHaveBeenCalledWith(
-			expect.objectContaining({
-				message: expect.stringContaining("Migrated 5 monitors and 5 check jobs"),
-			})
+			{ modifiedMonitors: 5, modifiedJobs: 5 },
+			expect.stringContaining("Migrated 5 monitors and 5 check jobs")
 		);
 	});
 
 	it("throws and logs error if updateMany fails", async () => {
 		jest.spyOn(MonitorModel, "updateMany").mockRejectedValue(new Error("Database error"));
 
-		await expect(migrateMonitorIntervalToMs(mockLogger)).rejects.toThrow("Database error");
+		await expect(migrateMonitorIntervalToMs(mockLogger as any)).rejects.toThrow("Database error");
 		expect(mockLogger.error).toHaveBeenCalledWith(
 			expect.objectContaining({
-				message: expect.stringContaining("Error migrating monitor intervals: Database error"),
-			})
+				err: expect.any(Error),
+			}),
+			"Error migrating monitor intervals"
 		);
 	});
 });
