@@ -975,7 +975,6 @@
 					"timestamp": "Marca de tiempo",
 					"level": "Nivel",
 					"service": "Servicio",
-					"method": "Método",
 					"monitorId": "ID de monitor",
 					"runCount": "Conteo de ejecuciones",
 					"failCount": "Conteo de fallas",

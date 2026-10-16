@@ -975,7 +975,6 @@
 					"timestamp": "เวลา",
 					"level": "ระดับ",
 					"service": "บริการ",
-					"method": "เมธอด",
 					"monitorId": "รหัสมอนิเตอร์",
 					"runCount": "จำนวนรัน",
 					"failCount": "จำนวนล้มเหลว",

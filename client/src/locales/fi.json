@@ -975,7 +975,6 @@
 					"timestamp": "Aikaleima",
 					"level": "Taso",
 					"service": "Palvelu",
-					"method": "Metodi",
 					"monitorId": "Monitorin tunnus",
 					"runCount": "Suorituskerrat",
 					"failCount": "Epäonnistumiskerrat",

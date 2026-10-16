@@ -26,25 +26,28 @@ afterEach(() => {
 });
 
 describe("Logger", () => {
-	it("writes one JSON line with level label, message, timestamp, service and method", () => {
+	it("writes one JSON line with level label, message, timestamp, service and fields", () => {
 		const { logger, lines, parsed } = setup();
 
-		logger.info({ message: "hello", service: "TestService", method: "run", details: { a: 1 } });
+		logger.child({ service: "TestService" }).info({ a: 1 }, "hello");
 
 		expect(lines).toHaveLength(1);
 		expect(lines[0]?.endsWith("\n")).toBe(true);
 		const [entry] = parsed();
-		expect(entry).toMatchObject({ level: "info", message: "hello", service: "TestService", method: "run", details: { a: 1 } });
+		expect(entry).toMatchObject({ level: "info", message: "hello", service: "TestService", a: 1 });
 		expect(typeof entry?.timestamp).toBe("string");
 		expect(Number.isNaN(Date.parse(String(entry?.timestamp)))).toBe(false);
 		expect(entry).not.toHaveProperty("pid");
 		expect(entry).not.toHaveProperty("hostname");
+		expect(entry).not.toHaveProperty("method");
 	});
 
 	it("keeps a multi-line stack on one line, under err", () => {
 		const { logger, lines, parsed } = setup();
+		const error = new Error("boom");
+		error.stack = "Error: boom\n    at a (x.ts:1:1)\n    at b (y.ts:2:2)";
 
-		logger.error({ message: "boom", service: "TestService", stack: "Error: boom\n    at a (x.ts:1:1)\n    at b (y.ts:2:2)" });
+		logger.error({ err: error }, "boom");
 
 		expect(lines).toHaveLength(1);
 		expect(lines[0]?.trimEnd().includes("\n")).toBe(false);
@@ -53,10 +56,10 @@ describe("Logger", () => {
 		expect(entry).not.toHaveProperty("stack");
 	});
 
-	it("omits err when no stack is given", () => {
+	it("omits err when none is given", () => {
 		const { logger, parsed } = setup();
 
-		logger.warn({ message: "no stack" });
+		logger.warn("no error");
 
 		expect(parsed()[0]).not.toHaveProperty("err");
 	});
@@ -64,10 +67,10 @@ describe("Logger", () => {
 	it("filters lines below the configured level", () => {
 		const { logger, parsed } = setup("warn");
 
-		logger.debug({ message: "debug" });
-		logger.info({ message: "info" });
-		logger.warn({ message: "warn" });
-		logger.error({ message: "error" });
+		logger.debug("debug");
+		logger.info("info");
+		logger.warn("warn");
+		logger.error("error");
 
 		expect(parsed().map((entry) => entry.level)).toEqual(["warn", "error"]);
 		expect(logger.getLogs().map((entry) => entry.level)).toEqual(["warn", "error"]);
@@ -76,7 +79,7 @@ describe("Logger", () => {
 	it("delivers debug lines to both stdout and the log cache", () => {
 		const { logger, parsed } = setup("debug");
 
-		logger.debug({ message: "debug line", service: "TestService" });
+		logger.child({ service: "TestService" }).debug("debug line");
 
 		expect(parsed()).toHaveLength(1);
 		expect(logger.getLogs()).toEqual([expect.objectContaining({ level: "debug", message: "debug line", service: "TestService" })]);
@@ -84,8 +87,9 @@ describe("Logger", () => {
 
 	it("caches entries in LogEntry shape, with the stack read back from err", () => {
 		const { logger } = setup();
+		const error = new Error("boom");
 
-		logger.error({ message: "boom", service: "TestService", method: "run", details: { a: 1 }, stack: "Error: boom" });
+		logger.child({ service: "TestService" }).error({ err: error, a: 1 }, "boom");
 
 		expect(logger.getLogs()).toEqual([
 			{
@@ -93,9 +97,8 @@ describe("Logger", () => {
 				message: "boom",
 				timestamp: expect.any(String),
 				service: "TestService",
-				method: "run",
 				details: { a: 1 },
-				stack: "Error: boom",
+				stack: error.stack,
 			},
 		]);
 	});
@@ -104,51 +107,48 @@ describe("Logger", () => {
 		const { logger } = setup();
 
 		for (let i = 0; i < 1005; i++) {
-			logger.info({ message: `line ${i}` });
+			logger.info({ index: i }, "line");
 		}
 
 		const logs = logger.getLogs();
 		expect(logs).toHaveLength(1000);
-		expect(logs[0]?.message).toBe("line 5");
-		expect(logs[999]?.message).toBe("line 1004");
+		expect(logs[0]?.details).toEqual({ index: 5 });
+		expect(logs[999]?.details).toEqual({ index: 1004 });
 	});
 
 	it("redacts secrets at the top level, one level down and two levels down", () => {
 		const { logger, parsed } = setup();
 
-		logger.info({ message: "secrets", details: { token: "t", keep: "ok", user: { password: "p" } } });
+		logger.info({ token: "t", keep: "ok", details: { password: "p", user: { password: "p" } } }, "secrets");
 
 		const [entry] = parsed();
-		expect(entry?.details).toEqual({ token: "[Redacted]", keep: "ok", user: { password: "[Redacted]" } });
-		expect(logger.getLogs()[0]?.details).toEqual({ token: "[Redacted]", keep: "ok", user: { password: "[Redacted]" } });
+		expect(entry).toMatchObject({ token: "[Redacted]", keep: "ok", details: { password: "[Redacted]", user: { password: "[Redacted]" } } });
+		expect(logger.getLogs()[0]?.details).toEqual({
+			token: "[Redacted]",
+			keep: "ok",
+			details: { password: "[Redacted]", user: { password: "[Redacted]" } },
+		});
 	});
 
 	it("adds the current log context to each line, and nothing outside it", () => {
 		const { logger, parsed } = setup();
 
-		logContext.run({ reqId: "r1" }, () => logger.info({ message: "inside" }));
-		logger.info({ message: "outside" });
+		logContext.run({ reqId: "r1" }, () => logger.info("inside"));
+		logger.info("outside");
 
 		const [inside, outside] = parsed();
 		expect(inside).toMatchObject({ message: "inside", reqId: "r1" });
 		expect(outside).not.toHaveProperty("reqId");
 	});
 
-	it("merges top-level context into the cached details of a legacy line", () => {
+	it("caches the top-level fields as details, including the log context", () => {
 		const { logger } = setup();
 
-		logContext.run({ reqId: "r1" }, () => logger.warn({ message: "with details", details: { a: 1 } }));
-		logContext.run({ reqId: "r2" }, () => logger.warn({ message: "without details" }));
+		logContext.run({ reqId: "r1" }, () => logger.warn({ a: 1 }, "with fields"));
+		logContext.run({ reqId: "r2" }, () => logger.warn("without fields"));
+		logger.warn("no context, no fields");
 
-		expect(logger.getLogs().map((entry) => entry.details)).toEqual([{ reqId: "r1", a: 1 }, { reqId: "r2" }]);
-	});
-
-	it("keeps a legacy line's own details value when it clashes with context", () => {
-		const { logger } = setup();
-
-		logContext.run({ reqId: "from-context" }, () => logger.info({ message: "clash", details: { reqId: "from-details" } }));
-
-		expect(logger.getLogs()[0]?.details).toEqual({ reqId: "from-details" });
+		expect(logger.getLogs().map((entry) => entry.details)).toEqual([{ reqId: "r1", a: 1 }, { reqId: "r2" }, undefined]);
 	});
 
 	it("keeps pino-http request lines out of the cache, but not lines that merely log a responseTime", () => {
@@ -156,7 +156,7 @@ describe("Logger", () => {
 		const pinoLogger = (logger as unknown as { pino: { info: (obj: object, msg: string) => void } }).pino;
 
 		pinoLogger.info({ httpRequest: { id: "r1" }, httpResponse: { statusCode: 200 }, httpDurationMs: 3 }, "GET /api/v1/x 200 3ms");
-		logger.info({ message: "check completed", details: { responseTime: 42 } });
+		logger.info({ responseTime: 42 }, "check completed");
 
 		expect(parsed()).toHaveLength(2);
 		expect(logger.getLogs().map((entry) => entry.message)).toEqual(["check completed"]);
@@ -171,7 +171,7 @@ describe("Logger.httpMiddleware", () => {
 		app.use(logger.httpMiddleware());
 		app.use((req, _res, next) => logContext.run({ reqId: String(req.id) }, next));
 		app.get("/api/v1/ok", (_req, res) => {
-			logger.info({ message: "handler line" });
+			logger.info("handler line");
 			res.json({ ok: true });
 		});
 		app.get("/api/v1/health", (_req, res) => {
@@ -313,25 +313,12 @@ describe("Logger call forms", () => {
 		expect(logger.getLogs()[0]?.stack).toEqual(expect.stringContaining("Error: boom"));
 	});
 
-	it("caches both forms in the same LogEntry shape", () => {
+	it("caches a call's fields as details", () => {
 		const { logger } = setup();
 
-		logger.info({ message: "legacy", service: "TestService", details: { a: 1 } });
 		logger.child({ service: "TestService" }).info({ a: 1 }, "new");
 
-		const [legacy, current] = logger.getLogs();
-		expect(legacy).toMatchObject({ message: "legacy", service: "TestService", details: { a: 1 } });
-		expect(current).toMatchObject({ message: "new", service: "TestService", details: { a: 1 } });
-	});
-
-	it("still accepts the legacy object alongside the new forms", () => {
-		const { logger, parsed } = setup();
-
-		logger.info({ message: "legacy", service: "TestService", method: "run" });
-		logger.info({ a: 1 }, "new");
-
-		expect(parsed().map((entry) => entry.message)).toEqual(["legacy", "new"]);
-		expect(parsed()[0]).toMatchObject({ service: "TestService", method: "run" });
+		expect(logger.getLogs()[0]).toMatchObject({ message: "new", service: "TestService", details: { a: 1 } });
 	});
 });
 
@@ -463,14 +450,6 @@ describe("error serialization", () => {
 		expect(parsed()[0]?.err).toMatchObject({ code: "ECONNREFUSED", errno: -111, syscall: "connect" });
 	});
 
-	it("still logs a legacy call's stack under err", () => {
-		const { logger, parsed } = setup();
-
-		logger.error({ message: "legacy", stack: "Error: boom\n    at a (x.ts:1:1)" });
-
-		expect(parsed()[0]?.err).toEqual({ stack: "Error: boom\n    at a (x.ts:1:1)" });
-	});
-
 	it("passes a non-object err through unchanged", () => {
 		const { logger, parsed } = setup();
 
@@ -496,15 +475,6 @@ describe("error serialization: URLs in messages", () => {
 		const err = parsed()[0]?.err as Record<string, string>;
 		expect(err.message).toBe(expected);
 		expect(err.stack.split("\n")[0]).toBe(`Error: ${expected}`);
-	});
-
-	it("masks URLs in a legacy call's stack", () => {
-		const { logger, lines } = setup();
-
-		logger.warn({ message: "Webhook alert failed", stack: "HTTPError: POST https://hooks.example/SECRET\n    at a (x.ts:1:1)" });
-
-		expect(lines[0]).not.toContain("SECRET");
-		expect(lines[0]).toContain("https://hooks.example/[Redacted]");
 	});
 
 	it("masks URLs in a cause's message", () => {
@@ -539,13 +509,14 @@ describe("reserved field names", () => {
 		});
 	});
 
-	it("leaves a legacy call's service alone", () => {
-		const { logger, parsed } = setup();
+	it("renames a service field to field_service, but not a child's service binding", () => {
+		const { logger, lines, parsed } = setup();
+		const loose: Record<string, unknown> = { service: "FromFields" };
 
-		logger.info({ message: "legacy", service: "LegacyService" });
+		logger.child({ service: "ChildService" }).info(loose as never, "service clash");
 
-		expect(parsed()[0]).toMatchObject({ service: "LegacyService", message: "legacy" });
-		expect(parsed()[0]).not.toHaveProperty("field_service");
+		expect((lines[0] ?? "").split('"service":')).toHaveLength(2); // the key appears exactly once
+		expect(parsed()[0]).toMatchObject({ service: "ChildService", field_service: "FromFields" });
 	});
 
 	it("does not rename child bindings or the log context", () => {

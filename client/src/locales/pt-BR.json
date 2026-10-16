@@ -1236,7 +1236,6 @@
 					"timestamp": "Data/hora",
 					"level": "Nível",
 					"service": "Serviço",
-					"method": "Método",
 					"monitorId": "ID do monitor",
 					"runCount": "Contagem de execuções",
 					"failCount": "Contagem de falhas",

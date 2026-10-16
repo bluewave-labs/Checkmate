@@ -975,7 +975,6 @@
 					"timestamp": "時間戳",
 					"level": "等級",
 					"service": "服務",
-					"method": "方法",
 					"monitorId": "監控 ID",
 					"runCount": "執行次數",
 					"failCount": "失敗次數",

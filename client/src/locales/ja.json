@@ -975,7 +975,6 @@
 					"timestamp": "タイムスタンプ",
 					"level": "レベル",
 					"service": "サービス",
-					"method": "メソッド",
 					"monitorId": "モニターID",
 					"runCount": "実行回数",
 					"failCount": "失敗回数",
