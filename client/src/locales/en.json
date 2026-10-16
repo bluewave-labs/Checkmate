@@ -1240,7 +1240,6 @@
 					"timestamp": "Timestamp",
 					"level": "Level",
 					"service": "Service",
-					"method": "Method",
 					"monitorId": "Monitor ID",
 					"runCount": "Run count",
 					"failCount": "Count",

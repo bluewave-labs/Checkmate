@@ -975,7 +975,6 @@
 					"timestamp": "Časové razítko",
 					"level": "Úroveň",
 					"service": "Služba",
-					"method": "Metoda",
 					"monitorId": "ID monitoru",
 					"runCount": "Počet spuštění",
 					"failCount": "Počet selhání",

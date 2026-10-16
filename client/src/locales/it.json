@@ -1066,7 +1066,6 @@
 					"timestamp": "Timestamp",
 					"level": "Livello",
 					"service": "Servizio",
-					"method": "Metodo",
 					"monitorId": "ID monitor",
 					"runCount": "Esecuzioni",
 					"failCount": "Errori",

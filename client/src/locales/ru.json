@@ -975,7 +975,6 @@
 					"timestamp": "Метка времени",
 					"level": "Уровень",
 					"service": "Сервис",
-					"method": "Метод",
 					"monitorId": "ID монитора",
 					"runCount": "Кол-во запусков",
 					"failCount": "Кол-во ошибок",

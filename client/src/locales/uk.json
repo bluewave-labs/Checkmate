@@ -975,7 +975,6 @@
 					"timestamp": "Мітка часу",
 					"level": "Рівень",
 					"service": "Сервіс",
-					"method": "Метод",
 					"monitorId": "ID монітора",
 					"runCount": "Кількість запусків",
 					"failCount": "Кількість помилок",

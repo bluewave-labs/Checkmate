@@ -975,7 +975,6 @@
 					"timestamp": "Zaman damgası",
 					"level": "Seviye",
 					"service": "Servis",
-					"method": "Yöntem",
 					"monitorId": "Monitör ID",
 					"runCount": "Çalışma sayısı",
 					"failCount": "Başarısızlık sayısı",

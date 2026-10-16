@@ -975,7 +975,6 @@
 					"timestamp": "Thời gian",
 					"level": "Mức",
 					"service": "Dịch vụ",
-					"method": "Phương thức",
 					"monitorId": "ID trình giám sát",
 					"runCount": "Số lần chạy",
 					"failCount": "Số lần lỗi",

@@ -975,7 +975,6 @@
 					"timestamp": "Horodatage",
 					"level": "Niveau",
 					"service": "Service",
-					"method": "Méthode",
 					"monitorId": "ID du moniteur",
 					"runCount": "Nombre d'exécutions",
 					"failCount": "Nombre d'échecs",
