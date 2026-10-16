@@ -70,7 +70,7 @@ export class EmailService implements IEmailService {
 		this.compile = compile;
 		this.mjml2html = mjml2html;
 		this.nodemailer = nodemailer;
-		this.logger = logger;
+		this.logger = logger.child({ service: SERVICE_NAME });
 		this.templateLookup = {};
 		this.init();
 	}
@@ -82,12 +82,7 @@ export class EmailService implements IEmailService {
 				const templateContent = this.fs.readFileSync(templatePath, "utf8");
 				return this.compile(templateContent);
 			} catch (error: unknown) {
-				this.logger.error({
-					message: error instanceof Error ? error.message : "Unknown error",
-					service: SERVICE_NAME,
-					method: "loadTemplate",
-					stack: error instanceof Error ? error.stack : undefined,
-				});
+				this.logger.error({ err: error, templateName }, "Failed to load email template");
 			}
 		};
 
@@ -109,12 +104,7 @@ export class EmailService implements IEmailService {
 			const html = await this.mjml2html(mjml);
 			return html.html;
 		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
-				service: SERVICE_NAME,
-				method: "buildEmail",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.error({ err: error }, "Failed to build email");
 		}
 	};
 
@@ -173,13 +163,7 @@ export class EmailService implements IEmailService {
 			await this.transporter.verify();
 		} catch (error: unknown) {
 			const cause = error instanceof Error ? error.message : "Unknown error";
-			this.logger.warn({
-				message: `Email transporter verification failed: ${cause}`,
-				service: SERVICE_NAME,
-				method: "verifyTransporter",
-				details: { host: systemEmailHost, port: emailConfig.port },
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.warn({ err: error, host: systemEmailHost, port: emailConfig.port }, "Email transporter verification failed");
 			throw new AppError(emailErrors.sendFailed, {
 				message: describeSmtpFailure(error, systemEmailHost, emailConfig.port),
 				service: SERVICE_NAME,
@@ -200,12 +184,7 @@ export class EmailService implements IEmailService {
 			});
 			return info.messageId;
 		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
-				service: SERVICE_NAME,
-				method: "sendEmail",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.error({ err: error }, "Failed to send email");
 			throw new AppError(emailErrors.sendFailed, {
 				message: "Failed to send email",
 				service: SERVICE_NAME,

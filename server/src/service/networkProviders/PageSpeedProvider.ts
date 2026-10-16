@@ -10,11 +10,15 @@ const SERVICE_NAME = "PageSpeedProvider";
 
 export class PageSpeedProvider implements IStatusProvider<PageSpeedStatusPayload> {
 	readonly type = "pagespeed";
+	private logger: ILogger;
+
 	constructor(
 		private httpProvider: HttpProvider,
 		private settingsService: ISettingsService,
-		private logger: ILogger
-	) {}
+		logger: ILogger
+	) {
+		this.logger = logger.child({ service: SERVICE_NAME });
+	}
 
 	supports(type: MonitorType) {
 		return type === "pagespeed";
@@ -34,12 +38,7 @@ export class PageSpeedProvider implements IStatusProvider<PageSpeedStatusPayload
 			if (apiKey) {
 				pageSpeedUrl += `&key=${apiKey}`;
 			} else {
-				this.logger.warn({
-					message: "PageSpeed API key not found, performance may be throttled",
-					service: SERVICE_NAME,
-					method: "handle",
-					details: { url },
-				});
+				this.logger.warn({ url }, "PageSpeed API key not found, performance may be throttled");
 			}
 
 			return await this.httpProvider.handle<PageSpeedStatusPayload>({

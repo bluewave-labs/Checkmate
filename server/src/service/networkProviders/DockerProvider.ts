@@ -54,12 +54,16 @@ export interface DockerError extends Error {
 export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 	readonly type = "docker";
 
+	private logger: ILogger;
+
 	constructor(
-		private logger: ILogger,
+		logger: ILogger,
 		private DockerLib: DockerodeType,
 		private encryptionService: IEncryptionService,
 		private httpProvider: HttpProvider
-	) {}
+	) {
+		this.logger = logger.child({ service: SERVICE_NAME });
+	}
 
 	supports(type: MonitorType): boolean {
 		return type === "docker";
@@ -208,11 +212,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 
 		const payload = response.payload;
 		if (!this.isCapturePayload(payload)) {
-			this.logger.warn({
-				message: "Capture returned an invalid Docker metrics payload",
-				service: SERVICE_NAME,
-				method: "handleCapture",
-			});
+			this.logger.warn("Capture returned an invalid Docker metrics payload");
 			return this.failed(monitor, NETWORK_ERROR, "Capture returned an invalid Docker metrics payload", response.responseTime ?? 0);
 		}
 
@@ -220,11 +220,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		const fatalError = errors.find((error) => error.metric.some((metric) => CAPTURE_FATAL_ERROR_METRICS.has(metric)));
 		if (fatalError) return this.failed(monitor, NETWORK_ERROR, fatalError.err, response.responseTime ?? 0);
 		if (errors.length > 0) {
-			this.logger.warn({
-				message: `Capture returned ${errors.length} partial Docker collection error(s)`,
-				service: SERVICE_NAME,
-				method: "handleCapture",
-			});
+			this.logger.warn({ count: errors.length }, "Capture returned partial Docker collection errors");
 		}
 
 		const containers = (payload.data ?? []).map((container) => this.toCaptureContainer(container));
@@ -290,12 +286,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		} else {
 			info.exitCode = this.exitCodeFromStatus(summary.Status);
 			info.health = this.healthFromStatus(summary.Status);
-			this.logger.warn({
-				message: `Failed to inspect container ${info.name}`,
-				service: SERVICE_NAME,
-				method: "toContainerInfo",
-				details: { containerId: summary.Id },
-			});
+			this.logger.warn({ err: inspectResult.reason, containerId: summary.Id, containerName: info.name }, "Failed to inspect container");
 		}
 
 		if (statsResult.status === "fulfilled" && statsResult.value) {
@@ -406,12 +397,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 				.logs({ follow: false, stdout: true, stderr: true, timestamps: true, tail: DOCKER_LOG_TAIL_LINES });
 			return { containerId: summary.Id, containerName, lines: this.parseLogBuffer(buffer) };
 		} catch (error: unknown) {
-			this.logger.warn({
-				message: `Failed to read logs for container ${containerName}`,
-				service: SERVICE_NAME,
-				method: "toContainerLogs",
-				details: { containerId: summary.Id, error: error instanceof Error ? error.message : String(error) },
-			});
+			this.logger.warn({ err: error, containerId: summary.Id, containerName }, "Failed to read logs for container");
 			return null;
 		}
 	};

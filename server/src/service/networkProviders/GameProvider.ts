@@ -11,10 +11,14 @@ type GameDigType = typeof GameDig;
 const SERVICE_NAME = "GameProvider";
 export class GameProvider implements IStatusProvider<GameStatusPayload> {
 	readonly type = "game";
+	private logger: ILogger;
+
 	constructor(
-		private logger: ILogger,
+		logger: ILogger,
 		private gameDig: GameDigType
-	) {}
+	) {
+		this.logger = logger.child({ service: SERVICE_NAME });
+	}
 
 	supports(type: MonitorType): boolean {
 		return type === "game";
@@ -33,12 +37,7 @@ export class GameProvider implements IStatusProvider<GameStatusPayload> {
 					port: port ?? 0,
 				})
 				.catch((error: unknown) => {
-					this.logger.warn({
-						message: error instanceof Error ? error.message : String(error),
-						service: SERVICE_NAME,
-						method: "handle",
-						details: { host, port, gameId },
-					});
+					this.logger.warn({ err: error, host, port, gameId }, "Game server query failed");
 					return undefined;
 				});
 

@@ -86,22 +86,13 @@ describe("BufferService", () => {
 	describe("constructor", () => {
 		it("logs initialization with development timeout", () => {
 			const { logger } = createService("development");
-			expect(logger.info).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("1s"),
-					service: "BufferService",
-					method: "constructor",
-				})
-			);
+			expect(logger.info).toHaveBeenCalledWith({ flushIntervalSeconds: 1 }, "Buffer service initialized");
+			expect(logger.child).toHaveBeenCalledWith({ service: "BufferService" });
 		});
 
 		it("uses 60s timeout in non-development environment", () => {
 			const { logger } = createService("production");
-			expect(logger.info).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("60s"),
-				})
-			);
+			expect(logger.info).toHaveBeenCalledWith({ flushIntervalSeconds: 60 }, "Buffer service initialized");
 		});
 
 		it("schedules a flush on construction", () => {
@@ -209,12 +200,7 @@ describe("BufferService", () => {
 
 			await jest.advanceTimersByTimeAsync(1000);
 
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "DB down",
-					method: "flushBuffer",
-				})
-			);
+			expect(logger.error).toHaveBeenCalledWith({ err: new Error("DB down") }, "Failed to flush checks to database");
 
 			// Should still reschedule — add another check and flush
 			service.addToBuffer(makeCheck({ id: "c2" }));
@@ -230,27 +216,16 @@ describe("BufferService", () => {
 
 			await jest.advanceTimersByTimeAsync(1000);
 
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "unexpected",
-					method: "scheduleNextFlush",
-				})
-			);
+			expect(logger.error).toHaveBeenCalledWith({ err: new Error("unexpected") }, "Scheduled buffer flush failed");
 		});
 
-		it("logs 'Unknown error' when flush throws non-Error past its own catch", async () => {
+		it("logs a non-Error thrown past its own catch under err", async () => {
 			const { service, logger } = createService();
 			service.flushBuffer = jest.fn<() => Promise<void>>().mockRejectedValueOnce("string error");
 
 			await jest.advanceTimersByTimeAsync(1000);
 
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "Unknown error",
-					method: "scheduleNextFlush",
-					stack: undefined,
-				})
-			);
+			expect(logger.error).toHaveBeenCalledWith({ err: "string error" }, "Scheduled buffer flush failed");
 		});
 	});
 
@@ -285,13 +260,7 @@ describe("BufferService", () => {
 
 			await service.flushBuffer();
 
-			expect(logger.debug).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "Flushing 1 checks to database",
-					service: "BufferService",
-					method: "flushBuffer",
-				})
-			);
+			expect(logger.debug).toHaveBeenCalledWith({ count: 1 }, "Flushing checks to database");
 		});
 
 		it("clears buffer even on error to prevent infinite retries", async () => {
@@ -302,31 +271,20 @@ describe("BufferService", () => {
 
 			await service.flushBuffer();
 
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "DB write failed",
-					method: "flushBuffer",
-				})
-			);
+			expect(logger.error).toHaveBeenCalledWith({ err: new Error("DB write failed") }, "Failed to flush checks to database");
 			// Buffer should be cleared: the failed batch is not handed over again
 			await service.flushBuffer();
 			expect(ingest).toHaveBeenNthCalledWith(2, []);
 		});
 
-		it("logs 'Unknown error' for non-Error thrown values", async () => {
+		it("logs non-Error thrown values under err", async () => {
 			const { service, ingest, logger } = createService();
 			ingest.mockRejectedValue(null);
 			service.addToBuffer(makeCheck());
 
 			await service.flushBuffer();
 
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "Unknown error",
-					method: "flushBuffer",
-					stack: undefined,
-				})
-			);
+			expect(logger.error).toHaveBeenCalledWith({ err: null }, "Failed to flush checks to database");
 		});
 	});
 
@@ -360,13 +318,7 @@ describe("BufferService", () => {
 
 			await service.flushGeoBuffer();
 
-			expect(logger.debug).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "Flushing 1 geo checks to database",
-					service: "BufferService",
-					method: "flushGeoBuffer",
-				})
-			);
+			expect(logger.debug).toHaveBeenCalledWith({ count: 1 }, "Flushing geo checks to database");
 		});
 
 		it("clears geo buffer even on error", async () => {
@@ -376,31 +328,20 @@ describe("BufferService", () => {
 
 			await service.flushGeoBuffer();
 
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "DB error",
-					method: "flushGeoBuffer",
-				})
-			);
+			expect(logger.error).toHaveBeenCalledWith({ err: new Error("DB error") }, "Failed to flush geo checks to database");
 			// Buffer should be cleared
 			await service.flushGeoBuffer();
 			expect(geoChecksService.createGeoChecks).toHaveBeenCalledTimes(1);
 		});
 
-		it("logs 'Unknown error' for non-Error thrown values", async () => {
+		it("logs non-Error thrown values under err", async () => {
 			const { service, geoChecksService, logger } = createService();
 			(geoChecksService.createGeoChecks as jest.Mock).mockRejectedValue(undefined);
 			service.addGeoCheckToBuffer(makeGeoCheck());
 
 			await service.flushGeoBuffer();
 
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "Unknown error",
-					method: "flushGeoBuffer",
-					stack: undefined,
-				})
-			);
+			expect(logger.error).toHaveBeenCalledWith({ err: undefined }, "Failed to flush geo checks to database");
 		});
 	});
 
@@ -452,7 +393,7 @@ describe("BufferService", () => {
 			await service.flushDockerLogsBuffer();
 
 			expect(dockerLogsService.createDockerLogs).toHaveBeenCalledTimes(1);
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "DB error", method: "flushDockerLogsBuffer" }));
+			expect(logger.error).toHaveBeenCalledWith({ err: new Error("DB error") }, "Failed to flush docker logs to database");
 		});
 	});
 

@@ -1,6 +1,5 @@
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { IEncryptionService } from "@/service/encryption/encryptionService.js";
-import { AppError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger/logger.js";
 
 const SERVICE_NAME = "SecretsRotationService";
@@ -12,11 +11,15 @@ export interface ISecretsRotationService {
 export class SecretsRotationService implements ISecretsRotationService {
 	static SERVICE_NAME = SERVICE_NAME;
 
+	private logger: ILogger;
+
 	constructor(
 		private monitorsRepository: IMonitorsRepository,
 		private encryptionService: IEncryptionService,
-		private logger: ILogger
-	) {}
+		logger: ILogger
+	) {
+		this.logger = logger.child({ service: SERVICE_NAME });
+	}
 
 	run = async () => {
 		const rows = await this.monitorsRepository.findAllDockerTlsKeys();
@@ -24,11 +27,10 @@ export class SecretsRotationService implements ISecretsRotationService {
 		if (rows.length === 0) return result;
 
 		if (!this.encryptionService.isConfigured()) {
-			this.logger.warn({
-				message: `${rows.length} monitor(s) have a stored Docker TLS key but ENCRYPTION_KEY is not set; their checks will fail until it is`,
-				service: SERVICE_NAME,
-				method: "run",
-			});
+			this.logger.warn(
+				{ count: rows.length },
+				"Monitors have a stored Docker TLS key but ENCRYPTION_KEY is not set; their checks will fail until it is"
+			);
 			result.skipped = rows.length;
 			return result;
 		}
@@ -42,19 +44,10 @@ export class SecretsRotationService implements ISecretsRotationService {
 				result.reencrypted += 1;
 			} catch (error: unknown) {
 				result.skipped += 1;
-				this.logger.warn({
-					message: `Could not reencrypt Docker TLS key for monitor ${id}: ${error instanceof Error ? error.message : String(error)}`,
-					service: SERVICE_NAME,
-					method: "run",
-					details: { monitorId: id, ...(error instanceof AppError ? error.details : {}) },
-				});
+				this.logger.warn({ err: error, monitorId: id }, "Could not re-encrypt Docker TLS key for monitor");
 			}
 		}
-		this.logger.info({
-			message: `Docker TLS key rotation: ${result.reencrypted} re-encrypted, ${result.skipped} skipped, ${result.scanned} scanned`,
-			service: SERVICE_NAME,
-			method: "run",
-		});
+		this.logger.info({ reencrypted: result.reencrypted, skipped: result.skipped, scanned: result.scanned }, "Docker TLS key rotation complete");
 		return result;
 	};
 }

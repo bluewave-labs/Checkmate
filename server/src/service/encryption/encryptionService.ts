@@ -35,11 +35,14 @@ export class EncryptionService implements IEncryptionService {
 
 	private readonly entries: KeyEntry[];
 
+	private logger: ILogger;
+
 	constructor(
 		keys: Buffer[],
-		private logger: ILogger,
+		logger: ILogger,
 		private cryptoLib: EncryptionCryptoLib
 	) {
+		this.logger = logger.child({ service: SERVICE_NAME });
 		this.entries = keys.map((key, index) => this.toEntry(key, index));
 		this.entries.forEach((entry, index) => {
 			if (this.entries.findIndex((other) => other.id === entry.id) !== index) {
@@ -49,13 +52,11 @@ export class EncryptionService implements IEncryptionService {
 
 		const current = this.entries[0];
 
-		this.logger.info({
-			message: current
-				? `Encryption configured with ${this.entries.length} key(s); current key id ${current.id}`
-				: "ENCRYPTION_KEY not set; encrypted fields are unavailable",
-			service: SERVICE_NAME,
-			method: "constructor",
-		});
+		if (current) {
+			this.logger.info({ keyCount: this.entries.length, currentKeyId: current.id }, "Encryption configured");
+		} else {
+			this.logger.info("ENCRYPTION_KEY not set; encrypted fields are unavailable");
+		}
 	}
 
 	isConfigured = () => {
