@@ -991,6 +991,10 @@
 			"header": {
 				"title": "Registros y cola",
 				"description": "Inspecciona registros del servidor, la cola de trabajos del monitor y los diagnósticos de runtime en un solo lugar."
+			},
+			"details": {
+				"fields": "Campos",
+				"stack": "Traza de pila"
 			}
 		},
 		"maintenanceWindow": {

@@ -991,6 +991,10 @@
 			"header": {
 				"title": "Günlükler ve kuyruk",
 				"description": "Sunucu günlüklerini, izleyici iş kuyruğunu ve çalışma zamanı tanılarını tek bir yerde inceleyin."
+			},
+			"details": {
+				"fields": "Alanlar",
+				"stack": "Yığın izi"
 			}
 		},
 		"maintenanceWindow": {

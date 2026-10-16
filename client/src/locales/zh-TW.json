@@ -991,6 +991,10 @@
 			"header": {
 				"title": "日誌與佇列",
 				"description": "在一處查看伺服器日誌、監視器作業佇列和執行時診斷。"
+			},
+			"details": {
+				"fields": "欄位",
+				"stack": "堆疊"
 			}
 		},
 		"maintenanceWindow": {

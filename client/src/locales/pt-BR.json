@@ -1249,6 +1249,10 @@
 			"header": {
 				"title": "Logs e fila",
 				"description": "Inspecione logs do servidor, fila de tarefas de monitor e diagnósticos de runtime em um só lugar."
+			},
+			"details": {
+				"fields": "Campos",
+				"stack": "Rastreamento de pilha"
 			}
 		},
 		"maintenanceWindow": {

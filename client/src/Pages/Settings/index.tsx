@@ -1,4 +1,11 @@
-import { BasePage, ConfigBox, TextLink, Tabs, Tab } from "@/Components/design-elements";
+import {
+	BasePage,
+	ConfigBox,
+	TextLink,
+	Tabs,
+	Tab,
+	CodeBlock,
+} from "@/Components/design-elements";
 import { Autocomplete, Select, Dialog } from "@/Components/inputs";
 import { logger } from "@/Utils/logger";
 import { LAYOUT } from "@/Utils/Theme/constants";
@@ -715,61 +722,37 @@ export const SettingsPage = () => {
 											const displayName = form.watch("systemEmailDisplayName")?.trim();
 											return (
 												<>
-													<Box
-														component="pre"
-														p={2}
-														borderRadius={theme.shape.borderRadius}
-														bgcolor={theme.palette.action.hover}
-														sx={{
-															fontFamily: theme.typography.fontFamilyMonospace,
-															overflow: "auto",
-														}}
-													>
-														<code>
-															{JSON.stringify(
-																{
-																	host: form.watch("systemEmailHost") || "",
-																	port: form.watch("systemEmailPort") || "",
-																	secure: form.watch("systemEmailSecure") ?? false,
-																	auth: {
-																		user: form.watch("systemEmailUser") || address,
-																		pass: "<your_password>",
-																	},
-																	name:
-																		form.watch("systemEmailConnectionHost") ||
-																		"localhost",
-																	pool: form.watch("systemEmailPool") ?? false,
-																	tls: {
-																		rejectUnauthorized:
-																			form.watch("systemEmailRejectUnauthorized") ?? true,
-																		ignoreTLS:
-																			form.watch("systemEmailIgnoreTLS") ?? false,
-																		requireTLS:
-																			form.watch("systemEmailRequireTLS") ?? false,
-																		servername:
-																			form.watch("systemEmailTLSServername") || "",
-																	},
+													<CodeBlock>
+														{JSON.stringify(
+															{
+																host: form.watch("systemEmailHost") || "",
+																port: form.watch("systemEmailPort") || "",
+																secure: form.watch("systemEmailSecure") ?? false,
+																auth: {
+																	user: form.watch("systemEmailUser") || address,
+																	pass: "<your_password>",
 																},
-																null,
-																2
-															)}
-														</code>
-													</Box>
+																name:
+																	form.watch("systemEmailConnectionHost") || "localhost",
+																pool: form.watch("systemEmailPool") ?? false,
+																tls: {
+																	rejectUnauthorized:
+																		form.watch("systemEmailRejectUnauthorized") ?? true,
+																	ignoreTLS: form.watch("systemEmailIgnoreTLS") ?? false,
+																	requireTLS:
+																		form.watch("systemEmailRequireTLS") ?? false,
+																	servername:
+																		form.watch("systemEmailTLSServername") || "",
+																},
+															},
+															null,
+															2
+														)}
+													</CodeBlock>
 													{address && (
-														<Box
-															component="pre"
-															p={2}
-															borderRadius={theme.shape.borderRadius}
-															bgcolor={theme.palette.action.hover}
-															sx={{
-																fontFamily: theme.typography.fontFamilyMonospace,
-																overflow: "auto",
-															}}
-														>
-															<code>
-																{`From: ${displayName ? `"${displayName}" <${address}>` : address}`}
-															</code>
-														</Box>
+														<CodeBlock>
+															{`From: ${displayName ? `"${displayName}" <${address}>` : address}`}
+														</CodeBlock>
 													)}
 												</>
 											);

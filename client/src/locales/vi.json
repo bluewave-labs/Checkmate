@@ -991,6 +991,10 @@
 			"header": {
 				"title": "Nhật ký & hàng đợi",
 				"description": "Kiểm tra nhật ký máy chủ, hàng đợi công việc giám sát và chẩn đoán runtime tại một nơi."
+			},
+			"details": {
+				"fields": "Trường",
+				"stack": "Dấu vết ngăn xếp"
 			}
 		},
 		"maintenanceWindow": {
