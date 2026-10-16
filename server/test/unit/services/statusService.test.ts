@@ -191,18 +191,12 @@ describe("StatusService", () => {
 			expect(result.monitor.status).toBe("up");
 			expect(monitorsRepository.updateStatusWindowAndChecks).toHaveBeenCalledTimes(1);
 			expect(logger.warn).toHaveBeenCalledTimes(1);
-			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					service: "StatusService",
-					method: "tryUpdateRunningStats",
-					message: "stats db down",
-					stack: expect.any(String),
-				})
-			);
+			expect(logger.warn).toHaveBeenCalledWith({ err: new Error("stats db down") }, "Failed to update running stats");
+			expect(logger.child).toHaveBeenCalledWith({ service: "StatusService" });
 			expect(logger.error).not.toHaveBeenCalled();
 		});
 
-		it("warns with 'Unknown error' for non-Error rejections", async () => {
+		it("warns with non-Error rejections under err", async () => {
 			const monitor = makeMonitor();
 			const { service, logger, monitorsRepository, monitorStatsRepository } = createService();
 			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
@@ -210,7 +204,7 @@ describe("StatusService", () => {
 
 			await service.updateMonitorStatus(makeCheck(), monitor);
 
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error", stack: undefined }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: "string error" }, "Failed to update running stats");
 		});
 	});
 

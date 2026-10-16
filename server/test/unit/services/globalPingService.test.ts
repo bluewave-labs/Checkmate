@@ -89,12 +89,8 @@ describe("GlobalPingService", () => {
 					timeout: { request: 10000 },
 				})
 			);
-			expect(logger.debug).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("meas-123"),
-					method: "createMeasurement",
-				})
-			);
+			expect(logger.debug).toHaveBeenCalledWith({ measurementId: "meas-123", target: "example.com" }, "Created GlobalPing measurement");
+			expect(logger.child).toHaveBeenCalledWith({ service: "GlobalPingService" });
 		});
 
 		it("strips http:// protocol from target URL", async () => {
@@ -132,10 +128,8 @@ describe("GlobalPingService", () => {
 
 			expect(result).toBeNull();
 			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "GlobalPing API unavailable, skipping geo check",
-					method: "createMeasurement",
-				})
+				{ err: new Error("Unsupported monitor type for GlobalPing: hardware") },
+				"GlobalPing API unavailable, skipping geo check"
 			);
 		});
 
@@ -146,21 +140,16 @@ describe("GlobalPingService", () => {
 			const result = await service.createMeasurement("http", "https://example.com", ["NA"] as GeoContinent[]);
 
 			expect(result).toBeNull();
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "GlobalPing API unavailable, skipping geo check",
-					method: "createMeasurement",
-				})
-			);
+			expect(logger.error).toHaveBeenCalledWith({ err: new Error("Network error") }, "GlobalPing API unavailable, skipping geo check");
 		});
 
-		it("logs stack as undefined for non-Error thrown values", async () => {
+		it("logs non-Error thrown values under err", async () => {
 			const { service, logger } = createService();
 			mockGotPost.mockRejectedValue("string error");
 
 			await service.createMeasurement("http", "https://example.com", ["NA"] as GeoContinent[]);
 
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
+			expect(logger.error).toHaveBeenCalledWith({ err: "string error" }, "GlobalPing API unavailable, skipping geo check");
 		});
 
 		it("supports ping monitor type", async () => {
@@ -202,12 +191,7 @@ describe("GlobalPingService", () => {
 					}),
 				})
 			);
-			expect(logger.debug).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("meas-123"),
-					method: "pollForResults",
-				})
-			);
+			expect(logger.debug).toHaveBeenCalledWith({ measurementId: "meas-123", resultsCount: 1 }, "GlobalPing measurement completed");
 		});
 
 		it("defaults results to empty array when finished with no results", async () => {
@@ -230,12 +214,7 @@ describe("GlobalPingService", () => {
 			const results = await service.pollForResults("meas-123");
 
 			expect(results).toEqual([]);
-			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("failed"),
-					method: "pollForResults",
-				})
-			);
+			expect(logger.warn).toHaveBeenCalledWith({ measurementId: "meas-123" }, "GlobalPing measurement failed");
 		});
 
 		it("polls again when status is in-progress, then returns on finished", async () => {
@@ -265,21 +244,16 @@ describe("GlobalPingService", () => {
 			const results = await service.pollForResults("meas-123");
 
 			expect(results).toEqual([]);
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "Error polling GlobalPing API",
-					method: "pollForResults",
-				})
-			);
+			expect(logger.error).toHaveBeenCalledWith({ err: new Error("Connection refused"), measurementId: "meas-123" }, "Error polling GlobalPing API");
 		});
 
-		it("logs stack as undefined for non-Error thrown values in poll", async () => {
+		it("logs non-Error thrown values under err in poll", async () => {
 			const { service, logger } = createService();
 			mockGotGet.mockRejectedValue(42);
 
 			await service.pollForResults("meas-123");
 
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
+			expect(logger.error).toHaveBeenCalledWith({ err: 42, measurementId: "meas-123" }, "Error polling GlobalPing API");
 		});
 
 		it("returns empty array and logs warning on timeout", async () => {
@@ -295,13 +269,7 @@ describe("GlobalPingService", () => {
 			const results = await promise;
 
 			expect(results).toEqual([]);
-			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("timeout"),
-					method: "pollForResults",
-					details: expect.objectContaining({ measurementId: "meas-123", timeoutMs: 100 }),
-				})
-			);
+			expect(logger.warn).toHaveBeenCalledWith({ measurementId: "meas-123", timeoutMs: 100 }, "GlobalPing measurement polling timeout");
 		});
 	});
 

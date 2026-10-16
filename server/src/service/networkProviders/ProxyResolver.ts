@@ -21,12 +21,16 @@ export const buildProxyUrl = (proxy: Proxy): string => {
 
 export class ProxyResolver implements IProxyResolver {
 	static SERVICE_NAME = SERVICE_NAME;
+	private logger: ILogger;
+
 	constructor(
 		private proxiesRepository: IProxiesRepository,
 		private settingsService: ISettingsService,
-		private logger: ILogger,
+		logger: ILogger,
 		private ttlMs = 60_000
-	) {}
+	) {
+		this.logger = logger.child({ service: SERVICE_NAME });
+	}
 
 	private cache = new Map<string, { value: Promise<unknown>; expiresAt: number }>();
 
@@ -44,17 +48,7 @@ export class ProxyResolver implements IProxyResolver {
 	}
 
 	private warn(message: string, monitor: Monitor, error?: unknown) {
-		this.logger.warn({
-			message,
-			service: SERVICE_NAME,
-			method: "resolve",
-			details: {
-				monitorId: monitor.id,
-				proxyMode: monitor.proxyMode,
-				proxyId: monitor.proxyId,
-				...(error instanceof Error ? { error: error.message } : {}),
-			},
-		});
+		this.logger.warn({ err: error, monitorId: monitor.id, proxyMode: monitor.proxyMode, proxyId: monitor.proxyId }, message);
 	}
 
 	private resolveCustom = async (monitor: Monitor): Promise<string | undefined> => {

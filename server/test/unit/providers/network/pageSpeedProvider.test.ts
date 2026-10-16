@@ -84,12 +84,8 @@ describe("PageSpeedProvider", () => {
 
 		const calledUrl = (httpProvider.handle as jest.Mock).mock.calls[0][0].url;
 		expect(calledUrl).not.toContain("key=");
-		expect(logger.warn).toHaveBeenCalledWith(
-			expect.objectContaining({
-				message: expect.stringContaining("API key not found"),
-				service: "PageSpeedProvider",
-			})
-		);
+		expect(logger.warn).toHaveBeenCalledWith({ url: "https://example.com" }, "PageSpeed API key not found, performance may be throttled");
+		expect(logger.child).toHaveBeenCalledWith({ service: "PageSpeedProvider" });
 	});
 
 	it("encodes the monitor URL in the PageSpeed API URL", async () => {
@@ -147,7 +143,7 @@ describe("PageSpeedProvider", () => {
 
 		await provider.handle(makeMonitor());
 
-		expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("API key not found") }));
+		expect(logger.warn).toHaveBeenCalledWith({ url: "https://example.com" }, "PageSpeed API key not found, performance may be throttled");
 	});
 
 	it("handles null dbSettings response", async () => {
@@ -160,6 +156,6 @@ describe("PageSpeedProvider", () => {
 
 		await provider.handle(makeMonitor());
 
-		expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("API key not found") }));
+		expect(logger.warn).toHaveBeenCalledWith({ url: "https://example.com" }, "PageSpeed API key not found, performance may be throttled");
 	});
 });

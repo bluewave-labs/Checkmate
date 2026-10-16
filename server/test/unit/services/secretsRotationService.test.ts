@@ -60,9 +60,8 @@ describe("SecretsRotationService", () => {
 		}
 		expect(repository.updateDockerTlsKey).not.toHaveBeenCalledWith("m-current", expect.anything());
 		expect(logger.warn).not.toHaveBeenCalled();
-		expect(logger.info).toHaveBeenCalledWith(
-			expect.objectContaining({ message: "Docker TLS key rotation: 2 re-encrypted, 0 skipped, 3 scanned", service: "SecretsRotationService" })
-		);
+		expect(logger.info).toHaveBeenCalledWith({ reencrypted: 2, skipped: 0, scanned: 3 }, "Docker TLS key rotation complete");
+		expect(logger.child).toHaveBeenCalledWith({ service: "SecretsRotationService" });
 	});
 
 	it("returns zero counts when every row is already under the current key", async () => {
@@ -77,7 +76,7 @@ describe("SecretsRotationService", () => {
 
 		expect(result).toEqual({ scanned: 2, reencrypted: 0, skipped: 0 });
 		expect(repository.updateDockerTlsKey).not.toHaveBeenCalled();
-		expect(logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: "Docker TLS key rotation: 0 re-encrypted, 0 skipped, 2 scanned" }));
+		expect(logger.info).toHaveBeenCalledWith({ reencrypted: 0, skipped: 0, scanned: 2 }, "Docker TLS key rotation complete");
 	});
 
 	it("skips a row encrypted under an unknown key and logs its key id", async () => {
@@ -90,11 +89,8 @@ describe("SecretsRotationService", () => {
 		expect(result).toEqual({ scanned: 1, reencrypted: 0, skipped: 1 });
 		expect(repository.updateDockerTlsKey).not.toHaveBeenCalled();
 		expect(logger.warn).toHaveBeenCalledWith(
-			expect.objectContaining({
-				message: expect.stringContaining("Could not reencrypt Docker TLS key for monitor m-unknown"),
-				service: "SecretsRotationService",
-				details: { monitorId: "m-unknown", keyId: unknown.currentKeyId() },
-			})
+			expect.objectContaining({ err: expect.objectContaining({ details: { keyId: unknown.currentKeyId() } }), monitorId: "m-unknown" }),
+			"Could not re-encrypt Docker TLS key for monitor"
 		);
 	});
 
@@ -114,12 +110,10 @@ describe("SecretsRotationService", () => {
 		expect(repository.updateDockerTlsKey).toHaveBeenCalledTimes(1);
 		expect(encryptionService.decrypt(updatedKeyFor(repository, "m-stale"))).toBe(PLAINTEXT);
 		expect(logger.warn).toHaveBeenCalledWith(
-			expect.objectContaining({
-				message: expect.stringContaining("Could not reencrypt Docker TLS key for monitor m-broken: Ciphertext failed authentication"),
-				details: expect.objectContaining({ monitorId: "m-broken" }),
-			})
+			expect.objectContaining({ err: expect.objectContaining({ message: "Ciphertext failed authentication" }), monitorId: "m-broken" }),
+			"Could not re-encrypt Docker TLS key for monitor"
 		);
-		expect(logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: "Docker TLS key rotation: 1 re-encrypted, 1 skipped, 2 scanned" }));
+		expect(logger.info).toHaveBeenCalledWith({ reencrypted: 1, skipped: 1, scanned: 2 }, "Docker TLS key rotation complete");
 	});
 
 	it("warns and skips every row when ENCRYPTION_KEY is not configured", async () => {
@@ -135,10 +129,8 @@ describe("SecretsRotationService", () => {
 		expect(repository.updateDockerTlsKey).not.toHaveBeenCalled();
 		expect(logger.warn).toHaveBeenCalledTimes(1);
 		expect(logger.warn).toHaveBeenCalledWith(
-			expect.objectContaining({
-				message: "2 monitor(s) have a stored Docker TLS key but ENCRYPTION_KEY is not set; their checks will fail until it is",
-				service: "SecretsRotationService",
-			})
+			{ count: 2 },
+			"Monitors have a stored Docker TLS key but ENCRYPTION_KEY is not set; their checks will fail until it is"
 		);
 		expect(logger.info).not.toHaveBeenCalled();
 	});
