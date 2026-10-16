@@ -7,7 +7,6 @@ export const createMockLogger = () => {
 		warn: jest.fn(),
 		error: jest.fn(),
 		debug: jest.fn(),
-		cacheLog: jest.fn(),
 		getLogs: jest.fn().mockReturnValue([]),
 		httpMiddleware: jest.fn(() => (_req: unknown, _res: unknown, next: () => void) => next()),
 		child: jest.fn(),

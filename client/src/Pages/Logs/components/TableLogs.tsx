@@ -73,15 +73,6 @@ export const TableLogs = ({ logs, logCount, page, setPage }: TableLogsProps) => 
 			render: (row) => <Typography>{row.service || "-"}</Typography>,
 		},
 		{
-			id: "method",
-			content: t("pages.logs.table.headers.method"),
-			render: (row) => (
-				<Typography fontFamily={theme.typography.fontFamilyMonospace}>
-					{row.method || "-"}
-				</Typography>
-			),
-		},
-		{
 			id: "message",
 			content: t("common.table.headers.message"),
 			render: (row) => (
