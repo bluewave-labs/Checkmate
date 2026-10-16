@@ -48,7 +48,7 @@ import { FormNumberField } from "@/Components/inputs/forms/FormNumberField";
 import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
 import { FormMultiSelectField } from "@/Components/inputs/forms/FormMultiSelectField";
 import type { ProxyResponse } from "@/Types/Proxy";
-import type { Notification } from "@/Types/Notification";
+import { EgressExcludedChannels, type Notification } from "@/Types/Notification";
 import type { AppSettingsResponse } from "@/Types/Settings";
 import { useSearchParams } from "react-router-dom";
 import { SYSTEM_TIMEZONE, TIME_FORMATS, type TimeFormat } from "@/Utils/TimeUtils";
@@ -199,7 +199,10 @@ export const SettingsPage = () => {
 		isAdmin ? "/notifications/team" : null
 	);
 	const notificationOptions = useMemo(
-		() => (notifications ?? []).map((n) => ({ ...n, name: n.notificationName })),
+		() =>
+			(notifications ?? [])
+				.filter((n) => !EgressExcludedChannels.some((channel) => channel === n.type))
+				.map((n) => ({ ...n, name: n.notificationName })),
 		[notifications]
 	);
 
