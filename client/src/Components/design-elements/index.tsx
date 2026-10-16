@@ -24,6 +24,8 @@ export * from "./SplitBox";
 export * from "./TextLink";
 export * from "./NoticeBanner";
 export * from "./OfflineBanner";
+export * from "./EgressBanner";
+export * from "./EgressDegradedLabel";
 export * from "./Avatar";
 export * from "./StatusCodeLabel";
 export * from "./StrategyBadge";

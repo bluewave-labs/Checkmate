@@ -19,6 +19,7 @@ import { queueRoutes } from "@/api/routes/queueRoutes.js";
 import { settingsRoutes } from "@/api/routes/settingsRoutes.js";
 import { statusPageRoutes } from "@/api/routes/statusPageRoutes.js";
 import { logRoutes } from "@/api/routes/logRoutes.js";
+import { egressRoutes } from "@/api/routes/egressRoutes.js";
 let cached: JsonObject | null = null;
 
 registerRoutes(registry, tagRoutes);
@@ -36,6 +37,7 @@ registerRoutes(registry, queueRoutes);
 registerRoutes(registry, settingsRoutes);
 registerRoutes(registry, statusPageRoutes);
 registerRoutes(registry, logRoutes);
+registerRoutes(registry, egressRoutes);
 export function getOpenApiSpec(): JsonObject {
 	if (cached) return cached;
 
@@ -68,6 +70,7 @@ export function getOpenApiSpec(): JsonObject {
 			{ name: "diagnostic", description: "System diagnostics for the running server (admin/superadmin)." },
 			{ name: "logs", description: "Application logs for the running server (admin/superadmin)." },
 			{ name: "tags", description: "Labels for grouping and filtering monitors, team-scoped." },
+			{ name: "egress", description: "The instance's outbound connectivity self-check state." },
 		],
 	});
 
