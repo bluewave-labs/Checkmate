@@ -1,5 +1,5 @@
 import { MonitorModel } from "../../domain/monitors/monitor.model.js";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 
 /**
  * Backfill proxyMode on monitors created before the field existed.
@@ -9,19 +9,16 @@ import type { ILogger } from "@/utils/logger.js";
  */
 export async function backfillMonitorProxyMode(logger: ILogger): Promise<void> {
 	const SERVICE_NAME = "Migration:BackfillMonitorProxyMode";
+	const log = logger.child({ service: SERVICE_NAME });
 
 	try {
-		logger.info({ service: SERVICE_NAME, message: "Starting proxyMode backfill" });
+		log.info("Starting proxyMode backfill");
 
 		const result = await MonitorModel.updateMany({ proxyMode: { $exists: false } }, { $set: { proxyMode: "inherit" } });
 
-		logger.info({
-			service: SERVICE_NAME,
-			message: `Backfilled proxyMode on ${result.modifiedCount} monitors`,
-		});
+		log.info({ modifiedCount: result.modifiedCount }, "Backfilled proxyMode on monitors");
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		logger.error({ service: SERVICE_NAME, message: `Error backfilling proxyMode: ${errorMessage}` });
+		log.error({ err: error }, "Error backfilling proxyMode");
 		throw error;
 	}
 }

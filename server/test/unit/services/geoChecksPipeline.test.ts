@@ -110,20 +110,20 @@ describe("GeoChecksPipeline", () => {
 	it("returns null when monitor type does not support geo checks", async () => {
 		const { pipeline, defaults } = createGeoPipeline();
 		await pipeline.run(geoMonitor({ type: "hardware" }));
-		expect(defaults.logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("does not support geo checks") }));
+		expect(defaults.logger.debug).toHaveBeenCalledWith({ monitorId: expect.any(String) }, "Monitor type does not support geo checks, skipping");
 		expect(defaults.geoChecksService.buildGeoCheck).not.toHaveBeenCalled();
 	});
 
 	it("warns when geoCheckLocations is empty", async () => {
 		const { pipeline, defaults } = createGeoPipeline();
 		await pipeline.run(geoMonitor({ geoCheckLocations: [] }));
-		expect(defaults.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("No geo check locations") }));
+		expect(defaults.logger.warn).toHaveBeenCalledWith({ monitorId: expect.any(String) }, "No geo check locations configured for monitor");
 	});
 
 	it("warns when geoCheckLocations is undefined", async () => {
 		const { pipeline, defaults } = createGeoPipeline();
 		await pipeline.run(geoMonitor({ geoCheckLocations: undefined as any }));
-		expect(defaults.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("No geo check locations") }));
+		expect(defaults.logger.warn).toHaveBeenCalledWith({ monitorId: expect.any(String) }, "No geo check locations configured for monitor");
 	});
 
 	it("skips when in maintenance window", async () => {
@@ -131,14 +131,14 @@ describe("GeoChecksPipeline", () => {
 			maintenanceWindowsRepository: { findByMonitorId: jest.fn().mockResolvedValue([activeWindow()]) },
 		});
 		await pipeline.run(geoMonitor());
-		expect(defaults.logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("maintenance window") }));
+		expect(defaults.logger.debug).toHaveBeenCalledWith({ monitorId: expect.any(String) }, "Monitor is in maintenance window, skipping geo check");
 		expect(defaults.geoChecksService.buildGeoCheck).not.toHaveBeenCalled();
 	});
 
 	it("warns when buildGeoCheck returns null", async () => {
 		const { pipeline, defaults } = createGeoPipeline();
 		await pipeline.run(geoMonitor());
-		expect(defaults.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("No geo check could be built") }));
+		expect(defaults.logger.warn).toHaveBeenCalledWith({ monitorId: expect.any(String) }, "No geo check could be built for monitor");
 	});
 
 	it("adds geo check to buffer on success", async () => {
@@ -148,7 +148,7 @@ describe("GeoChecksPipeline", () => {
 		});
 		await pipeline.run(geoMonitor());
 		expect(defaults.buffer.addGeoCheckToBuffer).toHaveBeenCalledWith(geoCheck);
-		expect(defaults.logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Geo check job executed") }));
+		expect(defaults.logger.debug).toHaveBeenCalledWith({ monitorId: expect.any(String) }, "Geo check job executed for monitor");
 	});
 
 	it("propagates errors (the job glue handles isolation)", async () => {

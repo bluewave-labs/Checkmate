@@ -1,7 +1,7 @@
 import type { Check } from "@/domain/checks/check.type.js";
 import type { GeoCheck } from "@/domain/geo-checks/geo-check.type.js";
 import type { IGeoChecksService } from "../domain/geo-checks/geo-check.service.js";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { DockerLog } from "@/domain/docker/docker-log.type.js";
 import { IDockerLogsService } from "@/domain/docker/docker-log.service.js";

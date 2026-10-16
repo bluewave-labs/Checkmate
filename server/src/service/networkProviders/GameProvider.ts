@@ -4,7 +4,7 @@ import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { GameDig } from "gamedig";
 import { AppError, internalError } from "@/utils/AppError.js";
 import { NETWORK_ERROR } from "@/types/network.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 
 type GameDigType = typeof GameDig;
 

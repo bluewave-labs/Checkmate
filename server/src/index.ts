@@ -1,3 +1,4 @@
+import "dotenv/config"; // first, so .env is loaded before any module reads process.env
 import { buildShared } from "@/config/services.shared.js";
 import { buildApi } from "@/config/services.api.js";
 import { buildWorker } from "@/config/services.worker.js";
@@ -10,7 +11,7 @@ import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs";
 
-import Logger, { ILogger } from "@/utils/logger.js";
+import Logger, { ILogger } from "@/utils/logger/logger.js";
 import { SettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { JobScheduler } from "@/worker/worker.job-scheduler.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";

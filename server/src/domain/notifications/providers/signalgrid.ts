@@ -5,6 +5,8 @@ import { getTestMessage, incidentUrl } from "@/domain/notifications/providers/ut
 import got from "got";
 
 export class SignalgridProvider extends NotificationProvider {
+	protected readonly serviceName = SERVICE_NAME;
+
 	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
 		if (!notification.address || !notification.accessToken) {
 			return false;
@@ -24,15 +26,7 @@ export class SignalgridProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const errMsg = error instanceof Error ? error.message : "unknown error";
-			const errStack = error instanceof Error ? error.stack : undefined;
-			this.logger.warn({
-				message: "Signalgrid test alert failed",
-				service: SERVICE_NAME,
-				method: "sendTestAlert",
-				stack: errStack,
-				details: { error: errMsg },
-			});
+			this.logger.warn({ err: error }, "Signalgrid test alert failed");
 			return false;
 		}
 	}
@@ -55,22 +49,10 @@ export class SignalgridProvider extends NotificationProvider {
 				...this.gotRequestOptions(),
 			});
 
-			this.logger.info({
-				message: "Signalgrid notification sent",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-			});
+			this.logger.info("Signalgrid notification sent");
 			return true;
 		} catch (error) {
-			const errMsg = error instanceof Error ? error.message : "unknown error";
-			const errStack = error instanceof Error ? error.stack : undefined;
-			this.logger.warn({
-				message: "Signalgrid alert failed",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-				stack: errStack,
-				details: { error: errMsg },
-			});
+			this.logger.warn({ err: error }, "Signalgrid alert failed");
 			return false;
 		}
 	}

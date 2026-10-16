@@ -9958,7 +9958,8 @@
 											"type": "object",
 											"properties": {
 												"certificateDate": {
-													"type": "string"
+													"type": "string",
+													"nullable": true
 												}
 											},
 											"required": ["certificateDate"]
@@ -13902,7 +13903,7 @@
 						}
 					},
 					"422": {
-						"description": "Referenced proxy does not exist",
+						"description": "Referenced proxy does not exist, or referenced notification does not exist, or notification channel cannot receive egress alerts",
 						"content": {
 							"application/json": {
 								"schema": {

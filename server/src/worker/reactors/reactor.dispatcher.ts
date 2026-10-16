@@ -1,4 +1,4 @@
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { MonitorEvaluation } from "@/worker/worker.interface.js";
 import { IMonitorReactor } from "@/worker/reactors/reactor.interface.js";
 
@@ -9,18 +9,17 @@ export interface IReactorDispatcher {
 }
 
 export class ReactorDispatcher implements IReactorDispatcher {
+	private logger: ILogger;
+
 	constructor(
-		private logger: ILogger,
+		logger: ILogger,
 		private reactors: IMonitorReactor[]
-	) {}
+	) {
+		this.logger = logger.child({ service: SERVICE_NAME });
+	}
 
 	private logFailure(reactor: IMonitorReactor, evaluation: MonitorEvaluation, error: unknown) {
-		this.logger.error({
-			service: SERVICE_NAME,
-			method: "dispatch",
-			message: `Reactor ${reactor.name} failed for monitor ${evaluation.monitor.id}: ${error instanceof Error ? error.message : String(error)}`,
-			stack: error instanceof Error ? error.stack : undefined,
-		});
+		this.logger.error({ err: error, reactor: reactor.name, monitorId: evaluation.monitor.id }, "Reactor failed");
 	}
 
 	dispatch = async (evaluation: MonitorEvaluation) => {

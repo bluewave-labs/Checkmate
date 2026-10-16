@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { MulterError } from "multer";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 import { AppError } from "@/utils/AppError.js";
 import { ZodError } from "zod";
 import type { ErrorBody } from "@/api/routes/openapiHelpers.js";

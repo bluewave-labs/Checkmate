@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { MonitorModel } from "../../domain/monitors/monitor.model.js";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 
 const JOBS_COLLECTION = "jobs";
 
@@ -11,6 +11,7 @@ const JOBS_COLLECTION = "jobs";
  */
 export async function backfillMonitorLastEvaluatedAt(logger: ILogger): Promise<void> {
 	const SERVICE_NAME = "Migration:BackfillMonitorLastEvaluatedAt";
+	const log = logger.child({ service: SERVICE_NAME });
 
 	try {
 		// Drop the legacy jobs collection first. The old super-simple-scheduler persisted jobs to the
@@ -21,21 +22,17 @@ export async function backfillMonitorLastEvaluatedAt(logger: ILogger): Promise<v
 			const existing = await db.listCollections({ name: JOBS_COLLECTION }).toArray();
 			if (existing.length > 0) {
 				await db.collection(JOBS_COLLECTION).drop();
-				logger.info({ service: SERVICE_NAME, message: `Dropped legacy "${JOBS_COLLECTION}" collection` });
+				log.info({ collection: JOBS_COLLECTION }, "Dropped legacy collection");
 			}
 		}
 
-		logger.info({ service: SERVICE_NAME, message: "Starting lastEvaluatedAt backfill" });
+		log.info("Starting lastEvaluatedAt backfill");
 
 		const result = await MonitorModel.updateMany({ lastEvaluatedAt: { $exists: false } }, { $set: { lastEvaluatedAt: Date.now() } });
 
-		logger.info({
-			service: SERVICE_NAME,
-			message: `Backfilled lastEvaluatedAt on ${result.modifiedCount} monitors`,
-		});
+		log.info({ modifiedCount: result.modifiedCount }, "Backfilled lastEvaluatedAt on monitors");
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		logger.error({ service: SERVICE_NAME, message: `Error backfilling lastEvaluatedAt: ${errorMessage}` });
+		log.error({ err: error }, "Error backfilling lastEvaluatedAt");
 		throw error;
 	}
 }

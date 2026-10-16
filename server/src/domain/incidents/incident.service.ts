@@ -9,7 +9,7 @@ import type { Incident, IncidentSummary } from "@/domain/incidents/incident.type
 import type { UserResponse } from "@/domain/users/user.type.js";
 import type { MonitorActionDecision } from "@/worker/worker.interface.js";
 import type { INotificationMessageBuilder } from "@/domain/notifications/notification.message-builder.js";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 import { DateRange } from "@/types/query.js";
 import { incidentErrors } from "@/domain/incidents/incident.errors.js";
 

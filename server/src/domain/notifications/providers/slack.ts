@@ -3,9 +3,11 @@ import type { Notification } from "@/domain/notifications/notification.type.js";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
 import { getTestMessage, incidentUrl } from "@/domain/notifications/providers/utils.js";
-import got, { HTTPError } from "got";
+import got from "got";
 
 export class SlackProvider extends NotificationProvider {
+	protected readonly serviceName = SERVICE_NAME;
+
 	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
 		if (!notification.address) {
 			return false;
@@ -21,13 +23,7 @@ export class SlackProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as HTTPError;
-			this.logger.warn({
-				message: "Slack test alert failed",
-				service: SERVICE_NAME,
-				method: "sendTestAlert",
-				stack: err?.stack,
-			});
+			this.logger.warn({ err: error }, "Slack test alert failed");
 			return false;
 		}
 	}
@@ -50,20 +46,10 @@ export class SlackProvider extends NotificationProvider {
 				},
 				...this.gotRequestOptions(),
 			});
-			this.logger.info({
-				message: "[NEW] Slack notification sent via sendMessage",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-			});
+			this.logger.info("Slack notification sent");
 			return true;
 		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: "[NEW] Slack alert failed via sendMessage",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-				stack: err?.stack,
-			});
+			this.logger.warn({ err: error }, "Slack alert failed");
 			return false;
 		}
 	}
