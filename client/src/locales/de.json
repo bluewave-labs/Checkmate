@@ -992,6 +992,10 @@
 			"header": {
 				"title": "Protokolle & Warteschlange",
 				"description": "Serverprotokolle, Monitor-Warteschlange und Laufzeitdiagnosen an einem Ort."
+			},
+			"details": {
+				"fields": "Felder",
+				"stack": "Stacktrace"
 			}
 		},
 		"maintenanceWindow": {

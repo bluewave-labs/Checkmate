@@ -992,6 +992,10 @@
 			"header": {
 				"title": "日志与队列",
 				"description": "在一处查看服务器日志、监控器作业队列和运行时诊断。"
+			},
+			"details": {
+				"fields": "字段",
+				"stack": "堆栈"
 			}
 		},
 		"maintenanceWindow": {

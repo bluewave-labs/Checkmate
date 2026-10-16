@@ -1044,7 +1044,11 @@
 				"queue": "Kolejka zadań"
 			},
 			"workers": "Pracownicy",
-			"workersExplainers": "Wyświetla procesy workerów.  Identyfikatory workerów są skrócone, najedź, aby zobaczyć pełny identyfikator"
+			"workersExplainers": "Wyświetla procesy workerów.  Identyfikatory workerów są skrócone, najedź, aby zobaczyć pełny identyfikator",
+			"details": {
+				"fields": "Pola",
+				"stack": "Ślad stosu"
+			}
 		},
 		"maintenanceWindow": {
 			"fallback": {

@@ -991,6 +991,10 @@
 			"header": {
 				"title": "Protokoly a fronta",
 				"description": "Zkontrolujte serverové protokoly, frontu úloh monitoru a diagnostiku v jednom místě."
+			},
+			"details": {
+				"fields": "Pole",
+				"stack": "Zásobník volání"
 			}
 		},
 		"maintenanceWindow": {

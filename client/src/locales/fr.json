@@ -991,6 +991,10 @@
 			"header": {
 				"title": "Journaux et file",
 				"description": "Inspectez les journaux serveur, la file des tâches de moniteur et les diagnostics d'exécution au même endroit."
+			},
+			"details": {
+				"fields": "Champs",
+				"stack": "Pile d'appels"
 			}
 		},
 		"maintenanceWindow": {

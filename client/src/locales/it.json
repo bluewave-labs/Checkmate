@@ -1079,6 +1079,10 @@
 			"header": {
 				"title": "Log e coda",
 				"description": "Ispeziona i log del server, la coda dei job del monitor e la diagnostica runtime in un unico posto."
+			},
+			"details": {
+				"fields": "Campi",
+				"stack": "Stack trace"
 			}
 		},
 		"maintenanceWindow": {
