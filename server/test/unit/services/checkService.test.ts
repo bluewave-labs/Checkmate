@@ -115,7 +115,7 @@ describe("CheckService", () => {
 				const check = service.toCheck(makeStatusResponse({ type: "pagespeed", payload: undefined } as any));
 
 				expect(check).toBeUndefined();
-				expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to build check" }));
+				expect(logger.warn).toHaveBeenCalledWith("Failed to build check");
 			});
 
 			it("defaults categories and audits to empty when lighthouseResult is missing", () => {

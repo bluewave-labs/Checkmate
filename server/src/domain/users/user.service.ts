@@ -92,7 +92,7 @@ export class UserService implements IUserService {
 	}) {
 		this.emailService = emailService;
 		this.settingsService = settingsService;
-		this.logger = logger;
+		this.logger = logger.child({ service: SERVICE_NAME });
 		this.jwt = jwt;
 		this.scheduler = scheduler;
 		this.crypto = crypto;
@@ -137,12 +137,7 @@ export class UserService implements IUserService {
 
 		const newUser = await this.usersRepository.create(user as User, file);
 
-		this.logger.debug({
-			message: "New user created",
-			service: SERVICE_NAME,
-			method: "registerUser",
-			details: { userId: newUser.id },
-		});
+		this.logger.debug({ userId: newUser.id }, "New user created");
 
 		delete newUser.avatarImage;
 
@@ -158,20 +153,10 @@ export class UserService implements IUserService {
 				throw new Error("Failed to build welcome email HTML");
 			}
 			this.emailService.sendEmail(newUser.email, "Welcome to Uptime Monitor", html).catch((error: unknown) => {
-				this.logger.warn({
-					message: error instanceof Error ? error.message : "Unknown error",
-					service: SERVICE_NAME,
-					method: "registerUser",
-					stack: error instanceof Error ? error.stack : undefined,
-				});
+				this.logger.warn({ err: error }, "Failed to send welcome email");
 			});
 		} catch (error: unknown) {
-			this.logger.warn({
-				message: error instanceof Error ? error.message : "Unknown error",
-				service: SERVICE_NAME,
-				method: "registerUser",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.warn({ err: error }, "Failed to send welcome email");
 		}
 
 		return { user: newUser, token };
@@ -195,12 +180,7 @@ export class UserService implements IUserService {
 
 		const newUser = await this.usersRepository.create(userData as User, file);
 
-		this.logger.debug({
-			message: "New user created by superadmin",
-			service: SERVICE_NAME,
-			method: "createUser",
-			details: { userId: newUser.id },
-		});
+		this.logger.debug({ userId: newUser.id }, "New user created by superadmin");
 
 		newUser.avatarImage = undefined;
 
@@ -355,11 +335,7 @@ export class UserService implements IUserService {
 
 		await this.usersRepository.deleteById(targetUserId);
 
-		this.logger.info({
-			message: `User ${targetUserId} deleted by ${actorId}`,
-			service: SERVICE_NAME,
-			method: "deleteUserById",
-		});
+		this.logger.info({ userId: targetUserId, actorId }, "User deleted");
 	};
 
 	getAllUsers = async () => {

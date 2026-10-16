@@ -43,7 +43,7 @@ class MongoChecksRepository implements IChecksRepository {
 
 	private logger: ILogger;
 	constructor(logger: ILogger) {
-		this.logger = logger;
+		this.logger = logger.child({ service: SERVICE_NAME });
 	}
 
 	private toEntity = (doc: CheckDocument): Check => {
@@ -238,11 +238,7 @@ class MongoChecksRepository implements IChecksRepository {
 			case "resolve":
 				return { status: false, statusCode: NETWORK_ERROR };
 			default:
-				this.logger.warn({
-					message: "invalid filter",
-					service: SERVICE_NAME,
-					method: "filterToMatch",
-				});
+				this.logger.warn("invalid filter");
 				return {};
 		}
 	};

@@ -70,7 +70,10 @@ describe("handleErrors", () => {
 		handleErrors(localLogger)(error, {} as Request, res, (() => {}) as NextFunction);
 		expect(res.status).toHaveBeenCalledWith(400);
 		expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ status: 400, msg: expect.stringContaining("name:") }));
-		expect(localLogger.warn).toHaveBeenCalledWith(expect.objectContaining({ service: "validation" }));
+		expect(localLogger.warn).toHaveBeenCalledWith(
+			expect.objectContaining({ errorService: "validation", status: 400, details: { issues: expect.any(Array) } }),
+			"Request failed"
+		);
 		expect(localLogger.error).not.toHaveBeenCalled();
 	});
 
@@ -79,7 +82,8 @@ describe("handleErrors", () => {
 		const req = { method: "GET", originalUrl: "/api/v1/monitors/certificate/abc123?token=secret" } as Request;
 		handleErrors(localLogger)(new Error("connect ETIMEDOUT"), req, makeRes(), (() => {}) as NextFunction);
 		expect(localLogger.error).toHaveBeenCalledWith(
-			expect.objectContaining({ service: "unknownService", details: { request: "GET /api/v1/monitors/certificate/abc123" } })
+			expect.objectContaining({ errorService: "unknownService", status: 500, request: "GET /api/v1/monitors/certificate/abc123" }),
+			"Request failed"
 		);
 	});
 
@@ -89,7 +93,8 @@ describe("handleErrors", () => {
 		const error = z.object({ name: z.string().min(1) }).safeParse({ name: "" }).error!;
 		handleErrors(localLogger)(error, req, makeRes(), (() => {}) as NextFunction);
 		expect(localLogger.warn).toHaveBeenCalledWith(
-			expect.objectContaining({ details: expect.objectContaining({ request: "POST /api/v1/monitors", issues: expect.any(Array) }) })
+			expect.objectContaining({ request: "POST /api/v1/monitors", details: expect.objectContaining({ issues: expect.any(Array) }) }),
+			"Request failed"
 		);
 	});
 

@@ -37,7 +37,6 @@ import { GameProvider } from "@/service/networkProviders/GameProvider.js";
 import { GrpcProvider } from "@/service/networkProviders/GrpcProvider.js";
 import { WebSocketProvider } from "@/service/networkProviders/WebSocketProvider.js";
 import { DNSProvider } from "@/service/networkProviders/DNSProvider.js";
-import { AppError } from "@/utils/AppError.js";
 import { WorkerPipeline } from "@/worker/worker.pipeline.js";
 export interface WorkerServices {
 	worker: IQueueWorker;
@@ -178,21 +177,12 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	});
 
 	const secretsRotationService = new SecretsRotationService(monitorsRepository, encryptionService, logger);
+	const log = logger.child({ service: "WorkerServices" }); // this function's own lines; services above get the root logger
 	try {
 		const result = await secretsRotationService.run();
-		logger.debug({
-			message: "Secrets rotation run successfully",
-			service: "WorkerServices",
-			method: "buildWorker",
-			details: { ...result },
-		});
+		log.debug({ ...result }, "Secrets rotation run successfully");
 	} catch (error: unknown) {
-		logger.warn({
-			message: `Could not rotate Docker TLS secrets: ${error instanceof Error ? error.message : String(error)}`,
-			service: "WorkerServices",
-			method: "buildWorker",
-			details: { ...(error instanceof AppError ? error.details : {}) },
-		});
+		log.warn({ err: error }, "Could not rotate Docker TLS secrets");
 	}
 
 	return { worker, networkService: providerRegistry, bufferService, statusService, egressService };

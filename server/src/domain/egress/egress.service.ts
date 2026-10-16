@@ -51,6 +51,8 @@ export class EgressService implements IEgressService {
 
 	private assessment: CachedAssessment | null = null;
 
+	private logger: ILogger;
+
 	constructor(
 		private settingsService: ISettingsService,
 		private egressStateRepository: IEgressStateRepository,
@@ -58,8 +60,10 @@ export class EgressService implements IEgressService {
 		private providerRegistry: IProviderRegistry,
 		private proxyResolver: IProxyResolver,
 		private notificationsService: INotificationsService,
-		private logger: ILogger
-	) {}
+		logger: ILogger
+	) {
+		this.logger = logger.child({ service: SERVICE_NAME });
+	}
 
 	// ****************************
 	// Probing
@@ -194,23 +198,18 @@ export class EgressService implements IEgressService {
 			// while ok, which the job's first run removes, rather than a degraded state that nothing is polling.
 			await this.scheduleRecoveryCheck(true);
 			const degraded = await this.egressStateRepository.markDegraded(results, now);
-			this.logger.warn({
-				message: degraded
-					? "Instance egress degraded: every reliability target is unreachable. Monitor failures will not be counted until it recovers"
-					: "Instance egress degraded (transition already recorded by another worker)",
-				service: SERVICE_NAME,
-				method: "assessAfterFailure",
-				details: { results },
-			});
+			if (degraded) {
+				this.logger.warn(
+					{ results },
+					"Instance egress degraded: every reliability target is unreachable. Monitor failures will not be counted until it recovers"
+				);
+			} else {
+				this.logger.warn({ results }, "Instance egress degraded (transition already recorded by another worker)");
+			}
 			return "degraded";
 		} catch (error: unknown) {
 			// The egress check must never break check production; treat an internal failure as "unknown" and carry on.
-			this.logger.error({
-				message: error instanceof Error ? error.message : String(error),
-				service: SERVICE_NAME,
-				method: "assessAfterFailure",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.error({ err: error }, "Egress assessment failed");
 			return null;
 		}
 	};
@@ -271,12 +270,7 @@ export class EgressService implements IEgressService {
 			return;
 		}
 
-		this.logger.info({
-			message: `Instance egress recovered (degraded since ${recovered.degradedSince ?? "unknown"})`,
-			service: SERVICE_NAME,
-			method: "checkRecovery",
-			details: { results },
-		});
+		this.logger.info({ degradedSince: recovered.degradedSince, results }, "Instance egress recovered");
 		// The job row is already gone and the state already reads ok, so a failure here has nothing to retry
 		// against: a rerun would release and return without sending. Logged rather than thrown, so it does not
 		// surface as a generic queue failure for a job that has completed.
@@ -285,20 +279,10 @@ export class EgressService implements IEgressService {
 			const delivered = await this.notificationsService.sendEgressRecoveredNotification(recovered, notificationIds);
 			if (!delivered) {
 				// Providers catch their own delivery errors and return false, so this is the only trace of a lost alert.
-				this.logger.warn({
-					message: "Egress recovered but at least one notification channel failed to deliver",
-					service: SERVICE_NAME,
-					method: "checkRecovery",
-					details: { notificationIds },
-				});
+				this.logger.warn({ notificationIds }, "Egress recovered but at least one notification channel failed to deliver");
 			}
 		} catch (error: unknown) {
-			this.logger.error({
-				message: `Egress recovered but the notification could not be sent: ${error instanceof Error ? error.message : String(error)}`,
-				service: SERVICE_NAME,
-				method: "checkRecovery",
-				details: { notificationIds },
-			});
+			this.logger.error({ err: error, notificationIds }, "Egress recovered but the notification could not be sent");
 		}
 	};
 }
