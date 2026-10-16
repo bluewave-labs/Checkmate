@@ -131,5 +131,22 @@ export type PageSpeedDetailsResult = z.infer<typeof pageSpeedDetailsResultSchema
 export type Game = z.infer<typeof gameSchema>;
 export type GamesMap = z.infer<typeof gamesMapSchema>;
 
+export const MIN_MONITOR_INTERVAL_MS = 10000;
+
+/**
+ * Normalizes a monitor interval value to milliseconds.
+ *
+ * If the interval is stored or provided in seconds (e.g. 300 for 5 minutes, 3600 for 1 hour,
+ * or 86400 for 1 day), it converts it to milliseconds (e.g. 300,000 ms).
+ * Values already in milliseconds (>= 10,000 ms) are preserved.
+ */
+export const normalizeIntervalMs = (interval: number | undefined | null): number => {
+	if (!interval || interval <= 0) return 60000;
+	if (interval < MIN_MONITOR_INTERVAL_MS || interval === 86400) {
+		return interval * 1000;
+	}
+	return interval;
+};
+
 export type MonitorScheduleFields = Pick<Monitor, "id" | "type" | "isActive" | "interval" | "geoCheckEnabled" | "geoCheckInterval">;
 export type DockerContainerLogsResult = DockerLogPage;

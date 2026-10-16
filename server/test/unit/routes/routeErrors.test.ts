@@ -24,7 +24,7 @@ const loadDefinitionNames = async (): Promise<Map<ErrorDefinition, string>> => {
 	const catalogs = readdirSync(path.join(serverRoot, "src"), { recursive: true })
 		.map(String)
 		.filter((file) => file.endsWith(".errors.ts"))
-		.map((file) => path.join("src", file));
+		.map((file) => path.join("src", file).replaceAll("\\", "/"));
 	const names = new Map<ErrorDefinition, string>();
 	for (const file of [...catalogs, "src/utils/AppError.ts"].sort()) {
 		const module = (await import(`../../../${file}`)) as Record<string, unknown>;

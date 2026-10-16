@@ -32,6 +32,8 @@ const createScheduler = (overrides?: { queueMode?: QueueMode; mocks?: Record<str
 	const jobsRepository = {
 		upsertJob: jest.fn<any>().mockResolvedValue(true),
 		upsertCleanupJob: jest.fn<any>().mockResolvedValue(true),
+		updateScheduleById: jest.fn<any>().mockResolvedValue(true),
+		deleteByIdAndType: jest.fn<any>().mockResolvedValue(true),
 	};
 	const queueWorkersRepository = {
 		upsert: jest.fn<any>().mockResolvedValue(undefined),
@@ -203,6 +205,50 @@ describe("JobScheduler", () => {
 			await (scheduler as any).heartbeat();
 
 			expect(mocks.queueWorkersRepository.upsert).not.toHaveBeenCalled();
+		});
+	});
+
+	describe("interval normalization", () => {
+		it("normalizes second-based monitor intervals to milliseconds when seeding check and geo-check jobs", async () => {
+			const { scheduler, mocks } = createScheduler({
+				queueMode: "primary",
+				mocks: {
+					monitorsRepository: {
+						findAllForScheduling: jest.fn<any>().mockResolvedValue([
+							makeMonitor({
+								id: "mon-1",
+								interval: 300, // 5 minutes in seconds
+								geoCheckEnabled: true,
+								geoCheckInterval: 600, // 10 minutes in seconds
+							}),
+						]),
+					},
+				},
+			});
+
+			await scheduler.init();
+
+			const checkCall = mocks.jobsRepository.upsertJob.mock.calls.find((c: any[]) => c[0].type === "check");
+			expect(checkCall).toBeDefined();
+			expect(checkCall[0].intervalMs).toBe(300000); // 300s -> 300,000ms
+
+			const geoCheckCall = mocks.jobsRepository.upsertJob.mock.calls.find((c: any[]) => c[0].type === "geo-check");
+			expect(geoCheckCall).toBeDefined();
+			expect(geoCheckCall[0].intervalMs).toBe(600000); // 600s -> 600,000ms
+		});
+
+		it("normalizes interval to milliseconds when updateJob is called", async () => {
+			const { scheduler, mocks } = createScheduler();
+			const monitor = {
+				id: "mon-1",
+				type: "http",
+				interval: 300, // 5 minutes in seconds
+				geoCheckEnabled: false,
+			} as any;
+
+			await scheduler.updateJob(monitor);
+
+			expect(mocks.jobsRepository.updateScheduleById).toHaveBeenCalledWith("mon-1", "check", 300000);
 		});
 	});
 });

@@ -1,7 +1,7 @@
 import { IJobScheduler } from "@/worker/worker.interface.js";
 import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
-import { Monitor, MonitorScheduleFields, supportsGeoCheck } from "@/domain/monitors/monitor.type.js";
+import { Monitor, MonitorScheduleFields, normalizeIntervalMs, supportsGeoCheck } from "@/domain/monitors/monitor.type.js";
 import { type Job, type JobSeed, type JobType, jobId } from "@/domain/jobs/job.type.js";
 import { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.repository.interface.js";
 import { WorkerJobsPagination, WorkerJobSummary, WorkerMetrics } from "@/worker/worker.interface.js";
@@ -47,20 +47,23 @@ export class JobScheduler implements IJobScheduler {
 		egress: POLL_MS,
 	};
 	// Helpers, builds job seeds. immediate=true runs on the next tick; otherwise jitter spreads the herd.
-	protected toCheckJob = (monitor: MonitorScheduleFields, now: number, immediate = false): JobSeed => ({
-		id: jobId("check", monitor.id),
-		type: "check",
-		refId: monitor.id,
-		isActive: monitor.isActive,
-		nextScheduledAt: immediate ? now : now + Math.floor(Math.random() * monitor.interval), // Avoid herd
-		intervalMs: monitor.interval,
-	});
+	protected toCheckJob = (monitor: MonitorScheduleFields, now: number, immediate = false): JobSeed => {
+		const intervalMs = normalizeIntervalMs(monitor.interval);
+		return {
+			id: jobId("check", monitor.id),
+			type: "check",
+			refId: monitor.id,
+			isActive: monitor.isActive,
+			nextScheduledAt: immediate ? now : now + Math.floor(Math.random() * intervalMs), // Avoid herd
+			intervalMs,
+		};
+	};
 
 	protected toGeoCheckJob = (monitor: MonitorScheduleFields, now: number, immediate = false): JobSeed => ({
 		...this.toCheckJob(monitor, now, immediate),
 		id: jobId("geo-check", monitor.id),
 		type: "geo-check",
-		intervalMs: monitor.geoCheckInterval!,
+		intervalMs: normalizeIntervalMs(monitor.geoCheckInterval ?? 300000),
 	});
 
 	protected toCleanupJob = (type: "cleanup-orphaned" | "cleanup-retention", now: number): JobSeed => ({
@@ -120,7 +123,8 @@ export class JobScheduler implements IJobScheduler {
 	};
 
 	updateJob = async (monitor: Monitor) => {
-		await this.jobsRepository.updateScheduleById(monitor.id, "check", monitor.interval);
+		const intervalMs = normalizeIntervalMs(monitor.interval);
+		await this.jobsRepository.updateScheduleById(monitor.id, "check", intervalMs);
 		if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) {
 			await this.jobsRepository.upsertJob(this.toGeoCheckJob(monitor, Date.now(), true)); // a newly enabled geo check should run right away
 			this.wake("geo-check");

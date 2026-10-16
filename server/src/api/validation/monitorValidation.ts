@@ -9,6 +9,7 @@ import {
 	MonitorMatchMethods,
 	MonitorStatuses,
 	MonitorTypes,
+	normalizeIntervalMs,
 	PageSpeedStrategies,
 	ProxyModes,
 } from "@/domain/monitors/monitor.type.js";
@@ -20,6 +21,11 @@ import { keyMatchesCertificate, parseCertificates, parsePrivateKey } from "@/uti
 import { monitorResponseSchema } from "@/domain/monitors/monitor.schema.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
+
+const intervalValidation = z
+	.number()
+	.positive("Interval must be a positive number")
+	.transform((val) => normalizeIntervalMs(val));
 
 // The client form submits proxyId: "" when no proxy is selected, set it to undefined
 const proxyIdValidation = z
@@ -198,7 +204,7 @@ export const createMonitorBodyValidation = z
 		useAdvancedMatching: z.boolean().default(false),
 		port: z.number().optional(),
 		isActive: z.boolean().optional(),
-		interval: z.number().optional(),
+		interval: intervalValidation.optional(),
 		cpuAlertThreshold: z.number().optional(),
 		memoryAlertThreshold: z.number().optional(),
 		diskAlertThreshold: z.number().optional(),
@@ -245,7 +251,7 @@ export const editMonitorBodyValidation = z
 		statusWindowSize: z.number().min(1).max(20).default(5),
 		statusWindowThreshold: z.number().min(1).max(100).default(60),
 		description: z.union([z.string(), z.literal("")]).optional(),
-		interval: z.number().optional(),
+		interval: intervalValidation.optional(),
 		notifications: z.array(z.string()).optional(),
 		tags: z.array(z.string()).optional(),
 		customUpCodes: z.array(httpStatusCode).optional(),
@@ -331,7 +337,7 @@ const importedMonitorSchema = z
 		url: z.string().min(1, "URL is required"),
 		port: z.number().optional(),
 		isActive: z.boolean().default(true),
-		interval: z.number().default(60000),
+		interval: intervalValidation.default(60000),
 		uptimePercentage: z.number().optional(),
 		notifications: z.array(z.string()).default([]),
 		tags: z.array(z.string()).default([]),
