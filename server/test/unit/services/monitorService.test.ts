@@ -1306,20 +1306,16 @@ describe("MonitorService", () => {
 			expect(result.failedCount).toBe(2);
 			expect(logger.error).toHaveBeenCalledTimes(2);
 			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("Failed to sync job queue for monitor m1"),
-					method: "bulkPauseMonitors",
-				})
+				{ err: new Error("Queue failure 1"), monitorId: "m1", action: "pause" },
+				"Failed to sync job queue for monitor during bulk pause/resume"
 			);
 			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("Failed to sync job queue for monitor m3"),
-					method: "bulkPauseMonitors",
-				})
+				{ err: new Error("Queue failure 2"), monitorId: "m3", action: "pause" },
+				"Failed to sync job queue for monitor during bulk pause/resume"
 			);
 		});
 
-		it("logs a resume failure with undefined stack when rejection is not an Error instance", async () => {
+		it("logs a resume failure when the rejection is not an Error instance", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			const monitors = [makeMonitor({ id: "m1", isActive: true })];
 			(monitorsRepository.bulkTogglePause as jest.Mock).mockResolvedValue(monitors);
@@ -1338,12 +1334,11 @@ describe("MonitorService", () => {
 
 			expect(result.failedCount).toBe(1);
 			expect(logger.error).toHaveBeenCalledTimes(1);
-			expect(logger.error).toHaveBeenCalledWith({
-				message: "Failed to sync job queue for monitor m1 during bulk resume",
-				service: "MonitorService",
-				method: "bulkPauseMonitors",
-				stack: undefined,
-			});
+			expect(logger.error).toHaveBeenCalledWith(
+				{ err: "queue blew up", monitorId: "m1", action: "resume" },
+				"Failed to sync job queue for monitor during bulk pause/resume"
+			);
+			expect(logger.child).toHaveBeenCalledWith({ service: "MonitorService" });
 		});
 
 		it("logs 'unknown' when the failing monitor has no id", async () => {
@@ -1364,9 +1359,8 @@ describe("MonitorService", () => {
 
 			expect(result.failedCount).toBe(1);
 			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "Failed to sync job queue for monitor unknown during bulk pause",
-				})
+				expect.objectContaining({ monitorId: "unknown", action: "pause" }),
+				"Failed to sync job queue for monitor during bulk pause/resume"
 			);
 		});
 
@@ -1386,9 +1380,8 @@ describe("MonitorService", () => {
 
 			expect(result.failedCount).toBe(1);
 			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "Failed to sync job queue for monitor unknown during bulk pause",
-				})
+				expect.objectContaining({ monitorId: "unknown", action: "pause" }),
+				"Failed to sync job queue for monitor during bulk pause/resume"
 			);
 		});
 	});
@@ -1460,14 +1453,12 @@ describe("MonitorService", () => {
 			await service.deleteMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID });
 
 			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("Error deleting monitor stats"),
-					stack: expect.any(String),
-				})
+				expect.objectContaining({ err: new Error("stats error"), monitorId: "monitor-1" }),
+				"Error deleting monitor stats for monitor"
 			);
 		});
 
-		it("logs warning with undefined stack when monitorStats deletion fails with non-Error", async () => {
+		it("logs warning when monitorStats deletion fails with non-Error", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			const checksRepository = createChecksRepositoryMock();
 			const monitorStatsRepository = createMonitorStatsRepositoryMock();
@@ -1497,10 +1488,8 @@ describe("MonitorService", () => {
 			await service.deleteMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID });
 
 			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("Error deleting monitor stats"),
-					stack: undefined,
-				})
+				expect.objectContaining({ err: "string error", monitorId: "monitor-1" }),
+				"Error deleting monitor stats for monitor"
 			);
 		});
 
@@ -1534,10 +1523,8 @@ describe("MonitorService", () => {
 			await service.deleteMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID });
 
 			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("Error deleting checks"),
-					stack: expect.any(String),
-				})
+				expect.objectContaining({ err: new Error("checks error"), monitorId: "monitor-1" }),
+				"Error deleting checks for monitor"
 			);
 		});
 
@@ -1570,12 +1557,7 @@ describe("MonitorService", () => {
 
 			await service.deleteMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID });
 
-			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("Error deleting checks"),
-					stack: undefined,
-				})
-			);
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ err: 42, monitorId: "monitor-1" }), "Error deleting checks for monitor");
 		});
 
 		it("logs warning when status pages removal fails with Error", async () => {
@@ -1608,10 +1590,8 @@ describe("MonitorService", () => {
 			await service.deleteMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID });
 
 			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("Error removing monitor"),
-					stack: expect.any(String),
-				})
+				expect.objectContaining({ err: new Error("status pages error"), monitorId: "monitor-1" }),
+				"Error removing monitor from status pages"
 			);
 		});
 
@@ -1645,10 +1625,8 @@ describe("MonitorService", () => {
 			await service.deleteMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID });
 
 			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("Error removing monitor"),
-					stack: undefined,
-				})
+				expect.objectContaining({ err: "oops", monitorId: "monitor-1" }),
+				"Error removing monitor from status pages"
 			);
 		});
 
@@ -1682,10 +1660,8 @@ describe("MonitorService", () => {
 			await service.deleteMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID });
 
 			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("Error deleting incidents"),
-					stack: expect.any(String),
-				})
+				expect.objectContaining({ err: new Error("incidents error"), monitorId: "monitor-1" }),
+				"Error deleting incidents for monitor"
 			);
 		});
 
@@ -1719,10 +1695,8 @@ describe("MonitorService", () => {
 			await service.deleteMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID });
 
 			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("Error deleting incidents"),
-					stack: undefined,
-				})
+				expect.objectContaining({ err: null, monitorId: "monitor-1" }),
+				"Error deleting incidents for monitor"
 			);
 		});
 
@@ -1756,10 +1730,8 @@ describe("MonitorService", () => {
 			await service.deleteMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID });
 
 			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("Error deleting geo checks"),
-					stack: expect.any(String),
-				})
+				expect.objectContaining({ err: new Error("geo error"), monitorId: "monitor-1" }),
+				"Error deleting geo checks for monitor"
 			);
 		});
 
@@ -1793,10 +1765,8 @@ describe("MonitorService", () => {
 			await service.deleteMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID });
 
 			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("Error deleting geo checks"),
-					stack: undefined,
-				})
+				expect.objectContaining({ err: { code: 500 }, monitorId: "monitor-1" }),
+				"Error deleting geo checks for monitor"
 			);
 		});
 	});
@@ -1870,10 +1840,8 @@ describe("MonitorService", () => {
 
 			expect(result).toBe(1);
 			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("Error deleting checks"),
-					stack: expect.any(String),
-				})
+				expect.objectContaining({ err: new Error("fail"), monitorId: "m1" }),
+				"Error deleting checks for monitor"
 			);
 			expect(jobQueue.deleteJob).toHaveBeenCalledTimes(1);
 		});
@@ -1916,10 +1884,8 @@ describe("MonitorService", () => {
 
 			expect(result).toBe(1);
 			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("Error deleting associated records"),
-					stack: undefined,
-				})
+				expect.objectContaining({ err: "string error", monitorId: "m1" }),
+				"Error deleting associated records for monitor"
 			);
 		});
 

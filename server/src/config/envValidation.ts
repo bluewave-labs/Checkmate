@@ -77,47 +77,31 @@ const envSchema = z.object({
 export type ValidatedEnv = z.infer<typeof envSchema>;
 
 export const validateEnv = (logger: ILogger): ValidatedEnv => {
+	const log = logger.child({ service: "Server" });
 	const result = envSchema.safeParse(process.env);
 
 	if (!result.success) {
-		logger.error({
-			message: "Env validation failed",
-			method: "validateEnv",
-			service: "Server",
-		});
+		log.error("Env validation failed");
 
 		const errors = result.error.format();
 		for (const [key, value] of Object.entries(errors)) {
 			if (key !== "_errors" && value && typeof value === "object" && "_errors" in value) {
-				logger.error({
-					message: `${key}: ${value._errors.join(", ")}`,
-					method: "validateEnv",
-					service: "Server",
-				});
+				log.error({ variable: key, errors: value._errors }, "Invalid environment variable");
 			}
 		}
 
-		logger.error({
-			message: "Please check your .env file and ensure all required variables are set.",
-			method: "validateEnv",
-			service: "Server",
-		});
+		log.error("Please check your .env file and ensure all required variables are set.");
 		process.exit(1);
 	}
 
 	const legacyClientVars = Object.keys(process.env).filter((key) => key.startsWith("UPTIME_APP_"));
 	if (legacyClientVars.length > 0) {
-		logger.warn({
-			message: `${legacyClientVars.join(", ")} no longer configure the client and will be ignored. The client defaults to the origin it is served from; to override, use CLIENT_CONFIG_API_BASE_URL, CLIENT_CONFIG_CLIENT_HOST, or CLIENT_CONFIG_LOG_LEVEL.`,
-			method: "validateEnv",
-			service: "Server",
-		});
+		log.warn(
+			{ variables: legacyClientVars },
+			"Legacy client variables no longer configure the client and will be ignored. The client defaults to the origin it is served from; to override, use CLIENT_CONFIG_API_BASE_URL, CLIENT_CONFIG_CLIENT_HOST, or CLIENT_CONFIG_LOG_LEVEL."
+		);
 	}
 
-	logger.info({
-		message: "Environment variables validated successfully",
-		method: "validateEnv",
-		service: "Server",
-	});
+	log.info("Environment variables validated successfully");
 	return result.data;
 };

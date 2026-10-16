@@ -196,7 +196,7 @@ describe("UserService", () => {
 			const result = await service.registerUser({ password: "pass" }, "invite-token", null);
 
 			expect(result.user).toBeDefined();
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ method: "registerUser" }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: new Error("Failed to build welcome email HTML") }, "Failed to send welcome email");
 		});
 
 		// The welcome email is fire-and-forget, but its .catch() only runs if sendEmail
@@ -212,7 +212,7 @@ describe("UserService", () => {
 			const result = await service.registerUser({ password: "pass" }, "invite-token", null);
 
 			expect(result.user).toBeDefined();
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ method: "registerUser", message: "SMTP auth failed" }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: new Error("SMTP auth failed") }, "Failed to send welcome email");
 		});
 
 		it("uses default role when invite has no role", async () => {
@@ -248,10 +248,10 @@ describe("UserService", () => {
 			await service.registerUser({ password: "pass" }, "invite-token", null);
 			await new Promise((r) => setTimeout(r, 10));
 
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "SMTP down" }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: new Error("SMTP down") }, "Failed to send welcome email");
 		});
 
-		it("logs 'Unknown error' when sendEmail rejects with non-Error", async () => {
+		it("logs a non-Error rejection from sendEmail under err", async () => {
 			const { service, logger } = createService({
 				emailService: {
 					buildEmail: jest.fn().mockResolvedValue("<html>ok</html>"),
@@ -262,10 +262,10 @@ describe("UserService", () => {
 			await service.registerUser({ password: "pass" }, "invite-token", null);
 			await new Promise((r) => setTimeout(r, 10));
 
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error" }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: "string error" }, "Failed to send welcome email");
 		});
 
-		it("logs 'Unknown error' when buildEmail throws non-Error", async () => {
+		it("logs a non-Error thrown by buildEmail under err", async () => {
 			const { service, logger } = createService({
 				emailService: {
 					buildEmail: jest.fn().mockRejectedValue(42),
@@ -276,7 +276,7 @@ describe("UserService", () => {
 			const result = await service.registerUser({ password: "pass" }, "invite-token", null);
 
 			expect(result.user).toBeDefined();
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error" }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: 42 }, "Failed to send welcome email");
 		});
 	});
 
@@ -545,7 +545,7 @@ describe("UserService", () => {
 			await service.deleteUserById({ actorId: "admin-1", actorTeamId: "team-1", actorRoles: ["superadmin"], targetUserId: "user-1" });
 
 			expect(usersRepository.deleteById).toHaveBeenCalledWith("user-1");
-			expect(logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: "User user-1 deleted by admin-1" }));
+			expect(logger.info).toHaveBeenCalledWith({ userId: "user-1", actorId: "admin-1" }, "User deleted");
 		});
 
 		it("throws when actor tries to delete themselves", async () => {

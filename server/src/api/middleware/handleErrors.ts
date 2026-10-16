@@ -5,6 +5,8 @@ import { AppError } from "@/utils/AppError.js";
 import { ZodError } from "zod";
 import type { ErrorBody } from "@/api/routes/openapiHelpers.js";
 
+const SERVICE_NAME = "ErrorHandler";
+
 type ErrorReport = {
 	status: number;
 	message: string;
@@ -43,14 +45,27 @@ const describeRequest = (req: Request): string | undefined => {
 	return `${req.method} ${req.originalUrl.split("?")[0]}`;
 };
 
-const handleErrors = (logger: ILogger) => (error: unknown, req: Request, res: Response, _next: NextFunction) => {
-	const report = describeError(error);
-	const level = report.status < 500 ? "warn" : "error";
-	const request = describeRequest(req);
-	const details = request ? { request, ...report.details } : report.details;
-	logger[level]({ ...report, details, stack: error instanceof Error ? error.stack : undefined });
-	const body: ErrorBody = { status: report.status, msg: report.message };
-	res.status(body.status).json(body);
+const handleErrors = (logger: ILogger) => {
+	const log = logger.child({ service: SERVICE_NAME });
+	return (error: unknown, req: Request, res: Response, _next: NextFunction) => {
+		const report = describeError(error);
+		const level = report.status < 500 ? "warn" : "error";
+		// AppError's service and method are renamed: `service` is this line's own binding
+		log[level](
+			{
+				err: error,
+				status: report.status,
+				reason: report.message,
+				errorService: report.service,
+				errorMethod: report.method,
+				request: describeRequest(req),
+				details: report.details,
+			},
+			"Request failed"
+		);
+		const body: ErrorBody = { status: report.status, msg: report.message };
+		res.status(body.status).json(body);
+	};
 };
 
 export { handleErrors };

@@ -70,7 +70,7 @@ describe("GeoChecksService", () => {
 			const result = await service.buildGeoCheck(makeMonitor({ url: "" }));
 
 			expect(result).toBeNull();
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Monitor missing URL for geo check" }));
+			expect(logger.warn).toHaveBeenCalledWith({ monitorId: "mon-1" }, "Monitor missing URL for geo check");
 		});
 
 		it("returns null and warns when geoCheckLocations is empty", async () => {
@@ -79,7 +79,7 @@ describe("GeoChecksService", () => {
 			const result = await service.buildGeoCheck(makeMonitor({ geoCheckLocations: [] }));
 
 			expect(result).toBeNull();
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Monitor missing geo check locations" }));
+			expect(logger.warn).toHaveBeenCalledWith({ monitorId: "mon-1" }, "Monitor missing geo check locations");
 		});
 
 		it("returns null and warns when geoCheckLocations is undefined", async () => {
@@ -88,7 +88,7 @@ describe("GeoChecksService", () => {
 			const result = await service.buildGeoCheck(makeMonitor({ geoCheckLocations: undefined as any }));
 
 			expect(result).toBeNull();
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Monitor missing geo check locations" }));
+			expect(logger.warn).toHaveBeenCalledWith({ monitorId: "mon-1" }, "Monitor missing geo check locations");
 		});
 
 		it("returns null when createMeasurement returns null (API unavailable)", async () => {
@@ -102,7 +102,7 @@ describe("GeoChecksService", () => {
 			const result = await service.buildGeoCheck(makeMonitor());
 
 			expect(result).toBeNull();
-			expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: "Skipping geo check due to API unavailability" }));
+			expect(logger.debug).toHaveBeenCalledWith("Skipping geo check due to API unavailability");
 		});
 
 		it("returns null when pollForResults returns empty array", async () => {
@@ -116,7 +116,7 @@ describe("GeoChecksService", () => {
 			const result = await service.buildGeoCheck(makeMonitor());
 
 			expect(result).toBeNull();
-			expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: "No successful geo check results" }));
+			expect(logger.debug).toHaveBeenCalledWith("No successful geo check results");
 		});
 
 		it("returns null and logs error when an exception is thrown", async () => {
@@ -130,15 +130,10 @@ describe("GeoChecksService", () => {
 			const result = await service.buildGeoCheck(makeMonitor());
 
 			expect(result).toBeNull();
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "Error executing geo check",
-					details: expect.objectContaining({ error: "API error" }),
-				})
-			);
+			expect(logger.error).toHaveBeenCalledWith({ err: new Error("API error"), monitorId: "mon-1" }, "Error executing geo check");
 		});
 
-		it("logs 'Unknown error' for non-Error exceptions", async () => {
+		it("logs non-Error exceptions under err", async () => {
 			const { service, logger } = createService({
 				globalPingService: {
 					createMeasurement: jest.fn().mockRejectedValue("string error"),
@@ -149,7 +144,7 @@ describe("GeoChecksService", () => {
 			const result = await service.buildGeoCheck(makeMonitor());
 
 			expect(result).toBeNull();
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ details: expect.objectContaining({ error: "Unknown error" }) }));
+			expect(logger.error).toHaveBeenCalledWith({ err: "string error", monitorId: "mon-1" }, "Error executing geo check");
 		});
 	});
 

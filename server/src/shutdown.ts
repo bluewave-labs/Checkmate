@@ -13,7 +13,7 @@ type ShutdownTargets = {
 };
 export const initShutdownListener = (server: Server | null, shutdownTargets: ShutdownTargets) => {
 	const SERVICE_NAME = "Server";
-	const logger = shutdownTargets.logger;
+	const log = shutdownTargets.logger.child({ service: SERVICE_NAME });
 
 	let isShuttingDown = false;
 
@@ -22,7 +22,7 @@ export const initShutdownListener = (server: Server | null, shutdownTargets: Shu
 			return;
 		}
 		isShuttingDown = true;
-		logger.info({ message: "Attempting graceful shutdown" });
+		log.info("Attempting graceful shutdown");
 
 		try {
 			server?.close();
@@ -30,16 +30,10 @@ export const initShutdownListener = (server: Server | null, shutdownTargets: Shu
 			await shutdownTargets.worker.shutdown();
 			await shutdownTargets.healthServer?.close();
 			await shutdownTargets.db.disconnect();
-			logger.info({ message: "Graceful shutdown complete" });
+			log.info("Graceful shutdown complete");
 			process.exit(exitCode);
 		} catch (error) {
-			const err = error as Error;
-			logger.error({
-				message: err.message,
-				service: SERVICE_NAME,
-				method: "shutdown",
-				stack: err.stack,
-			});
+			log.error({ err: error }, "Graceful shutdown failed");
 			process.exit(1);
 		}
 	};
@@ -48,12 +42,11 @@ export const initShutdownListener = (server: Server | null, shutdownTargets: Shu
 	process.on("SIGTERM", () => shutdown(0));
 
 	process.on("unhandledRejection", (reason: unknown) => {
-		const err = reason instanceof Error ? reason : new Error(String(reason));
-		logger.error({ message: `Unhandled promise rejection: ${err.message}`, service: SERVICE_NAME, method: "unhandledRejection", stack: err.stack });
+		log.error({ err: reason }, "Unhandled promise rejection");
 		shutdown(1);
 	});
 	process.on("uncaughtException", (error: Error) => {
-		logger.error({ message: `Uncaught exception: ${error.message}`, service: SERVICE_NAME, method: "uncaughtException", stack: error.stack });
+		log.error({ err: error }, "Uncaught exception");
 		shutdown(1);
 	});
 };
