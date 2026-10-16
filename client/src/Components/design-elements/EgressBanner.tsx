@@ -3,11 +3,9 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 import { TriangleAlert } from "lucide-react";
-import type { RootState } from "@/Types/state";
 import type { EgressState } from "@/Types/Egress";
-import { formatDateWithTz } from "@/Utils/TimeUtils";
+import { useFormatDate } from "@/Hooks/useFormatDate";
 import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface EgressBannerProps {
@@ -17,13 +15,13 @@ interface EgressBannerProps {
 export const EgressBanner = ({ state }: EgressBannerProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const uiTimezone = useSelector((s: RootState) => s.ui.timezone);
+	const formatDate = useFormatDate();
 
 	if (state?.status !== "degraded") return null;
 
 	const message = state.degradedSince
 		? t("components.egressBanner.degraded", {
-				time: formatDateWithTz(state.degradedSince, "ddd, MMM D, HH:mm", uiTimezone),
+				time: formatDate(state.degradedSince, "dateTime"),
 			})
 		: t("components.egressBanner.degradedNoTime");
 

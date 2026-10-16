@@ -1188,11 +1188,17 @@
 			},
 			"form": {
 				"timezone": {
-					"title": "Görüntüleme saat dilimi",
-					"description": "Uygulama genelinde tarih ve saatleri görüntülemek için kullanılacak saat dilimini seçin.",
+					"title": "Tarih ve saat",
+					"description": "Uygulama genelinde tarih ve saatleri göstermek için kullanılan saat dilimini ve saat biçimini seçin.",
 					"option": {
 						"timezone": {
-							"label": "Görüntüleme saat dilimi"
+							"label": "Görüntüleme saat dilimi",
+							"browserDefault": "Tarayıcı varsayılanı ({{timezone}})"
+						},
+						"timeFormat": {
+							"label": "Saat biçimi",
+							"24h": "24 saat",
+							"12h": "12 saat"
 						}
 					}
 				},

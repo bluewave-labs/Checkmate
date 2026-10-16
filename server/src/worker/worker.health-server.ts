@@ -1,6 +1,6 @@
 import http from "http";
 import { IQueueWorker, WorkerHealth } from "@/worker/worker.interface.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 
 const SERVICE_NAME = "HealthServer";
 const DEFAULT_HEALTH_PORT = 52346;
@@ -34,11 +34,14 @@ const isReady = (health: WorkerHealth): boolean => {
 export class HealthServer implements IHealthServer {
 	private server: http.Server;
 
+	private logger: ILogger;
+
 	constructor(
-		private logger: ILogger,
+		logger: ILogger,
 		private port: string,
 		private worker: IQueueWorker
 	) {
+		this.logger = logger.child({ service: SERVICE_NAME });
 		this.server = http.createServer(this.handle);
 	}
 
@@ -63,11 +66,7 @@ export class HealthServer implements IHealthServer {
 				res.writeHead(200, { "Content-Type": CONTENT_TYPE_METRICS });
 				res.end(body);
 			} catch (error: unknown) {
-				this.logger.warn({
-					message: error instanceof Error ? error.message : String(error),
-					service: SERVICE_NAME,
-					method: "metrics",
-				});
+				this.logger.warn({ err: error }, "Failed to build metrics");
 				res.writeHead(500).end();
 			}
 			return;
@@ -93,11 +92,7 @@ export class HealthServer implements IHealthServer {
 
 			const onError = (error: NodeJS.ErrnoException) => {
 				if (error.code === "EADDRINUSE" && port < lastPort) {
-					this.logger.warn({
-						message: `Health port ${port} in use, retrying on ${port + 1}`,
-						service: SERVICE_NAME,
-						method: "listen",
-					});
+					this.logger.warn({ port, nextPort: port + 1 }, "Health port in use, retrying on the next port");
 					port++;
 					this.server.listen(port);
 					return;
@@ -109,11 +104,7 @@ export class HealthServer implements IHealthServer {
 			this.server.on("error", onError);
 			this.server.listen(port, () => {
 				this.server.removeListener("error", onError);
-				this.logger.info({
-					message: `Health server listening on ${port}`,
-					service: SERVICE_NAME,
-					method: "listen",
-				});
+				this.logger.info({ port }, "Health server listening");
 				resolve();
 			});
 		});

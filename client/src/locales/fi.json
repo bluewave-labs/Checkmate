@@ -1188,11 +1188,17 @@
 			},
 			"form": {
 				"timezone": {
-					"title": "Näytettävä aikavyöhyke",
-					"description": "Valitse aikavyöhyke, jota käytetään päivämäärien ja aikojen näyttämiseen sovelluksessa.",
+					"title": "Päivämäärä ja aika",
+					"description": "Valitse aikavyöhyke ja kellon muoto, joita käytetään päivämäärien ja aikojen näyttämiseen koko sovelluksessa.",
 					"option": {
 						"timezone": {
-							"label": "Näytettävä aikavyöhyke"
+							"label": "Näytettävä aikavyöhyke",
+							"browserDefault": "Selaimen oletus ({{timezone}})"
+						},
+						"timeFormat": {
+							"label": "Aikamuoto",
+							"24h": "24 tuntia",
+							"12h": "12 tuntia"
 						}
 					}
 				},

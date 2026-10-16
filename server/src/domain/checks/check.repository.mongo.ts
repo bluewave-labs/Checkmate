@@ -10,8 +10,8 @@ import type {
 	CheckMemoryInfo,
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
+	CheckTimings,
 	DockerContainerStats,
-	GotTimings,
 	HardwareCheckStats,
 } from "@/domain/checks/check.type.js";
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
@@ -20,7 +20,7 @@ import { EXCLUDE_DEGRADED_EGRESS_MATCH } from "@/domain/checks/check.query.js";
 import type { EgressStatus } from "@/domain/egress/egress.type.js";
 import mongoose from "mongoose";
 import { getDateFormat, getDateForRange } from "@/utils/dataUtils.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
 import { getHardwareUpChecks, getHardwareStats, getHardwareTotalChecks } from "@/domain/checks/check.hardware.aggregations.js";
@@ -48,7 +48,7 @@ class MongoChecksRepository implements IChecksRepository {
 	}
 
 	private toEntity = (doc: CheckDocument): Check => {
-		const mapTimings = (timings?: GotTimings): GotTimings => {
+		const mapTimings = (timings?: CheckTimings): CheckTimings => {
 			const phases = timings?.phases ?? {
 				wait: 0,
 				dns: 0,

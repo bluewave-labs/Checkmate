@@ -2,7 +2,7 @@ import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.int
 import { DOCKER_LOG_RETENTION_DAYS, DockerLog } from "@/domain/docker/docker-log.type.js";
 import { DOCKER_LOG_TAIL_LINES, DockerLogLine } from "@/domain/docker/docker.type.js";
 import { DockerStatusPayload, MonitorStatusResponse } from "@/types/network.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import mongoose from "mongoose";
 
 const SERVICE_NAME = "DockerLogsService";

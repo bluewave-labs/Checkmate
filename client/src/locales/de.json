@@ -1189,11 +1189,17 @@
 			},
 			"form": {
 				"timezone": {
-					"title": "Anzeigesprache Zeitzone",
-					"description": "Wählen Sie die Zeitzone, die für die Anzeige von Datum und Uhrzeit in der Anwendung verwendet wird.",
+					"title": "Datum und Uhrzeit",
+					"description": "Wählen Sie die Zeitzone und das Uhrzeitformat, die in der gesamten Anwendung für Datums- und Zeitangaben verwendet werden.",
 					"option": {
 						"timezone": {
-							"label": "Anzeige-Zeitzone"
+							"label": "Anzeige-Zeitzone",
+							"browserDefault": "Browserstandard ({{timezone}})"
+						},
+						"timeFormat": {
+							"label": "Zeitformat",
+							"24h": "24-Stunden",
+							"12h": "12-Stunden"
 						}
 					}
 				},

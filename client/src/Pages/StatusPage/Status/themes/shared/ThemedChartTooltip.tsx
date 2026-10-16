@@ -1,14 +1,18 @@
 import type { CheckSnapshot, DailyCheckBucket } from "@/Types/Check";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { formatDateWithTz, formatMs } from "@/Utils/TimeUtils";
-import { formatPercentage } from "@/Utils/FormatUtils";
-import { useStatusPageTheme } from "@/Pages/StatusPage/Status/themes/StatusPageThemeProvider";
+import { formatDate, formatMs } from "@/Utils/TimeUtils";
+import { formatNumber, formatPercentage } from "@/Utils/FormatUtils";
 import { useTranslation } from "react-i18next";
 
-export const ThemedChartTooltip = ({ check }: { check: CheckSnapshot }) => {
-	const { t } = useTranslation();
-	const { timezone } = useStatusPageTheme();
+export const ThemedChartTooltip = ({
+	check,
+	timezone,
+}: {
+	check: CheckSnapshot;
+	timezone: string;
+}) => {
+	const { t, i18n } = useTranslation();
 	return (
 		<Stack gap={0.25}>
 			<Typography
@@ -23,14 +27,19 @@ export const ThemedChartTooltip = ({ check }: { check: CheckSnapshot }) => {
 				variant="caption"
 				sx={{ opacity: 0.8 }}
 			>
-				{formatDateWithTz(check.createdAt, "ddd, MMMM D, YYYY, HH:mm A", timezone)}
+				{formatDate(check.createdAt, "dateTime", {
+					timeZone: timezone,
+					locale: i18n.resolvedLanguage ?? "en",
+					timeFormat: "24h",
+				})}
 			</Typography>
 		</Stack>
 	);
 };
 
 export const ThemedDailyTooltip = ({ bucket }: { bucket: DailyCheckBucket }) => {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
+	const locale = i18n.resolvedLanguage ?? "en";
 	return (
 		<Stack gap={0.25}>
 			<Typography
@@ -45,8 +54,8 @@ export const ThemedDailyTooltip = ({ bucket }: { bucket: DailyCheckBucket }) => 
 			>
 				{t("pages.statusPages.monitorsList.chart.dayUptime", {
 					uptime: formatPercentage(bucket.upChecks / bucket.totalChecks),
-					upChecks: bucket.upChecks.toLocaleString(),
-					totalChecks: bucket.totalChecks.toLocaleString(),
+					upChecks: formatNumber(bucket.upChecks, locale),
+					totalChecks: formatNumber(bucket.totalChecks, locale),
 				})}
 			</Typography>
 			{bucket.avgResponseTime !== null && (

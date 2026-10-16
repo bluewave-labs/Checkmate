@@ -9,7 +9,7 @@ import { IMonitorStatsRepository } from "@/domain/monitor-stats/monitor-stats.re
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
 import { IEgressService } from "@/domain/egress/egress.service.js";
 import type { Job } from "@/domain/jobs/job.type.js";
@@ -50,7 +50,7 @@ export class WorkerHelper implements IWorkerHelper {
 		dockerLogsRepository: IDockerLogsRepository,
 		egressService: IEgressService
 	) {
-		this.logger = logger;
+		this.logger = logger.child({ service: SERVICE_NAME });
 		this.checkService = checkService;
 		this.settingsService = settingsService;
 		this.monitorsRepository = monitorsRepository;
@@ -75,108 +75,59 @@ export class WorkerHelper implements IWorkerHelper {
 	getCleanupOrphanedJob = () => {
 		return async () => {
 			try {
-				this.logger.info({
-					message: "Starting cleanup of orphaned data",
-					service: SERVICE_NAME,
-					method: "getCleanupOrphanedJob",
-				});
+				this.logger.info("Starting cleanup of orphaned data");
 
 				// Get all valid team IDs
 				const validTeamIds = await this.teamsRepository.findAllTeamIds();
-				this.logger.debug({
-					message: `Found ${validTeamIds.length} valid teams`,
-					service: SERVICE_NAME,
-					method: "getCleanupOrphanedJob",
-				});
+				this.logger.debug({ count: validTeamIds.length }, "Found valid teams");
 
 				// Remove orphaned monitors (monitors without a valid team)
 				const deletedMonitorCount = await this.monitorsRepository.deleteByTeamIdsNotIn(validTeamIds);
 				if (deletedMonitorCount > 0) {
-					this.logger.info({
-						message: `Deleted ${deletedMonitorCount} orphaned monitors`,
-						service: SERVICE_NAME,
-						method: "getCleanupOrphanedJob",
-					});
+					this.logger.info({ count: deletedMonitorCount }, "Deleted orphaned monitors");
 				}
 
 				// Remove orphaned monitorStats (stats without a valid monitor)
 				const allMonitorIds = await this.monitorsRepository.findAllMonitorIds();
-				this.logger.debug({
-					message: `Found ${allMonitorIds.length} valid monitors`,
-					service: SERVICE_NAME,
-					method: "getCleanupOrphanedJob",
-				});
+				this.logger.debug({ count: allMonitorIds.length }, "Found valid monitors");
 
 				const deletedStatsCount = await this.monitorStatsRepository.deleteByMonitorIdsNotIn(allMonitorIds);
 				if (deletedStatsCount > 0) {
-					this.logger.info({
-						message: `Deleted ${deletedStatsCount} orphaned monitor stats`,
-						service: SERVICE_NAME,
-						method: "getCleanupOrphanedJob",
-					});
+					this.logger.info({ count: deletedStatsCount }, "Deleted orphaned monitor stats");
 				}
 
 				// Remove orphaned checks
 				const deletedChecksCount = await this.checksRepository.deleteByMonitorIdsNotIn(allMonitorIds);
 				if (deletedChecksCount > 0) {
-					this.logger.info({
-						message: `Deleted ${deletedChecksCount} orphaned checks`,
-						service: SERVICE_NAME,
-						method: "getCleanupOrphanedJob",
-					});
+					this.logger.info({ count: deletedChecksCount }, "Deleted orphaned checks");
 				}
 
 				// Remove orphaned incidents
 				const deletedIncidentsCount = await this.incidentsRepository.deleteByMonitorIdsNotIn(allMonitorIds);
 				if (deletedIncidentsCount > 0) {
-					this.logger.info({
-						message: `Deleted ${deletedIncidentsCount} orphaned incidents`,
-						service: SERVICE_NAME,
-						method: "getCleanupOrphanedJob",
-					});
+					this.logger.info({ count: deletedIncidentsCount }, "Deleted orphaned incidents");
 				}
 
 				// Remove orphaned geo checks
 				const deletedGeoChecksCount = await this.geoChecksRepository.deleteByMonitorIdsNotIn(allMonitorIds);
 				if (deletedGeoChecksCount > 0) {
-					this.logger.info({
-						message: `Deleted ${deletedGeoChecksCount} orphaned geo checks`,
-						service: SERVICE_NAME,
-						method: "getCleanupOrphanedJob",
-					});
+					this.logger.info({ count: deletedGeoChecksCount }, "Deleted orphaned geo checks");
 				}
 
 				const deletedDockerLogsCount = await this.dockerLogsRepository.deleteByMonitorIdsNotIn(allMonitorIds);
 				if (deletedDockerLogsCount > 0) {
-					this.logger.info({
-						message: `Deleted ${deletedDockerLogsCount} orphaned docker logs`,
-						service: SERVICE_NAME,
-						method: "getCleanupOrphanedJob",
-					});
+					this.logger.info({ count: deletedDockerLogsCount }, "Deleted orphaned docker logs");
 				}
 
 				// Remove orphaned jobs
 				const deletedJobsCount = await this.jobsRepository.deleteByMonitorIdsNotIn(allMonitorIds);
 				if (deletedJobsCount > 0) {
-					this.logger.info({
-						message: `Deleted ${deletedJobsCount} orphaned jobs`,
-						service: SERVICE_NAME,
-						method: "getCleanupOrphanedJob",
-					});
+					this.logger.info({ count: deletedJobsCount }, "Deleted orphaned jobs");
 				}
 
-				this.logger.info({
-					message: "Cleanup of orphaned data completed",
-					service: SERVICE_NAME,
-					method: "getCleanupOrphanedJob",
-				});
+				this.logger.info("Cleanup of orphaned data completed");
 			} catch (error: unknown) {
-				this.logger.warn({
-					message: error instanceof Error ? error.message : "Unknown error",
-					service: SERVICE_NAME,
-					method: "getCleanupOrphanedJob",
-					stack: error instanceof Error ? error.stack : undefined,
-				});
+				this.logger.warn({ err: error }, "Cleanup of orphaned data failed");
 				throw error;
 			}
 		};
@@ -190,28 +141,15 @@ export class WorkerHelper implements IWorkerHelper {
 				const checkTTL = settings.checkTTL; // Check TTL is in DAYS, not MS
 
 				if (checkTTL === CHECK_TTL_SENTINEL) {
-					this.logger.info({
-						message: `Check TTL is set to unlimited, skipping cleanup`,
-						service: SERVICE_NAME,
-						method: "getCleanupRetentionJob",
-					});
+					this.logger.info("Check TTL is set to unlimited, skipping cleanup");
 					return;
 				}
 				const checkTTLInMs = checkTTL * 24 * 60 * 60 * 1000;
 				const cutoffDate = new Date(Date.now() - checkTTLInMs);
 				const deleteCount = await this.checkService.deleteOlderThan(cutoffDate);
-				this.logger.info({
-					message: `Deleted ${deleteCount} checks older than ${cutoffDate.toISOString()}`,
-					service: SERVICE_NAME,
-					method: "getCleanupRetentionJob",
-				});
+				this.logger.info({ count: deleteCount, cutoff: cutoffDate.toISOString() }, "Deleted checks older than the retention cutoff");
 			} catch (error: unknown) {
-				this.logger.error({
-					message: error instanceof Error ? error.message : "Unknown error",
-					service: SERVICE_NAME,
-					method: "getCleanupRetentionJob",
-					stack: error instanceof Error ? error.stack : undefined,
-				});
+				this.logger.error({ err: error }, "Retention cleanup failed");
 			}
 		};
 	};

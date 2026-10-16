@@ -4,9 +4,11 @@ import { NotificationProvider } from "@/domain/notifications/providers/INotifica
 import { AppError } from "@/utils/AppError.js";
 import { buildTestEmail } from "@/domain/notifications/providers/utils.js";
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 import { IEmailService } from "@/service/emailService.js";
 export class EmailProvider extends NotificationProvider {
+	protected readonly serviceName = SERVICE_NAME;
+
 	private emailService: IEmailService;
 
 	constructor(emailService: IEmailService, logger: ILogger) {
@@ -19,20 +21,12 @@ export class EmailProvider extends NotificationProvider {
 		const html = await buildTestEmail(this.emailService);
 
 		if (!notification.address) {
-			this.logger.warn({
-				message: "Missing address",
-				service: SERVICE_NAME,
-				method: "sendTestAlert",
-			});
+			this.logger.warn("Missing address");
 			return false;
 		}
 
 		if (!html) {
-			this.logger.warn({
-				message: "Failed to build test email content",
-				service: SERVICE_NAME,
-				method: "sendTestAlert",
-			});
+			this.logger.warn("Failed to build test email content");
 			return false;
 		}
 
@@ -40,13 +34,7 @@ export class EmailProvider extends NotificationProvider {
 			await this.emailService.sendEmail(notification.address, subject, html);
 			return true;
 		} catch (error: unknown) {
-			this.logger.warn({
-				message: `Email test alert failed: ${error instanceof Error ? error.message : "Unknown error"}`,
-				service: SERVICE_NAME,
-				method: "sendTestAlert",
-				details: error instanceof AppError ? error.details : undefined,
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.warn({ err: error, details: error instanceof AppError ? error.details : undefined }, "Email test alert failed");
 			if (error instanceof AppError) throw error;
 			return false;
 		}
@@ -61,11 +49,7 @@ export class EmailProvider extends NotificationProvider {
 		const html = await this.buildEmailFromMessage(message);
 
 		if (!html) {
-			this.logger.warn({
-				message: "Failed to build email content",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-			});
+			this.logger.warn("Failed to build email content");
 			return false;
 		}
 
@@ -75,13 +59,7 @@ export class EmailProvider extends NotificationProvider {
 			await this.emailService.sendEmail(notification.address, subject, html);
 			return true;
 		} catch (error: unknown) {
-			this.logger.warn({
-				message: `Email notification failed: ${error instanceof Error ? error.message : "Unknown error"}`,
-				service: SERVICE_NAME,
-				method: "sendMessage",
-				details: error instanceof AppError ? error.details : undefined,
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.warn({ err: error, details: error instanceof AppError ? error.details : undefined }, "Email notification failed");
 			return false;
 		}
 	}
@@ -121,12 +99,7 @@ export class EmailProvider extends NotificationProvider {
 			incidentUrl: message.content.incident?.url,
 		};
 
-		this.logger.info({
-			message: "[DEBUG] Building email from message",
-			service: SERVICE_NAME,
-			method: "buildEmailFromMessage",
-			details: { context },
-		});
+		this.logger.debug({ context }, "Building email from message");
 
 		const html = await this.emailService.buildEmail("unifiedNotificationTemplate", context);
 

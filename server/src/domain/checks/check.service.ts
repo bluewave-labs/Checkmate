@@ -4,7 +4,7 @@ import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interf
 import type { Check, CheckErrorInfo, ChecksQueryResult, ChecksSummary, ILighthouseAudit } from "@/domain/checks/check.type.js";
 import type { DockerStatusPayload, MonitorPayloadMap, MonitorStatusResponse } from "@/types/network.js";
 import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { CheckFilter, DateRange } from "@/types/query.js";
 
 const SERVICE_NAME = "checkService";

@@ -1,6 +1,5 @@
 import type { z } from "zod";
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
-import type { Response } from "got";
 import type {
 	checkAuditsSchema,
 	checkCaptureInfoSchema,
@@ -15,6 +14,7 @@ import type {
 	checkSnapshotSchema,
 	checksPageSchema,
 	checksSummarySchema,
+	checkTimingsSchema,
 	dailyCheckBucketSchema,
 	dockerContainerStatsBucketSchema,
 	dockerContainerStatsSchema,
@@ -31,9 +31,7 @@ import type {
 } from "@/domain/checks/check.schema.js";
 
 export const CHECK_TTL_SENTINEL = 366;
-
-export type GotTimings = Response["timings"];
-
+export type CheckTimings = z.infer<typeof checkTimingsSchema>;
 export type CheckMetadata = z.infer<typeof checkMetadataSchema>;
 export type CheckCpuInfo = z.infer<typeof checkCpuInfoSchema>;
 export type CheckMemoryInfo = z.infer<typeof checkMemoryInfoSchema>;

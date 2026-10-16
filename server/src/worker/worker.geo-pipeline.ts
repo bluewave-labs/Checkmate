@@ -2,7 +2,7 @@ import { Monitor } from "@/domain/monitors/monitor.type.js";
 import { JobHandler, MonitorEvaluation } from "@/worker/worker.interface.js";
 import { IMaintenanceWindowsRepository } from "@/domain/maintenance-windows/maintenance-window.repository.interface.js";
 import { isWindowActive } from "@/utils/maintenanceWindow.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { IBufferService } from "@/service/bufferService.js";
 import { AppError, internalError } from "@/utils/AppError.js";
 import { supportsGeoCheck } from "@/domain/monitors/monitor.type.js";
@@ -18,13 +18,17 @@ export interface IGeoChecksPipeline {
 }
 
 export class GeoChecksPipeline implements IGeoChecksPipeline {
+	private logger: ILogger;
+
 	constructor(
 		private monitorsRepository: IMonitorsRepository,
 		private maintenanceWindowsRepository: IMaintenanceWindowsRepository,
 		private geoChecksService: IGeoChecksService,
 		private bufferService: IBufferService,
-		private logger: ILogger
-	) {}
+		logger: ILogger
+	) {
+		this.logger = logger.child({ service: SERVICE_NAME });
+	}
 
 	private async isInMaintenanceWindow(monitorId: string, teamId: string) {
 		const maintenanceWindows = await this.maintenanceWindowsRepository.findByMonitorId(monitorId, teamId);
@@ -53,31 +57,19 @@ export class GeoChecksPipeline implements IGeoChecksPipeline {
 			return null;
 		}
 		if (!supportsGeoCheck(monitor.type)) {
-			this.logger.debug({
-				message: `Monitor ${monitor.id} type does not support geo checks, skipping`,
-				service: SERVICE_NAME,
-				method: "run",
-			});
+			this.logger.debug({ monitorId: monitor.id }, "Monitor type does not support geo checks, skipping");
 			return null;
 		}
 
 		if (!monitor.geoCheckLocations || monitor.geoCheckLocations.length === 0) {
-			this.logger.warn({
-				message: `No geo check locations configured for monitor ${monitor.id}`,
-				service: SERVICE_NAME,
-				method: "run",
-			});
+			this.logger.warn({ monitorId: monitor.id }, "No geo check locations configured for monitor");
 			return null;
 		}
 
 		// Step 1b: Maintenance window check
 		const maintenanceWindowActive = await this.isInMaintenanceWindow(monitor.id, monitor.teamId);
 		if (maintenanceWindowActive) {
-			this.logger.debug({
-				message: `Monitor ${monitor.id} is in maintenance window, skipping geo check`,
-				service: SERVICE_NAME,
-				method: "run",
-			});
+			this.logger.debug({ monitorId: monitor.id }, "Monitor is in maintenance window, skipping geo check");
 			return null;
 		}
 
@@ -88,22 +80,14 @@ export class GeoChecksPipeline implements IGeoChecksPipeline {
 		// Step 2a: Build geo check, return null if fail
 		const geoCheck = await this.geoChecksService.buildGeoCheck(monitor);
 		if (!geoCheck) {
-			this.logger.warn({
-				message: `No geo check could be built for monitor ${monitor.id}`,
-				service: SERVICE_NAME,
-				method: "run",
-			});
+			this.logger.warn({ monitorId: monitor.id }, "No geo check could be built for monitor");
 			return null;
 		}
 
 		// Step 2b: Add  to buffer
 		this.bufferService.addGeoCheckToBuffer(geoCheck);
 
-		this.logger.debug({
-			message: `Geo check job executed for monitor ${monitor.id}`,
-			service: SERVICE_NAME,
-			method: "run",
-		});
+		this.logger.debug({ monitorId: monitor.id }, "Geo check job executed for monitor");
 		return null;
 	};
 }

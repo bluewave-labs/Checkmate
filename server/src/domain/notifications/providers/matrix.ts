@@ -8,6 +8,8 @@ import { randomUUID } from "crypto";
 import { AppError, internalError } from "@/utils/AppError.js";
 
 export class MatrixProvider extends NotificationProvider {
+	protected readonly serviceName = SERVICE_NAME;
+
 	sendTestAlert = async (notification: Partial<Notification>) => {
 		const { homeserverUrl, accessToken, roomId } = notification;
 		if (!homeserverUrl || !accessToken || !roomId) {
@@ -56,13 +58,7 @@ export class MatrixProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: `Matrix notification failed : ${err.message}`,
-				service: SERVICE_NAME,
-				method: "sendMessage",
-				stack: err.stack,
-			});
+			this.logger.warn({ err: error }, "Matrix notification failed");
 			return false;
 		}
 	};

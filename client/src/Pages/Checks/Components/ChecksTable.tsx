@@ -12,10 +12,8 @@ import { LAYOUT } from "@/Utils/Theme/constants";
 import type { Header } from "@/Components/design-elements/Table";
 import type { Monitor } from "@/Types/Monitor";
 import { useTranslation } from "react-i18next";
-import { formatDateWithTz } from "@/Utils/TimeUtils";
 import type { Check } from "@/Types/Check";
-import type { RootState } from "@/Types/state";
-import { useSelector } from "react-redux";
+import { useFormatDate } from "@/Hooks/useFormatDate";
 
 export const ChecksTable = ({
 	monitors,
@@ -36,7 +34,7 @@ export const ChecksTable = ({
 }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
+	const formatDate = useFormatDate();
 
 	const getHeaders = () => {
 		const headers: Header<Check>[] = [
@@ -70,11 +68,7 @@ export const ChecksTable = ({
 				id: "date",
 				content: t("common.table.headers.dateTime"),
 				render: (row) => {
-					return formatDateWithTz(
-						row.createdAt,
-						"ddd, MMMM D, YYYY, HH:mm A",
-						uiTimezone
-					);
+					return formatDate(row.createdAt, "dateTime");
 				},
 			},
 			{

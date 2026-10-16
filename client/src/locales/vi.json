@@ -1188,11 +1188,17 @@
 			},
 			"form": {
 				"timezone": {
-					"title": "Múi giờ hiển thị",
-					"description": "Chọn múi giờ dùng để hiển thị ngày và giờ trong toàn bộ ứng dụng.",
+					"title": "Ngày và giờ",
+					"description": "Chọn múi giờ và định dạng đồng hồ dùng để hiển thị ngày giờ trong toàn bộ ứng dụng.",
 					"option": {
 						"timezone": {
-							"label": "Múi giờ hiển thị"
+							"label": "Múi giờ hiển thị",
+							"browserDefault": "Mặc định của trình duyệt ({{timezone}})"
+						},
+						"timeFormat": {
+							"label": "Định dạng giờ",
+							"24h": "24 giờ",
+							"12h": "12 giờ"
 						}
 					}
 				},

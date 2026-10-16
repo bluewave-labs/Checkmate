@@ -1188,11 +1188,17 @@
 			},
 			"form": {
 				"timezone": {
-					"title": "Zobrazované časové pásmo",
-					"description": "Vyberte časové pásmo používané pro zobrazení dat a časů v celé aplikaci.",
+					"title": "Datum a čas",
+					"description": "Vyberte časové pásmo a formát hodin používané k zobrazení data a času v celé aplikaci.",
 					"option": {
 						"timezone": {
-							"label": "Zobrazované časové pásmo"
+							"label": "Zobrazované časové pásmo",
+							"browserDefault": "Výchozí nastavení prohlížeče ({{timezone}})"
+						},
+						"timeFormat": {
+							"label": "Formát času",
+							"24h": "24hodinový",
+							"12h": "12hodinový"
 						}
 					}
 				},

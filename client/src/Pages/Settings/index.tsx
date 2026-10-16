@@ -29,6 +29,7 @@ import { useDelete } from "@/Hooks/UseApi";
 
 import {
 	setTimezone,
+	setTimeFormat,
 	setMode,
 	setLanguage,
 	setChartType,
@@ -50,6 +51,7 @@ import type { ProxyResponse } from "@/Types/Proxy";
 import type { Notification } from "@/Types/Notification";
 import type { AppSettingsResponse } from "@/Types/Settings";
 import { useSearchParams } from "react-router-dom";
+import { SYSTEM_TIMEZONE, TIME_FORMATS, type TimeFormat } from "@/Utils/TimeUtils";
 
 const SETTINGS_TABS = [
 	{ key: "general", labelKey: "pages.settings.tabs.general" },
@@ -268,6 +270,7 @@ export const SettingsPage = () => {
 
 	const {
 		timezone: selectedTimezoneId,
+		timeFormat,
 		mode,
 		language = "en",
 		chartType = "histogram",
@@ -275,12 +278,26 @@ export const SettingsPage = () => {
 
 	const user = useSelector((state: RootState) => state.auth.user);
 
+	// An empty id is the browser default; resolveTimezone falls back to SYSTEM_TIMEZONE
+	const timezoneSelectOptions: TimezoneOption[] = [
+		{
+			id: "",
+			name: t("pages.settings.form.timezone.option.timezone.browserDefault", {
+				timezone: SYSTEM_TIMEZONE,
+			}),
+		},
+		...timezoneOptions,
+	];
 	const selectedTimezone =
-		timezoneOptions.find((tz) => tz.id === selectedTimezoneId) ?? null;
+		timezoneSelectOptions.find((tz) => tz.id === selectedTimezoneId) ?? null;
 
 	const handleTimezoneChange = (newValue: TimezoneOption | null) => {
-		if (!newValue?.id) return;
+		if (!newValue) return;
 		dispatch(setTimezone({ timezone: newValue.id }));
+	};
+
+	const handleTimeFormatChange = (e: SelectChangeEvent<TimeFormat>) => {
+		dispatch(setTimeFormat(e.target.value));
 	};
 
 	const handleModeChange = (e: SelectChangeEvent<ThemeMode>) => {
@@ -481,20 +498,38 @@ export const SettingsPage = () => {
 							title={t("pages.settings.form.timezone.title")}
 							subtitle={t("pages.settings.form.timezone.description")}
 							rightContent={
-								<Autocomplete
-									value={selectedTimezone}
-									options={timezoneOptions}
-									getOptionLabel={(option: TimezoneOption) => option.name}
-									isOptionEqualToValue={(option: TimezoneOption, value: TimezoneOption) =>
-										option.id === value.id
-									}
-									onChange={(_, newValue: TimezoneOption | null) => {
-										handleTimezoneChange(newValue);
-									}}
-									fieldLabel={t("pages.settings.form.timezone.option.timezone.label")}
-								/>
+								<Stack gap={theme.spacing(LAYOUT.MD)}>
+									<Autocomplete
+										value={selectedTimezone}
+										options={timezoneSelectOptions}
+										getOptionLabel={(option: TimezoneOption) => option.name}
+										isOptionEqualToValue={(
+											option: TimezoneOption,
+											value: TimezoneOption
+										) => option.id === value.id}
+										onChange={(_, newValue: TimezoneOption | null) => {
+											handleTimezoneChange(newValue);
+										}}
+										fieldLabel={t("pages.settings.form.timezone.option.timezone.label")}
+									/>
+									<Select
+										fieldLabel={t("pages.settings.form.timezone.option.timeFormat.label")}
+										onChange={handleTimeFormatChange}
+										value={timeFormat}
+									>
+										{TIME_FORMATS.map((format) => (
+											<MenuItem
+												key={format}
+												value={format}
+											>
+												{t(`pages.settings.form.timezone.option.timeFormat.${format}`)}
+											</MenuItem>
+										))}
+									</Select>
+								</Stack>
 							}
 						/>
+
 						<ConfigBox
 							title={t("pages.settings.form.ui.title")}
 							subtitle={t("pages.settings.form.ui.description")}

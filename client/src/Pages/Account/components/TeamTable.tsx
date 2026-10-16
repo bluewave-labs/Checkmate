@@ -7,6 +7,7 @@ import type { Header } from "@/Components/design-elements/Table";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import { useClientPagination } from "@/Hooks/useClientPagination";
 import type { User } from "@/Types/User";
+import { useFormatDate } from "@/Hooks/useFormatDate";
 
 interface TeamTableProps {
 	users: User[];
@@ -16,6 +17,7 @@ export const TeamTable = ({ users }: TeamTableProps) => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const isAdmin = useIsAdmin();
+	const formatDate = useFormatDate();
 	const { pagedRows, paginationProps } = useClientPagination(users);
 
 	const headers: Header<User>[] = [
@@ -41,9 +43,7 @@ export const TeamTable = ({ users }: TeamTableProps) => {
 		{
 			id: "created",
 			content: t("pages.account.team.table.headers.created"),
-			render: (row) => (
-				<Typography>{new Date(row.createdAt).toLocaleDateString()}</Typography>
-			),
+			render: (row) => <Typography>{formatDate(row.createdAt, "date")}</Typography>,
 		},
 	];
 

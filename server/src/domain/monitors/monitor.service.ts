@@ -29,7 +29,7 @@ import type { IStatusPagesRepository } from "@/domain/status-pages/status-page-r
 import demoMonitorsData from "@/utils/demoMonitors.json" with { type: "json" };
 import { AppError, internalError } from "@/utils/AppError.js";
 import type { ImportedMonitor } from "@/api/validation/monitorValidation.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
 import { DateRange } from "@/types/query.js";
 import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";

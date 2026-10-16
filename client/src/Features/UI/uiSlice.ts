@@ -4,6 +4,7 @@ import {
 	type DashboardSortOrder,
 } from "@/Types/Dashboard";
 import type { SortOrder } from "@/Types/Query";
+import type { TimeFormat } from "@/Utils/TimeUtils";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 type ThemeMode = "light" | "dark";
@@ -42,6 +43,7 @@ interface UIState {
 	mode: ThemeMode;
 	showURL: boolean;
 	timezone: string;
+	timeFormat: TimeFormat;
 	distributedUptimeEnabled: boolean;
 	language: string;
 	starPromptOpen: boolean;
@@ -85,7 +87,8 @@ const initialState: UIState = {
 	},
 	mode: initialMode,
 	showURL: false,
-	timezone: "America/Toronto",
+	timezone: "",
+	timeFormat: "24h",
 	distributedUptimeEnabled: false,
 	language: "en",
 	starPromptOpen: true,
@@ -129,10 +132,12 @@ const uiSlice = createSlice({
 			state.showURL = action.payload;
 		},
 
+		// An empty timezone means "use the browser timezone" (see resolveTimezone)
 		setTimezone: (state, action: PayloadAction<{ timezone: string }>) => {
-			if (action.payload.timezone) {
-				state.timezone = action.payload.timezone;
-			}
+			state.timezone = action.payload.timezone;
+		},
+		setTimeFormat: (state, action: PayloadAction<TimeFormat>) => {
+			state.timeFormat = action.payload;
 		},
 		setLanguage: (state, action: PayloadAction<string>) => {
 			state.language = action.payload;
@@ -162,6 +167,7 @@ export const {
 	setMode,
 	setShowURL,
 	setTimezone,
+	setTimeFormat,
 	setDistributedUptimeEnabled,
 	setLanguage,
 	setStarPromptOpen,

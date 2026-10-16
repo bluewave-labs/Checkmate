@@ -1,4 +1,4 @@
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { RequestHandler } from "express";
 import { Handler } from "@/api/controllers/controllerUtils.js";
 

@@ -1,6 +1,6 @@
 import { IQueueWorker, JobHandlers } from "@/worker/worker.interface.js";
 import { type Job, type JobType, LOCK_MS } from "@/domain/jobs/job.type.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.repository.interface.js";
@@ -9,6 +9,8 @@ import { QueueMode } from "@/domain/app-settings/app-settings.type.js";
 import { JobScheduler } from "@/worker/worker.job-scheduler.js";
 import { IBufferService } from "@/service/bufferService.js";
 import { POLL_MS } from "@/worker/worker.job-scheduler.js";
+import { withLogContext } from "@/utils/logger/logContext.js";
+
 const SERVICE_NAME = "JobQueue";
 const POLL_MAX_MS = 5000; // back off poll interval to 5s if no jobs
 const LOCK_RENEW_MS = LOCK_MS / 3; // renew an in-flight job's lock at 1/3 the lease, so it survives two missed renewals
@@ -65,6 +67,8 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 			dependencies.logger,
 			dependencies.workerId
 		);
+		// From the root logger, not the base class's child, so `service` isn't written twice
+		this.logger = dependencies.logger.child({ service: SERVICE_NAME });
 		this.processesJobs = dependencies.queuePrimaryProcesses === true || dependencies.queueMode === "worker";
 		this.handlers = dependencies.handlers;
 		this.bufferService = dependencies.bufferService;
@@ -84,12 +88,12 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		try {
 			const held = await this.jobsRepository.renewLocks([job.id], Date.now());
 			if (held === 0) {
-				this.logger.warn({ message: `Lost lock on job ${job.id}, stopping renewal`, service: SERVICE_NAME, method: "renewLock" });
+				this.logger.warn("Lost job lock, stopping renewal");
 				return false;
 			}
 			return true;
 		} catch (error: unknown) {
-			this.logger.warn({ message: error instanceof Error ? error.message : String(error), service: SERVICE_NAME, method: "renewLock" });
+			this.logger.warn({ err: error }, "Failed to renew job lock");
 			return true;
 		}
 	};
@@ -108,17 +112,9 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 				await this.jobsRepository.recordSuccess(job.id, job.nextScheduledAt, job.intervalMs, Date.now());
 			}
 		} catch (error: unknown) {
-			this.logger.warn({
-				message: error instanceof Error ? error.message : String(error),
-				service: SERVICE_NAME,
-				method: `runJob:${job.type}`,
-			});
+			this.logger.warn({ err: error }, "Job failed");
 			await this.jobsRepository.recordFailure(job.id, error, Date.now()).catch((recordError: unknown) => {
-				this.logger.error({
-					message: `recordFailure failed for job ${job.id}: ${recordError instanceof Error ? recordError.message : String(recordError)}`,
-					service: SERVICE_NAME,
-					method: `runJob:${job.type}`,
-				});
+				this.logger.error({ err: recordError }, "Failed to record job failure");
 			}); // Record failure and release lock
 		} finally {
 			clearInterval(renewTimer);
@@ -137,27 +133,19 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 				const jobs = await this.jobsRepository.claimDueBatch(type, capacity, Date.now());
 				for (const job of jobs) {
 					this.inFlight[type]++; // stay within concurrency limits
-					this.runJob(job)
-						.catch((error: unknown) => {
+					withLogContext({ jobId: job.id, jobType: job.type }, () =>
+						this.runJob(job).catch((error: unknown) => {
 							// defensive, runJob already catches
-							this.logger.error({
-								message: error instanceof Error ? error.message : String(error),
-								service: SERVICE_NAME,
-								method: `runJob:${type}`,
-							});
+							this.logger.error({ err: error }, "Job runner threw unexpectedly");
 						})
-						.finally(() => {
-							this.inFlight[type]--; // job done, free the slot
-						});
+					).finally(() => {
+						this.inFlight[type]--; // job done, free the slot
+					});
 				}
 				// Back off if no jobs found, reset to base if jobs found
 				this.pollMs[type] = capacity > 0 && jobs.length === 0 ? Math.min(this.pollMs[type] * 2, POLL_MAX_MS) : POLL_MS;
 			} catch (error: unknown) {
-				this.logger.error({
-					message: error instanceof Error ? error.message : String(error),
-					service: SERVICE_NAME,
-					method: `loop:${type}`,
-				});
+				this.logger.error({ err: error, jobType: type }, "Job poll loop failed");
 			}
 			// Clearing the flag and re-arming run synchronously (no await between), so wake() can never interleave here.
 			this.ticking[type] = false;
@@ -197,17 +185,9 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 
 		const remainingJobs = this.getInFlightCount();
 		if (remainingJobs > 0) {
-			this.logger.warn({
-				message: `Draining timed out with ${remainingJobs} in-flight.  Locks will expire and jobs will be reclaimed`,
-				service: SERVICE_NAME,
-				method: "drain",
-			});
+			this.logger.warn({ inFlight: remainingJobs }, "Draining timed out, locks will expire and jobs will be reclaimed");
 		} else {
-			this.logger.info({
-				message: `${this.workerId} drained`,
-				service: SERVICE_NAME,
-				method: "drain",
-			});
+			this.logger.info({ workerId: this.workerId }, "Worker drained");
 		}
 
 		await this.bufferService.shutdown(); // Flush buffers

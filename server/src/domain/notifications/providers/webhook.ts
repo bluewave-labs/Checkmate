@@ -6,6 +6,8 @@ import { getTestMessage, incidentUrl } from "@/domain/notifications/providers/ut
 import got from "got";
 
 export class WebhookProvider extends NotificationProvider {
+	protected readonly serviceName = SERVICE_NAME;
+
 	sendMessage = async (notification: Notification, message: NotificationMessage): Promise<boolean> => {
 		if (!notification.address) {
 			return false;
@@ -22,20 +24,10 @@ export class WebhookProvider extends NotificationProvider {
 				},
 				...this.gotRequestOptions(),
 			});
-			this.logger.info({
-				message: "Webhook notification sent",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-			});
+			this.logger.info("Webhook notification sent");
 			return true;
 		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: "Webhook alert failed",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-				stack: err?.stack,
-			});
+			this.logger.warn({ err: error }, "Webhook alert failed");
 			return false;
 		}
 	};
@@ -106,13 +98,7 @@ export class WebhookProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: "Webhook test alert failed",
-				service: SERVICE_NAME,
-				method: "sendTestAlert",
-				stack: err?.stack,
-			});
+			this.logger.warn({ err: error }, "Webhook test alert failed");
 			return false;
 		}
 	};

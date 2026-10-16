@@ -74,11 +74,11 @@ export const MonitorStatBoxes = ({
 				<>
 					<StatBox
 						title={t("pages.common.monitors.statBoxes.certificateExpiry")}
-						subtitle={certificateExpiry || "N/A"}
+						subtitle={certificateExpiry || "-"}
 					/>
 					<StatBox
 						title={t("pages.common.monitors.statBoxes.domainExpiry")}
-						subtitle={domainExpiry || "N/A"}
+						subtitle={domainExpiry || "-"}
 					/>
 				</>
 			)}

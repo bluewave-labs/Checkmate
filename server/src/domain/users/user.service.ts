@@ -11,7 +11,7 @@ import { AppError, internalError } from "@/utils/AppError.js";
 import { userErrors } from "@/domain/users/user.errors.js";
 import { IEmailService } from "@/service/emailService.js";
 import { EnvConfig, ISettingsService } from "@/domain/app-settings/app-settings.service.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";

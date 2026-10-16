@@ -12,7 +12,7 @@ import type {
 	CheckMemoryInfo,
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
-	GotTimings,
+	CheckTimings,
 	ILighthouseAudit,
 } from "@/domain/checks/check.type.js";
 import {
@@ -41,7 +41,7 @@ interface CheckDocument extends CheckDocumentBase {
 	_id: Types.ObjectId;
 }
 
-const timingPhasesSchema = new Schema<GotTimings["phases"]>(
+const timingPhasesSchema = new Schema<CheckTimings["phases"]>(
 	{
 		wait: { type: Number, default: 0 },
 		dns: { type: Number, default: 0 },
@@ -55,7 +55,7 @@ const timingPhasesSchema = new Schema<GotTimings["phases"]>(
 	{ _id: false }
 );
 
-const timingsSchema = new Schema<GotTimings>(
+const timingsSchema = new Schema<CheckTimings>(
 	{
 		start: { type: Number, default: 0 },
 		socket: { type: Number, default: 0 },

@@ -2,13 +2,12 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { BaseChart } from "@/Components/design-elements";
 import { useTheme } from "@mui/material/styles";
-import { useSelector } from "react-redux";
-import { formatDateWithTz, formatMs } from "@/Utils/TimeUtils";
+import { formatMs, type DateFormat } from "@/Utils/TimeUtils";
 import { useTranslation } from "react-i18next";
 import { ResponsiveContainer, BarChart, XAxis, Bar, Cell, Tooltip } from "recharts";
 import { getResponseTimeColor } from "@/Utils/MonitorUtils";
 import type { GroupedCheck } from "@/Types/Check";
-import type { RootState } from "@/Types/state";
+import { useFormatDate } from "@/Hooks/useFormatDate";
 
 interface XLabelProps {
 	p1: GroupedCheck;
@@ -18,8 +17,8 @@ interface XLabelProps {
 
 const XLabel = ({ p1, p2, range }: XLabelProps) => {
 	const theme = useTheme();
-	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
-	const dateFormat = range === "day" ? "MMM D, h:mm A" : "MMM D";
+	const formatDate = useFormatDate();
+	const dateFormat: DateFormat = range === "day" ? "dateTimeShort" : "dateShort";
 	return (
 		<>
 			<text
@@ -30,7 +29,7 @@ const XLabel = ({ p1, p2, range }: XLabelProps) => {
 				fontSize={11}
 				fill={theme.palette.text.secondary}
 			>
-				{formatDateWithTz(p1.bucketDate, dateFormat, uiTimezone)}
+				{formatDate(p1.bucketDate, dateFormat)}
 			</text>
 			<text
 				x="100%"
@@ -40,7 +39,7 @@ const XLabel = ({ p1, p2, range }: XLabelProps) => {
 				fontSize={11}
 				fill={theme.palette.text.secondary}
 			>
-				{formatDateWithTz(p2.bucketDate, dateFormat, uiTimezone)}
+				{formatDate(p2.bucketDate, dateFormat)}
 			</text>
 		</>
 	);
@@ -61,6 +60,7 @@ export const HistogramStatus = ({
 }: HistogramStatusProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
+	const formatDate = useFormatDate();
 	const CustomTooltip = ({
 		active,
 		payload,
@@ -68,18 +68,17 @@ export const HistogramStatus = ({
 		active?: boolean;
 		payload?: Array<{ payload: GroupedCheck }>;
 	}) => {
-		const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 		if (!active || !payload?.length) return null;
 		const d = payload[0]?.payload;
 		const avg = d?.avgResponseTime ?? 0;
 		const titleText = t("common.charts.labels.averageResponseTime");
-		const fmt = range === "30d" ? "MMM D, YYYY" : "ddd, MMM D, YYYY, h:mm A";
+		const fmt: DateFormat = range === "30d" ? "date" : "dateTime";
 		let dateLabel = "";
 		if (d?.bucketDate) {
 			const base = new Date(d.bucketDate);
 			const midBucket =
 				range === "30d" ? new Date(base.getTime() + 12 * 60 * 60 * 1000) : base;
-			dateLabel = formatDateWithTz(midBucket.toISOString(), fmt, uiTimezone);
+			dateLabel = formatDate(midBucket, fmt);
 		}
 		return (
 			<Stack

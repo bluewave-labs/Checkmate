@@ -1,7 +1,7 @@
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import { AppError } from "@/utils/AppError.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 
 const SERVICE_NAME = "SecretsRotationService";
 

@@ -14,9 +14,7 @@ import type { Check } from "@/Types/Check";
 
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import { formatDateWithTz } from "@/Utils/TimeUtils";
-import type { RootState } from "@/Types/state";
-import { useSelector } from "react-redux";
+import { useFormatDate } from "@/Hooks/useFormatDate";
 
 export const ChecksTable = ({
 	checks,
@@ -36,8 +34,7 @@ export const ChecksTable = ({
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
-
+	const formatDate = useFormatDate();
 	const headers: Header<Check>[] = [
 		{
 			id: "status",
@@ -59,7 +56,7 @@ export const ChecksTable = ({
 			id: "date",
 			content: t("common.table.headers.dateTime"),
 			render: (row) => {
-				return formatDateWithTz(row.createdAt, "ddd, MMMM D, YYYY, HH:mm A", uiTimezone);
+				return formatDate(row.createdAt, "dateTime");
 			},
 		},
 		{

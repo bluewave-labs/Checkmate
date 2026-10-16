@@ -11,7 +11,7 @@ import {
 } from "@/domain/monitors/monitor.type.js";
 import type { StatusChangeResult } from "@/types/network.js";
 import { AppError, internalError } from "@/utils/AppError.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import type { HardwareStatusMetrics } from "@/types/network.js";
 import { MAX_RECENT_CHECKS } from "@/domain/monitors/monitor.type.js";
 import { toCheckSnapshot } from "@/domain/checks/check.snapshot.js";

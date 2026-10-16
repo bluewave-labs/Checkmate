@@ -43,6 +43,19 @@ export const formatPercentageFromWhole = (value: number): string => {
 	return formatPercentage(value / 100);
 };
 
+/**
+ * Formats a number with locale-specific grouping.
+ * @param value - Number to format
+ * @param locale - App language (e.g., "en", "de")
+ * @returns Formatted number string
+ * @example
+ * formatNumber(1234, "en") // "1,234"
+ * formatNumber(1234, "de") // "1.234"
+ */
+export const formatNumber = (value: number, locale: string): string => {
+	return new Intl.NumberFormat(locale).format(value);
+};
+
 export const getPercentage = (value: number, total: number) => {
 	if (!value || !total) return 0;
 	return (value / total) * 100;

@@ -1,10 +1,10 @@
 import { Table } from "@/Components/design-elements";
 import { Typography, useTheme } from "@mui/material";
-import { formatTimestamp } from "@/Utils/TimeUtils";
 
 import { useTranslation } from "react-i18next";
 import type { QueueWorker } from "@/Types/Queue";
 import type { Header } from "@/Components/design-elements";
+import { useFormatDate } from "@/Hooks/useFormatDate";
 
 type QueueWorkerWithId = QueueWorker & { id: number };
 
@@ -15,7 +15,7 @@ interface TableWorkersProps {
 export const TableWorkers = ({ queueWorkers }: TableWorkersProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-
+	const formatDate = useFormatDate();
 	const cellSx = {
 		whiteSpace: "nowrap" as const,
 		overflow: "hidden",
@@ -80,7 +80,9 @@ export const TableWorkers = ({ queueWorkers }: TableWorkersProps) => {
 			id: "lastSeen",
 			content: t("pages.logs.table.headers.lastSeenAt"),
 			render: (row) => (
-				<Typography sx={cellSx}>{formatTimestamp(row.lastSeenAt)}</Typography>
+				<Typography sx={cellSx}>
+					{formatDate(row.lastSeenAt, "dateTimeSeconds")}
+				</Typography>
 			),
 		},
 	];
