@@ -176,11 +176,13 @@ describe("Evaluate cursor with more than one processing worker", () => {
 				"cleanup-orphaned": unused,
 				"cleanup-retention": unused,
 				egress: unused,
+				telemetry: unused,
 			},
 			queueWorkersRepository: {} as any,
 			queueMode: "worker",
 			queuePrimaryProcesses: true,
 			workerId: "worker-b",
+			telemetryEnabled: false,
 		});
 	});
 

@@ -24,6 +24,7 @@ const CONCURRENCY: Record<JobType, number> = {
 	"cleanup-orphaned": 1,
 	"cleanup-retention": 1,
 	egress: 1,
+	telemetry: 1,
 };
 
 export interface DBQueueWorkerDependencies {
@@ -37,6 +38,7 @@ export interface DBQueueWorkerDependencies {
 	queueMode: QueueMode; // forwarded
 	queuePrimaryProcesses: boolean; // consumed immediately
 	workerId: string;
+	telemetryEnabled: boolean;
 }
 
 export class DBQueueWorker extends JobScheduler implements IQueueWorker {
@@ -52,6 +54,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		"cleanup-orphaned": 0,
 		"cleanup-retention": 0,
 		egress: 0,
+		telemetry: 0,
 	};
 
 	private bufferService: IBufferService;
@@ -65,7 +68,8 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 			dependencies.monitorsRepository,
 			dependencies.queueMode,
 			dependencies.logger,
-			dependencies.workerId
+			dependencies.workerId,
+			dependencies.telemetryEnabled
 		);
 		// From the root logger, not the base class's child, so `service` isn't written twice
 		this.logger = dependencies.logger.child({ service: SERVICE_NAME });
