@@ -44,6 +44,9 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 	const egressService = {
 		checkRecovery: jest.fn().mockResolvedValue(undefined),
 	};
+	const telemetryService = {
+		handleJob: jest.fn().mockResolvedValue(undefined),
+	};
 
 	const defaults = {
 		logger: createMockLogger(),
@@ -58,6 +61,7 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		geoChecksRepository,
 		dockerLogsRepository,
 		egressService,
+		telemetryService,
 		...overrides,
 	};
 
@@ -73,7 +77,8 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		defaults.incidentsRepository as any,
 		defaults.geoChecksRepository as any,
 		defaults.dockerLogsRepository as any,
-		defaults.egressService as any
+		defaults.egressService as any,
+		defaults.telemetryService as any
 	);
 	return { helper, defaults };
 };
@@ -207,6 +212,16 @@ describe("WorkerHelper", () => {
 			(defaults.egressService.checkRecovery as jest.Mock).mockRejectedValue(new Error("db down"));
 
 			await expect(helper.getEgressRecoveryJob()({ id: "egress" } as any)).rejects.toThrow("db down");
+		});
+	});
+
+	describe("getTelemetryJob", () => {
+		it("returns a function that runs the telemetry heartbeat", async () => {
+			const { helper, defaults } = createHelper();
+
+			await helper.getTelemetryJob()();
+
+			expect(defaults.telemetryService.handleJob).toHaveBeenCalledTimes(1);
 		});
 	});
 });

@@ -1,4 +1,4 @@
-export const JOB_TYPES = ["check", "geo-check", "evaluate", "cleanup-orphaned", "cleanup-retention", "egress"] as const;
+export const JOB_TYPES = ["check", "geo-check", "evaluate", "cleanup-orphaned", "cleanup-retention", "egress", "telemetry"] as const;
 export type JobType = (typeof JOB_TYPES)[number];
 export const LOCK_MS = 60_000;
 export const BACKOFF_MS = 5_000;

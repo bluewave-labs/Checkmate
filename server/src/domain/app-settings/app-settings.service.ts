@@ -1,5 +1,12 @@
 import { ISettingsRepository } from "@/domain/app-settings/app-settings-repository.interface.js";
-import { Settings, SettingsUpdate, type ClientRuntimeConfig, type DbType, type QueueMode } from "@/domain/app-settings/app-settings.type.js";
+import {
+	DeploymentType,
+	Settings,
+	SettingsUpdate,
+	type ClientRuntimeConfig,
+	type DbType,
+	type QueueMode,
+} from "@/domain/app-settings/app-settings.type.js";
 import { AppError, internalError } from "@/utils/AppError.js";
 import { ValidatedEnv } from "@/config/envValidation.js";
 import type { StringValue } from "ms";
@@ -17,6 +24,9 @@ export type EnvConfig = {
 	queuePrimaryProcesses: boolean;
 	statusPageThemesEnabled: boolean;
 	clientConfig: ClientRuntimeConfig;
+	telemetryEnabled: boolean;
+	telemetryUrl: string;
+	deployment: DeploymentType;
 };
 
 export interface ISettingsService {
@@ -60,6 +70,9 @@ export class SettingsService implements ISettingsService {
 				...(env.CLIENT_CONFIG_CLIENT_HOST && { clientHost: env.CLIENT_CONFIG_CLIENT_HOST }),
 				...(env.CLIENT_CONFIG_LOG_LEVEL && { logLevel: env.CLIENT_CONFIG_LOG_LEVEL }),
 			},
+			telemetryEnabled: env.TELEMETRY_ENABLED,
+			telemetryUrl: env.TELEMETRY_URL,
+			deployment: env.CHECKMATE_DEPLOYMENT,
 		};
 	}
 

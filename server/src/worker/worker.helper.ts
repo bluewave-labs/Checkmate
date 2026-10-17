@@ -12,12 +12,14 @@ import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
 import { ILogger } from "@/utils/logger/logger.js";
 import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
 import { IEgressService } from "@/domain/egress/egress.service.js";
+import { ITelemetryService } from "@/domain/telemetry/telemetry.service.js";
 import type { Job } from "@/domain/jobs/job.type.js";
 
 export interface IWorkerHelper {
 	getCleanupOrphanedJob(): () => Promise<void>;
 	getCleanupRetentionJob(): () => Promise<void>;
 	getEgressRecoveryJob(): (job: Job) => Promise<void>;
+	getTelemetryJob(): () => Promise<void>;
 }
 
 export class WorkerHelper implements IWorkerHelper {
@@ -35,6 +37,7 @@ export class WorkerHelper implements IWorkerHelper {
 	private geoChecksRepository: IGeoChecksRepository;
 	private dockerLogsRepository: IDockerLogsRepository;
 	private egressService: IEgressService;
+	private telemetryService: ITelemetryService;
 
 	constructor(
 		logger: ILogger,
@@ -48,7 +51,8 @@ export class WorkerHelper implements IWorkerHelper {
 		incidentsRepository: IIncidentsRepository,
 		geoChecksRepository: IGeoChecksRepository,
 		dockerLogsRepository: IDockerLogsRepository,
-		egressService: IEgressService
+		egressService: IEgressService,
+		telemetryService: ITelemetryService
 	) {
 		this.logger = logger.child({ service: SERVICE_NAME });
 		this.checkService = checkService;
@@ -62,6 +66,7 @@ export class WorkerHelper implements IWorkerHelper {
 		this.geoChecksRepository = geoChecksRepository;
 		this.dockerLogsRepository = dockerLogsRepository;
 		this.egressService = egressService;
+		this.telemetryService = telemetryService;
 	}
 
 	// Runs while instance egress is degraded; the service removes the row once egress is back.
@@ -69,6 +74,12 @@ export class WorkerHelper implements IWorkerHelper {
 	getEgressRecoveryJob = () => {
 		return async (job: Job) => {
 			await this.egressService.checkRecovery(job);
+		};
+	};
+
+	getTelemetryJob = () => {
+		return async () => {
+			await this.telemetryService.handleJob();
 		};
 	};
 

@@ -45,6 +45,7 @@ class SettingsController implements ISettingsController {
 		const sanitizedSettings: Record<string, unknown> = { ...dbSettings };
 		delete sanitizedSettings.version;
 		delete sanitizedSettings.jwtSecret;
+		delete sanitizedSettings.telemetryInstanceId;
 		const globalProxy =
 			dbSettings.globalProxyEnabled && dbSettings.globalProxyId ? await this.proxiesService.getProxySummary(dbSettings.globalProxyId) : null;
 		const returnSettings: Record<string, unknown | null> = {
