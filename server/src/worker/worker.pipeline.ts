@@ -75,7 +75,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 
 	produce = async (monitor: Monitor) => {
 		if (!monitor.id) {
-			throw new AppError(internalError, { message: "No monitor id", service: SERVICE_NAME, method: "produce" });
+			throw new AppError(internalError, { message: "No monitor id", service: SERVICE_NAME });
 		}
 		// ****************************
 		// Step 1:  Acquire
@@ -105,7 +105,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 
 		const status = await this.deps.providerRegistry.probe(monitor, { proxyUrl, dockerTlsKey });
 		if (!status) {
-			throw new AppError(internalError, { message: "No network response", service: SERVICE_NAME, method: "produce" });
+			throw new AppError(internalError, { message: "No network response", service: SERVICE_NAME });
 		}
 
 		// ****************************

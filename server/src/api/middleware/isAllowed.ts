@@ -12,7 +12,6 @@ const isAllowed = (allowedRoles: UserRole[]) => {
 				throw new AppError(internalError, {
 					message: "Role check ran without an authenticated user; verifyJWT must run before isAllowed",
 					service: SERVICE_NAME,
-					method: "isAllowed",
 				});
 			}
 			const userRoles = req.user?.role || [];
@@ -22,7 +21,7 @@ const isAllowed = (allowedRoles: UserRole[]) => {
 				next();
 				return;
 			} else {
-				throw new AppError(middlewareErrors.forbidden, { service: SERVICE_NAME, method: "isAllowed" });
+				throw new AppError(middlewareErrors.forbidden, { service: SERVICE_NAME });
 			}
 		} catch (error) {
 			next(error);

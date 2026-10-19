@@ -114,7 +114,6 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		if (unauthorizedMonitors.length > 0) {
 			throw new AppError(maintenanceWindowErrors.monitorNotOnTeam, {
 				service: SERVICE_NAME,
-				method: "createMaintenanceWindow",
 			});
 		}
 
@@ -197,7 +196,6 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 			if (unauthorizedMonitors.length > 0) {
 				throw new AppError(maintenanceWindowErrors.monitorNotOnTeam, {
 					service: SERVICE_NAME,
-					method: "editMaintenanceWindow",
 				});
 			}
 			update.monitorIds = monitors;

@@ -78,7 +78,7 @@ class SettingsController implements ISettingsController {
 		if (validatedBody.globalProxyId) {
 			const proxy = await this.proxiesService.getProxySummary(validatedBody.globalProxyId);
 			if (!proxy) {
-				throw new AppError(appSettingsErrors.proxyNotFound, { service: SERVICE_NAME, method: "updateAppSettings" });
+				throw new AppError(appSettingsErrors.proxyNotFound, { service: SERVICE_NAME });
 			}
 		}
 
@@ -109,14 +109,14 @@ class SettingsController implements ISettingsController {
 
 		const html = await this.emailService.buildEmail("testEmailTemplate", context);
 		if (!html) {
-			throw new AppError(internalError, { message: "Failed to build email template.", service: SERVICE_NAME, method: "sendTestEmail" });
+			throw new AppError(internalError, { message: "Failed to build email template.", service: SERVICE_NAME });
 		}
 		let messageId: string;
 		try {
 			messageId = await this.emailService.sendEmail(to, subject, html, transportConfig);
 		} catch (error: unknown) {
 			if (error instanceof AppError) throw error;
-			throw new AppError(internalError, { message: "Failed to send test email.", service: SERVICE_NAME, method: "sendTestEmail" });
+			throw new AppError(internalError, { message: "Failed to send test email.", service: SERVICE_NAME });
 		}
 
 		res.json({ success: true, msg: "Test email sent successfully", data: { messageId } });

@@ -167,34 +167,34 @@ export const fetchMonitorDomain = async (
 
 export const requireTeamId = (teamId?: string): string => {
 	if (!teamId) {
-		throw new AppError(internalError, { message: "Team ID is required", service: SERVICE_NAME, method: "requireTeamId" });
+		throw new AppError(internalError, { message: "Team ID is required", service: SERVICE_NAME });
 	}
 	return teamId;
 };
 
 export const requireUserId = (userId?: string): string => {
 	if (!userId) {
-		throw new AppError(internalError, { message: "User ID is required", service: SERVICE_NAME, method: "requireUserId" });
+		throw new AppError(internalError, { message: "User ID is required", service: SERVICE_NAME });
 	}
 	return userId;
 };
 export const requireUserEmail = (userEmail?: string): string => {
 	if (!userEmail) {
-		throw new AppError(internalError, { message: "User email is required", service: SERVICE_NAME, method: "requireUserEmail" });
+		throw new AppError(internalError, { message: "User email is required", service: SERVICE_NAME });
 	}
 	return userEmail;
 };
 
 export const requireFirstName = (firstName?: string): string => {
 	if (!firstName) {
-		throw new AppError(internalError, { message: "First name is required", service: SERVICE_NAME, method: "requireFirstName" });
+		throw new AppError(internalError, { message: "First name is required", service: SERVICE_NAME });
 	}
 	return firstName;
 };
 
 export const requireUserRoles = (userRoles?: UserRole[]): UserRole[] => {
 	if (!userRoles || userRoles.length === 0) {
-		throw new AppError(internalError, { message: "User roles are required", service: SERVICE_NAME, method: "requireUserRoles" });
+		throw new AppError(internalError, { message: "User roles are required", service: SERVICE_NAME });
 	}
 	return userRoles;
 };

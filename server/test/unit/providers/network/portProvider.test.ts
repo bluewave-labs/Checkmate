@@ -219,7 +219,6 @@ describe("PortProvider", () => {
 			expect.unreachable("should have thrown");
 		} catch (err: any) {
 			expect(err.service).toBe("PortProvider");
-			expect(err.method).toBe("handle");
 		}
 	});
 

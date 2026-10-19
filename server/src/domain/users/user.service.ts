@@ -123,7 +123,7 @@ export class UserService implements IUserService {
 			await this.settingsRepository.update({ jwtSecret });
 			// Create a new team
 			if (!user.email) {
-				throw new AppError(userErrors.firstUserEmailRequired, { service: SERVICE_NAME, method: "registerUser" });
+				throw new AppError(userErrors.firstUserEmailRequired, { service: SERVICE_NAME });
 			}
 			const team = await this.teamsRepository.create(user.email);
 			user.teamId = team.id;
@@ -168,7 +168,7 @@ export class UserService implements IUserService {
 		for (const targetRole of targetRoles) {
 			const canManage = actorRoles.some((actorRole) => canManageRole(actorRole, targetRole));
 			if (!canManage) {
-				throw new AppError(userErrors.roleAboveCaller, { service: SERVICE_NAME, method: "createUser" });
+				throw new AppError(userErrors.roleAboveCaller, { service: SERVICE_NAME });
 			}
 		}
 
@@ -194,7 +194,7 @@ export class UserService implements IUserService {
 		const match = await bcrypt.compare(password, user.password);
 
 		if (match !== true) {
-			throw new AppError(userErrors.invalidCredentials, { service: SERVICE_NAME, method: "loginUser" });
+			throw new AppError(userErrors.invalidCredentials, { service: SERVICE_NAME });
 		}
 
 		const userResponse = toUserResponse(user);
@@ -219,7 +219,7 @@ export class UserService implements IUserService {
 			// If not a match, throw a 403
 			// 403 instead of 401 to avoid triggering axios interceptor
 			if (!match) {
-				throw new AppError(userErrors.incorrectCurrentPassword, { service: SERVICE_NAME, method: "editUser" });
+				throw new AppError(userErrors.incorrectCurrentPassword, { service: SERVICE_NAME });
 			}
 			// If a match, update the password
 			updates.password = this.hashPassword(updates.newPassword);
@@ -252,7 +252,6 @@ export class UserService implements IUserService {
 			throw new AppError(internalError, {
 				message: "Failed to build password reset email HTML",
 				service: SERVICE_NAME,
-				method: "requestRecovery",
 			});
 		}
 		const msgId = await this.emailService.sendEmail(email, "Checkmate Password Reset", html);
@@ -270,7 +269,7 @@ export class UserService implements IUserService {
 
 		const match = await bcrypt.compare(password, existingUser.password);
 		if (match === true) {
-			throw new AppError(userErrors.passwordUnchanged, { service: SERVICE_NAME, method: "resetPassword" });
+			throw new AppError(userErrors.passwordUnchanged, { service: SERVICE_NAME });
 		}
 
 		const hashedPassword = this.hashPassword(password);
@@ -285,7 +284,7 @@ export class UserService implements IUserService {
 
 	deleteUser = async ({ userId, teamId, roles }: { userId: string; teamId: string; roles: UserRole[] }) => {
 		if (roles.includes("demo")) {
-			throw new AppError(userErrors.demoUserProtected, { service: SERVICE_NAME, method: "deleteUser" });
+			throw new AppError(userErrors.demoUserProtected, { service: SERVICE_NAME });
 		}
 
 		if (roles.includes("superadmin")) {
@@ -310,17 +309,17 @@ export class UserService implements IUserService {
 		targetUserId: string;
 	}) => {
 		if (actorId === targetUserId) {
-			throw new AppError(userErrors.cannotDeleteSelf, { service: SERVICE_NAME, method: "deleteUserById" });
+			throw new AppError(userErrors.cannotDeleteSelf, { service: SERVICE_NAME });
 		}
 
 		const targetUser = await this.usersRepository.findById(targetUserId);
 
 		if (targetUser.teamId !== actorTeamId) {
-			throw new AppError(userErrors.notOnTeam, { service: SERVICE_NAME, method: "deleteUserById" });
+			throw new AppError(userErrors.notOnTeam, { service: SERVICE_NAME });
 		}
 
 		if (targetUser.role.includes("demo")) {
-			throw new AppError(userErrors.demoUserProtected, { service: SERVICE_NAME, method: "deleteUserById" });
+			throw new AppError(userErrors.demoUserProtected, { service: SERVICE_NAME });
 		}
 
 		const targetRoles = targetUser.role;
@@ -329,7 +328,7 @@ export class UserService implements IUserService {
 		for (const targetRole of targetRoles) {
 			const canManage = actorRoles.some((actorRole) => canManageRole(actorRole, targetRole));
 			if (!canManage) {
-				throw new AppError(userErrors.roleAboveCaller, { service: SERVICE_NAME, method: "deleteUserById" });
+				throw new AppError(userErrors.roleAboveCaller, { service: SERVICE_NAME });
 			}
 		}
 

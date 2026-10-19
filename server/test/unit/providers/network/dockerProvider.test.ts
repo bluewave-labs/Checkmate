@@ -432,7 +432,6 @@ describe("DockerProvider", () => {
 				throw new AppError(internalError, {
 					message: "No encryption key matches ciphertext",
 					service: "EncryptionService",
-					method: "decrypt",
 					details: { keyId: "abc123" },
 				});
 			});
@@ -492,7 +491,6 @@ describe("DockerProvider", () => {
 
 			await expect(provider.handle(makeMonitor({ url: "not-a-url" }))).rejects.toMatchObject({
 				service: "DockerProvider",
-				method: "toDockerOptions",
 				status: 500,
 			});
 			await expect(provider.handle(makeMonitor({ url: "not-a-url" }))).rejects.toBeInstanceOf(AppError);

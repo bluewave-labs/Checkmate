@@ -70,7 +70,6 @@ export class PingProvider implements IStatusProvider<PingStatusPayload> {
 			throw new AppError(internalError, {
 				message,
 				service: SERVICE_NAME,
-				method: "handle",
 			});
 		}
 	}

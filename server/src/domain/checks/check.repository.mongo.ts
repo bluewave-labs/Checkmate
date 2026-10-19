@@ -201,7 +201,6 @@ class MongoChecksRepository implements IChecksRepository {
 			throw new AppError(internalError, {
 				message: `Check must have valid metadata with monitorId and teamId. Got: ${JSON.stringify({ id, metadata })}`,
 				service: SERVICE_NAME,
-				method: "toDocument",
 			});
 		}
 		return {

@@ -17,7 +17,6 @@ const imageUpload = multer({
 				new AppError(middlewareErrors.unsupportedFileType, {
 					message: "File must be a valid image (jpeg, jpg, or png)",
 					service: SERVICE_NAME,
-					method: "fileFilter",
 				})
 			);
 			return;

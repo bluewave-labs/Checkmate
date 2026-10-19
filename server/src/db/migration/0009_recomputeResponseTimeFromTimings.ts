@@ -19,7 +19,7 @@ interface MigrationStats {
 const getDb = () => {
 	const db = mongoose.connection.db;
 	if (!db) {
-		throw new AppError(internalError, { message: "Database connection is not initialized", service: SERVICE_NAME, method: "getDb" });
+		throw new AppError(internalError, { message: "Database connection is not initialized", service: SERVICE_NAME });
 	}
 	return db;
 };
@@ -149,7 +149,6 @@ const restoreFromBackup = async () => {
 		throw new AppError(internalError, {
 			message: "Cannot restore: backup collection does not exist",
 			service: SERVICE_NAME,
-			method: "restoreFromBackup",
 		});
 	}
 
@@ -184,7 +183,6 @@ export async function recomputeResponseTimeFromTimings(logger: ILogger): Promise
 		throw new AppError(internalError, {
 			message: `Backup collection "${BACKUP_COLLECTION}" already exists. Please remove it manually before running migration.`,
 			service: SERVICE_NAME,
-			method: "recomputeResponseTimeFromTimings",
 		});
 	}
 

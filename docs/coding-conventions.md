@@ -271,11 +271,9 @@ export class XxxProvider implements IStatusProvider<XxxStatusPayload> {
     } catch (err: unknown) {
       if (err instanceof AppError) throw err;
       const originalMessage = err instanceof Error ? err.message : String(err);
-      throw new AppError({
+      throw new AppError(internalError, {
         message: originalMessage || "Error performing xxx check",
-        status: 500,
         service: SERVICE_NAME,
-        method: "handle",
         details: { /* monitor-shaped context */ },
       });
     }
@@ -289,7 +287,7 @@ export class XxxProvider implements IStatusProvider<XxxStatusPayload> {
 - **`SERVICE_NAME` and `TIMEOUT_MS`** as module-level constants near the top, not magic strings/numbers in the body.
 - **Use the shared `timeRequest()` helper** from `service/infrastructure/network/utils.ts` to measure latency. Don't roll your own `process.hrtime()`.
 - **Enforce a hard timeout.** Every peer provider inlines a `setTimeout` race in the Promise body around the underlying client call (see `WebSocketProvider.ts`); sockets, DNS resolvers, and external clients can hang indefinitely without it. There is no shared `withTimeout` helper today — match the inline pattern.
-- **Outer try/catch** that converts unknown errors to `AppError({ service, method, details })` while letting your own `AppError` pass through.
+- **Outer try/catch** that converts unknown errors to `new AppError(internalError, { service, details })` while letting your own `AppError` pass through.
 
 ---
 
@@ -376,7 +374,7 @@ The repository's `toEntity` must write the new field; the build fails until it d
 
 ## 12. Every `AppError` is built from a definition
 
-Client errors are `{ status, description }` literals in `domain/<entity>/<entity>.errors.ts` (middleware errors in `api/middleware/middleware.errors.ts`, email errors in `service/email.errors.ts`), thrown as `new AppError(<entity>Errors.<name>, { service, method, message?, details? })` and listed by reference in the route table's `errors`. Server errors throw `internalError` from `utils/AppError.ts`. The OpenAPI spec is generated from the definitions, and `npm run test:route-errors` fails when a route omits a definition its handler can throw, or lists one it cannot.
+Client errors are `{ status, description }` literals in `domain/<entity>/<entity>.errors.ts` (middleware errors in `api/middleware/middleware.errors.ts`, email errors in `service/email.errors.ts`), thrown as `new AppError(<entity>Errors.<name>, { service, message?, details? })` and listed by reference in the route table's `errors`. Server errors throw `internalError` from `utils/AppError.ts`. The OpenAPI spec is generated from the definitions, and `npm run test:route-errors` fails when a route omits a definition its handler can throw, or lists one it cannot.
 
 **Why:** the status and the spec description come from the same value, so they cannot drift. A reviewer sees every error a route can return by reading its table entry.
 

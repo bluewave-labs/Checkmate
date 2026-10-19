@@ -52,7 +52,7 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 			teamId: teamId,
 		});
 		if (!maintenanceWindow) {
-			throw new AppError(maintenanceWindowErrors.notFound, { service: SERVICE_NAME, method: "findById" });
+			throw new AppError(maintenanceWindowErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(maintenanceWindow);
 	};
@@ -115,7 +115,7 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 			{ new: true, runValidators: true }
 		);
 		if (!updated) {
-			throw new AppError(maintenanceWindowErrors.notFound, { service: SERVICE_NAME, method: "updateById" });
+			throw new AppError(maintenanceWindowErrors.notFound, { service: SERVICE_NAME });
 		}
 
 		return this.toEntity(updated);
@@ -127,7 +127,7 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 			teamId: new mongoose.Types.ObjectId(teamId),
 		});
 		if (!deleted) {
-			throw new AppError(maintenanceWindowErrors.notFound, { service: SERVICE_NAME, method: "deleteById" });
+			throw new AppError(maintenanceWindowErrors.notFound, { service: SERVICE_NAME });
 		}
 
 		return this.toEntity(deleted);

@@ -92,7 +92,7 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 			url,
 		});
 		if (!statusPage) {
-			throw new AppError(statusPageErrors.notFound, { service: SERVICE_NAME, method: "findByUrl" });
+			throw new AppError(statusPageErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(statusPage);
 		// Get status page
@@ -101,14 +101,14 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 	findByCustomDomain = async (customDomain: string): Promise<StatusPage> => {
 		const normalizedDomain = normalizeStatusPageDomain(customDomain);
 		if (!normalizedDomain) {
-			throw new AppError(statusPageErrors.notFound, { service: SERVICE_NAME, method: "findByCustomDomain" });
+			throw new AppError(statusPageErrors.notFound, { service: SERVICE_NAME });
 		}
 
 		const statusPage = await StatusPageModel.findOne({
 			customDomain: normalizedDomain,
 		});
 		if (!statusPage) {
-			throw new AppError(statusPageErrors.notFound, { service: SERVICE_NAME, method: "findByCustomDomain" });
+			throw new AppError(statusPageErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(statusPage);
 	};
@@ -159,7 +159,7 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 		});
 
 		if (!statusPage) {
-			throw new AppError(statusPageErrors.notFound, { service: SERVICE_NAME, method: "updateById" });
+			throw new AppError(statusPageErrors.notFound, { service: SERVICE_NAME });
 		}
 
 		return this.toEntity(statusPage);
@@ -168,7 +168,7 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 	deleteById = async (id: string, teamId: string): Promise<StatusPage> => {
 		const statusPage = await StatusPageModel.findOneAndDelete({ _id: id, teamId });
 		if (!statusPage) {
-			throw new AppError(statusPageErrors.notFound, { service: SERVICE_NAME, method: "deleteById" });
+			throw new AppError(statusPageErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(statusPage);
 	};

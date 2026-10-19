@@ -138,7 +138,6 @@ export class GeoChecksService implements IGeoChecksService {
 			throw new AppError(monitorErrors.notFound, {
 				message: `Monitor with ID ${monitorId} not found.`,
 				service: SERVICE_NAME,
-				method: "getGeoChecksByMonitor",
 			});
 		}
 
