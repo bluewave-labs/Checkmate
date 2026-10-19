@@ -3,24 +3,19 @@ import { z } from "zod";
 import { hostnamePattern } from "@/Validation/patterns";
 
 export const EGRESS_TARGETS_MAX = 10;
+// The server caps each target at this length.
+export const EGRESS_TARGET_MAX_LENGTH = 253;
 
 // Follows the server's parseEgressTarget: an http(s) URL, host:port (or [ipv6]:port), or a bare host or
 // IP address. Kept in step so that what the form accepts is what the server accepts.
-const IPV4_REGEX = /^(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)$/;
-const IPV6_GROUP_REGEX = /^[0-9a-fA-F]{1,4}$/;
 const HOST_PORT_REGEX = /^(?:\[([^\]]+)\]|([^:/\s[\]]+)):(\d{1,5})$/;
 const BRACKETED_REGEX = /^\[([^\]]+)\]$/;
 
-// Up to eight hex groups, with at most one "::" standing in for the missing ones.
-const isIpv6 = (value: string) => {
-	const halves = value.split("::");
-	if (halves.length > 2) return false;
-	const groups = halves.flatMap((half) => (half === "" ? [] : half.split(":")));
-	if (!groups.every((group) => IPV6_GROUP_REGEX.test(group))) return false;
-	return halves.length === 2 ? groups.length < 8 : groups.length === 8;
-};
+const isIpv6 = (value: string) => z.ipv6().safeParse(value).success;
 const isHostOrIpv4 = (value: string) =>
-	value === "localhost" || IPV4_REGEX.test(value) || hostnamePattern.test(value);
+	value === "localhost" ||
+	z.ipv4().safeParse(value).success ||
+	hostnamePattern.test(value);
 
 const isHttpUrl = (value: string) => {
 	try {
@@ -123,6 +118,10 @@ export const settingsSchema = z
 					.array(
 						z
 							.string()
+							.max(
+								EGRESS_TARGET_MAX_LENGTH,
+								`Each target must be ${EGRESS_TARGET_MAX_LENGTH} characters or fewer`
+							)
 							.refine(
 								isEgressTarget,
 								"Each target must be a hostname or IP address, host:port, or http(s) URL"
