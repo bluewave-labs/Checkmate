@@ -30,7 +30,6 @@ export async function migrateMaintenanceWindowMonitorIdToArray(logger: ILogger):
 			throw new AppError(internalError, {
 				message: "Database connection is not initialized",
 				service: SERVICE_NAME,
-				method: "migrateMaintenanceWindowMonitorIdToArray",
 			});
 		}
 

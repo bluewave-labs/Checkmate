@@ -37,7 +37,7 @@ class MongoMonitorStatsRepository implements IMonitorStatsRepository {
 	findByMonitorId = async (monitorId: string): Promise<MonitorStats> => {
 		const monitorStats = await MonitorStatsModel.findOne({ monitorId: new mongoose.Types.ObjectId(monitorId) });
 		if (!monitorStats) {
-			throw new AppError(monitorStatsErrors.notFound, { service: SERVICE_NAME, method: "findByMonitorId" });
+			throw new AppError(monitorStatsErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(monitorStats);
 	};
@@ -86,7 +86,6 @@ class MongoMonitorStatsRepository implements IMonitorStatsRepository {
 			throw new AppError(internalError, {
 				message: "Failed to apply check result to monitor stats",
 				service: SERVICE_NAME,
-				method: "updateByMonitorId",
 			});
 		}
 		return this.toEntity(updated);
@@ -95,7 +94,7 @@ class MongoMonitorStatsRepository implements IMonitorStatsRepository {
 	deleteByMonitorId = async (monitorId: string) => {
 		const deleted = await MonitorStatsModel.findOneAndDelete({ monitorId: new mongoose.Types.ObjectId(monitorId) });
 		if (!deleted) {
-			throw new AppError(monitorStatsErrors.notFound, { service: SERVICE_NAME, method: "deleteByMonitorId" });
+			throw new AppError(monitorStatsErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(deleted);
 	};

@@ -27,7 +27,7 @@ class MongoTagsRepository implements ITagsRepository {
 			return this.toEntity(tag);
 		} catch (error) {
 			if (error && typeof error === "object" && (error as { code?: number }).code === 11000) {
-				throw new AppError(tagErrors.nameTaken, { message: `A tag named "${tagData.name}" already exists`, service: SERVICE_NAME, method: "create" });
+				throw new AppError(tagErrors.nameTaken, { message: `A tag named "${tagData.name}" already exists`, service: SERVICE_NAME });
 			}
 			throw error;
 		}
@@ -36,7 +36,7 @@ class MongoTagsRepository implements ITagsRepository {
 	async findById(tagId: string, teamId: string): Promise<Tag> {
 		const tag = await TagModel.findOne({ _id: tagId, teamId });
 		if (!tag) {
-			throw new AppError(tagErrors.notFound, { service: SERVICE_NAME, method: "findById" });
+			throw new AppError(tagErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(tag);
 	}
@@ -57,7 +57,7 @@ class MongoTagsRepository implements ITagsRepository {
 			{ new: true, runValidators: true }
 		);
 		if (!updatedTag) {
-			throw new AppError(tagErrors.notFound, { service: SERVICE_NAME, method: "updateById" });
+			throw new AppError(tagErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(updatedTag);
 	}
@@ -65,7 +65,7 @@ class MongoTagsRepository implements ITagsRepository {
 	async deleteById(tagId: string, teamId: string): Promise<Tag> {
 		const deletedTag = await TagModel.findOneAndDelete({ _id: tagId, teamId });
 		if (!deletedTag) {
-			throw new AppError(tagErrors.notFound, { service: SERVICE_NAME, method: "deleteById" });
+			throw new AppError(tagErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(deletedTag);
 	}

@@ -17,7 +17,8 @@ import { JobScheduler } from "@/worker/worker.job-scheduler.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
 import { HealthServer, IHealthServer } from "@/worker/worker.health-server.js";
 const SERVICE_NAME = "Server";
-let logger: ILogger;
+let logger: ILogger; // the root logger: passed to every service, which creates its own child
+let log: ILogger; // this file's own lines
 
 const startApp = async () => {
 	// ***********************
@@ -25,23 +26,16 @@ const startApp = async () => {
 	// ***********************
 
 	logger = new Logger();
+	log = logger.child({ service: SERVICE_NAME });
 	const env = validateEnv(logger);
 	logger.setLogLevel(env.LOG_LEVEL);
 	const settingsService = new SettingsService(env);
 	const envSettings = settingsService.getSettings();
 	const { queueMode, queuePrimaryProcesses } = envSettings;
 
-	logger.info({
-		message: `Queue mode: ${queueMode}`,
-		service: SERVICE_NAME,
-		method: "startApp",
-	});
+	log.info({ queueMode }, "Queue mode");
 
-	logger.info({
-		message: `Process jobs: ${queueMode === "worker" ? true : queuePrimaryProcesses}`,
-		service: SERVICE_NAME,
-		method: "startApp",
-	});
+	log.info({ processJobs: queueMode === "worker" ? true : queuePrimaryProcesses }, "Process jobs");
 
 	// ***********************
 	// Build shared services
@@ -55,7 +49,7 @@ const startApp = async () => {
 		const { worker } = await buildWorker(shared, envSettings);
 		const healthServer = new HealthServer(logger, env.HEALTH_PORT, worker);
 		await healthServer.listen();
-		logger.info({ message: "Worker instance started. API will not be started", service: SERVICE_NAME });
+		log.info("Worker instance started. API will not be started");
 		initShutdownListener(null, { worker, db: shared.db, logger, healthServer });
 		return;
 	}
@@ -79,7 +73,15 @@ const startApp = async () => {
 	// Primary node does not process jobs, only need scheduler
 	// ***********************
 	else {
-		scheduler = new JobScheduler(shared.jobsRepository, shared.queueWorkersRepository, shared.monitorsRepository, queueMode, logger, shared.workerId);
+		scheduler = new JobScheduler(
+			shared.jobsRepository,
+			shared.queueWorkersRepository,
+			shared.monitorsRepository,
+			queueMode,
+			logger,
+			shared.workerId,
+			envSettings.telemetryEnabled
+		);
 		await scheduler.init(); // register in the queue_workers registry + reconcile (seed the jobs collection)
 	}
 
@@ -104,18 +106,13 @@ const startApp = async () => {
 		openApiSpec,
 	});
 	const server = app.listen(env.PORT, () => {
-		logger.info({ message: `Server started on port:${env.PORT}` });
+		log.info({ port: env.PORT }, "Server started");
 	});
 
 	initShutdownListener(server, { ...services, healthServer });
 };
 
 startApp().catch((error) => {
-	logger.error({
-		message: error.message,
-		service: SERVICE_NAME,
-		method: "startApp",
-		stack: error.stack,
-	});
+	log.error({ err: error }, "Failed to start");
 	process.exit(1);
 });

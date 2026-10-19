@@ -976,7 +976,6 @@
 					"timestamp": "时间戳",
 					"level": "级别",
 					"service": "服务",
-					"method": "方法",
 					"monitorId": "监控 ID",
 					"runCount": "运行次数",
 					"failCount": "失败次数",
@@ -993,6 +992,10 @@
 			"header": {
 				"title": "日志与队列",
 				"description": "在一处查看服务器日志、监控器作业队列和运行时诊断。"
+			},
+			"details": {
+				"fields": "字段",
+				"stack": "堆栈"
 			}
 		},
 		"maintenanceWindow": {

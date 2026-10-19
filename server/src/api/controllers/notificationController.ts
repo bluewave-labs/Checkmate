@@ -92,11 +92,11 @@ class NotificationController implements INotificationController {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		const notifications = monitor.notifications || [];
 		if (notifications.length === 0) {
-			throw new AppError(notificationErrors.noneConfigured, { service: SERVICE_NAME, method: "testAllNotifications" });
+			throw new AppError(notificationErrors.noneConfigured, { service: SERVICE_NAME });
 		}
 		const result = await this.notificationsService.testAllNotifications(notifications);
 		if (!result) {
-			throw new AppError(internalError, { message: "Failed to send all notifications", service: SERVICE_NAME, method: "testAllNotifications" });
+			throw new AppError(internalError, { message: "Failed to send all notifications", service: SERVICE_NAME });
 		}
 		res.json({ success: true, msg: "All notifications sent successfully" });
 	};

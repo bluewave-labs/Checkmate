@@ -4,6 +4,7 @@ import type { Settings, SettingsUpdate } from "@/domain/app-settings/app-setting
 import { AppSettingsModel, type AppSettingsDocument } from "@/domain/app-settings/app-settings.model.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 import { DEFAULT_EGRESS_TARGETS } from "@/domain/egress/egress.type.js";
+import { randomUUID } from "crypto";
 
 class MongoSettingsRepository implements ISettingsRepository {
 	private toEntity = (doc: AppSettingsDocument): Settings => {
@@ -35,6 +36,7 @@ class MongoSettingsRepository implements ISettingsRepository {
 			egressCheckEnabled: doc.egressCheckEnabled ?? false,
 			egressCheckTargets: doc.egressCheckTargets ?? [...DEFAULT_EGRESS_TARGETS],
 			egressNotifications: doc.egressNotifications ?? [],
+			telemetryInstanceId: doc.telemetryInstanceId ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
@@ -51,6 +53,12 @@ class MongoSettingsRepository implements ISettingsRepository {
 			return null;
 		}
 		return this.toEntity(settings);
+	};
+
+	findOrCreateTelemetryInstanceId = async () => {
+		await AppSettingsModel.updateOne({ singleton: true, telemetryInstanceId: { $exists: false } }, { $set: { telemetryInstanceId: randomUUID() } });
+		const doc = await AppSettingsModel.findOne({ singleton: true }, { telemetryInstanceId: 1 }).lean();
+		return doc?.telemetryInstanceId ?? null;
 	};
 
 	update = async (settings: SettingsUpdate) => {

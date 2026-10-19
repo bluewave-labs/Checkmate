@@ -28,10 +28,11 @@ const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 		...overrides,
 	}) as Monitor;
 
-const createScheduler = (overrides?: { queueMode?: QueueMode; mocks?: Record<string, any> }) => {
+const createScheduler = (overrides?: { queueMode?: QueueMode; telemetryEnabled?: boolean; mocks?: Record<string, any> }) => {
 	const jobsRepository = {
 		upsertJob: jest.fn<any>().mockResolvedValue(true),
 		upsertCleanupJob: jest.fn<any>().mockResolvedValue(true),
+		deleteGlobalJob: jest.fn<any>().mockResolvedValue(true),
 	};
 	const queueWorkersRepository = {
 		upsert: jest.fn<any>().mockResolvedValue(undefined),
@@ -48,7 +49,8 @@ const createScheduler = (overrides?: { queueMode?: QueueMode; mocks?: Record<str
 		mocks.monitorsRepository as any,
 		overrides?.queueMode ?? "primary",
 		mocks.logger as any,
-		"worker-1"
+		"worker-1",
+		overrides?.telemetryEnabled ?? false
 	);
 	return { scheduler, mocks };
 };
@@ -106,6 +108,37 @@ describe("JobScheduler", () => {
 			expect(mocks.monitorsRepository.findAllForScheduling).not.toHaveBeenCalled();
 			expect(mocks.jobsRepository.upsertJob).not.toHaveBeenCalled();
 			expect(mocks.jobsRepository.upsertCleanupJob).not.toHaveBeenCalled();
+		});
+
+		it("primary mode seeds the telemetry row when telemetry is enabled", async () => {
+			const now = Date.now();
+			const { scheduler, mocks } = createScheduler({ queueMode: "primary", telemetryEnabled: true });
+			await scheduler.init();
+
+			const telemetryCall = mocks.jobsRepository.upsertJob.mock.calls.find((c: any[]) => c[0].type === "telemetry");
+			expect(telemetryCall).toBeDefined();
+			const seed = telemetryCall![0] as any;
+			expect(seed).toMatchObject({ id: "telemetry", refId: null, isActive: true, intervalMs: 24 * 60 * 60 * 1000 });
+			expect(seed.nextScheduledAt).toBeGreaterThanOrEqual(now);
+			expect(seed.nextScheduledAt).toBeLessThan(now + 60 * 60 * 1000);
+			expect(mocks.jobsRepository.deleteGlobalJob).not.toHaveBeenCalled();
+		});
+
+		it("primary mode removes the telemetry row when telemetry is disabled", async () => {
+			const { scheduler, mocks } = createScheduler({ queueMode: "primary", telemetryEnabled: false });
+			await scheduler.init();
+
+			const seededTypes = mocks.jobsRepository.upsertJob.mock.calls.map((c: any[]) => c[0].type);
+			expect(seededTypes).not.toContain("telemetry");
+			expect(mocks.jobsRepository.deleteGlobalJob).toHaveBeenCalledWith("telemetry");
+		});
+
+		it("worker mode never touches the telemetry row", async () => {
+			const { scheduler, mocks } = createScheduler({ queueMode: "worker", telemetryEnabled: true });
+			await scheduler.init();
+
+			expect(mocks.jobsRepository.upsertJob).not.toHaveBeenCalled();
+			expect(mocks.jobsRepository.deleteGlobalJob).not.toHaveBeenCalled();
 		});
 
 		it("arms a heartbeat interval timer that shutdown() clears and deregisters", async () => {

@@ -109,7 +109,6 @@ export class DNSProvider implements IStatusProvider<DNSStatusPayload> {
 			throw new AppError(internalError, {
 				message: originalMessage || "Error performing DNS check",
 				service: SERVICE_NAME,
-				method: "handle",
 				details: { url: monitor.url },
 			});
 		}

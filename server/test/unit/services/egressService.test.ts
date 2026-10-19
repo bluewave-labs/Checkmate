@@ -239,7 +239,10 @@ describe("EgressService", () => {
 				expect.any(Date)
 			);
 			expect(defaults.egressStateRepository.recordProbe).not.toHaveBeenCalled();
-			expect(defaults.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("egress degraded") }));
+			expect(defaults.logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({ results: expect.any(Array) }),
+				"Instance egress degraded: every reliability target is unreachable. Monitor failures will not be counted until it recovers"
+			);
 			expect(defaults.jobsRepository.upsertCleanupJob).toHaveBeenCalledWith({
 				id: "egress",
 				type: "egress",
@@ -268,7 +271,10 @@ describe("EgressService", () => {
 
 			expect(result).toBe("degraded");
 			expect(defaults.jobsRepository.upsertCleanupJob).toHaveBeenCalledWith(expect.objectContaining({ id: "egress", intervalMs: 5_000 }));
-			expect(defaults.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("already recorded") }));
+			expect(defaults.logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({ results: expect.any(Array) }),
+				"Instance egress degraded (transition already recorded by another worker)"
+			);
 		});
 
 		it("does not mark degraded when the recovery job cannot be scheduled", async () => {
@@ -316,7 +322,7 @@ describe("EgressService", () => {
 			const result = await service.assessAfterFailure();
 
 			expect(result).toBeNull();
-			expect(defaults.logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "db down", method: "assessAfterFailure" }));
+			expect(defaults.logger.error).toHaveBeenCalledWith({ err: new Error("db down") }, "Egress assessment failed");
 		});
 	});
 
@@ -399,7 +405,10 @@ describe("EgressService", () => {
 			);
 			// Conditional on the schedule this run claimed, so a concurrent new episode keeps its job
 			expect(defaults.jobsRepository.deleteGlobalJobIfUnchanged).toHaveBeenCalledWith("egress", 123_456);
-			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Instance egress recovered") }));
+			expect(defaults.logger.info).toHaveBeenCalledWith(
+				expect.objectContaining({ degradedSince: expect.anything(), results: expect.any(Array) }),
+				"Instance egress recovered"
+			);
 			expect(defaults.notificationsService.sendEgressRecoveredNotification).toHaveBeenCalledTimes(1);
 			expect(defaults.notificationsService.sendEgressRecoveredNotification).toHaveBeenCalledWith(
 				expect.objectContaining({ status: "ok", lastRecoveredAt: "2026-01-01T10:05:00.000Z" }),
@@ -418,7 +427,8 @@ describe("EgressService", () => {
 
 			expect(defaults.jobsRepository.deleteGlobalJobIfUnchanged).toHaveBeenCalledWith("egress", 1_000);
 			expect(defaults.logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({ message: expect.stringContaining("smtp down"), method: "checkRecovery", details: { notificationIds: ["notif-1"] } })
+				{ err: new Error("smtp down"), notificationIds: ["notif-1"] },
+				"Egress recovered but the notification could not be sent"
 			);
 		});
 
@@ -432,11 +442,8 @@ describe("EgressService", () => {
 			await expect(service.checkRecovery(makeJob())).resolves.toBeUndefined();
 
 			expect(defaults.logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("failed to deliver"),
-					method: "checkRecovery",
-					details: { notificationIds: ["notif-1"] },
-				})
+				{ notificationIds: ["notif-1"] },
+				"Egress recovered but at least one notification channel failed to deliver"
 			);
 			expect(defaults.logger.error).not.toHaveBeenCalled();
 		});

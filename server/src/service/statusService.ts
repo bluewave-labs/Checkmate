@@ -31,7 +31,7 @@ export class StatusService implements IStatusService {
 	private monitorStatsRepository: IMonitorStatsRepository;
 
 	constructor(logger: ILogger, monitorsRepository: IMonitorsRepository, monitorStatsRepository: IMonitorStatsRepository) {
-		this.logger = logger;
+		this.logger = logger.child({ service: SERVICE_NAME });
 		this.monitorsRepository = monitorsRepository;
 		this.monitorStatsRepository = monitorStatsRepository;
 	}
@@ -44,12 +44,7 @@ export class StatusService implements IStatusService {
 				now: Date.now(),
 			});
 		} catch (error: unknown) {
-			this.logger.warn({
-				service: SERVICE_NAME,
-				message: error instanceof Error ? error.message : "Unknown error",
-				method: "tryUpdateRunningStats",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.warn({ err: error }, "Failed to update running stats");
 		}
 	};
 
@@ -252,7 +247,6 @@ export class StatusService implements IStatusService {
 			throw new AppError(internalError, {
 				message: `Failed to update monitor with id ${check.metadata.monitorId} with status: ${error instanceof Error ? error.message : "Unknown error"}`,
 				service: SERVICE_NAME,
-				method: "updateMonitorStatus",
 			});
 		}
 	};

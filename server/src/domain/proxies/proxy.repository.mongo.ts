@@ -35,7 +35,6 @@ class MongoProxiesRepository implements IProxiesRepository {
 				throw new AppError(proxyErrors.nameTaken, {
 					message: `A proxy named "${proxyData.name}" already exists`,
 					service: SERVICE_NAME,
-					method: "create",
 				});
 			}
 			throw error;
@@ -50,7 +49,7 @@ class MongoProxiesRepository implements IProxiesRepository {
 	async findById(proxyId: string, teamId: string): Promise<Proxy> {
 		const proxy = await ProxyModel.findOne({ _id: proxyId, teamId });
 		if (!proxy) {
-			throw new AppError(proxyErrors.notFound, { service: SERVICE_NAME, method: "findById" });
+			throw new AppError(proxyErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(proxy);
 	}
@@ -94,7 +93,7 @@ class MongoProxiesRepository implements IProxiesRepository {
 			}
 			const updatedProxy = await ProxyModel.findOneAndUpdate({ _id: proxyId, teamId }, update, { new: true, runValidators: true });
 			if (!updatedProxy) {
-				throw new AppError(proxyErrors.notFound, { service: SERVICE_NAME, method: "updateById" });
+				throw new AppError(proxyErrors.notFound, { service: SERVICE_NAME });
 			}
 			return this.toEntity(updatedProxy);
 		} catch (error) {
@@ -102,7 +101,6 @@ class MongoProxiesRepository implements IProxiesRepository {
 				throw new AppError(proxyErrors.nameTaken, {
 					message: `A proxy named "${patch.name}" already exists`,
 					service: SERVICE_NAME,
-					method: "updateById",
 				});
 			}
 			throw error;
@@ -112,7 +110,7 @@ class MongoProxiesRepository implements IProxiesRepository {
 	async deleteById(proxyId: string, teamId: string): Promise<Proxy> {
 		const deletedProxy = await ProxyModel.findOneAndDelete({ _id: proxyId, teamId });
 		if (!deletedProxy) {
-			throw new AppError(proxyErrors.notFound, { service: SERVICE_NAME, method: "deleteById" });
+			throw new AppError(proxyErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(deletedProxy);
 	}

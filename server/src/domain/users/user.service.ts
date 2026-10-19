@@ -92,7 +92,7 @@ export class UserService implements IUserService {
 	}) {
 		this.emailService = emailService;
 		this.settingsService = settingsService;
-		this.logger = logger;
+		this.logger = logger.child({ service: SERVICE_NAME });
 		this.jwt = jwt;
 		this.scheduler = scheduler;
 		this.crypto = crypto;
@@ -123,7 +123,7 @@ export class UserService implements IUserService {
 			await this.settingsRepository.update({ jwtSecret });
 			// Create a new team
 			if (!user.email) {
-				throw new AppError(userErrors.firstUserEmailRequired, { service: SERVICE_NAME, method: "registerUser" });
+				throw new AppError(userErrors.firstUserEmailRequired, { service: SERVICE_NAME });
 			}
 			const team = await this.teamsRepository.create(user.email);
 			user.teamId = team.id;
@@ -137,12 +137,7 @@ export class UserService implements IUserService {
 
 		const newUser = await this.usersRepository.create(user as User, file);
 
-		this.logger.debug({
-			message: "New user created",
-			service: SERVICE_NAME,
-			method: "registerUser",
-			details: { userId: newUser.id },
-		});
+		this.logger.debug({ userId: newUser.id }, "New user created");
 
 		delete newUser.avatarImage;
 
@@ -158,20 +153,10 @@ export class UserService implements IUserService {
 				throw new Error("Failed to build welcome email HTML");
 			}
 			this.emailService.sendEmail(newUser.email, "Welcome to Uptime Monitor", html).catch((error: unknown) => {
-				this.logger.warn({
-					message: error instanceof Error ? error.message : "Unknown error",
-					service: SERVICE_NAME,
-					method: "registerUser",
-					stack: error instanceof Error ? error.stack : undefined,
-				});
+				this.logger.warn({ err: error }, "Failed to send welcome email");
 			});
 		} catch (error: unknown) {
-			this.logger.warn({
-				message: error instanceof Error ? error.message : "Unknown error",
-				service: SERVICE_NAME,
-				method: "registerUser",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.warn({ err: error }, "Failed to send welcome email");
 		}
 
 		return { user: newUser, token };
@@ -183,7 +168,7 @@ export class UserService implements IUserService {
 		for (const targetRole of targetRoles) {
 			const canManage = actorRoles.some((actorRole) => canManageRole(actorRole, targetRole));
 			if (!canManage) {
-				throw new AppError(userErrors.roleAboveCaller, { service: SERVICE_NAME, method: "createUser" });
+				throw new AppError(userErrors.roleAboveCaller, { service: SERVICE_NAME });
 			}
 		}
 
@@ -195,12 +180,7 @@ export class UserService implements IUserService {
 
 		const newUser = await this.usersRepository.create(userData as User, file);
 
-		this.logger.debug({
-			message: "New user created by superadmin",
-			service: SERVICE_NAME,
-			method: "createUser",
-			details: { userId: newUser.id },
-		});
+		this.logger.debug({ userId: newUser.id }, "New user created by superadmin");
 
 		newUser.avatarImage = undefined;
 
@@ -214,7 +194,7 @@ export class UserService implements IUserService {
 		const match = await bcrypt.compare(password, user.password);
 
 		if (match !== true) {
-			throw new AppError(userErrors.invalidCredentials, { service: SERVICE_NAME, method: "loginUser" });
+			throw new AppError(userErrors.invalidCredentials, { service: SERVICE_NAME });
 		}
 
 		const userResponse = toUserResponse(user);
@@ -239,7 +219,7 @@ export class UserService implements IUserService {
 			// If not a match, throw a 403
 			// 403 instead of 401 to avoid triggering axios interceptor
 			if (!match) {
-				throw new AppError(userErrors.incorrectCurrentPassword, { service: SERVICE_NAME, method: "editUser" });
+				throw new AppError(userErrors.incorrectCurrentPassword, { service: SERVICE_NAME });
 			}
 			// If a match, update the password
 			updates.password = this.hashPassword(updates.newPassword);
@@ -272,7 +252,6 @@ export class UserService implements IUserService {
 			throw new AppError(internalError, {
 				message: "Failed to build password reset email HTML",
 				service: SERVICE_NAME,
-				method: "requestRecovery",
 			});
 		}
 		const msgId = await this.emailService.sendEmail(email, "Checkmate Password Reset", html);
@@ -290,7 +269,7 @@ export class UserService implements IUserService {
 
 		const match = await bcrypt.compare(password, existingUser.password);
 		if (match === true) {
-			throw new AppError(userErrors.passwordUnchanged, { service: SERVICE_NAME, method: "resetPassword" });
+			throw new AppError(userErrors.passwordUnchanged, { service: SERVICE_NAME });
 		}
 
 		const hashedPassword = this.hashPassword(password);
@@ -305,7 +284,7 @@ export class UserService implements IUserService {
 
 	deleteUser = async ({ userId, teamId, roles }: { userId: string; teamId: string; roles: UserRole[] }) => {
 		if (roles.includes("demo")) {
-			throw new AppError(userErrors.demoUserProtected, { service: SERVICE_NAME, method: "deleteUser" });
+			throw new AppError(userErrors.demoUserProtected, { service: SERVICE_NAME });
 		}
 
 		if (roles.includes("superadmin")) {
@@ -330,17 +309,17 @@ export class UserService implements IUserService {
 		targetUserId: string;
 	}) => {
 		if (actorId === targetUserId) {
-			throw new AppError(userErrors.cannotDeleteSelf, { service: SERVICE_NAME, method: "deleteUserById" });
+			throw new AppError(userErrors.cannotDeleteSelf, { service: SERVICE_NAME });
 		}
 
 		const targetUser = await this.usersRepository.findById(targetUserId);
 
 		if (targetUser.teamId !== actorTeamId) {
-			throw new AppError(userErrors.notOnTeam, { service: SERVICE_NAME, method: "deleteUserById" });
+			throw new AppError(userErrors.notOnTeam, { service: SERVICE_NAME });
 		}
 
 		if (targetUser.role.includes("demo")) {
-			throw new AppError(userErrors.demoUserProtected, { service: SERVICE_NAME, method: "deleteUserById" });
+			throw new AppError(userErrors.demoUserProtected, { service: SERVICE_NAME });
 		}
 
 		const targetRoles = targetUser.role;
@@ -349,17 +328,13 @@ export class UserService implements IUserService {
 		for (const targetRole of targetRoles) {
 			const canManage = actorRoles.some((actorRole) => canManageRole(actorRole, targetRole));
 			if (!canManage) {
-				throw new AppError(userErrors.roleAboveCaller, { service: SERVICE_NAME, method: "deleteUserById" });
+				throw new AppError(userErrors.roleAboveCaller, { service: SERVICE_NAME });
 			}
 		}
 
 		await this.usersRepository.deleteById(targetUserId);
 
-		this.logger.info({
-			message: `User ${targetUserId} deleted by ${actorId}`,
-			service: SERVICE_NAME,
-			method: "deleteUserById",
-		});
+		this.logger.info({ userId: targetUserId, actorId }, "User deleted");
 	};
 
 	getAllUsers = async () => {

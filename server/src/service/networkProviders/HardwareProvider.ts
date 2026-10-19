@@ -23,7 +23,6 @@ export class HardwareProvider implements IStatusProvider<HardwareStatusPayload> 
 			throw new AppError(internalError, {
 				message: err instanceof Error ? err.message : "Error performing Hardware request",
 				service: SERVICE_NAME,
-				method: "handle",
 				details: { url: monitor.url },
 			});
 		}

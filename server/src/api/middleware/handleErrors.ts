@@ -5,11 +5,12 @@ import { AppError } from "@/utils/AppError.js";
 import { ZodError } from "zod";
 import type { ErrorBody } from "@/api/routes/openapiHelpers.js";
 
+const SERVICE_NAME = "ErrorHandler";
+
 type ErrorReport = {
 	status: number;
 	message: string;
 	service: string;
-	method: string;
 	details?: Record<string, unknown>;
 };
 
@@ -24,18 +25,18 @@ const formatZodIssues = (error: ZodError): string =>
 
 const describeError = (error: unknown): ErrorReport => {
 	if (error instanceof ZodError) {
-		return { status: 400, message: formatZodIssues(error), service: "validation", method: "unknownMethod", details: { issues: error.issues } };
+		return { status: 400, message: formatZodIssues(error), service: "validation", details: { issues: error.issues } };
 	}
 	if (error instanceof MulterError) {
-		return { status: error.code === "LIMIT_FILE_SIZE" ? 413 : 400, message: error.message, service: "uploadMiddleware", method: "unknownMethod" };
+		return { status: error.code === "LIMIT_FILE_SIZE" ? 413 : 400, message: error.message, service: "uploadMiddleware" };
 	}
 	if (error instanceof AppError) {
-		return { status: error.status, message: error.message, service: error.service, method: error.method, details: error.details };
+		return { status: error.status, message: error.message, service: error.service, details: error.details };
 	}
 	if (isClientHttpError(error)) {
-		return { status: error.status, message: error.message, service: "bodyParser", method: "unknownMethod" };
+		return { status: error.status, message: error.message, service: "bodyParser" };
 	}
-	return { status: 500, message: error instanceof Error ? error.message : "Server error", service: "unknownService", method: "unknownMethod" };
+	return { status: 500, message: error instanceof Error ? error.message : "Server error", service: "unknownService" };
 };
 
 const describeRequest = (req: Request): string | undefined => {
@@ -43,14 +44,26 @@ const describeRequest = (req: Request): string | undefined => {
 	return `${req.method} ${req.originalUrl.split("?")[0]}`;
 };
 
-const handleErrors = (logger: ILogger) => (error: unknown, req: Request, res: Response, _next: NextFunction) => {
-	const report = describeError(error);
-	const level = report.status < 500 ? "warn" : "error";
-	const request = describeRequest(req);
-	const details = request ? { request, ...report.details } : report.details;
-	logger[level]({ ...report, details, stack: error instanceof Error ? error.stack : undefined });
-	const body: ErrorBody = { status: report.status, msg: report.message };
-	res.status(body.status).json(body);
+const handleErrors = (logger: ILogger) => {
+	const log = logger.child({ service: SERVICE_NAME });
+	return (error: unknown, req: Request, res: Response, _next: NextFunction) => {
+		const report = describeError(error);
+		const level = report.status < 500 ? "warn" : "error";
+		// AppError's service is renamed: `service` is this line's own binding
+		log[level](
+			{
+				err: error,
+				status: report.status,
+				reason: report.message,
+				errorService: report.service,
+				request: describeRequest(req),
+				details: report.details,
+			},
+			"Request failed"
+		);
+		const body: ErrorBody = { status: report.status, msg: report.message };
+		res.status(body.status).json(body);
+	};
 };
 
 export { handleErrors };

@@ -975,7 +975,6 @@
 					"timestamp": "Zaman damgası",
 					"level": "Seviye",
 					"service": "Servis",
-					"method": "Yöntem",
 					"monitorId": "Monitör ID",
 					"runCount": "Çalışma sayısı",
 					"failCount": "Başarısızlık sayısı",
@@ -992,6 +991,10 @@
 			"header": {
 				"title": "Günlükler ve kuyruk",
 				"description": "Sunucu günlüklerini, izleyici iş kuyruğunu ve çalışma zamanı tanılarını tek bir yerde inceleyin."
+			},
+			"details": {
+				"fields": "Alanlar",
+				"stack": "Yığın izi"
 			}
 		},
 		"maintenanceWindow": {

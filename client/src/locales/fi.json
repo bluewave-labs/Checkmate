@@ -975,7 +975,6 @@
 					"timestamp": "Aikaleima",
 					"level": "Taso",
 					"service": "Palvelu",
-					"method": "Metodi",
 					"monitorId": "Monitorin tunnus",
 					"runCount": "Suorituskerrat",
 					"failCount": "Epäonnistumiskerrat",
@@ -992,6 +991,10 @@
 			"header": {
 				"title": "Lokit ja jono",
 				"description": "Tarkasta palvelinlokit, monitorin työjono ja ajonaikaiset diagnostiikat yhdestä paikasta."
+			},
+			"details": {
+				"fields": "Kentät",
+				"stack": "Pinojälki"
 			}
 		},
 		"maintenanceWindow": {

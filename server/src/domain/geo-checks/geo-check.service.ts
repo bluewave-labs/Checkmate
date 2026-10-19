@@ -44,7 +44,7 @@ export class GeoChecksService implements IGeoChecksService {
 		globalPingService: IGlobalPingService;
 		monitorsRepository: IMonitorsRepository;
 	}) {
-		this.logger = logger;
+		this.logger = logger.child({ service: SERVICE_NAME });
 		this.geoChecksRepository = geoChecksRepository;
 		this.globalPingService = globalPingService;
 		this.monitorsRepository = monitorsRepository;
@@ -53,22 +53,12 @@ export class GeoChecksService implements IGeoChecksService {
 	async buildGeoCheck(monitor: Monitor): Promise<GeoCheck | null> {
 		try {
 			if (!monitor.url) {
-				this.logger.warn({
-					message: "Monitor missing URL for geo check",
-					service: SERVICE_NAME,
-					method: "buildGeoCheck",
-					details: { monitorId: monitor.id },
-				});
+				this.logger.warn({ monitorId: monitor.id }, "Monitor missing URL for geo check");
 				return null;
 			}
 
 			if (!monitor.geoCheckLocations || monitor.geoCheckLocations.length === 0) {
-				this.logger.warn({
-					message: "Monitor missing geo check locations",
-					service: SERVICE_NAME,
-					method: "buildGeoCheck",
-					details: { monitorId: monitor.id },
-				});
+				this.logger.warn({ monitorId: monitor.id }, "Monitor missing geo check locations");
 				return null;
 			}
 
@@ -77,11 +67,7 @@ export class GeoChecksService implements IGeoChecksService {
 
 			if (!measurementId) {
 				// GlobalPing API is down, skip this check
-				this.logger.debug({
-					message: "Skipping geo check due to API unavailability",
-					service: SERVICE_NAME,
-					method: "buildGeoCheck",
-				});
+				this.logger.debug("Skipping geo check due to API unavailability");
 				return null;
 			}
 
@@ -90,32 +76,18 @@ export class GeoChecksService implements IGeoChecksService {
 
 			if (results.length === 0) {
 				// No successful results (all locations timed out or failed)
-				this.logger.debug({
-					message: "No successful geo check results",
-					service: SERVICE_NAME,
-					method: "buildGeoCheck",
-				});
+				this.logger.debug("No successful geo check results");
 				return null;
 			}
 
 			// Step 3: Build GeoCheck document
 			const geoCheck = this.createGeoCheckDocument(monitor, results);
 
-			this.logger.debug({
-				message: `Geo check completed for monitor ${monitor.id}`,
-				service: SERVICE_NAME,
-				method: "buildGeoCheck",
-			});
+			this.logger.debug({ monitorId: monitor.id }, "Geo check completed for monitor");
 
 			return geoCheck;
 		} catch (error: unknown) {
-			this.logger.error({
-				message: "Error executing geo check",
-				service: SERVICE_NAME,
-				method: "buildGeoCheck",
-				details: { monitorId: monitor.id, error: error instanceof Error ? error.message : "Unknown error" },
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.error({ err: error, monitorId: monitor.id }, "Error executing geo check");
 			return null;
 		}
 	}
@@ -166,7 +138,6 @@ export class GeoChecksService implements IGeoChecksService {
 			throw new AppError(monitorErrors.notFound, {
 				message: `Monitor with ID ${monitorId} not found.`,
 				service: SERVICE_NAME,
-				method: "getGeoChecksByMonitor",
 			});
 		}
 

@@ -1,6 +1,6 @@
 import type { z } from "zod";
 import pino, { type Logger as PinoLogger } from "pino";
-import type { logConfigSchema, logEntrySchema } from "@/utils/logger/logger.schema.js";
+import type { logEntrySchema } from "@/utils/logger/logger.schema.js";
 import { logContext } from "@/utils/logger/logContext.js";
 import type { RequestHandler } from "express";
 import { randomUUID } from "node:crypto";
@@ -10,12 +10,9 @@ import type { LogLevel } from "@/domain/app-settings/app-settings.type.js";
 // Keys the logger writes itself; a field with the same name would be written twice
 type ReservedLogKey = "message" | "level" | "timestamp" | "service";
 export type LogFields = Record<string, unknown> & { [K in ReservedLogKey]?: never };
-// child() is where `service` is set
 export type LogBindings = Record<string, unknown> & { [K in Exclude<ReservedLogKey, "service">]?: never };
-type LogConfig = z.infer<typeof logConfigSchema>;
 type LogEntry = z.infer<typeof logEntrySchema>;
 type LogMethod = {
-	(config: LogConfig): void; // legacy will be removed
 	(fields: LogFields, message: string): void;
 	(message: string): void;
 };
@@ -25,7 +22,6 @@ export interface ILogger {
 	warn: LogMethod;
 	error: LogMethod;
 	debug: LogMethod;
-	cacheLog(entry: LogEntry): void;
 	getLogs(): LogEntry[];
 	setLogLevel(level: LogLevel): void;
 	httpMiddleware(): RequestHandler;
@@ -34,8 +30,8 @@ export interface ILogger {
 
 const MAX_CACHE_SIZE = 1000;
 
-// Renamed reserved fields at runtime for fields the types miss TODO add "service"
-const RESERVED_FIELDS = ["message", "level", "timestamp"] as const;
+// Renamed reserved fields at runtime for fields the types miss
+const RESERVED_FIELDS = ["service", "message", "level", "timestamp"] as const;
 
 const renameReservedFields = (fields: Record<string, unknown>): Record<string, unknown> => {
 	const clashes = RESERVED_FIELDS.filter((key) => key in fields);
@@ -49,8 +45,7 @@ const renameReservedFields = (fields: Record<string, unknown>): Record<string, u
 };
 const REQUEST_ID_PATTERN = /^[\w.-]{1,128}$/;
 
-// Secret-bearing field names used in the app. Matched at the top level (new call shape), one level down and two
-// levels down (legacy calls nest fields under `details`).
+// Secret-bearing field names, redacted at the top level and up to two levels down (e.g. inside `details`)
 const SECRET_KEYS = [
 	"password",
 	"newPassword",
@@ -141,24 +136,17 @@ class Logger implements ILogger {
 		);
 	}
 
-	info(a: LogConfig | LogFields | string, b?: string) {
-		this.write("info", a, b);
+	info(fieldsOrMessage: LogFields | string, message?: string) {
+		this.write("info", fieldsOrMessage, message);
 	}
-	warn(a: LogConfig | LogFields | string, b?: string) {
-		this.write("warn", a, b);
+	warn(fieldsOrMessage: LogFields | string, message?: string) {
+		this.write("warn", fieldsOrMessage, message);
 	}
-	error(a: LogConfig | LogFields | string, b?: string) {
-		this.write("error", a, b);
+	error(fieldsOrMessage: LogFields | string, message?: string) {
+		this.write("error", fieldsOrMessage, message);
 	}
-	debug(a: LogConfig | LogFields | string, b?: string) {
-		this.write("debug", a, b);
-	}
-
-	cacheLog(entry: LogEntry) {
-		this.logCache.push(entry);
-		if (this.logCache.length > MAX_CACHE_SIZE) {
-			this.logCache.shift();
-		}
+	debug(fieldsOrMessage: LogFields | string, message?: string) {
+		this.write("debug", fieldsOrMessage, message);
 	}
 
 	getLogs() {
@@ -169,11 +157,12 @@ class Logger implements ILogger {
 		this.pino.level = level || "info";
 	}
 
-	private write(level: LogLevel, a: LogConfig | LogFields | string, b?: string) {
-		if (typeof a === "string") return this.pino[level](a);
-		if (typeof b === "string") return this.pino[level](a, b);
-		const { message, service, method, details, stack } = a as LogConfig;
-		this.pino[level]({ service, method, details, ...(stack && { err: { stack } }) }, message);
+	private write(level: LogLevel, fieldsOrMessage: LogFields | string, message?: string) {
+		if (typeof fieldsOrMessage === "string") {
+			this.pino[level](fieldsOrMessage);
+		} else {
+			this.pino[level](fieldsOrMessage, message);
+		}
 	}
 
 	httpMiddleware(): RequestHandler {
@@ -207,19 +196,23 @@ class Logger implements ILogger {
 	}
 
 	private toLogEntry(line: Record<string, unknown>): LogEntry {
-		const { level, message, timestamp, service, method, details, stack, err, ...rest } = line;
+		const { level, message, timestamp, service, err, ...rest } = line;
 		const errStack = typeof err === "object" && err !== null ? (err as { stack?: unknown }).stack : undefined;
-		// TODO: remove the merge once the legacy call shape is gone
-		const merged = { ...rest, ...(details as Record<string, unknown> | undefined) };
 		return {
 			level: String(level),
 			message: String(message ?? ""),
 			timestamp: String(timestamp),
 			service: typeof service === "string" ? service : undefined,
-			method: typeof method === "string" ? method : undefined,
-			details: Object.keys(merged).length > 0 ? merged : undefined,
-			stack: typeof stack === "string" ? stack : typeof errStack === "string" ? errStack : undefined,
+			details: Object.keys(rest).length > 0 ? rest : undefined,
+			stack: typeof errStack === "string" ? errStack : undefined,
 		};
+	}
+
+	private cacheLog(entry: LogEntry) {
+		this.logCache.push(entry);
+		if (this.logCache.length > MAX_CACHE_SIZE) {
+			this.logCache.shift();
+		}
 	}
 }
 

@@ -1,3 +1,6 @@
+export const DeploymentTypes = ["docker", "source"] as const;
+export type DeploymentType = (typeof DeploymentTypes)[number];
+
 export const DbTypes = ["mongodb"] as const;
 export type DbType = (typeof DbTypes)[number];
 
