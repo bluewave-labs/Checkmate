@@ -110,25 +110,32 @@ export const settingsSchema = z
 		globalProxyEnabled: z.boolean(),
 		globalProxyId: z.string().nullable().optional(),
 		egressCheckEnabled: z.boolean(),
+		// Reported on the field rather than per item: the form edits all targets in one textarea, so an
+		// error at egressCheckTargets.<index> would have nowhere to show.
 		egressCheckTargets: z
 			.string()
 			.transform(splitEgressTargets)
-			.pipe(
-				z
-					.array(
-						z
-							.string()
-							.max(
-								EGRESS_TARGET_MAX_LENGTH,
-								`Each target must be ${EGRESS_TARGET_MAX_LENGTH} characters or fewer`
-							)
-							.refine(
-								isEgressTarget,
-								"Each target must be a hostname or IP address, host:port, or http(s) URL"
-							)
-					)
-					.max(EGRESS_TARGETS_MAX, `Maximum ${EGRESS_TARGETS_MAX} targets`)
-			),
+			.superRefine((targets, ctx) => {
+				if (targets.length > EGRESS_TARGETS_MAX) {
+					ctx.addIssue({
+						code: "custom",
+						message: `Maximum ${EGRESS_TARGETS_MAX} targets`,
+					});
+				}
+				if (targets.some((target) => target.length > EGRESS_TARGET_MAX_LENGTH)) {
+					ctx.addIssue({
+						code: "custom",
+						message: `Each target must be ${EGRESS_TARGET_MAX_LENGTH} characters or fewer`,
+					});
+				}
+				const invalid = targets.find((target) => !isEgressTarget(target));
+				if (invalid !== undefined) {
+					ctx.addIssue({
+						code: "custom",
+						message: `"${invalid}" is not a hostname or IP address, host:port, or http(s) URL`,
+					});
+				}
+			}),
 		egressNotifications: z.array(z.string()),
 	})
 	.superRefine((body, ctx) => {
