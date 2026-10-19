@@ -26,6 +26,7 @@ export * from "./NoticeBanner";
 export * from "./OfflineBanner";
 export * from "./EgressBanner";
 export * from "./EgressDegradedLabel";
+export * from "./CheckStatusLabel";
 export * from "./Avatar";
 export * from "./StatusCodeLabel";
 export * from "./StrategyBadge";
