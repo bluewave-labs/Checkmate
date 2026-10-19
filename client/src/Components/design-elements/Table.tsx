@@ -76,7 +76,7 @@ export function DataTable<
 	const theme = useTheme();
 	const [expanded, setExpanded] = useState<(string | number) | null>(null);
 	const handleExpand = (row: T) => {
-		const key = row.id || row._id || null;
+		const key = row.id ?? row._id ?? null;
 		setExpanded(expanded === key ? null : key);
 	};
 
@@ -96,8 +96,6 @@ export function DataTable<
 			)
 		);
 	};
-	const isInteractive = Boolean(onRowClick) || expandableRows;
-
 	if (data.length === 0 || headers.length === 0) {
 		return (
 			<EmptyView
@@ -113,8 +111,9 @@ export function DataTable<
 		return (
 			<Stack spacing={theme.spacing(LAYOUT.XS)}>
 				{data.map((row) => {
-					const key = row.id || row._id || Math.random();
+					const key = row.id ?? row._id ?? Math.random();
 					keys.push(key);
+					const expandedContent = expandableRows ? renderExpandedContent?.(row) : null;
 					return (
 						<Stack
 							onClick={(e) => {
@@ -183,9 +182,7 @@ export function DataTable<
 									</Grid2>
 								);
 							})}
-							{expandableRows && renderExpandedContent && renderExpandedContent(row) && (
-								<Grid2 size={12}>{renderExpandedContent(row)}</Grid2>
-							)}
+							{expandedContent && <Grid2 size={12}>{expandedContent}</Grid2>}
 						</Stack>
 					);
 				})}
@@ -237,6 +234,12 @@ export function DataTable<
 			>
 				<TableHead>
 					<TableRow>
+						{expandableRows && (
+							<TableCell
+								width={0}
+								style={{ paddingRight: 0 }}
+							/>
+						)}
 						{headers.map((header, idx) => {
 							return (
 								<TableCell
@@ -251,13 +254,17 @@ export function DataTable<
 				</TableHead>
 				<TableBody>
 					{data.map((row) => {
-						const key = row.id || row._id || Math.random();
+						const key = row.id ?? row._id ?? Math.random();
 						const isExpanded = expanded === key;
 						const selected = isRowSelected?.(row);
+						const expandedContent = expandableRows ? renderExpandedContent?.(row) : null;
+						const canExpand = Boolean(expandedContent);
+						const isInteractive = Boolean(onRowClick) || canExpand;
 
 						return (
 							<Fragment key={key}>
 								<TableRow
+									aria-expanded={canExpand ? isExpanded : undefined}
 									sx={{
 										cursor: isInteractive ? "pointer" : "default",
 										...(isInteractive && {
@@ -276,10 +283,43 @@ export function DataTable<
 									}}
 									onClick={(e) => {
 										if (hasTextSelectionWithin(e.currentTarget)) return;
-										if (expandableRows) handleExpand(row);
+										if (canExpand) handleExpand(row);
 										else if (onRowClick) onRowClick(row);
 									}}
 								>
+									{expandableRows && (
+										<TableCell
+											width={0}
+											style={{ overflow: "visible" }}
+										>
+											{canExpand && (
+												<Box
+													display="inline-flex"
+													color={theme.palette.text.secondary}
+													sx={{
+														transform: isExpanded
+															? `rotate(${theme.direction === "rtl" ? -90 : 90}deg)`
+															: "none",
+														transition: theme.transitions.create("transform", {
+															duration: theme.transitions.duration.shortest,
+														}),
+													}}
+												>
+													{theme.direction === "rtl" ? (
+														<ChevronLeft
+															size={16}
+															strokeWidth={1.5}
+														/>
+													) : (
+														<ChevronRight
+															size={16}
+															strokeWidth={1.5}
+														/>
+													)}
+												</Box>
+											)}
+										</TableCell>
+									)}
 									{headers.map((header, index) => {
 										return (
 											<TableCell
@@ -294,28 +334,26 @@ export function DataTable<
 										);
 									})}
 								</TableRow>
-								{expandableRows &&
-									renderExpandedContent &&
-									renderExpandedContent(row) && (
-										<TableRow>
-											<TableCell
-												colSpan={headers.length}
-												style={{
-													borderBottom: isExpanded ? undefined : "none",
-													paddingTop: 0,
-													paddingBottom: 0,
-												}}
+								{canExpand && (
+									<TableRow>
+										<TableCell
+											colSpan={headers.length + 1}
+											style={{
+												borderBottom: isExpanded ? undefined : "none",
+												paddingTop: 0,
+												paddingBottom: 0,
+											}}
+										>
+											<Collapse
+												in={isExpanded}
+												timeout="auto"
+												unmountOnExit
 											>
-												<Collapse
-													in={isExpanded}
-													timeout="auto"
-													unmountOnExit
-												>
-													<Box sx={{ pt: 4, pb: 4 }}>{renderExpandedContent(row)}</Box>
-												</Collapse>
-											</TableCell>
-										</TableRow>
-									)}
+												<Box sx={{ pt: 4, pb: 4 }}>{expandedContent}</Box>
+											</Collapse>
+										</TableCell>
+									</TableRow>
+								)}
 							</Fragment>
 						);
 					})}

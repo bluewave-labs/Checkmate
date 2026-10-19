@@ -15,7 +15,6 @@ export async function migrateStatusPageTypeToArray(logger: ILogger): Promise<voi
 			throw new AppError(internalError, {
 				message: "Database connection is not initialized",
 				service: SERVICE_NAME,
-				method: "migrateStatusPageTypeToArray",
 			});
 		}
 

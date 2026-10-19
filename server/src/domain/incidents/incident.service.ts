@@ -47,7 +47,7 @@ export class IncidentService implements IIncidentService {
 		usersRepository: IUsersRepository,
 		notificationMessageBuilder: INotificationMessageBuilder
 	) {
-		this.logger = logger;
+		this.logger = logger.child({ service: SERVICE_NAME });
 		this.incidentsRepository = incidentsRepository;
 		this.monitorsRepository = monitorsRepository;
 		this.usersRepository = usersRepository;
@@ -91,11 +91,11 @@ export class IncidentService implements IIncidentService {
 			const incident = await this.incidentsRepository.findActiveByIncidentId(incidentId, teamId);
 
 			if (!incident) {
-				throw new AppError(incidentErrors.notFound, { service: SERVICE_NAME, method: "resolveIncident" });
+				throw new AppError(incidentErrors.notFound, { service: SERVICE_NAME });
 			}
 
 			if (incident.status === false) {
-				throw new AppError(incidentErrors.alreadyResolved, { service: SERVICE_NAME, method: "resolveIncident" });
+				throw new AppError(incidentErrors.alreadyResolved, { service: SERVICE_NAME });
 			}
 
 			incident.resolutionType = "manual";
@@ -107,22 +107,11 @@ export class IncidentService implements IIncidentService {
 
 			const resolvedIncident = await this.incidentsRepository.updateById(incident.id, teamId, incident);
 
-			this.logger.debug({
-				service: SERVICE_NAME,
-				method: "resolveIncidentManually",
-				message: `Incident manually resolved by user`,
-				details: { incidentId: resolvedIncident.id },
-			});
+			this.logger.debug({ incidentId: resolvedIncident.id }, "Incident manually resolved by user");
 
 			return resolvedIncident;
 		} catch (error: unknown) {
-			this.logger.error({
-				service: SERVICE_NAME,
-				method: "resolveIncident",
-				message: error instanceof Error ? error.message : "Unknown error",
-				details: { id: incidentId },
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.error({ err: error, incidentId }, "Failed to resolve incident");
 			throw error;
 		}
 	};
@@ -157,13 +146,7 @@ export class IncidentService implements IIncidentService {
 
 			return { incidents, count };
 		} catch (error: unknown) {
-			this.logger.error({
-				service: SERVICE_NAME,
-				method: "getIncidentsByTeam",
-				message: error instanceof Error ? error.message : "Unknown error",
-				details: { teamId },
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.error({ err: error, teamId }, "Failed to get incidents for team");
 			throw error;
 		}
 	};
@@ -175,13 +158,7 @@ export class IncidentService implements IIncidentService {
 
 			return summary;
 		} catch (error: unknown) {
-			this.logger.error({
-				service: SERVICE_NAME,
-				method: "getIncidentSummary",
-				message: error instanceof Error ? error.message : "Unknown error",
-				details: { teamId },
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.error({ err: error, teamId }, "Failed to get incident summary");
 			throw error;
 		}
 	};
@@ -196,13 +173,7 @@ export class IncidentService implements IIncidentService {
 			}
 			return { incident, monitor, user };
 		} catch (error: unknown) {
-			this.logger.error({
-				service: SERVICE_NAME,
-				method: "getIncidentById",
-				message: error instanceof Error ? error.message : "Unknown error",
-				details: { incidentId },
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.error({ err: error, incidentId }, "Failed to get incident");
 			throw error;
 		}
 	};

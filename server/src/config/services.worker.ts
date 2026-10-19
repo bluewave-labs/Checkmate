@@ -16,6 +16,7 @@ import { IProviderRegistry, ProviderRegistry } from "@/service/networkProviders/
 import { IBufferService, BufferService } from "@/service/bufferService.js";
 import { IStatusService, StatusService } from "@/service/statusService.js";
 import { SecretsRotationService } from "@/service/encryption/secretsRotationService.js";
+import { TelemetryService } from "@/domain/telemetry/telemetry.service.js";
 import { IQueueWorker, JobHandlers } from "@/worker/worker.interface.js";
 import { WorkerHelper } from "@/worker/worker.helper.js";
 import { GeoChecksPipeline } from "@/worker/worker.geo-pipeline.js";
@@ -37,7 +38,6 @@ import { GameProvider } from "@/service/networkProviders/GameProvider.js";
 import { GrpcProvider } from "@/service/networkProviders/GrpcProvider.js";
 import { WebSocketProvider } from "@/service/networkProviders/WebSocketProvider.js";
 import { DNSProvider } from "@/service/networkProviders/DNSProvider.js";
-import { AppError } from "@/utils/AppError.js";
 import { WorkerPipeline } from "@/worker/worker.pipeline.js";
 export interface WorkerServices {
 	worker: IQueueWorker;
@@ -70,6 +70,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		maintenanceWindowsRepository,
 		proxiesRepository,
 		egressStateRepository,
+		settingsRepository,
 	} = shared;
 
 	// ***********************
@@ -113,6 +114,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		notificationsService,
 		logger
 	);
+	const telemetryService = new TelemetryService(got, settingsService, settingsRepository, logger);
 
 	const notificationReactor = new NotificationReactor(notificationsService);
 	const incidentReactor = new IncidentReactor(incidentService);
@@ -152,7 +154,8 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		incidentsRepository,
 		geoChecksRepository,
 		dockerLogsRepository,
-		egressService
+		egressService,
+		telemetryService
 	);
 
 	const handlers: JobHandlers = {
@@ -162,6 +165,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		"cleanup-orphaned": workerHelper.getCleanupOrphanedJob(),
 		"cleanup-retention": workerHelper.getCleanupRetentionJob(),
 		egress: workerHelper.getEgressRecoveryJob(),
+		telemetry: workerHelper.getTelemetryJob(),
 	};
 
 	const worker = await DBQueueWorker.create({
@@ -175,24 +179,16 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		queueMode: envSettings.queueMode,
 		queuePrimaryProcesses: envSettings.queuePrimaryProcesses,
 		workerId,
+		telemetryEnabled: envSettings.telemetryEnabled,
 	});
 
 	const secretsRotationService = new SecretsRotationService(monitorsRepository, encryptionService, logger);
+	const log = logger.child({ service: "WorkerServices" }); // this function's own lines; services above get the root logger
 	try {
 		const result = await secretsRotationService.run();
-		logger.debug({
-			message: "Secrets rotation run successfully",
-			service: "WorkerServices",
-			method: "buildWorker",
-			details: { ...result },
-		});
+		log.debug({ ...result }, "Secrets rotation run successfully");
 	} catch (error: unknown) {
-		logger.warn({
-			message: `Could not rotate Docker TLS secrets: ${error instanceof Error ? error.message : String(error)}`,
-			service: "WorkerServices",
-			method: "buildWorker",
-			details: { ...(error instanceof AppError ? error.details : {}) },
-		});
+		log.warn({ err: error }, "Could not rotate Docker TLS secrets");
 	}
 
 	return { worker, networkService: providerRegistry, bufferService, statusService, egressService };

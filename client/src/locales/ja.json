@@ -975,7 +975,6 @@
 					"timestamp": "タイムスタンプ",
 					"level": "レベル",
 					"service": "サービス",
-					"method": "メソッド",
 					"monitorId": "モニターID",
 					"runCount": "実行回数",
 					"failCount": "失敗回数",
@@ -992,6 +991,10 @@
 			"header": {
 				"title": "ログとキュー",
 				"description": "サーバーログ、モニタージョブキュー、ランタイム診断を一か所で確認できます。"
+			},
+			"details": {
+				"fields": "フィールド",
+				"stack": "スタックトレース"
 			}
 		},
 		"maintenanceWindow": {

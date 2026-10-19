@@ -975,7 +975,6 @@
 					"timestamp": "時間戳",
 					"level": "等級",
 					"service": "服務",
-					"method": "方法",
 					"monitorId": "監控 ID",
 					"runCount": "執行次數",
 					"failCount": "失敗次數",
@@ -992,6 +991,10 @@
 			"header": {
 				"title": "日誌與佇列",
 				"description": "在一處查看伺服器日誌、監視器作業佇列和執行時診斷。"
+			},
+			"details": {
+				"fields": "欄位",
+				"stack": "堆疊"
 			}
 		},
 		"maintenanceWindow": {

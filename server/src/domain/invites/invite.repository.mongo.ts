@@ -36,7 +36,7 @@ class MongoInvitesRepository implements IInvitesRepository {
 			token,
 		});
 		if (invite === null) {
-			throw new AppError(inviteErrors.notFound, { service: SERVICE_NAME, method: "findByToken" });
+			throw new AppError(inviteErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(invite);
 	};
@@ -46,7 +46,7 @@ class MongoInvitesRepository implements IInvitesRepository {
 			token,
 		});
 		if (invite === null) {
-			throw new AppError(inviteErrors.notFound, { service: SERVICE_NAME, method: "findByTokenAndDelete" });
+			throw new AppError(inviteErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(invite);
 	};

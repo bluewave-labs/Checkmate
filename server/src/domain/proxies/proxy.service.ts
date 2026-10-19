@@ -93,7 +93,6 @@ export class ProxiesService implements IProxiesService {
 			throw new AppError(proxyErrors.inUseByMonitors, {
 				message: `Proxy still in use by ${monitorsUsingProxy} monitor${monitorsUsingProxy > 1 ? "s" : ""}`,
 				service: SERVICE_NAME,
-				method: "deleteProxy",
 			});
 		}
 
@@ -102,7 +101,6 @@ export class ProxiesService implements IProxiesService {
 		if (settings.globalProxyId === proxyId) {
 			throw new AppError(proxyErrors.isGlobalProxy, {
 				service: SERVICE_NAME,
-				method: "deleteProxy",
 			});
 		}
 		const raw = await this.proxiesRepository.deleteById(proxyId, teamId);

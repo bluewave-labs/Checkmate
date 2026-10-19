@@ -40,7 +40,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		const match: { _id: string; teamId: string } = { _id: monitorId, teamId };
 		const monitor = await MonitorModel.findOne(match);
 		if (!monitor) {
-			throw new AppError(monitorErrors.notFound, { message: `Monitor with ID ${monitorId} not found`, service: SERVICE_NAME, method: "findById" });
+			throw new AppError(monitorErrors.notFound, { message: `Monitor with ID ${monitorId} not found`, service: SERVICE_NAME });
 		}
 		return this.toEntity(monitor);
 	};
@@ -196,7 +196,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		}
 		const updatedMonitor = await MonitorModel.findOneAndUpdate({ _id: monitorId, teamId }, update, { new: true, runValidators: true });
 		if (!updatedMonitor) {
-			throw new AppError(internalError, { message: `Failed to update monitor with id ${monitorId}`, service: SERVICE_NAME, method: "updateById" });
+			throw new AppError(internalError, { message: `Failed to update monitor with id ${monitorId}`, service: SERVICE_NAME });
 		}
 		return this.toEntity(updatedMonitor);
 	};
@@ -236,7 +236,6 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			throw new AppError(internalError, {
 				message: `Failed to update status and checks for monitor with id ${monitorId}`,
 				service: SERVICE_NAME,
-				method: "updateStatusWindowAndChecks",
 			});
 		}
 		return this.toEntity(updatedMonitor);
@@ -265,7 +264,6 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			throw new AppError(monitorErrors.notFound, {
 				message: `Monitor with ID ${monitorId} not found for the given team.`,
 				service: SERVICE_NAME,
-				method: "togglePauseById",
 			});
 		}
 		return this.toEntity(monitor);
@@ -306,7 +304,6 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			throw new AppError(monitorErrors.notFound, {
 				message: `Monitor with ID ${monitorId} not found for the given team.`,
 				service: SERVICE_NAME,
-				method: "deleteById",
 			});
 		}
 
@@ -411,7 +408,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
 			notificationObjectIds = notificationIds.map((id) => new mongoose.Types.ObjectId(id));
 		} catch {
-			throw new AppError(monitorErrors.invalidNotificationIds, { service: SERVICE_NAME, method: "updateNotifications" });
+			throw new AppError(monitorErrors.invalidNotificationIds, { service: SERVICE_NAME });
 		}
 		const filter = { _id: { $in: objectIds }, teamId: new mongoose.Types.ObjectId(teamId) };
 
@@ -427,7 +424,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 				update = { $set: { notifications: notificationObjectIds } };
 				break;
 			default:
-				throw new AppError(internalError, { message: `Invalid action: ${action}`, service: SERVICE_NAME, method: "updateNotifications" });
+				throw new AppError(internalError, { message: `Invalid action: ${action}`, service: SERVICE_NAME });
 		}
 
 		const result = await MonitorModel.updateMany(filter, update);

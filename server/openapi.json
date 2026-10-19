@@ -3923,13 +3923,16 @@
 			"LogEntry": {
 				"type": "object",
 				"properties": {
+					"level": {
+						"type": "string"
+					},
+					"timestamp": {
+						"type": "string"
+					},
 					"message": {
 						"type": "string"
 					},
 					"service": {
-						"type": "string"
-					},
-					"method": {
 						"type": "string"
 					},
 					"details": {
@@ -3939,12 +3942,6 @@
 						}
 					},
 					"stack": {
-						"type": "string"
-					},
-					"level": {
-						"type": "string"
-					},
-					"timestamp": {
 						"type": "string"
 					}
 				},

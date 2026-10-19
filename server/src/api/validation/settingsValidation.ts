@@ -92,6 +92,7 @@ export const appSettingsResponseSchema = z
 			jwtSecret: true,
 			pagespeedApiKey: true,
 			systemEmailPassword: true,
+			telemetryInstanceId: true,
 		}),
 	})
 	.meta({ id: "AppSettings" });

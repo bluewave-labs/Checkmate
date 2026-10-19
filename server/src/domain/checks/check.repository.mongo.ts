@@ -43,7 +43,7 @@ class MongoChecksRepository implements IChecksRepository {
 
 	private logger: ILogger;
 	constructor(logger: ILogger) {
-		this.logger = logger;
+		this.logger = logger.child({ service: SERVICE_NAME });
 	}
 
 	private toEntity = (doc: CheckDocument): Check => {
@@ -201,7 +201,6 @@ class MongoChecksRepository implements IChecksRepository {
 			throw new AppError(internalError, {
 				message: `Check must have valid metadata with monitorId and teamId. Got: ${JSON.stringify({ id, metadata })}`,
 				service: SERVICE_NAME,
-				method: "toDocument",
 			});
 		}
 		return {
@@ -242,11 +241,7 @@ class MongoChecksRepository implements IChecksRepository {
 				// one place they can be reviewed as a set.
 				return { ...ONLY_DEGRADED_EGRESS_MATCH };
 			default:
-				this.logger.warn({
-					message: "invalid filter",
-					service: SERVICE_NAME,
-					method: "filterToMatch",
-				});
+				this.logger.warn("invalid filter");
 				return {};
 		}
 	};

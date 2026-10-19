@@ -22,7 +22,7 @@ export class DockerLogsService implements IDockerLogsService {
 	private lastTimestampByContainer = new Map<string, string>();
 
 	constructor({ logger, dockerLogsRepository }: { logger: ILogger; dockerLogsRepository: IDockerLogsRepository }) {
-		this.logger = logger;
+		this.logger = logger.child({ service: SERVICE_NAME });
 		this.dockerLogsRepository = dockerLogsRepository;
 	}
 
@@ -85,12 +85,7 @@ export class DockerLogsService implements IDockerLogsService {
 					updatedAt: checkedAt,
 				});
 			} catch (error: unknown) {
-				this.logger.warn({
-					message: `Failed to build docker logs for container ${containerName}`,
-					service: SERVICE_NAME,
-					method: "buildDockerLogs",
-					details: { monitorId: status.monitorId, containerId, error: error instanceof Error ? error.message : String(error) },
-				});
+				this.logger.warn({ err: error, monitorId: status.monitorId, containerId, containerName }, "Failed to build docker logs for container");
 			}
 		}
 		return results;

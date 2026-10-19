@@ -13,6 +13,8 @@ export const POLL_MS = 250; // base poll interval while a loop is actively claim
 const SERVICE_NAME = "JobScheduler";
 const HEARTBEAT_MS = WORKER_STALE_MS / 3; // Worker can miss two beats without being considered stale
 const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
+const TELEMETRY_INTERVAL_MS = 24 * 60 * 60 * 1000;
+const TELEMETRY_FIRST_RUN_JITTER_MS = 60 * 60 * 1000;
 
 export class JobScheduler implements IJobScheduler {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -23,7 +25,8 @@ export class JobScheduler implements IJobScheduler {
 		protected monitorsRepository: IMonitorsRepository,
 		protected queueMode: QueueMode,
 		logger: ILogger,
-		protected readonly workerId: string // same id MongoJobsRepository stamps into lockedBy
+		protected readonly workerId: string, // same id MongoJobsRepository stamps into lockedBy
+		protected telemetryEnabled: boolean
 	) {
 		this.logger = logger.child({ service: SERVICE_NAME });
 	}
@@ -45,6 +48,7 @@ export class JobScheduler implements IJobScheduler {
 		"cleanup-orphaned": POLL_MS,
 		"cleanup-retention": POLL_MS,
 		egress: POLL_MS,
+		telemetry: POLL_MS,
 	};
 	// Helpers, builds job seeds. immediate=true runs on the next tick; otherwise jitter spreads the herd.
 	protected toCheckJob = (monitor: MonitorScheduleFields, now: number, immediate = false): JobSeed => ({
@@ -70,6 +74,15 @@ export class JobScheduler implements IJobScheduler {
 		isActive: true,
 		nextScheduledAt: now,
 		intervalMs: CLEANUP_INTERVAL_MS,
+	});
+
+	protected toTelemetryJob = (now: number): JobSeed => ({
+		id: jobId("telemetry", null),
+		type: "telemetry",
+		refId: null,
+		isActive: true,
+		nextScheduledAt: now + Math.floor(Math.random() * TELEMETRY_FIRST_RUN_JITTER_MS), // Avoid herd after a release
+		intervalMs: TELEMETRY_INTERVAL_MS,
 	});
 
 	private toSummary = (job: Job): WorkerJobSummary => ({
@@ -201,6 +214,13 @@ export class JobScheduler implements IJobScheduler {
 		// Both cleanup jobs run immediately on every startup, then once a day
 		await this.jobsRepository.upsertCleanupJob(this.toCleanupJob("cleanup-orphaned", now));
 		await this.jobsRepository.upsertCleanupJob(this.toCleanupJob("cleanup-retention", now));
+
+		if (this.telemetryEnabled) {
+			await this.jobsRepository.upsertJob(this.toTelemetryJob(now));
+			this.logger.info("Anonymous telemetry enabled, set TELEMETRY_ENABLED=false to disable");
+		} else {
+			await this.jobsRepository.deleteGlobalJob("telemetry");
+		}
 	};
 
 	// Register worker

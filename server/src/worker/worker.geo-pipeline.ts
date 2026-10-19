@@ -50,7 +50,7 @@ export class GeoChecksPipeline implements IGeoChecksPipeline {
 		// Step 1a: Guards - skip if unsupported or not enabled
 
 		if (!monitor.id) {
-			throw new AppError(internalError, { message: "No monitor id", service: SERVICE_NAME, method: "run" });
+			throw new AppError(internalError, { message: "No monitor id", service: SERVICE_NAME });
 		}
 
 		if (!monitor.geoCheckEnabled) {

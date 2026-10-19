@@ -8,7 +8,7 @@ export const createVerifyStatusPageAccess = (statusPagesRepository: IStatusPages
 		try {
 			const url = Array.isArray(req.params.url) ? req.params.url[0] : req.params.url;
 			if (!url) {
-				throw new AppError(middlewareErrors.invalidRequest, { service: SERVICE_NAME, method: "createVerifyStatusPageAccess" });
+				throw new AppError(middlewareErrors.invalidRequest, { service: SERVICE_NAME });
 			}
 			const statusPage = await statusPagesRepository.findByUrl(url);
 			if (statusPage.isPublished) {

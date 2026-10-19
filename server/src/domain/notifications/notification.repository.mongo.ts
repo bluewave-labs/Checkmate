@@ -41,7 +41,7 @@ class MongoNotificationsRepository implements INotificationsRepository {
 	create = async (notificationData: Partial<Notification>) => {
 		const notification = await NotificationModel.create({ ...notificationData });
 		if (!notification) {
-			throw new AppError(internalError, { message: "Failed to create notification", service: SERVICE_NAME, method: "create" });
+			throw new AppError(internalError, { message: "Failed to create notification", service: SERVICE_NAME });
 		}
 		return this.toEntity(notification);
 	};
@@ -52,7 +52,7 @@ class MongoNotificationsRepository implements INotificationsRepository {
 			teamId: new mongoose.Types.ObjectId(teamId),
 		});
 		if (!notification) {
-			throw new AppError(notificationErrors.notFound, { service: SERVICE_NAME, method: "findById" });
+			throw new AppError(notificationErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(notification);
 	};
@@ -84,7 +84,7 @@ class MongoNotificationsRepository implements INotificationsRepository {
 			{ new: true, runValidators: true }
 		);
 		if (!notification) {
-			throw new AppError(notificationErrors.notFound, { service: SERVICE_NAME, method: "updateById" });
+			throw new AppError(notificationErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(notification);
 	};
@@ -98,7 +98,6 @@ class MongoNotificationsRepository implements INotificationsRepository {
 			throw new AppError(notificationErrors.notFound, {
 				message: "Notification not found or could not be deleted",
 				service: SERVICE_NAME,
-				method: "deleteById",
 			});
 		}
 		return this.toEntity(deleted);

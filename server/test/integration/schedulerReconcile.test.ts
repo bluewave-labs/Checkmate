@@ -49,14 +49,15 @@ const seedMonitor = (overrides: Record<string, unknown> = {}) =>
 		...overrides,
 	});
 
-const makeScheduler = () =>
+const makeScheduler = (telemetryEnabled = false) =>
 	new JobScheduler(
 		new MongoJobsRepository(WORKER_ID),
 		new MongoQueueWorkersRepository(),
 		new MongoMonitorsRepository(),
 		"primary",
 		createMockLogger(),
-		WORKER_ID
+		WORKER_ID,
+		telemetryEnabled
 	);
 
 const idsOf = async () => (await JobModel.find().lean<JobDocument[]>()).map((j) => j._id);
@@ -75,6 +76,32 @@ describe("JobScheduler.init (scheduler-only primary reconcile)", () => {
 		expect(ids).toContain(`check:${m2.id}`);
 		expect(ids).toContain("cleanup-orphaned");
 		expect(ids).toContain("cleanup-retention");
+	});
+
+	it("seeds the telemetry row once and keeps its schedule across restarts", async () => {
+		const first = makeScheduler(true);
+		await first.init();
+		await first.shutdown();
+		const seeded = await JobModel.findById("telemetry").lean<JobDocument>();
+		expect(seeded?.type).toBe("telemetry");
+
+		const second = makeScheduler(true);
+		await second.init();
+		await second.shutdown();
+		const afterRestart = await JobModel.findById("telemetry").lean<JobDocument>();
+		expect(afterRestart?.nextScheduledAt).toBe(seeded?.nextScheduledAt);
+	});
+
+	it("removes the telemetry row when telemetry is disabled", async () => {
+		const enabled = makeScheduler(true);
+		await enabled.init();
+		await enabled.shutdown();
+
+		const disabled = makeScheduler(false);
+		await disabled.init();
+		await disabled.shutdown();
+
+		expect(await idsOf()).not.toContain("telemetry");
 	});
 
 	it("seeds a geo-check row only for geo-enabled monitors", async () => {

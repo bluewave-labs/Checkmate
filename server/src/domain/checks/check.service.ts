@@ -44,7 +44,7 @@ export class CheckService implements ICheckService {
 	private logger: ILogger;
 	constructor(monitorsRepository: IMonitorsRepository, logger: ILogger, checksRepository: IChecksRepository) {
 		this.monitorsRepository = monitorsRepository;
-		this.logger = logger;
+		this.logger = logger.child({ service: SERVICE_NAME });
 		this.checksRepository = checksRepository;
 	}
 
@@ -75,11 +75,7 @@ export class CheckService implements ICheckService {
 		if (type === "pagespeed") {
 			const pageSpeedPayload = payload as PageSpeedStatusPayload | undefined;
 			if (!pageSpeedPayload) {
-				this.logger.warn({
-					message: "Failed to build check",
-					service: SERVICE_NAME,
-					method: "toCheck",
-				});
+				this.logger.warn("Failed to build check");
 				return undefined;
 			}
 			const categories = pageSpeedPayload.lighthouseResult?.categories ?? {};

@@ -47,7 +47,6 @@ export class InviteService implements IInviteService {
 				throw new AppError(inviteErrors.roleAboveCaller, {
 					message: "You do not have permission to create this invite",
 					service: SERVICE_NAME,
-					method: "getInviteToken",
 				});
 			}
 		}
@@ -62,7 +61,6 @@ export class InviteService implements IInviteService {
 			throw new AppError(inviteErrors.emailRequired, {
 				message: "Invite email is required to send an invite",
 				service: SERVICE_NAME,
-				method: "sendInviteEmail",
 			});
 		}
 
@@ -72,7 +70,6 @@ export class InviteService implements IInviteService {
 				throw new AppError(inviteErrors.roleAboveCaller, {
 					message: "You do not have permission to create this invite",
 					service: SERVICE_NAME,
-					method: "sendInviteEmail",
 				});
 			}
 		}
@@ -89,7 +86,6 @@ export class InviteService implements IInviteService {
 			throw new AppError(internalError, {
 				message: "Failed to build invite e-mail... Please verify your settings.",
 				service: SERVICE_NAME,
-				method: "sendInviteEmail",
 			});
 		}
 
@@ -99,7 +95,6 @@ export class InviteService implements IInviteService {
 			throw new AppError(internalError, {
 				message: "Failed to send invite e-mail... Please verify your settings.",
 				service: SERVICE_NAME,
-				method: "sendInviteEmail",
 				details: { cause: error instanceof Error ? error.message : "Unknown error" },
 			});
 		}

@@ -23,7 +23,6 @@ export class BufferService implements IBufferService {
 	static SERVICE_NAME = SERVICE_NAME;
 	private BUFFER_TIMEOUT: number;
 	private logger: ILogger;
-	private SERVICE_NAME: string;
 	private buffer: Check[];
 	private geoBuffer: GeoCheck[];
 	private dockerLogBuffer: DockerLog[];
@@ -39,19 +38,14 @@ export class BufferService implements IBufferService {
 		private ingest: CheckIngest
 	) {
 		this.BUFFER_TIMEOUT = settingsService.getSettings().nodeEnv === "development" ? 1000 : 1000 * 60 * 1; // 1 minute
-		this.logger = logger;
+		this.logger = logger.child({ service: SERVICE_NAME });
 		this.geoChecksService = geoChecksService;
 		this.dockerLogsService = dockerLogsService;
-		this.SERVICE_NAME = SERVICE_NAME;
 		this.buffer = [];
 		this.geoBuffer = [];
 		this.dockerLogBuffer = [];
 		this.scheduleNextFlush();
-		this.logger.info({
-			message: `Buffer service initialized, flushing every ${this.BUFFER_TIMEOUT / 1000}s`,
-			service: this.SERVICE_NAME,
-			method: "constructor",
-		});
+		this.logger.info({ flushIntervalSeconds: this.BUFFER_TIMEOUT / 1000 }, "Buffer service initialized");
 	}
 
 	addToBuffer(check: Check) {
@@ -76,12 +70,7 @@ export class BufferService implements IBufferService {
 				await this.flushGeoBuffer();
 				await this.flushDockerLogsBuffer();
 			} catch (error: unknown) {
-				this.logger.error({
-					message: error instanceof Error ? error.message : "Unknown error",
-					service: this.SERVICE_NAME,
-					method: "scheduleNextFlush",
-					stack: error instanceof Error ? error.stack : undefined,
-				});
+				this.logger.error({ err: error }, "Scheduled buffer flush failed");
 			} finally {
 				// Schedule the next flush only after the current one completes
 				this.scheduleNextFlush();
@@ -95,16 +84,11 @@ export class BufferService implements IBufferService {
 		this.buffer = [];
 		try {
 			if (batch.length > 0) {
-				this.logger.debug({ message: `Flushing ${batch.length} checks to database`, service: this.SERVICE_NAME, method: "flushBuffer" });
+				this.logger.debug({ count: batch.length }, "Flushing checks to database");
 			}
 			await this.ingest(batch);
 		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
-				service: this.SERVICE_NAME,
-				method: "flushBuffer",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.error({ err: error }, "Failed to flush checks to database");
 			// Batch is already cleared from the buffer; dropping it prevents infinite retry loops
 		}
 	}
@@ -112,21 +96,12 @@ export class BufferService implements IBufferService {
 	async flushGeoBuffer() {
 		try {
 			if (this.geoBuffer.length > 0) {
-				this.logger.debug({
-					message: `Flushing ${this.geoBuffer.length} geo checks to database`,
-					service: this.SERVICE_NAME,
-					method: "flushGeoBuffer",
-				});
+				this.logger.debug({ count: this.geoBuffer.length }, "Flushing geo checks to database");
 				await this.geoChecksService.createGeoChecks(this.geoBuffer);
 				this.geoBuffer = [];
 			}
 		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
-				service: this.SERVICE_NAME,
-				method: "flushGeoBuffer",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.error({ err: error }, "Failed to flush geo checks to database");
 			// Clear buffer even on error to prevent infinite retry loops
 			this.geoBuffer = [];
 		}
@@ -140,19 +115,10 @@ export class BufferService implements IBufferService {
 		const batch = this.dockerLogBuffer;
 		this.dockerLogBuffer = [];
 		try {
-			this.logger.debug({
-				message: `Flushing ${batch.length} docker logs to database`,
-				service: this.SERVICE_NAME,
-				method: "flushDockerLogsBuffer",
-			});
+			this.logger.debug({ count: batch.length }, "Flushing docker logs to database");
 			await this.dockerLogsService.createDockerLogs(batch);
 		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
-				service: this.SERVICE_NAME,
-				method: "flushDockerLogsBuffer",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.error({ err: error }, "Failed to flush docker logs to database");
 		}
 	}
 

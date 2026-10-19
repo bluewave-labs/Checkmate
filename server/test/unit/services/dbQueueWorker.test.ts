@@ -83,6 +83,7 @@ const makeHandlers = (overrides?: Record<string, any>) => ({
 	"cleanup-orphaned": jest.fn<any>().mockResolvedValue(undefined),
 	"cleanup-retention": jest.fn<any>().mockResolvedValue(undefined),
 	egress: jest.fn<any>().mockResolvedValue(undefined),
+	telemetry: jest.fn<any>().mockResolvedValue(undefined),
 	...overrides,
 });
 
@@ -91,6 +92,7 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 		claimDueBatch: jest.fn<any>().mockResolvedValue([]),
 		upsertJob: jest.fn<any>().mockResolvedValue(true),
 		upsertCleanupJob: jest.fn<any>().mockResolvedValue(true),
+		deleteGlobalJob: jest.fn<any>().mockResolvedValue(true),
 		upsertEvaluate: jest.fn<any>().mockResolvedValue(true),
 		pullEvaluated: jest.fn<any>().mockResolvedValue(true),
 		recordSuccess: jest.fn<any>().mockResolvedValue(true),
@@ -144,6 +146,7 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 		queueMode: overrides?.queueMode ?? "worker",
 		queuePrimaryProcesses: overrides?.queuePrimaryProcesses ?? true,
 		workerId: "worker-1",
+		telemetryEnabled: false,
 	} as any);
 	return { worker, mocks };
 };
@@ -244,6 +247,7 @@ describe("DBQueueWorker", () => {
 				queueMode: "worker",
 				queuePrimaryProcesses: true,
 				workerId: "worker-1",
+				telemetryEnabled: false,
 			} as any);
 			active = worker;
 			await jest.advanceTimersByTimeAsync(1);
@@ -376,6 +380,7 @@ describe("DBQueueWorker", () => {
 				makeJob({ id: "cleanup-orphaned", type: "cleanup-orphaned", refId: null, intervalMs: 86400000 }),
 				makeJob({ id: "cleanup-retention", type: "cleanup-retention", refId: null, intervalMs: 86400000 }),
 				makeJob({ id: "egress", type: "egress", refId: null, intervalMs: 30000 }),
+				makeJob({ id: "telemetry", type: "telemetry", refId: null, intervalMs: 86400000 }),
 			];
 			const handed = new Set<string>();
 			const claimDueBatch = jest.fn<any>(async (type: string) => {

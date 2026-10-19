@@ -1236,7 +1236,6 @@
 					"timestamp": "Data/hora",
 					"level": "Nível",
 					"service": "Serviço",
-					"method": "Método",
 					"monitorId": "ID do monitor",
 					"runCount": "Contagem de execuções",
 					"failCount": "Contagem de falhas",
@@ -1250,6 +1249,10 @@
 			"header": {
 				"title": "Logs e fila",
 				"description": "Inspecione logs do servidor, fila de tarefas de monitor e diagnósticos de runtime em um só lugar."
+			},
+			"details": {
+				"fields": "Campos",
+				"stack": "Rastreamento de pilha"
 			}
 		},
 		"maintenanceWindow": {

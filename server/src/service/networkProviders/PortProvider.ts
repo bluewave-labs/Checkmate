@@ -86,7 +86,6 @@ export class PortProvider implements IStatusProvider<PortStatusPayload> {
 			throw new AppError(internalError, {
 				message: originalMessage || "Error performing port check",
 				service: SERVICE_NAME,
-				method: "handle",
 				details: { url: monitor.url, port: monitor.port },
 			});
 		}

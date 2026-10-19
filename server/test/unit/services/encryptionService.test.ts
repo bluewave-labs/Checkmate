@@ -42,14 +42,18 @@ describe("EncryptionService", () => {
 			const { service, logger } = setup([]);
 			expect(service.isConfigured()).toBe(false);
 			expectAppError(() => service.currentKeyId(), "ENCRYPTION_KEY is not configured");
-			expect(logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: "ENCRYPTION_KEY not set; encrypted fields are unavailable" }));
+			expect(logger.info).toHaveBeenCalledWith("ENCRYPTION_KEY not set; encrypted fields are unavailable");
+			expect(logger.child).toHaveBeenCalledWith({ service: "EncryptionService" });
 		});
 
 		it("is configured with one key and exposes a 6-character base64url key id", () => {
 			const { service, logger } = setup([newKey()]);
 			expect(service.isConfigured()).toBe(true);
 			expect(service.currentKeyId()).toMatch(/^[A-Za-z0-9_-]{6}$/);
-			expect(logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Encryption configured with 1 key(s)") }));
+			expect(logger.info).toHaveBeenCalledWith(
+				expect.objectContaining({ keyCount: 1, currentKeyId: expect.stringMatching(/^[A-Za-z0-9_-]{6}$/) }),
+				"Encryption configured"
+			);
 		});
 
 		it("rejects an entry that is not 32 bytes, naming its index", () => {

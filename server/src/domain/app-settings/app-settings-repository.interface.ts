@@ -4,6 +4,7 @@ export interface ISettingsRepository {
 	create(settings: Partial<Settings>): Promise<Settings>;
 	// fetch
 	findSingleton(): Promise<Settings | null>;
+	findOrCreateTelemetryInstanceId(): Promise<string | null>;
 	// update
 	update(settings: SettingsUpdate): Promise<Settings>;
 	removeEgressNotification(notificationId: string): Promise<void>; // $pull, so it cannot race a concurrent settings update

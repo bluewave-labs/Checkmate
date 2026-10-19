@@ -270,7 +270,7 @@ describe("DockerProvider", () => {
 
 			expect(result.status).toBe(true);
 			expect(result.code).toBe(207);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Capture returned 1 partial Docker collection error(s)" }));
+			expect(logger.warn).toHaveBeenCalledWith({ count: 1 }, "Capture returned partial Docker collection errors");
 		});
 
 		it("marks fatal Capture Docker errors down", async () => {
@@ -432,7 +432,6 @@ describe("DockerProvider", () => {
 				throw new AppError(internalError, {
 					message: "No encryption key matches ciphertext",
 					service: "EncryptionService",
-					method: "decrypt",
 					details: { keyId: "abc123" },
 				});
 			});
@@ -492,7 +491,6 @@ describe("DockerProvider", () => {
 
 			await expect(provider.handle(makeMonitor({ url: "not-a-url" }))).rejects.toMatchObject({
 				service: "DockerProvider",
-				method: "toDockerOptions",
 				status: 500,
 			});
 			await expect(provider.handle(makeMonitor({ url: "not-a-url" }))).rejects.toBeInstanceOf(AppError);
@@ -660,7 +658,10 @@ describe("DockerProvider", () => {
 			const result = await provider.handle(makeMonitor({ dockerLogsEnabled: true }));
 
 			expect(result.payload?.logs).toEqual([]);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to read logs for container my-container" }));
+			expect(logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({ err: new Error("logs failed"), containerName: "my-container" }),
+				"Failed to read logs for container"
+			);
 		});
 
 		it("requests a bounded timestamped tail for every container state", async () => {
@@ -704,7 +705,10 @@ describe("DockerProvider", () => {
 			expect(result.status).toBe(true);
 			expect(result.payload?.containers).toHaveLength(1);
 			expect(result.payload?.containers[0]?.restartCount).toBeUndefined();
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Failed to inspect") }));
+			expect(logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({ err: new Error("inspect failed"), containerName: "my-container" }),
+				"Failed to inspect container"
+			);
 		});
 
 		it.each([

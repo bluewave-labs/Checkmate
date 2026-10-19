@@ -979,7 +979,6 @@
 					"timestamp": "Marca de temps",
 					"level": "Nivell",
 					"service": "Servei",
-					"method": "Mètode",
 					"monitorId": "ID del monitor",
 					"runCount": "Recompte d'execucions",
 					"failCount": "Recompte",
@@ -992,6 +991,10 @@
 			"header": {
 				"title": "Registres i cua",
 				"description": "Inspecciona els registres del servidor, la cua de feines del monitor i els diagnòstics d'execució en un sol lloc."
+			},
+			"details": {
+				"fields": "Camps",
+				"stack": "Traça de la pila"
 			}
 		},
 		"maintenanceWindow": {

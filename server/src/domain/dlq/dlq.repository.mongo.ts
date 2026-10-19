@@ -107,7 +107,7 @@ class MongoDLQRepository implements IDLQRepository {
 			{ new: true, runValidators: true }
 		);
 		if (!updated) {
-			throw new AppError(dlqErrors.notFound, { message: `DLQ item with id ${id} not found`, service: SERVICE_NAME, method: "updateById" });
+			throw new AppError(dlqErrors.notFound, { message: `DLQ item with id ${id} not found`, service: SERVICE_NAME });
 		}
 		return this.toEntity(updated);
 	};

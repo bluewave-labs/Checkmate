@@ -10,8 +10,9 @@ import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@/Types/state";
 import { setRowsPerPage } from "@/Features/UI/uiSlice";
 import { useFormatDate } from "@/Hooks/useFormatDate";
+import { LogDetails } from "@/Pages/Logs/components/LogDetails";
 
-type LogWithId = Log & { id: number };
+export type LogWithId = Log & { id: number };
 
 interface TableLogsProps {
 	logs: LogWithId[];
@@ -73,15 +74,6 @@ export const TableLogs = ({ logs, logCount, page, setPage }: TableLogsProps) => 
 			render: (row) => <Typography>{row.service || "-"}</Typography>,
 		},
 		{
-			id: "method",
-			content: t("pages.logs.table.headers.method"),
-			render: (row) => (
-				<Typography fontFamily={theme.typography.fontFamilyMonospace}>
-					{row.method || "-"}
-				</Typography>
-			),
-		},
-		{
 			id: "message",
 			content: t("common.table.headers.message"),
 			render: (row) => (
@@ -117,6 +109,10 @@ export const TableLogs = ({ logs, logCount, page, setPage }: TableLogsProps) => 
 				headers={headers}
 				data={logs}
 				emptyViewText={t("pages.logs.noLogs")}
+				renderExpandedContent={(row) =>
+					row.details || row.stack ? <LogDetails log={row} /> : null
+				}
+				expandableRows
 			/>
 			<Pagination
 				itemsOnPage={logs.length}
