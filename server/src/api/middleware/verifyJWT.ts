@@ -18,13 +18,13 @@ export const createVerifyJWT = (settingsService: ISettingsService) => {
 		const token = req.headers["authorization"];
 		// Make sure a token is provided
 		if (!token) {
-			const error = new AppError(middlewareErrors.unauthenticated, { message: "No token provided", service: SERVICE_NAME, method: "verifyJWT" });
+			const error = new AppError(middlewareErrors.unauthenticated, { message: "No token provided", service: SERVICE_NAME });
 			next(error);
 			return;
 		}
 		// Make sure it is properly formatted
 		if (!token.startsWith(TOKEN_PREFIX)) {
-			const error = new AppError(middlewareErrors.unauthenticated, { message: "Invalid token format", service: SERVICE_NAME, method: "verifyJWT" });
+			const error = new AppError(middlewareErrors.unauthenticated, { message: "Invalid token format", service: SERVICE_NAME });
 			next(error);
 			return;
 		}
@@ -33,7 +33,7 @@ export const createVerifyJWT = (settingsService: ISettingsService) => {
 		// Verify the token's authenticity
 		const { jwtSecret } = settingsService.getSettings();
 		if (!jwtSecret) {
-			const error = new AppError(internalError, { message: "JWT secret not configured", service: SERVICE_NAME, method: "verifyJWT" });
+			const error = new AppError(internalError, { message: "JWT secret not configured", service: SERVICE_NAME });
 			next(error);
 			return;
 		}
@@ -43,7 +43,6 @@ export const createVerifyJWT = (settingsService: ISettingsService) => {
 					message: err instanceof Error ? err.message : "Failed to authenticate token",
 					service: SERVICE_NAME,
 					details: err instanceof Error ? { error: err } : undefined,
-					method: "verifyJWT",
 				});
 				next(error);
 				return;
@@ -51,7 +50,7 @@ export const createVerifyJWT = (settingsService: ISettingsService) => {
 				req.user = decoded;
 				next();
 			} else {
-				next(new AppError(middlewareErrors.unauthenticated, { message: "Invalid token payload", service: SERVICE_NAME, method: "verifyJWT" }));
+				next(new AppError(middlewareErrors.unauthenticated, { message: "Invalid token payload", service: SERVICE_NAME }));
 			}
 		});
 	};

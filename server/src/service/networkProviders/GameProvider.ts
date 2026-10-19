@@ -72,7 +72,6 @@ export class GameProvider implements IStatusProvider<GameStatusPayload> {
 			throw new AppError(internalError, {
 				message: originalMessage || "Error performing game server check",
 				service: SERVICE_NAME,
-				method: "handle",
 				details: { url: monitor.url, port: monitor.port, gameId: monitor.gameId },
 			});
 		}

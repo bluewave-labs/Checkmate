@@ -247,7 +247,6 @@ export class StatusService implements IStatusService {
 			throw new AppError(internalError, {
 				message: `Failed to update monitor with id ${check.metadata.monitorId} with status: ${error instanceof Error ? error.message : "Unknown error"}`,
 				service: SERVICE_NAME,
-				method: "updateMonitorStatus",
 			});
 		}
 	};

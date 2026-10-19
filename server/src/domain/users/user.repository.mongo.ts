@@ -58,7 +58,7 @@ class MongoUsersRepository implements IUsersRepository {
 		await newUser.save();
 		const sanitizedUser = await UserModel.findOne({ _id: newUser._id }).select("-password").select("-profileImage");
 		if (!sanitizedUser) {
-			throw new AppError(internalError, { message: "Failed to create user", service: SERVICE_NAME, method: "create" });
+			throw new AppError(internalError, { message: "Failed to create user", service: SERVICE_NAME });
 		}
 		return this.toResponse(sanitizedUser);
 	};
@@ -66,7 +66,7 @@ class MongoUsersRepository implements IUsersRepository {
 	findByEmail = async (email: string) => {
 		const user = await UserModel.findOne({ email: email }).select("-profileImage");
 		if (!user) {
-			throw new AppError(userErrors.notFound, { service: SERVICE_NAME, method: "findByEmail" });
+			throw new AppError(userErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(user);
 	};
@@ -74,7 +74,7 @@ class MongoUsersRepository implements IUsersRepository {
 	findById = async (id: string) => {
 		const user = await UserModel.findById(id).select("-password").select("-profileImage");
 		if (!user) {
-			throw new AppError(userErrors.notFound, { service: SERVICE_NAME, method: "findById" });
+			throw new AppError(userErrors.notFound, { service: SERVICE_NAME });
 		}
 
 		return this.toResponse(user);
@@ -116,7 +116,7 @@ class MongoUsersRepository implements IUsersRepository {
 
 		const updatedUser = await UserModel.findOneAndUpdate({ _id: id }, updateQuery, { new: true }).select("-password").select("-profileImage");
 		if (!updatedUser) {
-			throw new AppError(userErrors.notFound, { service: SERVICE_NAME, method: "updateById" });
+			throw new AppError(userErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toResponse(updatedUser);
 	};
@@ -124,7 +124,7 @@ class MongoUsersRepository implements IUsersRepository {
 	deleteById = async (id: string) => {
 		const deletedUser = await UserModel.findByIdAndDelete(id);
 		if (!deletedUser) {
-			throw new AppError(userErrors.notFound, { service: SERVICE_NAME, method: "deleteById" });
+			throw new AppError(userErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(deletedUser);
 	};

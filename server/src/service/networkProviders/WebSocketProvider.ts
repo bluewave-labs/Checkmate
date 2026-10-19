@@ -90,7 +90,6 @@ export class WebSocketProvider implements IStatusProvider<WebSocketStatusPayload
 			throw new AppError(internalError, {
 				message: originalMessage || "Error performing WebSocket check",
 				service: SERVICE_NAME,
-				method: "handle",
 				details: { url: monitor.url },
 			});
 		}

@@ -56,7 +56,7 @@ export class StatusPageService implements IStatusPageService {
 
 		const clientHost = normalizeStatusPageDomain(this.settingsService.getSettings().clientHost);
 		if (clientHost && customDomain === clientHost) {
-			throw new AppError(statusPageErrors.customDomainIsHost, { service: SERVICE_NAME, method: "assertCustomDomainAllowed" });
+			throw new AppError(statusPageErrors.customDomainIsHost, { service: SERVICE_NAME });
 		}
 	};
 
@@ -153,7 +153,7 @@ export class StatusPageService implements IStatusPageService {
 		const statusPage = await this.getStatusPageByUrl(url);
 		if (!statusPage.isPublished) {
 			if (!requesterTeamId || statusPage.teamId !== requesterTeamId) {
-				throw new AppError(statusPageErrors.unpublished, { service: SERVICE_NAME, method: "getPublicStatusPageByUrl" });
+				throw new AppError(statusPageErrors.unpublished, { service: SERVICE_NAME });
 			}
 		}
 		return this.getPublicStatusPagePayload(statusPage, range);
@@ -201,13 +201,13 @@ export class StatusPageService implements IStatusPageService {
 		// Ensure the status page is public or the requester is the owner
 		if (!statusPage.isPublished) {
 			if (!requesterTeamId || statusPage.teamId !== requesterTeamId) {
-				throw new AppError(statusPageErrors.unpublished, { service: SERVICE_NAME, method: "getPublicMonitorIncidents" });
+				throw new AppError(statusPageErrors.unpublished, { service: SERVICE_NAME });
 			}
 		}
 
 		// Ensure the requested monitor actually belongs to this status page
 		if (!statusPage.monitors.includes(monitorId)) {
-			throw new AppError(statusPageErrors.monitorNotOnPage, { service: SERVICE_NAME, method: "getPublicMonitorIncidents" });
+			throw new AppError(statusPageErrors.monitorNotOnPage, { service: SERVICE_NAME });
 		}
 
 		const tz = statusPage.timezone ?? "Etc/UTC";

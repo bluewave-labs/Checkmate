@@ -135,7 +135,6 @@ export class EmailService implements IEmailService {
 			throw new AppError(emailErrors.notConfigured, {
 				message: "Email is not configured. Set the system email host in settings.",
 				service: SERVICE_NAME,
-				method: "sendEmail",
 			});
 		}
 
@@ -167,7 +166,6 @@ export class EmailService implements IEmailService {
 			throw new AppError(emailErrors.sendFailed, {
 				message: describeSmtpFailure(error, systemEmailHost, emailConfig.port),
 				service: SERVICE_NAME,
-				method: "sendEmail",
 				details: { cause },
 			});
 		}
@@ -188,7 +186,6 @@ export class EmailService implements IEmailService {
 			throw new AppError(emailErrors.sendFailed, {
 				message: "Failed to send email",
 				service: SERVICE_NAME,
-				method: "sendEmail",
 				details: { cause: error instanceof Error ? error.message : "Unknown error" },
 			});
 		}

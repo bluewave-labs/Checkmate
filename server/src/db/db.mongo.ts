@@ -58,7 +58,7 @@ class MongoDB implements IDb<Mongoose> {
 
 	getConnection = async (): Promise<Mongoose> => {
 		if (this.db === null) {
-			throw new AppError(internalError, { message: "Database not connected", service: SERVICE_NAME, method: "getConnection" });
+			throw new AppError(internalError, { message: "Database not connected", service: SERVICE_NAME });
 		}
 		return this.db;
 	};

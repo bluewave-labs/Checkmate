@@ -46,7 +46,7 @@ export class EncryptionService implements IEncryptionService {
 		this.entries = keys.map((key, index) => this.toEntry(key, index));
 		this.entries.forEach((entry, index) => {
 			if (this.entries.findIndex((other) => other.id === entry.id) !== index) {
-				throw this.fail("constructor", "ENCRYPTION_KEY key ids collide; regenerate one key", { index });
+				throw this.fail("ENCRYPTION_KEY key ids collide; regenerate one key", { index });
 			}
 		});
 
@@ -64,21 +64,21 @@ export class EncryptionService implements IEncryptionService {
 	};
 
 	currentKeyId = () => {
-		return this.requireCurrentKey("currentKeyId").id;
+		return this.requireCurrentKey().id;
 	};
 
 	keyIdOf = (ciphertext: string) => {
-		return this.parse(ciphertext, "keyIdOf").keyId;
+		return this.parse(ciphertext).keyId;
 	};
 
 	// Check if the ciphertext was encrypted with the current key
 	needsReencryption = (ciphertext: string) => {
-		const currentKey = this.requireCurrentKey("needsReencryption");
-		return this.parse(ciphertext, "needsReencryption").keyId !== currentKey.id;
+		const currentKey = this.requireCurrentKey();
+		return this.parse(ciphertext).keyId !== currentKey.id;
 	};
 
 	encrypt = (plaintext: string) => {
-		const currentKey = this.requireCurrentKey("encrypt"); // Get the current key for encryption
+		const currentKey = this.requireCurrentKey(); // Get the current key for encryption
 		const iv = this.cryptoLib.randomBytes(IV_BYTES); // Get IV_BYTES worth of random bytes for nonce
 		const cipher = this.cryptoLib.createCipheriv(ALGORITHM, currentKey.key, iv, { authTagLength: TAG_BYTES }); // Create the cipher
 		cipher.setAAD(this.aad(currentKey.id)); // set signing key as additional data so it is protected by the verification tag
@@ -88,11 +88,11 @@ export class EncryptionService implements IEncryptionService {
 	};
 
 	decrypt = (ciphertext: string) => {
-		this.requireCurrentKey("decrypt"); // Config check
-		const { keyId, iv, tag, data } = this.parse(ciphertext, "decrypt");
+		this.requireCurrentKey(); // Config check
+		const { keyId, iv, tag, data } = this.parse(ciphertext);
 		const key = this.entries.find((entry) => entry.id === keyId)?.key;
 		if (!key) {
-			throw this.fail("decrypt", "No encryption key matches ciphertext", { keyId });
+			throw this.fail("No encryption key matches ciphertext", { keyId });
 		}
 		const decipher = this.cryptoLib.createDecipheriv(ALGORITHM, key, iv, { authTagLength: TAG_BYTES });
 		decipher.setAAD(this.aad(keyId)); // reconstruct the additional data, must be done BEFORE auth tag
@@ -100,17 +100,17 @@ export class EncryptionService implements IEncryptionService {
 		try {
 			return Buffer.concat([decipher.update(data), decipher.final()]).toString("utf8");
 		} catch {
-			throw this.fail("decrypt", "Ciphertext failed authentication");
+			throw this.fail("Ciphertext failed authentication");
 		}
 	};
 
-	private fail = (method: string, message: string, details?: Record<string, unknown>): AppError => {
-		return new AppError(internalError, { message, service: SERVICE_NAME, method, details });
+	private fail = (message: string, details?: Record<string, unknown>): AppError => {
+		return new AppError(internalError, { message, service: SERVICE_NAME, details });
 	};
 
 	// Create an ID:Key pair for each key.
 	private toEntry = (key: Buffer, keyIdx: number): KeyEntry => {
-		if (key.length !== ENCRYPTION_KEY_BYTES) throw this.fail("constructor", "ENCRYPTION_KEY is not 32 bytes", { keyIdx });
+		if (key.length !== ENCRYPTION_KEY_BYTES) throw this.fail("ENCRYPTION_KEY is not 32 bytes", { keyIdx });
 
 		const id = this.cryptoLib
 			.createHash("sha256") // Create a sha256 hasher
@@ -121,10 +121,10 @@ export class EncryptionService implements IEncryptionService {
 		return { id, key };
 	};
 
-	private requireCurrentKey = (method: string): KeyEntry => {
+	private requireCurrentKey = (): KeyEntry => {
 		const current = this.entries[0];
 		if (!current) {
-			throw this.fail(method, "ENCRYPTION_KEY is not configured");
+			throw this.fail("ENCRYPTION_KEY is not configured");
 		}
 		return current;
 	};
@@ -133,31 +133,31 @@ export class EncryptionService implements IEncryptionService {
 	// <version>.<keyId>.<iv>.<tag>.<encryptedData>
 	// iv and tag belong to aes-256-gcm standard
 
-	private parse = (ciphertext: string, method: string) => {
+	private parse = (ciphertext: string) => {
 		const segments = ciphertext.split(".");
 		const version = segments[0];
 		if (version !== FORMAT_VERSION) {
-			throw this.fail(method, "Unsupported ciphertext version", { version });
+			throw this.fail("Unsupported ciphertext version", { version });
 		}
 
 		// **************************
 		// v1 parser
 		// **************************
 		if (!isV1Segments(segments)) {
-			throw this.fail(method, "Ciphertext is malformed");
+			throw this.fail("Ciphertext is malformed");
 		}
 
 		const [, keyId, ivText, tagText, dataText] = segments; // Skip first segment, we already have version
 
 		if (![keyId, ivText, tagText, dataText].every((segment) => BASE64URL.test(segment))) {
-			throw this.fail(method, "Ciphertext is malformed");
+			throw this.fail("Ciphertext is malformed");
 		}
 
 		const iv = Buffer.from(ivText, "base64url");
 		const tag = Buffer.from(tagText, "base64url");
 
 		if (keyId.length === 0 || iv.length !== IV_BYTES || tag.length !== TAG_BYTES) {
-			throw this.fail(method, "Ciphertext is malformed");
+			throw this.fail("Ciphertext is malformed");
 		}
 		return { keyId, iv, tag, data: Buffer.from(dataText, "base64url") };
 		// **************************

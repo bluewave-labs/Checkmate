@@ -33,7 +33,7 @@ class MongoRecoveryTokensRepository implements IRecoveryTokensRepository {
 	findByToken = async (token: string): Promise<RecoveryToken> => {
 		const recoveryToken = await RecoveryTokenModel.findOne({ token });
 		if (!recoveryToken) {
-			throw new AppError(recoveryTokenErrors.notFound, { service: SERVICE_NAME, method: "findByToken" });
+			throw new AppError(recoveryTokenErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(recoveryToken);
 	};

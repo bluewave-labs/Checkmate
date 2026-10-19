@@ -75,12 +75,12 @@ class StatusPageController implements IStatusPageController {
 		const { range, domain: queryDomain } = resolveStatusPageQueryValidation.parse(req.query);
 		const domain = resolveStatusPageDomainFromRequest(req.hostname, queryDomain);
 		if (!domain) {
-			throw new AppError(statusPageErrors.domainRequired, { service: SERVICE_NAME, method: "resolveStatusPageByDomain" });
+			throw new AppError(statusPageErrors.domainRequired, { service: SERVICE_NAME });
 		}
 
 		const statusPage = await this.statusPageService.getStatusPageByCustomDomain(domain);
 		if (!statusPage.isPublished) {
-			throw new AppError(statusPageErrors.notFound, { service: SERVICE_NAME, method: "resolveStatusPageByDomain" });
+			throw new AppError(statusPageErrors.notFound, { service: SERVICE_NAME });
 		}
 
 		const data = await this.statusPageService.getPublicStatusPagePayload(statusPage, range);

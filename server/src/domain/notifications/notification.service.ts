@@ -207,13 +207,11 @@ export class NotificationsService implements INotificationsService {
 			throw new AppError(appSettingsErrors.notificationNotFound, {
 				message: `Referenced notification does not exist: ${missing.join(", ")}`,
 				service: SERVICE_NAME,
-				method: "assertNotificationsExistForTeam",
 			});
 		}
 		if (found.some((notification) => EgressExcludedChannels.some((channel) => channel === notification.type))) {
 			throw new AppError(appSettingsErrors.notificationChannelNotSupported, {
 				service: SERVICE_NAME,
-				method: "assertNotificationsExistForTeam",
 			});
 		}
 	};

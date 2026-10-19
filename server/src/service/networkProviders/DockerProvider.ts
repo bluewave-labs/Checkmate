@@ -92,7 +92,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		return blocks.length > 0 ? blocks : undefined;
 	};
 
-	private invalidUrl = (message: string) => new AppError(internalError, { message, service: SERVICE_NAME, method: "toDockerOptions" });
+	private invalidUrl = (message: string) => new AppError(internalError, { message, service: SERVICE_NAME });
 
 	private toDockerOptions = (monitor: Monitor, credentials?: TlsCredentials): DockerOptions => {
 		const url = monitor.url?.trim();
@@ -472,7 +472,6 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 			throw new AppError(internalError, {
 				message: error instanceof Error ? error.message : "Error performing Docker request",
 				service: SERVICE_NAME,
-				method: "handle",
 				details: {
 					url: monitor.url,
 				},

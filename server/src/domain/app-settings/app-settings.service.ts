@@ -93,7 +93,6 @@ export class SettingsService implements ISettingsService {
 			throw new AppError(internalError, {
 				message: "Settings repository not initialized. Call setRepository() after DB connect.",
 				service: SERVICE_NAME,
-				method: "getRepository",
 			});
 		}
 		return this.settingsRepository;
@@ -122,7 +121,7 @@ export class SettingsService implements ISettingsService {
 		}
 
 		if (!settings) {
-			throw new AppError(internalError, { message: "Settings not found", service: SERVICE_NAME, method: "getDBSettings" });
+			throw new AppError(internalError, { message: "Settings not found", service: SERVICE_NAME });
 		}
 
 		return settings;

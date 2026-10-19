@@ -57,7 +57,7 @@ export class DiagnosticService implements IDiagnosticService {
 			const mongo = await this.db.getConnection();
 			const db = mongo.connection.db;
 			if (!db) {
-				throw new AppError(internalError, { message: "Database connection is not available", service: SERVICE_NAME, method: "getMongoOpsPerSecond" });
+				throw new AppError(internalError, { message: "Database connection is not available", service: SERVICE_NAME });
 			}
 			const sample = async (): Promise<MongoStats> => {
 				const res = await db.command({ serverStatus: 1 });
@@ -98,7 +98,7 @@ export class DiagnosticService implements IDiagnosticService {
 		const mongo = await this.db.getConnection();
 		const db = mongo.connection.db;
 		if (!db) {
-			throw new AppError(internalError, { message: "Database connection is not available", service: SERVICE_NAME, method: "getMongoDBStats" });
+			throw new AppError(internalError, { message: "Database connection is not available", service: SERVICE_NAME });
 		}
 
 		const opsPerSecond = await this.getMongoOpsPerSecond();

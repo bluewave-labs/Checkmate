@@ -78,7 +78,7 @@ class MongoIncidentsRepository implements IIncidentsRepository {
 			teamId: new mongoose.Types.ObjectId(teamId),
 		});
 		if (!incident) {
-			throw new AppError(incidentErrors.notFound, { message: `Incident with id ${incidentId} not found`, service: SERVICE_NAME, method: "findById" });
+			throw new AppError(incidentErrors.notFound, { message: `Incident with id ${incidentId} not found`, service: SERVICE_NAME });
 		}
 		return this.toEntity(incident);
 	};
@@ -147,7 +147,7 @@ class MongoIncidentsRepository implements IIncidentsRepository {
 			{ new: true, runValidators: true }
 		);
 		if (!updatedIncident) {
-			throw new AppError(internalError, { message: `Failed to update incident with id ${incidentId}`, service: SERVICE_NAME, method: "updateById" });
+			throw new AppError(internalError, { message: `Failed to update incident with id ${incidentId}`, service: SERVICE_NAME });
 		}
 		return this.toEntity(updatedIncident);
 	};

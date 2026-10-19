@@ -90,7 +90,6 @@ export class MatrixProvider extends NotificationProvider {
 			throw new AppError(internalError, {
 				message: `Matrix directory returned no room_id for alias ${roomIdOrAlias}`,
 				service: SERVICE_NAME,
-				method: "resolveRoomId",
 			});
 		}
 		return roomId;

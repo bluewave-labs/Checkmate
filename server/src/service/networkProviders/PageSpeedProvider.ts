@@ -49,7 +49,6 @@ export class PageSpeedProvider implements IStatusProvider<PageSpeedStatusPayload
 			throw new AppError(internalError, {
 				message: err instanceof Error ? err.message : "Error performing PageSpeed request",
 				service: SERVICE_NAME,
-				method: "handle",
 				details: { url: monitor.url },
 			});
 		}

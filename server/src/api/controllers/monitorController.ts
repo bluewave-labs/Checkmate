@@ -261,7 +261,6 @@ class MonitorController implements IMonitorController {
 			throw new AppError(monitorErrors.notificationNotOnTeam, {
 				message: `The following notification IDs are invalid or do not belong to your team: ${invalidIds.join(", ")}`,
 				service: SERVICE_NAME,
-				method: "updateNotifications",
 			});
 		}
 

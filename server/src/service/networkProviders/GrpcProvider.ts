@@ -65,10 +65,10 @@ export class GrpcProvider implements IStatusProvider<GrpcStatusPayload> {
 			const grpcServiceName = monitor.grpcServiceName || "";
 
 			if (!url) {
-				throw new AppError(internalError, { message: "Monitor host is required", service: SERVICE_NAME, method: "handle" });
+				throw new AppError(internalError, { message: "Monitor host is required", service: SERVICE_NAME });
 			}
 			if (!port) {
-				throw new AppError(internalError, { message: "Monitor port is required", service: SERVICE_NAME, method: "handle" });
+				throw new AppError(internalError, { message: "Monitor port is required", service: SERVICE_NAME });
 			}
 
 			const host = url.replace(/^https?:\/\//, "").split(/[/?#:]/)[0];
@@ -130,7 +130,6 @@ export class GrpcProvider implements IStatusProvider<GrpcStatusPayload> {
 							const grpcError = new AppError(internalError, {
 								message: grpcErr.details || grpcErr.message || "gRPC error",
 								service: SERVICE_NAME,
-								method: "handle",
 							}) as AppError & { grpcPayload?: GrpcStatusPayload; grpcCode?: number };
 							grpcError.grpcPayload = payload;
 							grpcError.grpcCode = grpcErr.code;
@@ -186,7 +185,6 @@ export class GrpcProvider implements IStatusProvider<GrpcStatusPayload> {
 			throw new AppError(internalError, {
 				message: originalMessage || "Error performing gRPC health check",
 				service: SERVICE_NAME,
-				method: "handle",
 				details: { url: monitor.url, port: monitor.port, grpcServiceName: monitor.grpcServiceName },
 			});
 		}
