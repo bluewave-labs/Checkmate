@@ -1668,7 +1668,12 @@
 						"targets": {
 							"label": "Reliability targets",
 							"placeholder": "1.1.1.1\ndns.google:53\nhttps://example.com",
-							"helper": "One per line, up to {{max}}. Leave empty to use the defaults (1.1.1.1, 8.8.8.8). A bare host or IP is pinged (ICMP), host:port opens a TCP connection, and an http:// or https:// URL is requested over HTTP."
+							"helper": "One per line, up to {{max}}. Leave empty to use the defaults (1.1.1.1, 8.8.8.8). A bare host or IP is pinged (ICMP), host:port opens a TCP connection, and an http:// or https:// URL is requested over HTTP.",
+							"validation": {
+								"max": "Maximum {{max}} targets",
+								"length": "Each target must be {{max}} characters or fewer",
+								"invalid": "\"{{target}}\" is not a hostname or IP address, host:port, or http(s) URL"
+							}
 						},
 						"notifications": {
 							"label": "Notify on recovery",

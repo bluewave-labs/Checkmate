@@ -1,5 +1,6 @@
 import { CHECK_TTL_SENTINEL } from "@/Types/Check";
 import { z } from "zod";
+import i18n from "@/Utils/i18n";
 
 export const EGRESS_TARGETS_MAX = 10;
 // The server caps each target at this length.
@@ -83,13 +84,18 @@ export const settingsSchema = z
 				if (targets.length > EGRESS_TARGETS_MAX) {
 					ctx.addIssue({
 						code: "custom",
-						message: `Maximum ${EGRESS_TARGETS_MAX} targets`,
+						message: i18n.t("pages.settings.form.egress.option.targets.validation.max", {
+							max: EGRESS_TARGETS_MAX,
+						}),
 					});
 				}
 				if (targets.some((target) => target.length > EGRESS_TARGET_MAX_LENGTH)) {
 					ctx.addIssue({
 						code: "custom",
-						message: `Each target must be ${EGRESS_TARGET_MAX_LENGTH} characters or fewer`,
+						message: i18n.t(
+							"pages.settings.form.egress.option.targets.validation.length",
+							{ max: EGRESS_TARGET_MAX_LENGTH }
+						),
 					});
 				}
 				// Only a quick shape check here; the server parses each target fully and its error is shown on the field.
@@ -97,7 +103,10 @@ export const settingsSchema = z
 				if (invalid !== undefined) {
 					ctx.addIssue({
 						code: "custom",
-						message: `"${invalid}" is not a hostname or IP address, host:port, or http(s) URL`,
+						message: i18n.t(
+							"pages.settings.form.egress.option.targets.validation.invalid",
+							{ target: invalid }
+						),
 					});
 				}
 			}),
