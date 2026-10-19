@@ -22,7 +22,7 @@ export interface INotificationsService {
 	findById: (id: string, teamId: string) => Promise<Notification>;
 	findNotificationsByTeamId: (teamId: string) => Promise<Notification[]>;
 	assertNotificationsExistForTeam: (ids: string[], teamId: string) => Promise<void>;
-	mergeEgressNotificationsForTeam: (storedIds: string[], requestedIds: string[], teamId: string) => Promise<string[]>;
+	findEgressNotificationScopeForTeam: (requestedIds: string[], teamId: string) => Promise<string[]>;
 	updateById(id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification>;
 	deleteById: (id: string, teamId: string) => Promise<Notification>;
 	handleNotifications: (monitor: Monitor, check: Check, decision: MonitorActionDecision) => Promise<boolean>;
@@ -199,12 +199,11 @@ export class NotificationsService implements INotificationsService {
 	};
 
 	// Egress notifications are one instance-wide list, but each admin sees and edits only their own team's channels.
-	// The request replaces the caller's team's share of the list; channels chosen by other teams are kept as stored.
-	mergeEgressNotificationsForTeam = async (storedIds: string[], requestedIds: string[], teamId: string): Promise<string[]> => {
+	// Checks the requested ids belong to the team and returns all of the team's ids: the share of the list the request
+	// replaces, leaving other teams' channels as stored.
+	findEgressNotificationScopeForTeam = async (requestedIds: string[], teamId: string): Promise<string[]> => {
 		await this.assertNotificationsExistForTeam(requestedIds, teamId);
-		const teamIds = new Set((await this.notificationsRepository.findByTeamId(teamId)).map((notification) => notification.id));
-		const otherTeamsIds = storedIds.filter((id) => !teamIds.has(id));
-		return [...new Set([...otherTeamsIds, ...requestedIds])];
+		return (await this.notificationsRepository.findByTeamId(teamId)).map((notification) => notification.id);
 	};
 
 	// Only the team's own notifications can be referenced; an id from another team is reported as missing, not forbidden.
