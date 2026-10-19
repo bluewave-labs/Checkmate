@@ -357,20 +357,25 @@ class MongoChecksRepository implements IChecksRepository {
 			...(monitorId && { "metadata.monitorId": new mongoose.Types.ObjectId(monitorId) }),
 			createdAt: { $gte: getDateForRange(dateRange) },
 		};
-		const baseMatch = { ...rangeMatch, ...EXCLUDE_DEGRADED_EGRESS_MATCH };
-
-		// Degraded checks sit outside the totals; counting them separately lets the Checks page header account for
-		// the rows its listing shows under the down filter but its totals leave out.
-		const [totalResult, downResult, degradedResult] = await Promise.all([
-			CheckModel.countDocuments(baseMatch),
-			CheckModel.countDocuments({ ...baseMatch, status: false }),
-			CheckModel.countDocuments({ ...rangeMatch, ...ONLY_DEGRADED_EGRESS_MATCH }),
+		// One pass over the team's range. Degraded checks sit outside the totals; counting them separately lets the
+		// Checks page header account for the rows its listing shows under the down filter but its totals leave out.
+		const isDegraded = { $eq: ["$egressStatus", ONLY_DEGRADED_EGRESS_MATCH.egressStatus] };
+		const [counts] = await CheckModel.aggregate<{ totalChecks: number; downChecks: number; degradedChecks: number }>([
+			{ $match: rangeMatch },
+			{
+				$group: {
+					_id: null,
+					totalChecks: { $sum: { $cond: [isDegraded, 0, 1] } },
+					downChecks: { $sum: { $cond: [{ $and: [{ $not: [isDegraded] }, { $eq: ["$status", false] }] }, 1, 0] } },
+					degradedChecks: { $sum: { $cond: [isDegraded, 1, 0] } },
+				},
+			},
 		]);
 
 		return {
-			totalChecks: totalResult,
-			downChecks: downResult,
-			degradedChecks: degradedResult,
+			totalChecks: counts?.totalChecks ?? 0,
+			downChecks: counts?.downChecks ?? 0,
+			degradedChecks: counts?.degradedChecks ?? 0,
 		};
 	};
 

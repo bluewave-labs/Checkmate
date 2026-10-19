@@ -149,6 +149,23 @@ describe("MongoChecksRepository degraded-egress exclusion", () => {
 		expect(summary).toEqual({ totalChecks: 2, downChecks: 1, degradedChecks: 1 });
 	});
 
+	it("returns zero counts when the range holds no checks", async () => {
+		const summary = await repo.findSummaryByTeamId(TEAM_ID.toString(), "day");
+
+		expect(summary).toEqual({ totalChecks: 0, downChecks: 0, degradedChecks: 0 });
+	});
+
+	it("narrows the summary to one monitor when given", async () => {
+		const otherMonitor = new mongoose.Types.ObjectId();
+		await seedCheck({ status: false });
+		await seedDegradedFailure();
+		await seedDegradedFailure({ metadata: { monitorId: otherMonitor, teamId: TEAM_ID, type: "http" } });
+
+		const summary = await repo.findSummaryByTeamId(TEAM_ID.toString(), "day", otherMonitor.toString());
+
+		expect(summary).toEqual({ totalChecks: 0, downChecks: 0, degradedChecks: 1 });
+	});
+
 	it("excludes degraded checks from the daily status buckets, dropping a day that saw nothing else", async () => {
 		const otherMonitor = new mongoose.Types.ObjectId();
 		await seedCheck();
