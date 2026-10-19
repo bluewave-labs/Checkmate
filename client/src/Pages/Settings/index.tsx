@@ -431,6 +431,15 @@ export const SettingsPage = () => {
 		if (isEmailPasswordSet && !emailPasswordHasBeenReset) {
 			delete (dataToSend as any).systemEmailPassword;
 		}
+		// Send only this team's channels: the server replaces this team's share of the list and keeps the
+		// channels other teams chose. Until the team's channels have loaded, leave the list untouched.
+		if (notifications) {
+			dataToSend.egressNotifications = data.egressNotifications.filter((id) =>
+				notificationOptions.some((option) => option.id === id)
+			);
+		} else {
+			delete (dataToSend as any).egressNotifications;
+		}
 
 		const result = await patch("/settings", dataToSend as SettingsFormData);
 

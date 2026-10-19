@@ -529,6 +529,37 @@ describe("NotificationsService", () => {
 		});
 	});
 
+	describe("mergeEgressNotificationsForTeam", () => {
+		it("replaces the team's share and keeps other teams' channels", async () => {
+			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findNotificationsByIdsForTeam as jest.Mock).mockResolvedValue([makeNotification({ id: "mine-2" })]);
+			(notificationsRepository.findByTeamId as jest.Mock).mockResolvedValue([makeNotification({ id: "mine-1" }), makeNotification({ id: "mine-2" })]);
+
+			const result = await service.mergeEgressNotificationsForTeam(["theirs-1", "mine-1"], ["mine-2"], "team-1");
+
+			expect(result).toEqual(["theirs-1", "mine-2"]);
+		});
+
+		it("clears only the team's share when given an empty list", async () => {
+			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findByTeamId as jest.Mock).mockResolvedValue([makeNotification({ id: "mine-1" })]);
+
+			const result = await service.mergeEgressNotificationsForTeam(["theirs-1", "mine-1"], [], "team-1");
+
+			expect(result).toEqual(["theirs-1"]);
+		});
+
+		it("rejects ids the team does not own without changing anything", async () => {
+			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findNotificationsByIdsForTeam as jest.Mock).mockResolvedValue([]);
+
+			await expect(service.mergeEgressNotificationsForTeam(["theirs-1"], ["theirs-1"], "team-1")).rejects.toMatchObject({
+				status: 422,
+			});
+			expect(notificationsRepository.findByTeamId).not.toHaveBeenCalled();
+		});
+	});
+
 	describe("updateById", () => {
 		it("delegates to repository", async () => {
 			const updated = makeNotification({ address: "new@example.com" });

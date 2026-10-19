@@ -22,6 +22,7 @@ export interface INotificationsService {
 	findById: (id: string, teamId: string) => Promise<Notification>;
 	findNotificationsByTeamId: (teamId: string) => Promise<Notification[]>;
 	assertNotificationsExistForTeam: (ids: string[], teamId: string) => Promise<void>;
+	mergeEgressNotificationsForTeam: (storedIds: string[], requestedIds: string[], teamId: string) => Promise<string[]>;
 	updateById(id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification>;
 	deleteById: (id: string, teamId: string) => Promise<Notification>;
 	handleNotifications: (monitor: Monitor, check: Check, decision: MonitorActionDecision) => Promise<boolean>;
@@ -195,6 +196,15 @@ export class NotificationsService implements INotificationsService {
 
 	findNotificationsByTeamId = async (teamId: string): Promise<Notification[]> => {
 		return await this.notificationsRepository.findByTeamId(teamId);
+	};
+
+	// Egress notifications are one instance-wide list, but each admin sees and edits only their own team's channels.
+	// The request replaces the caller's team's share of the list; channels chosen by other teams are kept as stored.
+	mergeEgressNotificationsForTeam = async (storedIds: string[], requestedIds: string[], teamId: string): Promise<string[]> => {
+		await this.assertNotificationsExistForTeam(requestedIds, teamId);
+		const teamIds = new Set((await this.notificationsRepository.findByTeamId(teamId)).map((notification) => notification.id));
+		const otherTeamsIds = storedIds.filter((id) => !teamIds.has(id));
+		return [...new Set([...otherTeamsIds, ...requestedIds])];
 	};
 
 	// Only the team's own notifications can be referenced; an id from another team is reported as missing, not forbidden.
