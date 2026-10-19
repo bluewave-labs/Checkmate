@@ -108,11 +108,13 @@ The image is configured entirely through environment variables on the server con
 | `PORT` | No | Port the API and web client are served on (default `52345`) |
 | `HEALTH_PORT` | No | Port for the `/livez`, `/readyz` and `/metrics` endpoints, served by any process that runs the job worker (default `52346`) |
 | `NODE_ENV` | No | `development`, `production` or `test` (default `development`). `development` disables the general API rate limiter; set `production` on real deployments |
-| `LOG_LEVEL` | No | Server log level: `error`, `warn`, `info`, or `debug` (default `debug`) |
+| `LOG_LEVEL` | No | Server log level: `error`, `warn`, `info`, or `debug` (default `info`) |
 | `TOKEN_TTL` | No | Lifetime of issued auth tokens, e.g. `12h` or `7d` (default `99d`) |
 | `QUEUE_MODE` | No | `primary` (default) runs the API, the web client and the job scheduler; `worker` runs a job-processing worker only, with no API |
 | `QUEUE_PRIMARY_PROCESSES` | No | `true` (default) or `false`. Whether a `primary` node also processes monitoring jobs itself; set `false` when dedicated `worker` nodes handle all checks. Ignored in `worker` mode |
 | `STATUS_PAGE_THEMES_ENABLED` | No | `true` (default) or `false`. When `false`, status pages ignore theme settings and always render the default theme |
+| `TELEMETRY_ENABLED` | No | `true` (default) or `false`. Set `false` to stop sending the daily anonymous usage heartbeat; see [Telemetry](#telemetry) |
+| `TELEMETRY_URL` | No | Where the heartbeat is sent. Only needed to point it at your own collector |
 
 The web client needs no configuration by default: it calls the API on the same origin it was served from (`/api/v1`). For setups where the defaults don't apply — for example, the API is reached through a different origin than the page — the server renders overrides into the client at runtime via these optional variables:
 
@@ -127,6 +129,25 @@ The web client needs no configuration by default: it calls the API on the same o
 See full installation instructions in the [Checkmate documentation portal](https://checkmate.so/docs). 
 
 Alternatively, any of the [1-click installation options](#installation) listed above can spin up a Checkmate instance quickly. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
+
+<a id="telemetry"></a>
+### Telemetry
+
+Checkmate sends one anonymous heartbeat per installation every 24 hours so we can see how many instances are running. It contains only:
+
+| Field | Example | What it is |
+|---|---|---|
+| `instanceId` | `3f0c7a52-…` | A random UUID generated once and stored in your database. It is not derived from your hardware, hostname or network |
+| `version` | `3.12.0` | Checkmate version |
+| `deployment` | `docker` | `docker` for the official image, `source` otherwise |
+| `queueMode` | `primary` | The `QUEUE_MODE` setting |
+| `nodeVersion` | `24.4.0` | Node.js version |
+| `os` | `linux` | Operating system |
+| `arch` | `x64` | CPU architecture |
+
+No URLs, hostnames, IP addresses, emails, names, monitor details or any other data you've entered are sent.
+
+To opt out, set `TELEMETRY_ENABLED=false` on every server container and restart. The scheduled heartbeat is removed on the next start.
 
 ### Using a Custom CA
 
