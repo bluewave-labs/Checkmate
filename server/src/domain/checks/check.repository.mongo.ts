@@ -16,8 +16,7 @@ import type {
 } from "@/domain/checks/check.type.js";
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
 import { CheckModel, type CheckDocument } from "@/domain/checks/check.model.js";
-import { EXCLUDE_DEGRADED_EGRESS_MATCH } from "@/domain/checks/check.query.js";
-import type { EgressStatus } from "@/domain/egress/egress.type.js";
+import { EXCLUDE_DEGRADED_EGRESS_MATCH, ONLY_DEGRADED_EGRESS_MATCH } from "@/domain/checks/check.query.js";
 import mongoose from "mongoose";
 import { getDateFormat, getDateForRange } from "@/utils/dataUtils.js";
 import { ILogger } from "@/utils/logger/logger.js";
@@ -241,7 +240,7 @@ class MongoChecksRepository implements IChecksRepository {
 			case "degraded":
 				// Checks taken while the instance's own egress was down; excluded from every aggregate, so this is the
 				// one place they can be reviewed as a set.
-				return { egressStatus: "degraded" satisfies EgressStatus };
+				return { ...ONLY_DEGRADED_EGRESS_MATCH };
 			default:
 				this.logger.warn({
 					message: "invalid filter",
@@ -363,7 +362,7 @@ class MongoChecksRepository implements IChecksRepository {
 		const [totalResult, downResult, degradedResult] = await Promise.all([
 			CheckModel.countDocuments(baseMatch),
 			CheckModel.countDocuments({ ...baseMatch, status: false }),
-			CheckModel.countDocuments({ ...rangeMatch, egressStatus: "degraded" satisfies EgressStatus }),
+			CheckModel.countDocuments({ ...rangeMatch, ...ONLY_DEGRADED_EGRESS_MATCH }),
 		]);
 
 		return {

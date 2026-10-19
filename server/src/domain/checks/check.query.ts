@@ -6,3 +6,6 @@ import type { EgressStatus } from "@/domain/egress/egress.type.js";
 // Spread this into the $match or filter of any query that reports statistics. Check listings keep degraded checks,
 // and the "degraded" check filter selects only them.
 export const EXCLUDE_DEGRADED_EGRESS_MATCH = { egressStatus: { $ne: "degraded" satisfies EgressStatus } } as const;
+
+// The opposite: only checks taken while egress was degraded. Used by the "degraded" check filter and its count.
+export const ONLY_DEGRADED_EGRESS_MATCH = { egressStatus: "degraded" satisfies EgressStatus } as const;
