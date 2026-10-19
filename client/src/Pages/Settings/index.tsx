@@ -441,7 +441,24 @@ export const SettingsPage = () => {
 			delete (dataToSend as any).egressNotifications;
 		}
 
-		const result = await patch("/settings", dataToSend as SettingsFormData);
+		// The server is the one full parser of egress targets. Its validation message reads
+		// "egressCheckTargets.<index>: <message>", joined by "; " when there are several.
+		const result = await patch(
+			"/settings",
+			dataToSend as SettingsFormData,
+			undefined,
+			(message) => {
+				const targetError = message
+					.split("; ")
+					.find((part) => part.startsWith("egressCheckTargets"));
+				if (targetError) {
+					form.setError("egressCheckTargets", {
+						type: "server",
+						message: targetError.replace(/^egressCheckTargets(\.\d+)?: /, ""),
+					});
+				}
+			}
+		);
 
 		if (result?.success) {
 			// The banner stops polling while the egress self-check is off; refetch so a change shows now.
