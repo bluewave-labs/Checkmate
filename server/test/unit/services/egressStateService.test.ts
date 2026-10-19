@@ -16,11 +16,16 @@ const createJobsRepo = () => ({
 	deleteGlobalJob: jest.fn().mockResolvedValue(true),
 });
 
-const createService = () => {
+const createSettingsService = (egressCheckEnabled = true) => ({
+	getCachedDBSettings: jest.fn().mockResolvedValue({ egressCheckEnabled }),
+});
+
+const createService = (egressCheckEnabled = true) => {
 	const egressStateRepository = createEgressStateRepo();
 	const jobsRepository = createJobsRepo();
-	const service = new EgressStateService(egressStateRepository as any, jobsRepository as any);
-	return { service, egressStateRepository, jobsRepository };
+	const settingsService = createSettingsService(egressCheckEnabled);
+	const service = new EgressStateService(egressStateRepository as any, jobsRepository as any, settingsService as any);
+	return { service, egressStateRepository, jobsRepository, settingsService };
 };
 
 const makeState = (overrides?: Partial<EgressState>): EgressState => ({
@@ -39,7 +44,7 @@ const makeState = (overrides?: Partial<EgressState>): EgressState => ({
 
 describe("EgressStateService", () => {
 	describe("getSummary", () => {
-		it("returns only the status and degradedSince from the repository's state", async () => {
+		it("returns only enabled, status and degradedSince", async () => {
 			const { service, egressStateRepository } = createService();
 			const state = makeState({
 				status: "degraded",
@@ -52,7 +57,16 @@ describe("EgressStateService", () => {
 			const result = await service.getSummary();
 
 			expect(egressStateRepository.findSingleton).toHaveBeenCalledTimes(1);
-			expect(result).toEqual({ status: "degraded", degradedSince: "2026-01-01T00:05:00Z" });
+			expect(result).toEqual({ enabled: true, status: "degraded", degradedSince: "2026-01-01T00:05:00Z" });
+		});
+
+		it("reports enabled false when the self-check is switched off", async () => {
+			const { service, egressStateRepository } = createService(false);
+			(egressStateRepository.findSingleton as jest.Mock).mockResolvedValue(makeState());
+
+			const result = await service.getSummary();
+
+			expect(result).toEqual({ enabled: false, status: "ok", degradedSince: null });
 		});
 
 		it("does not call any transition method", async () => {

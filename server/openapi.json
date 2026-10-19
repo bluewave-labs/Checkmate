@@ -15277,6 +15277,9 @@
 										"data": {
 											"type": "object",
 											"properties": {
+												"enabled": {
+													"type": "boolean"
+												},
 												"status": {
 													"type": "string",
 													"enum": ["ok", "degraded"]
@@ -15286,7 +15289,7 @@
 													"nullable": true
 												}
 											},
-											"required": ["status", "degradedSince"]
+											"required": ["enabled", "status", "degradedSince"]
 										}
 									},
 									"required": ["success", "msg", "data"]

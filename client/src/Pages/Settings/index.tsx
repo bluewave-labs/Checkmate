@@ -51,6 +51,7 @@ import type { ProxyResponse } from "@/Types/Proxy";
 import { EgressExcludedChannels, type Notification } from "@/Types/Notification";
 import type { AppSettingsResponse } from "@/Types/Settings";
 import { useSearchParams } from "react-router-dom";
+import { mutate } from "swr";
 import { SYSTEM_TIMEZONE, TIME_FORMATS, type TimeFormat } from "@/Utils/TimeUtils";
 
 const SETTINGS_TABS = [
@@ -434,6 +435,8 @@ export const SettingsPage = () => {
 		const result = await patch("/settings", dataToSend as SettingsFormData);
 
 		if (result?.success) {
+			// The banner stops polling while the egress self-check is off; refetch so a change shows now.
+			void mutate("/egress");
 			// Update API key state from response
 			if (result.data) {
 				setIsApiKeySet(result.data.pagespeedKeySet);

@@ -6,6 +6,7 @@ import { z } from "zod";
 //****************************************
 
 export const egressSummaryResponseSchema = z.object({
+	enabled: z.boolean(),
 	status: z.enum(EgressStatuses),
 	degradedSince: z.string().nullable(),
 });

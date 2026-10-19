@@ -103,7 +103,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 	const tagsService = new TagsService(tagsRepository, monitorsRepository);
 	const diagnosticService = new DiagnosticService(db);
 	const proxiesService = new ProxiesService(proxiesRepository, monitorsRepository, settingsService);
-	const egressStateService = new EgressStateService(egressStateRepository, jobsRepository);
+	const egressStateService = new EgressStateService(egressStateRepository, jobsRepository, settingsService);
 	return {
 		...shared,
 		worker: jobScheduler,

@@ -30,8 +30,9 @@ export interface EgressState {
 }
 
 // What GET /egress returns. Any signed-in role may read it for the banner, so it leaves out the probe
-// results: those name the admin-configured targets and carry probe error text.
-export type EgressSummary = Pick<EgressState, "status" | "degradedSince">;
+// results: those name the admin-configured targets and carry probe error text. `enabled` lets the client
+// stop polling while the self-check is switched off.
+export type EgressSummary = Pick<EgressState, "status" | "degradedSince"> & { enabled: boolean };
 
 export interface EgressProbeResult {
 	target: string;
