@@ -10,6 +10,8 @@ import type { RootState } from "@/Types/state";
 import type { EgressSummary } from "@/Types/Egress";
 
 const EGRESS_POLL_MS = 30_000;
+// While the self-check is off, poll rarely so tabs still notice when an admin switches it on.
+const EGRESS_DISABLED_POLL_MS = 5 * 60_000;
 
 interface AppLayoutProps {
 	children: React.ReactNode;
@@ -21,16 +23,16 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 	const retryIntervalRef = useRef<number | null>(null);
 	const authToken = useSelector((state: RootState) => state.auth.authToken);
 
-	// Poll egress state only for signed-in users, and only while the self-check is on. SWR still
-	// refetches on focus and when Settings saves, so switching it on is picked up. A failed poll
-	// hides the banner rather than leaving the last answer up; an unreachable server is already
-	// reported by OfflineBanner.
+	// Poll egress state only for signed-in users, and slowly while the self-check is off (focus
+	// revalidation is off app-wide, so this poll is how other tabs see it switched on). A failed
+	// poll hides the banner rather than leaving the last answer up; an unreachable server is
+	// already reported by OfflineBanner.
 	const { data: egressSummary, error: egressError } = useGet<EgressSummary>(
 		authToken ? "/egress" : null,
 		undefined,
 		{
 			refreshInterval: (latest?: ApiResponse<EgressSummary>) =>
-				latest?.data.enabled === false ? 0 : EGRESS_POLL_MS,
+				latest?.data.enabled === false ? EGRESS_DISABLED_POLL_MS : EGRESS_POLL_MS,
 			shouldRetryOnError: false,
 		}
 	);
