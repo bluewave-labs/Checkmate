@@ -17,7 +17,8 @@ export const EgressBanner = ({ state }: EgressBannerProps) => {
 	const { t } = useTranslation();
 	const formatDate = useFormatDate();
 
-	if (state?.status !== "degraded") return null;
+	// A stored "degraded" means nothing once the check is off, e.g. if the reset on switching it off failed.
+	if (!state?.enabled || state.status !== "degraded") return null;
 
 	const message = state.degradedSince
 		? t("components.egressBanner.degraded", {
