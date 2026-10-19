@@ -1,12 +1,11 @@
 import { CHECK_TTL_SENTINEL } from "@/Types/Check";
 import { z } from "zod";
+import { hostnamePattern } from "@/Validation/patterns";
 
 export const EGRESS_TARGETS_MAX = 10;
 
 // Follows the server's parseEgressTarget: an http(s) URL, host:port (or [ipv6]:port), or a bare host or
 // IP address. Kept in step so that what the form accepts is what the server accepts.
-const HOSTNAME_REGEX =
-	/^(?=.{1,253}$)([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}$/;
 const IPV4_REGEX = /^(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)$/;
 const IPV6_GROUP_REGEX = /^[0-9a-fA-F]{1,4}$/;
 const HOST_PORT_REGEX = /^(?:\[([^\]]+)\]|([^:/\s[\]]+)):(\d{1,5})$/;
@@ -21,7 +20,7 @@ const isIpv6 = (value: string) => {
 	return halves.length === 2 ? groups.length < 8 : groups.length === 8;
 };
 const isHostOrIpv4 = (value: string) =>
-	value === "localhost" || IPV4_REGEX.test(value) || HOSTNAME_REGEX.test(value);
+	value === "localhost" || IPV4_REGEX.test(value) || hostnamePattern.test(value);
 
 const isHttpUrl = (value: string) => {
 	try {
