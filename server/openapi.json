@@ -3949,6 +3949,23 @@
 					}
 				},
 				"required": ["message", "level", "timestamp"]
+			},
+			"EgressSummary": {
+				"type": "object",
+				"properties": {
+					"status": {
+						"type": "string",
+						"enum": ["ok", "degraded"]
+					},
+					"degradedSince": {
+						"type": "string",
+						"nullable": true
+					},
+					"enabled": {
+						"type": "boolean"
+					}
+				},
+				"required": ["status", "degradedSince", "enabled"]
 			}
 		},
 		"parameters": {}
@@ -15284,21 +15301,7 @@
 											"type": "string"
 										},
 										"data": {
-											"type": "object",
-											"properties": {
-												"enabled": {
-													"type": "boolean"
-												},
-												"status": {
-													"type": "string",
-													"enum": ["ok", "degraded"]
-												},
-												"degradedSince": {
-													"type": "string",
-													"nullable": true
-												}
-											},
-											"required": ["enabled", "status", "degradedSince"]
+											"$ref": "#/components/schemas/EgressSummary"
 										}
 									},
 									"required": ["success", "msg", "data"]

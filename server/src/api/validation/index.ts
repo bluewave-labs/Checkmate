@@ -23,4 +23,3 @@ export * from "./userValidation.js";
 export * from "./incidentValidation.js";
 export * from "./tagValidation.js";
 export * from "./proxyValidation.js";
-export * from "./egressValidation.js";

@@ -1,6 +1,6 @@
 import { IEgressController } from "@/api/controllers/egressController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
-import { egressSummaryResponseSchema } from "@/api/validation/egressValidation.js";
+import { egressSummarySchema } from "@/domain/egress/egress.schema.js";
 
 // Any authenticated role may read the summary: the client banner polls it.
 export const egressRoutes: RouteTable<IEgressController> = {
@@ -13,7 +13,7 @@ export const egressRoutes: RouteTable<IEgressController> = {
 			path: "/",
 			handler: "getState",
 			summary: "Get the instance's current egress self-check status",
-			response: egressSummaryResponseSchema,
+			response: egressSummarySchema,
 		},
 	],
 };
