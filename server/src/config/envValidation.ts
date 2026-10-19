@@ -43,7 +43,7 @@ const envSchema = z.object({
 	// Port for worker health checks
 	HEALTH_PORT: z.string().default("52346"),
 	NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-	LOG_LEVEL: z.enum(LogLevels).default("debug"),
+	LOG_LEVEL: z.enum(LogLevels).default("info"),
 
 	// Database
 	DB_CONNECTION_STRING: z.string().min(1, "Database connection string is required"),
