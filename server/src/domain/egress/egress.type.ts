@@ -29,6 +29,10 @@ export interface EgressState {
 	updatedAt: string;
 }
 
+// What GET /egress returns. Any signed-in role may read it for the banner, so it leaves out the probe
+// results: those name the admin-configured targets and carry probe error text.
+export type EgressSummary = Pick<EgressState, "status" | "degradedSince">;
+
 export interface EgressProbeResult {
 	target: string;
 	reachable: boolean;

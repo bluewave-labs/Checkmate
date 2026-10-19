@@ -4,12 +4,12 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { TriangleAlert } from "lucide-react";
-import type { EgressState } from "@/Types/Egress";
+import type { EgressSummary } from "@/Types/Egress";
 import { useFormatDate } from "@/Hooks/useFormatDate";
 import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface EgressBannerProps {
-	state: EgressState | null;
+	state: EgressSummary | null;
 }
 
 export const EgressBanner = ({ state }: EgressBannerProps) => {

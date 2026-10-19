@@ -15253,7 +15253,7 @@
 		"/egress": {
 			"get": {
 				"tags": ["egress"],
-				"summary": "Get the instance's current egress self-check state",
+				"summary": "Get the instance's current egress self-check status",
 				"security": [
 					{
 						"bearerAuth": []
@@ -15277,9 +15277,6 @@
 										"data": {
 											"type": "object",
 											"properties": {
-												"id": {
-													"type": "string"
-												},
 												"status": {
 													"type": "string",
 													"enum": ["ok", "degraded"]
@@ -15287,44 +15284,9 @@
 												"degradedSince": {
 													"type": "string",
 													"nullable": true
-												},
-												"lastRecoveredAt": {
-													"type": "string",
-													"nullable": true
-												},
-												"lastProbeAt": {
-													"type": "string",
-													"nullable": true
-												},
-												"lastProbeResults": {
-													"type": "array",
-													"items": {
-														"type": "object",
-														"properties": {
-															"target": {
-																"type": "string"
-															},
-															"reachable": {
-																"type": "boolean"
-															},
-															"responseTime": {
-																"type": "number"
-															},
-															"message": {
-																"type": "string"
-															}
-														},
-														"required": ["target", "reachable", "responseTime"]
-													}
-												},
-												"createdAt": {
-													"type": "string"
-												},
-												"updatedAt": {
-													"type": "string"
 												}
 											},
-											"required": ["id", "status", "degradedSince", "lastRecoveredAt", "lastProbeAt", "lastProbeResults", "createdAt", "updatedAt"]
+											"required": ["status", "degradedSince"]
 										}
 									},
 									"required": ["success", "msg", "data"]

@@ -13,7 +13,7 @@ class EgressController implements IEgressController {
 	}
 
 	getState: Handler = async (req, res) => {
-		const data = await this.egressStateService.getState();
+		const data = await this.egressStateService.getSummary();
 		res.json({ success: true, msg: "Egress state retrieved successfully", data });
 	};
 }

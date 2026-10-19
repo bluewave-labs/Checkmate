@@ -1,9 +1,9 @@
 import { IEgressStateRepository } from "@/domain/egress/egress-state.repository.interface.js";
 import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
-import type { EgressState } from "@/domain/egress/egress.type.js";
+import type { EgressState, EgressSummary } from "@/domain/egress/egress.type.js";
 
 export interface IEgressStateService {
-	getState(): Promise<EgressState>;
+	getSummary(): Promise<EgressSummary>;
 	reset(): Promise<EgressState>;
 }
 
@@ -19,8 +19,9 @@ export class EgressStateService implements IEgressStateService {
 		private jobsRepository: IJobsRepository
 	) {}
 
-	getState = async (): Promise<EgressState> => {
-		return this.egressStateRepository.findSingleton();
+	getSummary = async (): Promise<EgressSummary> => {
+		const { status, degradedSince } = await this.egressStateRepository.findSingleton();
+		return { status, degradedSince };
 	};
 
 	// Called when the feature is switched on or off: drop any pending recovery job and start from "ok".

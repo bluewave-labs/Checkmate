@@ -6,7 +6,7 @@ import { OfflineBanner, EgressBanner } from "@/Components/design-elements";
 import { setServerUnreachableCallback, get } from "@/Utils/ApiClient";
 import { useGet } from "@/Hooks/UseApi";
 import type { RootState } from "@/Types/state";
-import type { EgressState } from "@/Types/Egress";
+import type { EgressSummary } from "@/Types/Egress";
 
 const EGRESS_POLL_MS = 30_000;
 
@@ -22,7 +22,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
 	// Poll egress state only for signed-in users; failures are swallowed because
 	// an unreachable server is already reported by OfflineBanner.
-	const { data: egressState } = useGet<EgressState>(
+	const { data: egressSummary } = useGet<EgressSummary>(
 		authToken ? "/egress" : null,
 		undefined,
 		{ refreshInterval: EGRESS_POLL_MS, shouldRetryOnError: false }
@@ -61,7 +61,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 			}}
 		>
 			<OfflineBanner visible={serverUnreachable} />
-			{!serverUnreachable && <EgressBanner state={egressState} />}
+			{!serverUnreachable && <EgressBanner state={egressSummary} />}
 			{children}
 		</Box>
 	);
