@@ -350,9 +350,11 @@ class MongoChecksRepository implements IChecksRepository {
 		};
 	};
 
-	findSummaryByTeamId = async (teamId: string, dateRange: DateRange) => {
+	findSummaryByTeamId = async (teamId: string, dateRange: DateRange, monitorId?: string) => {
+		// Matching on the team as well keeps another team's monitor id from returning its counts.
 		const rangeMatch = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
+			...(monitorId && { "metadata.monitorId": new mongoose.Types.ObjectId(monitorId) }),
 			createdAt: { $gte: getDateForRange(dateRange) },
 		};
 		const baseMatch = { ...rangeMatch, ...EXCLUDE_DEGRADED_EGRESS_MATCH };

@@ -6007,6 +6007,15 @@
 						"required": false,
 						"name": "dateRange",
 						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"pattern": "^[0-9a-fA-F]{24}$"
+						},
+						"required": false,
+						"name": "monitorId",
+						"in": "query"
 					}
 				],
 				"responses": {

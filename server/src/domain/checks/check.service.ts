@@ -30,7 +30,7 @@ export interface ICheckService {
 		rowsPerPage: number;
 		filter?: CheckFilter;
 	}): Promise<ChecksQueryResult>;
-	getChecksSummaryByTeamId(params: { teamId: string; dateRange: DateRange }): Promise<ChecksSummary>;
+	getChecksSummaryByTeamId(params: { teamId: string; dateRange: DateRange; monitorId?: string }): Promise<ChecksSummary>;
 	deleteChecks(params: { monitorId: string; teamId: string }): Promise<number>;
 	deleteChecksByTeamId(params: { teamId: string }): Promise<number>;
 	deleteOlderThan(date: Date): Promise<number>;
@@ -185,8 +185,8 @@ export class CheckService implements ICheckService {
 		return checkData;
 	};
 
-	getChecksSummaryByTeamId = async ({ teamId, dateRange }: { teamId: string; dateRange: DateRange }) => {
-		const summary = await this.checksRepository.findSummaryByTeamId(teamId, dateRange);
+	getChecksSummaryByTeamId = async ({ teamId, dateRange, monitorId }: { teamId: string; dateRange: DateRange; monitorId?: string }) => {
+		const summary = await this.checksRepository.findSummaryByTeamId(teamId, dateRange, monitorId);
 		return summary;
 	};
 

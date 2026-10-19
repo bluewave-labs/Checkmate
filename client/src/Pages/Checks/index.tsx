@@ -31,7 +31,11 @@ const Checks = () => {
 	const [rowsPerPage, setRowsPerPage] = useState<number>(10);
 
 	const monitorsUrl = "/monitors/team";
-	const summaryUrl = `/checks/team/summary?dateRange=${dateRange}`;
+	// The summary boxes follow the monitor picker, like the table under them.
+	const summaryUrl =
+		selectedMonitor === "0"
+			? `/checks/team/summary?dateRange=${dateRange}`
+			: `/checks/team/summary?dateRange=${dateRange}&monitorId=${selectedMonitor}`;
 
 	const { data: monitorsResponse, isLoading: isLoadingMonitors } =
 		useGet<Monitor[]>(monitorsUrl);

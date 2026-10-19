@@ -64,7 +64,7 @@ class CheckController implements ICheckController {
 		const teamId = requireTeamId(req.user?.teamId);
 		const dateRange = validatedQuery.dateRange ?? "hour";
 
-		const data = await this.checkService.getChecksSummaryByTeamId({ teamId, dateRange });
+		const data = await this.checkService.getChecksSummaryByTeamId({ teamId, dateRange, monitorId: validatedQuery.monitorId });
 		res.json({ success: true, msg: "Checks summary retrieved successfully", data });
 	};
 

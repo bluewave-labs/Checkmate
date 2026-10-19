@@ -391,7 +391,15 @@ describe("CheckService", () => {
 			const result = await service.getChecksSummaryByTeamId({ teamId: "team-1", dateRange: "day" });
 
 			expect(result).toBe(summary);
-			expect(checksRepository.findSummaryByTeamId).toHaveBeenCalledWith("team-1", "day");
+			expect(checksRepository.findSummaryByTeamId).toHaveBeenCalledWith("team-1", "day", undefined);
+		});
+
+		it("passes the monitor through when one is selected", async () => {
+			const { service, checksRepository } = createService();
+
+			await service.getChecksSummaryByTeamId({ teamId: "team-1", dateRange: "day", monitorId: "mon-1" });
+
+			expect(checksRepository.findSummaryByTeamId).toHaveBeenCalledWith("team-1", "day", "mon-1");
 		});
 	});
 
