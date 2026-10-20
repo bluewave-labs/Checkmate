@@ -64,7 +64,7 @@ export interface HeartbeatTestHarness {
 	bufferStub: { addToBuffer: jest.Mock; addGeoCheckToBuffer: jest.Mock; scheduleNextFlush: jest.Mock };
 	maintenanceWindowsRepo: { findByMonitorId: jest.Mock };
 	messageBuilder: { buildThresholdBreachMessage: jest.Mock };
-	egressService: { assessAfterFailure: jest.Mock };
+	egressService: { assessAfterFailure: jest.Mock; shouldClearStatusWindow: jest.Mock };
 	heartbeatJob: (monitor: Monitor) => Promise<void>;
 	setNextResponse: (status: boolean, code: number) => void;
 	setNextResponseFull: (response: MonitorStatusResponse) => void;
@@ -114,7 +114,16 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 	const dockerLogsService = { buildDockerLogs: jest.fn().mockResolvedValue([]) };
 	// Null mirrors the egress check being disabled, so the existing heartbeat suites run unchanged.
 	let nextEgressStatus: EgressStatus | null = null;
-	const egressService = { assessAfterFailure: jest.fn().mockImplementation(() => Promise.resolve(nextEgressStatus)) };
+	// Each harness models one worker and at most one degraded spell: the window is cleared once per monitor, as EgressService does.
+	const clearedThisSpell = new Set<string>();
+	const egressService = {
+		assessAfterFailure: jest.fn().mockImplementation(() => Promise.resolve(nextEgressStatus)),
+		shouldClearStatusWindow: jest.fn().mockImplementation((monitorId: unknown) => {
+			if (nextEgressStatus !== "degraded" || clearedThisSpell.has(monitorId as string)) return false;
+			clearedThisSpell.add(monitorId as string);
+			return true;
+		}),
+	};
 	const setEgressStatus = (status: EgressStatus | null) => {
 		nextEgressStatus = status;
 	};

@@ -96,7 +96,7 @@ const createPipeline = (overrides?: Record<string, any>) => {
 		proxyResolver: { resolve: jest.fn<any>().mockResolvedValue(undefined) },
 		bufferService: { addToBuffer: jest.fn<any>(), addDockerLogToBuffer: jest.fn<any>() },
 		dockerLogsService: { buildDockerLogs: jest.fn<any>().mockResolvedValue([]) },
-		egressService: { assessAfterFailure: jest.fn<any>().mockResolvedValue(null) },
+		egressService: { assessAfterFailure: jest.fn<any>().mockResolvedValue(null), shouldClearStatusWindow: jest.fn<any>().mockReturnValue(true) },
 		statusService: { updateMonitorStatus: jest.fn<any>().mockResolvedValue(makeStatusChange({})) },
 		dispatcher: { dispatch: jest.fn<any>().mockResolvedValue(undefined) },
 		...overrides,
@@ -470,29 +470,52 @@ describe("WorkerPipeline", () => {
 		});
 
 		// ── status window across a spell ─────────────────────────────────────
-		// Matching the maintenance gate: cleared once as the monitor stops being evaluated, so the results either
-		// side of a spell are never adjacent.
+		// Matching the maintenance gate: cleared once per spell on this worker as the monitor stops being evaluated,
+		// so the results either side of a spell are never adjacent.
 
-		it("clears the status window on the first degraded check of a spell", async () => {
+		it("clears the status window when the egress service says this is the monitor's first degraded check of the spell", async () => {
 			const { pipeline, deps } = createPipeline({
 				providerRegistry: { probe: jest.fn<any>().mockResolvedValue(failingStatus) },
-				egressService: { assessAfterFailure: jest.fn<any>().mockResolvedValue("degraded") },
+				egressService: {
+					assessAfterFailure: jest.fn<any>().mockResolvedValue("degraded"),
+					shouldClearStatusWindow: jest.fn<any>().mockReturnValue(true),
+				},
 			});
 
 			await pipeline.produce(makeMonitor({ statusWindow: [true, true, true, false, false] }));
 
+			expect(deps.egressService.shouldClearStatusWindow).toHaveBeenCalledWith("m1");
 			expect(deps.monitorsRepository.updateById).toHaveBeenCalledWith("m1", "team", { statusWindow: [] });
 		});
 
-		it("does not re-write the status window for later degraded checks in the same spell", async () => {
+		// Another worker's real failures may have refilled the window since; wiping it again would hide a real outage.
+		it("leaves the status window alone once it has been cleared for this spell", async () => {
 			const { pipeline, deps } = createPipeline({
 				providerRegistry: { probe: jest.fn<any>().mockResolvedValue(failingStatus) },
-				egressService: { assessAfterFailure: jest.fn<any>().mockResolvedValue("degraded") },
+				egressService: {
+					assessAfterFailure: jest.fn<any>().mockResolvedValue("degraded"),
+					shouldClearStatusWindow: jest.fn<any>().mockReturnValue(false),
+				},
+			});
+
+			await pipeline.produce(makeMonitor({ statusWindow: [true, true, true, false, false] }));
+
+			expect(deps.monitorsRepository.updateById).not.toHaveBeenCalled();
+		});
+
+		it("does not write an empty status window", async () => {
+			const { pipeline, deps } = createPipeline({
+				providerRegistry: { probe: jest.fn<any>().mockResolvedValue(failingStatus) },
+				egressService: {
+					assessAfterFailure: jest.fn<any>().mockResolvedValue("degraded"),
+					shouldClearStatusWindow: jest.fn<any>().mockReturnValue(true),
+				},
 			});
 
 			await pipeline.produce(makeMonitor({ statusWindow: [] }));
 
 			expect(deps.monitorsRepository.updateById).not.toHaveBeenCalled();
+			expect(deps.egressService.shouldClearStatusWindow).not.toHaveBeenCalled();
 		});
 
 		it("leaves the status window alone when the probe found egress fine", async () => {
