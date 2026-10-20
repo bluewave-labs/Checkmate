@@ -35,8 +35,6 @@ export interface ISettingsService {
 	getDBSettings(): Promise<Settings>;
 	getCachedDBSettings(): Promise<Settings>;
 	updateDbSettings(newSettings: SettingsUpdate): Promise<Settings>;
-	removeEgressNotification(notificationId: string): Promise<void>;
-	replaceTeamEgressNotifications(teamNotificationIds: string[], selectedIds: string[]): Promise<Settings>;
 }
 
 const DB_SETTINGS_CACHE_TTL_MS = 60_000;
@@ -103,17 +101,6 @@ export class SettingsService implements ISettingsService {
 		const updated = await this.getRepository().update(newSettings);
 		this.dbSettingsCache = null;
 		return updated;
-	};
-
-	replaceTeamEgressNotifications = async (teamNotificationIds: string[], selectedIds: string[]) => {
-		const updated = await this.getRepository().replaceTeamEgressNotifications(teamNotificationIds, selectedIds);
-		this.dbSettingsCache = null;
-		return updated;
-	};
-
-	removeEgressNotification = async (notificationId: string) => {
-		await this.getRepository().removeEgressNotification(notificationId);
-		this.dbSettingsCache = null;
 	};
 
 	getDBSettings = async () => {

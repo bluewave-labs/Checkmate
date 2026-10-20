@@ -2,20 +2,16 @@ import { describe, expect, it } from "@jest/globals";
 import { updateAppSettingsBodyValidation } from "../../../src/api/validation/settingsValidation.ts";
 import { MAX_EGRESS_TARGETS } from "../../../src/domain/egress/egress.type.ts";
 
-const validNotificationId = "64b7f0c2a1d2e3f4a5b6c7d8";
-
 describe("settingsValidation", () => {
 	describe("updateAppSettingsBodyValidation egress fields", () => {
 		it("accepts a full set of valid egress settings", () => {
 			const parsed = updateAppSettingsBodyValidation.parse({
 				egressCheckEnabled: true,
 				egressCheckTargets: ["1.1.1.1", "dns.google:53", "https://example.com/health"],
-				egressNotifications: [validNotificationId],
 			});
 
 			expect(parsed.egressCheckEnabled).toBe(true);
 			expect(parsed.egressCheckTargets).toEqual(["1.1.1.1", "dns.google:53", "https://example.com/health"]);
-			expect(parsed.egressNotifications).toEqual([validNotificationId]);
 		});
 
 		it("accepts a body with no egress fields", () => {
@@ -67,21 +63,6 @@ describe("settingsValidation", () => {
 				"[::1]:",
 			]) {
 				expect(() => updateAppSettingsBodyValidation.parse({ egressCheckTargets: [target] })).toThrow();
-			}
-		});
-
-		it("accepts an empty notification list", () => {
-			expect(updateAppSettingsBodyValidation.parse({ egressNotifications: [] }).egressNotifications).toEqual([]);
-		});
-
-		it("lower-cases upper-case hex notification ids", () => {
-			const id = "64B7F0C2A1D2E3F4A5B6C7D8";
-			expect(updateAppSettingsBodyValidation.parse({ egressNotifications: [id] }).egressNotifications).toEqual(["64b7f0c2a1d2e3f4a5b6c7d8"]);
-		});
-
-		it("rejects notification ids that are not 24-character hex", () => {
-			for (const id of ["not-an-id", "64b7f0c2a1d2e3f4a5b6c7d", "zzzzzzzzzzzzzzzzzzzzzzzz", 123]) {
-				expect(() => updateAppSettingsBodyValidation.parse({ egressNotifications: [id] })).toThrow();
 			}
 		});
 

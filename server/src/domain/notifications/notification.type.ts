@@ -18,10 +18,6 @@ export const NotificationChannels = [
 ] as const;
 export type NotificationChannel = (typeof NotificationChannels)[number];
 
-// Channels that we don't want to send egress recovery alerts
-// Currently only pager duty due to incident creation without a follow up closing event
-export const EgressExcludedChannels = ["pager_duty"] as const satisfies readonly NotificationChannel[];
-
 // ntfy servers accept either a bearer access token or HTTP basic credentials.
 // Both store their secret in `accessToken`; basic auth pairs it with `ntfyUsername`.
 export const NtfyAuthTypes = ["none", "token", "basic"] as const;
@@ -61,15 +57,7 @@ export interface AlertDiscordPayload {
  */
 
 export type NotificationType =
-	| "monitor_down"
-	| "monitor_up"
-	| "threshold_breach"
-	| "threshold_resolved"
-	| "container_breach"
-	| "container_resolved"
-	// Instance-level rather than monitor-scoped: sent once when the instance regains outbound connectivity.
-	| "egress_recovered"
-	| "test";
+	"monitor_down" | "monitor_up" | "threshold_breach" | "threshold_resolved" | "container_breach" | "container_resolved" | "test";
 
 export type NotificationSeverity = "critical" | "warning" | "info" | "success";
 

@@ -105,15 +105,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		pipeline.ingestChecks(checks)
 	);
 	const statusService = new StatusService(logger, monitorsRepository, monitorStatsRepository);
-	const egressService = new EgressService(
-		settingsService,
-		egressStateRepository,
-		jobsRepository,
-		providerRegistry,
-		proxyResolver,
-		notificationsService,
-		logger
-	);
+	const egressService = new EgressService(settingsService, egressStateRepository, jobsRepository, providerRegistry, proxyResolver, logger);
 	const telemetryService = new TelemetryService(got, settingsService, settingsRepository, logger);
 
 	const notificationReactor = new NotificationReactor(notificationsService);

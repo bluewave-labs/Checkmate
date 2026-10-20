@@ -45,7 +45,6 @@ const AppSettingsSchema = new Schema<AppSettingsDocument>(
 		globalProxyId: { type: String, default: null },
 		egressCheckEnabled: { type: Boolean, default: false },
 		egressCheckTargets: { type: [String], default: () => [...DEFAULT_EGRESS_TARGETS] },
-		egressNotifications: { type: [String], default: () => [] }, // Notification ids, stored as strings like globalProxyId
 		telemetryInstanceId: { type: String },
 	},
 	{ timestamps: true }

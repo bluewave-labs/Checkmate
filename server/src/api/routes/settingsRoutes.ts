@@ -22,7 +22,7 @@ export const settingsRoutes: RouteTable<ISettingsController> = {
 			path: "/",
 			handler: "updateAppSettings",
 			summary: "Update application settings (admin/superadmin)",
-			errors: [appSettingsErrors.proxyNotFound, appSettingsErrors.notificationNotFound, appSettingsErrors.notificationChannelNotSupported],
+			errors: [appSettingsErrors.proxyNotFound],
 			roles: ["admin", "superadmin"],
 			body: updateAppSettingsBodyValidation,
 			response: appSettingsResponseSchema,

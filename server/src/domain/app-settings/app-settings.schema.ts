@@ -34,7 +34,6 @@ export const settingsSchema = z.object({
 	globalProxyId: z.string().nullable().optional(),
 	egressCheckEnabled: z.boolean(),
 	egressCheckTargets: z.array(z.string()),
-	egressNotifications: z.array(z.string()),
 	telemetryInstanceId: z.string().optional(),
 	createdAt: z.string(),
 	updatedAt: z.string(),
