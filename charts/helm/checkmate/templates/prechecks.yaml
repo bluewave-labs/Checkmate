@@ -1,54 +1,23 @@
-{{- $api := include "checkmate.api" . | fromYaml -}}
-{{- if eq .Values.client.ingress.host "change_me" }}
-  {{- fail "client.ingress.host must be overridden and not set to 'change_me'" }}
+{{- if .Values.client.enabled }}
+  {{- $clientHost := (index .Values.client.ingress.main.hosts 0).host }}
+
+  {{- if eq $clientHost "change_me" }}
+    {{- fail "client.ingress.main.hosts[0].host must be overridden and not set to 'change_me'" }}
+  {{- end }}
+
+  {{- if or (not .Values.client.controllers.main.containers.main.env.UPTIME_APP_API_BASE_URL) (contains "change_me" .Values.client.controllers.main.containers.main.env.UPTIME_APP_API_BASE_URL) }}
+    {{- fail "client.controllers.main.containers.main.env.UPTIME_APP_API_BASE_URL must be set to the public server URL" }}
+  {{- end }}
 {{- end }}
 
-{{- if eq $api.ingress.host "change_me" }}
-  {{- fail "api.ingress.host (or legacy server.ingress.host) must be overridden and not set to 'change_me'" }}
+{{- if .Values.server.enabled }}
+  {{- $serverHost := (index .Values.server.ingress.main.hosts 0).host }}
+
+  {{- if eq $serverHost "change_me" }}
+    {{- fail "server.ingress.main.hosts[0].host must be overridden and not set to 'change_me'" }}
+  {{- end }}
+
+  {{- if or (not .Values.server.controllers.main.containers.main.env.CLIENT_HOST) (contains "change_me" .Values.server.controllers.main.containers.main.env.CLIENT_HOST) }}
+    {{- fail "server.controllers.main.containers.main.env.CLIENT_HOST must be set to the public client URL" }}
+  {{- end }}
 {{- end }}
-
-{{- $apiProtocol := $api.protocol }}
-{{- if not (or (eq $apiProtocol "http") (eq $apiProtocol "https")) }}
-  {{- fail "api.protocol must be either 'http' or 'https'" }}
-{{- end }}
-
-{{- $clientProtocol := .Values.client.protocol }}
-{{- if not (or (eq $clientProtocol "http") (eq $clientProtocol "https")) }}
-  {{- fail "client.protocol must be either 'http' or 'https'" }}
-{{- end }}
-
-{{/* Enforce protocol when TLS is enabled to avoid mixed-content */}}
-{{- if and .Values.client.ingress.tls.enabled (ne $clientProtocol "https") }}
-  {{- fail "client.ingress.tls.enabled is true but client.protocol is not 'https'. Set client.protocol: https to avoid mixed content." }}
-{{- end }}
-
-{{- if and $api.ingress.tls.enabled (ne $apiProtocol "https") }}
-  {{- fail "api.ingress.tls.enabled is true but api.protocol is not 'https'. Set api.protocol: https to ensure correct API base URL." }}
-{{- end }}
-
-{{/* If client runs on https, API must also be https to avoid mixed content */}}
-{{- if and (eq $clientProtocol "https") (ne $apiProtocol "https") }}
-  {{- fail "client.protocol is 'https' but api.protocol is not. Set api.protocol: https to prevent browser mixed-content issues." }}
-{{- end }}
-
-{{/* Fail early if TLS enabled without cert-manager annotations (cluster-issuer or issuer) */}}
-{{- $cAnn := .Values.client.ingress.annotations | default dict }}
-{{- $aAnn := $api.ingress.annotations | default dict }}
-
-{{- $clientHasIssuer := or (hasKey $cAnn "cert-manager.io/cluster-issuer") (hasKey $cAnn "cert-manager.io/issuer") }}
-{{- $apiHasIssuer := or (hasKey $aAnn "cert-manager.io/cluster-issuer") (hasKey $aAnn "cert-manager.io/issuer") }}
-
-{{- if and .Values.client.ingress.tls.enabled (not $clientHasIssuer) }}
-  {{- fail "client.ingress.tls.enabled is true but no cert-manager issuer annotation found. Add 'cert-manager.io/cluster-issuer' or 'cert-manager.io/issuer'." }}
-{{- end }}
-
-{{- if and $api.ingress.tls.enabled (not $apiHasIssuer) }}
-  {{- fail "api.ingress.tls.enabled is true but no cert-manager issuer annotation found. Add 'cert-manager.io/cluster-issuer' or 'cert-manager.io/issuer'." }}
-{{- end }}
-
-{{/* Worker grace period must exceed the server drain timeout (25s) or workers are SIGKILLed mid-drain */}}
-{{- if and .Values.worker.enabled (le (int .Values.worker.terminationGracePeriodSeconds) 25) }}
-  {{- fail "worker.terminationGracePeriodSeconds must be greater than 25 (the server drain timeout) or workers are killed mid-drain" }}
-{{- end }}
-
-{{/* Secret name can be omitted; we default to <release>-client|api-tls in templates */}}

@@ -8,3 +8,22 @@ version: 0.2.0
 # checkmate-mongo images this chart references are frozen at v3.8.1 — later versions
 # are never published, so a bumped chart will fail to pull.
 appVersion: "v3.8.1" # "v" prefix: published image tags are v-prefixed (ghcr.io/.../checkmate-*:v3.8.1)
+dependencies:
+  - name: app-template
+    alias: client
+    version: 4.4.0
+    repository: https://bjw-s-labs.github.io/helm-charts
+    condition: client.enabled
+  - name: app-template
+    alias: server
+    version: 4.4.0
+    repository: https://bjw-s-labs.github.io/helm-charts
+    condition: server.enabled
+  - name: mongodb
+    version: 19.0.3
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: mongodb.enabled
+  - name: redis
+    version: 24.1.2
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: redis.enabled
