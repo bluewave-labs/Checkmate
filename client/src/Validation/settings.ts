@@ -110,7 +110,6 @@ export const settingsSchema = z
 					});
 				}
 			}),
-		egressNotifications: z.array(z.string()),
 	})
 	.superRefine((body, ctx) => {
 		if (body.globalProxyEnabled === true && !body.globalProxyId) {

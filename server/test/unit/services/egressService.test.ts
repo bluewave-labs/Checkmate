@@ -21,7 +21,6 @@ const makeState = (overrides?: Partial<EgressState>): EgressState => ({
 const makeSettings = (overrides?: Record<string, unknown>) => ({
 	egressCheckEnabled: true,
 	egressCheckTargets: ["1.1.1.1", "8.8.8.8"],
-	egressNotifications: ["notif-1"],
 	...overrides,
 });
 
@@ -80,7 +79,6 @@ const createService = (overrides?: Record<string, any>) => {
 		},
 		providerRegistry: { probe: statusFor(["1.1.1.1", "8.8.8.8"]) },
 		proxyResolver: { resolve: jest.fn().mockResolvedValue(undefined) },
-		notificationsService: { sendEgressRecoveredNotification: jest.fn().mockResolvedValue(true) },
 		logger: createMockLogger(),
 		...overrides,
 	};
@@ -90,7 +88,6 @@ const createService = (overrides?: Record<string, any>) => {
 		defaults.jobsRepository as any,
 		defaults.providerRegistry as any,
 		defaults.proxyResolver as any,
-		defaults.notificationsService as any,
 		defaults.logger as any
 	);
 	return { service, defaults };
@@ -409,43 +406,6 @@ describe("EgressService", () => {
 				expect.objectContaining({ degradedSince: expect.anything(), results: expect.any(Array) }),
 				"Instance egress recovered"
 			);
-			expect(defaults.notificationsService.sendEgressRecoveredNotification).toHaveBeenCalledTimes(1);
-			expect(defaults.notificationsService.sendEgressRecoveredNotification).toHaveBeenCalledWith(
-				expect.objectContaining({ status: "ok", lastRecoveredAt: "2026-01-01T10:05:00.000Z" }),
-				["notif-1"]
-			);
-		});
-
-		it("logs and swallows a failed recovery notification once the transition is recorded", async () => {
-			const { service, defaults } = createService({
-				egressStateRepository: degradedRepository(),
-				networkService: { requestStatus: statusFor(["1.1.1.1"]) },
-				notificationsService: { sendEgressRecoveredNotification: jest.fn().mockRejectedValue(new Error("smtp down")) },
-			});
-
-			await expect(service.checkRecovery(makeJob())).resolves.toBeUndefined();
-
-			expect(defaults.jobsRepository.deleteGlobalJobIfUnchanged).toHaveBeenCalledWith("egress", 1_000);
-			expect(defaults.logger.error).toHaveBeenCalledWith(
-				{ err: new Error("smtp down"), notificationIds: ["notif-1"] },
-				"Egress recovered but the notification could not be sent"
-			);
-		});
-
-		it("warns when a channel reports a failed delivery without throwing", async () => {
-			const { service, defaults } = createService({
-				egressStateRepository: degradedRepository(),
-				networkService: { requestStatus: statusFor(["1.1.1.1"]) },
-				notificationsService: { sendEgressRecoveredNotification: jest.fn().mockResolvedValue(false) },
-			});
-
-			await expect(service.checkRecovery(makeJob())).resolves.toBeUndefined();
-
-			expect(defaults.logger.warn).toHaveBeenCalledWith(
-				{ notificationIds: ["notif-1"] },
-				"Egress recovered but at least one notification channel failed to deliver"
-			);
-			expect(defaults.logger.error).not.toHaveBeenCalled();
 		});
 
 		it("releases the job but does not log a recovery when another process already recorded it", async () => {
@@ -460,10 +420,9 @@ describe("EgressService", () => {
 			expect(defaults.logger.info).not.toHaveBeenCalledWith(
 				expect.objectContaining({ message: expect.stringContaining("Instance egress recovered") })
 			);
-			expect(defaults.notificationsService.sendEgressRecoveredNotification).not.toHaveBeenCalled();
 		});
 
-		it("records the probe and keeps the job while every target stays unreachable, without notifying", async () => {
+		it("records the probe and keeps the job while every target stays unreachable", async () => {
 			const { service, defaults } = createService({
 				egressStateRepository: degradedRepository(),
 				providerRegistry: { probe: statusFor([]) },
@@ -474,7 +433,6 @@ describe("EgressService", () => {
 			expect(defaults.egressStateRepository.recordProbe).toHaveBeenCalledTimes(1);
 			expect(defaults.egressStateRepository.markRecovered).not.toHaveBeenCalled();
 			expect(defaults.jobsRepository.deleteGlobalJobIfUnchanged).not.toHaveBeenCalled();
-			expect(defaults.notificationsService.sendEgressRecoveredNotification).not.toHaveBeenCalled();
 		});
 
 		it("releases the job without probing when the persisted state is no longer degraded", async () => {

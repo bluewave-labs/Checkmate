@@ -42,8 +42,7 @@ export const initializeControllers = (apiServices: ApiServices): InitializedCont
 			apiServices.settingsService,
 			apiServices.emailService,
 			apiServices.proxiesService,
-			apiServices.egressStateService,
-			apiServices.notificationsService
+			apiServices.egressStateService
 		),
 		checkController: new CheckController(apiServices.checkService),
 		geoCheckController: new GeoCheckController(apiServices.geoChecksService),

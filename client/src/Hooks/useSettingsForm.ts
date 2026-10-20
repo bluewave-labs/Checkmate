@@ -47,7 +47,6 @@ export const useSettingsForm = ({ data = null }: UseSettingsFormOptions = {}) =>
 			globalProxyId: data?.globalProxyId ?? null,
 			egressCheckEnabled: data?.egressCheckEnabled ?? false,
 			egressCheckTargets: (data?.egressCheckTargets ?? []).join("\n"),
-			egressNotifications: data?.egressNotifications ?? [],
 		};
 
 		return { schema: settingsSchema, defaults };

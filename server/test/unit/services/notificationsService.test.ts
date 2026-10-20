@@ -5,7 +5,6 @@ import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { Notification } from "../../../src/domain/notifications/notification.type.ts";
 import type { Check } from "../../../src/domain/checks/check.type.ts";
 import type { MonitorActionDecision } from "../../../src/worker/worker.interface.ts";
-import type { EgressState } from "../../../src/domain/egress/egress.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -18,7 +17,6 @@ const createNotificationsRepo = () => ({
 	create: jest.fn(),
 	findById: jest.fn(),
 	findNotificationsByIds: jest.fn(),
-	findNotificationsByIdsForTeam: jest.fn(),
 	findByTeamId: jest.fn(),
 	updateById: jest.fn(),
 	deleteById: jest.fn(),
@@ -30,12 +28,10 @@ const createMonitorsRepo = () => ({
 
 const createSettingsService = (clientHost = "https://app.example.com") => ({
 	getSettings: jest.fn().mockReturnValue({ clientHost }),
-	removeEgressNotification: jest.fn().mockResolvedValue(undefined),
 });
 
 const createMessageBuilder = () => ({
 	buildMessage: jest.fn().mockReturnValue({ type: "monitor_down", content: { title: "Down" } }),
-	buildEgressRecoveredMessage: jest.fn().mockReturnValue({ type: "egress_recovered", content: { title: "Restored" } }),
 	buildThresholdBreachMessage: jest.fn(),
 });
 
@@ -138,18 +134,6 @@ const makeCheck = (overrides?: Partial<Check>): Check => ({
 	message: "Internal Server Error",
 	createdAt: "2026-01-01T00:00:00Z",
 	updatedAt: "2026-01-01T00:00:00Z",
-	...overrides,
-});
-
-const makeEgressState = (overrides?: Partial<EgressState>): EgressState => ({
-	id: "egress-1",
-	status: "ok",
-	degradedSince: "2026-01-01T10:00:00.000Z",
-	lastRecoveredAt: "2026-01-01T10:05:00.000Z",
-	lastProbeAt: "2026-01-01T10:05:00.000Z",
-	lastProbeResults: [],
-	createdAt: "2026-01-01T00:00:00.000Z",
-	updatedAt: "2026-01-01T10:05:00.000Z",
 	...overrides,
 });
 
@@ -350,95 +334,6 @@ describe("NotificationsService", () => {
 		});
 	});
 
-	// ── sendEgressRecoveredNotification ──────────────────────────────────────
-
-	describe("sendEgressRecoveredNotification", () => {
-		it("builds one egress message and sends it to every resolved notification", async () => {
-			const { service, notificationsRepository, emailProvider, slackProvider, notificationMessageBuilder } = createService();
-			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([
-				makeNotification({ id: "notif-1", type: "email" }),
-				makeNotification({ id: "notif-2", type: "slack" }),
-			]);
-			const state = makeEgressState();
-
-			const result = await service.sendEgressRecoveredNotification(state, ["notif-1", "notif-2"]);
-
-			expect(result).toBe(true);
-			expect(notificationsRepository.findNotificationsByIds).toHaveBeenCalledWith(["notif-1", "notif-2"]);
-			expect(notificationMessageBuilder.buildEgressRecoveredMessage).toHaveBeenCalledTimes(1);
-			expect(notificationMessageBuilder.buildEgressRecoveredMessage).toHaveBeenCalledWith(state, "https://app.example.com");
-			const message = notificationMessageBuilder.buildEgressRecoveredMessage.mock.results[0]?.value;
-			expect(emailProvider.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ id: "notif-1" }), message);
-			expect(slackProvider.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ id: "notif-2" }), message);
-		});
-
-		it("returns true without querying the repository when no notifications are configured", async () => {
-			const { service, notificationsRepository, notificationMessageBuilder, logger } = createService();
-
-			const result = await service.sendEgressRecoveredNotification(makeEgressState(), []);
-
-			expect(result).toBe(true);
-			expect(notificationsRepository.findNotificationsByIds).not.toHaveBeenCalled();
-			expect(notificationMessageBuilder.buildEgressRecoveredMessage).not.toHaveBeenCalled();
-			expect(logger.info).toHaveBeenCalledWith("Egress recovered but no notification channels are configured for it");
-		});
-
-		it("warns without building a message when none of the configured notifications exist", async () => {
-			const { service, notificationsRepository, notificationMessageBuilder, logger } = createService();
-			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([]);
-
-			const result = await service.sendEgressRecoveredNotification(makeEgressState(), ["notif-deleted"]);
-
-			expect(result).toBe(true);
-			expect(notificationMessageBuilder.buildEgressRecoveredMessage).not.toHaveBeenCalled();
-			expect(logger.warn).toHaveBeenCalledWith(
-				{ notificationIds: ["notif-deleted"] },
-				"Egress recovered but none of the configured notification channels exist"
-			);
-		});
-
-		it("returns false when any provider fails", async () => {
-			const { service, notificationsRepository, emailProvider } = createService();
-			emailProvider.sendMessage.mockResolvedValue(false);
-			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([makeNotification({ type: "email" })]);
-
-			const result = await service.sendEgressRecoveredNotification(makeEgressState(), ["notif-1"]);
-
-			expect(result).toBe(false);
-		});
-
-		it("skips excluded channels and sends to the rest", async () => {
-			const { service, notificationsRepository, emailProvider, pagerDutyProvider, logger } = createService();
-			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([
-				makeNotification({ id: "notif-1", type: "email" }),
-				makeNotification({ id: "notif-2", type: "pager_duty" }),
-			]);
-
-			const result = await service.sendEgressRecoveredNotification(makeEgressState(), ["notif-1", "notif-2"]);
-
-			expect(result).toBe(true);
-			expect(emailProvider.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ id: "notif-1" }), expect.anything());
-			expect(pagerDutyProvider.sendMessage).not.toHaveBeenCalled();
-			expect(logger.warn).toHaveBeenCalledWith(
-				{ skippedIds: ["notif-2"] },
-				"Egress recovered; skipping notification channels that cannot receive egress alerts"
-			);
-		});
-
-		it("returns true without building a message when only excluded channels are configured", async () => {
-			const { service, notificationsRepository, notificationMessageBuilder, pagerDutyProvider } = createService();
-			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([makeNotification({ id: "notif-2", type: "pager_duty" })]);
-
-			const result = await service.sendEgressRecoveredNotification(makeEgressState(), ["notif-2"]);
-
-			expect(result).toBe(true);
-			expect(notificationMessageBuilder.buildEgressRecoveredMessage).not.toHaveBeenCalled();
-			expect(pagerDutyProvider.sendMessage).not.toHaveBeenCalled();
-		});
-	});
-
-	// ── CRUD operations ──────────────────────────────────────────────────────
-
 	describe("createNotification", () => {
 		it("sets userId and teamId and delegates to repository", async () => {
 			const created = makeNotification();
@@ -474,82 +369,6 @@ describe("NotificationsService", () => {
 		});
 	});
 
-	describe("assertNotificationsExistForTeam", () => {
-		it("skips the repository for an empty list", async () => {
-			const { service, notificationsRepository } = createService();
-
-			await expect(service.assertNotificationsExistForTeam([], "team-1")).resolves.toBeUndefined();
-			expect(notificationsRepository.findNotificationsByIdsForTeam).not.toHaveBeenCalled();
-		});
-
-		it("resolves when every id belongs to the team", async () => {
-			const { service, notificationsRepository } = createService();
-			(notificationsRepository.findNotificationsByIdsForTeam as jest.Mock).mockResolvedValue([
-				makeNotification({ id: "notif-1" }),
-				makeNotification({ id: "notif-2" }),
-			]);
-
-			await expect(service.assertNotificationsExistForTeam(["notif-1", "notif-2"], "team-1")).resolves.toBeUndefined();
-			expect(notificationsRepository.findNotificationsByIdsForTeam).toHaveBeenCalledWith(["notif-1", "notif-2"], "team-1");
-		});
-
-		it("rejects naming the ids the team does not have", async () => {
-			const { service, notificationsRepository } = createService();
-			(notificationsRepository.findNotificationsByIdsForTeam as jest.Mock).mockResolvedValue([makeNotification({ id: "notif-1" })]);
-
-			await expect(service.assertNotificationsExistForTeam(["notif-1", "notif-2"], "team-1")).rejects.toMatchObject({
-				status: 422,
-				message: "Referenced notification does not exist: notif-2",
-			});
-			expect(notificationsRepository.findNotificationsByIdsForTeam).toHaveBeenCalledWith(["notif-1", "notif-2"], "team-1");
-		});
-
-		it("rejects a channel type that cannot receive egress alerts", async () => {
-			const { service, notificationsRepository } = createService();
-			(notificationsRepository.findNotificationsByIdsForTeam as jest.Mock).mockResolvedValue([
-				makeNotification({ id: "notif-1", type: "email" }),
-				makeNotification({ id: "notif-2", type: "pager_duty" }),
-			]);
-
-			await expect(service.assertNotificationsExistForTeam(["notif-1", "notif-2"], "team-1")).rejects.toMatchObject({
-				status: 422,
-				message: "Notification channel cannot receive egress alerts",
-			});
-		});
-
-		it("reports missing ids before unsupported channels", async () => {
-			const { service, notificationsRepository } = createService();
-			(notificationsRepository.findNotificationsByIdsForTeam as jest.Mock).mockResolvedValue([
-				makeNotification({ id: "notif-2", type: "pager_duty" }),
-			]);
-
-			await expect(service.assertNotificationsExistForTeam(["notif-1", "notif-2"], "team-1")).rejects.toMatchObject({
-				message: "Referenced notification does not exist: notif-1",
-			});
-		});
-	});
-
-	describe("findEgressNotificationScopeForTeam", () => {
-		it("returns every id the team owns once the requested ids check out", async () => {
-			const { service, notificationsRepository } = createService();
-			(notificationsRepository.findNotificationsByIdsForTeam as jest.Mock).mockResolvedValue([makeNotification({ id: "mine-2" })]);
-			(notificationsRepository.findByTeamId as jest.Mock).mockResolvedValue([makeNotification({ id: "mine-1" }), makeNotification({ id: "mine-2" })]);
-
-			const result = await service.findEgressNotificationScopeForTeam(["mine-2"], "team-1");
-
-			expect(result).toEqual(["mine-1", "mine-2"]);
-			expect(notificationsRepository.findByTeamId).toHaveBeenCalledWith("team-1");
-		});
-
-		it("rejects ids the team does not own", async () => {
-			const { service, notificationsRepository } = createService();
-			(notificationsRepository.findNotificationsByIdsForTeam as jest.Mock).mockResolvedValue([]);
-
-			await expect(service.findEgressNotificationScopeForTeam(["theirs-1"], "team-1")).rejects.toMatchObject({ status: 422 });
-			expect(notificationsRepository.findByTeamId).not.toHaveBeenCalled();
-		});
-	});
-
 	describe("updateById", () => {
 		it("delegates to repository", async () => {
 			const updated = makeNotification({ address: "new@example.com" });
@@ -571,27 +390,6 @@ describe("NotificationsService", () => {
 
 			expect(result).toBe(deleted);
 			expect(monitorsRepository.removeNotificationFromMonitors).toHaveBeenCalledWith("notif-1");
-		});
-
-		it("removes the notification from the egress recovered recipients after the team-scoped delete succeeds", async () => {
-			const { service, notificationsRepository, settingsService } = createService();
-			(notificationsRepository.deleteById as jest.Mock).mockResolvedValue(makeNotification());
-
-			await service.deleteById("notif-1", "team-1");
-
-			expect(settingsService.removeEgressNotification).toHaveBeenCalledWith("notif-1");
-			const deleteOrder = (notificationsRepository.deleteById as jest.Mock).mock.invocationCallOrder[0]!;
-			const cascadeOrder = (settingsService.removeEgressNotification as jest.Mock).mock.invocationCallOrder[0]!;
-			expect(deleteOrder).toBeLessThan(cascadeOrder);
-		});
-
-		it("does not touch app settings when the delete is refused", async () => {
-			const { service, notificationsRepository, settingsService } = createService();
-			(notificationsRepository.deleteById as jest.Mock).mockRejectedValue(new Error("Notification not found"));
-
-			await expect(service.deleteById("notif-1", "other-team")).rejects.toThrow("Notification not found");
-
-			expect(settingsService.removeEgressNotification).not.toHaveBeenCalled();
 		});
 	});
 });

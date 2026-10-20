@@ -1677,11 +1677,6 @@
 								"length": "Each target must be {{max}} characters or fewer",
 								"invalid": "\"{{target}}\" is not a hostname or IP address, host:port, or http(s) URL"
 							}
-						},
-						"notifications": {
-							"label": "Notify on recovery",
-							"placeholder": "Select notification channels",
-							"description": "Channels alerted when egress recovers. The list shows your team's channels; channels chosen by an admin from another team are kept but not shown here."
 						}
 					}
 				},

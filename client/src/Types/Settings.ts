@@ -28,7 +28,6 @@ export interface Settings {
 	globalProxyId?: string | null;
 	egressCheckEnabled: boolean;
 	egressCheckTargets: string[];
-	egressNotifications: string[];
 	createdAt: string;
 	updatedAt: string;
 }

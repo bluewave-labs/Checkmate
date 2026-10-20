@@ -15,11 +15,6 @@ export const NotificationChannels = [
 ] as const;
 export type NotificationChannel = (typeof NotificationChannels)[number];
 
-// Mirrors the server's EgressExcludedChannels: channels that can't receive egress recovery alerts
-export const EgressExcludedChannels = [
-	"pager_duty",
-] as const satisfies readonly NotificationChannel[];
-
 export interface Notification {
 	id: string;
 	userId: string;

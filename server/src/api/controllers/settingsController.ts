@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { Handler, requireTeamId } from "@/api/controllers/controllerUtils.js";
+import { Handler } from "@/api/controllers/controllerUtils.js";
 import { updateAppSettingsBodyValidation } from "@/api/validation/settingsValidation.js";
 import { sendTestEmailBodyValidation } from "@/api/validation/notificationValidation.js";
 import { AppError, internalError } from "@/utils/AppError.js";
@@ -9,7 +9,6 @@ import { IProxiesService } from "@/domain/proxies/proxy.service.js";
 import { IEgressStateService } from "@/domain/egress/egress-state.service.js";
 import { Settings } from "@/domain/app-settings/app-settings.type.js";
 import { appSettingsErrors } from "@/domain/app-settings/app-settings.errors.js";
-import { INotificationsService } from "@/domain/notifications/notification.service.js";
 
 const SERVICE_NAME = "SettingsController";
 
@@ -26,19 +25,16 @@ class SettingsController implements ISettingsController {
 	private emailService: IEmailService;
 	private proxiesService: IProxiesService;
 	private egressStateService: IEgressStateService;
-	private notificationsService: INotificationsService;
 	constructor(
 		settingsService: ISettingsService,
 		emailService: IEmailService,
 		proxiesService: IProxiesService,
-		egressStateService: IEgressStateService,
-		notificationsService: INotificationsService
+		egressStateService: IEgressStateService
 	) {
 		this.settingsService = settingsService;
 		this.emailService = emailService;
 		this.proxiesService = proxiesService;
 		this.egressStateService = egressStateService;
-		this.notificationsService = notificationsService;
 	}
 
 	buildAppSettings = async (dbSettings: Settings) => {
@@ -83,16 +79,7 @@ class SettingsController implements ISettingsController {
 		}
 
 		const previousSettings = await this.settingsService.getDBSettings();
-		// The team's share of the egress notifications is written separately, in one atomic update.
-		const { egressNotifications, ...settingsUpdate } = validatedBody;
-		const selectedIds = egressNotifications && [...new Set(egressNotifications)];
-		const teamNotificationIds =
-			selectedIds && (await this.notificationsService.findEgressNotificationScopeForTeam(selectedIds, requireTeamId(req.user?.teamId)));
-
-		let updatedSettings = await this.settingsService.updateDbSettings(settingsUpdate);
-		if (selectedIds && teamNotificationIds) {
-			updatedSettings = await this.settingsService.replaceTeamEgressNotifications(teamNotificationIds, selectedIds);
-		}
+		const updatedSettings = await this.settingsService.updateDbSettings(validatedBody);
 
 		// Switching the egress check on or off starts from a clean state: no degraded episode, no pending recovery job
 		if (validatedBody.egressCheckEnabled !== undefined && validatedBody.egressCheckEnabled !== previousSettings.egressCheckEnabled) {

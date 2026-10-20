@@ -35,7 +35,6 @@ class MongoSettingsRepository implements ISettingsRepository {
 			globalProxyId: doc.globalProxyId ?? undefined,
 			egressCheckEnabled: doc.egressCheckEnabled ?? false,
 			egressCheckTargets: doc.egressCheckTargets ?? [...DEFAULT_EGRESS_TARGETS],
-			egressNotifications: doc.egressNotifications ?? [],
 			telemetryInstanceId: doc.telemetryInstanceId ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
@@ -85,39 +84,6 @@ class MongoSettingsRepository implements ISettingsRepository {
 		});
 
 		return this.toEntity(updatedSettings);
-	};
-
-	// Egress notifications are one instance-wide list that each team edits its own share of. Computed in one
-	// pipeline update, so two admins saving at once cannot overwrite each other's channels: drop every id that
-	// belongs to the team, then add back the ones it selected.
-	replaceTeamEgressNotifications = async (teamNotificationIds: string[], selectedIds: string[]) => {
-		const updatedSettings = await AppSettingsModel.findOneAndUpdate(
-			{},
-			[
-				{
-					$set: {
-						egressNotifications: {
-							$setUnion: [
-								{
-									$filter: {
-										input: { $ifNull: ["$egressNotifications", []] },
-										cond: { $not: [{ $in: ["$$this", teamNotificationIds] }] },
-									},
-								},
-								selectedIds,
-							],
-						},
-					},
-				},
-			],
-			{ upsert: true, new: true }
-		);
-
-		return this.toEntity(updatedSettings);
-	};
-
-	removeEgressNotification = async (notificationId: string) => {
-		await AppSettingsModel.updateMany({ egressNotifications: notificationId }, { $pull: { egressNotifications: notificationId } });
 	};
 
 	deleteLegacy = async () => {

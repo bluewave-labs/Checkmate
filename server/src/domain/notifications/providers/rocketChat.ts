@@ -129,7 +129,7 @@ export class RocketChatProvider extends NotificationProvider {
 			return undefined;
 		}
 
-		// Instance-level messages (egress) describe the instance with a type that has no details page: no link.
+		// A message whose type has no details page gets no link.
 		const type = message.monitor.type;
 		if (!MonitorTypes.some((t) => t === type)) {
 			return undefined;
