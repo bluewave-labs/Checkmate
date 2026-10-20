@@ -1,5 +1,21 @@
 import { CHECK_TTL_SENTINEL } from "@/Types/Check";
 import { z } from "zod";
+import i18n from "@/Utils/i18n";
+
+export const EGRESS_TARGETS_MAX = 10;
+// The server caps each target at this length.
+export const EGRESS_TARGET_MAX_LENGTH = 253;
+
+// One target per line. Commas are not separators, since a URL may carry one in its query string.
+const splitEgressTargets = (raw: string): string[] =>
+	Array.from(
+		new Set(
+			raw
+				.split(/\r?\n/)
+				.map((entry) => entry.trim())
+				.filter((entry) => entry !== "")
+		)
+	);
 
 export const settingsSchema = z
 	.object({
@@ -58,6 +74,43 @@ export const settingsSchema = z
 		}),
 		globalProxyEnabled: z.boolean(),
 		globalProxyId: z.string().nullable().optional(),
+		egressCheckEnabled: z.boolean(),
+		// Reported on the field rather than per item: the form edits all targets in one textarea, so an
+		// error at egressCheckTargets.<index> would have nowhere to show.
+		egressCheckTargets: z
+			.string()
+			.transform(splitEgressTargets)
+			.superRefine((targets, ctx) => {
+				if (targets.length > EGRESS_TARGETS_MAX) {
+					ctx.addIssue({
+						code: "custom",
+						message: i18n.t("pages.settings.form.egress.option.targets.validation.max", {
+							max: EGRESS_TARGETS_MAX,
+						}),
+					});
+				}
+				if (targets.some((target) => target.length > EGRESS_TARGET_MAX_LENGTH)) {
+					ctx.addIssue({
+						code: "custom",
+						message: i18n.t(
+							"pages.settings.form.egress.option.targets.validation.length",
+							{ max: EGRESS_TARGET_MAX_LENGTH }
+						),
+					});
+				}
+				// Only a quick shape check here; the server parses each target fully and its error is shown on the field.
+				const invalid = targets.find((target) => /\s/.test(target));
+				if (invalid !== undefined) {
+					ctx.addIssue({
+						code: "custom",
+						message: i18n.t(
+							"pages.settings.form.egress.option.targets.validation.invalid",
+							{ target: invalid }
+						),
+					});
+				}
+			}),
+		egressNotifications: z.array(z.string()),
 	})
 	.superRefine((body, ctx) => {
 		if (body.globalProxyEnabled === true && !body.globalProxyId) {

@@ -1,9 +1,10 @@
 import { IEgressStateRepository } from "@/domain/egress/egress-state.repository.interface.js";
 import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
-import type { EgressState } from "@/domain/egress/egress.type.js";
+import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
+import type { EgressState, EgressSummary } from "@/domain/egress/egress.type.js";
 
 export interface IEgressStateService {
-	getState(): Promise<EgressState>;
+	getSummary(): Promise<EgressSummary>;
 	reset(): Promise<EgressState>;
 }
 
@@ -16,11 +17,16 @@ export class EgressStateService implements IEgressStateService {
 
 	constructor(
 		private egressStateRepository: IEgressStateRepository,
-		private jobsRepository: IJobsRepository
+		private jobsRepository: IJobsRepository,
+		private settingsService: ISettingsService
 	) {}
 
-	getState = async (): Promise<EgressState> => {
-		return this.egressStateRepository.findSingleton();
+	getSummary = async (): Promise<EgressSummary> => {
+		const [settings, { status, degradedSince }] = await Promise.all([
+			this.settingsService.getCachedDBSettings(),
+			this.egressStateRepository.findSingleton(),
+		]);
+		return { enabled: settings.egressCheckEnabled, status, degradedSince };
 	};
 
 	// Called when the feature is switched on or off: drop any pending recovery job and start from "ok".

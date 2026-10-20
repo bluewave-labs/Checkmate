@@ -83,15 +83,16 @@ class SettingsController implements ISettingsController {
 		}
 
 		const previousSettings = await this.settingsService.getDBSettings();
-		// Deduplicated once and persisted as such. Left undefined when absent, since an undefined key unsets the stored value.
-		const requestedIds = validatedBody.egressNotifications && [...new Set(validatedBody.egressNotifications)];
-		if (requestedIds && requestedIds.length > 0) {
-			await this.notificationsService.assertNotificationsExistForTeam(requestedIds, requireTeamId(req.user?.teamId));
-		}
+		// The team's share of the egress notifications is written separately, in one atomic update.
+		const { egressNotifications, ...settingsUpdate } = validatedBody;
+		const selectedIds = egressNotifications && [...new Set(egressNotifications)];
+		const teamNotificationIds =
+			selectedIds && (await this.notificationsService.findEgressNotificationScopeForTeam(selectedIds, requireTeamId(req.user?.teamId)));
 
-		const updatedSettings = await this.settingsService.updateDbSettings(
-			requestedIds ? { ...validatedBody, egressNotifications: requestedIds } : validatedBody
-		);
+		let updatedSettings = await this.settingsService.updateDbSettings(settingsUpdate);
+		if (selectedIds && teamNotificationIds) {
+			updatedSettings = await this.settingsService.replaceTeamEgressNotifications(teamNotificationIds, selectedIds);
+		}
 
 		// Switching the egress check on or off starts from a clean state: no degraded episode, no pending recovery job
 		if (validatedBody.egressCheckEnabled !== undefined && validatedBody.egressCheckEnabled !== previousSettings.egressCheckEnabled) {

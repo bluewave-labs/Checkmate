@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { FieldPath } from "react-hook-form";
 import { STATUS_PAGE_THEMES, STATUS_PAGE_THEME_MODES } from "@/Types/StatusPage";
 import { cssReferencesExternalResource } from "@/Utils/customCss";
+import { hostnamePattern } from "@/Validation/patterns";
 
 // Wizard step a field is validated on. Attached inline to each field below so
 // the grouping lives next to the field definition; unannotated fields default
@@ -9,9 +10,6 @@ import { cssReferencesExternalResource } from "@/Utils/customCss";
 // `monitorStepRegistry` so the create-status-page wizard can't drift from the
 // field definitions.
 export const statusPageStepRegistry = z.registry<{ step: number }>();
-
-const statusPageHostnameRegex =
-	/^(?=.{1,253}$)([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}$/;
 
 const normalizeCustomDomainInput = (raw: string | null): string | null => {
 	if (raw === null) {
@@ -43,7 +41,7 @@ export const statusPageSchema = z.object({
 	customDomain: z
 		.union([z.string(), z.null()])
 		.transform(normalizeCustomDomainInput)
-		.refine((domain) => domain === null || statusPageHostnameRegex.test(domain), {
+		.refine((domain) => domain === null || hostnamePattern.test(domain), {
 			message: "Enter a valid domain name (e.g. status.example.com)",
 		}),
 	timezone: z.string().optional(),

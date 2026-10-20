@@ -16,7 +16,7 @@ import type {
 } from "@/domain/checks/check.type.js";
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
 import { CheckModel, type CheckDocument } from "@/domain/checks/check.model.js";
-import { EXCLUDE_DEGRADED_EGRESS_MATCH } from "@/domain/checks/check.query.js";
+import { EXCLUDE_DEGRADED_EGRESS_MATCH, ONLY_DEGRADED_EGRESS_MATCH } from "@/domain/checks/check.query.js";
 import mongoose from "mongoose";
 import { getDateFormat, getDateForRange } from "@/utils/dataUtils.js";
 import { ILogger } from "@/utils/logger/logger.js";
@@ -236,6 +236,10 @@ class MongoChecksRepository implements IChecksRepository {
 				return { status: false };
 			case "resolve":
 				return { status: false, statusCode: NETWORK_ERROR };
+			case "degraded":
+				// Checks taken while the instance's own egress was down; excluded from every aggregate, so this is the
+				// one place they can be reviewed as a set.
+				return { ...ONLY_DEGRADED_EGRESS_MATCH };
 			default:
 				this.logger.warn("invalid filter");
 				return {};
@@ -341,21 +345,32 @@ class MongoChecksRepository implements IChecksRepository {
 		};
 	};
 
-	findSummaryByTeamId = async (teamId: string, dateRange: DateRange) => {
-		const baseMatch = {
+	findSummaryByTeamId = async (teamId: string, dateRange: DateRange, monitorId?: string) => {
+		// Matching on the team as well keeps another team's monitor id from returning its counts.
+		const rangeMatch = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
+			...(monitorId && { "metadata.monitorId": new mongoose.Types.ObjectId(monitorId) }),
 			createdAt: { $gte: getDateForRange(dateRange) },
-			...EXCLUDE_DEGRADED_EGRESS_MATCH,
 		};
-
-		const [totalResult, downResult] = await Promise.all([
-			CheckModel.countDocuments(baseMatch),
-			CheckModel.countDocuments({ ...baseMatch, status: false }),
+		// One pass over the team's range. Degraded checks sit outside the totals; counting them separately lets the
+		// Checks page header account for the rows its listing shows under the down filter but its totals leave out.
+		const isDegraded = { $eq: ["$egressStatus", ONLY_DEGRADED_EGRESS_MATCH.egressStatus] };
+		const [counts] = await CheckModel.aggregate<{ totalChecks: number; downChecks: number; degradedChecks: number }>([
+			{ $match: rangeMatch },
+			{
+				$group: {
+					_id: null,
+					totalChecks: { $sum: { $cond: [isDegraded, 0, 1] } },
+					downChecks: { $sum: { $cond: [{ $and: [{ $not: [isDegraded] }, { $eq: ["$status", false] }] }, 1, 0] } },
+					degradedChecks: { $sum: { $cond: [isDegraded, 1, 0] } },
+				},
+			},
 		]);
 
 		return {
-			totalChecks: totalResult,
-			downChecks: downResult,
+			totalChecks: counts?.totalChecks ?? 0,
+			downChecks: counts?.downChecks ?? 0,
+			degradedChecks: counts?.degradedChecks ?? 0,
 		};
 	};
 

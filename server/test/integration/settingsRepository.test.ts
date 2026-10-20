@@ -70,4 +70,33 @@ describe("MongoSettingsRepository", () => {
 			expect(await repo.findOrCreateTelemetryInstanceId()).toBeNull();
 		});
 	});
+
+	// Each team edits its own share of the instance-wide list. The pipeline update that does it is what keeps two
+	// admins saving at once from overwriting each other.
+	describe("replaceTeamEgressNotifications", () => {
+		it("replaces the team's share and keeps other teams' channels", async () => {
+			await repo.create({ egressNotifications: ["a-1", "a-2", "b-1"] });
+
+			const updated = await repo.replaceTeamEgressNotifications(["a-1", "a-2", "a-3"], ["a-3"]);
+
+			expect([...updated.egressNotifications].sort()).toEqual(["a-3", "b-1"]);
+		});
+
+		it("clears only the team's share when nothing is selected", async () => {
+			await repo.create({ egressNotifications: ["a-1", "b-1"] });
+
+			const updated = await repo.replaceTeamEgressNotifications(["a-1"], []);
+
+			expect(updated.egressNotifications).toEqual(["b-1"]);
+		});
+
+		it("keeps both teams' selections when two admins save at once", async () => {
+			await repo.create({ egressNotifications: [] });
+
+			await Promise.all([repo.replaceTeamEgressNotifications(["a-1", "a-2"], ["a-1"]), repo.replaceTeamEgressNotifications(["b-1"], ["b-1"])]);
+
+			const settings = await repo.findSingleton();
+			expect([...(settings?.egressNotifications ?? [])].sort()).toEqual(["a-1", "b-1"]);
+		});
+	});
 });

@@ -10,6 +10,7 @@ import {
 	type MonitorType,
 } from "@/Types/Monitor";
 import { ALL_HTTP_STATUS_CODES } from "@/Utils/statusCode";
+import { hostnamePattern } from "@/Validation/patterns";
 
 // Wizard step a field is validated on. Attached inline to each field below so
 // the grouping lives next to the field definition; unannotated fields default
@@ -221,19 +222,13 @@ const websocketSchema = baseSchema.extend({
 	ignoreTlsErrors: z.boolean().register(monitorStepRegistry, { step: 2 }),
 });
 
-// Hostname (FQDN) — labels of 1-63 alphanumerics/hyphens separated by dots,
-// optionally prefixed with `_` for service labels (e.g. _dmarc, _imaps._tcp).
-// No scheme, port, path, or whitespace. Total length ≤ 253.
-const hostnameRegex =
-	/^(?=.{1,253}$)([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}$/;
-
 // DNS monitor schema
 const dnsSchema = baseSchema.extend({
 	type: z.literal("dns"),
 	url: z
 		.string()
 		.min(1, "Domain is required")
-		.regex(hostnameRegex, "Enter a valid domain (e.g. www.example.com)"),
+		.regex(hostnamePattern, "Enter a valid domain (e.g. www.example.com)"),
 	dnsServer: z
 		.string()
 		.min(1, "DNS server is required")

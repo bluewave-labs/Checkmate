@@ -71,6 +71,10 @@
 		{
 			"name": "tags",
 			"description": "Labels for grouping and filtering monitors, team-scoped."
+		},
+		{
+			"name": "egress",
+			"description": "The instance's outbound connectivity self-check state."
 		}
 	],
 	"components": {
@@ -3941,7 +3945,24 @@
 						"type": "string"
 					}
 				},
-				"required": ["level", "timestamp", "message"]
+				"required": ["message", "level", "timestamp"]
+			},
+			"EgressSummary": {
+				"type": "object",
+				"properties": {
+					"status": {
+						"type": "string",
+						"enum": ["ok", "degraded"]
+					},
+					"degradedSince": {
+						"type": "string",
+						"nullable": true
+					},
+					"enabled": {
+						"type": "boolean"
+					}
+				},
+				"required": ["status", "degradedSince", "enabled"]
 			}
 		},
 		"parameters": {}
@@ -6000,6 +6021,15 @@
 						"required": false,
 						"name": "dateRange",
 						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"pattern": "^[0-9a-fA-F]{24}$"
+						},
+						"required": false,
+						"name": "monitorId",
+						"in": "query"
 					}
 				],
 				"responses": {
@@ -6025,9 +6055,12 @@
 												},
 												"downChecks": {
 													"type": "number"
+												},
+												"degradedChecks": {
+													"type": "number"
 												}
 											},
-											"required": ["totalChecks", "downChecks"]
+											"required": ["totalChecks", "downChecks", "degradedChecks"]
 										}
 									},
 									"required": ["success", "msg", "data"]
@@ -6118,7 +6151,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["all", "up", "down", "resolve"]
+							"enum": ["all", "up", "down", "resolve", "degraded"]
 						},
 						"required": false,
 						"name": "filter",
@@ -6368,7 +6401,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["all", "up", "down", "resolve"]
+							"enum": ["all", "up", "down", "resolve", "degraded"]
 						},
 						"required": false,
 						"name": "filter",
@@ -6763,7 +6796,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["all", "up", "down", "resolve"]
+							"enum": ["all", "up", "down", "resolve", "degraded"]
 						},
 						"required": false,
 						"name": "filter",
@@ -15209,6 +15242,72 @@
 					},
 					"403": {
 						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/egress": {
+			"get": {
+				"tags": ["egress"],
+				"summary": "Get the instance's current egress self-check status",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/EgressSummary"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {

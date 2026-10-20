@@ -1,3 +1,6 @@
+import type { z } from "zod";
+import type { egressProbeResultSchema, egressStateSchema, egressSummarySchema } from "@/domain/egress/egress.schema.js";
+
 // Egress self-check: detects loss of the instance's own outbound connectivity so that
 // a burst of simultaneous monitor failures is not reported as a burst of real outages.
 
@@ -16,22 +19,6 @@ export const MAX_EGRESS_TARGETS = 10;
 // and not configurable: the only effect of raising it is a longer blind window.
 export const EGRESS_RECOVERY_POLL_SECONDS = 5;
 
-// Instance-global singleton persisted in MongoDB so that every worker process and the API
-// process share one view of the state (the queue worker may run separately from the API).
-export interface EgressState {
-	id: string;
-	status: EgressStatus;
-	degradedSince: string | null; // ISO timestamp of the current or most recent degraded entry
-	lastRecoveredAt: string | null; // ISO timestamp of the most recent recovery
-	lastProbeAt: string | null; // ISO timestamp of the most recent reliability probe
-	lastProbeResults: EgressProbeResult[];
-	createdAt: string;
-	updatedAt: string;
-}
-
-export interface EgressProbeResult {
-	target: string;
-	reachable: boolean;
-	responseTime: number; // ms
-	message?: string;
-}
+export type EgressState = z.infer<typeof egressStateSchema>;
+export type EgressSummary = z.infer<typeof egressSummarySchema>;
+export type EgressProbeResult = z.infer<typeof egressProbeResultSchema>;

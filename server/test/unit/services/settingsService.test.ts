@@ -44,6 +44,7 @@ const createSettingsRepo = () =>
 		findSingleton: jest.fn().mockResolvedValue(makeSettings()),
 		update: jest.fn().mockResolvedValue(makeSettings()),
 		removeEgressNotification: jest.fn().mockResolvedValue(undefined),
+		replaceTeamEgressNotifications: jest.fn().mockResolvedValue(makeSettings()),
 		deleteLegacy: jest.fn().mockResolvedValue(true),
 	}) as unknown as jest.Mocked<ISettingsRepository>;
 
@@ -219,6 +220,17 @@ describe("SettingsService", () => {
 			await service.getCachedDBSettings();
 
 			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(2);
+		});
+
+		it("refetches after replaceTeamEgressNotifications", async () => {
+			const { service, settingsRepository } = createService();
+
+			await service.getCachedDBSettings();
+			await service.replaceTeamEgressNotifications(["mine-1"], ["mine-1"]);
+			await service.getCachedDBSettings();
+
+			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(2);
+			expect(settingsRepository.replaceTeamEgressNotifications).toHaveBeenCalledWith(["mine-1"], ["mine-1"]);
 		});
 
 		it("refetches after removeEgressNotification", async () => {

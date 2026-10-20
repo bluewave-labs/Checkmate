@@ -22,6 +22,7 @@ import { queueRoutes } from "@/api/routes/queueRoutes.js";
 import { settingsRoutes } from "@/api/routes/settingsRoutes.js";
 import { statusPageRoutes } from "@/api/routes/statusPageRoutes.js";
 import { logRoutes } from "@/api/routes/logRoutes.js";
+import { egressRoutes } from "@/api/routes/egressRoutes.js";
 
 export const setupRoutes = (app: Application, controllers: InitializedControllers, apiServices: ApiServices) => {
 	const verifyJWT = createVerifyJWT(apiServices.settingsService);
@@ -46,4 +47,5 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 	app.use("/api/v1/diagnostic", buildRouter(diagnosticRoutes, controllers.diagnosticController, middleware));
 	app.use("/api/v1/incidents", buildRouter(incidentRoutes, controllers.incidentController, middleware));
 	app.use("/api/v1/proxies", buildRouter(proxyRoutes, controllers.proxyController, middleware));
+	app.use("/api/v1/egress", buildRouter(egressRoutes, controllers.egressController, middleware));
 };

@@ -47,14 +47,18 @@ import { timezoneOptions } from "@/Utils/timezoneOptions";
 import type { TimezoneOption } from "@/Utils/timezoneOptions";
 import type { RootState } from "@/Types/state";
 import { CHECK_TTL_SENTINEL } from "@/Types/Check";
+import { EGRESS_TARGETS_MAX } from "@/Validation/settings";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { FormSliderField } from "@/Components/inputs/forms/FormSliderField";
 import { FormSwitchField } from "@/Components/inputs/forms/FormSwitchField";
 import { FormNumberField } from "@/Components/inputs/forms/FormNumberField";
 import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
+import { FormMultiSelectField } from "@/Components/inputs/forms/FormMultiSelectField";
 import type { ProxyResponse } from "@/Types/Proxy";
+import { EgressExcludedChannels, type Notification } from "@/Types/Notification";
 import type { AppSettingsResponse } from "@/Types/Settings";
 import { useSearchParams } from "react-router-dom";
+import { mutate } from "swr";
 import { SYSTEM_TIMEZONE, TIME_FORMATS, type TimeFormat } from "@/Utils/TimeUtils";
 
 const SETTINGS_TABS = [
@@ -70,6 +74,9 @@ type SettingsTabKey = (typeof SETTINGS_TABS)[number]["key"];
 const FIELD_TAB: Record<string, SettingsTabKey> = {
 	checkTTL: "monitoring",
 	globalThresholds: "monitoring",
+	egressCheckEnabled: "monitoring",
+	egressCheckTargets: "monitoring",
+	egressNotifications: "monitoring",
 	pagespeedApiKey: "integrations",
 	globalProxyEnabled: "integrations",
 	globalProxyId: "integrations",
@@ -90,6 +97,9 @@ const FIELD_LABEL_KEY: Record<string, string> = {
 		"pages.settings.form.thresholds.option.temperature.label",
 	pagespeedApiKey: "pages.settings.form.pagespeed.option.apiKey.label",
 	globalProxyEnabled: "pages.settings.form.globalProxy.option.enabled.label",
+	egressCheckEnabled: "pages.settings.form.egress.option.enabled.label",
+	egressCheckTargets: "pages.settings.form.egress.option.targets.label",
+	egressNotifications: "pages.settings.form.egress.option.notifications.label",
 	showURL: "pages.settings.form.url.option.showURL.label",
 	systemEmailHost: "pages.settings.form.email.option.host.label",
 	systemEmailPort: "pages.settings.form.email.option.port.label",
@@ -190,6 +200,18 @@ export const SettingsPage = () => {
 				label: `${proxy.name} (${proxy.host}:${proxy.port})`,
 			})),
 		[proxies]
+	);
+
+	// Notification channels for the egress self-check picker
+	const { data: notifications } = useGet<Notification[]>(
+		isAdmin ? "/notifications/team" : null
+	);
+	const notificationOptions = useMemo(
+		() =>
+			(notifications ?? [])
+				.filter((n) => !EgressExcludedChannels.some((channel) => channel === n.type))
+				.map((n) => ({ ...n, name: n.notificationName })),
+		[notifications]
 	);
 
 	// Form submission
@@ -416,10 +438,38 @@ export const SettingsPage = () => {
 		if (isEmailPasswordSet && !emailPasswordHasBeenReset) {
 			delete (dataToSend as any).systemEmailPassword;
 		}
+		// Send only this team's channels: the server replaces this team's share of the list and keeps the
+		// channels other teams chose. Until the team's channels have loaded, leave the list untouched.
+		if (notifications) {
+			dataToSend.egressNotifications = data.egressNotifications.filter((id) =>
+				notificationOptions.some((option) => option.id === id)
+			);
+		} else {
+			delete (dataToSend as any).egressNotifications;
+		}
 
-		const result = await patch("/settings", dataToSend as SettingsFormData);
+		// The server is the one full parser of egress targets. Its validation message reads
+		// "egressCheckTargets.<index>: <message>", joined by "; " when there are several.
+		const result = await patch(
+			"/settings",
+			dataToSend as SettingsFormData,
+			undefined,
+			(message) => {
+				const targetError = message
+					.split("; ")
+					.find((part) => part.startsWith("egressCheckTargets"));
+				if (targetError) {
+					form.setError("egressCheckTargets", {
+						type: "server",
+						message: targetError.replace(/^egressCheckTargets(\.\d+)?: /, ""),
+					});
+				}
+			}
+		);
 
 		if (result?.success) {
+			// The banner stops polling while the egress self-check is off; refetch so a change shows now.
+			void mutate("/egress");
 			// Update API key state from response
 			if (result.data) {
 				setIsApiKeySet(result.data.pagespeedKeySet);
@@ -674,6 +724,48 @@ export const SettingsPage = () => {
 												: `${value}`
 										}
 									/>
+								}
+							/>
+						)}
+
+						{/* Egress self-check */}
+						{isAdmin && (
+							<ConfigBox
+								title={t("pages.settings.form.egress.title")}
+								subtitle={t("pages.settings.form.egress.description")}
+								rightContent={
+									<Stack gap={theme.spacing(LAYOUT.MD)}>
+										<FormSwitchField
+											name="egressCheckEnabled"
+											labelPlacement="start"
+											label={t("pages.settings.form.egress.option.enabled.label")}
+										/>
+										<FormTextField
+											name="egressCheckTargets"
+											multiline
+											minRows={3}
+											fieldLabel={t("pages.settings.form.egress.option.targets.label")}
+											placeholder={t(
+												"pages.settings.form.egress.option.targets.placeholder"
+											)}
+											helperText={t("pages.settings.form.egress.option.targets.helper", {
+												max: EGRESS_TARGETS_MAX,
+											})}
+										/>
+										<FormMultiSelectField
+											name="egressNotifications"
+											options={notificationOptions}
+											fieldLabel={t(
+												"pages.settings.form.egress.option.notifications.label"
+											)}
+											placeholder={t(
+												"pages.settings.form.egress.option.notifications.placeholder"
+											)}
+											description={t(
+												"pages.settings.form.egress.option.notifications.description"
+											)}
+										/>
+									</Stack>
 								}
 							/>
 						)}

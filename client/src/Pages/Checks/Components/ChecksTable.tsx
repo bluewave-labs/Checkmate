@@ -1,7 +1,7 @@
 import {
 	Table,
 	Pagination,
-	StatusLabel,
+	CheckStatusLabel,
 	StatusCodeLabel,
 } from "@/Components/design-elements";
 import Box from "@mui/material/Box";
@@ -45,9 +45,9 @@ export const ChecksTable = ({
 			},
 			{
 				id: "status",
-				content: "Status",
+				content: t("common.table.headers.status"),
 				render: (row) => {
-					return <StatusLabel status={row.status === true ? "up" : "down"} />;
+					return <CheckStatusLabel check={row} />;
 				},
 			},
 			{

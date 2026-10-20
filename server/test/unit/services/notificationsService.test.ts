@@ -529,6 +529,27 @@ describe("NotificationsService", () => {
 		});
 	});
 
+	describe("findEgressNotificationScopeForTeam", () => {
+		it("returns every id the team owns once the requested ids check out", async () => {
+			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findNotificationsByIdsForTeam as jest.Mock).mockResolvedValue([makeNotification({ id: "mine-2" })]);
+			(notificationsRepository.findByTeamId as jest.Mock).mockResolvedValue([makeNotification({ id: "mine-1" }), makeNotification({ id: "mine-2" })]);
+
+			const result = await service.findEgressNotificationScopeForTeam(["mine-2"], "team-1");
+
+			expect(result).toEqual(["mine-1", "mine-2"]);
+			expect(notificationsRepository.findByTeamId).toHaveBeenCalledWith("team-1");
+		});
+
+		it("rejects ids the team does not own", async () => {
+			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findNotificationsByIdsForTeam as jest.Mock).mockResolvedValue([]);
+
+			await expect(service.findEgressNotificationScopeForTeam(["theirs-1"], "team-1")).rejects.toMatchObject({ status: 422 });
+			expect(notificationsRepository.findByTeamId).not.toHaveBeenCalled();
+		});
+	});
+
 	describe("updateById", () => {
 		it("delegates to repository", async () => {
 			const updated = makeNotification({ address: "new@example.com" });

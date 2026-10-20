@@ -16,11 +16,16 @@ const createJobsRepo = () => ({
 	deleteGlobalJob: jest.fn().mockResolvedValue(true),
 });
 
-const createService = () => {
+const createSettingsService = (egressCheckEnabled = true) => ({
+	getCachedDBSettings: jest.fn().mockResolvedValue({ egressCheckEnabled }),
+});
+
+const createService = (egressCheckEnabled = true) => {
 	const egressStateRepository = createEgressStateRepo();
 	const jobsRepository = createJobsRepo();
-	const service = new EgressStateService(egressStateRepository as any, jobsRepository as any);
-	return { service, egressStateRepository, jobsRepository };
+	const settingsService = createSettingsService(egressCheckEnabled);
+	const service = new EgressStateService(egressStateRepository as any, jobsRepository as any, settingsService as any);
+	return { service, egressStateRepository, jobsRepository, settingsService };
 };
 
 const makeState = (overrides?: Partial<EgressState>): EgressState => ({
@@ -38,28 +43,37 @@ const makeState = (overrides?: Partial<EgressState>): EgressState => ({
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("EgressStateService", () => {
-	describe("getState", () => {
-		it("returns the singleton state from the repository", async () => {
+	describe("getSummary", () => {
+		it("returns only enabled, status and degradedSince", async () => {
 			const { service, egressStateRepository } = createService();
 			const state = makeState({
 				status: "degraded",
 				degradedSince: "2026-01-01T00:05:00Z",
 				lastProbeAt: "2026-01-01T00:05:00Z",
-				lastProbeResults: [{ target: "1.1.1.1", reachable: false, responseTime: 0, message: "timeout" }],
+				lastProbeResults: [{ target: "https://internal.example.com", reachable: false, responseTime: 0, message: "timeout" }],
 			});
 			(egressStateRepository.findSingleton as jest.Mock).mockResolvedValue(state);
 
-			const result = await service.getState();
+			const result = await service.getSummary();
 
 			expect(egressStateRepository.findSingleton).toHaveBeenCalledTimes(1);
-			expect(result).toEqual(state);
+			expect(result).toEqual({ enabled: true, status: "degraded", degradedSince: "2026-01-01T00:05:00Z" });
+		});
+
+		it("reports enabled false when the self-check is switched off", async () => {
+			const { service, egressStateRepository } = createService(false);
+			(egressStateRepository.findSingleton as jest.Mock).mockResolvedValue(makeState());
+
+			const result = await service.getSummary();
+
+			expect(result).toEqual({ enabled: false, status: "ok", degradedSince: null });
 		});
 
 		it("does not call any transition method", async () => {
 			const { service, egressStateRepository } = createService();
 			(egressStateRepository.findSingleton as jest.Mock).mockResolvedValue(makeState());
 
-			await service.getState();
+			await service.getSummary();
 
 			expect(egressStateRepository.recordProbe).not.toHaveBeenCalled();
 			expect(egressStateRepository.markDegraded).not.toHaveBeenCalled();
@@ -70,7 +84,7 @@ describe("EgressStateService", () => {
 			const { service, egressStateRepository } = createService();
 			(egressStateRepository.findSingleton as jest.Mock).mockRejectedValue(new Error("db down"));
 
-			await expect(service.getState()).rejects.toThrow("db down");
+			await expect(service.getSummary()).rejects.toThrow("db down");
 		});
 	});
 

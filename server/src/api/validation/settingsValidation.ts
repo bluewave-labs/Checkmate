@@ -12,7 +12,9 @@ const egressTargetValidation = z
 	.trim()
 	.min(1)
 	.max(253)
-	.refine((target) => parseEgressTarget(target) !== null, "Enter a hostname or IP address, host:port, or http(s) URL");
+	.refine((target) => parseEgressTarget(target) !== null, {
+		error: (issue) => `"${String(issue.input)}" is not a hostname or IP address, host:port, or http(s) URL`,
+	});
 
 //****************************************
 // Settings Validations

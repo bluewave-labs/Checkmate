@@ -43,6 +43,16 @@ describe("settingsValidation", () => {
 			}
 		});
 
+		it("names the rejected target in the message, at its index", () => {
+			const result = updateAppSettingsBodyValidation.safeParse({ egressCheckTargets: ["1.1.1.1", "ftp://example.com"] });
+
+			expect(result.success).toBe(false);
+			expect(result.error?.issues[0]).toMatchObject({
+				path: ["egressCheckTargets", 1],
+				message: '"ftp://example.com" is not a hostname or IP address, host:port, or http(s) URL',
+			});
+		});
+
 		it("rejects malformed addresses that the probe could never reach", () => {
 			for (const target of [
 				"[1.1.1.1",
