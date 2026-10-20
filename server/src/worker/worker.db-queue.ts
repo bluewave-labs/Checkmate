@@ -23,7 +23,6 @@ const CONCURRENCY: Record<JobType, number> = {
 	evaluate: 20,
 	"cleanup-orphaned": 1,
 	"cleanup-retention": 1,
-	egress: 1,
 	telemetry: 1,
 };
 
@@ -53,7 +52,6 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		evaluate: 0,
 		"cleanup-orphaned": 0,
 		"cleanup-retention": 0,
-		egress: 0,
 		telemetry: 0,
 	};
 
