@@ -30,7 +30,8 @@ const UserSchema = new Schema<UserDocument>(
 		firstName: { type: String, required: true },
 		lastName: { type: String, required: true },
 		email: { type: String, required: true, unique: true },
-		password: { type: String, required: true },
+		// Not required: users created through SSO never have one
+		password: { type: String },
 		avatarImage: { type: String },
 		profileImage: { type: profileImageSchema },
 		isActive: { type: Boolean, default: true },
@@ -46,9 +47,14 @@ const UserSchema = new Schema<UserDocument>(
 			immutable: true,
 		},
 		checkTTL: { type: Number },
+		ssoIssuer: { type: String },
+		ssoSubject: { type: String },
 	},
 	{ timestamps: true }
 );
+
+// One Checkmate account per identity-provider subject. Sparse so the many password users, which have neither field, do not collide on null.
+UserSchema.index({ ssoIssuer: 1, ssoSubject: 1 }, { unique: true, sparse: true });
 
 UserSchema.pre("findOneAndDelete", async function (next) {
 	try {

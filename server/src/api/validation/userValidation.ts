@@ -35,7 +35,8 @@ export const createUserBodyValidation = z.object({
 	firstName: nameValidation,
 	lastName: nameValidation,
 	email: lowercaseEmailValidation,
-	password: passwordValidation,
+	// Optional so an admin can pre-create an account for someone who will sign in through SSO
+	password: passwordValidation.optional(),
 	role: z.array(z.enum(UserRoles)).min(1, "At least one role is required"),
 });
 
