@@ -6,4 +6,6 @@ export interface EgressSummary {
 	enabled: boolean;
 	status: EgressStatus;
 	degradedSince: string | null;
+	degradedWorkers: number;
+	totalWorkers: number;
 }

@@ -17,14 +17,21 @@ export const EgressBanner = ({ state }: EgressBannerProps) => {
 	const { t } = useTranslation();
 	const formatDate = useFormatDate();
 
-	// A stored "degraded" means nothing once the check is off, e.g. if the reset on switching it off failed.
+	// Built from live worker verdicts, so there is no stored state to go stale; hidden whenever the check is off.
 	if (!state?.enabled || state.status !== "degraded") return null;
 
-	const message = state.degradedSince
-		? t("components.egressBanner.degraded", {
-				time: formatDate(state.degradedSince, "dateTime"),
-			})
-		: t("components.egressBanner.degradedNoTime");
+	const time = state.degradedSince ? formatDate(state.degradedSince, "dateTime") : null;
+	let message: string;
+	if (state.totalWorkers <= 1) {
+		message = time
+			? t("components.egressBanner.degraded", { time })
+			: t("components.egressBanner.degradedNoTime");
+	} else {
+		const counts = { degraded: state.degradedWorkers, total: state.totalWorkers };
+		message = time
+			? t("components.egressBanner.degradedWorkers", { ...counts, time })
+			: t("components.egressBanner.degradedWorkersNoTime", counts);
+	}
 
 	// Rendered in flow rather than fixed like OfflineBanner: a degraded spell can last hours, and a fixed
 	// strip would sit over the sidebar and page header for all of it.

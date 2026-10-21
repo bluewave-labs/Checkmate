@@ -41,9 +41,6 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 	const checkService = {
 		deleteOlderThan: jest.fn().mockResolvedValue(0),
 	};
-	const egressService = {
-		checkRecovery: jest.fn().mockResolvedValue(undefined),
-	};
 	const telemetryService = {
 		handleJob: jest.fn().mockResolvedValue(undefined),
 	};
@@ -60,7 +57,6 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		incidentsRepository,
 		geoChecksRepository,
 		dockerLogsRepository,
-		egressService,
 		telemetryService,
 		...overrides,
 	};
@@ -77,7 +73,6 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		defaults.incidentsRepository as any,
 		defaults.geoChecksRepository as any,
 		defaults.dockerLogsRepository as any,
-		defaults.egressService as any,
 		defaults.telemetryService as any
 	);
 	return { helper, defaults };
@@ -194,24 +189,6 @@ describe("WorkerHelper", () => {
 			await job();
 
 			expect(defaults.logger.error).toHaveBeenCalledWith({ err: "boom" }, "Retention cleanup failed");
-		});
-	});
-
-	describe("getEgressRecoveryJob", () => {
-		it("returns a function that hands the claimed job to the egress service", async () => {
-			const { helper, defaults } = createHelper();
-			const job = { id: "egress", type: "egress", refId: null, nextScheduledAt: 1000 } as any;
-
-			await helper.getEgressRecoveryJob()(job);
-
-			expect(defaults.egressService.checkRecovery).toHaveBeenCalledWith(job);
-		});
-
-		it("lets the egress service's error propagate so the queue records the failure", async () => {
-			const { helper, defaults } = createHelper();
-			(defaults.egressService.checkRecovery as jest.Mock).mockRejectedValue(new Error("db down"));
-
-			await expect(helper.getEgressRecoveryJob()({ id: "egress" } as any)).rejects.toThrow("db down");
 		});
 	});
 

@@ -208,7 +208,9 @@
 		},
 		"egressBanner": {
 			"degraded": "Checkmate cannot reach its reliability targets. Outbound connectivity appears to be down since {{time}}; monitor failures are not being reported as incidents until it recovers.",
-			"degradedNoTime": "Checkmate cannot reach its reliability targets. Outbound connectivity appears to be down; monitor failures are not being reported as incidents until it recovers."
+			"degradedNoTime": "Checkmate cannot reach its reliability targets. Outbound connectivity appears to be down; monitor failures are not being reported as incidents until it recovers.",
+			"degradedWorkers": "{{degraded}} of {{total}} workers have lost outbound connectivity since {{time}}. Their monitor failures are not being reported as incidents until it recovers.",
+			"degradedWorkersNoTime": "{{degraded}} of {{total}} workers have lost outbound connectivity. Their monitor failures are not being reported as incidents until it recovers."
 		},
 		"sidebar": {
 			"menu": {

@@ -11,14 +11,11 @@ import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
 import { ILogger } from "@/utils/logger/logger.js";
 import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
-import { IEgressService } from "@/domain/egress/egress.service.js";
 import { ITelemetryService } from "@/domain/telemetry/telemetry.service.js";
-import type { Job } from "@/domain/jobs/job.type.js";
 
 export interface IWorkerHelper {
 	getCleanupOrphanedJob(): () => Promise<void>;
 	getCleanupRetentionJob(): () => Promise<void>;
-	getEgressRecoveryJob(): (job: Job) => Promise<void>;
 	getTelemetryJob(): () => Promise<void>;
 }
 
@@ -36,7 +33,6 @@ export class WorkerHelper implements IWorkerHelper {
 	private incidentsRepository: IIncidentsRepository;
 	private geoChecksRepository: IGeoChecksRepository;
 	private dockerLogsRepository: IDockerLogsRepository;
-	private egressService: IEgressService;
 	private telemetryService: ITelemetryService;
 
 	constructor(
@@ -51,7 +47,6 @@ export class WorkerHelper implements IWorkerHelper {
 		incidentsRepository: IIncidentsRepository,
 		geoChecksRepository: IGeoChecksRepository,
 		dockerLogsRepository: IDockerLogsRepository,
-		egressService: IEgressService,
 		telemetryService: ITelemetryService
 	) {
 		this.logger = logger.child({ service: SERVICE_NAME });
@@ -65,17 +60,8 @@ export class WorkerHelper implements IWorkerHelper {
 		this.incidentsRepository = incidentsRepository;
 		this.geoChecksRepository = geoChecksRepository;
 		this.dockerLogsRepository = dockerLogsRepository;
-		this.egressService = egressService;
 		this.telemetryService = telemetryService;
 	}
-
-	// Runs while instance egress is degraded; the service removes the row once egress is back.
-	// Errors from the probe propagate so the queue records the failure and retries with its usual backoff.
-	getEgressRecoveryJob = () => {
-		return async (job: Job) => {
-			await this.egressService.checkRecovery(job);
-		};
-	};
 
 	getTelemetryJob = () => {
 		return async () => {

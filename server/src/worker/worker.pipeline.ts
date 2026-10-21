@@ -132,9 +132,10 @@ export class WorkerPipeline implements IWorkerPipeline {
 
 		// Step 2d: As with the maintenance gate above, the window is cleared at the point the monitor stops
 		// being evaluated, so the results either side of a spell never end up adjacent and cross the threshold
-		// on stale data. The length guard keeps this to one write per spell rather than one per degraded check,
-		// and it runs after the check is buffered so that a failed write cannot cost us the check.
-		if (egressStatus === "degraded" && monitor.statusWindow?.length) {
+		// on stale data. It is cleared once per monitor per degraded spell on this worker, so checks from other
+		// workers that interleave during the spell are not wiped, and it runs after the check is buffered so
+		// that a failed write cannot cost us the check.
+		if (egressStatus === "degraded" && monitor.statusWindow?.length && this.deps.egressService.shouldClearStatusWindow(monitor.id)) {
 			await this.deps.monitorsRepository.updateById(monitor.id, monitor.teamId, { statusWindow: [] });
 		}
 

@@ -1,114 +1,120 @@
-import { describe, expect, it, jest } from "@jest/globals";
+import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import { EgressStateService } from "../../../src/domain/egress/egress-state.service.ts";
-import type { EgressState } from "../../../src/domain/egress/egress.type.ts";
+import { BANNER_FRESHNESS_MS } from "../../../src/domain/egress/egress.type.ts";
+import { WORKER_STALE_MS } from "../../../src/domain/queue-workers/queue-worker.model.ts";
+import type { QueueWorker, WorkerEgress } from "../../../src/domain/queue-workers/queue-worker.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-const createEgressStateRepo = () => ({
-	findSingleton: jest.fn(),
-	recordProbe: jest.fn(),
-	markDegraded: jest.fn(),
-	markRecovered: jest.fn(),
-	reset: jest.fn(),
-});
+const NOW = 1_760_000_000_000;
 
-const createJobsRepo = () => ({
-	deleteGlobalJob: jest.fn().mockResolvedValue(true),
-});
-
-const createSettingsService = (egressCheckEnabled = true) => ({
-	getCachedDBSettings: jest.fn().mockResolvedValue({ egressCheckEnabled }),
-});
-
-const createService = (egressCheckEnabled = true) => {
-	const egressStateRepository = createEgressStateRepo();
-	const jobsRepository = createJobsRepo();
-	const settingsService = createSettingsService(egressCheckEnabled);
-	const service = new EgressStateService(egressStateRepository as any, jobsRepository as any, settingsService as any);
-	return { service, egressStateRepository, jobsRepository, settingsService };
-};
-
-const makeState = (overrides?: Partial<EgressState>): EgressState => ({
-	id: "egress-1",
-	status: "ok",
-	degradedSince: null,
-	lastRecoveredAt: null,
-	lastProbeAt: null,
+const makeEgress = (overrides?: Partial<WorkerEgress>): WorkerEgress => ({
+	status: "degraded",
+	checkedAt: NOW - 1_000,
+	degradedSince: NOW - 30_000,
 	lastProbeResults: [],
-	createdAt: "2026-01-01T00:00:00Z",
-	updatedAt: "2026-01-01T00:00:00Z",
 	...overrides,
 });
+
+const makeWorker = (workerId: string, overrides?: Partial<QueueWorker>): QueueWorker => ({
+	workerId,
+	mode: "worker",
+	processesJobs: true,
+	lastSeenAt: NOW - 1_000,
+	...overrides,
+});
+
+const createService = (workers: QueueWorker[], egressCheckEnabled = true) => {
+	const queueWorkersRepository = { findRecent: jest.fn().mockResolvedValue(workers) };
+	const settingsService = { getCachedDBSettings: jest.fn().mockResolvedValue({ egressCheckEnabled }) };
+	const service = new EgressStateService(queueWorkersRepository as any, settingsService as any);
+	return { service, queueWorkersRepository, settingsService };
+};
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("EgressStateService", () => {
+	afterEach(() => {
+		jest.useRealTimers();
+	});
+
 	describe("getSummary", () => {
-		it("returns only enabled, status and degradedSince", async () => {
-			const { service, egressStateRepository } = createService();
-			const state = makeState({
-				status: "degraded",
-				degradedSince: "2026-01-01T00:05:00Z",
-				lastProbeAt: "2026-01-01T00:05:00Z",
-				lastProbeResults: [{ target: "https://internal.example.com", reachable: false, responseTime: 0, message: "timeout" }],
-			});
-			(egressStateRepository.findSingleton as jest.Mock).mockResolvedValue(state);
+		const setup = (workers: QueueWorker[], egressCheckEnabled = true) => {
+			jest.useFakeTimers();
+			jest.setSystemTime(NOW);
+			return createService(workers, egressCheckEnabled);
+		};
 
-			const result = await service.getSummary();
-
-			expect(egressStateRepository.findSingleton).toHaveBeenCalledTimes(1);
-			expect(result).toEqual({ enabled: true, status: "degraded", degradedSince: "2026-01-01T00:05:00Z" });
-		});
-
-		it("reports enabled false when the self-check is switched off", async () => {
-			const { service, egressStateRepository } = createService(false);
-			(egressStateRepository.findSingleton as jest.Mock).mockResolvedValue(makeState());
-
-			const result = await service.getSummary();
-
-			expect(result).toEqual({ enabled: false, status: "ok", degradedSince: null });
-		});
-
-		it("does not call any transition method", async () => {
-			const { service, egressStateRepository } = createService();
-			(egressStateRepository.findSingleton as jest.Mock).mockResolvedValue(makeState());
+		it("reads the workers seen within WORKER_STALE_MS", async () => {
+			const { service, queueWorkersRepository } = setup([]);
 
 			await service.getSummary();
 
-			expect(egressStateRepository.recordProbe).not.toHaveBeenCalled();
-			expect(egressStateRepository.markDegraded).not.toHaveBeenCalled();
-			expect(egressStateRepository.markRecovered).not.toHaveBeenCalled();
+			expect(queueWorkersRepository.findRecent).toHaveBeenCalledWith(WORKER_STALE_MS);
+		});
+
+		it("reports ok and 0 of 0 when there are no workers", async () => {
+			const { service } = setup([]);
+
+			expect(await service.getSummary()).toEqual({ enabled: true, status: "ok", degradedSince: null, degradedWorkers: 0, totalWorkers: 0 });
+		});
+
+		it("reports one fresh degraded worker with its degradedSince as ISO", async () => {
+			const { service } = setup([makeWorker("worker-1", { egress: makeEgress() })]);
+
+			expect(await service.getSummary()).toEqual({
+				enabled: true,
+				status: "degraded",
+				degradedSince: new Date(NOW - 30_000).toISOString(),
+				degradedWorkers: 1,
+				totalWorkers: 1,
+			});
+		});
+
+		it("ignores a degraded verdict older than BANNER_FRESHNESS_MS", async () => {
+			const { service } = setup([makeWorker("worker-1", { egress: makeEgress({ checkedAt: NOW - BANNER_FRESHNESS_MS }) })]);
+
+			expect(await service.getSummary()).toEqual(expect.objectContaining({ status: "ok", degradedSince: null, degradedWorkers: 0, totalWorkers: 1 }));
+		});
+
+		it("excludes workers that do not process jobs from both counts", async () => {
+			const { service } = setup([
+				makeWorker("api-1", { processesJobs: false, egress: makeEgress() }),
+				makeWorker("worker-1", { egress: makeEgress({ status: "ok", degradedSince: null }) }),
+			]);
+
+			expect(await service.getSummary()).toEqual(expect.objectContaining({ status: "ok", degradedWorkers: 0, totalWorkers: 1 }));
+		});
+
+		it("counts workers without a verdict toward the total only", async () => {
+			const { service } = setup([makeWorker("worker-1", { egress: makeEgress() }), makeWorker("worker-2")]);
+
+			expect(await service.getSummary()).toEqual(expect.objectContaining({ status: "degraded", degradedWorkers: 1, totalWorkers: 2 }));
+		});
+
+		it("reports the earliest degradedSince across degraded workers", async () => {
+			const { service } = setup([
+				makeWorker("worker-1", { egress: makeEgress({ degradedSince: NOW - 10_000 }) }),
+				makeWorker("worker-2", { egress: makeEgress({ degradedSince: NOW - 50_000 }) }),
+				makeWorker("worker-3", { egress: makeEgress({ degradedSince: NOW - 20_000 }) }),
+			]);
+
+			expect(await service.getSummary()).toEqual(
+				expect.objectContaining({ degradedSince: new Date(NOW - 50_000).toISOString(), degradedWorkers: 3, totalWorkers: 3 })
+			);
+		});
+
+		it("reports enabled from the settings", async () => {
+			const { service } = setup([], false);
+
+			expect(await service.getSummary()).toEqual(expect.objectContaining({ enabled: false }));
 		});
 
 		it("propagates repository errors", async () => {
-			const { service, egressStateRepository } = createService();
-			(egressStateRepository.findSingleton as jest.Mock).mockRejectedValue(new Error("db down"));
+			const { service, queueWorkersRepository } = setup([]);
+			queueWorkersRepository.findRecent.mockRejectedValue(new Error("db down"));
 
 			await expect(service.getSummary()).rejects.toThrow("db down");
-		});
-	});
-
-	describe("reset", () => {
-		it("removes any pending recovery job and returns the state to ok", async () => {
-			const { service, egressStateRepository, jobsRepository } = createService();
-			const reset = makeState();
-			(egressStateRepository.reset as jest.Mock).mockResolvedValue(reset);
-
-			const result = await service.reset();
-
-			expect(jobsRepository.deleteGlobalJob).toHaveBeenCalledWith("egress");
-			expect(egressStateRepository.reset).toHaveBeenCalledTimes(1);
-			expect(result).toEqual(reset);
-		});
-
-		it("does not touch the probe-driven transitions", async () => {
-			const { service, egressStateRepository } = createService();
-			(egressStateRepository.reset as jest.Mock).mockResolvedValue(makeState());
-
-			await service.reset();
-
-			expect(egressStateRepository.markDegraded).not.toHaveBeenCalled();
-			expect(egressStateRepository.markRecovered).not.toHaveBeenCalled();
 		});
 	});
 });

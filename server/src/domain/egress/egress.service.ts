@@ -1,29 +1,15 @@
 import type { Monitor } from "@/domain/monitors/monitor.type.js";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
-import type { IEgressStateRepository } from "@/domain/egress/egress-state.repository.interface.js";
-import type { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
-import { jobId, type Job, type JobSeed } from "@/domain/jobs/job.type.js";
 import type { IProviderRegistry } from "@/service/networkProviders/providerRegistry.js";
 import type { IProxyResolver } from "@/service/networkProviders/ProxyResolver.js";
 import type { ILogger } from "@/utils/logger/logger.js";
-import {
-	EGRESS_RECOVERY_POLL_SECONDS,
-	DEFAULT_EGRESS_TARGETS,
-	type EgressAssessment,
-	type EgressProbeResult,
-	type EgressStatus,
-} from "@/domain/egress/egress.type.js";
+import { DEFAULT_EGRESS_TARGETS, VERDICT_TTL_MS, type EgressProbeResult, type EgressStatus } from "@/domain/egress/egress.type.js";
 import { timeRequest } from "@/service/networkProviders/utils.js";
 import { parseEgressTarget, type EgressTarget } from "@/utils/egressTarget.js";
-
+import type { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.repository.interface.js";
+import type { WorkerEgress } from "@/domain/queue-workers/queue-worker.type.js";
 const SERVICE_NAME = "EgressService";
 const PROBE_TIMEOUT_MS = 5000;
-// How long a settled assessment answers for later failures. An assessment still in flight is shared
-// for as long as it takes, so this only bounds how stale a reused answer can be.
-const ASSESSMENT_REUSE_MS = 5000;
-// Global job row (refId null) that re-probes while degraded. Inserted when egress degrades, removed on recovery.
-const RECOVERY_JOB_TYPE = "egress" as const;
-const RECOVERY_JOB_ID = jobId(RECOVERY_JOB_TYPE, null);
 
 // HttpProvider reports transport failures with NETWORK_ERROR (outside the HTTP range) and everything else with the real status code.
 export const isHttpStatusCode = (code: unknown): boolean => typeof code === "number" && code >= 100 && code <= 599;
@@ -32,30 +18,32 @@ export const isHttpStatusCode = (code: unknown): boolean => typeof code === "num
 const PROBE_MONITOR_ID = "egress-probe";
 const PROBE_TEAM_ID = "system";
 
+type CachedAssessment = {
+	value: Promise<EgressStatus | null>;
+	expiresAt: number | null;
+	targetsKey: string;
+};
+
 export interface IEgressService {
 	probeTargets(targets: string[]): Promise<EgressProbeResult[]>;
 	// Called by the check producer when a check fails. Null when the feature is off or the assessment itself failed.
 	assessAfterFailure(): Promise<EgressStatus | null>;
-	// Handler for the "egress" job: re-probes while degraded and removes the job once egress is back.
-	checkRecovery(job: Job): Promise<void>;
+	shouldClearStatusWindow(monitorId: string): boolean;
 }
-
-type CachedAssessment = {
-	value: Promise<EgressAssessment | null>;
-	expiresAt: number | null; // null while the assessment is still in flight
-};
 
 export class EgressService implements IEgressService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private assessment: CachedAssessment | null = null;
+	private degradedSince: Date | null = null;
+	private clearedThisSpell = new Set<string>();
 
 	private logger: ILogger;
 
 	constructor(
 		private settingsService: ISettingsService,
-		private egressStateRepository: IEgressStateRepository,
-		private jobsRepository: IJobsRepository,
+		private workerId: string,
+		private queueWorkersRepository: IQueueWorkersRepository,
 		private providerRegistry: IProviderRegistry,
 		private proxyResolver: IProxyResolver,
 		logger: ILogger
@@ -145,126 +133,81 @@ export class EgressService implements IEgressService {
 	// ****************************
 
 	assessAfterFailure = async (): Promise<EgressStatus | null> => {
-		const assessment = await this.sharedAssessment();
-		return assessment === "disabled" ? null : assessment;
-	};
-
-	// When egress is down every monitor fails at once. Concurrent failures share the in-flight assessment
-	// however long it takes, and a settled one answers for ASSESSMENT_REUSE_MS. Same shape as ProxyResolver's cache.
-	private sharedAssessment = (): Promise<EgressAssessment | null> => {
-		const cached = this.assessment;
-		if (cached && (cached.expiresAt === null || cached.expiresAt > Date.now())) {
-			return cached.value;
-		}
-
-		const entry: CachedAssessment = { value: this.assess(), expiresAt: null };
-		this.assessment = entry;
-		void entry.value.then((result) => {
-			if (this.assessment !== entry) return;
-			if (result === null) {
-				this.assessment = null; // an internal failure is not cached, so the next failing check retries
-			} else {
-				entry.expiresAt = Date.now() + ASSESSMENT_REUSE_MS;
-			}
-		});
-		return entry.value;
-	};
-
-	private assess = async (): Promise<EgressAssessment | null> => {
 		try {
 			const settings = await this.settingsService.getCachedDBSettings();
-			if (!settings.egressCheckEnabled) {
-				return "disabled";
-			}
-
-			const state = await this.egressStateRepository.findSingleton();
-			if (state.status === "degraded") {
-				// Recovery is detected by the scheduled job. Make sure the row exists without touching its schedule.
-				await this.scheduleRecoveryCheck(false);
-				return "degraded";
-			}
-
-			const results = await this.probeTargets(this.resolveTargets(settings.egressCheckTargets));
-			const now = new Date();
-
-			if (results.some((result) => result.reachable)) {
-				await this.egressStateRepository.recordProbe(results, now);
-				return "ok";
-			}
-
-			// Schedule the recovery job before recording the transition: a crash between the two then leaves a stray row
-			// while ok, which the job's first run removes, rather than a degraded state that nothing is polling.
-			await this.scheduleRecoveryCheck(true);
-			const degraded = await this.egressStateRepository.markDegraded(results, now);
-			if (degraded) {
-				this.logger.warn(
-					{ results },
-					"Instance egress degraded: every reliability target is unreachable. Monitor failures will not be counted until it recovers"
-				);
-			} else {
-				this.logger.warn({ results }, "Instance egress degraded (transition already recorded by another worker)");
-			}
-			return "degraded";
+			if (!settings.egressCheckEnabled) return null;
+			return await this.sharedAssessment(this.resolveTargets(settings.egressCheckTargets));
 		} catch (error: unknown) {
-			// The egress check must never break check production; treat an internal failure as "unknown" and carry on.
 			this.logger.error({ err: error }, "Egress assessment failed");
 			return null;
 		}
 	};
 
-	// ****************************
-	// Recovery job
-	// ****************************
+	private sharedAssessment = (targets: string[]): Promise<EgressStatus | null> => {
+		const targetsKey = targets.join("\n");
+		const cached = this.assessment;
 
-	// reschedule=true sets nextScheduledAt (start of an episode); false only inserts the row if it is missing,
-	// so re-arming while degraded never pushes a pending run back.
-	private scheduleRecoveryCheck = async (reschedule: boolean) => {
-		const intervalMs = EGRESS_RECOVERY_POLL_SECONDS * 1000;
-		const seed: JobSeed = {
-			id: RECOVERY_JOB_ID,
-			type: RECOVERY_JOB_TYPE,
-			refId: null,
-			isActive: true,
-			nextScheduledAt: Date.now() + intervalMs,
-			intervalMs,
-		};
-		if (reschedule) {
-			await this.jobsRepository.upsertCleanupJob(seed); // global-row upsert that also sets the schedule
-		} else {
-			await this.jobsRepository.upsertJob(seed);
+		if (cached && cached.targetsKey === targetsKey && (cached.expiresAt === null || cached.expiresAt > Date.now())) {
+			return cached.value;
+		}
+
+		const currentAssessment = this.assess(targets);
+		const entry: CachedAssessment = { value: currentAssessment, expiresAt: null, targetsKey };
+		this.assessment = entry;
+
+		entry.value.then((result) => {
+			if (this.assessment !== entry) return;
+			if (result === null) {
+				this.assessment = null;
+			} else {
+				entry.expiresAt = Date.now() + VERDICT_TTL_MS;
+			}
+		});
+		return entry.value;
+	};
+
+	private publish = async (egress: WorkerEgress) => {
+		try {
+			await this.queueWorkersRepository.setEgress(this.workerId, egress);
+		} catch (error: unknown) {
+			this.logger.warn({ err: error }, "Could not publish this worker's egress verdict");
 		}
 	};
 
-	// Removes the row only if nobody has rescheduled it since this run claimed it. Another worker may have seen
-	// egress fail again in the meantime and started a new episode; its schedule must survive.
-	private releaseRecoveryJob = async (job: Job) => {
-		await this.jobsRepository.deleteGlobalJobIfUnchanged(RECOVERY_JOB_TYPE, job.nextScheduledAt);
+	private applyVerdict = (status: EgressStatus, results: EgressProbeResult[], now: Date) => {
+		if (status === "degraded" && this.degradedSince === null) {
+			this.degradedSince = now;
+			this.logger.warn({ results }, "Egress degraded on this worker: egress targets unreachable");
+		} else if (status === "ok" && this.degradedSince !== null) {
+			this.logger.info({ degradedSince: this.degradedSince, results }, "Egress recovered for this worker");
+			this.degradedSince = null;
+			this.clearedThisSpell.clear();
+		}
+		this.publish({
+			status,
+			checkedAt: now.getTime(),
+			degradedSince: this.degradedSince ? this.degradedSince.getTime() : null,
+			lastProbeResults: results,
+		});
 	};
 
-	// Runs on the queue at the configured interval while degraded. Errors from the probe and the transition
-	// propagate so the queue records the failure and retries with its usual backoff.
-	checkRecovery = async (job: Job): Promise<void> => {
-		const settings = await this.settingsService.getCachedDBSettings();
-		const state = await this.egressStateRepository.findSingleton();
-		if (!settings.egressCheckEnabled || state.status !== "degraded") {
-			// Feature switched off, recovery recorded by another worker, or state reset: nothing left to poll for.
-			await this.releaseRecoveryJob(job);
-			return;
+	private assess = async (targets: string[]): Promise<EgressStatus | null> => {
+		try {
+			const results = await this.probeTargets(targets);
+			const status: EgressStatus = results.some((result) => result.reachable) ? "ok" : "degraded";
+			this.applyVerdict(status, results, new Date());
+			return status;
+		} catch (error: unknown) {
+			this.logger.error({ err: error }, "Egress assessment failed");
+			return null;
 		}
+	};
 
-		const results = await this.probeTargets(this.resolveTargets(settings.egressCheckTargets));
-		const now = new Date();
-
-		if (!results.some((result) => result.reachable)) {
-			await this.egressStateRepository.recordProbe(results, now);
-			return;
+	shouldClearStatusWindow = (monitorId: string): boolean => {
+		if (this.degradedSince === null || this.clearedThisSpell.has(monitorId)) {
+			return false;
 		}
-
-		const recovered = await this.egressStateRepository.markRecovered(results, now);
-		await this.releaseRecoveryJob(job);
-		if (recovered) {
-			// Only the process that performed the transition logs it.
-			this.logger.info({ degradedSince: recovered.degradedSince, results }, "Instance egress recovered");
-		}
+		this.clearedThisSpell.add(monitorId);
+		return true;
 	};
 }

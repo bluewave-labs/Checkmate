@@ -69,7 +69,6 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		teamsRepository,
 		maintenanceWindowsRepository,
 		proxiesRepository,
-		egressStateRepository,
 		settingsRepository,
 	} = shared;
 
@@ -105,7 +104,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		pipeline.ingestChecks(checks)
 	);
 	const statusService = new StatusService(logger, monitorsRepository, monitorStatsRepository);
-	const egressService = new EgressService(settingsService, egressStateRepository, jobsRepository, providerRegistry, proxyResolver, logger);
+	const egressService = new EgressService(settingsService, workerId, queueWorkersRepository, providerRegistry, proxyResolver, logger);
 	const telemetryService = new TelemetryService(got, settingsService, settingsRepository, logger);
 
 	const notificationReactor = new NotificationReactor(notificationsService);
@@ -146,7 +145,6 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		incidentsRepository,
 		geoChecksRepository,
 		dockerLogsRepository,
-		egressService,
 		telemetryService
 	);
 
@@ -156,7 +154,6 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		"geo-check": geoCheckPipeline.handle,
 		"cleanup-orphaned": workerHelper.getCleanupOrphanedJob(),
 		"cleanup-retention": workerHelper.getCleanupRetentionJob(),
-		egress: workerHelper.getEgressRecoveryJob(),
 		telemetry: workerHelper.getTelemetryJob(),
 	};
 

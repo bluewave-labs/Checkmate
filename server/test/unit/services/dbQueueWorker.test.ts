@@ -82,7 +82,6 @@ const makeHandlers = (overrides?: Record<string, any>) => ({
 	"geo-check": jest.fn<any>().mockResolvedValue(undefined),
 	"cleanup-orphaned": jest.fn<any>().mockResolvedValue(undefined),
 	"cleanup-retention": jest.fn<any>().mockResolvedValue(undefined),
-	egress: jest.fn<any>().mockResolvedValue(undefined),
 	telemetry: jest.fn<any>().mockResolvedValue(undefined),
 	...overrides,
 });
@@ -229,7 +228,7 @@ describe("DBQueueWorker", () => {
 			const { mocks } = await start({ queueMode: "worker" });
 
 			const claimedTypes = mocks.jobsRepository.claimDueBatch.mock.calls.map((c: any[]) => c[0]);
-			expect(claimedTypes).toEqual(expect.arrayContaining(["check", "geo-check", "evaluate", "cleanup-orphaned", "cleanup-retention", "egress"]));
+			expect(claimedTypes).toEqual(expect.arrayContaining(["check", "geo-check", "evaluate", "cleanup-orphaned", "cleanup-retention", "telemetry"]));
 			expect(mocks.jobsRepository.claimDueBatch).toHaveBeenCalledWith("check", 500, expect.any(Number));
 			expect(mocks.jobsRepository.claimDueBatch).toHaveBeenCalledWith("evaluate", 20, expect.any(Number));
 			expect(mocks.jobsRepository.claimDueBatch).toHaveBeenCalledWith("cleanup-orphaned", 1, expect.any(Number));
@@ -379,7 +378,6 @@ describe("DBQueueWorker", () => {
 				makeJob({ id: "geo-check:m1", type: "geo-check", intervalMs: 300000 }),
 				makeJob({ id: "cleanup-orphaned", type: "cleanup-orphaned", refId: null, intervalMs: 86400000 }),
 				makeJob({ id: "cleanup-retention", type: "cleanup-retention", refId: null, intervalMs: 86400000 }),
-				makeJob({ id: "egress", type: "egress", refId: null, intervalMs: 30000 }),
 				makeJob({ id: "telemetry", type: "telemetry", refId: null, intervalMs: 86400000 }),
 			];
 			const handed = new Set<string>();
@@ -398,10 +396,10 @@ describe("DBQueueWorker", () => {
 		});
 
 		it("reschedules an interval job after its handler succeeds", async () => {
-			const job = makeJob({ id: "egress", type: "egress", refId: null, intervalMs: 30000 });
+			const job = makeJob({ id: "telemetry", type: "telemetry", refId: null, intervalMs: 86400000 });
 			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) } } });
 
-			expect(mocks.handlers.egress).toHaveBeenCalledWith(job);
+			expect(mocks.handlers.telemetry).toHaveBeenCalledWith(job);
 			expect(mocks.jobsRepository.recordSuccess).toHaveBeenCalledWith(job.id, job.nextScheduledAt, job.intervalMs, expect.any(Number));
 		});
 

@@ -3260,6 +3260,46 @@
 					"lastSeenAt": {
 						"type": "number",
 						"description": "Epoch ms of the last heartbeat"
+					},
+					"egress": {
+						"type": "object",
+						"properties": {
+							"status": {
+								"type": "string",
+								"enum": ["ok", "degraded"]
+							},
+							"checkedAt": {
+								"type": "number",
+								"description": "Epoch ms of the probe behind this verdict"
+							},
+							"degradedSince": {
+								"type": "number",
+								"nullable": true,
+								"description": "Epoch ms the current degraded spell began, null when ok"
+							},
+							"lastProbeResults": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"target": {
+											"type": "string"
+										},
+										"reachable": {
+											"type": "boolean"
+										},
+										"responseTime": {
+											"type": "number"
+										},
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": ["target", "reachable", "responseTime"]
+								}
+							}
+						},
+						"required": ["status", "checkedAt", "degradedSince", "lastProbeResults"]
 					}
 				},
 				"required": ["workerId", "mode", "processesJobs", "lastSeenAt"]
@@ -3943,6 +3983,9 @@
 			"EgressSummary": {
 				"type": "object",
 				"properties": {
+					"enabled": {
+						"type": "boolean"
+					},
 					"status": {
 						"type": "string",
 						"enum": ["ok", "degraded"]
@@ -3951,11 +3994,14 @@
 						"type": "string",
 						"nullable": true
 					},
-					"enabled": {
-						"type": "boolean"
+					"degradedWorkers": {
+						"type": "number"
+					},
+					"totalWorkers": {
+						"type": "number"
 					}
 				},
-				"required": ["status", "degradedSince", "enabled"]
+				"required": ["enabled", "status", "degradedSince", "degradedWorkers", "totalWorkers"]
 			}
 		},
 		"parameters": {}

@@ -188,4 +188,24 @@ describe("Heartbeat job: degraded egress", () => {
 		expect((await h.monitorsRepo.findById("mon-1", "team-1")).status).toBe("down");
 		expect(h.incidentsRepo.getAll()).toHaveLength(1);
 	});
+
+	// Two workers checking the same monitor: one has lost egress, the other has not. The degraded worker
+	// clears the window once as its spell starts, so the healthy worker's real failures still accumulate.
+	it("still detects down from a healthy worker's failures interleaved with a degraded worker's checks", async () => {
+		const monitor = makeMonitor();
+		h.monitorsRepo.seed(monitor);
+		h.setNextResponse(false, NETWORK_ERROR);
+
+		for (let i = 0; i < 5; i++) {
+			h.setEgressStatus("degraded");
+			await h.heartbeatJob(monitor);
+			h.setEgressStatus("ok");
+			await h.heartbeatJob(monitor);
+		}
+
+		// Asked on every degraded check, granted only on the first
+		expect(h.egressService.shouldClearStatusWindow.mock.results.filter((result) => result.value === true)).toHaveLength(1);
+		expect((await h.monitorsRepo.findById("mon-1", "team-1")).status).toBe("down");
+		expect(h.incidentsRepo.getAll()).toHaveLength(1);
+	});
 });

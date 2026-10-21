@@ -6,7 +6,6 @@ import { AppError, internalError } from "@/utils/AppError.js";
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { IEmailService } from "@/service/emailService.js";
 import { IProxiesService } from "@/domain/proxies/proxy.service.js";
-import { IEgressStateService } from "@/domain/egress/egress-state.service.js";
 import { Settings } from "@/domain/app-settings/app-settings.type.js";
 import { appSettingsErrors } from "@/domain/app-settings/app-settings.errors.js";
 
@@ -24,17 +23,10 @@ class SettingsController implements ISettingsController {
 	private settingsService: ISettingsService;
 	private emailService: IEmailService;
 	private proxiesService: IProxiesService;
-	private egressStateService: IEgressStateService;
-	constructor(
-		settingsService: ISettingsService,
-		emailService: IEmailService,
-		proxiesService: IProxiesService,
-		egressStateService: IEgressStateService
-	) {
+	constructor(settingsService: ISettingsService, emailService: IEmailService, proxiesService: IProxiesService) {
 		this.settingsService = settingsService;
 		this.emailService = emailService;
 		this.proxiesService = proxiesService;
-		this.egressStateService = egressStateService;
 	}
 
 	buildAppSettings = async (dbSettings: Settings) => {
@@ -78,13 +70,7 @@ class SettingsController implements ISettingsController {
 			}
 		}
 
-		const previousSettings = await this.settingsService.getDBSettings();
 		const updatedSettings = await this.settingsService.updateDbSettings(validatedBody);
-
-		// Switching the egress check on or off starts from a clean state: no degraded episode, no pending recovery job
-		if (validatedBody.egressCheckEnabled !== undefined && validatedBody.egressCheckEnabled !== previousSettings.egressCheckEnabled) {
-			await this.egressStateService.reset();
-		}
 
 		const data = await this.buildAppSettings(updatedSettings);
 		res.json({ success: true, msg: "App settings updated successfully", data });
