@@ -170,6 +170,12 @@
 			"retrying": "Yeniden deneniyor...",
 			"reconnected": "Bağlantı yeniden kuruldu"
 		},
+		"egressBanner": {
+			"degraded": "Checkmate güvenilirlik hedeflerine ulaşamıyor. Giden bağlantı {{time}} itibarıyla kesik görünüyor; düzelene kadar monitör hataları olay olarak bildirilmiyor.",
+			"degradedNoTime": "Checkmate güvenilirlik hedeflerine ulaşamıyor. Giden bağlantı kesik görünüyor; düzelene kadar monitör hataları olay olarak bildirilmiyor.",
+			"degradedWorkers": "{{total}} worker'dan {{degraded}} tanesi {{time}} itibarıyla giden bağlantısını kaybetti. Düzelene kadar bunların monitör hataları olay olarak bildirilmiyor.",
+			"degradedWorkersNoTime": "{{total}} worker'dan {{degraded}} tanesi giden bağlantısını kaybetti. Düzelene kadar bunların monitör hataları olay olarak bildirilmiyor."
+		},
 		"sidebar": {
 			"menu": {
 				"uptime": "Çalışma süresi",
@@ -412,11 +418,13 @@
 				"status": {
 					"all": "Tümü",
 					"down": "Çevrimdışı",
-					"up": "Çevrimiçi"
+					"up": "Çevrimiçi",
+					"degraded": "Giden bağlantı bozuk"
 				}
 			},
 			"table": {
 				"empty": "Bu zaman aralığında çevrimdışı kontrol yok",
+				"egressDegraded": "Giden bağlantı bozuk",
 				"headers": {
 					"statusCode": "Durum kodu",
 					"location": "Konum"
@@ -462,7 +470,8 @@
 					"maintenance": "bakım",
 					"paused": "duraklatıldı",
 					"total": "toplam",
-					"up": "çevrimiçi"
+					"up": "çevrimiçi",
+					"degraded": "giden bağlantı bozuk"
 				},
 				"monitorTypes": {
 					"optionDocker": "Docker",
@@ -1342,6 +1351,25 @@
 						"displayName": {
 							"label": "Gönderen adı (isteğe bağlı) - Gönderen alanında gösterilen kullanıcı dostu ad",
 							"placeholder": "Checkmate bildirimleri"
+						}
+					}
+				},
+				"egress": {
+					"title": "Giden bağlantı öz denetimi",
+					"description": "Bu örnekten bir dizi güvenilirlik hedefini düzenli olarak yoklar. Hiçbirine ulaşılamadığı sürece giden bağlantı kesik kabul edilir ve monitör hataları olay olarak kaydedilmez.",
+					"option": {
+						"enabled": {
+							"label": "Giden bağlantı öz denetimini etkinleştir"
+						},
+						"targets": {
+							"label": "Güvenilirlik hedefleri",
+							"placeholder": "https://example.com\ndns.google:53\n1.1.1.1",
+							"helper": "Her satıra bir tane, en fazla {{max}}. Varsayılanları kullanmak için boş bırakın (https://www.google.com/generate_204, https://www.cloudflare.com/cdn-cgi/trace). Yalın bir ana bilgisayar veya IP'ye ping atılır (ICMP), host:port bir TCP bağlantısı açar ve http:// veya https:// URL'si HTTP üzerinden istenir.",
+							"validation": {
+								"max": "En fazla {{max}} hedef",
+								"length": "Her hedef en fazla {{max}} karakter olmalıdır",
+								"invalid": "\"{{target}}\" bir ana bilgisayar adı veya IP adresi, host:port ya da http(s) URL'si değil"
+							}
 						}
 					}
 				},

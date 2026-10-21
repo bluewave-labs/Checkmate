@@ -181,6 +181,12 @@
 			"retrying": "Nuovo tentativo...",
 			"reconnected": "Connessione ripristinata"
 		},
+		"egressBanner": {
+			"degraded": "Checkmate non riesce a raggiungere i suoi obiettivi di affidabilità. La connettività in uscita sembra interrotta dalle {{time}}; i guasti dei monitor non vengono segnalati come incidenti finché non viene ripristinata.",
+			"degradedNoTime": "Checkmate non riesce a raggiungere i suoi obiettivi di affidabilità. La connettività in uscita sembra interrotta; i guasti dei monitor non vengono segnalati come incidenti finché non viene ripristinata.",
+			"degradedWorkers": "{{degraded}} worker su {{total}} hanno perso la connettività in uscita dalle {{time}}. I loro guasti dei monitor non vengono segnalati come incidenti finché non viene ripristinata.",
+			"degradedWorkersNoTime": "{{degraded}} worker su {{total}} hanno perso la connettività in uscita. I loro guasti dei monitor non vengono segnalati come incidenti finché non viene ripristinata."
+		},
 		"sidebar": {
 			"menu": {
 				"uptime": "Uptime",
@@ -420,11 +426,13 @@
 				"status": {
 					"all": "Tutti",
 					"down": "Non attivo",
-					"up": "Attivo"
+					"up": "Attivo",
+					"degraded": "Uscita degradata"
 				}
 			},
 			"table": {
 				"empty": "Nessuna verifica fallita in questo intervallo di tempo",
+				"egressDegraded": "Uscita degradata",
 				"headers": {
 					"statusCode": "Codice di stato",
 					"location": "Posizione"
@@ -477,7 +485,8 @@
 					"maintenance": "manutenzione",
 					"paused": "in pausa",
 					"total": "totale",
-					"up": "attivo"
+					"up": "attivo",
+					"degraded": "uscita degradata"
 				},
 				"monitorTypes": {
 					"optionDocker": "Docker",
@@ -1438,6 +1447,25 @@
 						},
 						"rejectUnauthorized": {
 							"label": "Rifiuta certificati non validi: rifiuta connessioni con certificati auto-firmati o non fidati"
+						}
+					}
+				},
+				"egress": {
+					"title": "Autoverifica in uscita",
+					"description": "Sonda periodicamente un insieme di obiettivi di affidabilità da questa istanza. Finché nessuno è raggiungibile, la connettività in uscita è considerata interrotta e i guasti dei monitor non vengono registrati come incidenti.",
+					"option": {
+						"enabled": {
+							"label": "Abilita l'autoverifica in uscita"
+						},
+						"targets": {
+							"label": "Obiettivi di affidabilità",
+							"placeholder": "https://example.com\ndns.google:53\n1.1.1.1",
+							"helper": "Uno per riga, fino a {{max}}. Lascia vuoto per usare i valori predefiniti (https://www.google.com/generate_204, https://www.cloudflare.com/cdn-cgi/trace). Un host o IP semplice viene pingato (ICMP), host:port apre una connessione TCP e un URL http:// o https:// viene richiesto via HTTP.",
+							"validation": {
+								"max": "Massimo {{max}} obiettivi",
+								"length": "Ogni obiettivo deve avere al massimo {{max}} caratteri",
+								"invalid": "\"{{target}}\" non è un nome host o indirizzo IP, host:port o URL http(s)"
+							}
 						}
 					}
 				},

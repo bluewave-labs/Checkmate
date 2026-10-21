@@ -170,6 +170,12 @@
 			"retrying": "Nouvelle tentative...",
 			"reconnected": "Connexion rétablie avec le serveur."
 		},
+		"egressBanner": {
+			"degraded": "Checkmate ne parvient pas à joindre ses cibles de fiabilité. La connectivité sortante semble interrompue depuis {{time}} ; les échecs des moniteurs ne sont pas signalés comme incidents jusqu'à son rétablissement.",
+			"degradedNoTime": "Checkmate ne parvient pas à joindre ses cibles de fiabilité. La connectivité sortante semble interrompue ; les échecs des moniteurs ne sont pas signalés comme incidents jusqu'à son rétablissement.",
+			"degradedWorkers": "{{degraded}} workers sur {{total}} ont perdu la connectivité sortante depuis {{time}}. Leurs échecs de moniteurs ne sont pas signalés comme incidents jusqu'à son rétablissement.",
+			"degradedWorkersNoTime": "{{degraded}} workers sur {{total}} ont perdu la connectivité sortante. Leurs échecs de moniteurs ne sont pas signalés comme incidents jusqu'à son rétablissement."
+		},
 		"sidebar": {
 			"menu": {
 				"uptime": "Temps en ligne",
@@ -412,11 +418,13 @@
 				"status": {
 					"all": "Tous",
 					"down": "Hors ligne",
-					"up": "En ligne"
+					"up": "En ligne",
+					"degraded": "Sortie dégradée"
 				}
 			},
 			"table": {
 				"empty": "Aucune vérification en échec sur cette période",
+				"egressDegraded": "Sortie dégradée",
 				"headers": {
 					"statusCode": "Code de statut",
 					"location": "Emplacement"
@@ -462,7 +470,8 @@
 					"maintenance": "maintenance",
 					"paused": "en pause",
 					"total": "total",
-					"up": "en ligne"
+					"up": "en ligne",
+					"degraded": "sortie dégradée"
 				},
 				"monitorTypes": {
 					"optionDocker": "Docker",
@@ -1342,6 +1351,25 @@
 						"displayName": {
 							"label": "Nom de l'expéditeur (facultatif) - Nom convivial affiché dans le champ De",
 							"placeholder": "Notifications Checkmate"
+						}
+					}
+				},
+				"egress": {
+					"title": "Auto-vérification de la sortie",
+					"description": "Sonde périodiquement un ensemble de cibles de fiabilité depuis cette instance. Tant qu'aucune n'est joignable, la connectivité sortante est considérée comme interrompue et les échecs des moniteurs ne sont pas enregistrés comme incidents.",
+					"option": {
+						"enabled": {
+							"label": "Activer l'auto-vérification de la sortie"
+						},
+						"targets": {
+							"label": "Cibles de fiabilité",
+							"placeholder": "https://example.com\ndns.google:53\n1.1.1.1",
+							"helper": "Une par ligne, jusqu'à {{max}}. Laissez vide pour utiliser les valeurs par défaut (https://www.google.com/generate_204, https://www.cloudflare.com/cdn-cgi/trace). Un hôte ou une IP seul est pingé (ICMP), host:port ouvre une connexion TCP et une URL http:// ou https:// est requêtée en HTTP.",
+							"validation": {
+								"max": "{{max}} cibles maximum",
+								"length": "Chaque cible doit comporter {{max}} caractères ou moins",
+								"invalid": "« {{target}} » n'est pas un nom d'hôte ou une adresse IP, un host:port ou une URL http(s)"
+							}
 						}
 					}
 				},

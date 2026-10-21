@@ -178,6 +178,12 @@
 			"retrying": "Reintentant...",
 			"reconnected": "Connexió restablerta"
 		},
+		"egressBanner": {
+			"degraded": "Checkmate no pot arribar als seus destins de fiabilitat. La connectivitat sortint sembla caiguda des de {{time}}; les fallades dels monitors no s'estan notificant com a incidents fins que es recuperi.",
+			"degradedNoTime": "Checkmate no pot arribar als seus destins de fiabilitat. La connectivitat sortint sembla caiguda; les fallades dels monitors no s'estan notificant com a incidents fins que es recuperi.",
+			"degradedWorkers": "{{degraded}} de {{total}} workers han perdut la connectivitat sortint des de {{time}}. Les seves fallades de monitors no s'estan notificant com a incidents fins que es recuperi.",
+			"degradedWorkersNoTime": "{{degraded}} de {{total}} workers han perdut la connectivitat sortint. Les seves fallades de monitors no s'estan notificant com a incidents fins que es recuperi."
+		},
 		"sidebar": {
 			"menu": {
 				"uptime": "Temps en línia",
@@ -416,11 +422,13 @@
 				"status": {
 					"all": "Tots",
 					"down": "Caigut",
-					"up": "En línia"
+					"up": "En línia",
+					"degraded": "Sortida degradada"
 				}
 			},
 			"table": {
 				"empty": "Cap comprovació caiguda en aquest interval de temps",
+				"egressDegraded": "Sortida degradada",
 				"headers": {
 					"statusCode": "Codi d'estat",
 					"location": "Ubicació"
@@ -462,7 +470,8 @@
 					"maintenance": "manteniment",
 					"paused": "pausat",
 					"total": "total",
-					"up": "en línia"
+					"up": "en línia",
+					"degraded": "sortida degradada"
 				},
 				"monitorTypes": {
 					"optionDocker": "Docker",
@@ -1342,6 +1351,25 @@
 						},
 						"rejectUnauthorized": {
 							"label": "Rebutjar certificats no vàlids: Rebutjar connexions amb certificats autofirmats o no de confiança"
+						}
+					}
+				},
+				"egress": {
+					"title": "Autocomprovació de sortida",
+					"description": "Comprova periòdicament un conjunt de destins de fiabilitat des d'aquesta instància. Mentre no se'n pugui arribar a cap, la connectivitat sortint es considera caiguda i les fallades dels monitors no es registren com a incidents.",
+					"option": {
+						"enabled": {
+							"label": "Activa l'autocomprovació de sortida"
+						},
+						"targets": {
+							"label": "Destins de fiabilitat",
+							"placeholder": "https://example.com\ndns.google:53\n1.1.1.1",
+							"helper": "Un per línia, fins a {{max}}. Deixa-ho buit per utilitzar els valors per defecte (https://www.google.com/generate_204, https://www.cloudflare.com/cdn-cgi/trace). Un host o IP sol es comprova amb ping (ICMP), host:port obre una connexió TCP i una URL http:// o https:// se sol·licita per HTTP.",
+							"validation": {
+								"max": "Màxim {{max}} destins",
+								"length": "Cada destí ha de tenir {{max}} caràcters o menys",
+								"invalid": "\"{{target}}\" no és un nom d'amfitrió o adreça IP, host:port ni una URL http(s)"
+							}
 						}
 					}
 				},

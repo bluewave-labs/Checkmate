@@ -170,6 +170,12 @@
 			"retrying": "Reintentando...",
 			"reconnected": "Conexión restablecida"
 		},
+		"egressBanner": {
+			"degraded": "Checkmate no puede alcanzar sus destinos de fiabilidad. La conectividad saliente parece estar caída desde {{time}}; los fallos de los monitores no se notifican como incidentes hasta que se recupere.",
+			"degradedNoTime": "Checkmate no puede alcanzar sus destinos de fiabilidad. La conectividad saliente parece estar caída; los fallos de los monitores no se notifican como incidentes hasta que se recupere.",
+			"degradedWorkers": "{{degraded}} de {{total}} workers han perdido la conectividad saliente desde {{time}}. Sus fallos de monitores no se notifican como incidentes hasta que se recupere.",
+			"degradedWorkersNoTime": "{{degraded}} de {{total}} workers han perdido la conectividad saliente. Sus fallos de monitores no se notifican como incidentes hasta que se recupere."
+		},
 		"sidebar": {
 			"menu": {
 				"uptime": "Disponibilidad",
@@ -412,11 +418,13 @@
 				"status": {
 					"all": "Todos",
 					"down": "Caído",
-					"up": "Activo"
+					"up": "Activo",
+					"degraded": "Salida degradada"
 				}
 			},
 			"table": {
 				"empty": "No hay verificaciones caídas en este rango de tiempo",
+				"egressDegraded": "Salida degradada",
 				"headers": {
 					"statusCode": "Código de estado",
 					"location": "Ubicación"
@@ -462,7 +470,8 @@
 					"maintenance": "mantenimiento",
 					"paused": "pausado",
 					"total": "total",
-					"up": "activo"
+					"up": "activo",
+					"degraded": "salida degradada"
 				},
 				"monitorTypes": {
 					"optionDocker": "Docker",
@@ -1342,6 +1351,25 @@
 						"displayName": {
 							"label": "Nombre del remitente (opcional) - Nombre amigable mostrado en el campo De",
 							"placeholder": "Notificaciones de Checkmate"
+						}
+					}
+				},
+				"egress": {
+					"title": "Autocomprobación de salida",
+					"description": "Comprueba periódicamente un conjunto de destinos de fiabilidad desde esta instancia. Mientras no se pueda alcanzar ninguno, la conectividad saliente se considera caída y los fallos de los monitores no se registran como incidentes.",
+					"option": {
+						"enabled": {
+							"label": "Activar la autocomprobación de salida"
+						},
+						"targets": {
+							"label": "Destinos de fiabilidad",
+							"placeholder": "https://example.com\ndns.google:53\n1.1.1.1",
+							"helper": "Uno por línea, hasta {{max}}. Déjalo vacío para usar los valores predeterminados (https://www.google.com/generate_204, https://www.cloudflare.com/cdn-cgi/trace). Un host o IP solo se comprueba con ping (ICMP), host:port abre una conexión TCP y una URL http:// o https:// se solicita por HTTP.",
+							"validation": {
+								"max": "Máximo {{max}} destinos",
+								"length": "Cada destino debe tener {{max}} caracteres o menos",
+								"invalid": "\"{{target}}\" no es un nombre de host o dirección IP, host:port ni una URL http(s)"
+							}
 						}
 					}
 				},

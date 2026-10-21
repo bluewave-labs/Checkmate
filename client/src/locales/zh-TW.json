@@ -170,6 +170,12 @@
 			"retrying": "重試中...",
 			"reconnected": "連線已恢復"
 		},
+		"egressBanner": {
+			"degraded": "Checkmate 無法連線至其可靠性目標。對外連線似乎自 {{time}} 起中斷；在恢復之前，監控器的失敗不會被回報為事件。",
+			"degradedNoTime": "Checkmate 無法連線至其可靠性目標。對外連線似乎已中斷；在恢復之前，監控器的失敗不會被回報為事件。",
+			"degradedWorkers": "{{total}} 個工作程序中有 {{degraded}} 個自 {{time}} 起失去對外連線。在恢復之前，它們的監控器失敗不會被回報為事件。",
+			"degradedWorkersNoTime": "{{total}} 個工作程序中有 {{degraded}} 個失去對外連線。在恢復之前，它們的監控器失敗不會被回報為事件。"
+		},
 		"sidebar": {
 			"menu": {
 				"uptime": "正常運行時間",
@@ -412,11 +418,13 @@
 				"status": {
 					"all": "全部",
 					"down": "離線",
-					"up": "上線"
+					"up": "上線",
+					"degraded": "對外連線降級"
 				}
 			},
 			"table": {
 				"empty": "此時間範圍內沒有離線檢查",
+				"egressDegraded": "對外連線降級",
 				"headers": {
 					"statusCode": "狀態碼",
 					"location": "位置"
@@ -462,7 +470,8 @@
 					"maintenance": "維護中",
 					"paused": "已暫停",
 					"total": "總計",
-					"up": "上線"
+					"up": "上線",
+					"degraded": "對外連線降級"
 				},
 				"monitorTypes": {
 					"optionDocker": "Docker",
@@ -1342,6 +1351,25 @@
 						"displayName": {
 							"label": "寄件者名稱（選填）- 顯示在寄件者欄位的友善名稱",
 							"placeholder": "Checkmate通知"
+						}
+					}
+				},
+				"egress": {
+					"title": "對外連線自我檢查",
+					"description": "定期從此執行個體探測一組可靠性目標。當所有目標都無法連線時，對外連線會被視為中斷，監控器的失敗不會被記錄為事件。",
+					"option": {
+						"enabled": {
+							"label": "啟用對外連線自我檢查"
+						},
+						"targets": {
+							"label": "可靠性目標",
+							"placeholder": "https://example.com\ndns.google:53\n1.1.1.1",
+							"helper": "每行一個，最多 {{max}} 個。留空則使用預設值（https://www.google.com/generate_204, https://www.cloudflare.com/cdn-cgi/trace）。單獨的主機或 IP 使用 ping（ICMP），host:port 建立 TCP 連線，http:// 或 https:// URL 透過 HTTP 請求。",
+							"validation": {
+								"max": "最多 {{max}} 個目標",
+								"length": "每個目標不得超過 {{max}} 個字元",
+								"invalid": "「{{target}}」不是主機名稱、IP 位址、host:port 或 http(s) URL"
+							}
 						}
 					}
 				},

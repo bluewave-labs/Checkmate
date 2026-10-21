@@ -206,6 +206,12 @@
 			"retrying": "Tentando novamente...",
 			"reconnected": "Reconectado ao servidor com sucesso."
 		},
+		"egressBanner": {
+			"degraded": "O Checkmate não consegue alcançar seus destinos de confiabilidade. A conectividade de saída parece estar fora do ar desde {{time}}; as falhas dos monitores não estão sendo registradas como incidentes até que ela se recupere.",
+			"degradedNoTime": "O Checkmate não consegue alcançar seus destinos de confiabilidade. A conectividade de saída parece estar fora do ar; as falhas dos monitores não estão sendo registradas como incidentes até que ela se recupere.",
+			"degradedWorkers": "{{degraded}} de {{total}} workers perderam a conectividade de saída desde {{time}}. As falhas de monitores deles não estão sendo registradas como incidentes até que ela se recupere.",
+			"degradedWorkersNoTime": "{{degraded}} de {{total}} workers perderam a conectividade de saída. As falhas de monitores deles não estão sendo registradas como incidentes até que ela se recupere."
+		},
 		"sidebar": {
 			"menu": {
 				"uptime": "Uptime",
@@ -503,11 +509,13 @@
 				"status": {
 					"all": "Todos",
 					"down": "Fora do ar",
-					"up": "Online"
+					"up": "Online",
+					"degraded": "Saída degradada"
 				}
 			},
 			"table": {
 				"empty": "Nenhuma verificação com falha neste período",
+				"egressDegraded": "Saída degradada",
 				"headers": {
 					"statusCode": "Código de status",
 					"location": "Localização"
@@ -561,7 +569,8 @@
 					"maintenance": "manutenção",
 					"paused": "pausado",
 					"total": "total",
-					"up": "online"
+					"up": "online",
+					"degraded": "saída degradada"
 				},
 				"monitorTypes": {
 					"optionDocker": "Docker",
@@ -1647,6 +1656,25 @@
 						},
 						"rejectUnauthorized": {
 							"label": "Rejeitar certificados inválidos: Rejeitar conexões com certificados autoassinados ou não confiáveis"
+						}
+					}
+				},
+				"egress": {
+					"title": "Autoverificação de saída",
+					"description": "Verifica periodicamente um conjunto de destinos de confiabilidade a partir desta instância. Enquanto nenhum deles puder ser alcançado, a conectividade de saída é considerada fora do ar e as falhas dos monitores não são registradas como incidentes.",
+					"option": {
+						"enabled": {
+							"label": "Ativar autoverificação de saída"
+						},
+						"targets": {
+							"label": "Destinos de confiabilidade",
+							"placeholder": "https://example.com\ndns.google:53\n1.1.1.1",
+							"helper": "Um por linha, até {{max}}. Deixe vazio para usar os padrões (https://www.google.com/generate_204, https://www.cloudflare.com/cdn-cgi/trace). Um host ou IP simples recebe ping (ICMP), host:port abre uma conexão TCP e uma URL http:// ou https:// é requisitada via HTTP.",
+							"validation": {
+								"max": "Máximo de {{max}} destinos",
+								"length": "Cada destino deve ter no máximo {{max}} caracteres",
+								"invalid": "\"{{target}}\" não é um nome de host ou endereço IP, host:port ou URL http(s)"
+							}
 						}
 					}
 				},

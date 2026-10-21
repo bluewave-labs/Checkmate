@@ -173,6 +173,12 @@
 			"retrying": "Ponawianie próby...",
 			"serverUnreachable": "Nie można połączyć się z serwerem"
 		},
+		"egressBanner": {
+			"degraded": "Checkmate nie może osiągnąć swoich celów niezawodności. Łączność wychodząca wydaje się niedostępna od {{time}}; awarie monitorów nie są zgłaszane jako incydenty, dopóki nie zostanie przywrócona.",
+			"degradedNoTime": "Checkmate nie może osiągnąć swoich celów niezawodności. Łączność wychodząca wydaje się niedostępna; awarie monitorów nie są zgłaszane jako incydenty, dopóki nie zostanie przywrócona.",
+			"degradedWorkers": "{{degraded}} z {{total}} workerów utraciło łączność wychodzącą od {{time}}. Ich awarie monitorów nie są zgłaszane jako incydenty, dopóki nie zostanie przywrócona.",
+			"degradedWorkersNoTime": "{{degraded}} z {{total}} workerów utraciło łączność wychodzącą. Ich awarie monitorów nie są zgłaszane jako incydenty, dopóki nie zostanie przywrócona."
+		},
 		"pageHeader": {
 			"links": {
 				"changelog": "Dziennik zmian",
@@ -420,11 +426,13 @@
 				"status": {
 					"all": "Wszystkie",
 					"down": "Niedostępny",
-					"up": "Dostępny"
+					"up": "Dostępny",
+					"degraded": "Łączność wychodząca ograniczona"
 				}
 			},
 			"table": {
 				"empty": "Brak awarii w tym przedziale czasowym",
+				"egressDegraded": "Łączność wychodząca ograniczona",
 				"headers": {
 					"location": "Lokalizacja",
 					"statusCode": "Kod statusu"
@@ -485,7 +493,8 @@
 					"maintenance": "konserwacja",
 					"paused": "wstrzymano",
 					"total": "łącznie",
-					"up": "działa"
+					"up": "działa",
+					"degraded": "łączność wychodząca ograniczona"
 				}
 			}
 		},
@@ -1318,6 +1327,25 @@
 						}
 					},
 					"title": "Ustawienia e-mail"
+				},
+				"egress": {
+					"title": "Autotest łączności wychodzącej",
+					"description": "Okresowo sprawdza zestaw celów niezawodności z tej instancji. Dopóki żaden z nich nie jest osiągalny, łączność wychodząca jest uznawana za niedostępną, a awarie monitorów nie są rejestrowane jako incydenty.",
+					"option": {
+						"enabled": {
+							"label": "Włącz autotest łączności wychodzącej"
+						},
+						"targets": {
+							"label": "Cele niezawodności",
+							"placeholder": "https://example.com\ndns.google:53\n1.1.1.1",
+							"helper": "Jeden w wierszu, maksymalnie {{max}}. Pozostaw puste, aby użyć wartości domyślnych (https://www.google.com/generate_204, https://www.cloudflare.com/cdn-cgi/trace). Sam host lub IP jest pingowany (ICMP), host:port otwiera połączenie TCP, a adres URL http:// lub https:// jest pobierany przez HTTP.",
+							"validation": {
+								"max": "Maksymalnie {{max}} celów",
+								"length": "Każdy cel może mieć najwyżej {{max}} znaków",
+								"invalid": "„{{target}}” nie jest nazwą hosta ani adresem IP, host:port ani adresem URL http(s)"
+							}
+						}
+					}
 				},
 				"exportMonitors": {
 					"title": "Eksportuj monitory"

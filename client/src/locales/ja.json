@@ -170,6 +170,12 @@
 			"retrying": "再試行中...",
 			"reconnected": "サーバーに正常に再接続しました。"
 		},
+		"egressBanner": {
+			"degraded": "Checkmate が信頼性ターゲットに到達できません。{{time}} 以降、外向き通信が停止しているようです。復旧するまでモニターの失敗はインシデントとして報告されません。",
+			"degradedNoTime": "Checkmate が信頼性ターゲットに到達できません。外向き通信が停止しているようです。復旧するまでモニターの失敗はインシデントとして報告されません。",
+			"degradedWorkers": "{{total}} 台中 {{degraded}} 台のワーカーが {{time}} 以降、外向き通信を失っています。復旧するまで、これらのワーカーでのモニターの失敗はインシデントとして報告されません。",
+			"degradedWorkersNoTime": "{{total}} 台中 {{degraded}} 台のワーカーが外向き通信を失っています。復旧するまで、これらのワーカーでのモニターの失敗はインシデントとして報告されません。"
+		},
 		"sidebar": {
 			"menu": {
 				"uptime": "稼働時間",
@@ -412,11 +418,13 @@
 				"status": {
 					"all": "すべて",
 					"down": "ダウン",
-					"up": "アップ"
+					"up": "アップ",
+					"degraded": "外向き通信の低下"
 				}
 			},
 			"table": {
 				"empty": "この期間にダウンチェックはありません",
+				"egressDegraded": "外向き通信の低下",
 				"headers": {
 					"statusCode": "ステータスコード",
 					"location": "ロケーション"
@@ -462,7 +470,8 @@
 					"maintenance": "メンテナンス中",
 					"paused": "一時停止中",
 					"total": "合計",
-					"up": "稼働中"
+					"up": "稼働中",
+					"degraded": "外向き通信の低下"
 				},
 				"monitorTypes": {
 					"optionDocker": "Docker",
@@ -1342,6 +1351,25 @@
 						"displayName": {
 							"label": "送信者名（任意）- 差出人フィールドに表示されるわかりやすい名前",
 							"placeholder": "Checkmate通知"
+						}
+					}
+				},
+				"egress": {
+					"title": "外向き通信のセルフチェック",
+					"description": "このインスタンスから一連の信頼性ターゲットを定期的に確認します。いずれにも到達できない間は外向き通信が停止しているとみなし、モニターの失敗をインシデントとして記録しません。",
+					"option": {
+						"enabled": {
+							"label": "外向き通信のセルフチェックを有効にする"
+						},
+						"targets": {
+							"label": "信頼性ターゲット",
+							"placeholder": "https://example.com\ndns.google:53\n1.1.1.1",
+							"helper": "1 行に 1 つ、最大 {{max}} 件。空欄の場合はデフォルト (https://www.google.com/generate_204, https://www.cloudflare.com/cdn-cgi/trace) を使用します。ホストまたは IP のみの場合は ping (ICMP)、host:port は TCP 接続、http:// または https:// の URL は HTTP でリクエストします。",
+							"validation": {
+								"max": "最大 {{max}} 件のターゲット",
+								"length": "各ターゲットは {{max}} 文字以内で入力してください",
+								"invalid": "「{{target}}」はホスト名、IP アドレス、host:port、http(s) URL のいずれでもありません"
+							}
 						}
 					}
 				},
