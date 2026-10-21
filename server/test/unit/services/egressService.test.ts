@@ -204,6 +204,9 @@ describe("EgressService", () => {
 			await service.assessAfterFailure();
 
 			expect(probedUrls(defaults)).toEqual([...DEFAULT_EGRESS_TARGETS]);
+			// Hostname URLs, so the probe goes through DNS and does not depend on ICMP
+			const types = (defaults.providerRegistry.probe as jest.Mock).mock.calls.map((call) => (call[0] as any).type);
+			expect(types).toEqual(["http", "http"]);
 		});
 
 		it("returns null and logs when reading the settings fails", async () => {
