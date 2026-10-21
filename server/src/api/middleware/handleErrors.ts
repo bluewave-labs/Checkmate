@@ -1,27 +1,69 @@
 import type { NextFunction, Request, Response } from "express";
 import { MulterError } from "multer";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 import { AppError } from "@/utils/AppError.js";
+import { ZodError } from "zod";
+import type { ErrorBody } from "@/api/routes/openapiHelpers.js";
 
-// Multer throws MulterError, send 413 Payload Too Large / 400
-const multerErrorStatus = (error: MulterError): number => (error.code === "LIMIT_FILE_SIZE" ? 413 : 400);
+const SERVICE_NAME = "ErrorHandler";
 
-const handleErrors = (logger: ILogger) => (error: unknown, req: Request, res: Response, _next: NextFunction) => {
-	const status = error instanceof MulterError ? multerErrorStatus(error) : error instanceof AppError ? error.status || 500 : 500;
-	const message = error instanceof AppError ? error.message : error instanceof Error ? error.message : "Server error";
-	const service = error instanceof AppError ? error.service : error instanceof MulterError ? "uploadMiddleware" : "unknownService";
-	const method = error instanceof AppError ? error.method : "unknownMethod";
-	logger.error({
-		message: message,
-		service: service,
-		method: method,
-		stack: error instanceof Error ? error.stack : undefined,
-		details: error instanceof AppError ? error.details : undefined,
-	});
-	res.status(status).json({
-		status,
-		msg: message,
-	});
+type ErrorReport = {
+	status: number;
+	message: string;
+	service: string;
+	details?: Record<string, unknown>;
+};
+
+const isClientHttpError = (error: unknown): error is { status: number; message: string } => {
+	if (typeof error !== "object" || error === null) return false;
+	const status = (error as { status?: unknown }).status;
+	return typeof status === "number" && status >= 400 && status < 500;
+};
+
+const formatZodIssues = (error: ZodError): string =>
+	error.issues.map((issue) => (issue.path.length > 0 ? `${issue.path.join(".")}: ${issue.message}` : issue.message)).join("; ");
+
+const describeError = (error: unknown): ErrorReport => {
+	if (error instanceof ZodError) {
+		return { status: 400, message: formatZodIssues(error), service: "validation", details: { issues: error.issues } };
+	}
+	if (error instanceof MulterError) {
+		return { status: error.code === "LIMIT_FILE_SIZE" ? 413 : 400, message: error.message, service: "uploadMiddleware" };
+	}
+	if (error instanceof AppError) {
+		return { status: error.status, message: error.message, service: error.service, details: error.details };
+	}
+	if (isClientHttpError(error)) {
+		return { status: error.status, message: error.message, service: "bodyParser" };
+	}
+	return { status: 500, message: error instanceof Error ? error.message : "Server error", service: "unknownService" };
+};
+
+const describeRequest = (req: Request): string | undefined => {
+	if (!req.method || !req.originalUrl) return undefined;
+	return `${req.method} ${req.originalUrl.split("?")[0]}`;
+};
+
+const handleErrors = (logger: ILogger) => {
+	const log = logger.child({ service: SERVICE_NAME });
+	return (error: unknown, req: Request, res: Response, _next: NextFunction) => {
+		const report = describeError(error);
+		const level = report.status < 500 ? "warn" : "error";
+		// AppError's service is renamed: `service` is this line's own binding
+		log[level](
+			{
+				err: error,
+				status: report.status,
+				reason: report.message,
+				errorService: report.service,
+				request: describeRequest(req),
+				details: report.details,
+			},
+			"Request failed"
+		);
+		const body: ErrorBody = { status: report.status, msg: report.message };
+		res.status(body.status).json(body);
+	};
 };
 
 export { handleErrors };

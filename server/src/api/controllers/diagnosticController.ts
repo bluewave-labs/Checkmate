@@ -1,6 +1,6 @@
 import { IDiagnosticService } from "@/domain/diagnostics/diagnostic.service.js";
-import { Request, Response, RequestHandler } from "express";
-import { catchAsync } from "@/utils/catchAsync.js";
+import { RequestHandler } from "express";
+import { Handler } from "@/api/controllers/controllerUtils.js";
 
 export interface IDiagnosticController {
 	getSystemStats: RequestHandler;
@@ -13,14 +13,10 @@ class DiagnosticController implements IDiagnosticController {
 		this.diagnosticService = diagnosticService;
 	}
 
-	getSystemStats = catchAsync(async (req: Request, res: Response) => {
-		const diagnostics = await this.diagnosticService.getSystemStats();
-		return res.status(200).json({
-			success: true,
-			msg: "OK",
-			data: diagnostics,
-		});
-	});
+	getSystemStats: Handler = async (req, res) => {
+		const data = await this.diagnosticService.getSystemStats();
+		res.json({ success: true, msg: "OK", data });
+	};
 }
 
 export default DiagnosticController;

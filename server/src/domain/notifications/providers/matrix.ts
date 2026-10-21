@@ -3,10 +3,13 @@ import got from "got";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
 import type { AlertMatrixPayload, Notification } from "@/domain/notifications/notification.type.js";
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
-import { getTestMessage } from "@/domain/notifications/providers/utils.js";
+import { getTestMessage, incidentUrl } from "@/domain/notifications/providers/utils.js";
 import { randomUUID } from "crypto";
+import { AppError, internalError } from "@/utils/AppError.js";
 
 export class MatrixProvider extends NotificationProvider {
+	protected readonly serviceName = SERVICE_NAME;
+
 	sendTestAlert = async (notification: Partial<Notification>) => {
 		const { homeserverUrl, accessToken, roomId } = notification;
 		if (!homeserverUrl || !accessToken || !roomId) {
@@ -55,13 +58,7 @@ export class MatrixProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: `Matrix notification failed : ${err.message}`,
-				service: SERVICE_NAME,
-				method: "sendMessage",
-				stack: err.stack,
-			});
+			this.logger.warn({ err: error }, "Matrix notification failed");
 			return false;
 		}
 	};
@@ -90,7 +87,10 @@ export class MatrixProvider extends NotificationProvider {
 
 		const roomId = (response.body as { room_id?: string })?.room_id;
 		if (!roomId) {
-			throw new Error(`Matrix directory returned no room_id for alias ${roomIdOrAlias}`);
+			throw new AppError(internalError, {
+				message: `Matrix directory returned no room_id for alias ${roomIdOrAlias}`,
+				service: SERVICE_NAME,
+			});
 		}
 		return roomId;
 	};
@@ -172,10 +172,10 @@ export class MatrixProvider extends NotificationProvider {
 
 		// Incident link (if incident exists)
 		if (message.content.incident) {
-			const incidentUrl = `${message.clientHost}/infrastructure/${message.monitor.id}`;
+			const url = incidentUrl(message);
 			plainLines.push("");
-			plainLines.push(`View Incident: ${incidentUrl}`);
-			htmlLines.push(`<p><a href="${this.escapeHtml(incidentUrl)}">View Incident</a></p>`);
+			plainLines.push(`View Incident: ${url}`);
+			htmlLines.push(`<p><a href="${this.escapeHtml(url)}">View Incident</a></p>`);
 		}
 
 		// Footer with timestamp

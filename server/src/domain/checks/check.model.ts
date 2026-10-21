@@ -1,5 +1,6 @@
 import { Schema, model, Types } from "mongoose";
 import { MonitorTypes, type MonitorType } from "@/domain/monitors/monitor.type.js";
+import { EgressStatuses } from "@/domain/egress/egress.type.js";
 import type {
 	Check,
 	CheckAudits,
@@ -11,7 +12,7 @@ import type {
 	CheckMemoryInfo,
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
-	GotTimings,
+	CheckTimings,
 	ILighthouseAudit,
 } from "@/domain/checks/check.type.js";
 import {
@@ -40,7 +41,7 @@ interface CheckDocument extends CheckDocumentBase {
 	_id: Types.ObjectId;
 }
 
-const timingPhasesSchema = new Schema<GotTimings["phases"]>(
+const timingPhasesSchema = new Schema<CheckTimings["phases"]>(
 	{
 		wait: { type: Number, default: 0 },
 		dns: { type: Number, default: 0 },
@@ -54,7 +55,7 @@ const timingPhasesSchema = new Schema<GotTimings["phases"]>(
 	{ _id: false }
 );
 
-const timingsSchema = new Schema<GotTimings>(
+const timingsSchema = new Schema<CheckTimings>(
 	{
 		start: { type: Number, default: 0 },
 		socket: { type: Number, default: 0 },
@@ -219,6 +220,7 @@ const dockerContainerSchema = new Schema<DockerContainerInfo>(
 		startedAt: { type: String },
 		ports: { type: [dockerContainerPortSchema], default: undefined },
 		mounts: { type: [dockerContainerMountSchema], default: undefined },
+		exitCode: { type: Number, default: undefined },
 	},
 	{ _id: false }
 );
@@ -335,6 +337,11 @@ const CheckSchema = new Schema<CheckDocument>(
 		},
 		containerSummary: {
 			type: containerSummarySchema,
+			default: undefined,
+		},
+		egressStatus: {
+			type: String,
+			enum: EgressStatuses,
 			default: undefined,
 		},
 	},

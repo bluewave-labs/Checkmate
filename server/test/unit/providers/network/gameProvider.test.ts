@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { GameProvider } from "../../../../src/service/network/GameProvider.ts";
+import { GameProvider } from "../../../../src/service/networkProviders/GameProvider.ts";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
 import { NETWORK_ERROR } from "../../../../src/types/network.ts";
@@ -126,10 +126,8 @@ describe("GameProvider", () => {
 			})
 		);
 		expect(logger.warn).toHaveBeenCalledWith(
-			expect.objectContaining({
-				message: "Server offline",
-				method: "handle",
-			})
+			{ err: new Error("Server offline"), host: "play.example.com", port: 25565, gameId: "minecraft" },
+			"Game server query failed"
 		);
 	});
 
@@ -139,7 +137,7 @@ describe("GameProvider", () => {
 
 		await provider.handle(makeMonitor());
 
-		expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "string error" }));
+		expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ err: "string error" }), "Game server query failed");
 	});
 
 	it("uses empty string as host when url is undefined", async () => {

@@ -1,5 +1,6 @@
 import CheckModel from "@/domain/checks/check.model.js";
 import { DockerContainerStatsBucket, DockerStatsBucket } from "@/domain/checks/check.type.js";
+import { EXCLUDE_DEGRADED_EGRESS_MATCH } from "@/domain/checks/check.query.js";
 import mongoose from "mongoose";
 
 type DateRange = { start: Date; end: Date };
@@ -9,6 +10,7 @@ export const getDockerTotalChecks = async (monitorId: string, dates: DateRange):
 		"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 		"metadata.type": "docker",
 		createdAt: { $gte: dates.start, $lte: dates.end },
+		...EXCLUDE_DEGRADED_EGRESS_MATCH,
 	});
 
 export const getDockerUpChecks = async (monitorId: string, dates: DateRange): Promise<{ totalChecks: number }> => {
@@ -16,6 +18,7 @@ export const getDockerUpChecks = async (monitorId: string, dates: DateRange): Pr
 		"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 		"metadata.type": "docker",
 		createdAt: { $gte: dates.start, $lte: dates.end },
+		...EXCLUDE_DEGRADED_EGRESS_MATCH,
 		status: true,
 	});
 	return { totalChecks: count };
@@ -28,6 +31,7 @@ export const getDockerStats = async (monitorId: string, dates: DateRange, dateSt
 				"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 				"metadata.type": "docker",
 				createdAt: { $gte: dates.start, $lte: dates.end },
+				...EXCLUDE_DEGRADED_EGRESS_MATCH,
 			},
 		},
 		{
@@ -48,6 +52,7 @@ export const getDockerLatestCheck = async (monitorId: string) =>
 	CheckModel.findOne({
 		"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 		"metadata.type": "docker",
+		...EXCLUDE_DEGRADED_EGRESS_MATCH,
 	})
 		.sort({ createdAt: -1 })
 		.select("containers containerSummary createdAt")
@@ -65,6 +70,7 @@ export const getDockerContainerStats = async (
 				"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 				"metadata.type": "docker",
 				createdAt: { $gte: dates.start, $lte: dates.end },
+				...EXCLUDE_DEGRADED_EGRESS_MATCH,
 				"containers.name": containerName,
 			},
 		},
@@ -88,6 +94,7 @@ export const getDockerContainerLatestCheck = async (monitorId: string, container
 		"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 		"metadata.type": "docker",
 		"containers.name": containerName,
+		...EXCLUDE_DEGRADED_EGRESS_MATCH,
 	})
 		.sort({ createdAt: -1 })
 		.select("containers createdAt")

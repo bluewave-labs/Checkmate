@@ -1,8 +1,8 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { PageSpeedProvider } from "../../../../src/service/network/PageSpeedProvider.ts";
+import { PageSpeedProvider } from "../../../../src/service/networkProviders/PageSpeedProvider.ts";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
-import type { HttpProvider } from "../../../../src/service/network/HttpProvider.ts";
+import type { HttpProvider } from "../../../../src/service/networkProviders/HttpProvider.ts";
 import type { ISettingsService } from "../../../../src/domain/app-settings/app-settings.service.ts";
 import type { Monitor } from "../../../../src/domain/monitors/monitor.type.ts";
 
@@ -33,7 +33,7 @@ const createMockHttpProvider = () =>
 
 const createMockSettingsService = (apiKey?: string) =>
 	({
-		getDBSettings: jest.fn().mockResolvedValue({ pagespeedApiKey: apiKey }),
+		getCachedDBSettings: jest.fn().mockResolvedValue({ pagespeedApiKey: apiKey }),
 	}) as unknown as jest.Mocked<ISettingsService>;
 
 const createProvider = (opts?: { apiKey?: string }) => {
@@ -84,12 +84,8 @@ describe("PageSpeedProvider", () => {
 
 		const calledUrl = (httpProvider.handle as jest.Mock).mock.calls[0][0].url;
 		expect(calledUrl).not.toContain("key=");
-		expect(logger.warn).toHaveBeenCalledWith(
-			expect.objectContaining({
-				message: expect.stringContaining("API key not found"),
-				service: "PageSpeedProvider",
-			})
-		);
+		expect(logger.warn).toHaveBeenCalledWith({ url: "https://example.com" }, "PageSpeed API key not found, performance may be throttled");
+		expect(logger.child).toHaveBeenCalledWith({ service: "PageSpeedProvider" });
 	});
 
 	it("encodes the monitor URL in the PageSpeed API URL", async () => {
@@ -147,19 +143,19 @@ describe("PageSpeedProvider", () => {
 
 		await provider.handle(makeMonitor());
 
-		expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("API key not found") }));
+		expect(logger.warn).toHaveBeenCalledWith({ url: "https://example.com" }, "PageSpeed API key not found, performance may be throttled");
 	});
 
 	it("handles null dbSettings response", async () => {
 		const logger = createMockLogger();
 		const httpProvider = createMockHttpProvider();
 		const settingsService = {
-			getDBSettings: jest.fn().mockResolvedValue(null),
+			getCachedDBSettings: jest.fn().mockResolvedValue(null),
 		} as unknown as jest.Mocked<ISettingsService>;
 		const provider = new PageSpeedProvider(httpProvider, settingsService, logger as any);
 
 		await provider.handle(makeMonitor());
 
-		expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("API key not found") }));
+		expect(logger.warn).toHaveBeenCalledWith({ url: "https://example.com" }, "PageSpeed API key not found, performance may be throttled");
 	});
 });

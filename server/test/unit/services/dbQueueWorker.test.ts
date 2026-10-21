@@ -5,14 +5,16 @@ import type { Job } from "../../../src/domain/jobs/job.type.ts";
 import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { QueueMode } from "../../../src/domain/app-settings/app-settings.type.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
+import { logContext } from "../../../src/utils/logger/logContext.ts";
 
 // ── Notes ──────────────────────────────────────────────────────────────────────
 //
 // DBQueueWorker is the orchestrator: it drives the polling loops, claims batches
-// sized to free capacity, runs jobs (check / evaluate / geo-check / cleanup) and
-// renews their locks, and registers itself in the worker heartbeat. The repository
-// claim/lock atomicity is covered in integration/jobsRepository.test.ts; here we
-// test only the orchestration around it, with the repository fully mocked.
+// sized to free capacity, hands each job to the handler registered for its type,
+// renews locks while a job runs, and registers itself in the worker heartbeat. What a
+// handler does is covered in workerPipeline.test.ts and geoChecksPipeline.test.ts; the
+// repository claim/lock atomicity in integration/jobsRepository.test.ts. Here we test
+// only the orchestration, with the repository and every handler mocked.
 //
 // Fake timers are mandatory: init() starts self-re-arming setTimeout loops and a
 // heartbeat setInterval, so without them the loops would leak across tests. The
@@ -56,10 +58,31 @@ const makeJob = (overrides?: Partial<Job>): Job => ({
 	intervalMs: 60000,
 	lockedBy: null,
 	lockedUntil: null,
+	pendingChecks: [],
 	runCount: 0,
 	failCount: 0,
 	lastFinishedAt: null,
 	lastFailReason: null,
+	...overrides,
+});
+
+// An evaluate row as ingest leaves it: one pending entry per stored check
+const makeEvaluateJob = (...checkIds: string[]): Job =>
+	makeJob({
+		id: "evaluate:m1",
+		type: "evaluate",
+		intervalMs: null,
+		pendingChecks: checkIds.map((checkId, i) => ({ checkId, createdAt: 1000 + i })),
+	});
+
+// One resolved mock per job type; a test overrides the one it drives
+const makeHandlers = (overrides?: Record<string, any>) => ({
+	check: jest.fn<any>().mockResolvedValue(undefined),
+	evaluate: jest.fn<any>().mockResolvedValue(undefined),
+	"geo-check": jest.fn<any>().mockResolvedValue(undefined),
+	"cleanup-orphaned": jest.fn<any>().mockResolvedValue(undefined),
+	"cleanup-retention": jest.fn<any>().mockResolvedValue(undefined),
+	telemetry: jest.fn<any>().mockResolvedValue(undefined),
 	...overrides,
 });
 
@@ -68,7 +91,9 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 		claimDueBatch: jest.fn<any>().mockResolvedValue([]),
 		upsertJob: jest.fn<any>().mockResolvedValue(true),
 		upsertCleanupJob: jest.fn<any>().mockResolvedValue(true),
+		deleteGlobalJob: jest.fn<any>().mockResolvedValue(true),
 		upsertEvaluate: jest.fn<any>().mockResolvedValue(true),
+		pullEvaluated: jest.fn<any>().mockResolvedValue(true),
 		recordSuccess: jest.fn<any>().mockResolvedValue(true),
 		recordFailure: jest.fn<any>().mockResolvedValue(true),
 		recordOneShot: jest.fn<any>().mockResolvedValue(true),
@@ -87,13 +112,6 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 		findAllForScheduling: jest.fn<any>().mockResolvedValue([]),
 		updateById: jest.fn<any>().mockResolvedValue({}),
 	};
-	const checksRepository = {
-		findUnevaluatedByMonitorId: jest.fn<any>().mockResolvedValue([]),
-	};
-	const checkService = {
-		toStatusResponse: jest.fn<any>().mockReturnValue({ status: "up" }),
-		toLastEvaluatedAt: jest.fn<any>().mockReturnValue(12345),
-	};
 	const bufferService = {
 		addToBuffer: jest.fn<any>(),
 		addGeoCheckToBuffer: jest.fn<any>(),
@@ -102,18 +120,7 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 		flushGeoBuffer: jest.fn<any>().mockResolvedValue(undefined),
 		shutdown: jest.fn<any>().mockResolvedValue(undefined),
 	};
-	const checkProducer = {
-		produce: jest.fn<any>().mockResolvedValue({ status: { status: "up" }, check: { id: "c1" } }),
-	};
-	const checkEvaluator = {
-		evaluate: jest.fn<any>().mockResolvedValue({ monitor: makeMonitor(), statusChange: { monitor: makeMonitor() }, decision: {} }),
-	};
-	const geoCheckPipeline = { run: jest.fn<any>().mockResolvedValue(null) };
-	const dispatcher = { dispatch: jest.fn<any>().mockResolvedValue(undefined) };
-	const helper = {
-		getCleanupOrphanedJob: jest.fn<any>().mockReturnValue(jest.fn<any>().mockResolvedValue(undefined)),
-		getCleanupRetentionJob: jest.fn<any>().mockReturnValue(jest.fn<any>().mockResolvedValue(undefined)),
-	};
+	const handlers = makeHandlers();
 	const queueWorkersRepository = {
 		upsert: jest.fn<any>().mockResolvedValue(undefined),
 		deleteById: jest.fn<any>().mockResolvedValue(undefined),
@@ -126,14 +133,8 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 		isDbConnected,
 		jobsRepository,
 		monitorsRepository,
-		checksRepository,
-		checkService,
 		bufferService,
-		checkProducer,
-		checkEvaluator,
-		geoCheckPipeline,
-		dispatcher,
-		helper,
+		handlers,
 		queueWorkersRepository,
 		logger,
 		...overrides?.mocks,
@@ -144,6 +145,7 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 		queueMode: overrides?.queueMode ?? "worker",
 		queuePrimaryProcesses: overrides?.queuePrimaryProcesses ?? true,
 		workerId: "worker-1",
+		telemetryEnabled: false,
 	} as any);
 	return { worker, mocks };
 };
@@ -226,7 +228,7 @@ describe("DBQueueWorker", () => {
 			const { mocks } = await start({ queueMode: "worker" });
 
 			const claimedTypes = mocks.jobsRepository.claimDueBatch.mock.calls.map((c: any[]) => c[0]);
-			expect(claimedTypes).toEqual(expect.arrayContaining(["check", "geo-check", "evaluate", "cleanup-orphaned", "cleanup-retention"]));
+			expect(claimedTypes).toEqual(expect.arrayContaining(["check", "geo-check", "evaluate", "cleanup-orphaned", "cleanup-retention", "telemetry"]));
 			expect(mocks.jobsRepository.claimDueBatch).toHaveBeenCalledWith("check", 500, expect.any(Number));
 			expect(mocks.jobsRepository.claimDueBatch).toHaveBeenCalledWith("evaluate", 20, expect.any(Number));
 			expect(mocks.jobsRepository.claimDueBatch).toHaveBeenCalledWith("cleanup-orphaned", 1, expect.any(Number));
@@ -244,6 +246,7 @@ describe("DBQueueWorker", () => {
 				queueMode: "worker",
 				queuePrimaryProcesses: true,
 				workerId: "worker-1",
+				telemetryEnabled: false,
 			} as any);
 			active = worker;
 			await jest.advanceTimersByTimeAsync(1);
@@ -271,19 +274,18 @@ describe("DBQueueWorker", () => {
 			const job = makeJob({ type: "check", refId: "m1", intervalMs: 60000 });
 			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) } } });
 
-			expect(mocks.monitorsRepository.findByIdLean).toHaveBeenCalledWith("m1");
-			expect(mocks.checkProducer.produce).toHaveBeenCalled();
-			// The check stage only produces; the buffer arms evaluate once the check is durably stored
-			expect(mocks.jobsRepository.upsertEvaluate).not.toHaveBeenCalled();
+			expect(mocks.handlers.check).toHaveBeenCalledWith(job);
 			expect(mocks.jobsRepository.recordSuccess).toHaveBeenCalledWith(job.id, job.nextScheduledAt, job.intervalMs, expect.any(Number));
 			expect(mocks.jobsRepository.recordFailure).not.toHaveBeenCalled();
 		});
 
 		it("records a failure (and not a success) when the job handler throws", async () => {
 			const job = makeJob({ type: "check" });
-			const failingProducer = { produce: jest.fn<any>().mockRejectedValue(new Error("network down")) };
 			const { mocks } = await start({
-				mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) }, checkProducer: failingProducer },
+				mocks: {
+					jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) },
+					handlers: makeHandlers({ check: jest.fn<any>().mockRejectedValue(new Error("network down")) }),
+				},
 			});
 
 			expect(mocks.jobsRepository.recordFailure).toHaveBeenCalledWith(job.id, expect.any(Error), expect.any(Number));
@@ -299,7 +301,6 @@ describe("DBQueueWorker", () => {
 			process.on("unhandledRejection", onUnhandled);
 			try {
 				const job = makeJob({ type: "check" });
-				const failingProducer = { produce: jest.fn<any>().mockRejectedValue(new Error("network down")) };
 				const { mocks, worker } = await start({
 					mocks: {
 						jobsRepository: {
@@ -307,16 +308,14 @@ describe("DBQueueWorker", () => {
 							claimDueBatch: claimOnce(job),
 							recordFailure: jest.fn<any>().mockRejectedValue(new Error("mongo unavailable")),
 						},
-						checkProducer: failingProducer,
+						handlers: makeHandlers({ check: jest.fn<any>().mockRejectedValue(new Error("network down")) }),
 					},
 				});
 				await jest.advanceTimersByTimeAsync(1); // let the recordFailure rejection settle
 
 				// the failing failure-write is caught and logged, not thrown
 				expect(mocks.jobsRepository.recordFailure).toHaveBeenCalledWith(job.id, expect.any(Error), expect.any(Number));
-				expect(mocks.logger.error).toHaveBeenCalledWith(
-					expect.objectContaining({ message: expect.stringContaining("recordFailure failed for job check:m1") })
-				);
+				expect(mocks.logger.error).toHaveBeenCalledWith({ err: new Error("mongo unavailable") }, "Failed to record job failure");
 				expect(unhandled).toEqual([]); // nothing escaped to the process
 				expect(worker.getHealth().inFlight).toBe(0); // slot freed despite the double failure
 			} finally {
@@ -325,7 +324,7 @@ describe("DBQueueWorker", () => {
 		});
 
 		it("swallows the failure when both the success and failure writes reject", async () => {
-			const job = makeJob({ type: "check", intervalMs: 60000 }); // produce succeeds → recordSuccess path
+			const job = makeJob({ type: "check", intervalMs: 60000 }); // handler succeeds → recordSuccess path
 			const { mocks, worker } = await start({
 				mocks: {
 					jobsRepository: {
@@ -341,9 +340,7 @@ describe("DBQueueWorker", () => {
 			// success write is attempted, its rejection falls into the catch, and the failure write is too
 			expect(mocks.jobsRepository.recordSuccess).toHaveBeenCalled();
 			expect(mocks.jobsRepository.recordFailure).toHaveBeenCalledWith(job.id, expect.any(Error), expect.any(Number));
-			expect(mocks.logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({ message: expect.stringContaining("recordFailure failed for job check:m1") })
-			);
+			expect(mocks.logger.error).toHaveBeenCalledWith({ err: new Error("mongo still unavailable") }, "Failed to record job failure");
 			expect(worker.getHealth().inFlight).toBe(0);
 		});
 
@@ -356,7 +353,7 @@ describe("DBQueueWorker", () => {
 						claimDueBatch: claimOnce(job),
 						recordFailure: jest.fn<any>().mockRejectedValue(new Error("mongo unavailable")),
 					},
-					checkProducer: { produce: jest.fn<any>().mockRejectedValue(new Error("network down")) },
+					handlers: makeHandlers({ check: jest.fn<any>().mockRejectedValue(new Error("network down")) }),
 				},
 			});
 			await jest.advanceTimersByTimeAsync(1);
@@ -368,126 +365,172 @@ describe("DBQueueWorker", () => {
 		});
 
 		it("parks a one-shot job (intervalMs null) via recordOneShot instead of rescheduling", async () => {
-			const job = makeJob({ id: "evaluate:m1", type: "evaluate", intervalMs: null });
+			const job = makeEvaluateJob("c1");
 			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) } } });
 
 			expect(mocks.jobsRepository.recordOneShot).toHaveBeenCalledWith(job.id, expect.any(Number));
 			expect(mocks.jobsRepository.recordSuccess).not.toHaveBeenCalled();
 		});
 
-		it("evaluate job dispatches each unevaluated check and advances lastEvaluatedAt", async () => {
-			const job = makeJob({ id: "evaluate:m1", type: "evaluate", intervalMs: null });
-			const checksRepository = { findUnevaluatedByMonitorId: jest.fn<any>().mockResolvedValue([{ id: "c1" }]) };
-			const { mocks } = await start({
-				mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) }, checksRepository },
+		it("routes every job type to the handler registered for it, with the claimed job", async () => {
+			const jobs: Job[] = [
+				makeJob({ id: "evaluate:m1", type: "evaluate", intervalMs: null, pendingChecks: [{ checkId: "c1", createdAt: 1000 }] }),
+				makeJob({ id: "geo-check:m1", type: "geo-check", intervalMs: 300000 }),
+				makeJob({ id: "cleanup-orphaned", type: "cleanup-orphaned", refId: null, intervalMs: 86400000 }),
+				makeJob({ id: "cleanup-retention", type: "cleanup-retention", refId: null, intervalMs: 86400000 }),
+				makeJob({ id: "telemetry", type: "telemetry", refId: null, intervalMs: 86400000 }),
+			];
+			const handed = new Set<string>();
+			const claimDueBatch = jest.fn<any>(async (type: string) => {
+				const job = jobs.find((j) => j.type === type);
+				if (!job || handed.has(type)) return [];
+				handed.add(type);
+				return [job];
 			});
+			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch } } });
 
-			expect(mocks.checkEvaluator.evaluate).toHaveBeenCalled();
-			expect(mocks.dispatcher.dispatch).toHaveBeenCalled();
-			expect(mocks.monitorsRepository.updateById).toHaveBeenCalledWith("m1", "team", { lastEvaluatedAt: 12345 });
+			for (const job of jobs) {
+				expect(mocks.handlers[job.type]).toHaveBeenCalledWith(job);
+			}
+			expect(mocks.handlers.check).not.toHaveBeenCalled();
 		});
 
-		it("evaluate job reads the monitor once and threads the post-write monitor across the backlog", async () => {
-			const job = makeJob({ id: "evaluate:m1", type: "evaluate", intervalMs: null });
-			const initialMonitor = makeMonitor();
-			const postWriteMonitor = makeMonitor({ status: "down" }); // what updateStatusWindowAndChecks would return after check c1
-			const monitorsRepository = {
-				findByIdLean: jest.fn<any>().mockResolvedValue(initialMonitor),
-				updateById: jest.fn<any>().mockResolvedValue({}),
-			};
-			const checksRepository = { findUnevaluatedByMonitorId: jest.fn<any>().mockResolvedValue([{ id: "c1" }, { id: "c2" }]) };
-			const checkEvaluator = {
-				evaluate: jest.fn<any>().mockResolvedValue({ monitor: postWriteMonitor, statusChange: { monitor: postWriteMonitor }, decision: {} }),
-			};
-			const { mocks } = await start({
-				mocks: {
-					jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) },
-					monitorsRepository,
-					checksRepository,
-					checkEvaluator,
-				},
-			});
-
-			// The monitor is read once for the whole backlog, not once per check
-			expect(mocks.monitorsRepository.findByIdLean).toHaveBeenCalledTimes(1);
-			expect(mocks.checkEvaluator.evaluate).toHaveBeenCalledTimes(2);
-			// First check evaluates against the freshly-read monitor; the second against the post-write monitor from the first
-			expect(mocks.checkEvaluator.evaluate.mock.calls[0][2]).toBe(initialMonitor);
-			expect(mocks.checkEvaluator.evaluate.mock.calls[1][2]).toBe(postWriteMonitor);
-		});
-
-		it("cleanup-orphaned job runs the helper's cleanup function", async () => {
-			const job = makeJob({ id: "cleanup-orphaned", type: "cleanup-orphaned", refId: null, intervalMs: 86400000 });
-			const cleanupFn = jest.fn<any>().mockResolvedValue(undefined);
-			const helper = {
-				getCleanupOrphanedJob: jest.fn<any>().mockReturnValue(cleanupFn),
-				getCleanupRetentionJob: jest.fn<any>().mockReturnValue(jest.fn<any>().mockResolvedValue(undefined)),
-			};
-			await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) }, helper } });
-
-			expect(cleanupFn).toHaveBeenCalled();
-		});
-
-		it("cleanup-retention job runs the helper's retention function", async () => {
-			const job = makeJob({ id: "cleanup-retention", type: "cleanup-retention", refId: null, intervalMs: 86400000 });
-			const retentionFn = jest.fn<any>().mockResolvedValue(undefined);
-			const helper = {
-				getCleanupOrphanedJob: jest.fn<any>().mockReturnValue(jest.fn<any>().mockResolvedValue(undefined)),
-				getCleanupRetentionJob: jest.fn<any>().mockReturnValue(retentionFn),
-			};
-			await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) }, helper } });
-
-			expect(retentionFn).toHaveBeenCalled();
-		});
-
-		it("geo-check job runs the geo pipeline (no evaluate handoff)", async () => {
-			const job = makeJob({ id: "geo-check:m1", type: "geo-check", refId: "m1", intervalMs: 300000 });
+		it("reschedules an interval job after its handler succeeds", async () => {
+			const job = makeJob({ id: "telemetry", type: "telemetry", refId: null, intervalMs: 86400000 });
 			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) } } });
 
-			expect(mocks.geoCheckPipeline.run).toHaveBeenCalled();
-			expect(mocks.dispatcher.dispatch).not.toHaveBeenCalled();
+			expect(mocks.handlers.telemetry).toHaveBeenCalledWith(job);
 			expect(mocks.jobsRepository.recordSuccess).toHaveBeenCalledWith(job.id, job.nextScheduledAt, job.intervalMs, expect.any(Number));
 		});
 
 		it("renews the lock while a slow job is still running", async () => {
 			const job = makeJob({ type: "check" });
-			const gate = deferred<{ status: unknown; check: unknown }>();
-			const slowProducer = { produce: jest.fn<any>().mockReturnValue(gate.promise) };
+			const gate = deferred<void>();
 			const { mocks } = await start({
-				mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) }, checkProducer: slowProducer },
+				mocks: {
+					jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) },
+					handlers: makeHandlers({ check: jest.fn<any>().mockReturnValue(gate.promise) }),
+				},
 			});
 
-			// Job is parked on produce(); push past one renewal interval.
+			// Job is parked in its handler; push past one renewal interval.
 			await jest.advanceTimersByTimeAsync(LOCK_RENEW_MS);
 			expect(mocks.jobsRepository.renewLocks).toHaveBeenCalledWith([job.id], expect.any(Number));
 
 			// Let it finish; success is still recorded.
-			gate.resolve({ status: { status: "up" }, check: { id: "c1" } });
+			gate.resolve();
 			await jest.advanceTimersByTimeAsync(1);
 			expect(mocks.jobsRepository.recordSuccess).toHaveBeenCalled();
 		});
 
 		it("stops renewing once the lock is lost to another worker", async () => {
 			const job = makeJob({ type: "check" });
-			const gate = deferred<{ status: unknown; check: unknown }>();
-			const slowProducer = { produce: jest.fn<any>().mockReturnValue(gate.promise) };
+			const gate = deferred<void>();
 			const jobsRepository = {
 				...createWorker().mocks.jobsRepository,
 				claimDueBatch: claimOnce(job),
 				renewLocks: jest.fn<any>().mockResolvedValue(0),
 			};
-			const { mocks } = await start({ mocks: { jobsRepository, checkProducer: slowProducer } });
+			const { mocks } = await start({ mocks: { jobsRepository, handlers: makeHandlers({ check: jest.fn<any>().mockReturnValue(gate.promise) }) } });
 
 			await jest.advanceTimersByTimeAsync(LOCK_RENEW_MS);
 			expect(mocks.jobsRepository.renewLocks).toHaveBeenCalledTimes(1); // lease lost → renewal timer stops
-			expect(mocks.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Lost lock") }));
+			expect(mocks.logger.warn).toHaveBeenCalledWith("Lost job lock, stopping renewal");
 
 			// A second interval passes without another renewal attempt.
 			await jest.advanceTimersByTimeAsync(LOCK_RENEW_MS);
 			expect(mocks.jobsRepository.renewLocks).toHaveBeenCalledTimes(1);
 
-			gate.resolve({ status: { status: "up" }, check: { id: "c1" } });
+			gate.resolve();
 			await jest.advanceTimersByTimeAsync(1);
+		});
+	});
+
+	// ── log context: every line written while a job runs carries its id and type ──
+
+	describe("log context", () => {
+		const claimOnce = (...jobs: Job[]) => {
+			const pending = [...jobs];
+			return jest.fn<any>(async (type: string) => {
+				const matching = pending.filter((job) => job.type === type);
+				for (const job of matching) pending.splice(pending.indexOf(job), 1);
+				return matching;
+			});
+		};
+
+		it("runs the handler inside the job's log context", async () => {
+			const job = makeJob({ id: "check:m1", type: "check" });
+			let seen: unknown;
+			const check = jest.fn<any>(async () => {
+				seen = logContext.getStore();
+			});
+			await start({
+				mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) }, handlers: makeHandlers({ check }) },
+			});
+
+			expect(check).toHaveBeenCalledWith(job);
+			expect(seen).toEqual({ jobId: "check:m1", jobType: "check" });
+		});
+
+		it("gives concurrent jobs their own context", async () => {
+			const first = makeJob({ id: "check:m1", refId: "m1" });
+			const second = makeJob({ id: "check:m2", refId: "m2" });
+			const seen: unknown[] = [];
+			const check = jest.fn<any>(async () => {
+				await Promise.resolve(); // interleave the two jobs
+				seen.push(logContext.getStore());
+			});
+			await start({
+				mocks: {
+					jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(first, second) },
+					handlers: makeHandlers({ check }),
+				},
+			});
+
+			expect(seen).toEqual(
+				expect.arrayContaining([
+					{ jobId: "check:m1", jobType: "check" },
+					{ jobId: "check:m2", jobType: "check" },
+				])
+			);
+			expect(seen).toHaveLength(2);
+		});
+
+		it("logs a handler failure inside the job's context", async () => {
+			const job = makeJob({ id: "check:m1", type: "check" });
+			const logger = createMockLogger();
+			const contextAtWarn: unknown[] = [];
+			logger.warn.mockImplementation(() => {
+				contextAtWarn.push(logContext.getStore());
+			});
+			await start({
+				mocks: {
+					logger,
+					jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) },
+					handlers: makeHandlers({ check: jest.fn<any>().mockRejectedValue(new Error("network down")) }),
+				},
+			});
+
+			expect(contextAtWarn).toEqual([{ jobId: "check:m1", jobType: "check" }]);
+		});
+
+		// The lock renewal timer is not tested here: setInterval callbacks keep the context they were created in under
+		// real timers, but Jest's fake timers run them from advanceTimersByTimeAsync, outside it. The renewal interval
+		// (LOCK_MS / 3, 20s) is too long to wait for with real timers in this suite.
+
+		it("does not leak a job's context into the poll loop", async () => {
+			const job = makeJob({ id: "check:m1", type: "check" });
+			const contextAtClaim: unknown[] = [];
+			const claim = claimOnce(job);
+			const claimDueBatch = jest.fn<any>(async (type: string, ...rest: unknown[]) => {
+				contextAtClaim.push(logContext.getStore());
+				return claim(type, ...rest);
+			});
+			await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch } } });
+			await jest.advanceTimersByTimeAsync(POLL_MS); // a second tick, after the job ran
+
+			expect(contextAtClaim.length).toBeGreaterThan(1);
+			expect(contextAtClaim.every((store) => store === undefined)).toBe(true);
 		});
 	});
 
@@ -607,11 +650,8 @@ describe("DBQueueWorker", () => {
 				}
 				return [];
 			});
-			const helper = {
-				getCleanupOrphanedJob: jest.fn<any>().mockReturnValue(jest.fn<any>(() => gate.promise)), // blocks → keeps the slot full
-				getCleanupRetentionJob: jest.fn<any>().mockReturnValue(jest.fn<any>().mockResolvedValue(undefined)),
-			};
-			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch }, helper } });
+			const handlers = makeHandlers({ "cleanup-orphaned": jest.fn<any>(() => gate.promise) }); // blocks → keeps the slot full
+			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch }, handlers } });
 
 			const before = claims(mocks, "cleanup-orphaned"); // the blocking job is now in-flight → capacity 0
 			await jest.advanceTimersByTimeAsync(1000);
@@ -720,7 +760,7 @@ describe("DBQueueWorker", () => {
 			await worker.drain();
 
 			expect(mocks.bufferService.shutdown).toHaveBeenCalledTimes(1);
-			expect(mocks.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("drained") }));
+			expect(mocks.logger.info).toHaveBeenCalledWith({ workerId: "worker-1" }, "Worker drained");
 			// Loops must not claim again after draining.
 			await jest.advanceTimersByTimeAsync(POLL_MS * 4);
 			expect(mocks.jobsRepository.claimDueBatch.mock.calls.length).toBe(claimsBefore);
@@ -728,19 +768,21 @@ describe("DBQueueWorker", () => {
 
 		it("waits for an in-flight job to finish before flushing", async () => {
 			const job = makeJob({ type: "check" });
-			const gate = deferred<{ status: unknown; check: unknown }>();
-			const slowProducer = { produce: jest.fn<any>().mockReturnValue(gate.promise) };
+			const gate = deferred<void>();
 			const { worker, mocks } = await start({
-				mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) }, checkProducer: slowProducer },
+				mocks: {
+					jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) },
+					handlers: makeHandlers({ check: jest.fn<any>().mockReturnValue(gate.promise) }),
+				},
 			});
 
-			// Job is parked on produce(); drain must not flush while it is still in flight.
+			// Job is parked in its handler; drain must not flush while it is still in flight.
 			const draining = worker.drain();
 			await jest.advanceTimersByTimeAsync(DRAIN_POLL_MS * 3);
 			expect(mocks.bufferService.shutdown).not.toHaveBeenCalled();
 
 			// Let the job finish; drain observes inFlight == 0, then flushes.
-			gate.resolve({ status: { status: "up" }, check: { id: "c1" } });
+			gate.resolve();
 			await jest.advanceTimersByTimeAsync(DRAIN_POLL_MS);
 			await draining;
 			expect(mocks.bufferService.shutdown).toHaveBeenCalledTimes(1);
@@ -748,20 +790,25 @@ describe("DBQueueWorker", () => {
 
 		it("times out after DRAIN_TIMEOUT_MS, warns, and still flushes", async () => {
 			const job = makeJob({ type: "check" });
-			const gate = deferred<{ status: unknown; check: unknown }>();
-			const stuckProducer = { produce: jest.fn<any>().mockReturnValue(gate.promise) };
+			const gate = deferred<void>();
 			const { worker, mocks } = await start({
-				mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) }, checkProducer: stuckProducer },
+				mocks: {
+					jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) },
+					handlers: makeHandlers({ check: jest.fn<any>().mockReturnValue(gate.promise) }),
+				},
 			});
 
 			const draining = worker.drain();
 			await jest.advanceTimersByTimeAsync(DRAIN_TIMEOUT_MS + DRAIN_POLL_MS);
 			await draining;
 
-			expect(mocks.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("timed out") }));
+			expect(mocks.logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({ inFlight: expect.any(Number) }),
+				"Draining timed out, locks will expire and jobs will be reclaimed"
+			);
 			expect(mocks.bufferService.shutdown).toHaveBeenCalledTimes(1);
 
-			gate.resolve({ status: { status: "up" }, check: { id: "c1" } }); // release the stuck job for cleanup
+			gate.resolve(); // release the stuck job for cleanup
 		});
 	});
 
@@ -816,15 +863,17 @@ describe("DBQueueWorker", () => {
 
 		it("counts in-flight jobs while they run and releases on completion", async () => {
 			const job = makeJob({ type: "check" });
-			const gate = deferred<{ status: unknown; check: unknown }>();
-			const slowProducer = { produce: jest.fn<any>().mockReturnValue(gate.promise) };
+			const gate = deferred<void>();
 			const { worker } = await start({
-				mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOneCheck(job) }, checkProducer: slowProducer },
+				mocks: {
+					jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOneCheck(job) },
+					handlers: makeHandlers({ check: jest.fn<any>().mockReturnValue(gate.promise) }),
+				},
 			});
 
-			expect(worker.getHealth().inFlight).toBe(1); // parked on produce()
+			expect(worker.getHealth().inFlight).toBe(1); // parked in its handler
 
-			gate.resolve({ status: { status: "up" }, check: { id: "c1" } });
+			gate.resolve();
 			await jest.advanceTimersByTimeAsync(1);
 			expect(worker.getHealth().inFlight).toBe(0);
 		});

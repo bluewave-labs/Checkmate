@@ -44,7 +44,7 @@ describe("Heartbeat job: maintenance windows", () => {
 		expect(storedMonitor.status).toBe("maintenance");
 
 		// No network request should have been made
-		expect(h.networkService.requestStatus).not.toHaveBeenCalled();
+		expect(h.providerRegistry.probe).not.toHaveBeenCalled();
 
 		// No check should have been buffered
 		expect(h.bufferStub.addToBuffer).not.toHaveBeenCalled();
@@ -68,7 +68,7 @@ describe("Heartbeat job: maintenance windows", () => {
 		// since status was already "maintenance"
 		const storedMonitor = await h.monitorsRepo.findById("mon-1", "team-1");
 		expect(storedMonitor.status).toBe("maintenance");
-		expect(h.networkService.requestStatus).not.toHaveBeenCalled();
+		expect(h.providerRegistry.probe).not.toHaveBeenCalled();
 	});
 
 	it("resumes normal checks when maintenance window expires", async () => {
@@ -88,7 +88,7 @@ describe("Heartbeat job: maintenance windows", () => {
 		await h.heartbeatJob(monitor);
 
 		// Network request should have been made this time
-		expect(h.networkService.requestStatus).toHaveBeenCalledTimes(1);
+		expect(h.providerRegistry.probe).toHaveBeenCalledTimes(1);
 
 		// Check should have been buffered
 		expect(h.bufferStub.addToBuffer).toHaveBeenCalledTimes(1);
@@ -105,7 +105,7 @@ describe("Heartbeat job: maintenance windows", () => {
 		await h.heartbeatJob(monitor);
 
 		// Normal check should proceed since window is inactive
-		expect(h.networkService.requestStatus).toHaveBeenCalledTimes(1);
+		expect(h.providerRegistry.probe).toHaveBeenCalledTimes(1);
 		expect(h.bufferStub.addToBuffer).toHaveBeenCalledTimes(1);
 	});
 
@@ -123,7 +123,7 @@ describe("Heartbeat job: maintenance windows", () => {
 
 		expect((await h.monitorsRepo.findById("mon-a", "team-1")).status).toBe("maintenance");
 		expect((await h.monitorsRepo.findById("mon-b", "team-1")).status).toBe("maintenance");
-		expect(h.networkService.requestStatus).not.toHaveBeenCalled();
+		expect(h.providerRegistry.probe).not.toHaveBeenCalled();
 	});
 
 	it("skips checks when window is in the past (expired)", async () => {
@@ -141,6 +141,6 @@ describe("Heartbeat job: maintenance windows", () => {
 		await h.heartbeatJob(monitor);
 
 		// Window is in the past — normal check should proceed
-		expect(h.networkService.requestStatus).toHaveBeenCalledTimes(1);
+		expect(h.providerRegistry.probe).toHaveBeenCalledTimes(1);
 	});
 });

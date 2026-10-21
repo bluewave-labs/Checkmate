@@ -10,6 +10,7 @@ import type { DockerContainerInfo } from "@/Types/Check";
 
 // Utils
 import { formatDuration } from "@/Utils/TimeUtils";
+import { PLACEHOLDER } from "@/Utils/FormatUtils";
 import { getDockerPalette } from "@/Utils/MonitorUtils";
 
 export const DockerContainerStatusBoxes = ({
@@ -23,8 +24,9 @@ export const DockerContainerStatusBoxes = ({
 	if (!container) return null;
 
 	const { state, restartCount, health } = container;
-	const startedAt = container.startedAt ?? "0";
-	const runningFor = Date.now() - new Date(startedAt).getTime();
+	const runningFor = container.startedAt
+		? Date.now() - new Date(container.startedAt).getTime()
+		: undefined;
 	const palette = getDockerPalette(state);
 	return (
 		<Stack
@@ -39,11 +41,11 @@ export const DockerContainerStatusBoxes = ({
 			/>
 			<StatBox
 				title={t("common.labels.uptime")}
-				subtitle={formatDuration(runningFor)}
+				subtitle={runningFor === undefined ? PLACEHOLDER : formatDuration(runningFor)}
 			/>
 			<StatBox
 				title={t("common.labels.restarts")}
-				subtitle={String(restartCount ?? 0)}
+				subtitle={restartCount === undefined ? PLACEHOLDER : String(restartCount)}
 			/>
 			<StatBox
 				title={t("common.labels.health")}

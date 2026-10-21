@@ -8,6 +8,9 @@ import AuthRegister from "@/Pages/Auth/Register";
 import AuthForgotPassword from "@/Pages/Auth/Recovery";
 import AuthSetNewPassword from "@/Pages/Auth/SetNewPassword";
 
+// Dashboard (disabled until the page is ready for release)
+// import Dashboard from "@/Pages/Dashboard";
+
 // Uptime
 import Uptime from "@/Pages/Uptime/Monitors";
 import UptimeDetails from "@/Pages/Uptime/Details";
@@ -92,6 +95,10 @@ const Routes = () => {
 					path="/"
 					element={<Navigate to="/uptime" />}
 				/>
+				{/* <Route
+					path="dashboard"
+					element={<Dashboard />}
+				/> */}
 				<Route
 					path="/uptime"
 					element={<Uptime />}

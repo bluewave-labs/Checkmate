@@ -17,6 +17,11 @@ describe("extractDomainExpiryDate", () => {
 		expect(extractDomainExpiryDate({ "Expiry Date": "14-Feb-2027" })).toBe("2027-02-14T00:00:00.000Z");
 	});
 
+	it("returns an ISO date for yyyy-MMM-dd expiry values (TRABIS, .tr)", () => {
+		expect(extractDomainExpiryDate({ "Expiry Date": "2029-Sep-01" })).toBe("2029-09-01T00:00:00.000Z");
+		expect(extractDomainExpiryDate({ "Expiry Date": "2027-Feb-04." })).toBe("2027-02-04T00:00:00.000Z");
+	});
+
 	it("returns null when no expiry key exists", () => {
 		expect(extractDomainExpiryDate({ "Domain Name": "example.com" })).toBeNull();
 	});
@@ -41,6 +46,37 @@ describe("fetchMonitorDomain", () => {
 
 		expect(queried).toEqual(["example.co.uk"]);
 		expect(result).toEqual({ domain: "example.co.uk", expiryDate: "2027-08-13T04:00:00.000Z" });
+	});
+
+	it("uses the current WHOIS server for .tr domains", async () => {
+		const calls: Array<{ domain: string; options: Record<string, unknown> }> = [];
+		const client = {
+			domain: async (domain: string, options: Record<string, unknown>) => {
+				calls.push({ domain, options });
+				return { "whois.trabis.gov.tr": { "Expiry Date": "2029-Sep-01" } };
+			},
+		};
+		const cache = createDomainExpiryCache(60_000, 10_000);
+
+		const result = await fetchMonitorDomain(client as never, makeMonitor("https://www.example.org.tr"), cache);
+
+		expect(calls[0]?.domain).toBe("example.org.tr");
+		expect(calls[0]?.options.host).toBe("whois.trabis.gov.tr");
+		expect(result).toEqual({ domain: "example.org.tr", expiryDate: "2029-09-01T00:00:00.000Z" });
+	});
+
+	it("leaves WHOIS server selection to whoiser for other TLDs", async () => {
+		const calls: Array<Record<string, unknown>> = [];
+		const client = {
+			domain: async (_domain: string, options: Record<string, unknown>) => {
+				calls.push(options);
+				return { "whois.verisign-grs.com": { "Expiry Date": "2027-08-13T04:00:00Z" } };
+			},
+		};
+
+		await fetchMonitorDomain(client as never, makeMonitor("https://example.com"), createDomainExpiryCache(60_000, 10_000));
+
+		expect(calls[0]).not.toHaveProperty("host");
 	});
 
 	it("returns null expiry for bare IP addresses without querying whois", async () => {

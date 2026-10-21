@@ -13,11 +13,11 @@ import {
 	ProxyModes,
 } from "@/domain/monitors/monitor.type.js";
 import { DateRanges, SortOrders } from "@/types/query.js";
-import { DockerContainerStates, DockerHealthStatuses, DockerLogStreams, DockerPortProtocols } from "@/domain/docker/docker.type.js";
 import { DOCKER_LOG_PAGE_DEFAULT, DOCKER_LOG_PAGE_MAX } from "@/domain/docker/docker-log.type.js";
-import { isDockerSocketUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
+import { isCaptureDockerUrl, isDockerSocketUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
 import { X509Certificate } from "node:crypto";
 import { keyMatchesCertificate, parseCertificates, parsePrivateKey } from "@/utils/pem.js";
+import { monitorResponseSchema } from "@/domain/monitors/monitor.schema.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
@@ -36,7 +36,7 @@ export const getMonitorByIdQueryValidation = z.object({
 	status: booleanCoercion.optional(),
 	sortOrder: z.enum(SortOrders).optional(),
 	limit: z.coerce.number().optional(),
-	dateRange: z.enum(DateRanges).optional(),
+	dateRange: z.enum(DateRanges).default("recent"),
 	numToDisplay: z.coerce.number().optional(),
 	continent: z.union([z.enum(GeoContinents), z.array(z.enum(GeoContinents))]).optional(),
 });
@@ -125,13 +125,19 @@ const refineProxySelection = (body: { proxyMode?: string; proxyId?: string }, ct
 
 const refineDockerUrl = (data: { type?: string; url?: string }, ctx: z.RefinementCtx) => {
 	if (data.type !== "docker" || data.url === undefined) return;
-	if (!isDockerSocketUrl(data.url) && !isDockerTlsUrl(data.url)) {
+	if (!isDockerSocketUrl(data.url) && !isDockerTlsUrl(data.url) && !isCaptureDockerUrl(data.url)) {
 		ctx.addIssue({
 			code: "custom",
 			path: ["url"],
-			message: "Docker host must be unix:///path, an absolute socket path, or tcp://host[:port]",
+			message: "Docker host must be a socket path, a TLS daemon URL, or a Capture /metrics/docker endpoint",
 		});
 	}
+};
+
+// Edits are checked in the monitor service against the stored secret, since the body may omit either the url or the secret.
+const refineCaptureSecret = (data: { type?: string; url?: string; secret?: string }, ctx: z.RefinementCtx) => {
+	if (data.type !== "docker" || !isCaptureDockerUrl(data.url)) return;
+	if (!data.secret?.trim()) ctx.addIssue({ code: "custom", path: ["secret"], message: "Capture API secret is required" });
 };
 
 type DockerTlsFields = {
@@ -214,6 +220,8 @@ export const createMonitorBodyValidation = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 		geoCheckInterval: z.number().min(300000).optional(),
 		dockerLogsEnabled: z.boolean().optional(),
+		dockerAlertOnStopped: z.boolean().optional(),
+		dockerAlertOnUnhealthy: z.boolean().optional(),
 		dockerTlsCa: z.union([z.string(), z.literal("")]).optional(),
 		dockerTlsCert: z.union([z.string(), z.literal("")]).optional(),
 		dockerTlsKey: z.union([z.string(), z.literal("")]).optional(),
@@ -226,6 +234,7 @@ export const createMonitorBodyValidation = z
 	.superRefine(refineRegexPattern)
 	.superRefine(refineProxySelection)
 	.superRefine(refineDockerUrl)
+	.superRefine(refineCaptureSecret)
 	.superRefine(refineDockerTls("create"));
 
 export const editMonitorBodyValidation = z
@@ -263,6 +272,8 @@ export const editMonitorBodyValidation = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 		geoCheckInterval: z.number().min(300000).optional(),
 		dockerLogsEnabled: z.boolean().optional(),
+		dockerAlertOnStopped: z.boolean().optional(),
+		dockerAlertOnUnhealthy: z.boolean().optional(),
 		dockerTlsCa: z.union([z.string(), z.literal("")]).optional(),
 		dockerTlsCert: z.union([z.string(), z.literal("")]).optional(),
 		dockerTlsKey: z.union([z.string(), z.literal("")]).optional(),
@@ -343,6 +354,8 @@ const importedMonitorSchema = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)).default([]),
 		geoCheckInterval: z.number().min(300000).default(300000),
 		dockerLogsEnabled: z.boolean().default(false),
+		dockerAlertOnStopped: z.boolean().default(false),
+		dockerAlertOnUnhealthy: z.boolean().default(false),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 		createdAt: z.string().optional(),
@@ -353,7 +366,8 @@ const importedMonitorSchema = z
 	.superRefine(refineHeadMatching)
 	.superRefine(refineRegexPattern)
 	.superRefine(refineProxySelection)
-	.superRefine(refineDockerUrl);
+	.superRefine(refineDockerUrl)
+	.superRefine(refineCaptureSecret);
 
 export const importMonitorsBodyValidation = z.object({
 	monitors: z.array(importedMonitorSchema).min(1, "At least one monitor is required"),
@@ -366,22 +380,23 @@ export const getHardwareDetailsByIdParamValidation = z.object({
 });
 
 export const getHardwareDetailsByIdQueryValidation = z.object({
-	dateRange: z.enum(DateRanges).optional(),
+	dateRange: z.enum(DateRanges).default("recent"),
 });
 
 export const getDockerDetailsByIdParamValidation = z.object({ monitorId: z.string().min(1, "Monitor ID is required") });
-export const getDockerDetailsByIdQueryValidation = z.object({ dateRange: z.enum(DateRanges).optional() });
+export const getDockerDetailsByIdQueryValidation = z.object({ dateRange: z.enum(DateRanges).default("recent") });
 
 export const getDockerContainerNameParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
 	containerName: z.string().min(1, "Container name is required"),
 });
-export const getDockerContainerByNameQueryValidation = z.object({ dateRange: z.enum(DateRanges).optional() });
+export const getDockerContainerByNameQueryValidation = z.object({ dateRange: z.enum(DateRanges).default("recent") });
 
+const isoToDate = z.iso.datetime().transform((v) => new Date(v));
 export const getDockerContainerLogsQueryValidation = z
 	.object({
-		before: z.iso.datetime().optional(),
-		after: z.iso.datetime().optional(),
+		before: isoToDate.optional(),
+		after: isoToDate.optional(),
 		limit: z.coerce.number().int().min(1).max(DOCKER_LOG_PAGE_MAX).default(DOCKER_LOG_PAGE_DEFAULT),
 	})
 	.superRefine((query, ctx) => {
@@ -393,226 +408,34 @@ export const getDockerContainerLogsQueryValidation = z
 			});
 		}
 	});
-// Canonical monitor shape returned by /monitors endpoints. Keep aligned with
-// what the controllers actually serialize.
-export const monitorResponseSchema = z
-	.object({
-		_id: z.string(),
-		name: z.string(),
-		description: z.string().optional(),
-		type: z.enum(MonitorTypes),
-		url: z.string(),
-		port: z.number().optional(),
-		isActive: z.boolean(),
-		interval: z.number(),
-		status: z.enum(MonitorStatuses),
-		statusWindowSize: z.number(),
-		statusWindowThreshold: z.number(),
-		ignoreTlsErrors: z.boolean(),
-		proxyMode: z.enum(ProxyModes),
-		proxyId: proxyIdValidation,
-		useAdvancedMatching: z.boolean(),
-		jsonPath: z.string().optional(),
-		expectedValue: z.string().optional(),
-		matchMethod: z.enum(MonitorMatchMethods).optional(),
-		method: z.enum(HttpMethods),
-		notifications: z.array(z.string()),
-		tags: z.array(z.string()),
-		customUpCodes: z.array(httpStatusCode).optional(),
-		secret: z.string().optional(),
-		cpuAlertThreshold: z.number(),
-		memoryAlertThreshold: z.number(),
-		diskAlertThreshold: z.number(),
-		tempAlertThreshold: z.number(),
-		selectedDisks: z.array(z.string()),
-		gameId: z.string().optional(),
-		grpcServiceName: z.string().optional(),
-		group: z.string().nullable().optional(),
-		geoCheckEnabled: z.boolean(),
-		geoCheckLocations: z.array(z.enum(GeoContinents)),
-		geoCheckInterval: z.number(),
-		dockerLogsEnabled: z.boolean(),
-		dockerTlsCa: z.string().optional(),
-		dockerTlsCert: z.string().optional(),
-		dockerTlsKeySet: z.boolean().optional(),
-		dnsServer: z.string().optional(),
-		dnsRecordType: z.enum(DnsRecordTypes).optional(),
-		teamId: z.string(),
-		userId: z.string(),
-		createdAt: z.string(),
-		updatedAt: z.string(),
-		lastEvaluatedAt: z.number(),
-	})
-	.passthrough();
 
-// Grouped-check buckets returned by GET /monitors/uptime/details/{monitorId}. Keep
-// aligned with GroupedCheck / GroupedUptimeCheck in domain/checks/check.type.ts.
-export const groupedCheckResponseSchema = z.object({
-	bucketDate: z.string(),
-	avgResponseTime: z.number(),
-	totalChecks: z.number(),
+//****************************************
+// Response schemas
+//****************************************
+
+export const monitorListResponseSchema = z.array(monitorResponseSchema);
+
+export const bulkPauseResponseSchema = z.object({
+	monitors: z.array(monitorResponseSchema),
+	failedCount: z.number(),
 });
 
-export const groupedUptimeCheckResponseSchema = groupedCheckResponseSchema.extend({
-	avgDns: z.number(),
-	avgTcp: z.number(),
-	avgTls: z.number(),
-	avgRequest: z.number(),
-	avgFirstByte: z.number(),
-	avgDownload: z.number(),
+export const certificateResponseSchema = z.object({
+	certificateDate: z.string().nullable(),
 });
 
-// Keep aligned with MonitorStats in domain/monitor-stats/monitor-stats.type.ts.
-export const monitorStatsResponseSchema = z.object({
-	id: z.string(),
-	monitorId: z.string(),
-	avgResponseTime: z.number(),
-	maxResponseTime: z.number(),
-	totalChecks: z.number(),
-	totalUpChecks: z.number(),
-	totalDownChecks: z.number(),
-	uptimePercentage: z.number(),
-	lastCheckTimestamp: z.number(),
-	lastResponseTime: z.number(),
-	timeOfLastFailure: z.number().optional(),
-	createdAt: z.string(),
-	updatedAt: z.string(),
+export const domainResponseSchema = z.object({
+	domain: z.string().nullable(),
+	expiryDate: z.string().nullable(),
 });
 
-// Response of GET /monitors/uptime/details/{monitorId}. Keep aligned with
-// UptimeDetailsResult in domain/monitors/monitor.type.ts; the monitor here is the
-// repository's domain entity, which serializes `id` rather than `_id`.
-export const uptimeDetailsResponseSchema = z.object({
-	monitorData: z.object({
-		monitor: monitorResponseSchema.omit({ _id: true }).extend({ id: z.string() }),
-		groupedChecks: z.array(groupedUptimeCheckResponseSchema),
-		groupedUpChecks: z.array(groupedCheckResponseSchema),
-		groupedDownChecks: z.array(groupedCheckResponseSchema),
-		groupedAvgResponseTime: z.number(),
-		groupedUptimePercentage: z.number(),
-	}),
-	monitorStats: monitorStatsResponseSchema.nullable(),
+export const updateNotificationsResponseSchema = z.object({
+	modifiedCount: z.number(),
 });
 
-// Keep aligned with DockerContainerPort / DockerContainerMount in types/network.ts.
-export const dockerContainerPortResponseSchema = z.object({
-	privatePort: z.number(),
-	protocol: z.enum(DockerPortProtocols),
-	publicPort: z.number().optional(),
-	hostIp: z.string().optional(),
-});
+export const demoMonitorsResponseSchema = z.number();
 
-export const dockerContainerMountResponseSchema = z.object({
-	type: z.string(),
-	name: z.string().optional(),
-	source: z.string(),
-	destination: z.string(),
-	mode: z.string(),
-	rw: z.boolean(),
-});
-
-// Keep aligned with DockerContainerInfo / DockerContainerSummary in types/network.ts.
-export const dockerContainerResponseSchema = z.object({
-	id: z.string(),
-	name: z.string(),
-	image: z.string(),
-	state: z.enum(DockerContainerStates),
-	status: z.string(),
-	health: z.enum(DockerHealthStatuses),
-	cpuPct: z.number().optional(),
-	memoryUsedBytes: z.number().optional(),
-	memoryLimitBytes: z.number().optional(),
-	memoryPct: z.number().optional(),
-	restartCount: z.number().optional(),
-	startedAt: z.string().optional(),
-	ports: z.array(dockerContainerPortResponseSchema).optional(),
-	mounts: z.array(dockerContainerMountResponseSchema).optional(),
-});
-
-export const containerSummaryResponseSchema = z.object({
-	total: z.number(),
-	running: z.number(),
-	stopped: z.number(),
-	unhealthy: z.number(),
-});
-
-// Keep aligned with DockerStatsBucket in domain/checks/check.type.ts. The avg fields are
-// null for buckets with no values ($avg skips missing; down checks store no containerSummary).
-export const dockerStatsBucketResponseSchema = z.object({
-	_id: z.string(),
-	avgResponseTime: z.number().nullable(),
-	upCount: z.number(),
-	totalCount: z.number(),
-	avgRunning: z.number().nullable(),
-	avgTotal: z.number().nullable(),
-	avgUnhealthy: z.number().nullable(),
-});
-
-// Response of GET /monitors/docker/details/{monitorId}. Keep aligned with
-// DockerDetailsResult in domain/monitors/monitor.type.ts; the monitor here is the
-// repository's domain entity, which serializes `id` rather than `_id`.
-export const dockerDetailsResponseSchema = z.object({
-	monitor: monitorResponseSchema.omit({ _id: true }).extend({ id: z.string() }),
-	stats: z.object({
-		aggregateData: z.object({ totalChecks: z.number() }),
-		upChecks: z.object({ totalChecks: z.number() }),
-		aggregate: z.array(dockerStatsBucketResponseSchema),
-		latest: z
-			.object({
-				containers: z.array(dockerContainerResponseSchema),
-				summary: containerSummaryResponseSchema.optional(),
-				checkedAt: z.string(),
-			})
-			.nullable(),
-	}),
-	monitorStats: monitorStatsResponseSchema.nullable(),
-});
-
-// Keep aligned with DockerContainerStatsBucket in domain/checks/check.type.ts.
-export const dockerContainerStatsBucketResponseSchema = z.object({
-	_id: z.string(),
-	avgCpuPct: z.number().nullable(),
-	avgMemoryUsedBytes: z.number().nullable(),
-	avgMemoryPct: z.number().nullable(),
-	minRestartCount: z.number().nullable(),
-	maxRestartCount: z.number().nullable(),
-});
-
-// Response of GET /monitors/docker/details/{monitorId}/containers/{containerName}. Keep
-// aligned with DockerContainerDetailsResult in domain/monitors/monitor.type.ts.
-export const dockerContainerDetailsResponseSchema = z.object({
-	monitor: monitorResponseSchema.omit({ _id: true }).extend({ id: z.string() }),
-	stats: z.object({
-		aggregate: z.array(dockerContainerStatsBucketResponseSchema),
-		restartsInRange: z.number(),
-		latest: z
-			.object({
-				container: dockerContainerResponseSchema,
-				checkedAt: z.string(),
-			})
-			.nullable(),
-	}),
-});
-
-export const dockerLogLineResponseSchema = z.object({
-	ts: z.string(),
-	stream: z.enum(DockerLogStreams),
-	text: z.string(),
-});
-
-export const dockerLogResponseSchema = z.object({
-	id: z.string(),
-	metadata: z.object({ monitorId: z.string(), teamId: z.string(), containerId: z.string(), containerName: z.string() }),
-	lines: z.array(dockerLogLineResponseSchema),
-	gap: z.boolean(),
-	checkedAt: z.string(),
-	expiry: z.string(),
-	createdAt: z.string(),
-	updatedAt: z.string(),
-});
-
-// Response of GET /monitors/docker/details/{monitorId}/containers/{containerName}/logs.
-export const dockerContainerLogsResponseSchema = z.object({
-	logs: z.array(dockerLogResponseSchema),
-	nextCursor: z.string().nullable(),
+export const importMonitorsResponseSchema = z.object({
+	imported: z.number(),
+	errors: z.array(z.string()),
 });

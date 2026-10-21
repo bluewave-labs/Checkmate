@@ -10,20 +10,21 @@ import type {
 	CheckMemoryInfo,
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
+	CheckTimings,
 	DockerContainerStats,
-	GotTimings,
 	HardwareCheckStats,
 } from "@/domain/checks/check.type.js";
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
 import { CheckModel, type CheckDocument } from "@/domain/checks/check.model.js";
+import { EXCLUDE_DEGRADED_EGRESS_MATCH, ONLY_DEGRADED_EGRESS_MATCH } from "@/domain/checks/check.query.js";
 import mongoose from "mongoose";
 import { getDateFormat, getDateForRange } from "@/utils/dataUtils.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
 import { getHardwareUpChecks, getHardwareStats, getHardwareTotalChecks } from "@/domain/checks/check.hardware.aggregations.js";
 import { CheckFilter, DateRange } from "@/types/query.js";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import {
 	getDockerContainerLatestCheck,
@@ -33,6 +34,7 @@ import {
 	getDockerTotalChecks,
 	getDockerUpChecks,
 } from "@/domain/checks/check.docker.aggregation.js";
+import { PendingCheck } from "@/domain/jobs/job.type.js";
 
 const SERVICE_NAME = "ChecksRepository";
 
@@ -41,11 +43,11 @@ class MongoChecksRepository implements IChecksRepository {
 
 	private logger: ILogger;
 	constructor(logger: ILogger) {
-		this.logger = logger;
+		this.logger = logger.child({ service: SERVICE_NAME });
 	}
 
 	private toEntity = (doc: CheckDocument): Check => {
-		const mapTimings = (timings?: GotTimings): GotTimings => {
+		const mapTimings = (timings?: CheckTimings): CheckTimings => {
 			const phases = timings?.phases ?? {
 				wait: 0,
 				dns: 0,
@@ -74,6 +76,7 @@ class MongoChecksRepository implements IChecksRepository {
 			physical_core: cpu?.physical_core ?? 0,
 			logical_core: cpu?.logical_core ?? 0,
 			frequency: cpu?.frequency ?? 0,
+			current_frequency: cpu?.current_frequency ?? 0,
 			temperature: cpu?.temperature ?? [],
 			free_percent: cpu?.free_percent ?? 0,
 			usage_percent: cpu?.usage_percent ?? 0,
@@ -178,6 +181,7 @@ class MongoChecksRepository implements IChecksRepository {
 			audits: mapAudits(doc.audits),
 			containers: doc.containers,
 			containerSummary: doc.containerSummary,
+			egressStatus: doc.egressStatus,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
@@ -194,11 +198,9 @@ class MongoChecksRepository implements IChecksRepository {
 		// Map id to _id for MongoDB storage
 		const { id, metadata, ...rest } = check;
 		if (!metadata || !metadata.monitorId || !metadata.teamId) {
-			throw new AppError({
+			throw new AppError(internalError, {
 				message: `Check must have valid metadata with monitorId and teamId. Got: ${JSON.stringify({ id, metadata })}`,
-				status: 500,
 				service: SERVICE_NAME,
-				method: "toDocument",
 			});
 		}
 		return {
@@ -234,12 +236,12 @@ class MongoChecksRepository implements IChecksRepository {
 				return { status: false };
 			case "resolve":
 				return { status: false, statusCode: NETWORK_ERROR };
+			case "degraded":
+				// Checks taken while the instance's own egress was down; excluded from every aggregate, so this is the
+				// one place they can be reviewed as a set.
+				return { ...ONLY_DEGRADED_EGRESS_MATCH };
 			default:
-				this.logger.warn({
-					message: "invalid filter",
-					service: SERVICE_NAME,
-					method: "filterToMatch",
-				});
+				this.logger.warn("invalid filter");
 				return {};
 		}
 	};
@@ -343,27 +345,52 @@ class MongoChecksRepository implements IChecksRepository {
 		};
 	};
 
-	findSummaryByTeamId = async (teamId: string, dateRange: DateRange) => {
-		const baseMatch = {
+	findSummaryByTeamId = async (teamId: string, dateRange: DateRange, monitorId?: string) => {
+		// Matching on the team as well keeps another team's monitor id from returning its counts.
+		const rangeMatch = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
+			...(monitorId && { "metadata.monitorId": new mongoose.Types.ObjectId(monitorId) }),
 			createdAt: { $gte: getDateForRange(dateRange) },
 		};
-
-		const [totalResult, downResult] = await Promise.all([
-			CheckModel.countDocuments(baseMatch),
-			CheckModel.countDocuments({ ...baseMatch, status: false }),
+		// One pass over the team's range. Degraded checks sit outside the totals; counting them separately lets the
+		// Checks page header account for the rows its listing shows under the down filter but its totals leave out.
+		const isDegraded = { $eq: ["$egressStatus", ONLY_DEGRADED_EGRESS_MATCH.egressStatus] };
+		const [counts] = await CheckModel.aggregate<{ totalChecks: number; downChecks: number; degradedChecks: number }>([
+			{ $match: rangeMatch },
+			{
+				$group: {
+					_id: null,
+					totalChecks: { $sum: { $cond: [isDegraded, 0, 1] } },
+					downChecks: { $sum: { $cond: [{ $and: [{ $not: [isDegraded] }, { $eq: ["$status", false] }] }, 1, 0] } },
+					degradedChecks: { $sum: { $cond: [isDegraded, 1, 0] } },
+				},
+			},
 		]);
 
 		return {
-			totalChecks: totalResult,
-			downChecks: downResult,
+			totalChecks: counts?.totalChecks ?? 0,
+			downChecks: counts?.downChecks ?? 0,
+			degradedChecks: counts?.degradedChecks ?? 0,
 		};
 	};
 
-	findUnevaluatedByMonitorId = async (monitorId: string, since: number) => {
+	findUnevaluatedByMonitorId = async (monitorId: string, pending: PendingCheck[]) => {
+		if (pending.length === 0) return [];
+
+		const ids = pending.map((entry) => new mongoose.Types.ObjectId(entry.checkId));
+
+		// Bound the query to the pending time range so the monitorId + createdAt index is used
+		let from = Number.POSITIVE_INFINITY;
+		let to = Number.NEGATIVE_INFINITY;
+		for (const entry of pending) {
+			if (entry.createdAt < from) from = entry.createdAt;
+			if (entry.createdAt > to) to = entry.createdAt;
+		}
+
 		const docs = await CheckModel.find({
 			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-			createdAt: { $gt: new Date(since) },
+			createdAt: { $gte: new Date(from), $lte: new Date(to) },
+			_id: { $in: ids },
 		})
 			.sort({ createdAt: 1 })
 			.lean<CheckDocument[]>();
@@ -379,6 +406,7 @@ class MongoChecksRepository implements IChecksRepository {
 				$match: {
 					"metadata.monitorId": { $in: objectIds },
 					createdAt: { $gte: windowStart },
+					...EXCLUDE_DEGRADED_EGRESS_MATCH,
 				},
 			},
 			{
@@ -459,6 +487,7 @@ class MongoChecksRepository implements IChecksRepository {
 		const matchStage = {
 			"metadata.monitorId": monitorObjectId,
 			createdAt: { $gte: startDate, $lte: endDate },
+			...EXCLUDE_DEGRADED_EGRESS_MATCH,
 		};
 		const [result] = await CheckModel.aggregate([
 			{ $match: matchStage },
@@ -624,6 +653,7 @@ class MongoChecksRepository implements IChecksRepository {
 		const matchStage = {
 			"metadata.monitorId": monitorObjectId,
 			createdAt: { $gte: startDate, $lte: endDate },
+			...EXCLUDE_DEGRADED_EGRESS_MATCH,
 		};
 
 		const [result] = await CheckModel.aggregate([

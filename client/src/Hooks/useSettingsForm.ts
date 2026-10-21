@@ -45,6 +45,8 @@ export const useSettingsForm = ({ data = null }: UseSettingsFormOptions = {}) =>
 			systemEmailPassword: "",
 			globalProxyEnabled: data?.globalProxyEnabled ?? false,
 			globalProxyId: data?.globalProxyId ?? null,
+			egressCheckEnabled: data?.egressCheckEnabled ?? false,
+			egressCheckTargets: (data?.egressCheckTargets ?? []).join("\n"),
 		};
 
 		return { schema: settingsSchema, defaults };

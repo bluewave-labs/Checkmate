@@ -1,4 +1,11 @@
-import { BasePage, ConfigBox, TextLink, Tabs, Tab } from "@/Components/design-elements";
+import {
+	BasePage,
+	ConfigBox,
+	TextLink,
+	Tabs,
+	Tab,
+	CodeBlock,
+} from "@/Components/design-elements";
 import { Autocomplete, Select, Dialog } from "@/Components/inputs";
 import { logger } from "@/Utils/logger";
 import { LAYOUT } from "@/Utils/Theme/constants";
@@ -29,6 +36,7 @@ import { useDelete } from "@/Hooks/UseApi";
 
 import {
 	setTimezone,
+	setTimeFormat,
 	setMode,
 	setLanguage,
 	setChartType,
@@ -39,6 +47,7 @@ import { timezoneOptions } from "@/Utils/timezoneOptions";
 import type { TimezoneOption } from "@/Utils/timezoneOptions";
 import type { RootState } from "@/Types/state";
 import { CHECK_TTL_SENTINEL } from "@/Types/Check";
+import { EGRESS_TARGETS_MAX } from "@/Validation/settings";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { FormSliderField } from "@/Components/inputs/forms/FormSliderField";
 import { FormSwitchField } from "@/Components/inputs/forms/FormSwitchField";
@@ -47,6 +56,8 @@ import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
 import type { ProxyResponse } from "@/Types/Proxy";
 import type { AppSettingsResponse } from "@/Types/Settings";
 import { useSearchParams } from "react-router-dom";
+import { mutate } from "swr";
+import { SYSTEM_TIMEZONE, TIME_FORMATS, type TimeFormat } from "@/Utils/TimeUtils";
 
 const SETTINGS_TABS = [
 	{ key: "general", labelKey: "pages.settings.tabs.general" },
@@ -61,6 +72,8 @@ type SettingsTabKey = (typeof SETTINGS_TABS)[number]["key"];
 const FIELD_TAB: Record<string, SettingsTabKey> = {
 	checkTTL: "monitoring",
 	globalThresholds: "monitoring",
+	egressCheckEnabled: "monitoring",
+	egressCheckTargets: "monitoring",
 	pagespeedApiKey: "integrations",
 	globalProxyEnabled: "integrations",
 	globalProxyId: "integrations",
@@ -81,6 +94,8 @@ const FIELD_LABEL_KEY: Record<string, string> = {
 		"pages.settings.form.thresholds.option.temperature.label",
 	pagespeedApiKey: "pages.settings.form.pagespeed.option.apiKey.label",
 	globalProxyEnabled: "pages.settings.form.globalProxy.option.enabled.label",
+	egressCheckEnabled: "pages.settings.form.egress.option.enabled.label",
+	egressCheckTargets: "pages.settings.form.egress.option.targets.label",
 	showURL: "pages.settings.form.url.option.showURL.label",
 	systemEmailHost: "pages.settings.form.email.option.host.label",
 	systemEmailPort: "pages.settings.form.email.option.port.label",
@@ -250,6 +265,7 @@ export const SettingsPage = () => {
 
 	const {
 		timezone: selectedTimezoneId,
+		timeFormat,
 		mode,
 		language = "en",
 		chartType = "histogram",
@@ -257,12 +273,26 @@ export const SettingsPage = () => {
 
 	const user = useSelector((state: RootState) => state.auth.user);
 
+	// An empty id is the browser default; resolveTimezone falls back to SYSTEM_TIMEZONE
+	const timezoneSelectOptions: TimezoneOption[] = [
+		{
+			id: "",
+			name: t("pages.settings.form.timezone.option.timezone.browserDefault", {
+				timezone: SYSTEM_TIMEZONE,
+			}),
+		},
+		...timezoneOptions,
+	];
 	const selectedTimezone =
-		timezoneOptions.find((tz) => tz.id === selectedTimezoneId) ?? null;
+		timezoneSelectOptions.find((tz) => tz.id === selectedTimezoneId) ?? null;
 
 	const handleTimezoneChange = (newValue: TimezoneOption | null) => {
-		if (!newValue?.id) return;
+		if (!newValue) return;
 		dispatch(setTimezone({ timezone: newValue.id }));
+	};
+
+	const handleTimeFormatChange = (e: SelectChangeEvent<TimeFormat>) => {
+		dispatch(setTimeFormat(e.target.value));
 	};
 
 	const handleModeChange = (e: SelectChangeEvent<ThemeMode>) => {
@@ -392,10 +422,28 @@ export const SettingsPage = () => {
 		if (isEmailPasswordSet && !emailPasswordHasBeenReset) {
 			delete (dataToSend as any).systemEmailPassword;
 		}
-
-		const result = await patch("/settings", dataToSend as SettingsFormData);
+		// The server is the one full parser of egress targets. Its validation message reads
+		// "egressCheckTargets.<index>: <message>", joined by "; " when there are several.
+		const result = await patch(
+			"/settings",
+			dataToSend as SettingsFormData,
+			undefined,
+			(message) => {
+				const targetError = message
+					.split("; ")
+					.find((part) => part.startsWith("egressCheckTargets"));
+				if (targetError) {
+					form.setError("egressCheckTargets", {
+						type: "server",
+						message: targetError.replace(/^egressCheckTargets(\.\d+)?: /, ""),
+					});
+				}
+			}
+		);
 
 		if (result?.success) {
+			// The banner stops polling while the egress self-check is off; refetch so a change shows now.
+			void mutate("/egress");
 			// Update API key state from response
 			if (result.data) {
 				setIsApiKeySet(result.data.pagespeedKeySet);
@@ -463,20 +511,38 @@ export const SettingsPage = () => {
 							title={t("pages.settings.form.timezone.title")}
 							subtitle={t("pages.settings.form.timezone.description")}
 							rightContent={
-								<Autocomplete
-									value={selectedTimezone}
-									options={timezoneOptions}
-									getOptionLabel={(option: TimezoneOption) => option.name}
-									isOptionEqualToValue={(option: TimezoneOption, value: TimezoneOption) =>
-										option.id === value.id
-									}
-									onChange={(_, newValue: TimezoneOption | null) => {
-										handleTimezoneChange(newValue);
-									}}
-									fieldLabel={t("pages.settings.form.timezone.option.timezone.label")}
-								/>
+								<Stack gap={theme.spacing(LAYOUT.MD)}>
+									<Autocomplete
+										value={selectedTimezone}
+										options={timezoneSelectOptions}
+										getOptionLabel={(option: TimezoneOption) => option.name}
+										isOptionEqualToValue={(
+											option: TimezoneOption,
+											value: TimezoneOption
+										) => option.id === value.id}
+										onChange={(_, newValue: TimezoneOption | null) => {
+											handleTimezoneChange(newValue);
+										}}
+										fieldLabel={t("pages.settings.form.timezone.option.timezone.label")}
+									/>
+									<Select
+										fieldLabel={t("pages.settings.form.timezone.option.timeFormat.label")}
+										onChange={handleTimeFormatChange}
+										value={timeFormat}
+									>
+										{TIME_FORMATS.map((format) => (
+											<MenuItem
+												key={format}
+												value={format}
+											>
+												{t(`pages.settings.form.timezone.option.timeFormat.${format}`)}
+											</MenuItem>
+										))}
+									</Select>
+								</Stack>
 							}
 						/>
+
 						<ConfigBox
 							title={t("pages.settings.form.ui.title")}
 							subtitle={t("pages.settings.form.ui.description")}
@@ -636,6 +702,35 @@ export const SettingsPage = () => {
 							/>
 						)}
 
+						{/* Egress self-check */}
+						{isAdmin && (
+							<ConfigBox
+								title={t("pages.settings.form.egress.title")}
+								subtitle={t("pages.settings.form.egress.description")}
+								rightContent={
+									<Stack gap={theme.spacing(LAYOUT.MD)}>
+										<FormSwitchField
+											name="egressCheckEnabled"
+											labelPlacement="start"
+											label={t("pages.settings.form.egress.option.enabled.label")}
+										/>
+										<FormTextField
+											name="egressCheckTargets"
+											multiline
+											minRows={3}
+											fieldLabel={t("pages.settings.form.egress.option.targets.label")}
+											placeholder={t(
+												"pages.settings.form.egress.option.targets.placeholder"
+											)}
+											helperText={t("pages.settings.form.egress.option.targets.helper", {
+												max: EGRESS_TARGETS_MAX,
+											})}
+										/>
+									</Stack>
+								}
+							/>
+						)}
+
 						{/* Demo Monitors - Admin Only */}
 						{isAdmin && (
 							<ConfigBox
@@ -680,61 +775,37 @@ export const SettingsPage = () => {
 											const displayName = form.watch("systemEmailDisplayName")?.trim();
 											return (
 												<>
-													<Box
-														component="pre"
-														p={2}
-														borderRadius={theme.shape.borderRadius}
-														bgcolor={theme.palette.action.hover}
-														sx={{
-															fontFamily: theme.typography.fontFamilyMonospace,
-															overflow: "auto",
-														}}
-													>
-														<code>
-															{JSON.stringify(
-																{
-																	host: form.watch("systemEmailHost") || "",
-																	port: form.watch("systemEmailPort") || "",
-																	secure: form.watch("systemEmailSecure") ?? false,
-																	auth: {
-																		user: form.watch("systemEmailUser") || address,
-																		pass: "<your_password>",
-																	},
-																	name:
-																		form.watch("systemEmailConnectionHost") ||
-																		"localhost",
-																	pool: form.watch("systemEmailPool") ?? false,
-																	tls: {
-																		rejectUnauthorized:
-																			form.watch("systemEmailRejectUnauthorized") ?? true,
-																		ignoreTLS:
-																			form.watch("systemEmailIgnoreTLS") ?? false,
-																		requireTLS:
-																			form.watch("systemEmailRequireTLS") ?? false,
-																		servername:
-																			form.watch("systemEmailTLSServername") || "",
-																	},
+													<CodeBlock>
+														{JSON.stringify(
+															{
+																host: form.watch("systemEmailHost") || "",
+																port: form.watch("systemEmailPort") || "",
+																secure: form.watch("systemEmailSecure") ?? false,
+																auth: {
+																	user: form.watch("systemEmailUser") || address,
+																	pass: "<your_password>",
 																},
-																null,
-																2
-															)}
-														</code>
-													</Box>
+																name:
+																	form.watch("systemEmailConnectionHost") || "localhost",
+																pool: form.watch("systemEmailPool") ?? false,
+																tls: {
+																	rejectUnauthorized:
+																		form.watch("systemEmailRejectUnauthorized") ?? true,
+																	ignoreTLS: form.watch("systemEmailIgnoreTLS") ?? false,
+																	requireTLS:
+																		form.watch("systemEmailRequireTLS") ?? false,
+																	servername:
+																		form.watch("systemEmailTLSServername") || "",
+																},
+															},
+															null,
+															2
+														)}
+													</CodeBlock>
 													{address && (
-														<Box
-															component="pre"
-															p={2}
-															borderRadius={theme.shape.borderRadius}
-															bgcolor={theme.palette.action.hover}
-															sx={{
-																fontFamily: theme.typography.fontFamilyMonospace,
-																overflow: "auto",
-															}}
-														>
-															<code>
-																{`From: ${displayName ? `"${displayName}" <${address}>` : address}`}
-															</code>
-														</Box>
+														<CodeBlock>
+															{`From: ${displayName ? `"${displayName}" <${address}>` : address}`}
+														</CodeBlock>
 													)}
 												</>
 											);

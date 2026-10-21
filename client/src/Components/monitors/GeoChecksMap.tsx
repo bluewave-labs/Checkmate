@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { formatStatusCode } from "@/Utils/statusCode";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { formatMs } from "@/Utils/TimeUtils";
+import { useFormatDate } from "@/Hooks/useFormatDate";
 
 interface GeoChecksMapProps {
 	geoChecks: FlatGeoCheck[];
@@ -18,6 +19,7 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 	const theme = useTheme();
 	const isDarkMode = theme.palette.mode === "dark";
 	const { t } = useTranslation();
+	const formatDate = useFormatDate();
 
 	const mapPopupStyles = (
 		<GlobalStyles
@@ -190,7 +192,7 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 										color="text.secondary"
 										sx={{ mt: 0.5 }}
 									>
-										{new Date(selectedCheck.createdAt).toLocaleString()}
+										{formatDate(selectedCheck.createdAt, "dateTime")}
 									</Typography>
 								</Stack>
 							</Box>

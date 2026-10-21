@@ -9,6 +9,7 @@ import type {
 	PageSpeedChecksResult,
 	UptimeChecksResult,
 } from "@/domain/checks/check.type.js";
+import { PendingCheck } from "@/domain/jobs/job.type.js";
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
 import { CheckFilter, DateRange } from "@/types/query.js";
 
@@ -42,8 +43,8 @@ export interface IChecksRepository {
 		options?: { type?: MonitorType }
 	): Promise<UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult | DockerChecksResult>;
 	findDockerContainerChecks(monitorId: string, containerName: string, dateRange: DateRange): Promise<Omit<DockerContainerStats, "restartsInRange">>;
-	findSummaryByTeamId(teamId: string, dateRange: DateRange): Promise<ChecksSummary>;
-	findUnevaluatedByMonitorId(monitorId: string, since: number): Promise<Check[]>;
+	findSummaryByTeamId(teamId: string, dateRange: DateRange, monitorId?: string): Promise<ChecksSummary>;
+	findUnevaluatedByMonitorId(monitorId: string, pending: PendingCheck[]): Promise<Check[]>;
 	getDailyStatusBuckets(monitorIds: string[], days: number, timezone: string): Promise<DailyCheckBucket[]>;
 
 	// update

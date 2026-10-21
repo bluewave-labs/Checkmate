@@ -45,14 +45,14 @@ describe("DiscordProvider", () => {
 			mockGotPost.mockRejectedValue(new Error("network"));
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeNotification())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ method: "sendTestAlert" }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: new Error("network") }, "Discord test alert failed");
 		});
 
 		it("handles undefined thrown values", async () => {
 			mockGotPost.mockRejectedValue(undefined);
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeNotification())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: undefined }, "Discord test alert failed");
 		});
 	});
 
@@ -76,14 +76,14 @@ describe("DiscordProvider", () => {
 			mockGotPost.mockRejectedValue(new Error("fail"));
 			const { provider, logger } = createProvider();
 			expect(await provider.sendMessage(makeNotification() as any, makeMessage())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ method: "sendMessage" }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: new Error("fail") }, "Discord notification failed");
 		});
 
 		it("handles undefined thrown values in sendMessage", async () => {
 			mockGotPost.mockRejectedValue(undefined);
 			const { provider, logger } = createProvider();
 			expect(await provider.sendMessage(makeNotification() as any, makeMessage())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: undefined }, "Discord notification failed");
 		});
 
 		it("includes threshold breaches in embed fields", async () => {

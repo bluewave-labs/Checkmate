@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import MongoJobsRepository from "../../src/domain/jobs/job.repository.mongo.ts";
 import JobModel, { type JobDocument } from "../../src/domain/jobs/job.model.ts";
-import { BACKOFF_MS, LOCK_MS, type Job, type JobType } from "../../src/domain/jobs/job.type.ts";
+import { BACKOFF_MS, LOCK_MS, PARKED, type Job, type JobType, type PendingCheck } from "../../src/domain/jobs/job.type.ts";
 
 // ── Real-Mongo harness ─────────────────────────────────────────────────────────
 // The headline guarantee of the queue — "exactly one claimer wins" — IS MongoDB's
@@ -57,6 +57,9 @@ const readRow = (id: string) => JobModel.findById(id).lean<JobDocument>();
 const ownedBy = (r: MongoJobsRepository) => (r as unknown as { workerId: string }).workerId;
 
 const WORKER_ID = "worker-under-test";
+
+// Pending entries as ingest pushes them: one per inserted check, stamped with the check's createdAt.
+const pending = (...checkIds: string[]): PendingCheck[] => checkIds.map((checkId, i) => ({ checkId, createdAt: NOW + i }));
 
 describe("MongoJobsRepository", () => {
 	let repo: MongoJobsRepository;
@@ -180,7 +183,7 @@ describe("MongoJobsRepository", () => {
 
 		it("does not release a lock owned by another worker (fenced no-op)", async () => {
 			// A worker whose lease expired and was reclaimed must not clobber the new owner's lock.
-			await seedJob({ lockedBy: "other-worker", lockedUntil: NOW + LOCK_MS, runCount: 7 });
+			await seedJob({ lockedBy: "other-worker", lockedUntil: NOW + LOCK_MS, runCount: 7, failCount: 2, lastFailReason: "timeout" });
 
 			const ok = await repo.recordSuccess("check:mon-1", NOW, 60_000, NOW + 1_000);
 
@@ -189,6 +192,72 @@ describe("MongoJobsRepository", () => {
 			expect(row?.lockedBy).toBe("other-worker"); // lock untouched
 			expect(row?.lockedUntil).toBe(NOW + LOCK_MS);
 			expect(row?.runCount).toBe(7); // not double-counted
+			expect(row?.failCount).toBe(2); // failure state untouched
+			expect(row?.lastFailReason).toBe("timeout");
+		});
+
+		it("clears the failure state so failCount counts consecutive failures", async () => {
+			await seedJob({ lockedBy: ownedBy(repo), lockedUntil: NOW + LOCK_MS, failCount: 3, lastFailReason: "connection refused" });
+
+			await repo.recordSuccess("check:mon-1", NOW, 60_000, NOW + 1_000);
+
+			const row = await readRow("check:mon-1");
+			expect(row?.failCount).toBe(0);
+			expect(row?.lastFailReason).toBeNull();
+		});
+	});
+
+	// ── recordOneShot (park after a single run) ─────────────────────────────────
+	describe("recordOneShot", () => {
+		it("parks the job, releases the lease, counts the run and clears the failure state", async () => {
+			await seedJob({
+				intervalMs: null,
+				lockedBy: ownedBy(repo),
+				lockedUntil: NOW + LOCK_MS,
+				runCount: 1,
+				failCount: 2,
+				lastFailReason: "connection refused",
+			});
+
+			const ok = await repo.recordOneShot("check:mon-1", NOW + 1_000);
+
+			expect(ok).toBe(true);
+			const row = await readRow("check:mon-1");
+			expect(row?.nextScheduledAt).toBe(PARKED);
+			expect(row?.lockedBy).toBeNull();
+			expect(row?.lockedUntil).toBeNull();
+			expect(row?.lastFinishedAt).toBe(NOW + 1_000);
+			expect(row?.runCount).toBe(2);
+			expect(row?.failCount).toBe(0);
+			expect(row?.lastFailReason).toBeNull();
+		});
+
+		it("does not touch a lock owned by another worker (fenced no-op)", async () => {
+			await seedJob({ intervalMs: null, lockedBy: "other-worker", lockedUntil: NOW + LOCK_MS, failCount: 2, lastFailReason: "timeout" });
+
+			expect(await repo.recordOneShot("check:mon-1", NOW + 1_000)).toBe(false);
+			const row = await readRow("check:mon-1");
+			expect(row?.nextScheduledAt).toBe(NOW); // not parked
+			expect(row?.lockedBy).toBe("other-worker");
+			expect(row?.failCount).toBe(2);
+			expect(row?.lastFailReason).toBe("timeout");
+		});
+
+		it("re-arms instead of parking when checks were pushed while the run held the lease", async () => {
+			await seedJob({
+				_id: "evaluate:mon-1",
+				type: "evaluate",
+				intervalMs: null,
+				lockedBy: ownedBy(repo),
+				lockedUntil: NOW + LOCK_MS,
+				pendingChecks: pending("c-late"), // arrived mid-run, not yet pulled
+			});
+
+			expect(await repo.recordOneShot("evaluate:mon-1", NOW + 1_000)).toBe(true);
+			const row = await readRow("evaluate:mon-1");
+			expect(row?.nextScheduledAt).toBe(NOW + 1_000); // due now, not PARKED
+			expect(row?.lockedBy).toBeNull();
+			expect(row?.runCount).toBe(1);
 		});
 	});
 
@@ -276,10 +345,10 @@ describe("MongoJobsRepository", () => {
 		});
 	});
 
-	// ── upsertEvaluate (handoff + $min coalescing) ───────────────────────────────
+	// ── upsertEvaluate (handoff: $push ids + $min due time) ──────────────────────
 	describe("upsertEvaluate", () => {
-		it("creates a single evaluate row keyed by monitor", async () => {
-			await repo.upsertEvaluate("mon-1", NOW);
+		it("creates a single evaluate row keyed by monitor carrying the pushed ids", async () => {
+			await repo.upsertEvaluate("mon-1", pending("c1", "c2"), NOW);
 
 			const row = await readRow("evaluate:mon-1");
 			expect(row?.type).toBe("evaluate");
@@ -287,11 +356,12 @@ describe("MongoJobsRepository", () => {
 			expect(row?.nextScheduledAt).toBe(NOW);
 			expect(row?.intervalMs).toBeNull();
 			expect(row?.isActive).toBe(true);
+			expect(row?.pendingChecks).toEqual(pending("c1", "c2"));
 		});
 
 		it("coalesces rapid checks: a later call never pushes runAt out ($min)", async () => {
-			await repo.upsertEvaluate("mon-1", NOW);
-			await repo.upsertEvaluate("mon-1", NOW + 9_000);
+			await repo.upsertEvaluate("mon-1", pending("c1"), NOW);
+			await repo.upsertEvaluate("mon-1", pending("c2"), NOW + 9_000);
 
 			const rows = await JobModel.find({ type: "evaluate", refId: "mon-1" }).lean<JobDocument[]>();
 			expect(rows).toHaveLength(1);
@@ -299,19 +369,117 @@ describe("MongoJobsRepository", () => {
 		});
 
 		it("lowers runAt when an earlier evaluation arrives ($min)", async () => {
-			await repo.upsertEvaluate("mon-1", NOW + 9_000);
-			await repo.upsertEvaluate("mon-1", NOW);
+			await repo.upsertEvaluate("mon-1", pending("c1"), NOW + 9_000);
+			await repo.upsertEvaluate("mon-1", pending("c2"), NOW);
 
 			const row = await readRow("evaluate:mon-1");
 			expect(row?.nextScheduledAt).toBe(NOW);
 		});
 
-		it("concurrent upserts for one monitor produce exactly one row", async () => {
-			const workers = Array.from({ length: 20 }, (_, i) => new MongoJobsRepository(`worker-${i}`));
-			await Promise.all(workers.map((w) => w.upsertEvaluate("mon-1", NOW)));
+		it("never duplicates an entry when the same batch is armed twice (retry after a failed arm)", async () => {
+			await repo.upsertEvaluate("mon-1", pending("c1", "c2"), NOW);
+			await repo.upsertEvaluate("mon-1", pending("c1", "c2"), NOW + 1_000);
 
-			const count = await JobModel.countDocuments({ type: "evaluate", refId: "mon-1" });
-			expect(count).toBe(1);
+			const row = await readRow("evaluate:mon-1");
+			expect(row?.pendingChecks).toEqual(pending("c1", "c2"));
+		});
+
+		it("accumulates ids across flushes so a late batch is never lost", async () => {
+			await repo.upsertEvaluate("mon-1", pending("c2"), NOW); // later check, flushed first
+			await repo.upsertEvaluate("mon-1", pending("c1"), NOW + 15_000); // earlier check, flushed later
+
+			const row = await readRow("evaluate:mon-1");
+			expect(row?.pendingChecks.map((entry) => entry.checkId)).toEqual(["c2", "c1"]);
+		});
+
+		it("keeps pushing onto a row that is currently leased by a worker", async () => {
+			await seedJob({
+				_id: "evaluate:mon-1",
+				type: "evaluate",
+				intervalMs: null,
+				lockedBy: "other-worker",
+				lockedUntil: NOW + LOCK_MS,
+				pendingChecks: pending("c1"),
+			});
+
+			await repo.upsertEvaluate("mon-1", pending("c2"), NOW);
+
+			const row = await readRow("evaluate:mon-1");
+			expect(row?.lockedBy).toBe("other-worker"); // lease untouched
+			expect(row?.pendingChecks.map((entry) => entry.checkId)).toEqual(["c1", "c2"]);
+		});
+
+		it("concurrent upserts for one monitor produce exactly one row holding every id", async () => {
+			const workers = Array.from({ length: 20 }, (_, i) => new MongoJobsRepository(`worker-${i}`));
+			await Promise.all(workers.map((w, i) => w.upsertEvaluate("mon-1", pending(`c${i}`), NOW)));
+
+			const rows = await JobModel.find({ type: "evaluate", refId: "mon-1" }).lean<JobDocument[]>();
+			expect(rows).toHaveLength(1);
+			expect(rows[0].pendingChecks).toHaveLength(20);
+		});
+	});
+
+	// ── pullEvaluated (evaluator removes applied ids) ───────────────────────────
+	describe("pullEvaluated", () => {
+		it("removes only the listed ids and leaves the rest", async () => {
+			await seedJob({
+				_id: "evaluate:mon-1",
+				type: "evaluate",
+				intervalMs: null,
+				lockedBy: ownedBy(repo),
+				lockedUntil: NOW + LOCK_MS,
+				pendingChecks: pending("c1", "c2", "c3"),
+			});
+
+			expect(await repo.pullEvaluated("evaluate:mon-1", ["c1", "c3"])).toBe(true);
+
+			const row = await readRow("evaluate:mon-1");
+			expect(row?.pendingChecks.map((entry) => entry.checkId)).toEqual(["c2"]);
+		});
+
+		it("is fenced on the lease: another worker's row is untouched", async () => {
+			await seedJob({
+				_id: "evaluate:mon-1",
+				type: "evaluate",
+				intervalMs: null,
+				lockedBy: "other-worker",
+				lockedUntil: NOW + LOCK_MS,
+				pendingChecks: pending("c1"),
+			});
+
+			expect(await repo.pullEvaluated("evaluate:mon-1", ["c1"])).toBe(false);
+
+			const row = await readRow("evaluate:mon-1");
+			expect(row?.pendingChecks.map((entry) => entry.checkId)).toEqual(["c1"]);
+		});
+
+		it("reports the lease as held even when the ids were already pulled", async () => {
+			await seedJob({
+				_id: "evaluate:mon-1",
+				type: "evaluate",
+				intervalMs: null,
+				lockedBy: ownedBy(repo),
+				lockedUntil: NOW + LOCK_MS,
+				pendingChecks: [],
+			});
+
+			expect(await repo.pullEvaluated("evaluate:mon-1", ["c1"])).toBe(true);
+		});
+
+		it("is a no-op for an empty id list", async () => {
+			await seedJob({
+				_id: "evaluate:mon-1",
+				type: "evaluate",
+				intervalMs: null,
+				lockedBy: ownedBy(repo),
+				lockedUntil: NOW + LOCK_MS,
+				pendingChecks: pending("c1"),
+			});
+
+			expect(await repo.pullEvaluated("evaluate:mon-1", [])).toBe(true);
+
+			const row = await readRow("evaluate:mon-1");
+			expect(row?.pendingChecks).toHaveLength(1);
 		});
 	});
 
@@ -327,6 +495,7 @@ describe("MongoJobsRepository", () => {
 				intervalMs: 60_000,
 				lockedBy: null,
 				lockedUntil: null,
+				pendingChecks: [],
 				runCount: 0,
 				failCount: 0,
 				lastFinishedAt: null,
@@ -358,6 +527,7 @@ describe("MongoJobsRepository", () => {
 				intervalMs: 86_400_000,
 				lockedBy: null,
 				lockedUntil: null,
+				pendingChecks: [],
 				runCount: 0,
 				failCount: 0,
 				lastFinishedAt: null,
@@ -438,7 +608,7 @@ describe("MongoJobsRepository", () => {
 		it("deleteById drops every row for the monitor", async () => {
 			await seedJob({ _id: "check:mon-1", type: "check" });
 			await seedJob({ _id: "geo:mon-1", type: "geo-check" });
-			await repo.upsertEvaluate("mon-1", NOW);
+			await repo.upsertEvaluate("mon-1", pending("c1"), NOW);
 
 			await repo.deleteById("mon-1");
 
@@ -531,6 +701,23 @@ describe("MongoJobsRepository", () => {
 		it("returns 0 when nothing is due", async () => {
 			await seedJob({ nextScheduledAt: NOW + 10_000 });
 			expect(await repo.countDueBacklog(NOW)).toBe(0);
+		});
+	});
+
+	// ── global rows ───────────────────────────────────────────────────────────
+
+	describe("global rows", () => {
+		const repo = new MongoJobsRepository(WORKER_ID);
+
+		it("deleteGlobalJob removes the row by its canonical _id and leaves other global rows alone", async () => {
+			await seedJob({ _id: "telemetry", type: "telemetry" as JobType, refId: null, nextScheduledAt: NOW, intervalMs: 86_400_000 });
+			await seedJob({ _id: "cleanup-orphaned", type: "cleanup-orphaned" as JobType, refId: null });
+
+			expect(await repo.deleteGlobalJob("telemetry")).toBe(true);
+
+			expect(await readRow("telemetry")).toBeNull();
+			expect(await readRow("cleanup-orphaned")).not.toBeNull();
+			expect(await repo.deleteGlobalJob("telemetry")).toBe(false);
 		});
 	});
 });

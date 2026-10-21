@@ -6,9 +6,11 @@ import {
 	HttpMethods,
 	PageSpeedStrategies,
 	ProxyModes,
+	MIN_MONITOR_INTERVAL_MS,
 	type MonitorType,
 } from "@/Types/Monitor";
 import { ALL_HTTP_STATUS_CODES } from "@/Utils/statusCode";
+import { hostnamePattern } from "@/Validation/patterns";
 
 // Wizard step a field is validated on. Attached inline to each field below so
 // the grouping lives next to the field definition; unannotated fields default
@@ -27,7 +29,8 @@ const baseSchema = z.object({
 	description: z.string().optional(),
 	interval: z
 		.number()
-		.min(15000, "Interval must be at least 15 seconds")
+		.int("Interval must be a whole number of milliseconds")
+		.min(MIN_MONITOR_INTERVAL_MS, "Interval must be at least 10 seconds")
 		.register(monitorStepRegistry, { step: 1 }),
 	notifications: z.array(z.string()).register(monitorStepRegistry, { step: 1 }),
 	tags: z.array(z.string()).register(monitorStepRegistry, { step: 1 }),
@@ -108,13 +111,26 @@ const portSchema = baseSchema.extend({
 		.max(65535, "Port must be at most 65535"),
 });
 
-// Docker monitor schema. The url forms mirror DOCKER_TLS_URL and
-// DOCKER_SOCKET_URL in server/src/utils/dockerHost.ts.
+// Docker monitor schema. The URL forms mirror the Docker source helpers in
+// server/src/utils/dockerHost.ts.
 const dockerTlsUrlRegex = /^(tcp|https):\/\/([^/\s:]+)(?::(\d+))?\/?$/;
 const dockerSocketUrlRegex = /^(?:unix:\/\/\/\S+|\/\S+)$/;
 
 export const isDockerTlsUrl = (url: string | undefined): boolean =>
 	dockerTlsUrlRegex.test(url?.trim() ?? "");
+
+export const isCaptureDockerUrl = (url: string | undefined): boolean => {
+	try {
+		const parsed = new URL(url?.trim() ?? "");
+		const pathname = parsed.pathname.replace(/\/+$/, "");
+		return (
+			(parsed.protocol === "http:" || parsed.protocol === "https:") &&
+			pathname.endsWith("/metrics/docker")
+		);
+	} catch {
+		return false;
+	}
+};
 
 const dockerSchema = baseSchema.extend({
 	type: z.literal("docker"),
@@ -122,9 +138,13 @@ const dockerSchema = baseSchema.extend({
 		.string()
 		.min(1, "Docker host URL is required")
 		.refine(
-			(url) => dockerSocketUrlRegex.test(url.trim()) || isDockerTlsUrl(url),
-			"Docker host must be unix:///path, an absolute socket path, or tcp://host[:port]"
+			(url) =>
+				dockerSocketUrlRegex.test(url.trim()) ||
+				isDockerTlsUrl(url) ||
+				isCaptureDockerUrl(url),
+			"Docker host must be a socket path, a TLS daemon URL, or a Capture /metrics/docker endpoint"
 		),
+	secret: z.string(),
 	ignoreTlsErrors: z.boolean(),
 	dockerTlsCa: z.string(),
 	dockerTlsCert: z.string(),
@@ -133,6 +153,8 @@ const dockerSchema = baseSchema.extend({
 	// Read only mirror of the server flag, stripped on submit
 	dockerTlsKeySet: z.boolean(),
 	dockerLogsEnabled: z.boolean().register(monitorStepRegistry, { step: 1 }),
+	dockerAlertOnStopped: z.boolean().register(monitorStepRegistry, { step: 1 }),
+	dockerAlertOnUnhealthy: z.boolean().register(monitorStepRegistry, { step: 1 }),
 });
 
 // Game server monitor schema
@@ -200,19 +222,13 @@ const websocketSchema = baseSchema.extend({
 	ignoreTlsErrors: z.boolean().register(monitorStepRegistry, { step: 2 }),
 });
 
-// Hostname (FQDN) — labels of 1-63 alphanumerics/hyphens separated by dots,
-// optionally prefixed with `_` for service labels (e.g. _dmarc, _imaps._tcp).
-// No scheme, port, path, or whitespace. Total length ≤ 253.
-const hostnameRegex =
-	/^(?=.{1,253}$)([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}$/;
-
 // DNS monitor schema
 const dnsSchema = baseSchema.extend({
 	type: z.literal("dns"),
 	url: z
 		.string()
 		.min(1, "Domain is required")
-		.regex(hostnameRegex, "Enter a valid domain (e.g. www.example.com)"),
+		.regex(hostnamePattern, "Enter a valid domain (e.g. www.example.com)"),
 	dnsServer: z
 		.string()
 		.min(1, "DNS server is required")
@@ -245,6 +261,14 @@ export const monitorSchema = monitorSchemaUnion.superRefine((data, ctx) => {
 			code: "custom",
 			path: ["proxyId"],
 			message: "A proxy must be selected when proxy mode is custom",
+		});
+	}
+
+	if (data.type === "docker" && isCaptureDockerUrl(data.url) && !data.secret.trim()) {
+		ctx.addIssue({
+			code: "custom",
+			path: ["secret"],
+			message: "Capture API secret is required",
 		});
 	}
 

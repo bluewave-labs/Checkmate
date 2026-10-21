@@ -7,7 +7,8 @@ import type { IUsersRepository } from "../../../src/domain/users/user.repository
 import type { INotificationMessageBuilder } from "../../../src/domain/notifications/notification.message-builder.ts";
 import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { Incident } from "../../../src/domain/incidents/incident.type.ts";
-import type { MonitorActionDecision } from "../../../src/worker/worker.helper.ts";
+import type { MonitorActionDecision } from "../../../src/worker/worker.interface.ts";
+import type { Check } from "../../../src/domain/checks/check.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -35,7 +36,7 @@ const createUsersRepo = () =>
 
 const createMessageBuilder = () =>
 	({
-		extractThresholdBreaches: jest.fn(),
+		buildThresholdBreachMessage: jest.fn(),
 	}) as unknown as jest.Mocked<INotificationMessageBuilder>;
 
 const createService = (overrides?: {
@@ -79,12 +80,21 @@ const makeIncident = (overrides?: Partial<Incident>): Incident =>
 		...overrides,
 	}) as Incident;
 
+const makeCheck = (overrides?: Partial<Check>): Check =>
+	({
+		id: "check-1",
+		metadata: { monitorId: "mon-1", teamId: "team-1", type: "http" },
+		status: true,
+		statusCode: 200,
+		responseTime: 100,
+		message: "OK",
+		createdAt: "2026-01-01T00:00:00.000Z",
+		updatedAt: "2026-01-01T00:00:00.000Z",
+		...overrides,
+	}) as Check;
+
 const makeDecision = (overrides?: Partial<MonitorActionDecision>): MonitorActionDecision => ({
-	shouldCreateIncident: false,
-	shouldResolveIncident: false,
-	shouldSendNotification: false,
-	incidentReason: null,
-	notificationReason: null,
+	transition: null,
 	...overrides,
 });
 
@@ -96,28 +106,28 @@ describe("IncidentService", () => {
 	describe("handleIncident", () => {
 		it("returns null when neither create nor resolve is requested", async () => {
 			const { service } = createService();
-			const result = await service.handleIncident(makeMonitor(), 200, makeDecision());
+			const result = await service.handleIncident(makeMonitor(), makeDecision(), makeCheck());
 			expect(result).toBeNull();
 		});
 
-		it("returns existing active incident when shouldCreateIncident and one already exists", async () => {
+		it("returns the existing active incident on a down transition when one is already open", async () => {
 			const existing = makeIncident();
 			const { service, incidentsRepository } = createService();
 			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(existing);
 
-			const result = await service.handleIncident(makeMonitor(), 500, makeDecision({ shouldCreateIncident: true, incidentReason: "status_down" }));
+			const result = await service.handleIncident(makeMonitor(), makeDecision({ transition: "status_down" }), makeCheck({ statusCode: 500 }));
 
 			expect(result).toBe(existing);
 			expect(incidentsRepository.create).not.toHaveBeenCalled();
 		});
 
-		it("creates a new incident when shouldCreateIncident and no active incident exists", async () => {
+		it("creates a new incident on a down transition when none is open", async () => {
 			const created = makeIncident();
-			const { service, incidentsRepository } = createService();
+			const { service, incidentsRepository, notificationMessageBuilder } = createService();
 			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(null);
 			(incidentsRepository.create as jest.Mock).mockResolvedValue(created);
 
-			const result = await service.handleIncident(makeMonitor(), 500, makeDecision({ shouldCreateIncident: true, incidentReason: "status_down" }));
+			const result = await service.handleIncident(makeMonitor(), makeDecision({ transition: "status_down" }), makeCheck({ statusCode: 500 }));
 
 			expect(result).toBe(created);
 			expect(incidentsRepository.create).toHaveBeenCalledWith(
@@ -128,6 +138,7 @@ describe("IncidentService", () => {
 					statusCode: 500,
 				})
 			);
+			expect(notificationMessageBuilder.buildThresholdBreachMessage).not.toHaveBeenCalled();
 		});
 
 		it("uses status code 9999 and builds message for threshold_breach incidents", async () => {
@@ -135,13 +146,15 @@ describe("IncidentService", () => {
 			const { service, incidentsRepository, notificationMessageBuilder } = createService();
 			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(null);
 			(incidentsRepository.create as jest.Mock).mockResolvedValue(created);
-			(notificationMessageBuilder.extractThresholdBreaches as jest.Mock).mockReturnValue([
-				{ metric: "cpu", formattedValue: "95%", threshold: 80, unit: "%" },
-			]);
+			(notificationMessageBuilder.buildThresholdBreachMessage as jest.Mock).mockReturnValue("CPU: 95% (threshold: 80%)");
 
-			const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
-			await service.handleIncident(makeMonitor(), 200, decision, { monitorId: "mon-1" } as any);
+			const monitor = makeMonitor({ type: "hardware" });
+			const check = makeCheck({ metadata: { monitorId: "mon-1", teamId: "team-1", type: "hardware" }, cpu: { usage_percent: 0.95 } });
+			const thresholdBreaches = { cpu: true, memory: false, disk: false, temp: false };
+			const decision = makeDecision({ transition: "threshold_breach", thresholdBreaches });
+			await service.handleIncident(monitor, decision, check);
 
+			expect(notificationMessageBuilder.buildThresholdBreachMessage).toHaveBeenCalledWith(monitor, check, thresholdBreaches);
 			expect(incidentsRepository.create).toHaveBeenCalledWith(
 				expect.objectContaining({
 					statusCode: 9999,
@@ -150,57 +163,14 @@ describe("IncidentService", () => {
 			);
 		});
 
-		it("uses fallback message when monitorStatusResponse is undefined for threshold_breach", async () => {
-			const created = makeIncident();
-			const { service, incidentsRepository } = createService();
-			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(null);
-			(incidentsRepository.create as jest.Mock).mockResolvedValue(created);
-
-			const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
-			await service.handleIncident(makeMonitor(), 200, decision, undefined);
-
-			expect(incidentsRepository.create).toHaveBeenCalledWith(expect.objectContaining({ message: "Threshold breach detected" }));
-		});
-
-		it("uses fallback message when extractThresholdBreaches returns empty array", async () => {
-			const created = makeIncident();
-			const { service, incidentsRepository, notificationMessageBuilder } = createService();
-			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(null);
-			(incidentsRepository.create as jest.Mock).mockResolvedValue(created);
-			(notificationMessageBuilder.extractThresholdBreaches as jest.Mock).mockReturnValue([]);
-
-			const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
-			await service.handleIncident(makeMonitor(), 200, decision, { monitorId: "mon-1" } as any);
-
-			expect(incidentsRepository.create).toHaveBeenCalledWith(expect.objectContaining({ message: "Threshold breach detected" }));
-		});
-
-		it("joins multiple threshold breaches with commas", async () => {
-			const created = makeIncident();
-			const { service, incidentsRepository, notificationMessageBuilder } = createService();
-			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(null);
-			(incidentsRepository.create as jest.Mock).mockResolvedValue(created);
-			(notificationMessageBuilder.extractThresholdBreaches as jest.Mock).mockReturnValue([
-				{ metric: "cpu", formattedValue: "95%", threshold: 80, unit: "%" },
-				{ metric: "memory", formattedValue: "90%", threshold: 80, unit: "%" },
-			]);
-
-			const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
-			await service.handleIncident(makeMonitor(), 200, decision, { monitorId: "mon-1" } as any);
-
-			expect(incidentsRepository.create).toHaveBeenCalledWith(
-				expect.objectContaining({ message: "CPU: 95% (threshold: 80%), MEMORY: 90% (threshold: 80%)" })
-			);
-		});
-
-		it("resolves active incident when shouldResolveIncident", async () => {
+		it("resolves the active incident on an up transition", async () => {
 			const active = makeIncident();
 			const resolved = makeIncident({ status: false, endTime: "123", resolutionType: "automatic" });
 			const { service, incidentsRepository } = createService();
 			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(active);
 			(incidentsRepository.updateById as jest.Mock).mockResolvedValue(resolved);
 
-			const result = await service.handleIncident(makeMonitor(), 200, makeDecision({ shouldResolveIncident: true }));
+			const result = await service.handleIncident(makeMonitor(), makeDecision({ transition: "status_up" }), makeCheck());
 
 			expect(result).toBe(resolved);
 			expect(incidentsRepository.updateById).toHaveBeenCalledWith(
@@ -210,11 +180,28 @@ describe("IncidentService", () => {
 			);
 		});
 
-		it("returns null when shouldResolveIncident but no active incident exists", async () => {
+		it("resolves the active incident on a threshold_resolved transition", async () => {
+			const active = makeIncident();
+			const resolved = makeIncident({ status: false, endTime: "123", resolutionType: "automatic" });
+			const { service, incidentsRepository } = createService();
+			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(active);
+			(incidentsRepository.updateById as jest.Mock).mockResolvedValue(resolved);
+
+			const result = await service.handleIncident(makeMonitor(), makeDecision({ transition: "threshold_resolved" }), makeCheck());
+
+			expect(result).toBe(resolved);
+			expect(incidentsRepository.updateById).toHaveBeenCalledWith(
+				"inc-1",
+				"team-1",
+				expect.objectContaining({ status: false, resolutionType: "automatic" })
+			);
+		});
+
+		it("returns null on an up transition when no incident is open", async () => {
 			const { service, incidentsRepository } = createService();
 			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(null);
 
-			const result = await service.handleIncident(makeMonitor(), 200, makeDecision({ shouldResolveIncident: true }));
+			const result = await service.handleIncident(makeMonitor(), makeDecision({ transition: "status_up" }), makeCheck());
 
 			expect(result).toBeNull();
 		});
@@ -265,33 +252,21 @@ describe("IncidentService", () => {
 			);
 		});
 
-		it("throws when incidentId is missing", async () => {
-			const { service } = createService();
-			await expect(service.resolveIncident("", "user-1", "team-1")).rejects.toThrow("No incident ID in request");
-		});
-
-		it("throws when userId is missing", async () => {
-			const { service } = createService();
-			await expect(service.resolveIncident("inc-1", "", "team-1")).rejects.toThrow("No user ID in request");
-		});
-
-		it("throws when teamId is missing", async () => {
-			const { service } = createService();
-			await expect(service.resolveIncident("inc-1", "user-1", "")).rejects.toThrow("No team ID in request");
-		});
-
 		it("throws when incident is not found", async () => {
 			const { service, incidentsRepository } = createService();
 			(incidentsRepository.findActiveByIncidentId as jest.Mock).mockResolvedValue(null);
 
-			await expect(service.resolveIncident("inc-1", "user-1", "team-1")).rejects.toThrow("Incident not found");
+			await expect(service.resolveIncident("inc-1", "user-1", "team-1")).rejects.toMatchObject({ status: 404, message: "Incident not found" });
 		});
 
 		it("throws when incident is already resolved", async () => {
 			const { service, incidentsRepository } = createService();
 			(incidentsRepository.findActiveByIncidentId as jest.Mock).mockResolvedValue(makeIncident({ status: false }));
 
-			await expect(service.resolveIncident("inc-1", "user-1", "team-1")).rejects.toThrow("Incident is already resolved");
+			await expect(service.resolveIncident("inc-1", "user-1", "team-1")).rejects.toMatchObject({
+				status: 409,
+				message: "Incident is already resolved",
+			});
 		});
 
 		it("logs error and rethrows on unexpected failure", async () => {
@@ -299,17 +274,16 @@ describe("IncidentService", () => {
 			(incidentsRepository.findActiveByIncidentId as jest.Mock).mockRejectedValue(new Error("db error"));
 
 			await expect(service.resolveIncident("inc-1", "user-1", "team-1")).rejects.toThrow("db error");
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({ service: "incidentService", method: "resolveIncident", message: "db error" })
-			);
+			expect(logger.error).toHaveBeenCalledWith({ err: new Error("db error"), incidentId: "inc-1" }, "Failed to resolve incident");
+			expect(logger.child).toHaveBeenCalledWith({ service: "incidentService" });
 		});
 
-		it("logs 'Unknown error' for non-Error exceptions", async () => {
+		it("logs non-Error exceptions under err", async () => {
 			const { service, logger, incidentsRepository } = createService();
 			(incidentsRepository.findActiveByIncidentId as jest.Mock).mockRejectedValue("string error");
 
 			await expect(service.resolveIncident("inc-1", "user-1", "team-1")).rejects.toBe("string error");
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error", stack: undefined }));
+			expect(logger.error).toHaveBeenCalledWith({ err: "string error", incidentId: "inc-1" }, "Failed to resolve incident");
 		});
 	});
 
@@ -348,25 +322,20 @@ describe("IncidentService", () => {
 			expect(incidentsRepository.countByTeamId).toHaveBeenCalledWith("team-1", expect.any(Date), true, "mon-1", "manual");
 		});
 
-		it("throws when teamId is missing", async () => {
-			const { service } = createService();
-			await expect(service.getIncidentsByTeam("", "desc", "day", 0, 20, undefined, undefined, undefined)).rejects.toThrow("No team ID in request");
-		});
-
 		it("logs error and rethrows on unexpected failure", async () => {
 			const { service, logger, incidentsRepository } = createService();
 			(incidentsRepository.findByTeamId as jest.Mock).mockRejectedValue(new Error("db error"));
 
 			await expect(service.getIncidentsByTeam("team-1", "desc", "day", 0, 20, undefined, undefined, undefined)).rejects.toThrow("db error");
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ service: "incidentService", method: "getIncidentsByTeam" }));
+			expect(logger.error).toHaveBeenCalledWith({ err: new Error("db error"), teamId: "team-1" }, "Failed to get incidents for team");
 		});
 
-		it("logs 'Unknown error' for non-Error exceptions", async () => {
+		it("logs non-Error exceptions under err", async () => {
 			const { service, logger, incidentsRepository } = createService();
 			(incidentsRepository.findByTeamId as jest.Mock).mockRejectedValue(42);
 
 			await expect(service.getIncidentsByTeam("team-1", "desc", "day", 0, 20, undefined, undefined, undefined)).rejects.toBe(42);
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error", stack: undefined }));
+			expect(logger.error).toHaveBeenCalledWith({ err: 42, teamId: "team-1" }, "Failed to get incidents for team");
 		});
 	});
 
@@ -393,25 +362,20 @@ describe("IncidentService", () => {
 			expect(incidentsRepository.findSummaryByTeamId).toHaveBeenCalledWith("team-1", 10);
 		});
 
-		it("throws when teamId is missing", async () => {
-			const { service } = createService();
-			await expect(service.getIncidentSummary("")).rejects.toThrow("No team ID in request");
-		});
-
 		it("logs error and rethrows on unexpected failure", async () => {
 			const { service, logger, incidentsRepository } = createService();
 			(incidentsRepository.findSummaryByTeamId as jest.Mock).mockRejectedValue(new Error("db error"));
 
 			await expect(service.getIncidentSummary("team-1")).rejects.toThrow("db error");
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ service: "incidentService", method: "getIncidentSummary" }));
+			expect(logger.error).toHaveBeenCalledWith({ err: new Error("db error"), teamId: "team-1" }, "Failed to get incident summary");
 		});
 
-		it("logs 'Unknown error' for non-Error exceptions", async () => {
+		it("logs non-Error exceptions under err", async () => {
 			const { service, logger, incidentsRepository } = createService();
 			(incidentsRepository.findSummaryByTeamId as jest.Mock).mockRejectedValue("boom");
 
 			await expect(service.getIncidentSummary("team-1")).rejects.toBe("boom");
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error", stack: undefined }));
+			expect(logger.error).toHaveBeenCalledWith({ err: "boom", teamId: "team-1" }, "Failed to get incident summary");
 		});
 	});
 
@@ -451,17 +415,15 @@ describe("IncidentService", () => {
 			(incidentsRepository.findById as jest.Mock).mockRejectedValue(new Error("not found"));
 
 			await expect(service.getIncidentById("inc-1", "team-1")).rejects.toThrow("not found");
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.objectContaining({ service: "incidentService", method: "getIncidentById", details: { incidentId: "inc-1" } })
-			);
+			expect(logger.error).toHaveBeenCalledWith({ err: new Error("not found"), incidentId: "inc-1" }, "Failed to get incident");
 		});
 
-		it("logs 'Unknown error' for non-Error exceptions", async () => {
+		it("logs non-Error exceptions under err", async () => {
 			const { service, logger, incidentsRepository } = createService();
 			(incidentsRepository.findById as jest.Mock).mockRejectedValue(null);
 
 			await expect(service.getIncidentById("inc-1", "team-1")).rejects.toBeNull();
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error", stack: undefined }));
+			expect(logger.error).toHaveBeenCalledWith({ err: null, incidentId: "inc-1" }, "Failed to get incident");
 		});
 	});
 });

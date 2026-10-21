@@ -63,7 +63,7 @@ describe("MatrixProvider", () => {
 			mockGotPut.mockRejectedValue({ message: "custom obj" });
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeNotification())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: { message: "custom obj" } }, "Matrix notification failed");
 		});
 	});
 
@@ -103,6 +103,14 @@ describe("MatrixProvider", () => {
 			const body = mockGotPut.mock.calls[0][1].json;
 			expect(body.body).toContain("View Incident");
 			expect(body.formatted_body).toContain("View Incident");
+		});
+
+		it("links the incident to the monitor's incidents page", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessageWithIncident());
+			const body = mockGotPut.mock.calls[0][1].json;
+			expect(body.body).toContain("View Incident: https://app.example.com/incidents/mon-1");
+			expect(body.formatted_body).toContain('href="https://app.example.com/incidents/mon-1"');
 		});
 
 		it("omits optional sections when not present", async () => {

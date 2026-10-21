@@ -1,23 +1,25 @@
 import { useMemo } from "react";
 import Box from "@mui/material/Box";
 import { useTranslation } from "react-i18next";
+import { formatDate } from "@/Utils/TimeUtils";
 import type { SlotProps } from "@/Pages/StatusPage/Status/themes/shared/BaseStatusPage";
 import type { EditorialStyles } from "@/Pages/StatusPage/Status/themes/editorial/styles";
 
 export const EditorialHero = ({
 	overall,
 	monitorCount,
+	bucketTimezone,
 	styles,
 }: SlotProps<EditorialStyles>) => {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const todayLabel = useMemo(
 		() =>
-			new Date().toLocaleDateString(undefined, {
-				year: "numeric",
-				month: "long",
-				day: "numeric",
+			formatDate(new Date(), "date", {
+				timeZone: bucketTimezone,
+				locale: i18n.resolvedLanguage ?? "en",
+				timeFormat: "24h",
 			}),
-		[]
+		[bucketTimezone, i18n.resolvedLanguage]
 	);
 
 	return (

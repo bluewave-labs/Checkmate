@@ -6,7 +6,8 @@ import type { IMonitorsRepository } from "../../src/domain/monitors/monitor.repo
 import type { IUsersRepository } from "../../src/domain/users/user.repository.interface.ts";
 import type { INotificationMessageBuilder } from "../../src/domain/notifications/notification.message-builder.ts";
 import type { Monitor } from "../../src/domain/monitors/monitor.type.ts";
-import type { MonitorActionDecision } from "../../src/worker/worker.helper.ts";
+import type { MonitorActionDecision } from "../../src/worker/worker.interface.ts";
+import type { Check } from "../../src/domain/checks/check.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -22,12 +23,19 @@ const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 	}) as Monitor;
 
 const makeDecision = (overrides?: Partial<MonitorActionDecision>): MonitorActionDecision => ({
-	shouldCreateIncident: false,
-	shouldResolveIncident: false,
-	shouldSendNotification: false,
-	incidentReason: null,
-	notificationReason: null,
+	transition: null,
 	...overrides,
+});
+
+const makeCheck = (statusCode: number): Check => ({
+	id: "check-1",
+	metadata: { monitorId: "mon-1", teamId: "team-1", type: "http" },
+	status: statusCode < 400,
+	statusCode,
+	responseTime: 100,
+	message: statusCode < 400 ? "OK" : "Service Unavailable",
+	createdAt: "2026-01-01T00:00:00Z",
+	updatedAt: "2026-01-01T00:00:00Z",
 });
 
 // ── Test suite ───────────────────────────────────────────────────────────────
@@ -43,7 +51,7 @@ describe("Incident lifecycle (integration)", () => {
 		repo = new InMemoryIncidentsRepository();
 		monitorsRepo = { findById: jest.fn() } as unknown as jest.Mocked<IMonitorsRepository>;
 		usersRepo = { findById: jest.fn() } as unknown as jest.Mocked<IUsersRepository>;
-		messageBuilder = { extractThresholdBreaches: jest.fn() } as unknown as jest.Mocked<INotificationMessageBuilder>;
+		messageBuilder = { buildThresholdBreachMessage: jest.fn() } as unknown as jest.Mocked<INotificationMessageBuilder>;
 		service = new IncidentService(createMockLogger() as any, repo, monitorsRepo, usersRepo, messageBuilder);
 	});
 
@@ -51,9 +59,9 @@ describe("Incident lifecycle (integration)", () => {
 
 	it("creates an incident when monitor goes down", async () => {
 		const monitor = makeMonitor({ status: "down" });
-		const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "status_down" });
+		const decision = makeDecision({ transition: "status_down" });
 
-		const incident = await service.handleIncident(monitor, 503, decision);
+		const incident = await service.handleIncident(monitor, decision, makeCheck(503));
 
 		expect(incident).not.toBeNull();
 		expect(incident!.monitorId).toBe("mon-1");
@@ -72,10 +80,10 @@ describe("Incident lifecycle (integration)", () => {
 
 	it("does not create a duplicate incident for the same monitor", async () => {
 		const monitor = makeMonitor({ status: "down" });
-		const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "status_down" });
+		const decision = makeDecision({ transition: "status_down" });
 
-		const first = await service.handleIncident(monitor, 503, decision);
-		const second = await service.handleIncident(monitor, 503, decision);
+		const first = await service.handleIncident(monitor, decision, makeCheck(503));
+		const second = await service.handleIncident(monitor, decision, makeCheck(503));
 
 		expect(second!.id).toBe(first!.id);
 		expect(repo.getAll()).toHaveLength(1);
@@ -85,11 +93,11 @@ describe("Incident lifecycle (integration)", () => {
 
 	it("auto-resolves an incident when monitor recovers", async () => {
 		const monitor = makeMonitor({ status: "down" });
-		const createDecision = makeDecision({ shouldCreateIncident: true, incidentReason: "status_down" });
-		const created = await service.handleIncident(monitor, 503, createDecision);
+		const createDecision = makeDecision({ transition: "status_down" });
+		const created = await service.handleIncident(monitor, createDecision, makeCheck(503));
 
-		const resolveDecision = makeDecision({ shouldResolveIncident: true });
-		const resolved = await service.handleIncident(monitor, 200, resolveDecision);
+		const resolveDecision = makeDecision({ transition: "status_up" });
+		const resolved = await service.handleIncident(monitor, resolveDecision, makeCheck(200));
 
 		expect(resolved).not.toBeNull();
 		expect(resolved!.id).toBe(created!.id);
@@ -102,9 +110,9 @@ describe("Incident lifecycle (integration)", () => {
 
 	it("returns null when resolving with no active incident", async () => {
 		const monitor = makeMonitor({ status: "up" });
-		const decision = makeDecision({ shouldResolveIncident: true });
+		const decision = makeDecision({ transition: "status_up" });
 
-		const result = await service.handleIncident(monitor, 200, decision);
+		const result = await service.handleIncident(monitor, decision, makeCheck(200));
 
 		expect(result).toBeNull();
 	});
@@ -113,8 +121,8 @@ describe("Incident lifecycle (integration)", () => {
 
 	it("manually resolves an active incident with comment", async () => {
 		const monitor = makeMonitor({ status: "down" });
-		const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "status_down" });
-		const created = await service.handleIncident(monitor, 500, decision);
+		const decision = makeDecision({ transition: "status_down" });
+		const created = await service.handleIncident(monitor, decision, makeCheck(500));
 
 		const resolved = await service.resolveIncident(created!.id, "user-1", "team-1", "Root cause identified", "user@test.com");
 
@@ -128,8 +136,8 @@ describe("Incident lifecycle (integration)", () => {
 
 	it("throws when manually resolving an already-resolved incident", async () => {
 		const monitor = makeMonitor({ status: "down" });
-		const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "status_down" });
-		const created = await service.handleIncident(monitor, 500, decision);
+		const decision = makeDecision({ transition: "status_down" });
+		const created = await service.handleIncident(monitor, decision, makeCheck(500));
 
 		await service.resolveIncident(created!.id, "user-1", "team-1");
 
@@ -140,13 +148,10 @@ describe("Incident lifecycle (integration)", () => {
 
 	it("creates a threshold breach incident with statusCode 9999 and descriptive message", async () => {
 		const monitor = makeMonitor({ status: "breached", type: "hardware" });
-		(messageBuilder.extractThresholdBreaches as jest.Mock).mockReturnValue([
-			{ metric: "cpu", formattedValue: "92%", threshold: 80, unit: "%" },
-			{ metric: "memory", formattedValue: "88%", threshold: 85, unit: "%" },
-		]);
-		const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
+		(messageBuilder.buildThresholdBreachMessage as jest.Mock).mockReturnValue("CPU: 92% (threshold: 80%), MEMORY: 88% (threshold: 85%)");
+		const decision = makeDecision({ transition: "threshold_breach" });
 
-		const incident = await service.handleIncident(monitor, 200, decision, { monitorId: "mon-1" } as any);
+		const incident = await service.handleIncident(monitor, decision, makeCheck(200));
 
 		expect(incident!.statusCode).toBe(9999);
 		expect(incident!.message).toBe("CPU: 92% (threshold: 80%), MEMORY: 88% (threshold: 85%)");
@@ -158,7 +163,7 @@ describe("Incident lifecycle (integration)", () => {
 		const monitor = makeMonitor({ status: "up" });
 		const decision = makeDecision();
 
-		const result = await service.handleIncident(monitor, 200, decision);
+		const result = await service.handleIncident(monitor, decision, makeCheck(200));
 
 		expect(result).toBeNull();
 		expect(repo.getAll()).toHaveLength(0);
@@ -170,19 +175,19 @@ describe("Incident lifecycle (integration)", () => {
 		const monitor = makeMonitor({ status: "down" });
 
 		// First outage
-		const first = await service.handleIncident(monitor, 503, makeDecision({ shouldCreateIncident: true, incidentReason: "status_down" }));
+		const first = await service.handleIncident(monitor, makeDecision({ transition: "status_down" }), makeCheck(503));
 		expect(first!.status).toBe(true);
 
 		// Manually resolved
 		await service.resolveIncident(first!.id, "user-1", "team-1", "Restarted server");
 
 		// Second outage — new incident since previous was resolved
-		const second = await service.handleIncident(monitor, 502, makeDecision({ shouldCreateIncident: true, incidentReason: "status_down" }));
+		const second = await service.handleIncident(monitor, makeDecision({ transition: "status_down" }), makeCheck(502));
 		expect(second!.id).not.toBe(first!.id);
 		expect(second!.statusCode).toBe(502);
 
 		// Auto-resolve
-		const resolved = await service.handleIncident(monitor, 200, makeDecision({ shouldResolveIncident: true }));
+		const resolved = await service.handleIncident(monitor, makeDecision({ transition: "status_up" }), makeCheck(200));
 		expect(resolved!.id).toBe(second!.id);
 		expect(resolved!.status).toBe(false);
 		expect(resolved!.resolutionType).toBe("automatic");
@@ -198,16 +203,16 @@ describe("Incident lifecycle (integration)", () => {
 	it("incidents for different monitors do not interfere", async () => {
 		const monitorA = makeMonitor({ id: "mon-a", status: "down" });
 		const monitorB = makeMonitor({ id: "mon-b", status: "down" });
-		const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "status_down" });
+		const decision = makeDecision({ transition: "status_down" });
 
-		const incidentA = await service.handleIncident(monitorA, 500, decision);
-		const incidentB = await service.handleIncident(monitorB, 502, decision);
+		const incidentA = await service.handleIncident(monitorA, decision, makeCheck(500));
+		const incidentB = await service.handleIncident(monitorB, decision, makeCheck(502));
 
 		expect(incidentA!.id).not.toBe(incidentB!.id);
 		expect(repo.getAll()).toHaveLength(2);
 
 		// Resolving monitor A does not affect monitor B
-		const resolved = await service.handleIncident(monitorA, 200, makeDecision({ shouldResolveIncident: true }));
+		const resolved = await service.handleIncident(monitorA, makeDecision({ transition: "status_up" }), makeCheck(200));
 		expect(resolved!.id).toBe(incidentA!.id);
 
 		const bStillActive = await repo.findActiveByMonitorId("mon-b", "team-1");

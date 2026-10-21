@@ -86,7 +86,9 @@ export const usePatch = <B = any, R = any>() => {
 	const patchFn = async (
 		endpoint: string,
 		body?: B,
-		config?: AxiosRequestConfig
+		config?: AxiosRequestConfig,
+		// Receives the server's error message, e.g. to place a validation error on a form field.
+		onError?: (message: string) => void
 	): Promise<ApiResponse<R> | null> => {
 		setLoading(true);
 		setError(null);
@@ -105,6 +107,7 @@ export const usePatch = <B = any, R = any>() => {
 			const errMsg = err?.response?.data?.msg || err.message || "An error occurred";
 			toastError(errMsg);
 			setError(errMsg);
+			onError?.(errMsg);
 			return null;
 		} finally {
 			setLoading(false);

@@ -1,16 +1,77 @@
 import { IMaintenanceWindowController } from "@/api/controllers/maintenanceWindowController.js";
-import { isAllowed } from "@/api/middleware/isAllowed.js";
-import { Router } from "express";
+import { RouteTable } from "@/api/routes/defineRoutes.js";
+import {
+	createMaintenanceWindowBodyValidation,
+	deleteMaintenanceWindowByIdParamValidation,
+	editMaintenanceByIdWindowBodyValidation,
+	editMaintenanceWindowByIdParamValidation,
+	getMaintenanceWindowByIdParamValidation,
+	getMaintenanceWindowsByMonitorIdParamValidation,
+	getMaintenanceWindowsByTeamIdQueryValidation,
+	maintenanceWindowListResponseSchema,
+	maintenanceWindowPageResponseSchema,
+} from "@/api/validation/maintenanceWindowValidation.js";
+import { maintenanceWindowSchema } from "@/domain/maintenance-windows/maintenance-window.schema.js";
+import { maintenanceWindowErrors } from "@/domain/maintenance-windows/maintenance-window.errors.js";
 
-export const createMaintenanceWindowRoutes = (maintenanceWindowController: IMaintenanceWindowController): Router => {
-	const router = Router();
-	router.post("/", isAllowed(["admin", "superadmin"]), maintenanceWindowController.createMaintenanceWindows);
-	router.get("/team/", maintenanceWindowController.getMaintenanceWindowsByTeamId);
-
-	router.get("/monitor/:monitorId", maintenanceWindowController.getMaintenanceWindowsByMonitorId);
-
-	router.get("/:id", maintenanceWindowController.getMaintenanceWindowById);
-	router.patch("/:id", isAllowed(["admin", "superadmin"]), maintenanceWindowController.editMaintenanceWindow);
-	router.delete("/:id", isAllowed(["admin", "superadmin"]), maintenanceWindowController.deleteMaintenanceWindow);
-	return router;
+export const maintenanceWindowRoutes: RouteTable<IMaintenanceWindowController> = {
+	prefix: "/maintenance-window",
+	tag: "maintenance-window",
+	auth: "jwt",
+	routes: [
+		{
+			method: "post",
+			path: "/",
+			handler: "createMaintenanceWindows",
+			summary: "Create one or more maintenance windows (admin/superadmin)",
+			errors: [maintenanceWindowErrors.monitorNotOnTeam],
+			roles: ["admin", "superadmin"],
+			body: createMaintenanceWindowBodyValidation,
+		},
+		{
+			method: "get",
+			path: "/team",
+			handler: "getMaintenanceWindowsByTeamId",
+			summary: "List maintenance windows for the caller's team",
+			query: getMaintenanceWindowsByTeamIdQueryValidation,
+			response: maintenanceWindowPageResponseSchema,
+		},
+		{
+			method: "get",
+			path: "/monitor/:monitorId",
+			handler: "getMaintenanceWindowsByMonitorId",
+			summary: "List maintenance windows for a monitor",
+			params: getMaintenanceWindowsByMonitorIdParamValidation,
+			response: maintenanceWindowListResponseSchema,
+		},
+		{
+			method: "get",
+			path: "/:id",
+			handler: "getMaintenanceWindowById",
+			summary: "Get a maintenance window by id",
+			errors: [maintenanceWindowErrors.notFound],
+			params: getMaintenanceWindowByIdParamValidation,
+			response: maintenanceWindowSchema,
+		},
+		{
+			method: "patch",
+			path: "/:id",
+			handler: "editMaintenanceWindow",
+			summary: "Edit a maintenance window (admin/superadmin)",
+			errors: [maintenanceWindowErrors.monitorNotOnTeam, maintenanceWindowErrors.notFound],
+			roles: ["admin", "superadmin"],
+			params: editMaintenanceWindowByIdParamValidation,
+			body: editMaintenanceByIdWindowBodyValidation,
+			response: maintenanceWindowSchema,
+		},
+		{
+			method: "delete",
+			path: "/:id",
+			handler: "deleteMaintenanceWindow",
+			summary: "Delete a maintenance window (admin/superadmin)",
+			errors: [maintenanceWindowErrors.notFound],
+			roles: ["admin", "superadmin"],
+			params: deleteMaintenanceWindowByIdParamValidation,
+		},
+	],
 };

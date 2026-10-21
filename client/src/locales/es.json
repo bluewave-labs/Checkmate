@@ -170,11 +170,18 @@
 			"retrying": "Reintentando...",
 			"reconnected": "Conexión restablecida"
 		},
+		"egressBanner": {
+			"degraded": "Checkmate no puede alcanzar sus destinos de fiabilidad. La conectividad saliente parece estar caída desde {{time}}; los fallos de los monitores no se notifican como incidentes hasta que se recupere.",
+			"degradedNoTime": "Checkmate no puede alcanzar sus destinos de fiabilidad. La conectividad saliente parece estar caída; los fallos de los monitores no se notifican como incidentes hasta que se recupere.",
+			"degradedWorkers": "{{degraded}} de {{total}} workers han perdido la conectividad saliente desde {{time}}. Sus fallos de monitores no se notifican como incidentes hasta que se recupere.",
+			"degradedWorkersNoTime": "{{degraded}} de {{total}} workers han perdido la conectividad saliente. Sus fallos de monitores no se notifican como incidentes hasta que se recupere."
+		},
 		"sidebar": {
 			"menu": {
 				"uptime": "Disponibilidad",
 				"pagespeed": "Pagespeed",
 				"infrastructure": "Infraestructura",
+				"docker": "Docker",
 				"notifications": "Notificaciones",
 				"checks": "Verificaciones",
 				"incidents": "Incidentes",
@@ -187,7 +194,8 @@
 					"alerting": "Alertas",
 					"reporting": "Informes",
 					"configuration": "Configuración"
-				}
+				},
+				"dashboard": "Panel"
 			},
 			"bottomMenu": {
 				"support": "Soporte",
@@ -410,11 +418,13 @@
 				"status": {
 					"all": "Todos",
 					"down": "Caído",
-					"up": "Activo"
+					"up": "Activo",
+					"degraded": "Salida degradada"
 				}
 			},
 			"table": {
 				"empty": "No hay verificaciones caídas en este rango de tiempo",
+				"egressDegraded": "Salida degradada",
 				"headers": {
 					"statusCode": "Código de estado",
 					"location": "Ubicación"
@@ -460,7 +470,8 @@
 					"maintenance": "mantenimiento",
 					"paused": "pausado",
 					"total": "total",
-					"up": "activo"
+					"up": "activo",
+					"degraded": "salida degradada"
 				},
 				"monitorTypes": {
 					"optionDocker": "Docker",
@@ -534,10 +545,6 @@
 				},
 				"general": {
 					"option": {
-						"container": {
-							"label": "Nombre/ID de contenedor",
-							"placeholder": "my-app o abcd1234"
-						},
 						"host": {
 							"label": "Host",
 							"placeholder": "192.168.1.100 o example.com"
@@ -593,6 +600,10 @@
 							"desktop": "Escritorio",
 							"label": "Estrategia",
 							"mobile": "Móvil"
+						},
+						"dockerHost": {
+							"label": "Host de Docker",
+							"placeholder": "unix:///var/run/docker.sock"
 						}
 					},
 					"title": "Configuración general",
@@ -694,17 +705,6 @@
 						}
 					}
 				},
-				"url": {
-					"title": "IP/URL del monitor en la página de estado",
-					"description": "Muestre la dirección IP o URL del monitor en la página de estado pública. Si está deshabilitado, solo se mostrará el nombre del monitor para proteger información sensible.",
-					"option": {
-						"showURL": {
-							"label": "Mostrar IP/URL en la página de estado",
-							"enabled": "Habilitado",
-							"disabled": "Deshabilitado"
-						}
-					}
-				},
 				"stats": {
 					"title": "Historial del monitor",
 					"description": "Limpie todo el historial de monitoreo y estadísticas de su equipo. Esta acción es irreversible.",
@@ -713,6 +713,50 @@
 						"title": "¿Limpiar todo el historial de monitoreo?",
 						"description": "Esto eliminará permanentemente todo el historial de monitoreo, estadísticas y datos de verificación de su equipo. Esta acción no se puede deshacer.",
 						"confirm": "Sí, limpiar todas las estadísticas"
+					}
+				},
+				"dockerLogs": {
+					"title": "Registros de contenedores",
+					"description": "Recopila en cada comprobación las líneas de registro más recientes de todos los contenedores de este host. Los registros se conservan 7 días. Deje esta opción desactivada en hosts con contenedores muy verbosos para ahorrar espacio en la base de datos.",
+					"option": {
+						"enabled": {
+							"label": "Recopilar registros de contenedores"
+						}
+					}
+				},
+				"dockerAlerts": {
+					"title": "Alertas de contenedores",
+					"description": "Marca este host como degradado mientras alguno de sus contenedores esté detenido o falle su comprobación de salud, y notifica el cambio. Los contenedores que terminan con código 0 no cuentan como detenidos. Capture no informa de los códigos de salida, así que en hosts con Capture cuenta cualquier contenedor detenido.",
+					"option": {
+						"onStopped": {
+							"label": "Alertar cuando un contenedor esté detenido"
+						},
+						"onUnhealthy": {
+							"label": "Alertar cuando un contenedor no esté sano"
+						}
+					}
+				},
+				"dockerTls": {
+					"title": "Credenciales TLS",
+					"description": "Conecta con un demonio de Docker remoto mediante TLS mutuo. Pegue los archivos PEM que pasaría a docker --tlsverify. La clave de cliente se cifra antes de guardarse y no se vuelve a mostrar.",
+					"option": {
+						"ca": {
+							"label": "Certificado de la CA",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"cert": {
+							"label": "Certificado de cliente",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"key": {
+							"label": "Clave de cliente",
+							"placeholder": "-----BEGIN PRIVATE KEY-----",
+							"stored": "Hay una clave guardada. Déjelo en blanco para conservarla."
+						},
+						"ignoreTls": {
+							"label": "Ignorar errores de TLS/SSL",
+							"description": "Omite la verificación del certificado del demonio, por lo que el certificado de la CA pasa a ser opcional. El certificado y la clave de cliente siguen siendo obligatorios porque el demonio los verifica."
+						}
 					}
 				}
 			}
@@ -825,12 +869,9 @@
 		"infrastructure": {
 			"charts": {
 				"labels": {
-					"cpu": "Uso de CPU",
 					"disk": "Uso de disco",
-					"memory": "Uso de memoria",
 					"netBytesRecv": "{{name}} - Bytes recibidos",
 					"netBytesSent": "{{name}} - Bytes enviados",
-					"netNoTraffic": "Capture no informa tráfico en ninguna interfaz. Esto es normal cuando Capture se ejecuta dentro de un contenedor que solo ve interfaces de loopback — ejecuta Capture directamente en el host para ver actividad de red real.",
 					"temp": "Temp"
 				}
 			},
@@ -943,7 +984,6 @@
 					"timestamp": "Marca de tiempo",
 					"level": "Nivel",
 					"service": "Servicio",
-					"method": "Método",
 					"monitorId": "ID de monitor",
 					"runCount": "Conteo de ejecuciones",
 					"failCount": "Conteo de fallas",
@@ -960,6 +1000,10 @@
 			"header": {
 				"title": "Registros y cola",
 				"description": "Inspecciona registros del servidor, la cola de trabajos del monitor y los diagnósticos de runtime en un solo lugar."
+			},
+			"details": {
+				"fields": "Campos",
+				"stack": "Traza de pila"
 			}
 		},
 		"maintenanceWindow": {
@@ -1156,11 +1200,17 @@
 			},
 			"form": {
 				"timezone": {
-					"title": "Zona horaria de visualización",
-					"description": "Seleccione la zona horaria utilizada para mostrar fechas y horas en toda la aplicación.",
+					"title": "Fecha y hora",
+					"description": "Elija la zona horaria y el formato de reloj que se usan para mostrar fechas y horas en toda la aplicación.",
 					"option": {
 						"timezone": {
-							"label": "Zona horaria de visualización"
+							"label": "Zona horaria de visualización",
+							"browserDefault": "Predeterminado del navegador ({{timezone}})"
+						},
+						"timeFormat": {
+							"label": "Formato de hora",
+							"24h": "24 horas",
+							"12h": "12 horas"
 						}
 					}
 				},
@@ -1199,9 +1249,7 @@
 					"description": "Muestre la dirección IP o URL del monitor en la página de estado pública. Si está deshabilitado, solo se mostrará el nombre del monitor para proteger información sensible.",
 					"option": {
 						"showURL": {
-							"label": "Mostrar IP/URL en la página de estado",
-							"enabled": "Habilitado",
-							"disabled": "Deshabilitado"
+							"label": "Mostrar IP/URL en la página de estado"
 						}
 					}
 				},
@@ -1306,6 +1354,25 @@
 						}
 					}
 				},
+				"egress": {
+					"title": "Autocomprobación de salida",
+					"description": "Comprueba periódicamente un conjunto de destinos de fiabilidad desde esta instancia. Mientras no se pueda alcanzar ninguno, la conectividad saliente se considera caída y los fallos de los monitores no se registran como incidentes.",
+					"option": {
+						"enabled": {
+							"label": "Activar la autocomprobación de salida"
+						},
+						"targets": {
+							"label": "Destinos de fiabilidad",
+							"placeholder": "https://example.com\ndns.google:53\n1.1.1.1",
+							"helper": "Uno por línea, hasta {{max}}. Déjalo vacío para usar los valores predeterminados (https://www.google.com/generate_204, https://www.cloudflare.com/cdn-cgi/trace). Un host o IP solo se comprueba con ping (ICMP), host:port abre una conexión TCP y una URL http:// o https:// se solicita por HTTP.",
+							"validation": {
+								"max": "Máximo {{max}} destinos",
+								"length": "Cada destino debe tener {{max}} caracteres o menos",
+								"invalid": "\"{{target}}\" no es un nombre de host o dirección IP, host:port ni una URL http(s)"
+							}
+						}
+					}
+				},
 				"demoMonitors": {
 					"title": "Monitores de demostración",
 					"description": "Agregue monitores de ejemplo con fines demostrativos."
@@ -1377,6 +1444,9 @@
 					"maintenance": "Mantenimiento",
 					"paused": "Pausado",
 					"up": "Operativo"
+				},
+				"incidents": {
+					"errorLoading": "Error al cargar incidentes."
 				}
 			},
 			"statusBar": {
@@ -1549,6 +1619,105 @@
 			"header": {
 				"title": "Monitores de uptime",
 				"description": "Observa endpoints HTTP, pings, contenedores y puertos — recibe alertas en el momento en que algo falla."
+			}
+		},
+		"docker": {
+			"table": {
+				"headers": {
+					"host": "Host",
+					"containers": "Contenedores"
+				},
+				"containersRunning": "{{running}} de {{total}} en ejecución"
+			},
+			"header": {
+				"title": "Monitores de Docker",
+				"description": "Monitorice sus hosts de Docker y todos los contenedores que se ejecutan en ellos."
+			},
+			"fallback": {
+				"title": "Aún no hay monitores de Docker",
+				"description": "Añada un host de Docker para monitorizar sus contenedores.",
+				"actionButton": "Crear un monitor"
+			},
+			"container": {
+				"header": {
+					"title": "Detalles del contenedor",
+					"description": "Estado, uso de recursos y registros de este contenedor."
+				},
+				"tabs": {
+					"overview": "Resumen",
+					"logs": "Registros"
+				},
+				"logs": {
+					"recentLines": "{{count}} líneas recientes",
+					"loading": "Cargando...",
+					"updatedSecondsAgo": "Actualizado hace {{count}} s",
+					"updatedMinutesAgo": "Actualizado hace {{count}} min",
+					"skipped": "Se omitieron algunas entradas del registro",
+					"loadOlder": "Cargar registros anteriores",
+					"loadingOlder": "Cargando...",
+					"noOlder": "Comienzo de los registros conservados",
+					"loadError": "No se pudieron cargar los registros",
+					"loadOlderError": "No se pudieron cargar los registros anteriores",
+					"empty": {
+						"title": "Todavía no se han recopilado registros",
+						"description": "Las líneas aparecerán aquí después de la próxima comprobación. Solo se almacena la salida escrita desde que se activó la recopilación."
+					},
+					"disabled": {
+						"title": "La recopilación de registros está desactivada para este host",
+						"description": "Active los registros de contenedores en la configuración del monitor para empezar a recopilarlos.",
+						"action": "Configurar el monitor"
+					},
+					"forbidden": {
+						"title": "No tiene acceso a los registros de contenedores",
+						"description": "Solo los administradores pueden ver los registros. Pida acceso a un administrador si necesita verlos."
+					}
+				}
+			},
+			"host": {
+				"statBoxes": {
+					"containers": "Contenedores",
+					"running": "En ejecución",
+					"stopped": "Detenidos",
+					"unhealthy": "No sanos"
+				},
+				"table": {
+					"headers": {
+						"container": "Contenedores",
+						"cpu": "CPU",
+						"memory": "Memoria"
+					}
+				}
+			}
+		},
+		"dashboard": {
+			"noData": "No hay datos disponibles en este momento.",
+			"monitorStatus": {
+				"ofUp": "de {{total}} activos"
+			},
+			"cards": {
+				"monitorStatus": "Estado de los monitores",
+				"currentlyDown": "Caídos ahora mismo",
+				"uptime": "Disponibilidad de los monitores",
+				"monitorsByType": "Monitores por tipo"
+			},
+			"uptimeCard": {
+				"toggleSortOrder": "Cambiar el orden"
+			},
+			"currentlyDown": {
+				"empty": "Ningún monitor está caído en este momento."
+			},
+			"header": {
+				"title": "Panel",
+				"description": "Vea todos los tipos de monitor en un solo lugar y detecte lo que necesita atención."
+			},
+			"editCards": "Editar tarjetas",
+			"editCardsModal": {
+				"title": "Tarjetas del panel",
+				"description": "Seleccione las tarjetas que se mostrarán en su panel.",
+				"groups": {
+					"uptime": "Disponibilidad"
+				},
+				"done": "Listo"
 			}
 		}
 	}

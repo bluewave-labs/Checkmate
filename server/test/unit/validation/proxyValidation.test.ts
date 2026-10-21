@@ -1,5 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
-import { createProxyBodyValidation, editProxyBodyValidation, proxyResponseSchema } from "../../../src/api/validation/proxyValidation.ts";
+import { createProxyBodyValidation, editProxyBodyValidation } from "../../../src/api/validation/proxyValidation.ts";
+import { proxyResponseSchema } from "../../../src/domain/proxies/proxy.schema.ts";
 
 const validBody = {
 	name: "Egress proxy",

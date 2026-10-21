@@ -1,5 +1,6 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { MaintenanceWindowService } from "../../../src/domain/maintenance-windows/maintenance-window.service.ts";
+import { maintenanceWindowErrors } from "../../../src/domain/maintenance-windows/maintenance-window.errors.ts";
 import type { IMaintenanceWindowsRepository } from "../../../src/domain/maintenance-windows/maintenance-window.repository.interface.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
 import type { IJobsRepository } from "../../../src/domain/jobs/job.repository.interface.ts";
@@ -134,9 +135,9 @@ describe("MaintenanceWindowService", () => {
 			]);
 			const { service, maintenanceWindowsRepository } = createService({ monitorsRepository });
 
-			await expect(service.createMaintenanceWindow(defaultCreateParams)).rejects.toThrow(
-				"Unauthorized to create maintenance window for one or more monitors"
-			);
+			await expect(service.createMaintenanceWindow(defaultCreateParams)).rejects.toMatchObject({
+				definition: maintenanceWindowErrors.monitorNotOnTeam,
+			});
 			expect(maintenanceWindowsRepository.create).not.toHaveBeenCalled();
 		});
 
@@ -421,7 +422,7 @@ describe("MaintenanceWindowService", () => {
 					teamId: "team-1",
 					body: { monitors: ["mon-1", "mon-2"] },
 				})
-			).rejects.toThrow("Unauthorized to edit maintenance window for one or more monitors");
+			).rejects.toMatchObject({ definition: maintenanceWindowErrors.monitorNotOnTeam });
 			expect(maintenanceWindowsRepository.updateById).not.toHaveBeenCalled();
 		});
 

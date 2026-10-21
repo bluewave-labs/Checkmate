@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import type { Document } from "mongodb";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "Migration:RecomputeResponseTimeFromTimings";
 const CHECKS_COLLECTION = "checks";
@@ -18,7 +19,7 @@ interface MigrationStats {
 const getDb = () => {
 	const db = mongoose.connection.db;
 	if (!db) {
-		throw new Error("Database connection is not initialized");
+		throw new AppError(internalError, { message: "Database connection is not initialized", service: SERVICE_NAME });
 	}
 	return db;
 };
@@ -145,7 +146,10 @@ const restoreFromBackup = async () => {
 	const db = getDb();
 	const backupExists = await db.listCollections({ name: BACKUP_COLLECTION }).toArray();
 	if (backupExists.length === 0) {
-		throw new Error("Cannot restore: backup collection does not exist");
+		throw new AppError(internalError, {
+			message: "Cannot restore: backup collection does not exist",
+			service: SERVICE_NAME,
+		});
 	}
 
 	const checksExists = await db.listCollections({ name: CHECKS_COLLECTION }).toArray();
@@ -158,24 +162,28 @@ const restoreFromBackup = async () => {
 };
 
 export async function recomputeResponseTimeFromTimings(logger: ILogger): Promise<void> {
+	const log = logger.child({ service: SERVICE_NAME });
 	const db = getDb();
 
 	const checksExists = await db.listCollections({ name: CHECKS_COLLECTION }).toArray();
 	if (checksExists.length === 0) {
-		logger.info({ service: SERVICE_NAME, message: "No checks collection, nothing to migrate" });
+		log.info("No checks collection, nothing to migrate");
 		return;
 	}
 
 	// Fresh installs and non-HTTP-only deployments have no stored timings — skip the rewrite entirely
 	const needsMigration = await db.collection(CHECKS_COLLECTION).countDocuments({ "timings.phases.total": { $exists: true } }, { limit: 1 });
 	if (needsMigration === 0) {
-		logger.info({ service: SERVICE_NAME, message: "No checks with timings.phases.total, nothing to migrate" });
+		log.info("No checks with timings.phases.total, nothing to migrate");
 		return;
 	}
 
 	const backupExists = await db.listCollections({ name: BACKUP_COLLECTION }).toArray();
 	if (backupExists.length > 0) {
-		throw new Error(`Backup collection "${BACKUP_COLLECTION}" already exists. Please remove it manually before running migration.`);
+		throw new AppError(internalError, {
+			message: `Backup collection "${BACKUP_COLLECTION}" already exists. Please remove it manually before running migration.`,
+			service: SERVICE_NAME,
+		});
 	}
 
 	await db
@@ -187,22 +195,25 @@ export async function recomputeResponseTimeFromTimings(logger: ILogger): Promise
 	try {
 		await createTimeSeriesCollection();
 		const stats = await streamBackupIntoChecks(recomputeResponseTime, true);
-		logger.info({
-			service: SERVICE_NAME,
-			message:
-				`Migrated ${stats.totalMigrated}/${stats.totalSource} checks, ${stats.totalFailed} failed ` +
-				`(failures stored in ${FAILED_DOCS_COLLECTION}); backup retained in ${BACKUP_COLLECTION}`,
-		});
+		log.info(
+			{
+				totalMigrated: stats.totalMigrated,
+				totalSource: stats.totalSource,
+				totalFailed: stats.totalFailed,
+				failedDocsCollection: FAILED_DOCS_COLLECTION,
+				backupCollection: BACKUP_COLLECTION,
+			},
+			"Migrated checks; failures stored and backup retained"
+		);
 	} catch (error) {
 		try {
 			await restoreFromBackup();
-			logger.error({ service: SERVICE_NAME, message: "Migration failed, checks restored from backup" });
+			log.error("Migration failed, checks restored from backup");
 		} catch (restoreError) {
-			const restoreMessage = restoreError instanceof Error ? restoreError.message : String(restoreError);
-			logger.error({
-				service: SERVICE_NAME,
-				message: `Migration failed AND rollback failed (${restoreMessage}) — original data is preserved in ${BACKUP_COLLECTION}`,
-			});
+			log.error(
+				{ err: restoreError, backupCollection: BACKUP_COLLECTION },
+				"Migration failed AND rollback failed, original data is preserved in the backup collection"
+			);
 		}
 		throw error;
 	}

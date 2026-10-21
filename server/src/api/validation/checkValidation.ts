@@ -41,4 +41,11 @@ export const deleteChecksParamValidation = z.object({
 
 export const getChecksSummaryByTeamIdQueryValidation = z.object({
 	dateRange: z.enum(DateRanges).optional(),
+	// Narrows the summary to one of the team's monitors, matching the Checks page's monitor picker.
+	monitorId: z
+		.string()
+		.regex(/^[0-9a-fA-F]{24}$/, "Must be a valid monitor ID")
+		.optional(),
 });
+
+export const deletedCountResponseSchema = z.object({ deletedCount: z.number() });

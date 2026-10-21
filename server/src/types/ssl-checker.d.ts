@@ -15,6 +15,7 @@ declare module "ssl-checker" {
 		agent?: Agent;
 		rejectUnauthorized?: boolean;
 		validateSubjectAltName?: boolean;
+		timeout?: number;
 	}
 
 	function sslChecker(hostname: string, options?: SSLOptions): Promise<SSLDetails>;

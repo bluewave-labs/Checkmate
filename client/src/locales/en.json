@@ -206,6 +206,12 @@
 			"retrying": "Retrying...",
 			"reconnected": "Connection restored"
 		},
+		"egressBanner": {
+			"degraded": "Checkmate cannot reach its reliability targets. Outbound connectivity appears to be down since {{time}}; monitor failures are not being reported as incidents until it recovers.",
+			"degradedNoTime": "Checkmate cannot reach its reliability targets. Outbound connectivity appears to be down; monitor failures are not being reported as incidents until it recovers.",
+			"degradedWorkers": "{{degraded}} of {{total}} workers have lost outbound connectivity since {{time}}. Their monitor failures are not being reported as incidents until it recovers.",
+			"degradedWorkersNoTime": "{{degraded}} of {{total}} workers have lost outbound connectivity. Their monitor failures are not being reported as incidents until it recovers."
+		},
 		"sidebar": {
 			"menu": {
 				"uptime": "Uptime",
@@ -226,7 +232,8 @@
 					"alerting": "Alerting",
 					"reporting": "Reporting",
 					"configuration": "Configuration"
-				}
+				},
+				"dashboard": "Dashboard"
 			},
 			"bottomMenu": {
 				"support": "Support",
@@ -502,11 +509,13 @@
 				"status": {
 					"all": "All",
 					"down": "Down",
-					"up": "Up"
+					"up": "Up",
+					"degraded": "Egress degraded"
 				}
 			},
 			"table": {
-				"empty": "No down checks in this time range",
+				"empty": "No checks match in this time range",
+				"egressDegraded": "Egress degraded",
 				"headers": {
 					"statusCode": "Status code",
 					"location": "Location"
@@ -547,6 +556,7 @@
 				},
 				"statBoxes": {
 					"activeFor": "Active for",
+					"checkingEvery": "Checking every {{interval}}",
 					"certificateExpiry": "Certificate expiry",
 					"domainExpiry": "Domain expiry",
 					"lastCheck": "Last check",
@@ -555,12 +565,13 @@
 				},
 				"status": {
 					"down": "down",
-					"breached": "threshold exceeded",
+					"breached": "alert",
 					"initializing": "initializing",
 					"maintenance": "maintenance",
 					"paused": "paused",
 					"total": "total",
-					"up": "up"
+					"up": "up",
+					"degraded": "egress degraded"
 				},
 				"monitorTypes": {
 					"optionDocker": "Docker",
@@ -633,6 +644,9 @@
 					"title": "Check frequency"
 				},
 				"general": {
+					"url": {
+						"alert": "Future checks will use the new URL. Historical data for this monitor is kept, but it was collected from the old URL."
+					},
 					"option": {
 						"dockerHost": {
 							"label": "Docker host",
@@ -718,7 +732,7 @@
 						"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.  Set an optional proxy server to connect through.",
 						"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
 						"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
-						"docker": "Enter the Docker socket to monitor, as unix:///var/run/docker.sock or an absolute path such as /var/run/docker.sock, or a remote daemon as tcp://host:2376 to connect with TLS client certificates. Every container on the host is monitored.",
+						"docker": "Enter a Docker socket such as unix:///var/run/docker.sock, a remote daemon such as tcp://host:2376 with TLS client certificates, or a Capture endpoint ending in /metrics/docker with its authorization secret. Every container on the host is monitored.",
 						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type. Some games require enabling server queries in their config file — check your game server's documentation. See the <gamedigLink>supported games list</gamedigLink> for protocol details.",
 						"pagespeed": "Track page load performance, Core Web Vitals, and optimization scores for your website.",
 						"grpc": "Enter the hostname and port of the gRPC server, optionally specify a service name for the health check, and add a display name.",
@@ -822,6 +836,18 @@
 					"option": {
 						"enabled": {
 							"label": "Collect container logs"
+						}
+					}
+				},
+				"dockerAlerts": {
+					"title": "Container alerts",
+					"description": "Mark this host as breached while any container on it is stopped or failing its health check, and notify on the change. Containers that exit with code 0 do not count as stopped. Capture does not report exit codes, so on Capture hosts every stopped container counts.",
+					"option": {
+						"onStopped": {
+							"label": "Alert when a container is stopped"
+						},
+						"onUnhealthy": {
+							"label": "Alert when a container is unhealthy"
 						}
 					}
 				},
@@ -1223,7 +1249,6 @@
 					"timestamp": "Timestamp",
 					"level": "Level",
 					"service": "Service",
-					"method": "Method",
 					"monitorId": "Monitor ID",
 					"runCount": "Run count",
 					"failCount": "Count",
@@ -1237,6 +1262,10 @@
 			"header": {
 				"title": "Logs & queue",
 				"description": "Inspect server logs, the monitor job queue, and runtime diagnostics in one place."
+			},
+			"details": {
+				"fields": "Fields",
+				"stack": "Stack"
 			}
 		},
 		"maintenanceWindow": {
@@ -1464,11 +1493,17 @@
 			},
 			"form": {
 				"timezone": {
-					"title": "Display timezone",
-					"description": "Select the timezone used to display dates and times throughout the application.",
+					"title": "Date and time",
+					"description": "Choose the timezone and clock format used to display dates and times throughout the application.",
 					"option": {
 						"timezone": {
-							"label": "Display timezone"
+							"label": "Display timezone",
+							"browserDefault": "Browser default ({{timezone}})"
+						},
+						"timeFormat": {
+							"label": "Time format",
+							"24h": "24-hour",
+							"12h": "12-hour"
 						}
 					}
 				},
@@ -1628,6 +1663,25 @@
 						}
 					}
 				},
+				"egress": {
+					"title": "Egress self-check",
+					"description": "Periodically probe a set of reliability targets from this instance. While none of them can be reached, outbound connectivity is treated as down and monitor failures are not recorded as incidents.",
+					"option": {
+						"enabled": {
+							"label": "Enable egress self-check"
+						},
+						"targets": {
+							"label": "Reliability targets",
+							"placeholder": "https://example.com\ndns.google:53\n1.1.1.1",
+							"helper": "One per line, up to {{max}}. Leave empty to use the defaults (https://www.google.com/generate_204, https://www.cloudflare.com/cdn-cgi/trace). A bare host or IP is pinged (ICMP), host:port opens a TCP connection, and an http:// or https:// URL is requested over HTTP.",
+							"validation": {
+								"max": "Maximum {{max}} targets",
+								"length": "Each target must be {{max}} characters or fewer",
+								"invalid": "\"{{target}}\" is not a hostname or IP address, host:port, or http(s) URL"
+							}
+						}
+					}
+				},
 				"demoMonitors": {
 					"title": "Demo monitors",
 					"description": "Add sample monitors for demonstration purposes."
@@ -1683,7 +1737,7 @@
 				"status": {
 					"up": "Operational",
 					"down": "Down",
-					"breached": "Threshold exceeded",
+					"breached": "Alert",
 					"maintenance": "Maintenance",
 					"paused": "Paused",
 					"initializing": "Initializing"
@@ -1710,19 +1764,26 @@
 				"uptime": {
 					"title": "Uptime",
 					"responseTime": "Response time"
+				},
+				"incidents": {
+					"modalTitle": "Incidents for {{date}}",
+					"loading": "Loading...",
+					"noIncidents": "No incidents reported for this day.",
+					"ongoing": "Ongoing",
+					"errorLoading": "Failed to load incidents."
 				}
 			},
 			"statusBar": {
 				"monitoringSummary": "Monitoring {{count}} service · Updates every 10 seconds",
 				"monitoringSummary_other": "Monitoring {{count}} services · Updates every 10 seconds",
 				"allUp": "All systems operational",
-				"allBreached": "All systems have exceeded thresholds",
+				"allBreached": "All systems have active alerts",
 				"allMaintenance": "All systems are under maintenance",
 				"allDown": "All systems are down",
 				"allPaused": "All systems are paused",
 				"allInitializing": "All systems are initializing",
-				"breachedAndDown": "Some systems have exceeded thresholds and are down",
-				"breached": "Some systems have exceeded thresholds",
+				"breachedAndDown": "Some systems have active alerts and some are down",
+				"breached": "Some systems have active alerts",
 				"degraded": "Some systems are experiencing issues",
 				"maintenanceAndDown": "Some systems are down during maintenance",
 				"maintenance": "Some systems are under maintenance",
@@ -1906,6 +1967,37 @@
 			"header": {
 				"title": "Uptime monitors",
 				"description": "Watch HTTP endpoints, pings, containers, and ports — and get alerted the moment something goes down."
+			}
+		},
+		"dashboard": {
+			"noData": "No data available at this moment.",
+			"monitorStatus": {
+				"ofUp": "of {{total}} up"
+			},
+			"cards": {
+				"monitorStatus": "Monitor status",
+				"currentlyDown": "Currently down",
+				"uptime": "Monitor uptime",
+				"monitorsByType": "Monitors by type"
+			},
+			"uptimeCard": {
+				"toggleSortOrder": "Toggle sort order"
+			},
+			"currentlyDown": {
+				"empty": "No monitors are down at this moment."
+			},
+			"header": {
+				"title": "Dashboard",
+				"description": "See every monitor type in one place and spot what needs attention."
+			},
+			"editCards": "Edit cards",
+			"editCardsModal": {
+				"title": "Dashboard cards",
+				"description": "Select the cards to display on your dashboard.",
+				"groups": {
+					"uptime": "Uptime"
+				},
+				"done": "Done"
 			}
 		}
 	}

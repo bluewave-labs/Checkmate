@@ -9,9 +9,10 @@ import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@/Types/state";
 import { setRowsPerPage } from "@/Features/UI/uiSlice";
-import { formatTimestamp } from "@/Utils/TimeUtils";
+import { useFormatDate } from "@/Hooks/useFormatDate";
+import { LogDetails } from "@/Pages/Logs/components/LogDetails";
 
-type LogWithId = Log & { id: number };
+export type LogWithId = Log & { id: number };
 
 interface TableLogsProps {
 	logs: LogWithId[];
@@ -46,6 +47,7 @@ const LevelBadge = ({ level }: { level: LogLevel }) => {
 export const TableLogs = ({ logs, logCount, page, setPage }: TableLogsProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
+	const formatDate = useFormatDate();
 	const dispatch = useDispatch();
 	const rowsPerPage = useSelector(
 		(state: RootState) => state?.ui?.logs?.rowsPerPage ?? 15
@@ -57,7 +59,7 @@ export const TableLogs = ({ logs, logCount, page, setPage }: TableLogsProps) => 
 			content: t("pages.logs.table.headers.timestamp"),
 			render: (row) => (
 				<Typography sx={{ fontFamily: theme.typography.fontFamilyMonospace }}>
-					{formatTimestamp(row.timestamp)}
+					{formatDate(row.timestamp, "dateTimeSeconds")}
 				</Typography>
 			),
 		},
@@ -70,15 +72,6 @@ export const TableLogs = ({ logs, logCount, page, setPage }: TableLogsProps) => 
 			id: "service",
 			content: t("pages.logs.table.headers.service"),
 			render: (row) => <Typography>{row.service || "-"}</Typography>,
-		},
-		{
-			id: "method",
-			content: t("pages.logs.table.headers.method"),
-			render: (row) => (
-				<Typography fontFamily={theme.typography.fontFamilyMonospace}>
-					{row.method || "-"}
-				</Typography>
-			),
 		},
 		{
 			id: "message",
@@ -116,6 +109,10 @@ export const TableLogs = ({ logs, logCount, page, setPage }: TableLogsProps) => 
 				headers={headers}
 				data={logs}
 				emptyViewText={t("pages.logs.noLogs")}
+				renderExpandedContent={(row) =>
+					row.details || row.stack ? <LogDetails log={row} /> : null
+				}
+				expandableRows
 			/>
 			<Pagination
 				itemsOnPage={logs.length}

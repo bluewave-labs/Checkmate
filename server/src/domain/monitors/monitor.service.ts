@@ -27,14 +27,15 @@ import type { IMonitorStatsRepository } from "@/domain/monitor-stats/monitor-sta
 import type { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import type { IStatusPagesRepository } from "@/domain/status-pages/status-page-repository.interface.js";
 import demoMonitorsData from "@/utils/demoMonitors.json" with { type: "json" };
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import type { ImportedMonitor } from "@/api/validation/monitorValidation.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
 import { DateRange } from "@/types/query.js";
 import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
 import { IEncryptionService } from "@/service/encryption/encryptionService.js";
-import { isDockerTlsUrl } from "@/utils/dockerHost.js";
+import { isCaptureDockerUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
+import { monitorErrors } from "@/domain/monitors/monitor.errors.js";
 
 const SERVICE_NAME = "MonitorService";
 
@@ -174,7 +175,7 @@ export class MonitorService implements IMonitorService {
 		encryptionService: IEncryptionService;
 	}) {
 		this.scheduler = scheduler;
-		this.logger = logger;
+		this.logger = logger.child({ service: SERVICE_NAME });
 		this.games = games;
 		this.monitorsRepository = monitorsRepository;
 		this.checksRepository = checksRepository;
@@ -194,10 +195,13 @@ export class MonitorService implements IMonitorService {
 
 		// Encrypt docker TLS keys
 		this.encryptDockerTls(body, "create");
+		if (body.type === "docker" && isCaptureDockerUrl(body.url)) {
+			body.dockerLogsEnabled = false;
+		}
 
 		const monitor = await this.monitorsRepository.create(body, teamId, userId);
 		if (!monitor) {
-			throw new AppError({ message: "Failed to create monitor", status: 500, service: SERVICE_NAME, method: "createMonitor" });
+			throw new AppError(internalError, { message: "Failed to create monitor", service: SERVICE_NAME });
 		}
 
 		this.scheduler.addJob(monitor.id, monitor);
@@ -207,7 +211,7 @@ export class MonitorService implements IMonitorService {
 	createMonitors = async (monitors: Array<Monitor>): Promise<Monitor[] | null> => {
 		const createdMonitors = await this.monitorsRepository.createMonitors(monitors);
 		if (!createdMonitors || createdMonitors.length === 0) {
-			throw new AppError({ message: "Failed to create monitors", status: 500, service: SERVICE_NAME, method: "createMonitors" });
+			throw new AppError(internalError, { message: "Failed to create monitors", service: SERVICE_NAME });
 		}
 
 		await Promise.all(createdMonitors.map((monitor) => this.scheduler.addJob(monitor.id, monitor)));
@@ -241,7 +245,10 @@ export class MonitorService implements IMonitorService {
 	}): Promise<UptimeDetailsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
-			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
+			throw new AppError(monitorErrors.notFound, {
+				message: `Monitor with ID ${monitorId} not found.`,
+				service: SERVICE_NAME,
+			});
 		}
 		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, dateRange, {
 			type: monitor.type,
@@ -249,7 +256,10 @@ export class MonitorService implements IMonitorService {
 		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
 
 		if (!isUptimeChecksResult(checksData)) {
-			throw new AppError({ message: `${monitor.type} monitors are not supported for uptime details`, status: 400 });
+			throw new AppError(monitorErrors.notUptimeMonitor, {
+				message: `${monitor.type} monitors are not supported for uptime details`,
+				service: SERVICE_NAME,
+			});
 		}
 
 		return {
@@ -276,10 +286,16 @@ export class MonitorService implements IMonitorService {
 	}): Promise<HardwareDetailsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
-			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
+			throw new AppError(monitorErrors.notFound, {
+				message: `Monitor with ID ${monitorId} not found.`,
+				service: SERVICE_NAME,
+			});
 		}
 		if (monitor.type !== "hardware") {
-			throw new AppError({ message: `${monitor.type} monitors are not supported for hardware details`, status: 400 });
+			throw new AppError(monitorErrors.notHardwareMonitor, {
+				message: `${monitor.type} monitors are not supported for hardware details`,
+				service: SERVICE_NAME,
+			});
 		}
 
 		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, dateRange, {
@@ -287,7 +303,10 @@ export class MonitorService implements IMonitorService {
 		});
 
 		if (checksData.monitorType !== "hardware") {
-			throw new AppError({ message: "Unable to load hardware stats for this monitor", status: 500 });
+			throw new AppError(internalError, {
+				message: "Unable to load hardware stats for this monitor",
+				service: SERVICE_NAME,
+			});
 		}
 
 		const stats = {
@@ -316,10 +335,16 @@ export class MonitorService implements IMonitorService {
 	}): Promise<PageSpeedDetailsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
-			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
+			throw new AppError(monitorErrors.notFound, {
+				message: `Monitor with ID ${monitorId} not found.`,
+				service: SERVICE_NAME,
+			});
 		}
 		if (monitor.type !== "pagespeed") {
-			throw new AppError({ message: `${monitor.type} monitors are not supported for pagespeed details`, status: 400 });
+			throw new AppError(monitorErrors.notPageSpeedMonitor, {
+				message: `${monitor.type} monitors are not supported for pagespeed details`,
+				service: SERVICE_NAME,
+			});
 		}
 
 		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, dateRange, {
@@ -327,7 +352,10 @@ export class MonitorService implements IMonitorService {
 		});
 
 		if (checksData.monitorType !== "pagespeed") {
-			throw new AppError({ message: "Unable to load pagespeed stats for this monitor", status: 500 });
+			throw new AppError(internalError, {
+				message: "Unable to load pagespeed stats for this monitor",
+				service: SERVICE_NAME,
+			});
 		}
 
 		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
@@ -351,10 +379,16 @@ export class MonitorService implements IMonitorService {
 	}): Promise<DockerDetailsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
-			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
+			throw new AppError(monitorErrors.notFound, {
+				message: `Monitor with ID ${monitorId} not found.`,
+				service: SERVICE_NAME,
+			});
 		}
 		if (monitor.type !== "docker") {
-			throw new AppError({ message: `${monitor.type} monitors are not supported for docker details`, status: 400 });
+			throw new AppError(monitorErrors.notDockerMonitor, {
+				message: `${monitor.type} monitors are not supported for docker details`,
+				service: SERVICE_NAME,
+			});
 		}
 
 		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, dateRange, {
@@ -362,7 +396,10 @@ export class MonitorService implements IMonitorService {
 		});
 
 		if (checksData.monitorType !== "docker") {
-			throw new AppError({ message: "Unable to load docker stats for this monitor", status: 500 });
+			throw new AppError(internalError, {
+				message: "Unable to load docker stats for this monitor",
+				service: SERVICE_NAME,
+			});
 		}
 
 		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
@@ -392,10 +429,16 @@ export class MonitorService implements IMonitorService {
 	}): Promise<DockerContainerDetailsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
-			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
+			throw new AppError(monitorErrors.notFound, {
+				message: `Monitor with ID ${monitorId} not found.`,
+				service: SERVICE_NAME,
+			});
 		}
 		if (monitor.type !== "docker") {
-			throw new AppError({ message: `${monitor.type} monitors are not supported for docker container details`, status: 400 });
+			throw new AppError(monitorErrors.notDockerMonitor, {
+				message: `${monitor.type} monitors are not supported for docker container details`,
+				service: SERVICE_NAME,
+			});
 		}
 
 		const { aggregate, latest } = await this.checksRepository.findDockerContainerChecks(monitor.id, containerName, dateRange);
@@ -427,16 +470,16 @@ export class MonitorService implements IMonitorService {
 	}): Promise<DockerContainerLogsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
-			throw new AppError({
+			throw new AppError(monitorErrors.notFound, {
 				message: `Monitor with ID ${monitorId} not found`,
-				status: 404,
+				service: SERVICE_NAME,
 			});
 		}
 
 		if (monitor.type !== "docker") {
-			throw new AppError({
+			throw new AppError(monitorErrors.notDockerMonitor, {
 				message: `${monitor.type} monitors are not supported for docker container logs`,
-				status: 400,
+				service: SERVICE_NAME,
 			});
 		}
 
@@ -458,7 +501,10 @@ export class MonitorService implements IMonitorService {
 	}): Promise<GroupedGeoCheckResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
-			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
+			throw new AppError(monitorErrors.notFound, {
+				message: `Monitor with ID ${monitorId} not found.`,
+				service: SERVICE_NAME,
+			});
 		}
 
 		if (!supportsGeoCheck(monitor.type) || !monitor.geoCheckEnabled) {
@@ -553,14 +599,12 @@ export class MonitorService implements IMonitorService {
 		if (body.type === "docker" && isDockerTlsUrl(body.url) && body.dockerTlsKey === undefined) {
 			const stored = await this.monitorsRepository.findById(monitorId, teamId);
 			if (!stored.dockerTlsKeySet) {
-				throw new AppError({
-					message: "Key is required for a TLS Docker host",
-					status: 422,
+				throw new AppError(monitorErrors.dockerTlsKeyRequired, {
 					service: SERVICE_NAME,
-					method: "editMonitor",
 				});
 			}
 		}
+		await this.normalizeCaptureDocker(body, monitorId, teamId);
 		const editedMonitor = await this.monitorsRepository.updateById(monitorId, teamId, body, { unsetProxyId });
 		await this.scheduler.updateJob(editedMonitor);
 		return editedMonitor;
@@ -623,12 +667,10 @@ export class MonitorService implements IMonitorService {
 		results.forEach((result, index) => {
 			if (result.status === "rejected") {
 				failedCount++;
-				this.logger.error({
-					message: `Failed to sync job queue for monitor ${monitors[index]?.id || "unknown"} during bulk ${pause ? "pause" : "resume"}`,
-					service: SERVICE_NAME,
-					method: "bulkPauseMonitors",
-					stack: result.reason instanceof Error ? result.reason.stack : undefined,
-				});
+				this.logger.error(
+					{ err: result.reason, monitorId: monitors[index]?.id || "unknown", action: pause ? "pause" : "resume" },
+					"Failed to sync job queue for monitor during bulk pause/resume"
+				);
 			}
 		});
 
@@ -637,50 +679,26 @@ export class MonitorService implements IMonitorService {
 
 	private deleteMonitorChildren = async (monitor: Monitor, teamId: string) => {
 		await this.checksRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
-			this.logger.warn({
-				message: `Error deleting checks for monitor ${monitor.id} with name ${monitor.name}`,
-				service: SERVICE_NAME,
-				stack: err instanceof Error ? err.stack : undefined,
-			});
+			this.logger.warn({ err, monitorId: monitor.id, monitorName: monitor.name }, "Error deleting checks for monitor");
 		});
 		await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id).catch((err: unknown) => {
-			this.logger.warn({
-				message: `Error removing monitor ${monitor.id} with name ${monitor.name} from status pages`,
-				service: SERVICE_NAME,
-				stack: err instanceof Error ? err.stack : undefined,
-			});
+			this.logger.warn({ err, monitorId: monitor.id, monitorName: monitor.name }, "Error removing monitor from status pages");
 		});
 
 		await this.incidentsRepository.deleteByMonitorId(monitor.id, teamId).catch((err: unknown) => {
-			this.logger.warn({
-				message: `Error deleting incidents for monitor ${monitor.id} with name ${monitor.name}`,
-				service: SERVICE_NAME,
-				stack: err instanceof Error ? err.stack : undefined,
-			});
+			this.logger.warn({ err, monitorId: monitor.id, monitorName: monitor.name }, "Error deleting incidents for monitor");
 		});
 
 		await this.geoChecksRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
-			this.logger.warn({
-				message: `Error deleting geo checks for monitor ${monitor.id} with name ${monitor.name}`,
-				service: SERVICE_NAME,
-				stack: err instanceof Error ? err.stack : undefined,
-			});
+			this.logger.warn({ err, monitorId: monitor.id, monitorName: monitor.name }, "Error deleting geo checks for monitor");
 		});
 
 		await this.dockerLogsRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
-			this.logger.warn({
-				message: `Error deleting docker logs for monitor ${monitor.id} with name ${monitor.name}`,
-				service: SERVICE_NAME,
-				stack: err instanceof Error ? err.stack : undefined,
-			});
+			this.logger.warn({ err, monitorId: monitor.id, monitorName: monitor.name }, "Error deleting docker logs for monitor");
 		});
 
 		await this.monitorStatsRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
-			this.logger.warn({
-				message: `Error deleting monitor stats for monitor ${monitor.id} with name ${monitor.name}`,
-				service: SERVICE_NAME,
-				stack: err instanceof Error ? err.stack : undefined,
-			});
+			this.logger.warn({ err, monitorId: monitor.id, monitorName: monitor.name }, "Error deleting monitor stats for monitor");
 		});
 	};
 
@@ -700,12 +718,7 @@ export class MonitorService implements IMonitorService {
 					await this.deleteMonitorChildren(monitor, teamId);
 					await this.scheduler.deleteJob(monitor);
 				} catch (error: unknown) {
-					this.logger.warn({
-						message: `Error deleting associated records for monitor ${monitor.id} with name ${monitor.name}`,
-						service: SERVICE_NAME,
-						method: "deleteAllMonitors",
-						stack: error instanceof Error ? error.stack : undefined,
-					});
+					this.logger.warn({ err: error, monitorId: monitor.id, monitorName: monitor.name }, "Error deleting associated records for monitor");
 				}
 			})
 		);
@@ -716,7 +729,9 @@ export class MonitorService implements IMonitorService {
 		const monitors = await this.monitorsRepository.findByTeamId(teamId, {}, { includeRecentChecks: false });
 
 		if (monitors.length === 0) {
-			throw new AppError({ message: "No monitors found to export.", service: SERVICE_NAME, method: "exportMonitorsToJSON", status: 400 });
+			throw new AppError(monitorErrors.nothingToExport, {
+				service: SERVICE_NAME,
+			});
 		}
 
 		return monitors;
@@ -749,6 +764,26 @@ export class MonitorService implements IMonitorService {
 		return { imported: createdMonitors!.length, errors };
 	};
 
+	// Capture-backed Docker monitors authenticate with the API secret and never collect logs; socket and TLS hosts have no secret.
+	private normalizeCaptureDocker = async (body: Partial<Monitor>, monitorId: string, teamId: string) => {
+		if (body.type !== "docker") return;
+
+		if (body.url !== undefined && !isCaptureDockerUrl(body.url)) {
+			body.secret = "";
+			return;
+		}
+		if (body.url === undefined && body.secret === undefined) return;
+
+		const stored = await this.monitorsRepository.findById(monitorId, teamId);
+		if (body.url === undefined && !isCaptureDockerUrl(stored.url)) return;
+
+		body.dockerLogsEnabled = false;
+		const secret = body.secret === undefined ? stored.secret : body.secret.trim();
+		if (!secret) {
+			throw new AppError(monitorErrors.captureSecretRequired, { service: SERVICE_NAME });
+		}
+	};
+
 	private encryptDockerTls = (body: Partial<Monitor>, mode: "create" | "edit") => {
 		if (body.type !== "docker" && mode === "create") return;
 
@@ -766,12 +801,10 @@ export class MonitorService implements IMonitorService {
 		}
 
 		if (!this.encryptionService.isConfigured()) {
-			throw new AppError({
+			throw new AppError(monitorErrors.encryptionKeyMissing, {
 				message:
 					'Docker TLS credentials require ENCRYPTION_KEY to be set on the server. Generate one with "openssl rand -base64 32", set the same value for both the API and worker, and restart.',
-				status: 422,
 				service: SERVICE_NAME,
-				method: "encryptDockerTls",
 			});
 		}
 

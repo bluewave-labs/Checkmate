@@ -69,6 +69,34 @@ describe("MongoMonitorsRepository", () => {
 		});
 	});
 
+	describe("sorting", () => {
+		it("uses creation time as the fallback for equal primary values", async () => {
+			const repo = new MongoMonitorsRepository();
+			const teamId = new mongoose.Types.ObjectId();
+			const createMonitor = (name: string, type: string, status: string, createdAt: Date) =>
+				MonitorModel.create({
+					userId: new mongoose.Types.ObjectId(),
+					teamId,
+					name,
+					type,
+					status,
+					url: "https://example.com",
+					createdAt,
+				});
+
+			await createMonitor("newer-up", "hardware", "up", new Date("2026-03-01T00:00:00.000Z"));
+			await createMonitor("down", "http", "down", new Date("2026-04-01T00:00:00.000Z"));
+			await createMonitor("older-up", "pagespeed", "up", new Date("2026-01-01T00:00:00.000Z"));
+			await createMonitor("middle-up", "docker", "up", new Date("2026-02-01T00:00:00.000Z"));
+
+			const ascending = await repo.findByTeamIdWithStats(teamId.toString(), { field: "status", order: "asc" });
+			const descending = await repo.findByTeamIdWithStats(teamId.toString(), { field: "status", order: "desc" });
+
+			expect(ascending.map((monitor) => monitor.name)).toEqual(["down", "older-up", "middle-up", "newer-up"]);
+			expect(descending.map((monitor) => monitor.name)).toEqual(["older-up", "middle-up", "newer-up", "down"]);
+		});
+	});
+
 	describe("findByIds recentChecks modes", () => {
 		const seedFixtures = async () => {
 			const teamId = new mongoose.Types.ObjectId();

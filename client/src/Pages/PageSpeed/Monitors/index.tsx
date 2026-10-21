@@ -46,9 +46,8 @@ const PageSpeedMonitorsPage = () => {
 				setPage={c.setPage}
 				rowsPerPage={c.rowsPerPage}
 				sortField={c.sortField}
-				setSortField={c.setSortField}
 				sortOrder={c.sortOrder}
-				setSortOrder={c.setSortOrder}
+				setSort={c.setSort}
 				setRowsPerPage={c.handleSetRowsPerPage}
 			/>
 		</MonitorListPage>

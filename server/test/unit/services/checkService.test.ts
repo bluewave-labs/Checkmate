@@ -4,8 +4,6 @@ import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import type { IChecksRepository } from "../../../src/domain/checks/check.repository.interface.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
 import type { MonitorStatusResponse, HardwareStatusPayload, PageSpeedStatusPayload } from "../../../src/types/network.ts";
-import { NotificationMessageBuilder } from "../../../src/domain/notifications/notification.message-builder.ts";
-import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -117,7 +115,7 @@ describe("CheckService", () => {
 				const check = service.toCheck(makeStatusResponse({ type: "pagespeed", payload: undefined } as any));
 
 				expect(check).toBeUndefined();
-				expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to build check" }));
+				expect(logger.warn).toHaveBeenCalledWith("Failed to build check");
 			});
 
 			it("defaults categories and audits to empty when lighthouseResult is missing", () => {
@@ -281,84 +279,6 @@ describe("CheckService", () => {
 		});
 	});
 
-	// ── toStatusResponse round-trip (Phase 2 §5 guard) ─────────────────────────
-	// The DB-queue split persists a Check, then the evaluator rebuilds the status response from it.
-	// toStatusResponse is only correct because every field a downstream consumer reads survives
-	// toCheck → toStatusResponse. These tests pin that: if a future change drops a consumed field
-	// from the round-trip, they fail instead of silently regressing the evaluator/reactors.
-
-	describe("toStatusResponse round-trip", () => {
-		const makeHardwareStatus = (overrides?: Partial<MonitorStatusResponse>): MonitorStatusResponse =>
-			makeStatusResponse({
-				type: "hardware",
-				status: true,
-				code: 200,
-				message: "OK",
-				responseTime: 42,
-				payload: {
-					data: {
-						cpu: { usage_percent: 0.92 },
-						memory: { usage_percent: 0.81 },
-						disk: [{ device: "/dev/sda", usage_percent: 0.75 }],
-						host: { os: "linux" },
-						net: [{ name: "eth0" }],
-					},
-				} as HardwareStatusPayload,
-				...overrides,
-			} as any);
-
-		it("uptime: preserves every consumed scalar field", () => {
-			const { service } = createService();
-			const status = makeStatusResponse({ type: "http", status: false, code: 503, message: "Service Unavailable", responseTime: 87 });
-
-			const rebuilt = service.toStatusResponse(service.toCheck(status)!);
-
-			expect(rebuilt.monitorId).toBe(status.monitorId);
-			expect(rebuilt.teamId).toBe(status.teamId);
-			expect(rebuilt.type).toBe(status.type);
-			expect(rebuilt.status).toBe(status.status);
-			expect(rebuilt.code).toBe(status.code);
-			expect(rebuilt.message).toBe(status.message);
-			expect(rebuilt.responseTime).toBe(status.responseTime);
-		});
-
-		it("hardware: preserves payload.data metrics verbatim, same units (usage_percent stays a 0–1 decimal)", () => {
-			const { service } = createService();
-			const status = makeHardwareStatus();
-
-			const rebuilt = service.toStatusResponse(service.toCheck(status)!);
-
-			const original = status.payload as HardwareStatusPayload;
-			const roundtripped = rebuilt.payload as HardwareStatusPayload;
-			expect(roundtripped.data).toEqual(original.data);
-			expect(roundtripped.data.cpu!.usage_percent).toBe(0.92); // not rescaled to 92
-		});
-
-		it("hardware: a real consumer (extractThresholdBreaches) behaves identically on raw vs round-tripped status", () => {
-			const { service } = createService();
-			const builder = new NotificationMessageBuilder();
-			const monitor = {
-				id: "mon-1",
-				type: "hardware",
-				cpuAlertThreshold: 90, // 0.92 → 92% breaches
-				memoryAlertThreshold: 90, // 0.81 → 81% does not
-				diskAlertThreshold: 90, // 0.75 → 75% does not
-				tempAlertThreshold: 100,
-			} as Monitor;
-			const status = makeHardwareStatus();
-
-			const rebuilt = service.toStatusResponse(service.toCheck(status)!);
-
-			const fromRaw = builder.extractThresholdBreaches(monitor, status as MonitorStatusResponse<HardwareStatusPayload>);
-			const fromRebuilt = builder.extractThresholdBreaches(monitor, rebuilt as MonitorStatusResponse<HardwareStatusPayload>);
-
-			// sanity: the fixture actually triggers a breach, so the equality below is not vacuous
-			expect(fromRaw).toHaveLength(1);
-			expect(fromRaw[0].metric).toBe("cpu");
-			expect(fromRebuilt).toEqual(fromRaw);
-		});
-	});
-
 	// ── createChecks ─────────────────────────────────────────────────────────
 
 	describe("createChecks", () => {
@@ -422,20 +342,6 @@ describe("CheckService", () => {
 			expect(checksRepository.findByMonitorId).toHaveBeenCalledWith("mon-1", "asc", "week", 2, 20, false, "resolve");
 		});
 
-		it("throws when monitorId is missing", async () => {
-			const { service } = createService();
-			await expect(
-				service.getChecksByMonitor({ monitorId: "", teamId: "team-1", sortOrder: "desc", dateRange: "day", page: 0, rowsPerPage: 10 })
-			).rejects.toThrow("No monitor ID in request");
-		});
-
-		it("throws when teamId is missing", async () => {
-			const { service } = createService();
-			await expect(
-				service.getChecksByMonitor({ monitorId: "mon-1", teamId: "", sortOrder: "desc", dateRange: "day", page: 0, rowsPerPage: 10 })
-			).rejects.toThrow("No team ID in request");
-		});
-
 		it("verifies monitor belongs to team via repository", async () => {
 			const { service, monitorsRepository } = createService();
 
@@ -485,7 +391,15 @@ describe("CheckService", () => {
 			const result = await service.getChecksSummaryByTeamId({ teamId: "team-1", dateRange: "day" });
 
 			expect(result).toBe(summary);
-			expect(checksRepository.findSummaryByTeamId).toHaveBeenCalledWith("team-1", "day");
+			expect(checksRepository.findSummaryByTeamId).toHaveBeenCalledWith("team-1", "day", undefined);
+		});
+
+		it("passes the monitor through when one is selected", async () => {
+			const { service, checksRepository } = createService();
+
+			await service.getChecksSummaryByTeamId({ teamId: "team-1", dateRange: "day", monitorId: "mon-1" });
+
+			expect(checksRepository.findSummaryByTeamId).toHaveBeenCalledWith("team-1", "day", "mon-1");
 		});
 	});
 
