@@ -170,6 +170,12 @@
 			"retrying": "Yritetään uudelleen...",
 			"reconnected": "Yhteys palautettu"
 		},
+		"egressBanner": {
+			"degraded": "Checkmate ei tavoita luotettavuuskohteitaan. Lähtevä yhteys näyttää olleen poikki {{time}} alkaen; monitorien virheitä ei raportoida häiriöinä ennen kuin yhteys palautuu.",
+			"degradedNoTime": "Checkmate ei tavoita luotettavuuskohteitaan. Lähtevä yhteys näyttää olevan poikki; monitorien virheitä ei raportoida häiriöinä ennen kuin yhteys palautuu.",
+			"degradedWorkers": "{{degraded}}/{{total}} workeria on menettänyt lähtevän yhteyden {{time}} alkaen. Niiden monitorivirheitä ei raportoida häiriöinä ennen kuin yhteys palautuu.",
+			"degradedWorkersNoTime": "{{degraded}}/{{total}} workeria on menettänyt lähtevän yhteyden. Niiden monitorivirheitä ei raportoida häiriöinä ennen kuin yhteys palautuu."
+		},
 		"sidebar": {
 			"menu": {
 				"uptime": "Käytettävyys",
@@ -412,11 +418,13 @@
 				"status": {
 					"all": "Kaikki",
 					"down": "Alhaalla",
-					"up": "Ylhäällä"
+					"up": "Ylhäällä",
+					"degraded": "Lähtevä yhteys heikentynyt"
 				}
 			},
 			"table": {
 				"empty": "Ei alhaalla-tarkistuksia tällä aikavälillä",
+				"egressDegraded": "Lähtevä yhteys heikentynyt",
 				"headers": {
 					"statusCode": "Tilakoodi",
 					"location": "Sijainti"
@@ -462,7 +470,8 @@
 					"maintenance": "huollossa",
 					"paused": "keskeytetty",
 					"total": "yhteensä",
-					"up": "ylhäällä"
+					"up": "ylhäällä",
+					"degraded": "lähtevä yhteys heikentynyt"
 				},
 				"monitorTypes": {
 					"optionDocker": "Docker",
@@ -1342,6 +1351,25 @@
 						"displayName": {
 							"label": "Lähettäjän nimi (valinnainen) - Lähettäjäkentässä näkyvä ystävällinen nimi",
 							"placeholder": "Checkmate-ilmoitukset"
+						}
+					}
+				},
+				"egress": {
+					"title": "Lähtevän yhteyden itsetarkistus",
+					"description": "Testaa säännöllisesti joukkoa luotettavuuskohteita tästä instanssista. Niin kauan kuin yhtäkään ei tavoiteta, lähtevä yhteys katsotaan katkenneeksi eikä monitorien virheitä kirjata häiriöiksi.",
+					"option": {
+						"enabled": {
+							"label": "Ota lähtevän yhteyden itsetarkistus käyttöön"
+						},
+						"targets": {
+							"label": "Luotettavuuskohteet",
+							"placeholder": "https://example.com\ndns.google:53\n1.1.1.1",
+							"helper": "Yksi riviä kohden, enintään {{max}}. Jätä tyhjäksi käyttääksesi oletuksia (https://www.google.com/generate_204, https://www.cloudflare.com/cdn-cgi/trace). Pelkkä isäntä tai IP pingataan (ICMP), host:port avaa TCP-yhteyden ja http://- tai https://-URL haetaan HTTP:llä.",
+							"validation": {
+								"max": "Enintään {{max}} kohdetta",
+								"length": "Kunkin kohteen enimmäispituus on {{max}} merkkiä",
+								"invalid": "\"{{target}}\" ei ole isäntänimi, IP-osoite, host:port tai http(s)-URL"
+							}
 						}
 					}
 				},

@@ -170,6 +170,12 @@
 			"retrying": "Opakuji pokus...",
 			"reconnected": "Podařilo se úspěšně obnovit spojení se serverem"
 		},
+		"egressBanner": {
+			"degraded": "Checkmate nemůže dosáhnout svých cílů spolehlivosti. Odchozí připojení je zřejmě nedostupné od {{time}}; selhání monitorů nejsou hlášena jako incidenty, dokud se neobnoví.",
+			"degradedNoTime": "Checkmate nemůže dosáhnout svých cílů spolehlivosti. Odchozí připojení je zřejmě nedostupné; selhání monitorů nejsou hlášena jako incidenty, dokud se neobnoví.",
+			"degradedWorkers": "{{degraded}} z {{total}} workerů ztratilo odchozí připojení od {{time}}. Jejich selhání monitorů nejsou hlášena jako incidenty, dokud se neobnoví.",
+			"degradedWorkersNoTime": "{{degraded}} z {{total}} workerů ztratilo odchozí připojení. Jejich selhání monitorů nejsou hlášena jako incidenty, dokud se neobnoví."
+		},
 		"sidebar": {
 			"menu": {
 				"uptime": "Dostupnost",
@@ -412,11 +418,13 @@
 				"status": {
 					"all": "Vše",
 					"down": "Nedostupné",
-					"up": "Dostupné"
+					"up": "Dostupné",
+					"degraded": "Odchozí připojení omezeno"
 				}
 			},
 			"table": {
 				"empty": "Žádné neúspěšné kontroly v tomto období",
+				"egressDegraded": "Odchozí připojení omezeno",
 				"headers": {
 					"statusCode": "Stavový kód",
 					"location": "Umístění"
@@ -462,7 +470,8 @@
 					"maintenance": "údržba",
 					"paused": "pozastaveno",
 					"total": "celkem",
-					"up": "dostupný"
+					"up": "dostupný",
+					"degraded": "odchozí připojení omezeno"
 				},
 				"monitorTypes": {
 					"optionDocker": "Docker",
@@ -1342,6 +1351,25 @@
 						"displayName": {
 							"label": "Jméno odesílatele (nepovinné) - Přátelské jméno zobrazené v poli Od",
 							"placeholder": "Oznámení Checkmate"
+						}
+					}
+				},
+				"egress": {
+					"title": "Autotest odchozího připojení",
+					"description": "Pravidelně z této instance testuje sadu cílů spolehlivosti. Dokud není dosažitelný žádný z nich, odchozí připojení se považuje za nedostupné a selhání monitorů se nezaznamenávají jako incidenty.",
+					"option": {
+						"enabled": {
+							"label": "Povolit autotest odchozího připojení"
+						},
+						"targets": {
+							"label": "Cíle spolehlivosti",
+							"placeholder": "https://example.com\ndns.google:53\n1.1.1.1",
+							"helper": "Jeden na řádek, nejvýše {{max}}. Ponechte prázdné pro výchozí hodnoty (https://www.google.com/generate_204, https://www.cloudflare.com/cdn-cgi/trace). Samotný host nebo IP se pinguje (ICMP), host:port otevře TCP spojení a URL http:// nebo https:// se načte přes HTTP.",
+							"validation": {
+								"max": "Maximálně {{max}} cílů",
+								"length": "Každý cíl může mít nejvýše {{max}} znaků",
+								"invalid": "„{{target}}“ není název hostitele ani IP adresa, host:port ani URL http(s)"
+							}
 						}
 					}
 				},

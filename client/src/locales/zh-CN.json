@@ -170,6 +170,12 @@
 			"retrying": "重试中...",
 			"reconnected": "已成功重新连接到服务器。"
 		},
+		"egressBanner": {
+			"degraded": "Checkmate 无法访问其可靠性目标。出站连接似乎自 {{time}} 起中断；在恢复之前，监控器的失败不会被报告为事件。",
+			"degradedNoTime": "Checkmate 无法访问其可靠性目标。出站连接似乎已中断；在恢复之前，监控器的失败不会被报告为事件。",
+			"degradedWorkers": "{{total}} 个工作进程中有 {{degraded}} 个自 {{time}} 起失去出站连接。在恢复之前，它们的监控器失败不会被报告为事件。",
+			"degradedWorkersNoTime": "{{total}} 个工作进程中有 {{degraded}} 个失去出站连接。在恢复之前，它们的监控器失败不会被报告为事件。"
+		},
 		"sidebar": {
 			"menu": {
 				"uptime": "上线时间",
@@ -412,11 +418,13 @@
 				"status": {
 					"all": "全部",
 					"down": "宕机",
-					"up": "正常"
+					"up": "正常",
+					"degraded": "出站连接降级"
 				}
 			},
 			"table": {
 				"empty": "此时间范围内没有宕机检查",
+				"egressDegraded": "出站连接降级",
 				"headers": {
 					"statusCode": "状态码",
 					"location": "位置"
@@ -463,7 +471,8 @@
 					"maintenance": "维护中",
 					"paused": "已暂停",
 					"total": "总计",
-					"up": "正常"
+					"up": "正常",
+					"degraded": "出站连接降级"
 				},
 				"monitorTypes": {
 					"optionDocker": "Docker",
@@ -1343,6 +1352,25 @@
 						"displayName": {
 							"label": "发件人姓名（可选）- 显示在发件人字段中的友好名称",
 							"placeholder": "Checkmate通知"
+						}
+					}
+				},
+				"egress": {
+					"title": "出站连接自检",
+					"description": "定期从此实例探测一组可靠性目标。当所有目标都无法访问时，出站连接被视为中断，监控器的失败不会被记录为事件。",
+					"option": {
+						"enabled": {
+							"label": "启用出站连接自检"
+						},
+						"targets": {
+							"label": "可靠性目标",
+							"placeholder": "https://example.com\ndns.google:53\n1.1.1.1",
+							"helper": "每行一个，最多 {{max}} 个。留空则使用默认值（https://www.google.com/generate_204, https://www.cloudflare.com/cdn-cgi/trace）。单独的主机或 IP 使用 ping（ICMP），host:port 建立 TCP 连接，http:// 或 https:// URL 通过 HTTP 请求。",
+							"validation": {
+								"max": "最多 {{max}} 个目标",
+								"length": "每个目标不得超过 {{max}} 个字符",
+								"invalid": "“{{target}}”不是主机名、IP 地址、host:port 或 http(s) URL"
+							}
 						}
 					}
 				},

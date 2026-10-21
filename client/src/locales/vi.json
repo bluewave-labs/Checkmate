@@ -170,6 +170,12 @@
 			"retrying": "Đang thử lại...",
 			"reconnected": "Đã khôi phục kết nối"
 		},
+		"egressBanner": {
+			"degraded": "Checkmate không thể kết nối tới các mục tiêu kiểm tra độ tin cậy. Kết nối ra ngoài dường như bị gián đoạn từ {{time}}; lỗi của các monitor sẽ không được báo cáo thành sự cố cho đến khi kết nối được khôi phục.",
+			"degradedNoTime": "Checkmate không thể kết nối tới các mục tiêu kiểm tra độ tin cậy. Kết nối ra ngoài dường như bị gián đoạn; lỗi của các monitor sẽ không được báo cáo thành sự cố cho đến khi kết nối được khôi phục.",
+			"degradedWorkers": "{{degraded}}/{{total}} worker đã mất kết nối ra ngoài từ {{time}}. Lỗi monitor của chúng sẽ không được báo cáo thành sự cố cho đến khi kết nối được khôi phục.",
+			"degradedWorkersNoTime": "{{degraded}}/{{total}} worker đã mất kết nối ra ngoài. Lỗi monitor của chúng sẽ không được báo cáo thành sự cố cho đến khi kết nối được khôi phục."
+		},
 		"sidebar": {
 			"menu": {
 				"uptime": "Thời gian hoạt động",
@@ -412,11 +418,13 @@
 				"status": {
 					"all": "Tất cả",
 					"down": "Ngừng hoạt động",
-					"up": "Hoạt động"
+					"up": "Hoạt động",
+					"degraded": "Kết nối ra ngoài suy giảm"
 				}
 			},
 			"table": {
 				"empty": "Không có kiểm tra lỗi trong khoảng thời gian này",
+				"egressDegraded": "Kết nối ra ngoài suy giảm",
 				"headers": {
 					"statusCode": "Mã trạng thái",
 					"location": "Vị trí"
@@ -462,7 +470,8 @@
 					"maintenance": "bảo trì",
 					"paused": "tạm dừng",
 					"total": "tổng",
-					"up": "hoạt động"
+					"up": "hoạt động",
+					"degraded": "kết nối ra ngoài suy giảm"
 				},
 				"monitorTypes": {
 					"optionDocker": "Docker",
@@ -1342,6 +1351,25 @@
 						"displayName": {
 							"label": "Tên người gửi (tùy chọn) - Tên thân thiện hiển thị trong trường Từ",
 							"placeholder": "Thông báo Checkmate"
+						}
+					}
+				},
+				"egress": {
+					"title": "Tự kiểm tra kết nối ra ngoài",
+					"description": "Định kỳ kiểm tra một tập mục tiêu độ tin cậy từ phiên bản này. Khi không thể kết nối tới mục tiêu nào, kết nối ra ngoài được coi là gián đoạn và lỗi của các monitor không được ghi nhận thành sự cố.",
+					"option": {
+						"enabled": {
+							"label": "Bật tự kiểm tra kết nối ra ngoài"
+						},
+						"targets": {
+							"label": "Mục tiêu độ tin cậy",
+							"placeholder": "https://example.com\ndns.google:53\n1.1.1.1",
+							"helper": "Mỗi dòng một mục, tối đa {{max}}. Để trống để dùng giá trị mặc định (https://www.google.com/generate_204, https://www.cloudflare.com/cdn-cgi/trace). Host hoặc IP đơn thuần sẽ được ping (ICMP), host:port mở một kết nối TCP, còn URL http:// hoặc https:// được yêu cầu qua HTTP.",
+							"validation": {
+								"max": "Tối đa {{max}} mục tiêu",
+								"length": "Mỗi mục tiêu tối đa {{max}} ký tự",
+								"invalid": "\"{{target}}\" không phải là tên máy chủ hoặc địa chỉ IP, host:port hay URL http(s)"
+							}
 						}
 					}
 				},

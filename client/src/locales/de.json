@@ -170,6 +170,12 @@
 			"retrying": "Wird erneut versucht...",
 			"reconnected": "Verbindung zum Server wiederhergestellt."
 		},
+		"egressBanner": {
+			"degraded": "Checkmate kann seine Zuverlässigkeitsziele nicht erreichen. Die ausgehende Verbindung scheint seit {{time}} unterbrochen zu sein; Monitorfehler werden bis zur Wiederherstellung nicht als Vorfälle gemeldet.",
+			"degradedNoTime": "Checkmate kann seine Zuverlässigkeitsziele nicht erreichen. Die ausgehende Verbindung scheint unterbrochen zu sein; Monitorfehler werden bis zur Wiederherstellung nicht als Vorfälle gemeldet.",
+			"degradedWorkers": "{{degraded}} von {{total}} Workern haben seit {{time}} keine ausgehende Verbindung mehr. Ihre Monitorfehler werden bis zur Wiederherstellung nicht als Vorfälle gemeldet.",
+			"degradedWorkersNoTime": "{{degraded}} von {{total}} Workern haben keine ausgehende Verbindung mehr. Ihre Monitorfehler werden bis zur Wiederherstellung nicht als Vorfälle gemeldet."
+		},
 		"sidebar": {
 			"menu": {
 				"uptime": "Verfügbarkeit",
@@ -412,11 +418,13 @@
 				"status": {
 					"all": "Alle",
 					"down": "Ausgefallen",
-					"up": "Erreichbar"
+					"up": "Erreichbar",
+					"degraded": "Ausgehende Verbindung gestört"
 				}
 			},
 			"table": {
 				"empty": "Keine ausgefallenen Checks in diesem Zeitraum",
+				"egressDegraded": "Ausgehende Verbindung gestört",
 				"headers": {
 					"statusCode": "Statuscode",
 					"location": "Standort"
@@ -463,7 +471,8 @@
 					"maintenance": "Wartung",
 					"paused": "pausiert",
 					"total": "gesamt",
-					"up": "erreichbar"
+					"up": "erreichbar",
+					"degraded": "ausgehende Verbindung gestört"
 				},
 				"monitorTypes": {
 					"optionDocker": "Docker",
@@ -1343,6 +1352,25 @@
 						"displayName": {
 							"label": "Absendername (optional) - Anzeigename im Absenderfeld",
 							"placeholder": "Checkmate-Benachrichtigungen"
+						}
+					}
+				},
+				"egress": {
+					"title": "Selbsttest der ausgehenden Verbindung",
+					"description": "Prüft regelmäßig eine Reihe von Zuverlässigkeitszielen von dieser Instanz aus. Solange keines davon erreichbar ist, gilt die ausgehende Verbindung als unterbrochen und Monitorfehler werden nicht als Vorfälle erfasst.",
+					"option": {
+						"enabled": {
+							"label": "Selbsttest der ausgehenden Verbindung aktivieren"
+						},
+						"targets": {
+							"label": "Zuverlässigkeitsziele",
+							"placeholder": "https://example.com\ndns.google:53\n1.1.1.1",
+							"helper": "Eines pro Zeile, bis zu {{max}}. Leer lassen, um die Standardwerte zu verwenden (https://www.google.com/generate_204, https://www.cloudflare.com/cdn-cgi/trace). Ein einzelner Host oder eine IP wird angepingt (ICMP), host:port öffnet eine TCP-Verbindung und eine http://- oder https://-URL wird per HTTP abgerufen.",
+							"validation": {
+								"max": "Maximal {{max}} Ziele",
+								"length": "Jedes Ziel darf höchstens {{max}} Zeichen lang sein",
+								"invalid": "\"{{target}}\" ist kein Hostname oder keine IP-Adresse, kein host:port und keine http(s)-URL"
+							}
 						}
 					}
 				},
