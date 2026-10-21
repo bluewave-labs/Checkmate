@@ -1,12 +1,8 @@
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import prettyMilliseconds from "pretty-ms";
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
 dayjs.extend(customParseFormat);
 dayjs.extend(duration);
 
@@ -29,55 +25,8 @@ export const SYSTEM_TIMEZONE = resolveSystemTimezone();
 export const resolveTimezone = (preferred?: string | null): string =>
 	preferred?.trim() || SYSTEM_TIMEZONE;
 
-export const formatDateWithTz = (
-	timestamp: string,
-	format: string,
-	timezone?: string
-) => {
-	if (!timestamp) {
-		return "Unknown time";
-	}
-	const tz = resolveTimezone(timezone);
-	try {
-		return dayjs(timestamp).tz(tz).format(format);
-	} catch {
-		return dayjs(timestamp).utc().format(format);
-	}
-};
-
-export const tickDateFormatLookup = (range: string) => {
-	const tickFormatLookup: Record<string, string> = {
-		recent: "h:mm A",
-		day: "h:mm A",
-		week: "MM/D, h:mm A",
-		month: "ddd. M/D",
-	};
-	const format = tickFormatLookup[range];
-	if (format === undefined) {
-		return "";
-	}
-	return format;
-};
-
-export const tooltipDateFormatLookup = (range: string) => {
-	const dateFormatLookup: Record<string, string> = {
-		recent: "ddd. MMMM D, YYYY, hh:mm A",
-		day: "ddd. MMMM D, YYYY, hh:mm A",
-		week: "ddd. MMMM D, YYYY, hh:mm A",
-		month: "ddd. MMMM D, YYYY",
-	};
-	const format = dateFormatLookup[range];
-	if (format === undefined) {
-		return "";
-	}
-	return format;
-};
-
-export const formatTimestamp = (timestamp: string | number | null): string => {
-	if (!timestamp) return "-";
-	const date = new Date(timestamp);
-	return date.toLocaleString();
-};
+export const tooltipDateFormatLookup = (range: string): DateFormat =>
+	range === "month" ? "date" : "dateTime";
 
 const DISPLAY_UNITS = [MS_PER_DAY, MS_PER_HOUR, MS_PER_MINUTE, MS_PER_SECOND];
 
@@ -104,9 +53,52 @@ export const formatMs = (ms: number, hasSpace: boolean = true): string => {
 	return formatted;
 };
 
-export const formatDuration = (ms: number, verbose: boolean = false, hasSpace = true) => {
-	if (verbose) {
-		return prettyMilliseconds(ms, { verbose: true });
+type DurationUnit = "day" | "hour" | "minute" | "second";
+
+interface FormatDurationOptions {
+	long?: boolean;
+	relative?: boolean;
+	hasSpace?: boolean;
+	locale?: string;
+}
+
+const DURATION_UNITS: Array<{ unit: DurationUnit; milliseconds: number }> = [
+	{ unit: "day", milliseconds: MS_PER_DAY },
+	{ unit: "hour", milliseconds: MS_PER_HOUR },
+	{ unit: "minute", milliseconds: MS_PER_MINUTE },
+	{ unit: "second", milliseconds: MS_PER_SECOND },
+];
+
+const FALLBACK_DURATION_UNIT = DURATION_UNITS[DURATION_UNITS.length - 1];
+
+const getDurationUnit = (ms: number) =>
+	DURATION_UNITS.find(({ milliseconds }) => Math.abs(ms) >= milliseconds) ??
+	FALLBACK_DURATION_UNIT;
+
+const getExactDurationUnit = (ms: number) =>
+	DURATION_UNITS.find(({ milliseconds }) => ms !== 0 && ms % milliseconds === 0) ??
+	FALLBACK_DURATION_UNIT;
+
+export const formatDuration = (
+	ms: number,
+	{ long = false, relative = false, hasSpace = true, locale }: FormatDurationOptions = {}
+): string => {
+	if (relative) {
+		const { unit, milliseconds } = getDurationUnit(ms);
+		const value = Math.sign(ms) * Math.floor(Math.abs(ms) / milliseconds);
+		return new Intl.RelativeTimeFormat(locale, {
+			numeric: "always",
+			style: long ? "long" : "narrow",
+		}).format(-value, unit);
+	}
+
+	if (long) {
+		const { unit, milliseconds } = getExactDurationUnit(ms);
+		return new Intl.NumberFormat(locale, {
+			style: "unit",
+			unit,
+			unitDisplay: "long",
+		}).format(ms / milliseconds);
 	}
 
 	const formatted = prettyMilliseconds(ms, {
@@ -134,4 +126,55 @@ export const enumerateDays = (days: number, timeZone: string): string[] => {
 	return Array.from({ length: days }, (_, i) =>
 		new Date(todayUtc - (days - 1 - i) * DAY_MS).toISOString().slice(0, 10)
 	);
+};
+
+export const DATE_FORMATS = {
+	// Wed, Oct 4, 2026, 14:19
+	dateTime: {
+		weekday: "short",
+		year: "numeric",
+		month: "short",
+		day: "numeric",
+		hour: "numeric",
+		minute: "2-digit",
+	},
+	// Oct 4, 2026, 14:19:05
+	dateTimeSeconds: {
+		year: "numeric",
+		month: "short",
+		day: "numeric",
+		hour: "numeric",
+		minute: "2-digit",
+		second: "2-digit",
+	},
+	// Oct 4, 14:19
+	dateTimeShort: { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" },
+	// Oct 4, 2026
+	date: { year: "numeric", month: "short", day: "numeric" },
+	// Oct 4
+	dateShort: { month: "short", day: "numeric" },
+	// 14:19
+	time: { hour: "numeric", minute: "2-digit" },
+} satisfies Record<string, Intl.DateTimeFormatOptions>;
+export type DateFormat = keyof typeof DATE_FORMATS;
+
+export const TIME_FORMATS = ["24h", "12h"] as const;
+export type TimeFormat = (typeof TIME_FORMATS)[number];
+
+const HOUR_CYCLES = { "12h": "h12", "24h": "h23" } as const;
+
+export const formatDate = (
+	value: string | number | Date | null | undefined,
+	format: DateFormat,
+	options: { timeZone?: string; locale: string; timeFormat: TimeFormat }
+): string => {
+	if (value === null || value === undefined || value === "") return "-";
+	const date = new Date(value);
+	if (Number.isNaN(date.getTime())) return "-";
+	return date.toLocaleString(options.locale, {
+		...DATE_FORMATS[format],
+		timeZone: resolveTimezone(options.timeZone),
+		hourCycle: HOUR_CYCLES[options.timeFormat],
+		calendar: "gregory",
+	});
 };

@@ -1,21 +1,16 @@
-import { IQueueWorker } from "@/worker/worker.interface.js";
+import { IQueueWorker, JobHandlers } from "@/worker/worker.interface.js";
 import { type Job, type JobType, LOCK_MS } from "@/domain/jobs/job.type.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
-import { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
-import { ICheckService } from "@/domain/checks/check.service.js";
-import { ICheckProducer } from "@/worker/worker.check-producer.js";
-import { ICheckEvaluator } from "@/worker/worker.check-evaluator.js";
-import { ICheckPipeline } from "@/worker/worker.check-pipeline.js";
-import { IReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
-import { IWorkerHelper } from "@/worker/worker.helper.js";
 import { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.repository.interface.js";
 import { WORKER_STALE_MS } from "@/domain/queue-workers/queue-worker.model.js";
 import { QueueMode } from "@/domain/app-settings/app-settings.type.js";
 import { JobScheduler } from "@/worker/worker.job-scheduler.js";
 import { IBufferService } from "@/service/bufferService.js";
 import { POLL_MS } from "@/worker/worker.job-scheduler.js";
+import { withLogContext } from "@/utils/logger/logContext.js";
+
 const SERVICE_NAME = "JobQueue";
 const POLL_MAX_MS = 5000; // back off poll interval to 5s if no jobs
 const LOCK_RENEW_MS = LOCK_MS / 3; // renew an in-flight job's lock at 1/3 the lease, so it survives two missed renewals
@@ -28,6 +23,7 @@ const CONCURRENCY: Record<JobType, number> = {
 	evaluate: 20,
 	"cleanup-orphaned": 1,
 	"cleanup-retention": 1,
+	telemetry: 1,
 };
 
 export interface DBQueueWorkerDependencies {
@@ -35,18 +31,13 @@ export interface DBQueueWorkerDependencies {
 	isDbConnected: () => boolean;
 	jobsRepository: IJobsRepository; // forwarded
 	monitorsRepository: IMonitorsRepository; // forwarded
-	checksRepository: IChecksRepository;
-	checkService: ICheckService;
+	handlers: JobHandlers;
 	bufferService: IBufferService;
-	checkProducer: ICheckProducer;
-	checkEvaluator: ICheckEvaluator;
-	geoCheckPipeline: ICheckPipeline;
-	dispatcher: IReactorDispatcher;
-	helper: IWorkerHelper;
 	queueWorkersRepository: IQueueWorkersRepository; // forwarded
 	queueMode: QueueMode; // forwarded
 	queuePrimaryProcesses: boolean; // consumed immediately
 	workerId: string;
+	telemetryEnabled: boolean;
 }
 
 export class DBQueueWorker extends JobScheduler implements IQueueWorker {
@@ -61,17 +52,12 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		evaluate: 0,
 		"cleanup-orphaned": 0,
 		"cleanup-retention": 0,
+		telemetry: 0,
 	};
 
-	private checksRepository: IChecksRepository;
-	private checkProducer: ICheckProducer;
-	private checkService: ICheckService;
-	private checkEvaluator: ICheckEvaluator;
-	private dispatcher: IReactorDispatcher;
-	private geoCheckPipeline: ICheckPipeline;
-	private helper: IWorkerHelper;
 	private bufferService: IBufferService;
 	private isDbConnected: () => boolean;
+	private handlers: JobHandlers;
 
 	constructor(dependencies: DBQueueWorkerDependencies) {
 		super(
@@ -80,16 +66,13 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 			dependencies.monitorsRepository,
 			dependencies.queueMode,
 			dependencies.logger,
-			dependencies.workerId
+			dependencies.workerId,
+			dependencies.telemetryEnabled
 		);
+		// From the root logger, not the base class's child, so `service` isn't written twice
+		this.logger = dependencies.logger.child({ service: SERVICE_NAME });
 		this.processesJobs = dependencies.queuePrimaryProcesses === true || dependencies.queueMode === "worker";
-		this.checksRepository = dependencies.checksRepository;
-		this.checkProducer = dependencies.checkProducer;
-		this.checkService = dependencies.checkService;
-		this.checkEvaluator = dependencies.checkEvaluator;
-		this.dispatcher = dependencies.dispatcher;
-		this.geoCheckPipeline = dependencies.geoCheckPipeline;
-		this.helper = dependencies.helper;
+		this.handlers = dependencies.handlers;
 		this.bufferService = dependencies.bufferService;
 		this.isDbConnected = dependencies.isDbConnected;
 	}
@@ -102,53 +85,17 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 
 	private getInFlightCount = () => Object.values(this.inFlight).reduce((sum, n) => sum + n, 0);
 
-	// ********************
-	// Stage 1:  This can eventually be offloaded to a separate service
-	// ********************
-
-	private runCheck = async (job: Job) => {
-		if (!job.refId) return;
-		const monitor = await this.monitorsRepository.findByIdLean(job.refId); // job row has no teamId
-		if (!monitor) return;
-		await this.checkProducer.produce(monitor);
-	};
-
-	// ********************
-	// Stage 2:  Evaluator loop stays here
-	// ********************
-
-	private runEvaluate = async (job: Job) => {
-		if (!job.refId) return;
-		const monitor = await this.monitorsRepository.findByIdLean(job.refId); // job row has no teamId
-		if (!monitor) return;
-		const checks = await this.checksRepository.findUnevaluatedByMonitorId(job.refId, monitor.lastEvaluatedAt);
-
-		let current = monitor;
-		for (const check of checks) {
-			const status = this.checkService.toStatusResponse(check);
-			const evaluation = await this.checkEvaluator.evaluate(status, check, current);
-			await this.dispatcher.dispatch(evaluation); // Handle incidents and notifications
-			await this.monitorsRepository.updateById(job.refId, current.teamId, { lastEvaluatedAt: this.checkService.toLastEvaluatedAt(check) });
-			current = evaluation.statusChange.monitor; // fresh statusWindow/status/counters for the next check
-		}
-	};
-
-	private runGeoCheck = async (job: Job) => {
-		const monitor = await this.monitorsRepository.findByIdLean(job.refId!);
-		if (monitor) await this.geoCheckPipeline.run(monitor); // returns null; no evaluate handoff
-	};
-
 	// Extend the lock while a job runs so a slow-but-alive job is never reclaimed.
 	private renewLock = async (job: Job): Promise<boolean> => {
 		try {
 			const held = await this.jobsRepository.renewLocks([job.id], Date.now());
 			if (held === 0) {
-				this.logger.warn({ message: `Lost lock on job ${job.id}, stopping renewal`, service: SERVICE_NAME, method: "renewLock" });
+				this.logger.warn("Lost job lock, stopping renewal");
 				return false;
 			}
 			return true;
 		} catch (error: unknown) {
-			this.logger.warn({ message: error instanceof Error ? error.message : String(error), service: SERVICE_NAME, method: "renewLock" });
+			this.logger.warn({ err: error }, "Failed to renew job lock");
 			return true;
 		}
 	};
@@ -159,24 +106,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 			if (!renewLock) clearInterval(renewTimer);
 		}, LOCK_RENEW_MS);
 		try {
-			switch (job.type) {
-				case "check":
-					await this.runCheck(job);
-					break;
-				case "evaluate":
-					await this.runEvaluate(job);
-					break;
-				case "geo-check":
-					await this.runGeoCheck(job);
-					break;
-				case "cleanup-orphaned":
-					await this.helper.getCleanupOrphanedJob()(); // Get job and execute
-					break;
-				case "cleanup-retention":
-					await this.helper.getCleanupRetentionJob()(); // Get job and execute
-					break;
-			}
-
+			await this.handlers[job.type](job);
 			if (job.intervalMs === null) {
 				// One-shot job
 				await this.jobsRepository.recordOneShot(job.id, Date.now());
@@ -184,17 +114,9 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 				await this.jobsRepository.recordSuccess(job.id, job.nextScheduledAt, job.intervalMs, Date.now());
 			}
 		} catch (error: unknown) {
-			this.logger.warn({
-				message: error instanceof Error ? error.message : String(error),
-				service: SERVICE_NAME,
-				method: `runJob:${job.type}`,
-			});
+			this.logger.warn({ err: error }, "Job failed");
 			await this.jobsRepository.recordFailure(job.id, error, Date.now()).catch((recordError: unknown) => {
-				this.logger.error({
-					message: `recordFailure failed for job ${job.id}: ${recordError instanceof Error ? recordError.message : String(recordError)}`,
-					service: SERVICE_NAME,
-					method: `runJob:${job.type}`,
-				});
+				this.logger.error({ err: recordError }, "Failed to record job failure");
 			}); // Record failure and release lock
 		} finally {
 			clearInterval(renewTimer);
@@ -213,27 +135,19 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 				const jobs = await this.jobsRepository.claimDueBatch(type, capacity, Date.now());
 				for (const job of jobs) {
 					this.inFlight[type]++; // stay within concurrency limits
-					this.runJob(job)
-						.catch((error: unknown) => {
+					withLogContext({ jobId: job.id, jobType: job.type }, () =>
+						this.runJob(job).catch((error: unknown) => {
 							// defensive, runJob already catches
-							this.logger.error({
-								message: error instanceof Error ? error.message : String(error),
-								service: SERVICE_NAME,
-								method: `runJob:${type}`,
-							});
+							this.logger.error({ err: error }, "Job runner threw unexpectedly");
 						})
-						.finally(() => {
-							this.inFlight[type]--; // job done, free the slot
-						});
+					).finally(() => {
+						this.inFlight[type]--; // job done, free the slot
+					});
 				}
 				// Back off if no jobs found, reset to base if jobs found
 				this.pollMs[type] = capacity > 0 && jobs.length === 0 ? Math.min(this.pollMs[type] * 2, POLL_MAX_MS) : POLL_MS;
 			} catch (error: unknown) {
-				this.logger.error({
-					message: error instanceof Error ? error.message : String(error),
-					service: SERVICE_NAME,
-					method: `loop:${type}`,
-				});
+				this.logger.error({ err: error, jobType: type }, "Job poll loop failed");
 			}
 			// Clearing the flag and re-arming run synchronously (no await between), so wake() can never interleave here.
 			this.ticking[type] = false;
@@ -273,17 +187,9 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 
 		const remainingJobs = this.getInFlightCount();
 		if (remainingJobs > 0) {
-			this.logger.warn({
-				message: `Draining timed out with ${remainingJobs} in-flight.  Locks will expire and jobs will be reclaimed`,
-				service: SERVICE_NAME,
-				method: "drain",
-			});
+			this.logger.warn({ inFlight: remainingJobs }, "Draining timed out, locks will expire and jobs will be reclaimed");
 		} else {
-			this.logger.info({
-				message: `${this.workerId} drained`,
-				service: SERVICE_NAME,
-				method: "drain",
-			});
+			this.logger.info({ workerId: this.workerId }, "Worker drained");
 		}
 
 		await this.bufferService.shutdown(); // Flush buffers

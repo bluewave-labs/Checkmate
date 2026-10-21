@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 import MaintenanceWindowModel from "../../domain/maintenance-windows/maintenance-window.model.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 
 type GroupResult = {
 	_id: {
@@ -19,16 +20,17 @@ type GroupResult = {
 
 export async function migrateMaintenanceWindowMonitorIdToArray(logger: ILogger): Promise<void> {
 	const SERVICE_NAME = "Migration:MigrateMaintenanceWindowMonitorIdToArray";
+	const log = logger.child({ service: SERVICE_NAME });
 
 	try {
-		logger.info({
-			service: SERVICE_NAME,
-			message: "Starting migration of MaintenanceWindow.monitorId to monitorIds array (eager merge)",
-		});
+		log.info("Starting migration of MaintenanceWindow.monitorId to monitorIds array (eager merge)");
 
 		const db = mongoose.connection.db;
 		if (!db) {
-			throw new Error("Database connection is not initialized");
+			throw new AppError(internalError, {
+				message: "Database connection is not initialized",
+				service: SERVICE_NAME,
+			});
 		}
 
 		// Group old-style docs by their scheduling key.
@@ -60,7 +62,7 @@ export async function migrateMaintenanceWindowMonitorIdToArray(logger: ILogger):
 		]);
 
 		if (groups.length === 0) {
-			logger.info({ service: SERVICE_NAME, message: "No MaintenanceWindow documents needed migration" });
+			log.info("No MaintenanceWindow documents needed migration");
 			return;
 		}
 
@@ -98,17 +100,10 @@ export async function migrateMaintenanceWindowMonitorIdToArray(logger: ILogger):
 		const result = await MaintenanceWindowModel.collection.bulkWrite(bulkOps, { ordered: true });
 		const deletedCount = originalDocCount - groups.length;
 
-		logger.info({
-			service: SERVICE_NAME,
-			message: `Migration complete. Consolidated ${originalDocCount} old document(s) into ${groups.length} group window(s); deleted ${deletedCount} duplicate(s).`,
-		});
-		logger.debug({
-			service: SERVICE_NAME,
-			message: `bulkWrite result: modified=${result.modifiedCount}, deleted=${result.deletedCount}`,
-		});
+		log.info({ originalDocCount, groupCount: groups.length, deletedCount }, "Migration complete, consolidated old documents into group windows");
+		log.debug({ modifiedCount: result.modifiedCount, deletedCount: result.deletedCount }, "bulkWrite result");
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		logger.error({ service: SERVICE_NAME, message: `Error during MaintenanceWindow migration: ${errorMessage}` });
+		log.error({ err: error }, "Error during MaintenanceWindow migration");
 		throw error;
 	}
 }

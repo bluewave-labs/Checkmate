@@ -48,7 +48,6 @@ const createMessage = (overrides?: Partial<NotificationMessage>): NotificationMe
 	clientHost: "https://app.example.com",
 	metadata: {
 		teamId: "team-1",
-		notificationReason: "monitor_down",
 	},
 	...overrides,
 });
@@ -99,12 +98,8 @@ describe("TeamsProvider", () => {
 			const notification = createNotification();
 			const result = await provider.sendTestAlert(notification);
 			expect(result).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "Teams test alert failed",
-					service: "TeamsProvider",
-				})
-			);
+			expect(logger.warn).toHaveBeenCalledWith({ err: new Error("Network error") }, "Teams test alert failed");
+			expect(logger.child).toHaveBeenCalledWith({ service: "TeamsProvider" });
 		});
 	});
 
@@ -154,7 +149,7 @@ describe("TeamsProvider", () => {
 			expect(card.actions).toHaveLength(1);
 			expect(card.actions[0].type).toBe("Action.OpenUrl");
 			expect(card.actions[0].title).toBe("View Incident");
-			expect(card.actions[0].url).toContain("/incidents/inc-1");
+			expect(card.actions[0].url).toBe("https://app.example.com/incidents/mon-1");
 		});
 
 		it("omits actions when no incident is present", async () => {
@@ -241,19 +236,15 @@ describe("TeamsProvider", () => {
 			const notification = createNotification();
 			const result = await provider.sendMessage(notification, createMessage());
 			expect(result).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: "Teams alert failed via sendMessage",
-					service: "TeamsProvider",
-				})
-			);
+			expect(logger.warn).toHaveBeenCalledWith({ err: new Error("502 Bad Gateway") }, "Teams alert failed");
+			expect(logger.child).toHaveBeenCalledWith({ service: "TeamsProvider" });
 		});
 
 		it("handles non-Error thrown values in sendMessage", async () => {
 			mockPost.mockRejectedValue(null);
 			const result = await provider.sendMessage(createNotification(), createMessage());
 			expect(result).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: null }, "Teams alert failed");
 		});
 
 		it("includes details section in Adaptive Card when details are present", async () => {
@@ -289,7 +280,7 @@ describe("TeamsProvider", () => {
 			mockPost.mockRejectedValue(null);
 			const result = await provider.sendTestAlert(createNotification());
 			expect(result).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: null }, "Teams test alert failed");
 		});
 	});
 });

@@ -1,6 +1,13 @@
 import { IGeoChecksRepository } from "./geo-check.repository.interface.js";
-import type { GeoCheck, GeoCheckMetadata, GeoCheckResult, GroupedGeoCheck, GeoContinent, FlatGeoCheck } from "@/domain/geo-checks/geo-check.type.js";
-import type { FlatGeoChecksQueryResult } from "./geo-check.repository.interface.js";
+import type {
+	GeoCheck,
+	GeoCheckMetadata,
+	GeoCheckResult,
+	GroupedGeoCheck,
+	GeoContinent,
+	FlatGeoCheck,
+	FlatGeoChecksQueryResult,
+} from "@/domain/geo-checks/geo-check.type.js";
 import { GeoCheckMetadataDocument, GeoCheckModel, type GeoCheckDocument } from "@/domain/geo-checks/geo-check.model.js";
 import mongoose, { PipelineStage } from "mongoose";
 import { getDateForRange, getDateFormat } from "@/utils/dataUtils.js";

@@ -2,10 +2,12 @@ const SERVICE_NAME = "TelegramProvider";
 import type { Notification } from "@/domain/notifications/notification.type.js";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
-import { getTestMessage } from "@/domain/notifications/providers/utils.js";
+import { getTestMessage, incidentUrl } from "@/domain/notifications/providers/utils.js";
 import got from "got";
 
 export class TelegramProvider extends NotificationProvider {
+	protected readonly serviceName = SERVICE_NAME;
+
 	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
 		if (!notification.address || !notification.accessToken) {
 			return false;
@@ -22,15 +24,7 @@ export class TelegramProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const errMsg = error instanceof Error ? error.message : "unknown error";
-			const errStack = error instanceof Error ? error.stack : undefined;
-			this.logger.warn({
-				message: "Telegram test alert failed",
-				service: SERVICE_NAME,
-				method: "sendTestAlert",
-				stack: errStack,
-				details: { error: errMsg },
-			});
+			this.logger.warn({ err: error }, "Telegram test alert failed");
 			return false;
 		}
 	}
@@ -52,22 +46,10 @@ export class TelegramProvider extends NotificationProvider {
 				...this.gotRequestOptions(),
 			});
 
-			this.logger.info({
-				message: "Telegram notification sent",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-			});
+			this.logger.info("Telegram notification sent");
 			return true;
 		} catch (error) {
-			const errMsg = error instanceof Error ? error.message : "unknown error";
-			const errStack = error instanceof Error ? error.stack : undefined;
-			this.logger.warn({
-				message: "Telegram alert failed",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-				stack: errStack,
-				details: { error: errMsg },
-			});
+			this.logger.warn({ err: error }, "Telegram alert failed");
 			return false;
 		}
 	}
@@ -101,7 +83,7 @@ export class TelegramProvider extends NotificationProvider {
 
 		if (message.content.incident) {
 			lines.push("");
-			lines.push(`<a href="${message.clientHost}/incidents/${message.monitor.id}">View Incident</a>`);
+			lines.push(`<a href="${incidentUrl(message)}">View Incident</a>`);
 		}
 
 		return lines.join("\n");

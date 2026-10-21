@@ -5,6 +5,7 @@ import {
 	TotalChecksBox,
 	UpChecksBox,
 	DownChecksBox,
+	DegradedChecksBox,
 } from "@/Components/design-elements";
 import { HeaderTimeRange } from "@/Components/common";
 import { Select } from "@/Components/inputs";
@@ -30,7 +31,11 @@ const Checks = () => {
 	const [rowsPerPage, setRowsPerPage] = useState<number>(10);
 
 	const monitorsUrl = "/monitors/team";
-	const summaryUrl = `/checks/team/summary?dateRange=${dateRange}`;
+	// The summary boxes follow the monitor picker, like the table under them.
+	const summaryUrl =
+		selectedMonitor === "0"
+			? `/checks/team/summary?dateRange=${dateRange}`
+			: `/checks/team/summary?dateRange=${dateRange}&monitorId=${selectedMonitor}`;
 
 	const { data: monitorsResponse, isLoading: isLoadingMonitors } =
 		useGet<Monitor[]>(monitorsUrl);
@@ -103,6 +108,7 @@ const Checks = () => {
 	const totalChecks = summaryResponse?.totalChecks || 0;
 	const downChecks = summaryResponse?.downChecks || 0;
 	const upChecks = totalChecks - (summaryResponse?.downChecks || 0);
+	const degradedChecks = summaryResponse?.degradedChecks || 0;
 
 	const noMonitors = !isLoadingMonitors && (monitorsResponse?.length ?? 0) === 0;
 	if (noMonitors) {
@@ -124,6 +130,7 @@ const Checks = () => {
 				<TotalChecksBox n={totalChecks} />
 				<UpChecksBox n={upChecks} />
 				<DownChecksBox n={downChecks || 0} />
+				{degradedChecks > 0 && <DegradedChecksBox n={degradedChecks} />}
 			</Stack>
 
 			<Stack
@@ -164,6 +171,9 @@ const Checks = () => {
 						<MenuItem value="all">{t("pages.checks.selects.status.all")}</MenuItem>
 						<MenuItem value="up">{t("pages.checks.selects.status.up")}</MenuItem>
 						<MenuItem value="down">{t("pages.checks.selects.status.down")}</MenuItem>
+						<MenuItem value="degraded">
+							{t("pages.checks.selects.status.degraded")}
+						</MenuItem>
 					</Select>
 				</Stack>
 				<HeaderTimeRange

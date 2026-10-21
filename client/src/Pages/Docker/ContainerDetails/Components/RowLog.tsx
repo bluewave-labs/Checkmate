@@ -7,20 +7,17 @@ import { Fragment } from "react";
 
 // Hooks
 import { useTheme } from "@mui/material";
-import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 
 // Utils
 import type { DockerLogRow } from "@/Utils/MonitorUtils";
 import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
-import { formatDateWithTz } from "@/Utils/TimeUtils";
-import type { RootState } from "@/store";
+import { useFormatDate } from "@/Hooks/useFormatDate";
 
 export const RowLog = ({ row }: { row: DockerLogRow }) => {
 	const theme = useTheme();
-	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 	const { t } = useTranslation();
-
+	const formatDate = useFormatDate();
 	return (
 		<Fragment>
 			<Grid
@@ -33,7 +30,7 @@ export const RowLog = ({ row }: { row: DockerLogRow }) => {
 						fontFamily="monospace"
 						color={theme.palette.text.secondary}
 					>
-						{formatDateWithTz(row.ts, "MMM D HH:mm:ss", uiTimezone)}
+						{formatDate(row.ts, "dateTimeSeconds")}
 					</Typography>
 				</Grid>
 				<Grid size={{ xs: 12, md: "grow" }}>

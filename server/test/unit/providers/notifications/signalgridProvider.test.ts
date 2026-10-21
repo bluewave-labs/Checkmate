@@ -52,14 +52,14 @@ describe("SignalgridProvider", () => {
 			mockGotPost.mockRejectedValue(new Error("fail"));
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeNotification())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ method: "sendTestAlert", details: { error: "fail" } }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: new Error("fail") }, "Signalgrid test alert failed");
 		});
 
 		it("handles non-Error thrown values in sendTestAlert", async () => {
 			mockGotPost.mockRejectedValue("string error");
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeNotification())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined, details: { error: "unknown error" } }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: "string error" }, "Signalgrid test alert failed");
 		});
 	});
 
@@ -117,14 +117,14 @@ describe("SignalgridProvider", () => {
 			mockGotPost.mockRejectedValue(new Error("fail"));
 			const { provider, logger } = createProvider();
 			expect(await provider.sendMessage(makeNotification() as any, makeMessage())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ method: "sendMessage" }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: new Error("fail") }, "Signalgrid alert failed");
 		});
 
 		it("handles non-Error thrown values in sendMessage", async () => {
 			mockGotPost.mockRejectedValue(42);
 			const { provider, logger } = createProvider();
 			expect(await provider.sendMessage(makeNotification() as any, makeMessage())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ details: { error: "unknown error" } }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: 42 }, "Signalgrid alert failed");
 		});
 
 		it("includes thresholds in text", async () => {
@@ -137,6 +137,12 @@ describe("SignalgridProvider", () => {
 			const { provider } = createProvider();
 			await provider.sendMessage(makeNotification() as any, makeMessageWithIncident());
 			expect(mockGotPost.mock.calls[0][1].form.body).toContain("View Incident");
+		});
+
+		it("links the incident to the monitor's incidents page", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessageWithIncident());
+			expect(mockGotPost.mock.calls[0][1].form.body).toContain("View Incident: https://app.example.com/incidents/mon-1");
 		});
 
 		it("omits optional sections when not present", async () => {

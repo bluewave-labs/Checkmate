@@ -4,17 +4,14 @@ import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interf
 import type { Check, CheckErrorInfo, ChecksQueryResult, ChecksSummary, ILighthouseAudit } from "@/domain/checks/check.type.js";
 import type { DockerStatusPayload, MonitorPayloadMap, MonitorStatusResponse } from "@/types/network.js";
 import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
-import { AppError } from "@/utils/AppError.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { CheckFilter, DateRange } from "@/types/query.js";
 
 const SERVICE_NAME = "checkService";
 
 export interface ICheckService {
 	createChecks(checks: Check[]): Promise<Check[]>;
-	toLastEvaluatedAt(check: Check): number;
 	toCheck(statusResponse: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>): Check | undefined;
-	toStatusResponse(check: Check): MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>;
 	getChecksByMonitor(params: {
 		monitorId: string;
 		teamId: string;
@@ -33,7 +30,7 @@ export interface ICheckService {
 		rowsPerPage: number;
 		filter?: CheckFilter;
 	}): Promise<ChecksQueryResult>;
-	getChecksSummaryByTeamId(params: { teamId: string; dateRange: DateRange }): Promise<ChecksSummary>;
+	getChecksSummaryByTeamId(params: { teamId: string; dateRange: DateRange; monitorId?: string }): Promise<ChecksSummary>;
 	deleteChecks(params: { monitorId: string; teamId: string }): Promise<number>;
 	deleteChecksByTeamId(params: { teamId: string }): Promise<number>;
 	deleteOlderThan(date: Date): Promise<number>;
@@ -47,16 +44,12 @@ export class CheckService implements ICheckService {
 	private logger: ILogger;
 	constructor(monitorsRepository: IMonitorsRepository, logger: ILogger, checksRepository: IChecksRepository) {
 		this.monitorsRepository = monitorsRepository;
-		this.logger = logger;
+		this.logger = logger.child({ service: SERVICE_NAME });
 		this.checksRepository = checksRepository;
 	}
 
 	createChecks = async (checks: Check[]) => {
 		return this.checksRepository.createChecks(checks);
-	};
-
-	toLastEvaluatedAt = (check: Check) => {
-		return new Date(check.createdAt).getTime();
 	};
 
 	toCheck = (statusResponse: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>): Check | undefined => {
@@ -82,11 +75,7 @@ export class CheckService implements ICheckService {
 		if (type === "pagespeed") {
 			const pageSpeedPayload = payload as PageSpeedStatusPayload | undefined;
 			if (!pageSpeedPayload) {
-				this.logger.warn({
-					message: "Failed to build check",
-					service: SERVICE_NAME,
-					method: "toCheck",
-				});
+				this.logger.warn("Failed to build check");
 				return undefined;
 			}
 			const categories = pageSpeedPayload.lighthouseResult?.categories ?? {};
@@ -140,24 +129,6 @@ export class CheckService implements ICheckService {
 		return check;
 	};
 
-	toStatusResponse = (check: Check) => {
-		const statusResponse: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]> = {
-			monitorId: check.metadata.monitorId,
-			teamId: check.metadata.teamId,
-			type: check.metadata.type,
-			status: check.status,
-			code: check.statusCode,
-			message: check.message,
-			responseTime: check.responseTime,
-			// re-nest hardware metrics so updateMonitorStatus / extractThresholdBreaches see payload.data
-			payload:
-				check.metadata.type === "hardware"
-					? ({ data: { cpu: check.cpu, memory: check.memory, disk: check.disk, host: check.host, net: check.net } } as HardwareStatusPayload)
-					: undefined,
-		};
-		return statusResponse;
-	};
-
 	getChecksByMonitor = async ({
 		monitorId,
 		teamId,
@@ -177,13 +148,6 @@ export class CheckService implements ICheckService {
 		status?: boolean;
 		filter: CheckFilter;
 	}) => {
-		if (!monitorId) {
-			throw new AppError({ message: "No monitor ID in request", service: SERVICE_NAME, method: "getChecksByMonitor", status: 400 });
-		}
-		if (!teamId) {
-			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "getChecksByMonitor", status: 400 });
-		}
-
 		// For verification, throws an error if monitor doesn't belong to team
 		await this.monitorsRepository.findById(monitorId, teamId);
 
@@ -217,8 +181,8 @@ export class CheckService implements ICheckService {
 		return checkData;
 	};
 
-	getChecksSummaryByTeamId = async ({ teamId, dateRange }: { teamId: string; dateRange: DateRange }) => {
-		const summary = await this.checksRepository.findSummaryByTeamId(teamId, dateRange);
+	getChecksSummaryByTeamId = async ({ teamId, dateRange, monitorId }: { teamId: string; dateRange: DateRange; monitorId?: string }) => {
+		const summary = await this.checksRepository.findSummaryByTeamId(teamId, dateRange, monitorId);
 		return summary;
 	};
 

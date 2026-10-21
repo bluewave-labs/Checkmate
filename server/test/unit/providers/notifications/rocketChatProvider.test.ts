@@ -77,13 +77,8 @@ describe("RocketChatProvider", () => {
 		const result = await provider.sendTestAlert(makeNotification({ type: "rocket_chat" }));
 
 		expect(result).toBe(false);
-		expect(logger.warn).toHaveBeenCalledWith(
-			expect.objectContaining({
-				message: "Rocket.Chat test alert failed",
-				service: "RocketChatProvider",
-				method: "sendTestAlert",
-			})
-		);
+		expect(logger.warn).toHaveBeenCalledWith({ err: new Error("network failure") }, "Rocket.Chat test alert failed");
+		expect(logger.child).toHaveBeenCalledWith({ service: "RocketChatProvider" });
 	});
 
 	it("sends a rich monitor attachment without webhook overrides", async () => {
@@ -134,6 +129,7 @@ describe("RocketChatProvider", () => {
 		["ping", "https://app.example.com/uptime/mon-1"],
 		["pagespeed", "https://app.example.com/pagespeed/mon-1"],
 		["hardware", "https://app.example.com/infrastructure/mon-1"],
+		["docker", "https://app.example.com/docker/host/mon-1"],
 	])("links %s monitors to %s", async (type, expectedLink) => {
 		const { provider } = createProvider();
 
@@ -150,6 +146,18 @@ describe("RocketChatProvider", () => {
 		const { provider } = createProvider();
 
 		await provider.sendMessage(makeNotification({ type: "rocket_chat" }), makeMessage({ clientHost }));
+
+		const payload = mockGotPost.mock.calls[0][1].json;
+		expect(payload.attachments[0]).not.toHaveProperty("title_link");
+	});
+
+	it("omits title_link for a message whose type has no details page", async () => {
+		const { provider } = createProvider();
+
+		await provider.sendMessage(
+			makeNotification({ type: "rocket_chat" }),
+			makeMessage({ monitor: { id: "system", name: "System", type: "system", status: "up", url: "https://app.example.com" } })
+		);
 
 		const payload = mockGotPost.mock.calls[0][1].json;
 		expect(payload.attachments[0]).not.toHaveProperty("title_link");
@@ -262,12 +270,7 @@ describe("RocketChatProvider", () => {
 		const result = await provider.sendMessage(makeNotification({ type: "rocket_chat" }), makeMessage());
 
 		expect(result).toBe(false);
-		expect(logger.warn).toHaveBeenCalledWith(
-			expect.objectContaining({
-				message: "Rocket.Chat notification failed",
-				service: "RocketChatProvider",
-				method: "sendMessage",
-			})
-		);
+		expect(logger.warn).toHaveBeenCalledWith({ err: new Error("network failure") }, "Rocket.Chat notification failed");
+		expect(logger.child).toHaveBeenCalledWith({ service: "RocketChatProvider" });
 	});
 });

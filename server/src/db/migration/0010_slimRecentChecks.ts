@@ -1,5 +1,5 @@
 import { MonitorModel } from "../../domain/monitors/monitor.model.js";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 
 const KEEP_KEYS = [
 	"id",
@@ -26,8 +26,9 @@ const KEEP_KEYS = [
  */
 export async function slimRecentChecks(logger: ILogger): Promise<void> {
 	const SERVICE_NAME = "Migration:SlimRecentChecks";
+	const log = logger.child({ service: SERVICE_NAME });
 	try {
-		logger.info({ service: SERVICE_NAME, message: "Slimming recentChecks snapshots" });
+		log.info("Slimming recentChecks snapshots");
 
 		const result = await MonitorModel.updateMany({ "recentChecks.0": { $exists: true } }, [
 			{
@@ -119,10 +120,9 @@ export async function slimRecentChecks(logger: ILogger): Promise<void> {
 			},
 		]);
 
-		logger.info({ service: SERVICE_NAME, message: `Slimmed recentChecks on ${result.modifiedCount} monitors` });
+		log.info({ modifiedCount: result.modifiedCount }, "Slimmed recentChecks on monitors");
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		logger.error({ service: SERVICE_NAME, message: `Error slimming recentChecks: ${errorMessage}` });
+		log.error({ err: error }, "Error slimming recentChecks");
 		throw error;
 	}
 }

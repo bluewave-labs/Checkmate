@@ -170,11 +170,18 @@
 			"retrying": "Wird erneut versucht...",
 			"reconnected": "Verbindung zum Server wiederhergestellt."
 		},
+		"egressBanner": {
+			"degraded": "Checkmate kann seine Zuverlässigkeitsziele nicht erreichen. Die ausgehende Verbindung scheint seit {{time}} unterbrochen zu sein; Monitorfehler werden bis zur Wiederherstellung nicht als Vorfälle gemeldet.",
+			"degradedNoTime": "Checkmate kann seine Zuverlässigkeitsziele nicht erreichen. Die ausgehende Verbindung scheint unterbrochen zu sein; Monitorfehler werden bis zur Wiederherstellung nicht als Vorfälle gemeldet.",
+			"degradedWorkers": "{{degraded}} von {{total}} Workern haben seit {{time}} keine ausgehende Verbindung mehr. Ihre Monitorfehler werden bis zur Wiederherstellung nicht als Vorfälle gemeldet.",
+			"degradedWorkersNoTime": "{{degraded}} von {{total}} Workern haben keine ausgehende Verbindung mehr. Ihre Monitorfehler werden bis zur Wiederherstellung nicht als Vorfälle gemeldet."
+		},
 		"sidebar": {
 			"menu": {
 				"uptime": "Verfügbarkeit",
 				"pagespeed": "Pagespeed",
 				"infrastructure": "Infrastruktur",
+				"docker": "Docker",
 				"notifications": "Benachrichtigungen",
 				"checks": "Checks",
 				"incidents": "Vorfälle",
@@ -187,7 +194,8 @@
 					"alerting": "Benachrichtigungen",
 					"reporting": "Berichte",
 					"configuration": "Konfiguration"
-				}
+				},
+				"dashboard": "Dashboard"
 			},
 			"bottomMenu": {
 				"support": "Support",
@@ -410,11 +418,13 @@
 				"status": {
 					"all": "Alle",
 					"down": "Ausgefallen",
-					"up": "Erreichbar"
+					"up": "Erreichbar",
+					"degraded": "Ausgehende Verbindung gestört"
 				}
 			},
 			"table": {
 				"empty": "Keine ausgefallenen Checks in diesem Zeitraum",
+				"egressDegraded": "Ausgehende Verbindung gestört",
 				"headers": {
 					"statusCode": "Statuscode",
 					"location": "Standort"
@@ -448,6 +458,7 @@
 				},
 				"statBoxes": {
 					"activeFor": "Aktiv seit",
+					"checkingEvery": "Check alle {{interval}}",
 					"certificateExpiry": "Zertifikatablauf",
 					"lastCheck": "Letzter Check",
 					"lastResponseTime": "Letzte Antwortzeit",
@@ -460,7 +471,8 @@
 					"maintenance": "Wartung",
 					"paused": "pausiert",
 					"total": "gesamt",
-					"up": "erreichbar"
+					"up": "erreichbar",
+					"degraded": "ausgehende Verbindung gestört"
 				},
 				"monitorTypes": {
 					"optionDocker": "Docker",
@@ -534,10 +546,6 @@
 				},
 				"general": {
 					"option": {
-						"container": {
-							"label": "Containername/-ID",
-							"placeholder": "my-app oder abcd1234"
-						},
 						"host": {
 							"label": "Host",
 							"placeholder": "192.168.1.100 oder example.com"
@@ -593,6 +601,10 @@
 							"desktop": "Desktop",
 							"label": "Strategie",
 							"mobile": "Mobil"
+						},
+						"dockerHost": {
+							"label": "Docker-Host",
+							"placeholder": "unix:///var/run/docker.sock"
 						}
 					},
 					"title": "Allgemeine Einstellungen",
@@ -694,17 +706,6 @@
 						}
 					}
 				},
-				"url": {
-					"title": "Monitor-IP/URL auf Statusseite",
-					"description": "Zeigt die IP-Adresse oder URL des Monitors auf der öffentlichen Statusseite an. Wenn deaktiviert, wird nur der Monitor-Name angezeigt, um sensible Informationen zu schützen.",
-					"option": {
-						"showURL": {
-							"label": "IP/URL auf Statusseite anzeigen",
-							"enabled": "Aktiviert",
-							"disabled": "Deaktiviert"
-						}
-					}
-				},
 				"stats": {
 					"title": "Monitor-Verlauf",
 					"description": "Löschen Sie alle Überwachungsverläufe und Statistiken für Ihr Team. Diese Aktion ist unwiderruflich.",
@@ -713,6 +714,50 @@
 						"title": "Alle Überwachungsverläufe löschen?",
 						"description": "Dies wird alle Überwachungsverläufe, Statistiken und Check-Daten für Ihr Team dauerhaft löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
 						"confirm": "Ja, alle Statistiken löschen"
+					}
+				},
+				"dockerLogs": {
+					"title": "Container-Logs",
+					"description": "Erfasst bei jeder Prüfung die neuesten Logzeilen von jedem Container auf diesem Host. Logs werden 7 Tage aufbewahrt. Lassen Sie dies bei Hosts mit gesprächigen Containern deaktiviert, um Datenbankspeicher zu sparen.",
+					"option": {
+						"enabled": {
+							"label": "Container-Logs erfassen"
+						}
+					}
+				},
+				"dockerAlerts": {
+					"title": "Container-Warnungen",
+					"description": "Markiert diesen Host als beeinträchtigt, solange ein Container darauf gestoppt ist oder seine Gesundheitsprüfung fehlschlägt, und benachrichtigt bei der Änderung. Container, die mit Code 0 beendet werden, gelten nicht als gestoppt. Capture meldet keine Exit-Codes, daher zählt auf Capture-Hosts jeder gestoppte Container.",
+					"option": {
+						"onStopped": {
+							"label": "Warnen, wenn ein Container gestoppt ist"
+						},
+						"onUnhealthy": {
+							"label": "Warnen, wenn ein Container fehlerhaft ist"
+						}
+					}
+				},
+				"dockerTls": {
+					"title": "TLS-Anmeldedaten",
+					"description": "Verbindet sich über gegenseitiges TLS mit einem entfernten Docker-Daemon. Fügen Sie die PEM-Dateien ein, die Sie an docker --tlsverify übergeben würden. Der Client-Schlüssel wird vor dem Speichern verschlüsselt und nie wieder angezeigt.",
+					"option": {
+						"ca": {
+							"label": "CA-Zertifikat",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"cert": {
+							"label": "Client-Zertifikat",
+							"placeholder": "-----BEGIN CERTIFICATE-----"
+						},
+						"key": {
+							"label": "Client-Schlüssel",
+							"placeholder": "-----BEGIN PRIVATE KEY-----",
+							"stored": "Ein Schlüssel ist gespeichert. Leer lassen, um ihn zu behalten."
+						},
+						"ignoreTls": {
+							"label": "TLS/SSL-Fehler ignorieren",
+							"description": "Überspringt die Überprüfung des Daemon-Zertifikats, sodass das CA-Zertifikat optional wird. Client-Zertifikat und Schlüssel sind weiterhin erforderlich, da der Daemon sie überprüft."
+						}
 					}
 				}
 			}
@@ -825,12 +870,9 @@
 		"infrastructure": {
 			"charts": {
 				"labels": {
-					"cpu": "CPU-Auslastung",
 					"disk": "Festplattenauslastung",
-					"memory": "Arbeitsspeicherauslastung",
 					"netBytesRecv": "{{name}} - Empfangene Bytes",
 					"netBytesSent": "{{name}} - Gesendete Bytes",
-					"netNoTraffic": "Capture meldet null Datenverkehr auf allen Schnittstellen. Das ist normal, wenn Capture in einem Container läuft, der nur Loopback-Schnittstellen sieht — führe Capture direkt auf dem Host aus, um echten Netzwerkverkehr zu sehen.",
 					"temp": "CPU-Temperatur"
 				}
 			},
@@ -943,7 +985,6 @@
 					"timestamp": "Zeitstempel",
 					"level": "Stufe",
 					"service": "Dienst",
-					"method": "Methode",
 					"monitorId": "Monitor-ID",
 					"runCount": "Ausführungen",
 					"failCount": "Fehlerzahl",
@@ -960,6 +1001,10 @@
 			"header": {
 				"title": "Protokolle & Warteschlange",
 				"description": "Serverprotokolle, Monitor-Warteschlange und Laufzeitdiagnosen an einem Ort."
+			},
+			"details": {
+				"fields": "Felder",
+				"stack": "Stacktrace"
 			}
 		},
 		"maintenanceWindow": {
@@ -1156,11 +1201,17 @@
 			},
 			"form": {
 				"timezone": {
-					"title": "Anzeigesprache Zeitzone",
-					"description": "Wählen Sie die Zeitzone, die für die Anzeige von Datum und Uhrzeit in der Anwendung verwendet wird.",
+					"title": "Datum und Uhrzeit",
+					"description": "Wählen Sie die Zeitzone und das Uhrzeitformat, die in der gesamten Anwendung für Datums- und Zeitangaben verwendet werden.",
 					"option": {
 						"timezone": {
-							"label": "Anzeige-Zeitzone"
+							"label": "Anzeige-Zeitzone",
+							"browserDefault": "Browserstandard ({{timezone}})"
+						},
+						"timeFormat": {
+							"label": "Zeitformat",
+							"24h": "24-Stunden",
+							"12h": "12-Stunden"
 						}
 					}
 				},
@@ -1199,9 +1250,7 @@
 					"description": "Zeigt die IP-Adresse oder URL des Monitors auf der öffentlichen Statusseite an. Wenn deaktiviert, wird nur der Monitor-Name angezeigt, um sensible Informationen zu schützen.",
 					"option": {
 						"showURL": {
-							"label": "IP/URL auf Statusseite anzeigen",
-							"enabled": "Aktiviert",
-							"disabled": "Deaktiviert"
+							"label": "IP/URL auf Statusseite anzeigen"
 						}
 					}
 				},
@@ -1306,6 +1355,25 @@
 						}
 					}
 				},
+				"egress": {
+					"title": "Selbsttest der ausgehenden Verbindung",
+					"description": "Prüft regelmäßig eine Reihe von Zuverlässigkeitszielen von dieser Instanz aus. Solange keines davon erreichbar ist, gilt die ausgehende Verbindung als unterbrochen und Monitorfehler werden nicht als Vorfälle erfasst.",
+					"option": {
+						"enabled": {
+							"label": "Selbsttest der ausgehenden Verbindung aktivieren"
+						},
+						"targets": {
+							"label": "Zuverlässigkeitsziele",
+							"placeholder": "https://example.com\ndns.google:53\n1.1.1.1",
+							"helper": "Eines pro Zeile, bis zu {{max}}. Leer lassen, um die Standardwerte zu verwenden (https://www.google.com/generate_204, https://www.cloudflare.com/cdn-cgi/trace). Ein einzelner Host oder eine IP wird angepingt (ICMP), host:port öffnet eine TCP-Verbindung und eine http://- oder https://-URL wird per HTTP abgerufen.",
+							"validation": {
+								"max": "Maximal {{max}} Ziele",
+								"length": "Jedes Ziel darf höchstens {{max}} Zeichen lang sein",
+								"invalid": "\"{{target}}\" ist kein Hostname oder keine IP-Adresse, kein host:port und keine http(s)-URL"
+							}
+						}
+					}
+				},
 				"demoMonitors": {
 					"title": "Demo-Monitore",
 					"description": "Beispiel-Monitore zu Demonstrationszwecken hinzufügen."
@@ -1377,6 +1445,9 @@
 					"maintenance": "Wartung",
 					"paused": "Pausiert",
 					"up": "Betriebsbereit"
+				},
+				"incidents": {
+					"errorLoading": "Vorfälle konnten nicht geladen werden."
 				}
 			},
 			"statusBar": {
@@ -1549,6 +1620,105 @@
 			"header": {
 				"title": "Uptime-Monitore",
 				"description": "Überwachen Sie HTTP-Endpunkte, Pings, Container und Ports und werden Sie sofort benachrichtigt, wenn etwas ausfällt."
+			}
+		},
+		"docker": {
+			"table": {
+				"headers": {
+					"host": "Host",
+					"containers": "Container"
+				},
+				"containersRunning": "{{running}} von {{total}} laufen"
+			},
+			"header": {
+				"title": "Docker-Monitore",
+				"description": "Überwachen Sie Ihre Docker-Hosts und jeden darauf laufenden Container."
+			},
+			"fallback": {
+				"title": "Noch keine Docker-Monitore",
+				"description": "Fügen Sie einen Docker-Host hinzu, um seine Container zu überwachen.",
+				"actionButton": "Monitor erstellen"
+			},
+			"container": {
+				"header": {
+					"title": "Container-Details",
+					"description": "Status, Ressourcennutzung und Logs für diesen Container."
+				},
+				"tabs": {
+					"overview": "Übersicht",
+					"logs": "Logs"
+				},
+				"logs": {
+					"recentLines": "{{count}} aktuelle Zeilen",
+					"loading": "Wird geladen...",
+					"updatedSecondsAgo": "Aktualisiert vor {{count}} s",
+					"updatedMinutesAgo": "Aktualisiert vor {{count}} min",
+					"skipped": "Einige Logeinträge wurden übersprungen",
+					"loadOlder": "Ältere Logs laden",
+					"loadingOlder": "Wird geladen...",
+					"noOlder": "Beginn der aufbewahrten Logs",
+					"loadError": "Logs konnten nicht geladen werden",
+					"loadOlderError": "Ältere Logs konnten nicht geladen werden",
+					"empty": {
+						"title": "Noch keine Logs erfasst",
+						"description": "Zeilen erscheinen hier nach der nächsten Prüfung. Nur Ausgaben, die seit dem Aktivieren der Erfassung geschrieben wurden, werden gespeichert."
+					},
+					"disabled": {
+						"title": "Die Logerfassung ist für diesen Host deaktiviert",
+						"description": "Aktivieren Sie Container-Logs in den Monitoreinstellungen, um mit der Erfassung zu beginnen.",
+						"action": "Monitor konfigurieren"
+					},
+					"forbidden": {
+						"title": "Sie haben keinen Zugriff auf Container-Logs",
+						"description": "Nur Administratoren können Logs einsehen. Bitten Sie einen Administrator um Zugriff, wenn Sie sie sehen müssen."
+					}
+				}
+			},
+			"host": {
+				"statBoxes": {
+					"containers": "Container",
+					"running": "Laufend",
+					"stopped": "Gestoppt",
+					"unhealthy": "Fehlerhaft"
+				},
+				"table": {
+					"headers": {
+						"container": "Container",
+						"cpu": "CPU",
+						"memory": "Speicher"
+					}
+				}
+			}
+		},
+		"dashboard": {
+			"noData": "Derzeit keine Daten verfügbar.",
+			"monitorStatus": {
+				"ofUp": "von {{total}} aktiv"
+			},
+			"cards": {
+				"monitorStatus": "Monitorstatus",
+				"currentlyDown": "Derzeit ausgefallen",
+				"uptime": "Monitor-Verfügbarkeit",
+				"monitorsByType": "Monitore nach Typ"
+			},
+			"uptimeCard": {
+				"toggleSortOrder": "Sortierreihenfolge umschalten"
+			},
+			"currentlyDown": {
+				"empty": "Derzeit ist kein Monitor ausgefallen."
+			},
+			"header": {
+				"title": "Dashboard",
+				"description": "Alle Monitortypen an einem Ort sehen und erkennen, was Aufmerksamkeit braucht."
+			},
+			"editCards": "Karten bearbeiten",
+			"editCardsModal": {
+				"title": "Dashboard-Karten",
+				"description": "Wählen Sie die Karten aus, die auf Ihrem Dashboard angezeigt werden.",
+				"groups": {
+					"uptime": "Verfügbarkeit"
+				},
+				"done": "Fertig"
 			}
 		}
 	}

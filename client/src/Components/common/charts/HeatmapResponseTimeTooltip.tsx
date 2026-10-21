@@ -1,12 +1,11 @@
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { formatDateWithTz, formatMs } from "@/Utils/TimeUtils";
+import { formatMs } from "@/Utils/TimeUtils";
 import type { CheckSnapshot } from "@/Types/Check";
 import { useTheme } from "@mui/material/styles";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/Types/state";
 import { useTranslation } from "react-i18next";
+import { useFormatDate } from "@/Hooks/useFormatDate";
 
 type HeatmapCheck =
 	| CheckSnapshot
@@ -20,8 +19,8 @@ export const HeatmapResponseTimeTooltip = ({
 	check: HeatmapCheck;
 }) => {
 	const { t } = useTranslation();
-	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 	const theme = useTheme();
+	const formatDate = useFormatDate();
 
 	const getColor = (status: boolean) => {
 		if (status === true) return theme.palette.success.light;
@@ -53,9 +52,7 @@ export const HeatmapResponseTimeTooltip = ({
 						p: theme.spacing(4),
 					}}
 				>
-					<Typography>
-						{formatDateWithTz(check?.createdAt, "ddd, MMMM D, YYYY, HH:mm A", uiTimezone)}
-					</Typography>
+					<Typography>{formatDate(check?.createdAt, "dateTime")}</Typography>
 					<Typography>
 						{t("common.labels.responseTime")}:{" "}
 						{check?.responseTime ? formatMs(check.responseTime) : "N/A"}

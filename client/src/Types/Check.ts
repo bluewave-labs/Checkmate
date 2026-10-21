@@ -1,3 +1,5 @@
+import type { EgressStatus } from "@/Types/Egress";
+
 export const CHECK_TTL_SENTINEL = 366;
 
 export interface CheckMetadata {
@@ -224,6 +226,7 @@ export interface Check {
 	seo?: number;
 	performance?: number;
 	audits?: CheckAudits;
+	egressStatus?: EgressStatus;
 	createdAt: string;
 	updatedAt: string;
 }
@@ -333,6 +336,7 @@ export interface UptimeChecksResult {
 export interface ChecksSummary {
 	totalChecks: number;
 	downChecks: number;
+	degradedChecks: number;
 }
 
 export type SnapshotCpuInfo = Pick<

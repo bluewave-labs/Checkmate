@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { AdvancedMatcher } from "../../../../src/service/network/AdvancedMatcher.ts";
+import { AdvancedMatcher } from "../../../../src/service/networkProviders/AdvancedMatcher.ts";
 import type { Monitor } from "../../../../src/domain/monitors/monitor.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────

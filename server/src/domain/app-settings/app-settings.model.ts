@@ -42,6 +42,9 @@ const AppSettingsSchema = new Schema<AppSettingsDocument>(
 		globalThresholds: { type: thresholdsSchema },
 		globalProxyEnabled: { type: Boolean, default: false },
 		globalProxyId: { type: String, default: null },
+		egressCheckEnabled: { type: Boolean, default: false },
+		egressCheckTargets: { type: [String], default: () => [] },
+		telemetryInstanceId: { type: String },
 	},
 	{ timestamps: true }
 );

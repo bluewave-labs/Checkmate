@@ -2,10 +2,12 @@ const SERVICE_NAME = "WebhookProvider";
 import type { Notification } from "@/domain/notifications/notification.type.js";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
-import { getTestMessage } from "@/domain/notifications/providers/utils.js";
+import { getTestMessage, incidentUrl } from "@/domain/notifications/providers/utils.js";
 import got from "got";
 
 export class WebhookProvider extends NotificationProvider {
+	protected readonly serviceName = SERVICE_NAME;
+
 	sendMessage = async (notification: Notification, message: NotificationMessage): Promise<boolean> => {
 		if (!notification.address) {
 			return false;
@@ -22,20 +24,10 @@ export class WebhookProvider extends NotificationProvider {
 				},
 				...this.gotRequestOptions(),
 			});
-			this.logger.info({
-				message: "Webhook notification sent",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-			});
+			this.logger.info("Webhook notification sent");
 			return true;
 		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: "Webhook alert failed",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-				stack: err?.stack,
-			});
+			this.logger.warn({ err: error }, "Webhook alert failed");
 			return false;
 		}
 	};
@@ -74,7 +66,7 @@ export class WebhookProvider extends NotificationProvider {
 
 		// Incident link
 		if (message.content.incident) {
-			lines.push(`[View Incident](${message.clientHost}/infrastructure/${message.monitor.id})`);
+			lines.push(`[View Incident](${incidentUrl(message)})`);
 		}
 
 		// Return webhook payload with both text and structured data
@@ -106,13 +98,7 @@ export class WebhookProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: "Webhook test alert failed",
-				service: SERVICE_NAME,
-				method: "sendTestAlert",
-				stack: err?.stack,
-			});
+			this.logger.warn({ err: error }, "Webhook test alert failed");
 			return false;
 		}
 	};

@@ -1,7 +1,8 @@
 import { z } from "zod";
-import { DbTypes, LogLevels, QueueModes } from "@/domain/app-settings/app-settings.type.js";
+import { DbTypes, DeploymentTypes, LogLevels, QueueModes } from "@/domain/app-settings/app-settings.type.js";
 import { booleanCoercion } from "@/api/validation/shared.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
+import { DEFAULT_TELEMETRY_URL } from "@/domain/telemetry/telemetry.type.js";
 
 // Padded standard base64 of exactly 32 bytes, as produced by `openssl rand -base64 32`
 const ENCRYPTION_KEY_ENTRY = /^[A-Za-z0-9+/]{43}=$/;
@@ -42,7 +43,7 @@ const envSchema = z.object({
 	// Port for worker health checks
 	HEALTH_PORT: z.string().default("52346"),
 	NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-	LOG_LEVEL: z.enum(LogLevels).default("debug"),
+	LOG_LEVEL: z.enum(LogLevels).default("info"),
 
 	// Database
 	DB_CONNECTION_STRING: z.string().min(1, "Database connection string is required"),
@@ -72,52 +73,41 @@ const envSchema = z.object({
 
 	// Encryption
 	ENCRYPTION_KEY: encryptionKeyList,
+
+	// Telemetry
+	TELEMETRY_ENABLED: booleanCoercion.default(true),
+	TELEMETRY_URL: z.url("TELEMETRY_URL must be a valid URL").default(DEFAULT_TELEMETRY_URL),
+	CHECKMATE_DEPLOYMENT: z.enum(DeploymentTypes).default("source"),
 });
 
 export type ValidatedEnv = z.infer<typeof envSchema>;
 
 export const validateEnv = (logger: ILogger): ValidatedEnv => {
+	const log = logger.child({ service: "Server" });
 	const result = envSchema.safeParse(process.env);
 
 	if (!result.success) {
-		logger.error({
-			message: "Env validation failed",
-			method: "validateEnv",
-			service: "Server",
-		});
+		log.error("Env validation failed");
 
 		const errors = result.error.format();
 		for (const [key, value] of Object.entries(errors)) {
 			if (key !== "_errors" && value && typeof value === "object" && "_errors" in value) {
-				logger.error({
-					message: `${key}: ${value._errors.join(", ")}`,
-					method: "validateEnv",
-					service: "Server",
-				});
+				log.error({ variable: key, errors: value._errors }, "Invalid environment variable");
 			}
 		}
 
-		logger.error({
-			message: "Please check your .env file and ensure all required variables are set.",
-			method: "validateEnv",
-			service: "Server",
-		});
+		log.error("Please check your .env file and ensure all required variables are set.");
 		process.exit(1);
 	}
 
 	const legacyClientVars = Object.keys(process.env).filter((key) => key.startsWith("UPTIME_APP_"));
 	if (legacyClientVars.length > 0) {
-		logger.warn({
-			message: `${legacyClientVars.join(", ")} no longer configure the client and will be ignored. The client defaults to the origin it is served from; to override, use CLIENT_CONFIG_API_BASE_URL, CLIENT_CONFIG_CLIENT_HOST, or CLIENT_CONFIG_LOG_LEVEL.`,
-			method: "validateEnv",
-			service: "Server",
-		});
+		log.warn(
+			{ variables: legacyClientVars },
+			"Legacy client variables no longer configure the client and will be ignored. The client defaults to the origin it is served from; to override, use CLIENT_CONFIG_API_BASE_URL, CLIENT_CONFIG_CLIENT_HOST, or CLIENT_CONFIG_LOG_LEVEL."
+		);
 	}
 
-	logger.info({
-		message: "Environment variables validated successfully",
-		method: "validateEnv",
-		service: "Server",
-	});
+	log.info("Environment variables validated successfully");
 	return result.data;
 };

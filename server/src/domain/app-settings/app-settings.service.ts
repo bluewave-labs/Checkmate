@@ -1,6 +1,13 @@
 import { ISettingsRepository } from "@/domain/app-settings/app-settings-repository.interface.js";
-import { Settings, SettingsUpdate, type ClientRuntimeConfig, type DbType, type QueueMode } from "@/domain/app-settings/app-settings.type.js";
-import { AppError } from "@/utils/AppError.js";
+import {
+	DeploymentType,
+	Settings,
+	SettingsUpdate,
+	type ClientRuntimeConfig,
+	type DbType,
+	type QueueMode,
+} from "@/domain/app-settings/app-settings.type.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { ValidatedEnv } from "@/config/envValidation.js";
 import type { StringValue } from "ms";
 const SERVICE_NAME = "SettingsService";
@@ -17,21 +24,35 @@ export type EnvConfig = {
 	queuePrimaryProcesses: boolean;
 	statusPageThemesEnabled: boolean;
 	clientConfig: ClientRuntimeConfig;
+	telemetryEnabled: boolean;
+	telemetryUrl: string;
+	deployment: DeploymentType;
 };
 
 export interface ISettingsService {
 	getSettings(): EnvConfig;
 	areStatusPageThemesEnabled(): boolean;
 	getDBSettings(): Promise<Settings>;
+	getCachedDBSettings(): Promise<Settings>;
 	updateDbSettings(newSettings: SettingsUpdate): Promise<Settings>;
 }
 
+const DB_SETTINGS_CACHE_TTL_MS = 60_000;
+
+type CachedSettings = {
+	value: Promise<Settings>;
+	expiresAt: number;
+};
 export class SettingsService implements ISettingsService {
 	static SERVICE_NAME = SERVICE_NAME;
 	private settings: EnvConfig;
 	private settingsRepository: ISettingsRepository | null = null;
+	private dbSettingsCache: CachedSettings | null = null;
 
-	constructor(env: ValidatedEnv) {
+	constructor(
+		env: ValidatedEnv,
+		private dbSettingsTTLMs: number = DB_SETTINGS_CACHE_TTL_MS
+	) {
 		this.settings = {
 			jwtSecret: env.JWT_SECRET,
 			jwtTTL: env.TOKEN_TTL as StringValue,
@@ -48,6 +69,9 @@ export class SettingsService implements ISettingsService {
 				...(env.CLIENT_CONFIG_CLIENT_HOST && { clientHost: env.CLIENT_CONFIG_CLIENT_HOST }),
 				...(env.CLIENT_CONFIG_LOG_LEVEL && { logLevel: env.CLIENT_CONFIG_LOG_LEVEL }),
 			},
+			telemetryEnabled: env.TELEMETRY_ENABLED,
+			telemetryUrl: env.TELEMETRY_URL,
+			deployment: env.CHECKMATE_DEPLOYMENT,
 		};
 	}
 
@@ -65,9 +89,8 @@ export class SettingsService implements ISettingsService {
 
 	private getRepository(): ISettingsRepository {
 		if (!this.settingsRepository) {
-			throw new AppError({
+			throw new AppError(internalError, {
 				message: "Settings repository not initialized. Call setRepository() after DB connect.",
-				status: 500,
 				service: SERVICE_NAME,
 			});
 		}
@@ -75,7 +98,9 @@ export class SettingsService implements ISettingsService {
 	}
 
 	updateDbSettings = async (newSettings: SettingsUpdate) => {
-		return await this.getRepository().update(newSettings);
+		const updated = await this.getRepository().update(newSettings);
+		this.dbSettingsCache = null;
+		return updated;
 	};
 
 	getDBSettings = async () => {
@@ -90,9 +115,22 @@ export class SettingsService implements ISettingsService {
 		}
 
 		if (!settings) {
-			throw new AppError({ message: "Settings not found", status: 500 });
+			throw new AppError(internalError, { message: "Settings not found", service: SERVICE_NAME });
 		}
 
 		return settings;
+	};
+
+	getCachedDBSettings = async () => {
+		const hit = this.dbSettingsCache;
+		if (hit && hit.expiresAt > Date.now()) {
+			return hit.value;
+		}
+		const entry: CachedSettings = { value: this.getDBSettings(), expiresAt: Date.now() + this.dbSettingsTTLMs };
+		this.dbSettingsCache = entry;
+		entry.value.catch(() => {
+			if (this.dbSettingsCache === entry) this.dbSettingsCache = null;
+		});
+		return entry.value;
 	};
 }

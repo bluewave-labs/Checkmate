@@ -4,11 +4,16 @@ import type { CheckSnapshot } from "@/domain/checks/check.type.js";
 import type { Monitor, MonitorScheduleFields, MonitorStatus, MonitorsSummary } from "@/domain/monitors/monitor.type.js";
 import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import { MongoBulkWriteError } from "mongodb";
-import { AppError } from "@/utils/AppError.js";
+import { AppError, internalError } from "@/utils/AppError.js";
 import { IMonitorsRepository, TeamQueryConfig, SummaryConfig, RecentChecksMode } from "@/domain/monitors/monitor.repository.interface.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 import { toCheckSnapshot } from "@/domain/checks/check.snapshot.js";
+import { monitorErrors } from "@/domain/monitors/monitor.errors.js";
+
+const SERVICE_NAME = "MonitorsRepository";
 class MongoMonitorsRepository implements IMonitorsRepository {
+	static SERVICE_NAME = SERVICE_NAME;
+
 	create = async (monitor: Monitor, teamId: string, userId: string) => {
 		const monitorModel = new MonitorModel({ ...monitor, teamId, userId });
 		const saved = await monitorModel.save();
@@ -35,7 +40,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		const match: { _id: string; teamId: string } = { _id: monitorId, teamId };
 		const monitor = await MonitorModel.findOne(match);
 		if (!monitor) {
-			throw new AppError({ message: `Monitor with ID ${monitorId} not found`, status: 404 });
+			throw new AppError(monitorErrors.notFound, { message: `Monitor with ID ${monitorId} not found`, service: SERVICE_NAME });
 		}
 		return this.toEntity(monitor);
 	};
@@ -101,7 +106,12 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 
 	private pageOptions = (config: TeamQueryConfig) => {
 		const { page = 0, rowsPerPage = 0, field = "createdAt", order = "desc" } = config ?? {};
-		return { sort: { [field]: order === "asc" ? 1 : -1 } as const, skip: Math.max(page, 0) * rowsPerPage, limit: rowsPerPage };
+		const direction: 1 | -1 = order === "asc" ? 1 : -1;
+		const sort: Record<string, 1 | -1> = { [field]: direction };
+		if (field !== "createdAt") {
+			sort.createdAt = 1;
+		}
+		return { sort, skip: Math.max(page, 0) * rowsPerPage, limit: rowsPerPage };
 	};
 
 	findByTeamId = async (teamId: string, config: TeamQueryConfig, options?: { includeRecentChecks?: boolean }): Promise<Monitor[]> => {
@@ -186,7 +196,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		}
 		const updatedMonitor = await MonitorModel.findOneAndUpdate({ _id: monitorId, teamId }, update, { new: true, runValidators: true });
 		if (!updatedMonitor) {
-			throw new AppError({ message: `Failed to update monitor with id ${monitorId}`, status: 500 });
+			throw new AppError(internalError, { message: `Failed to update monitor with id ${monitorId}`, service: SERVICE_NAME });
 		}
 		return this.toEntity(updatedMonitor);
 	};
@@ -223,7 +233,10 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		);
 
 		if (!updatedMonitor) {
-			throw new AppError({ message: `Failed to update status and checks for monitor with id ${monitorId}`, status: 500 });
+			throw new AppError(internalError, {
+				message: `Failed to update status and checks for monitor with id ${monitorId}`,
+				service: SERVICE_NAME,
+			});
 		}
 		return this.toEntity(updatedMonitor);
 	};
@@ -248,7 +261,10 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			{ new: true }
 		);
 		if (!monitor) {
-			throw new AppError({ message: `Monitor with ID ${monitorId} not found for the given team.`, status: 404 });
+			throw new AppError(monitorErrors.notFound, {
+				message: `Monitor with ID ${monitorId} not found for the given team.`,
+				service: SERVICE_NAME,
+			});
 		}
 		return this.toEntity(monitor);
 	};
@@ -285,7 +301,10 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		const deletedMonitor = await MonitorModel.findOneAndDelete({ _id: monitorId, teamId });
 
 		if (!deletedMonitor) {
-			throw new AppError({ message: `Monitor with ID ${monitorId} not found for the given team.`, status: 404 });
+			throw new AppError(monitorErrors.notFound, {
+				message: `Monitor with ID ${monitorId} not found for the given team.`,
+				service: SERVICE_NAME,
+			});
 		}
 
 		return this.toEntity(deletedMonitor);
@@ -389,7 +408,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
 			notificationObjectIds = notificationIds.map((id) => new mongoose.Types.ObjectId(id));
 		} catch {
-			throw new AppError({ message: "One or more monitor or notification IDs are invalid", status: 400 });
+			throw new AppError(monitorErrors.invalidNotificationIds, { service: SERVICE_NAME });
 		}
 		const filter = { _id: { $in: objectIds }, teamId: new mongoose.Types.ObjectId(teamId) };
 
@@ -405,7 +424,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 				update = { $set: { notifications: notificationObjectIds } };
 				break;
 			default:
-				throw new AppError({ message: `Invalid action: ${action}`, status: 400 });
+				throw new AppError(internalError, { message: `Invalid action: ${action}`, service: SERVICE_NAME });
 		}
 
 		const result = await MonitorModel.updateMany(filter, update);
@@ -468,6 +487,8 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			geoCheckLocations: doc.geoCheckLocations ?? [],
 			geoCheckInterval: doc.geoCheckInterval ?? 300000,
 			dockerLogsEnabled: doc.dockerLogsEnabled ?? false,
+			dockerAlertOnStopped: doc.dockerAlertOnStopped ?? false,
+			dockerAlertOnUnhealthy: doc.dockerAlertOnUnhealthy ?? false,
 			dockerTlsCa: doc.dockerTlsCa ?? undefined,
 			dockerTlsCert: doc.dockerTlsCert ?? undefined,
 			dockerTlsKeySet: doc.dockerTlsKeySet ?? false,

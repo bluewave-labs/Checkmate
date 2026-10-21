@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import type { IStatusProvider } from "../../src/service/network/IStatusProvider.ts";
+import type { IStatusProvider } from "../../src/service/networkProviders/IStatusProvider.ts";
 import type { Monitor } from "../../src/domain/monitors/monitor.type.ts";
 
 /**

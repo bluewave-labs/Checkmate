@@ -45,14 +45,14 @@ describe("PushoverProvider", () => {
 			mockGotPost.mockRejectedValue(new Error("fail"));
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeNotification())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ method: "sendTestAlert", details: { error: "fail" } }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: new Error("fail") }, "Pushover test alert failed");
 		});
 
 		it("handles non-Error thrown values in sendTestAlert", async () => {
 			mockGotPost.mockRejectedValue("string error");
 			const { provider, logger } = createProvider();
 			expect(await provider.sendTestAlert(makeNotification())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined, details: { error: "unknown error" } }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: "string error" }, "Pushover test alert failed");
 		});
 	});
 
@@ -77,14 +77,14 @@ describe("PushoverProvider", () => {
 			mockGotPost.mockRejectedValue(new Error("fail"));
 			const { provider, logger } = createProvider();
 			expect(await provider.sendMessage(makeNotification() as any, makeMessage())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ method: "sendMessage" }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: new Error("fail") }, "Pushover alert failed");
 		});
 
 		it("handles non-Error thrown values in sendMessage", async () => {
 			mockGotPost.mockRejectedValue(42);
 			const { provider, logger } = createProvider();
 			expect(await provider.sendMessage(makeNotification() as any, makeMessage())).toBe(false);
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ details: { error: "unknown error" } }));
+			expect(logger.warn).toHaveBeenCalledWith({ err: 42 }, "Pushover alert failed");
 		});
 
 		it("includes thresholds in text", async () => {
@@ -97,6 +97,12 @@ describe("PushoverProvider", () => {
 			const { provider } = createProvider();
 			await provider.sendMessage(makeNotification() as any, makeMessageWithIncident());
 			expect(mockGotPost.mock.calls[0][1].form.message).toContain("View Incident");
+		});
+
+		it("links the incident to the monitor's incidents page", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessageWithIncident());
+			expect(mockGotPost.mock.calls[0][1].form.message).toContain("View Incident: https://app.example.com/incidents/mon-1");
 		});
 
 		it("omits optional sections when not present", async () => {

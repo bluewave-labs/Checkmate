@@ -92,7 +92,7 @@ JWT_SECRET="$(openssl rand -hex 32)" docker compose up -d
 Then open http://localhost:52345. If the app is reached at another origin (domain or LAN IP), set `CLIENT_HOST` accordingly. To build the image yourself, run `docker build -f docker/Dockerfile -t checkmate .` from a checkout. For TLS, put any reverse proxy (Caddy, Traefik, nginx) in front of port 52345.
 
 There are also 1-click installation options like [Repocloud](https://repocloud.io/details/Checkmate),
-[Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) or [Cloudzy](https://cloudzy.com/marketplace/checkmate). Note that the Helm chart has not yet been migrated to the all-in-one image: it still deploys the legacy `checkmate-client`, `checkmate-backend` and `checkmate-mongo` images, pinned at v3.8.1.
+[Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [Easypanel](https://easypanel.io/templates/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (South Africa), [Cloudzy](https://cloudzy.com/marketplace/checkmate) or [Pethost](https://pethost.dev/templates/checkmate/). Note that the Helm chart has not yet been migrated to the all-in-one image: it still deploys the legacy `checkmate-client`, `checkmate-backend` and `checkmate-mongo` images, pinned at v3.8.1.
 
 
 ### Configuration
@@ -108,11 +108,13 @@ The image is configured entirely through environment variables on the server con
 | `PORT` | No | Port the API and web client are served on (default `52345`) |
 | `HEALTH_PORT` | No | Port for the `/livez`, `/readyz` and `/metrics` endpoints, served by any process that runs the job worker (default `52346`) |
 | `NODE_ENV` | No | `development`, `production` or `test` (default `development`). `development` disables the general API rate limiter; set `production` on real deployments |
-| `LOG_LEVEL` | No | Server log level: `error`, `warn`, `info`, or `debug` (default `debug`) |
+| `LOG_LEVEL` | No | Server log level: `error`, `warn`, `info`, or `debug` (default `info`) |
 | `TOKEN_TTL` | No | Lifetime of issued auth tokens, e.g. `12h` or `7d` (default `99d`) |
 | `QUEUE_MODE` | No | `primary` (default) runs the API, the web client and the job scheduler; `worker` runs a job-processing worker only, with no API |
 | `QUEUE_PRIMARY_PROCESSES` | No | `true` (default) or `false`. Whether a `primary` node also processes monitoring jobs itself; set `false` when dedicated `worker` nodes handle all checks. Ignored in `worker` mode |
 | `STATUS_PAGE_THEMES_ENABLED` | No | `true` (default) or `false`. When `false`, status pages ignore theme settings and always render the default theme |
+| `TELEMETRY_ENABLED` | No | `true` (default) or `false`. Set `false` to stop sending the daily anonymous usage heartbeat; see [Telemetry](#telemetry) |
+| `TELEMETRY_URL` | No | Where the heartbeat is sent. Only needed to point it at your own collector |
 
 The web client needs no configuration by default: it calls the API on the same origin it was served from (`/api/v1`). For setups where the defaults don't apply — for example, the API is reached through a different origin than the page — the server renders overrides into the client at runtime via these optional variables:
 
@@ -126,7 +128,26 @@ The web client needs no configuration by default: it calls the API on the same o
 
 See full installation instructions in the [Checkmate documentation portal](https://checkmate.so/docs). 
 
-Alternatively, you can also use [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md) (legacy images, pinned at v3.8.1), [Sive Host](https://sive.host) (South Africa), [Cloudzy](https://cloudzy.com/marketplace/checkmate) or [Pikapods](https://www.pikapods.com/) to quickly spin off a Checkmate instance. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
+Alternatively, any of the [1-click installation options](#installation) listed above can spin up a Checkmate instance quickly. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
+
+<a id="telemetry"></a>
+### Telemetry
+
+Checkmate sends one anonymous heartbeat per installation every 24 hours so we can see how many instances are running. It contains only:
+
+| Field | Example | What it is |
+|---|---|---|
+| `instanceId` | `3f0c7a52-…` | A random UUID generated once and stored in your database. It is not derived from your hardware, hostname or network |
+| `version` | `3.12.0` | Checkmate version |
+| `deployment` | `docker` | `docker` for the official image, `source` otherwise |
+| `queueMode` | `primary` | The `QUEUE_MODE` setting |
+| `nodeVersion` | `24.4.0` | Node.js version |
+| `os` | `linux` | Operating system |
+| `arch` | `x64` | CPU architecture |
+
+No URLs, hostnames, IP addresses, emails, names, monitor details or any other data you've entered are sent.
+
+To opt out, set `TELEMETRY_ENABLED=false` on every server container and restart. The scheduled heartbeat is removed on the next start.
 
 ### Using a Custom CA
 
@@ -134,14 +155,17 @@ If you need to monitor internal HTTPS endpoints with certificates from private C
 
 ### Docker monitors
 
-A Docker monitor connects to a Docker daemon and reports on every container it runs. The daemon's ping response decides whether the monitor is up or down and its latency is the response time. Each check also records every container's state, health, CPU and memory usage, restart count, published ports and mounts. Enabling **Collect container logs** additionally stores the latest 200 log lines per container on every check; logs are kept for 7 days.
+A Docker monitor reports on every container running on a host. It can connect to the Docker daemon directly or read container metrics from a Capture agent. Direct monitors use the daemon's ping response for availability and record container state, health, CPU and memory usage, restart count, published ports and mounts. Enabling **Collect container logs** additionally stores the latest 200 log lines per container on every direct check; logs are kept for 7 days.
 
-The **Docker host** field accepts two forms:
+The **Docker host** field accepts three forms:
 
 | Host | Example | Notes |
 |---|---|---|
 | Local socket | `unix:///var/run/docker.sock` | Also accepts a bare absolute path such as `/var/run/docker.sock`. Use this for the daemon on the same machine Checkmate runs on. |
 | Remote daemon | `tcp://docker.example.com:2376` | Always uses mutual TLS; the port defaults to `2376`. Unencrypted daemons on `2375` are not supported. |
+| Capture agent | `https://capture.example.com/api/v1/metrics/docker` | Enter the full endpoint ending in `/metrics/docker` and its authorization secret. Checkmate requests `all=true` so stopped containers are included. |
+
+Capture-backed monitors normalize Capture's container state, health, CPU, memory, start time and exposed ports into the same Docker pages. Capture does not currently provide restart counts, mounts, published host-port bindings or container logs, so those values are shown as unavailable. Capture also reports a container whose health check is still starting as healthy, so the `starting` health state only appears on direct monitors, and stopped containers carry no CPU or memory metrics.
 
 **Monitoring the local socket.** The reference Compose file does not mount the socket, so add it and grant the container the host's `docker` group. The image runs as an unprivileged user and cannot read the socket otherwise. Find the group id with `stat -c %g /var/run/docker.sock`, then:
 

@@ -8,6 +8,8 @@ import { FieldLabel } from "./FieldLabel";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/Types/state";
 
 interface TimePickerComponentProps extends Omit<MobileTimePickerProps<Dayjs>, "label"> {
 	fieldLabel?: string;
@@ -24,10 +26,12 @@ export const TimePickerComponent = ({
 	...props
 }: TimePickerComponentProps) => {
 	const theme = useTheme();
+	const timeFormat = useSelector((state: RootState) => state.ui.timeFormat);
 
 	const picker = (
 		<LocalizationProvider dateAdapter={AdapterDayjs}>
 			<MobileTimePicker
+				ampm={timeFormat === "12h"}
 				{...props}
 				slotProps={{
 					field: {

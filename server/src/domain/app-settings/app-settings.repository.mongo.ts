@@ -3,6 +3,7 @@ import { ISettingsRepository } from "@/domain/app-settings/app-settings-reposito
 import type { Settings, SettingsUpdate } from "@/domain/app-settings/app-settings.type.js";
 import { AppSettingsModel, type AppSettingsDocument } from "@/domain/app-settings/app-settings.model.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
+import { randomUUID } from "crypto";
 
 class MongoSettingsRepository implements ISettingsRepository {
 	private toEntity = (doc: AppSettingsDocument): Settings => {
@@ -24,12 +25,16 @@ class MongoSettingsRepository implements ISettingsRepository {
 			systemEmailIgnoreTLS: doc.systemEmailIgnoreTLS ?? false,
 			systemEmailRequireTLS: doc.systemEmailRequireTLS ?? false,
 			systemEmailRejectUnauthorized: doc.systemEmailRejectUnauthorized ?? true,
+			systemEmailDisplayName: doc.systemEmailDisplayName ?? undefined,
 			showURL: doc.showURL ?? false,
 			singleton: doc.singleton,
 			version: doc.version ?? 1,
 			globalThresholds: doc.globalThresholds ?? undefined,
 			globalProxyEnabled: doc.globalProxyEnabled ?? false,
 			globalProxyId: doc.globalProxyId ?? undefined,
+			egressCheckEnabled: doc.egressCheckEnabled ?? false,
+			egressCheckTargets: doc.egressCheckTargets ?? [],
+			telemetryInstanceId: doc.telemetryInstanceId ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
@@ -41,11 +46,17 @@ class MongoSettingsRepository implements ISettingsRepository {
 	};
 
 	findSingleton = async () => {
-		const settings = await AppSettingsModel.findOne({ singleton: true }).select("-__v -_id -createdAt -updatedAt -singleton").lean();
+		const settings = await AppSettingsModel.findOne({ singleton: true }).lean();
 		if (!settings) {
 			return null;
 		}
 		return this.toEntity(settings);
+	};
+
+	findOrCreateTelemetryInstanceId = async () => {
+		await AppSettingsModel.updateOne({ singleton: true, telemetryInstanceId: { $exists: false } }, { $set: { telemetryInstanceId: randomUUID() } });
+		const doc = await AppSettingsModel.findOne({ singleton: true }, { telemetryInstanceId: 1 }).lean();
+		return doc?.telemetryInstanceId ?? null;
 	};
 
 	update = async (settings: SettingsUpdate) => {
@@ -66,14 +77,9 @@ class MongoSettingsRepository implements ISettingsRepository {
 			...(Object.keys($unset).length > 0 && { $unset }),
 		};
 
-		await AppSettingsModel.findOneAndUpdate({}, update, {
-			upsert: true,
-		});
-
 		const updatedSettings = await AppSettingsModel.findOneAndUpdate({}, update, {
 			upsert: true,
 			new: true,
-			projection: "-__v -_id -createdAt -updatedAt -singleton",
 		});
 
 		return this.toEntity(updatedSettings);

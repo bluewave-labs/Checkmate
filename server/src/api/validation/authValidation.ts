@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { passwordPattern, nameValidation, lowercaseEmailValidation } from "./shared.js";
 import { UserRoles } from "@/domain/users/user.type.js";
+import { userExample, userResponseSchema } from "@/domain/users/user.schema.js";
 
 //****************************************
 // Auth Validations
@@ -51,3 +52,12 @@ export const inviteBodyValidation = z.object({
 export const inviteVerificationBodyValidation = z.object({
 	token: z.string().min(1, "Token is required"),
 });
+
+export const authPayloadResponseSchema = z
+	.object({
+		user: userResponseSchema,
+		token: z.string().optional(),
+	})
+	.meta({ id: "AuthPayload", example: { user: userExample, token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." } });
+
+export const superadminExistsResponseSchema = z.object({ superAdminExists: z.boolean() });

@@ -1,9 +1,9 @@
 import type { GeoContinent, GeoCheckResult, GeoCheckTimings, GeoCheckLocation } from "@/domain/geo-checks/geo-check.type.js";
 import { supportsGeoCheck, type HttpStatusCode } from "@/domain/monitors/monitor.type.js";
 import { MonitorType } from "@/domain/monitors/monitor.type.js";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 import got from "got";
-import { isStatusUp } from "@/service/network/utils.js";
+import { isStatusUp } from "@/service/networkProviders/utils.js";
 
 const SERVICE_NAME = "GlobalPingService";
 const GLOBAL_PING_API_BASE = "https://api.globalping.io/v1";
@@ -71,7 +71,7 @@ export class GlobalPingService implements IGlobalPingService {
 	private logger: ILogger;
 
 	constructor(logger: ILogger) {
-		this.logger = logger;
+		this.logger = logger.child({ service: SERVICE_NAME });
 	}
 
 	async createMeasurement(monitorType: MonitorType, url: string, locations: GeoContinent[]): Promise<string | null> {
@@ -97,20 +97,11 @@ export class GlobalPingService implements IGlobalPingService {
 
 			const measurementId = response.body.id;
 
-			this.logger.debug({
-				message: `Created GlobalPing measurement: ${measurementId} for target: ${cleanTarget}`,
-				service: SERVICE_NAME,
-				method: "createMeasurement",
-			});
+			this.logger.debug({ measurementId, target: cleanTarget }, "Created GlobalPing measurement");
 
 			return measurementId;
 		} catch (error: unknown) {
-			this.logger.error({
-				message: "GlobalPing API unavailable, skipping geo check",
-				service: SERVICE_NAME,
-				method: "createMeasurement",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			this.logger.error({ err: error }, "GlobalPing API unavailable, skipping geo check");
 			return null;
 		}
 	}
@@ -133,44 +124,25 @@ export class GlobalPingService implements IGlobalPingService {
 
 				if (measurement.status === "finished") {
 					const results = this.transformResults(measurement.results || [], customUpCodes);
-					this.logger.debug({
-						message: `GlobalPing measurement completed: ${measurementId}`,
-						service: SERVICE_NAME,
-						method: "pollForResults",
-						details: { measurementId, resultsCount: results.length },
-					});
+					this.logger.debug({ measurementId, resultsCount: results.length }, "GlobalPing measurement completed");
 					return results;
 				}
 
 				if (measurement.status === "failed") {
-					this.logger.warn({
-						message: `GlobalPing measurement failed: ${measurementId}`,
-						service: SERVICE_NAME,
-						method: "pollForResults",
-					});
+					this.logger.warn({ measurementId }, "GlobalPing measurement failed");
 					return [];
 				}
 
 				// Still in-progress, wait and poll again
 				await this.sleep(POLL_INTERVAL_MS);
 			} catch (error: unknown) {
-				this.logger.error({
-					message: "Error polling GlobalPing API",
-					service: SERVICE_NAME,
-					method: "pollForResults",
-					stack: error instanceof Error ? error.stack : undefined,
-				});
+				this.logger.error({ err: error, measurementId }, "Error polling GlobalPing API");
 				return [];
 			}
 		}
 
 		// Timeout reached
-		this.logger.warn({
-			message: `GlobalPing measurement polling timeout: ${measurementId}`,
-			service: SERVICE_NAME,
-			method: "pollForResults",
-			details: { measurementId, timeoutMs },
-		});
+		this.logger.warn({ measurementId, timeoutMs }, "GlobalPing measurement polling timeout");
 		return [];
 	}
 

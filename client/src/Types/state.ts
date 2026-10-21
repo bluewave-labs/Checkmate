@@ -1,5 +1,6 @@
 import type { ChartType } from "@/Features/UI/uiSlice";
 import type { User } from "./User";
+import type { TimeFormat } from "@/Utils/TimeUtils";
 
 export interface AuthState {
 	isLoading: boolean;
@@ -35,6 +36,7 @@ export interface UIState {
 		lastUpdate: string | null;
 	};
 	timezone: string;
+	timeFormat: TimeFormat;
 	distributedUptimeEnabled: boolean;
 	language: string;
 	starPromptOpen: boolean;

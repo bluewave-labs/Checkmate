@@ -1,5 +1,5 @@
 import { MonitorModel } from "../../domain/monitors/monitor.model.js";
-import type { ILogger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger/logger.js";
 
 /**
  * Fix infrastructure monitors that had thresholds incorrectly set to 0 or 5
@@ -7,9 +7,10 @@ import type { ILogger } from "@/utils/logger.js";
  */
 export async function fixInfrastructureThresholds(logger: ILogger): Promise<void> {
 	const SERVICE_NAME = "Migration:FixInfrastructureThresholds";
+	const log = logger.child({ service: SERVICE_NAME });
 
 	try {
-		logger.info({ service: SERVICE_NAME, message: "Starting infrastructure threshold fix" });
+		log.info("Starting infrastructure threshold fix");
 
 		const thresholdFields = ["cpuAlertThreshold", "memoryAlertThreshold", "diskAlertThreshold", "tempAlertThreshold"];
 
@@ -22,14 +23,11 @@ export async function fixInfrastructureThresholds(logger: ILogger): Promise<void
 		const monitors = await MonitorModel.find(filter);
 
 		if (monitors.length === 0) {
-			logger.info({ service: SERVICE_NAME, message: "No monitors with threshold value of 0 or 5 found" });
+			log.info("No monitors with threshold value of 0 or 5 found");
 			return;
 		}
 
-		logger.info({
-			service: SERVICE_NAME,
-			message: `Found ${monitors.length} monitors with threshold value of 0 or 5`,
-		});
+		log.info({ count: monitors.length }, "Found monitors with threshold value of 0 or 5");
 
 		let updatedCount = 0;
 
@@ -49,13 +47,9 @@ export async function fixInfrastructureThresholds(logger: ILogger): Promise<void
 			}
 		}
 
-		logger.info({
-			service: SERVICE_NAME,
-			message: `Fixed ${updatedCount} monitors — thresholds updated from 0/5 to 100`,
-		});
+		log.info({ updatedCount }, "Fixed monitors, thresholds updated from 0/5 to 100");
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		logger.error({ service: SERVICE_NAME, message: `Error fixing thresholds: ${errorMessage}` });
+		log.error({ err: error }, "Error fixing thresholds");
 		throw error;
 	}
 }

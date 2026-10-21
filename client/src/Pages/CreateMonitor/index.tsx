@@ -6,6 +6,7 @@ import { useParams, useLocation, useNavigate } from "react-router";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTheme } from "@mui/material";
+import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 import { Trans, useTranslation } from "react-i18next";
 import Typography from "@mui/material/Typography";
@@ -38,6 +39,7 @@ import {
 	PageSpeedStrategies,
 	DnsRecordTypes,
 	MonitorIntervalOptions,
+	MIN_MONITOR_INTERVAL_MS,
 	DefaultMonitorMatchMethod,
 	MonitorMatchMethods,
 	GeoCheckIntervalOptions,
@@ -50,6 +52,7 @@ import type { AppSettingsResponse } from "@/Types/Settings";
 import {
 	stepFieldsFor,
 	monitorStepCount,
+	isCaptureDockerUrl,
 	isDockerTlsUrl,
 	type MonitorFormData,
 } from "@/Validation/monitor";
@@ -58,9 +61,14 @@ import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { FormRadioGroup } from "@/Components/inputs/forms/FormRadioGroupField";
 import { FormMultiSelectField } from "@/Components/inputs/forms/FormMultiSelectField";
 import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
+import {
+	FormAutocompleteField,
+	type AutocompleteOption,
+} from "@/Components/inputs/forms/FormAutoCompleteField";
 import { FormSliderField } from "@/Components/inputs/forms/FormSliderField";
 import { FormSwitchField } from "@/Components/inputs/forms/FormSwitchField";
 import type { ProxyResponse } from "@/Types/Proxy";
+import { formatDuration } from "@/Utils/TimeUtils";
 
 const httpMethodOptions = HttpMethods.map((method) => ({
 	value: method,
@@ -73,6 +81,40 @@ const PEM_FIELD_ROWS = 6;
 // without -webkit-text-security, which then show the key as plain text.
 const maskedInputSx = {
 	"&:not(.Mui-focused) textarea": { WebkitTextSecurity: "disc" },
+};
+
+interface IntervalOption extends AutocompleteOption {
+	id: number;
+}
+
+const INTERVAL_UNIT_MULTIPLIERS = [1000, 60000, 3600000, 86400000] as const;
+
+const toIntervalOption = (
+	intervalMs: number,
+	locale: string | undefined
+): IntervalOption => ({
+	id: intervalMs,
+	name: formatDuration(intervalMs, { long: true, locale }),
+});
+
+const filterIntervalOptions = (
+	options: IntervalOption[],
+	inputValue: string,
+	locale: string | undefined
+): IntervalOption[] => {
+	const input = inputValue.trim();
+	if (input === "" || options.some((option) => option.name === input)) {
+		return options;
+	}
+
+	const amount = Number(input);
+	if (!Number.isFinite(amount) || amount <= 0) {
+		return [];
+	}
+
+	return INTERVAL_UNIT_MULTIPLIERS.map((multiplier) => amount * multiplier)
+		.filter(Number.isSafeInteger)
+		.map((ms) => toIntervalOption(ms, locale));
 };
 
 interface GeneralSettingsConfig {
@@ -252,7 +294,7 @@ const getGeneralSettingsConfig = (
 
 const CreateMonitorPage = () => {
 	const theme = useTheme();
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const { monitorId } = useParams();
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -297,7 +339,7 @@ const CreateMonitorPage = () => {
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
-	const { watch, handleSubmit, clearErrors, trigger, reset, setValue } = form;
+	const { watch, handleSubmit, clearErrors, trigger, reset, setValue, formState } = form;
 
 	useEffect(() => {
 		reset(defaults);
@@ -310,10 +352,12 @@ const CreateMonitorPage = () => {
 
 	const watchedType = watch("type") as MonitorType;
 	const watchedUrl = watch("url") as string;
+	const isCaptureDocker = watchedType === "docker" && isCaptureDockerUrl(watchedUrl);
 	const watchedMethod = watch("method") as HttpMethod | undefined;
 	const watchedProxyMode = watch("proxyMode") as ProxyMode | undefined;
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
 	const watchGeoCheckEnabled = watch("geoCheckEnabled") as boolean;
+	const watchedInterval = watch("interval");
 
 	// Steps without an advanced section drop it, so the last step is the form's.
 	const totalSteps = monitorStepCount(watchedType);
@@ -338,6 +382,13 @@ const CreateMonitorPage = () => {
 			clearErrors();
 		}
 	}, [watchedType, showTypeSelector, reset, clearErrors]);
+
+	// The logs switch is hidden for Capture hosts, so a value left over from a socket host must not be submitted.
+	useEffect(() => {
+		if (isCaptureDocker) {
+			setValue("dockerLogsEnabled", false);
+		}
+	}, [isCaptureDocker, setValue]);
 
 	const generalSettingsConfig = useMemo(
 		() => getGeneralSettingsConfig(watchedType, t),
@@ -471,16 +522,18 @@ const CreateMonitorPage = () => {
 		[t]
 	);
 
-	const intervalOptions = useMemo(
-		() =>
-			MonitorIntervalOptions.map((option) => ({
-				value: option.value,
-				label: t(
-					`pages.createMonitor.form.frequency.option.frequency.value.${option.labelKey}`
-				),
-			})),
-		[t]
-	);
+	const intervalOptions = useMemo(() => {
+		const options = MonitorIntervalOptions.map(({ value }) =>
+			toIntervalOption(value, i18n.resolvedLanguage)
+		);
+		if (
+			typeof watchedInterval === "number" &&
+			!options.some((option) => option.id === watchedInterval)
+		) {
+			options.push(toIntervalOption(watchedInterval, i18n.resolvedLanguage));
+		}
+		return options;
+	}, [watchedInterval, i18n.resolvedLanguage]);
 
 	const matchMethodOptions = useMemo(
 		() =>
@@ -565,7 +618,6 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
 				{showStep(0) && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.general.title")}
@@ -596,8 +648,15 @@ const CreateMonitorPage = () => {
 										name="url"
 										fieldLabel={generalSettingsConfig.urlLabel}
 										placeholder={generalSettingsConfig.urlPlaceholder}
-										disabled={isEditMode}
 									/>
+								)}
+								{isEditMode && formState.dirtyFields.url && (
+									<Alert
+										severity="warning"
+										sx={{ alignItems: "center" }}
+									>
+										{t("pages.createMonitor.form.general.url.alert")}
+									</Alert>
 								)}
 								{/* Proxy fields - only shown for HTTP */}
 								{generalSettingsConfig.showProxy && (
@@ -666,14 +725,20 @@ const CreateMonitorPage = () => {
 									/>
 								)}
 
-								{/* Secret field - only for hardware type */}
-								{generalSettingsConfig.showSecret && (
+								{/* Capture API secret - used by hardware and Capture-backed Docker monitors */}
+								{(generalSettingsConfig.showSecret || isCaptureDocker) && (
 									<FormTextField
 										name="secret"
 										fieldLabel={t("pages.createMonitor.form.general.option.secret.label")}
 										placeholder={t(
 											"pages.createMonitor.form.general.option.secret.placeholder"
 										)}
+									/>
+								)}
+								{isCaptureDocker && (
+									<FormSwitchField
+										name="ignoreTlsErrors"
+										label={t("pages.createMonitor.form.ignoreTls.option.tls.label")}
 									/>
 								)}
 								{generalSettingsConfig.showDnsServer && (
@@ -700,7 +765,6 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
 				{showStep(0) && watchedType === "docker" && isDockerTlsUrl(watchedUrl) && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.dockerTls.title")}
@@ -758,23 +822,26 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
 				{showStep(1) && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.frequency.title")}
 						subtitle={t("pages.createMonitor.form.frequency.description")}
 						rightContent={
-							<FormSelectField
+							<FormAutocompleteField
 								name="interval"
 								fieldLabel={t(
 									"pages.createMonitor.form.frequency.option.frequency.label"
 								)}
 								options={intervalOptions}
+								filterOptions={(options, { inputValue }) =>
+									filterIntervalOptions(options, inputValue, i18n.resolvedLanguage)
+								}
+								getOptionDisabled={(option) => option.id < MIN_MONITOR_INTERVAL_MS}
+								disableClearable
 							/>
 						}
 					/>
 				)}
-
 				{/* Alert Thresholds - only for hardware type */}
 				{watchedType === "hardware" && showStep(1) && (
 					<ConfigBox
@@ -830,7 +897,6 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
 				{showStep(1) && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.incidents.title")}
@@ -857,7 +923,6 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
 				{showStep(1) && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.notifications.title")}
@@ -870,7 +935,6 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
 				{showStep(1) && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.tags.title")}
@@ -897,8 +961,7 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
-				{showStep(1) && watchedType === "docker" && (
+				{showStep(1) && watchedType === "docker" && !isCaptureDocker && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.dockerLogs.title")}
 						subtitle={t("pages.createMonitor.form.dockerLogs.description")}
@@ -910,7 +973,28 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
+				{showStep(1) && watchedType === "docker" && (
+					<ConfigBox
+						title={t("pages.createMonitor.form.dockerAlerts.title")}
+						subtitle={t("pages.createMonitor.form.dockerAlerts.description")}
+						rightContent={
+							<Stack gap={theme.spacing(LAYOUT.MD)}>
+								<FormSwitchField
+									name="dockerAlertOnStopped"
+									label={t(
+										"pages.createMonitor.form.dockerAlerts.option.onStopped.label"
+									)}
+								/>
+								<FormSwitchField
+									name="dockerAlertOnUnhealthy"
+									label={t(
+										"pages.createMonitor.form.dockerAlerts.option.onUnhealthy.label"
+									)}
+								/>
+							</Stack>
+						}
+					/>
+				)}
 				{showStep(2) &&
 					(watchedType === "http" ||
 						watchedType === "grpc" ||
@@ -926,7 +1010,6 @@ const CreateMonitorPage = () => {
 							}
 						/>
 					)}
-
 				{showStep(2) && watchedType === "http" && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.advanced.title")}
@@ -1026,7 +1109,6 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
 				{showStep(2) && supportsGeoCheck(watchedType) && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.geoChecks.title")}
@@ -1059,7 +1141,6 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-
 				<Stack
 					direction="row"
 					justifyContent={!isEditMode ? "space-between" : "flex-end"}

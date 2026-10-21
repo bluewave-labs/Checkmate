@@ -1,8 +1,8 @@
 const SERVICE_NAME = "RocketChatProvider";
-import { supportsUptimeDetails, type MonitorType } from "@/domain/monitors/monitor.type.js";
+import { getMonitorPath, MonitorTypes, type MonitorType } from "@/domain/monitors/monitor.type.js";
 import type { Notification, NotificationMessage } from "@/domain/notifications/notification.type.js";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
-import { getTestMessage } from "@/domain/notifications/providers/utils.js";
+import { CLIENT_HOST_FALLBACK, getTestMessage } from "@/domain/notifications/providers/utils.js";
 import got from "got";
 
 type RocketChatField = { title: string; value: string; short: boolean };
@@ -16,6 +16,8 @@ type RocketChatAttachment = {
 type RocketChatPayload = { text: string; attachments: [RocketChatAttachment] };
 
 export class RocketChatProvider extends NotificationProvider {
+	protected readonly serviceName = SERVICE_NAME;
+
 	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
 		if (!notification.address) {
 			return false;
@@ -31,13 +33,7 @@ export class RocketChatProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: "Rocket.Chat test alert failed",
-				service: SERVICE_NAME,
-				method: "sendTestAlert",
-				stack: err?.stack,
-			});
+			this.logger.warn({ err: error }, "Rocket.Chat test alert failed");
 			return false;
 		}
 	}
@@ -73,13 +69,7 @@ export class RocketChatProvider extends NotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: "Rocket.Chat notification failed",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-				stack: err?.stack,
-			});
+			this.logger.warn({ err: error }, "Rocket.Chat notification failed");
 			return false;
 		}
 	}
@@ -135,23 +125,17 @@ export class RocketChatProvider extends NotificationProvider {
 
 	private monitorUrl(message: NotificationMessage): string | undefined {
 		const clientHost = message.clientHost?.trim();
-		if (!clientHost || clientHost === "Host not defined") {
+		if (!clientHost || clientHost === CLIENT_HOST_FALLBACK) {
 			return undefined;
 		}
 
-		if (message.monitor.type === "hardware") {
-			return `${clientHost}/infrastructure/${message.monitor.id}`;
+		// A message whose type has no details page gets no link.
+		const type = message.monitor.type;
+		if (!MonitorTypes.some((t) => t === type)) {
+			return undefined;
 		}
 
-		if (message.monitor.type === "pagespeed") {
-			return `${clientHost}/pagespeed/${message.monitor.id}`;
-		}
-
-		if (supportsUptimeDetails(message.monitor.type as MonitorType)) {
-			return `${clientHost}/uptime/${message.monitor.id}`;
-		}
-
-		return undefined;
+		return `${clientHost}/${getMonitorPath(type as MonitorType)}/${message.monitor.id}`;
 	}
 
 	private severityColor(severity: NotificationMessage["severity"]): string {

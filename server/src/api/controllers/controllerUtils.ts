@@ -1,26 +1,41 @@
-import { AppError } from "@/utils/AppError.js";
-import { Monitor, MonitorTypes, type MonitorType } from "@/domain/monitors/monitor.type.js";
+import { AppError, internalError } from "@/utils/AppError.js";
+import { Monitor } from "@/domain/monitors/monitor.type.js";
 import { UserRole } from "@/domain/users/user.type.js";
 import sslChecker, { SSLDetails } from "ssl-checker";
 import * as whoiser from "whoiser";
 import { parse as parseDomain } from "tldts";
+import { Request, Response } from "express";
+
 type SSLCheckerType = typeof sslChecker;
 type WhoisModule = typeof whoiser;
+export type Handler = (req: Request, res: Response<ApiEnvelope>) => Promise<void>;
+export type ApiEnvelope<T = unknown> = { success: boolean; msg: string; data?: T };
 
-export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: Monitor): Promise<SSLDetails> => {
+const CERTIFICATE_TIMEOUT_MS = 10_000;
+const SERVICE_NAME = "controllerUtils";
+
+export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: Monitor): Promise<SSLDetails | null> => {
 	const monitorUrl = new URL(monitor.url);
-	const hostname = monitorUrl.hostname;
-	const cert = await checker(hostname);
-	if (cert?.validTo === null || cert?.validTo === undefined) {
-		throw new Error("Certificate not found");
+	const port = monitorUrl.port ? Number(monitorUrl.port) : 443;
+	try {
+		const cert = await checker(monitorUrl.hostname, { port, timeout: CERTIFICATE_TIMEOUT_MS });
+		if (cert?.validTo === null || cert?.validTo === undefined) {
+			throw new Error("Certificate not found");
+		}
+		return cert;
+	} catch {
+		return null;
 	}
-	return cert;
 };
 
 const WHOIS_TIMEOUT_MS = 10_000;
 const DOMAIN_EXPIRY_CACHE_POSITIVE_TTL_MS = 60 * 60 * 1000; // 1 hour
 const DOMAIN_EXPIRY_CACHE_NEGATIVE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 const EXPIRY_DATE_KEY_PATTERN = /(expiry date|expiration|paid-?till|registration expiration)/i;
+// TODO: remove once whoiser is upgraded to 2.x, which already has the current .tr server.
+const WHOIS_SERVER_OVERRIDES: Record<string, string> = {
+	tr: "whois.trabis.gov.tr",
+};
 
 export interface DomainExpiryResult {
 	domain: string | null;
@@ -61,7 +76,13 @@ export const createDomainExpiryCache = (positiveTtlMs: number, negativeTtlMs: nu
 };
 
 const domainExpiryCache = createDomainExpiryCache(DOMAIN_EXPIRY_CACHE_POSITIVE_TTL_MS, DOMAIN_EXPIRY_CACHE_NEGATIVE_TTL_MS);
-
+const extractString = (value: unknown): string | undefined => {
+	const candidate = Array.isArray(value) ? value[0] : value;
+	if (typeof candidate !== "string" || candidate.length === 0) {
+		return undefined;
+	}
+	return candidate;
+};
 export const extractDomainExpiryDate = (whoisData: object): string | null => {
 	const matchingKey = Object.keys(whoisData).find((key) => EXPIRY_DATE_KEY_PATTERN.test(key));
 	if (!matchingKey) {
@@ -77,16 +98,32 @@ export const extractDomainExpiryDate = (whoisData: object): string | null => {
 };
 
 const parseDomainExpiryValue = (raw: string): Date | null => {
+	const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+	const fromParts = (year: string | undefined, month: string | undefined, day: string | undefined): Date | null => {
+		const monthIndex = months.indexOf((month ?? "").toLowerCase());
+		if (monthIndex === -1) {
+			return null;
+		}
+		const parsed = new Date(Date.UTC(Number(year), monthIndex, Number(day)));
+		return Number.isNaN(parsed.getTime()) ? null : parsed;
+	};
+
 	// Some registries (e.g. Nominet for .uk) return "14-Feb-2027" style values.
-	const monthMatch = /^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/.exec(raw.trim());
-	if (monthMatch) {
-		const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
-		const monthIndex = months.indexOf((monthMatch[2] ?? "").toLowerCase());
-		if (monthIndex !== -1) {
-			const parsed = new Date(Date.UTC(Number(monthMatch[3]), monthIndex, Number(monthMatch[1])));
-			if (!Number.isNaN(parsed.getTime())) {
-				return parsed;
-			}
+	const dayFirst = /^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/.exec(raw.trim());
+	if (dayFirst) {
+		const parsed = fromParts(dayFirst[3], dayFirst[2], dayFirst[1]);
+		if (parsed) {
+			return parsed;
+		}
+	}
+
+	// TRABIS (.tr) returns "2029-Sep-01" style values, which Date() only parses by
+	// engine-specific leniency.
+	const yearFirst = /^(\d{4})-([A-Za-z]{3})-(\d{1,2})\.?$/.exec(raw.trim());
+	if (yearFirst) {
+		const parsed = fromParts(yearFirst[1], yearFirst[2], yearFirst[3]);
+		if (parsed) {
+			return parsed;
 		}
 	}
 
@@ -114,7 +151,11 @@ export const fetchMonitorDomain = async (
 		return cached;
 	}
 
-	const result = await client.domain(registrableDomain, { timeout: WHOIS_TIMEOUT_MS });
+	const serverOverride = WHOIS_SERVER_OVERRIDES[registrableDomain.split(".").pop() ?? ""];
+	const result = await client.domain(registrableDomain, {
+		timeout: WHOIS_TIMEOUT_MS,
+		...(serverOverride ? { host: serverOverride } : {}),
+	});
 	const firstServerData = Object.values(result)[0];
 	const expiryDate = extractDomainExpiryDate(
 		typeof firstServerData === "object" && firstServerData !== null && !Array.isArray(firstServerData) ? firstServerData : {}
@@ -124,107 +165,36 @@ export const fetchMonitorDomain = async (
 	return domainExpiry;
 };
 
-export const requireString = (value: unknown, fieldName: string): string => {
-	if (typeof value === "string" && value.trim().length > 0) {
-		return value;
-	}
-	throw new AppError({ message: `${fieldName} is required`, status: 400 });
-};
-
-export const optionalString = (value: unknown, fieldName: string): string | undefined => {
-	if (value === undefined) {
-		return undefined;
-	}
-	if (typeof value === "string") {
-		return value;
-	}
-	throw new AppError({ message: `${fieldName} must be a string`, status: 400 });
-};
-
-export const extractString = (value: unknown): string | undefined => {
-	const candidate = Array.isArray(value) ? value[0] : value;
-	if (typeof candidate !== "string" || candidate.length === 0) {
-		return undefined;
-	}
-	return candidate;
-};
-
-export const optionalNumber = (value: unknown, fieldName: string): number | undefined => {
-	if (value === undefined) {
-		return undefined;
-	}
-	if (typeof value === "number" && Number.isFinite(value)) {
-		return value;
-	}
-	if (typeof value === "string" && value.trim() !== "") {
-		const parsed = Number(value);
-		if (!Number.isNaN(parsed)) {
-			return parsed;
-		}
-	}
-	throw new AppError({ message: `${fieldName} must be a number`, status: 400 });
-};
-
-export const parseMonitorTypeFilter = (value: unknown): MonitorType | MonitorType[] | undefined => {
-	const parseSingle = (input: unknown): MonitorType => {
-		if (typeof input !== "string") {
-			throw new AppError({ message: "Monitor type must be a string", status: 400 });
-		}
-		if (!MonitorTypes.includes(input as MonitorType)) {
-			throw new AppError({ message: `Invalid monitor type: ${input}`, status: 400 });
-		}
-		return input as MonitorType;
-	};
-
-	if (value === undefined) {
-		return undefined;
-	}
-	if (Array.isArray(value)) {
-		return value.map((entry) => parseSingle(entry));
-	}
-	return parseSingle(value);
-};
-
-export const parseSortOrder = (value: unknown): "asc" | "desc" | undefined => {
-	if (value === undefined) {
-		return undefined;
-	}
-	if (value === "asc" || value === "desc") {
-		return value;
-	}
-	throw new AppError({ message: "order must be either 'asc' or 'desc'", status: 400 });
-};
-
 export const requireTeamId = (teamId?: string): string => {
 	if (!teamId) {
-		throw new AppError({ message: "Team ID is required", status: 400 });
+		throw new AppError(internalError, { message: "Team ID is required", service: SERVICE_NAME });
 	}
 	return teamId;
 };
 
 export const requireUserId = (userId?: string): string => {
 	if (!userId) {
-		throw new AppError({ message: "User ID is required", status: 400 });
+		throw new AppError(internalError, { message: "User ID is required", service: SERVICE_NAME });
 	}
 	return userId;
 };
 export const requireUserEmail = (userEmail?: string): string => {
 	if (!userEmail) {
-		throw new AppError({ message: "User email is required", status: 400 });
+		throw new AppError(internalError, { message: "User email is required", service: SERVICE_NAME });
 	}
 	return userEmail;
 };
 
 export const requireFirstName = (firstName?: string): string => {
 	if (!firstName) {
-		throw new AppError({ message: "First name is required", status: 400 });
+		throw new AppError(internalError, { message: "First name is required", service: SERVICE_NAME });
 	}
 	return firstName;
 };
 
 export const requireUserRoles = (userRoles?: UserRole[]): UserRole[] => {
 	if (!userRoles || userRoles.length === 0) {
-		throw new AppError({ message: "User roles are required", status: 400 });
+		throw new AppError(internalError, { message: "User roles are required", service: SERVICE_NAME });
 	}
 	return userRoles;
 };

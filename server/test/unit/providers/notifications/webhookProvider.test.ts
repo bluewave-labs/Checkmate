@@ -86,6 +86,12 @@ describe("WebhookProvider", () => {
 			expect(mockGotPost.mock.calls[0][1].json.text).toContain("View Incident");
 		});
 
+		it("links the incident to the monitor's incidents page", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessageWithIncident());
+			expect(mockGotPost.mock.calls[0][1].json.text).toContain("[View Incident](https://app.example.com/incidents/mon-1)");
+		});
+
 		it("omits threshold and incident sections when not present", async () => {
 			const { provider } = createProvider();
 			const msg = makeMessage();

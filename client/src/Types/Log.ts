@@ -5,7 +5,6 @@ export type LogLevelOption = (typeof LOG_LEVEL_OPTIONS)[number];
 export interface Log {
 	message: string;
 	service?: string;
-	method?: string;
 	details?: Record<string, unknown>;
 	stack?: string;
 	level: LogLevel;

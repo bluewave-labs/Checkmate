@@ -1,6 +1,6 @@
 import { Schema, model, type Types } from "mongoose";
 import bcrypt from "bcryptjs";
-import type { User, UserProfileImage, UserRole } from "@/domain/users/user.type.js";
+import { UserRoles, type User, type UserProfileImage } from "@/domain/users/user.type.js";
 import { MonitorModel } from "@/domain/monitors/monitor.model.js";
 import Team from "../teams/team.model.js";
 import NotificationModel from "../notifications/notification.model.js";
@@ -37,7 +37,7 @@ const UserSchema = new Schema<UserDocument>(
 		isVerified: { type: Boolean, default: false },
 		role: {
 			type: [String],
-			enum: ["user", "admin", "superadmin", "demo" satisfies UserRole],
+			enum: UserRoles,
 			default: ["user"],
 		},
 		teamId: {

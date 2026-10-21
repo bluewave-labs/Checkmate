@@ -60,6 +60,15 @@ export const monitorTypeLabelKey: Record<SelectableMonitorType, string> &
 	pagespeed: "optionPagespeed",
 };
 
+export const getMonitorTypeLabel = (
+	type: MonitorType,
+	t: (key: string) => string
+): string => {
+	const monitorLabel = monitorTypeLabelKey[type];
+	return monitorLabel ? t(`pages.common.monitors.monitorTypes.${monitorLabel}`) : type;
+};
+export const MIN_MONITOR_INTERVAL_MS = 10000;
+
 export const MonitorIntervalOptions = [
 	{ value: 15000, labelKey: "fifteenSeconds" },
 	{ value: 30000, labelKey: "thirtySeconds" },
@@ -160,6 +169,8 @@ export interface Monitor {
 	geoCheckLocations?: GeoContinent[];
 	geoCheckInterval?: number;
 	dockerLogsEnabled?: boolean;
+	dockerAlertOnStopped?: boolean;
+	dockerAlertOnUnhealthy?: boolean;
 	dockerTlsCa?: string;
 	dockerTlsCert?: string;
 	dockerTlsKeySet?: boolean;
@@ -181,6 +192,11 @@ export interface MonitorsSummary {
 	initializingMonitors: number;
 	maintenanceMonitors: number;
 	breachedMonitors: number;
+}
+
+export interface MonitorTypeCount {
+	type: MonitorType;
+	count: number;
 }
 
 export interface MonitorsWithChecksResponse {

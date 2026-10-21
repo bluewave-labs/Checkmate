@@ -8,6 +8,9 @@ services:
       - "52345:52345"
     env_file:
       - server.env
+    environment:
+      LOG_LEVEL: "debug"
+      # TELEMETRY_ENABLED: "false"
     depends_on:
       mongodb:
         condition: service_healthy
@@ -23,6 +26,8 @@ services:
     environment:
       QUEUE_MODE: "worker"
       HEALTH_PORT: "52346"
+      LOG_LEVEL: "debug"
+      # TELEMETRY_ENABLED: "false"
     stop_grace_period: 30s
     healthcheck:
       test:
@@ -47,7 +52,7 @@ services:
     volumes:
       - ./mongo/data:/data/db
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/27017"]
       interval: 5s
       timeout: 30s
       start_period: 0s

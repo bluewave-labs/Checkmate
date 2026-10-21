@@ -1,7 +1,11 @@
 {
 	"name": "client",
 	"private": true,
-	"version": "3.12.0",
+	"version": "3.13.0",
+	"engines": {
+		"node": ">=24",
+		"npm": ">=11"
+	},
 	"type": "module",
 	"scripts": {
 		"lockfile": "docker run --rm -v \"$PWD\":/w -w /w $(grep -m1 -o 'node:[^ ]*' ../docker/Dockerfile) npm install --package-lock-only",
@@ -13,7 +17,8 @@
 		"preview": "vite preview",
 		"format": "prettier --write .",
 		"format-check": "prettier --check .",
-		"compile": "tsc -b"
+		"compile": "tsc -b",
+		"version": "npm --prefix ../server version --no-git-tag-version --allow-same-version $npm_package_version && git add ../server/package.json ../server/package-lock.json"
 	},
 	"lint-staged": {
 		"**/*": "prettier --write --ignore-unknown"

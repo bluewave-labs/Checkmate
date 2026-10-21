@@ -1,10 +1,15 @@
-export const JOB_TYPES = ["check", "geo-check", "evaluate", "cleanup-orphaned", "cleanup-retention"] as const;
+export const JOB_TYPES = ["check", "geo-check", "evaluate", "cleanup-orphaned", "cleanup-retention", "telemetry"] as const;
 export type JobType = (typeof JOB_TYPES)[number];
 export const LOCK_MS = 60_000;
 export const BACKOFF_MS = 5_000;
 export const PARKED = Number.MAX_SAFE_INTEGER;
 
-// Canonical _id scheme: monitor-bound rows are `${type}:${refId}`; global rows (refId null) are just the type.
+export type PendingCheck = {
+	checkId: string;
+	createdAt: number; // epoch ms, copied from Check.createdAt
+};
+
+// Canonical _id scheme: monitor-bound rows are `${type}:${refId}`; global rows (refId null: cleanup, telemetry) are just the type.
 export const jobId = (type: JobType, refId: string | null): string => (refId === null ? type : `${type}:${refId}`);
 
 export type Job = {
@@ -20,6 +25,9 @@ export type Job = {
 	// Lock fields
 	lockedBy: string | null; // workerId holding the lease
 	lockedUntil: number | null; // epoch ms; lease expiry => reclaimable after a crash
+
+	// Evaluate these rows only.  These are checks that are inserted but not yet evaluated
+	pendingChecks: PendingCheck[];
 
 	// observability (replaces what getMetrics/getJobs)
 	runCount: number;

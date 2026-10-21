@@ -1,3 +1,4 @@
+import { tagSchema } from "@/domain/tags/tag.schema.js";
 import { z } from "zod";
 
 //****************************************
@@ -23,3 +24,5 @@ export const editTagParamValidation = z.object({
 export const deleteTagParamValidation = z.object({
 	id: z.string().min(1, "Tag ID is required"),
 });
+
+export const tagListResponseSchema = z.array(tagSchema);

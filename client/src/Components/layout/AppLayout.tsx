@@ -1,8 +1,18 @@
 import Box from "@mui/material/Box";
 import { useState, useEffect, useRef } from "react";
 import { useTheme } from "@mui/material/styles";
-import { OfflineBanner } from "@/Components/design-elements";
+import { useSelector } from "react-redux";
+import { OfflineBanner, EgressBanner } from "@/Components/design-elements";
 import { setServerUnreachableCallback, get } from "@/Utils/ApiClient";
+import { useGet } from "@/Hooks/UseApi";
+import type { ApiResponse } from "@/Hooks/UseApi";
+import type { RootState } from "@/Types/state";
+import type { EgressSummary } from "@/Types/Egress";
+
+const EGRESS_POLL_MS = 30_000;
+// While the self-check is off, poll rarely so tabs still notice when an admin switches it on.
+const EGRESS_DISABLED_POLL_MS = 5 * 60_000;
+const EGRESS_ERROR_RETRY_MS = 10_000;
 
 interface AppLayoutProps {
 	children: React.ReactNode;
@@ -12,6 +22,25 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 	const theme = useTheme();
 	const [serverUnreachable, setServerUnreachable] = useState(false);
 	const retryIntervalRef = useRef<number | null>(null);
+	const authToken = useSelector((state: RootState) => state.auth.authToken);
+
+	// Poll egress state only for signed-in users, and slowly while the self-check is off (focus
+	// revalidation is off app-wide, so this poll is how other tabs see it switched on). A failed
+	// poll hides the banner rather than leaving the last answer up; an unreachable server is
+	// already reported by OfflineBanner. SWR skips polling while the last request errored, so a
+	// failed poll is retried here without limit, or the banner would stay hidden until a reload.
+	const { data: egressSummary, error: egressError } = useGet<EgressSummary>(
+		authToken ? "/egress" : null,
+		undefined,
+		{
+			refreshInterval: (latest?: ApiResponse<EgressSummary>) =>
+				latest?.data.enabled === false ? EGRESS_DISABLED_POLL_MS : EGRESS_POLL_MS,
+			shouldRetryOnError: true,
+			onErrorRetry: (_error, _key, _config, revalidate, { retryCount }) => {
+				setTimeout(() => revalidate({ retryCount }), EGRESS_ERROR_RETRY_MS);
+			},
+		}
+	);
 
 	useEffect(() => {
 		setServerUnreachableCallback(setServerUnreachable);
@@ -46,6 +75,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 			}}
 		>
 			<OfflineBanner visible={serverUnreachable} />
+			{!serverUnreachable && !egressError && <EgressBanner state={egressSummary} />}
 			{children}
 		</Box>
 	);

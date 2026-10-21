@@ -96,6 +96,14 @@ describe("SlackProvider", () => {
 			expect(text).toContain("Additional Information");
 		});
 
+		it("links the incident button to the monitor's incidents page", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessageWithIncident());
+			const blocks = mockGotPost.mock.calls[0][1].json.blocks;
+			const actions = blocks.find((b: any) => b.type === "actions");
+			expect(actions.elements[0].url).toBe("https://app.example.com/incidents/mon-1");
+		});
+
 		it("omits threshold, details, and incident sections when not present", async () => {
 			const { provider } = createProvider();
 			const msg = makeMessage();

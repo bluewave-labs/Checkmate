@@ -15,6 +15,7 @@ import { createStatusPageCorsOrigin } from "@/api/middleware/statusPageCorsOrigi
 import { isPublicStatusPageApiPath } from "@/api/middleware/statusPagePublicApiPath.js";
 import { createStatusPageDocumentCsp } from "@/api/middleware/statusPageDocumentCsp.js";
 import { ApiServices } from "@/config/services.api.js";
+import { logContext } from "./utils/logger/logContext.js";
 
 export const createApp = ({
 	apiServices: services,
@@ -36,10 +37,12 @@ export const createApp = ({
 		methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
 		allowedHeaders: ["Content-Type", "Authorization", "Accept-Language"],
 		credentials: true,
+		exposedHeaders: ["X-Request-Id"],
 	};
 	const publicStatusPageCorsOrigin = createStatusPageCorsOrigin(allowedOrigin, services.statusPagesRepository);
 
 	const devMode = envSettings.nodeEnv === "development";
+	app.use(services.logger.httpMiddleware());
 	app.use(generalApiLimiter(devMode));
 
 	app.use((req, res, next) => {
@@ -67,6 +70,7 @@ export const createApp = ({
 
 	app.use(sanitizeBody());
 	app.use(sanitizeQuery());
+	app.use((req, _res, next) => logContext.run({ reqId: String(req.id) }, next));
 
 	app.use(
 		helmet({
@@ -122,7 +126,7 @@ export const createApp = ({
 	setupRoutes(app, controllers, services);
 
 	// FE routes
-	app.get("*", (req, res) => {
+	app.get("/{*splat}", (req, res) => {
 		res.sendFile(path.join(frontendPath, "index.html"));
 	});
 	app.use(handleErrors(services.logger));

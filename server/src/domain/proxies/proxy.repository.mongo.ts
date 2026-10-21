@@ -4,6 +4,7 @@ import { ProxyDocument, ProxyModel } from "@/domain/proxies/proxy.model.js";
 import { AppError } from "@/utils/AppError.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 import { Error as MongooseError, UpdateQuery } from "mongoose";
+import { proxyErrors } from "@/domain/proxies/proxy.errors.js";
 
 const SERVICE_NAME = "ProxiesRepository";
 
@@ -31,7 +32,10 @@ class MongoProxiesRepository implements IProxiesRepository {
 			return this.toEntity(proxy);
 		} catch (error) {
 			if (error && typeof error === "object" && (error as { code?: number }).code === 11000) {
-				throw new AppError({ message: `A proxy named "${proxyData.name}" already exists`, service: SERVICE_NAME, status: 409 });
+				throw new AppError(proxyErrors.nameTaken, {
+					message: `A proxy named "${proxyData.name}" already exists`,
+					service: SERVICE_NAME,
+				});
 			}
 			throw error;
 		}
@@ -45,7 +49,7 @@ class MongoProxiesRepository implements IProxiesRepository {
 	async findById(proxyId: string, teamId: string): Promise<Proxy> {
 		const proxy = await ProxyModel.findOne({ _id: proxyId, teamId });
 		if (!proxy) {
-			throw new AppError({ message: "Proxy not found", service: SERVICE_NAME, status: 404 });
+			throw new AppError(proxyErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(proxy);
 	}
@@ -89,12 +93,15 @@ class MongoProxiesRepository implements IProxiesRepository {
 			}
 			const updatedProxy = await ProxyModel.findOneAndUpdate({ _id: proxyId, teamId }, update, { new: true, runValidators: true });
 			if (!updatedProxy) {
-				throw new AppError({ message: "Proxy not found or could not be updated", service: SERVICE_NAME, status: 404 });
+				throw new AppError(proxyErrors.notFound, { service: SERVICE_NAME });
 			}
 			return this.toEntity(updatedProxy);
 		} catch (error) {
 			if (error && typeof error === "object" && (error as { code?: number }).code === 11000) {
-				throw new AppError({ message: `A proxy named "${patch.name}" already exists`, service: SERVICE_NAME, status: 409 });
+				throw new AppError(proxyErrors.nameTaken, {
+					message: `A proxy named "${patch.name}" already exists`,
+					service: SERVICE_NAME,
+				});
 			}
 			throw error;
 		}
@@ -103,7 +110,7 @@ class MongoProxiesRepository implements IProxiesRepository {
 	async deleteById(proxyId: string, teamId: string): Promise<Proxy> {
 		const deletedProxy = await ProxyModel.findOneAndDelete({ _id: proxyId, teamId });
 		if (!deletedProxy) {
-			throw new AppError({ message: "Proxy not found or could not be deleted", service: SERVICE_NAME, status: 404 });
+			throw new AppError(proxyErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(deletedProxy);
 	}

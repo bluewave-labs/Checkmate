@@ -45,12 +45,14 @@ const mapMemory = (memory?: CheckMemoryInfo): SnapshotMemoryInfo | undefined =>
 	};
 
 const mapDisk = (disk?: CheckDiskInfo[]): SnapshotDiskInfo[] | undefined =>
-	disk?.map((entry) => ({
-		device: entry.device,
-		total_bytes: entry.total_bytes,
-		used_bytes: entry.used_bytes,
-		usage_percent: entry.usage_percent,
-	}));
+	disk
+		?.filter((entry) => entry != null)
+		.map((entry) => ({
+			device: entry.device,
+			total_bytes: entry.total_bytes,
+			used_bytes: entry.used_bytes,
+			usage_percent: entry.usage_percent,
+		}));
 
 const mapHost = (host?: CheckHostInfo): SnapshotHostInfo | undefined =>
 	host && {

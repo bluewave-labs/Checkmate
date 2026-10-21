@@ -19,7 +19,7 @@ import { INotificationMessageBuilder, NotificationMessageBuilder } from "@/domai
 import { INotificationsService, NotificationsService } from "@/domain/notifications/notification.service.js";
 import { IEmailService, EmailService } from "@/service/emailService.js";
 import { GlobalPingService } from "@/service/globalPingService.js";
-import { ILogger } from "@/utils/logger.js";
+import { ILogger } from "@/utils/logger/logger.js";
 import { IEncryptionService, EncryptionService } from "@/service/encryption/encryptionService.js";
 
 // Notification providers
