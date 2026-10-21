@@ -3,7 +3,6 @@ import { ISettingsRepository } from "@/domain/app-settings/app-settings-reposito
 import type { Settings, SettingsUpdate } from "@/domain/app-settings/app-settings.type.js";
 import { AppSettingsModel, type AppSettingsDocument } from "@/domain/app-settings/app-settings.model.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
-import { DEFAULT_EGRESS_TARGETS } from "@/domain/egress/egress.type.js";
 import { randomUUID } from "crypto";
 
 class MongoSettingsRepository implements ISettingsRepository {
@@ -34,7 +33,7 @@ class MongoSettingsRepository implements ISettingsRepository {
 			globalProxyEnabled: doc.globalProxyEnabled ?? false,
 			globalProxyId: doc.globalProxyId ?? undefined,
 			egressCheckEnabled: doc.egressCheckEnabled ?? false,
-			egressCheckTargets: doc.egressCheckTargets ?? [...DEFAULT_EGRESS_TARGETS],
+			egressCheckTargets: doc.egressCheckTargets ?? [],
 			telemetryInstanceId: doc.telemetryInstanceId ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),

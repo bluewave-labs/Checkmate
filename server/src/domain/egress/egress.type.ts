@@ -7,9 +7,9 @@ import type { egressProbeResultSchema, egressSummarySchema } from "@/domain/egre
 export const EgressStatuses = ["ok", "degraded"] as const;
 export type EgressStatus = (typeof EgressStatuses)[number];
 
-// Sensible defaults for a fresh install. Bare hosts are ICMP-pinged, host:port is a TCP connect,
-// http(s):// URLs are fetched. Any one target being reachable means egress is fine.
-export const DEFAULT_EGRESS_TARGETS = ["1.1.1.1", "8.8.8.8"] as const;
+// Defaults used when no targets are configured. HTTPS by hostname, so a probe also exercises DNS and is not
+// fooled by networks that drop ICMP. Any HTTP response counts as reachable; one reachable target means egress is fine.
+export const DEFAULT_EGRESS_TARGETS = ["https://www.google.com/generate_204", "https://www.cloudflare.com/cdn-cgi/trace"] as const;
 export const MAX_EGRESS_TARGETS = 10;
 
 export const VERDICT_TTL_MS = 10_000;

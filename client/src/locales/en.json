@@ -1672,8 +1672,8 @@
 						},
 						"targets": {
 							"label": "Reliability targets",
-							"placeholder": "1.1.1.1\ndns.google:53\nhttps://example.com",
-							"helper": "One per line, up to {{max}}. Leave empty to use the defaults (1.1.1.1, 8.8.8.8). A bare host or IP is pinged (ICMP), host:port opens a TCP connection, and an http:// or https:// URL is requested over HTTP.",
+							"placeholder": "https://example.com\ndns.google:53\n1.1.1.1",
+							"helper": "One per line, up to {{max}}. Leave empty to use the defaults (https://www.google.com/generate_204, https://www.cloudflare.com/cdn-cgi/trace). A bare host or IP is pinged (ICMP), host:port opens a TCP connection, and an http:// or https:// URL is requested over HTTP.",
 							"validation": {
 								"max": "Maximum {{max}} targets",
 								"length": "Each target must be {{max}} characters or fewer",

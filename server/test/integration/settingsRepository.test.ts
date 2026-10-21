@@ -70,4 +70,21 @@ describe("MongoSettingsRepository", () => {
 			expect(await repo.findOrCreateTelemetryInstanceId()).toBeNull();
 		});
 	});
+
+	describe("egressCheckTargets", () => {
+		// Stored empty so the probe falls back to whatever DEFAULT_EGRESS_TARGETS is at the time, not a copy from install day
+		it("stores and returns an empty list on a new settings document", async () => {
+			await repo.create({ singleton: true });
+
+			const raw = await AppSettingsModel.findOne({ singleton: true }).lean();
+			expect(raw?.egressCheckTargets).toEqual([]);
+			expect((await repo.findSingleton())?.egressCheckTargets).toEqual([]);
+		});
+
+		it("returns an empty list when the stored document has no targets field", async () => {
+			await AppSettingsModel.collection.insertOne({ singleton: true });
+
+			expect((await repo.findSingleton())?.egressCheckTargets).toEqual([]);
+		});
+	});
 });
