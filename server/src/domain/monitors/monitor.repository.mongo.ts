@@ -1,7 +1,14 @@
 import { MonitorModel } from "@/domain/monitors/monitor.model.js";
 import type { MonitorDocument, CheckSnapshotDocument } from "@/domain/monitors/monitor.model.js";
 import type { CheckSnapshot } from "@/domain/checks/check.type.js";
-import type { Monitor, MonitorScheduleFields, MonitorStatus, MonitorsSummary } from "@/domain/monitors/monitor.type.js";
+import {
+	MonitorTypes,
+	type Monitor,
+	type MonitorScheduleFields,
+	type MonitorStatus,
+	type MonitorsSummary,
+	type MonitorTypeCount,
+} from "@/domain/monitors/monitor.type.js";
 import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import { MongoBulkWriteError } from "mongodb";
 import { AppError, internalError } from "@/utils/AppError.js";
@@ -185,6 +192,12 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	findMonitorCountByProxyId = async (proxyId: string): Promise<number> => {
 		const count = await MonitorModel.countDocuments({ proxyId });
 		return count;
+	};
+
+	findMonitorTypeCount = async (): Promise<MonitorTypeCount> => {
+		const rows = await MonitorModel.aggregate<{ _id: string; count: number }>([{ $group: { _id: "$type", count: { $sum: 1 } } }]);
+		const countsByType = new Map(rows.map(({ _id, count }) => [_id, count]));
+		return MonitorTypes.map((type) => ({ type, count: countsByType.get(type) ?? 0 }));
 	};
 
 	updateById = async (monitorId: string, teamId: string, patch: Partial<Monitor>, options?: { unsetProxyId?: boolean }) => {

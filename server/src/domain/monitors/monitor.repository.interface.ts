@@ -1,4 +1,12 @@
-import type { MonitorType, Monitor, MonitorStatus, MonitorsSummary, CheckSnapshot, MonitorScheduleFields } from "@/domain/monitors/monitor.type.js";
+import type {
+	MonitorType,
+	Monitor,
+	MonitorStatus,
+	MonitorsSummary,
+	MonitorTypeCount,
+	CheckSnapshot,
+	MonitorScheduleFields,
+} from "@/domain/monitors/monitor.type.js";
 
 export interface TeamQueryConfig {
 	limit?: number;
@@ -54,6 +62,7 @@ export interface IMonitorsRepository {
 	// counts
 	findMonitorCountByTeamIdAndType(teamId: string, config: TeamQueryConfig): Promise<number>;
 	findMonitorCountByProxyId(proxyId: string): Promise<number>;
+	findMonitorTypeCount(): Promise<MonitorTypeCount>;
 
 	// Docker TLS
 	findDockerTlsKeyById(monitorId: string): Promise<string | null>;
