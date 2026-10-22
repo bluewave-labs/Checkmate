@@ -20,6 +20,7 @@ const makeStatusPage = (overrides?: Partial<StatusPage>): StatusPage =>
 		url: "my-status-page",
 		companyName: "Test Co",
 		monitors: ["mon-1"],
+		showMonitorUrls: false,
 		theme: "modern",
 		themeMode: "dark",
 		createdAt: "2026-01-01T00:00:00Z",
@@ -281,7 +282,7 @@ describe("StatusPageService", () => {
 			"selectedDisks",
 		] as const;
 
-		const publishedPage = () => makeStatusPage({ isPublished: true });
+		const publishedPage = (overrides?: Partial<StatusPage>) => makeStatusPage({ isPublished: true, ...overrides });
 
 		it("never exposes secret or internal fields — even when showURL is ON (regression)", async () => {
 			const { service } = createService(true, "http://localhost:5173", true);
@@ -308,7 +309,7 @@ describe("StatusPageService", () => {
 			const withShowURL = createService(true, "http://localhost:5173", true);
 			const withoutShowURL = createService(true, "http://localhost:5173", false);
 
-			const shown = await withShowURL.service.getPublicStatusPagePayload(publishedPage());
+			const shown = await withShowURL.service.getPublicStatusPagePayload(publishedPage({ showMonitorUrls: true }));
 			const hidden = await withoutShowURL.service.getPublicStatusPagePayload(publishedPage());
 
 			expect(shown.monitors[0]).toHaveProperty("url", "http://internal.example.com/health");
@@ -316,6 +317,24 @@ describe("StatusPageService", () => {
 			expect(shown.monitors[0]).not.toHaveProperty("secret");
 			expect(hidden.monitors[0]).not.toHaveProperty("url");
 			expect(hidden.monitors[0]).not.toHaveProperty("port");
+		});
+
+		it("withholds URLs unless the status page opts in, even when global URL visibility is enabled", async () => {
+			const { service } = createService(true, "http://localhost:5173", true);
+
+			const { monitors } = await service.getPublicStatusPagePayload(publishedPage());
+
+			expect(monitors[0]).not.toHaveProperty("url");
+			expect(monitors[0]).not.toHaveProperty("port");
+		});
+
+		it("withholds URLs when global URL visibility is disabled, even when the status page opts in", async () => {
+			const { service } = createService(true, "http://localhost:5173", false);
+
+			const { monitors } = await service.getPublicStatusPagePayload(publishedPage({ showMonitorUrls: true }));
+
+			expect(monitors[0]).not.toHaveProperty("url");
+			expect(monitors[0]).not.toHaveProperty("port");
 		});
 
 		it("keeps the display fields the public themes consume", async () => {
