@@ -105,7 +105,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	);
 	const statusService = new StatusService(logger, monitorsRepository, monitorStatsRepository);
 	const egressService = new EgressService(settingsService, workerId, queueWorkersRepository, providerRegistry, proxyResolver, logger);
-	const telemetryService = new TelemetryService(got, settingsService, settingsRepository, logger);
+	const telemetryService = new TelemetryService(got, settingsService, settingsRepository, monitorsRepository, logger);
 
 	const notificationReactor = new NotificationReactor(notificationsService);
 	const incidentReactor = new IncidentReactor(incidentService);
