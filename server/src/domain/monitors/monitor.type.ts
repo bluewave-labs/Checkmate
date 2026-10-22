@@ -122,6 +122,7 @@ export const MAX_RECENT_CHECKS = 50;
 
 export type Monitor = z.infer<typeof monitorSchema>;
 export type MonitorsSummary = z.infer<typeof monitorsSummarySchema>;
+export type MonitorTypeCount = { type: MonitorType; count: number }[];
 export type MonitorsWithChecksByTeamIdResult = z.infer<typeof monitorsWithChecksByTeamIdResultSchema>;
 export type UptimeDetailsResult = z.infer<typeof uptimeDetailsResultSchema>;
 export type HardwareDetailsResult = z.infer<typeof hardwareDetailsResultSchema>;
