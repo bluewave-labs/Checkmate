@@ -45,7 +45,7 @@ This repository contains both the frontend and the backend of Checkmate, an open
 
 Checkmate also has an agent, called [Capture](https://github.com/bluewave-labs/capture), to retrieve data from remote servers. While Capture is not required to run Checkmate, it provides additional insights about your servers' CPU, RAM, disk, and temperature status. Capture can run on Linux, Windows, Mac, Raspberry Pi, or any device that can run Go.
 
-Checkmate has been stress-tested with 1000+ active monitors without any particular issues or performance bottlenecks.
+**Checkmate is already being used by companies to monitor over 1,600 servers, with no reported performance bottlenecks or significant issues.**
 
 ## 📚 Table of contents
 
