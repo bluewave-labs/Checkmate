@@ -1,6 +1,7 @@
 import type { Got } from "got";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import type { ISettingsRepository } from "@/domain/app-settings/app-settings-repository.interface.js";
+import type { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import type { TelemetryPayload } from "@/domain/telemetry/telemetry.type.js";
 import type { ILogger } from "@/utils/logger/logger.js";
 import { timeRequest } from "@/service/networkProviders/utils.js";
@@ -22,6 +23,7 @@ export class TelemetryService implements ITelemetryService {
 		private got: Got,
 		private settingsService: ISettingsService,
 		private settingsRepository: ISettingsRepository,
+		private monitorsRepository: IMonitorsRepository,
 		logger: ILogger
 	) {
 		this.logger = logger.child({ service: SERVICE_NAME });
@@ -31,6 +33,7 @@ export class TelemetryService implements ITelemetryService {
 		const instanceId = await this.settingsRepository.findOrCreateTelemetryInstanceId();
 		if (!instanceId) return null;
 		const { queueMode, deployment } = this.settingsService.getSettings();
+		const monitorTypeCount = await this.monitorsRepository.findMonitorTypeCount();
 		return {
 			instanceId,
 			version: APP_VERSION,
@@ -39,6 +42,7 @@ export class TelemetryService implements ITelemetryService {
 			nodeVersion: process.versions.node,
 			os: process.platform,
 			arch: process.arch,
+			monitorTypeCount,
 		};
 	};
 

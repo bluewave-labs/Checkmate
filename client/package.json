@@ -1,7 +1,7 @@
 {
 	"name": "client",
 	"private": true,
-	"version": "3.13.0",
+	"version": "3.13.1",
 	"engines": {
 		"node": ">=24",
 		"npm": ">=11"

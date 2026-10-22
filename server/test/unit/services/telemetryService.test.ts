@@ -15,15 +15,21 @@ const makeEnv = (overrides?: Record<string, unknown>) => ({
 	...overrides,
 });
 
+const MONITOR_TYPE_COUNT = [
+	{ type: "http", count: 2 },
+	{ type: "ping", count: 0 },
+];
+
 const createService = (overrides?: { env?: Record<string, unknown>; instanceId?: string | null; post?: jest.Mock<any> }) => {
 	const got = { post: overrides?.post ?? jest.fn<any>().mockResolvedValue({ statusCode: 200 }) };
 	const settingsService = { getSettings: jest.fn<any>().mockReturnValue(makeEnv(overrides?.env)) };
 	const settingsRepository = {
 		findOrCreateTelemetryInstanceId: jest.fn<any>().mockResolvedValue(overrides?.instanceId === undefined ? "instance-1" : overrides.instanceId),
 	};
+	const monitorsRepository = { findMonitorTypeCount: jest.fn<any>().mockResolvedValue(MONITOR_TYPE_COUNT) };
 	const logger = createMockLogger();
-	const service = new TelemetryService(got as any, settingsService as any, settingsRepository as any, logger as any);
-	return { service, got, settingsService, settingsRepository, logger };
+	const service = new TelemetryService(got as any, settingsService as any, settingsRepository as any, monitorsRepository as any, logger as any);
+	return { service, got, settingsService, settingsRepository, monitorsRepository, logger };
 };
 
 describe("TelemetryService", () => {
@@ -37,7 +43,16 @@ describe("TelemetryService", () => {
 
 			const payload = await service.buildPayload();
 
-			expect(Object.keys(payload!).sort()).toEqual(["arch", "deployment", "instanceId", "nodeVersion", "os", "queueMode", "version"]);
+			expect(Object.keys(payload!).sort()).toEqual([
+				"arch",
+				"deployment",
+				"instanceId",
+				"monitorTypeCount",
+				"nodeVersion",
+				"os",
+				"queueMode",
+				"version",
+			]);
 			expect(payload).toEqual({
 				instanceId: "instance-1",
 				version: APP_VERSION,
@@ -46,6 +61,7 @@ describe("TelemetryService", () => {
 				nodeVersion: process.versions.node,
 				os: process.platform,
 				arch: process.arch,
+				monitorTypeCount: MONITOR_TYPE_COUNT,
 			});
 		});
 
