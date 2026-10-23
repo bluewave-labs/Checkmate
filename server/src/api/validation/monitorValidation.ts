@@ -61,6 +61,11 @@ export const getMonitorsWithChecksQueryValidation = z.object({
 	explain: booleanCoercion.optional(),
 });
 
+export const getDashboardByTeamIdQueryValidation = z.object({
+	limit: z.coerce.number().int().min(1).max(100).optional(),
+	order: z.enum(SortOrders).optional(),
+});
+
 export const getCertificateParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
 });
