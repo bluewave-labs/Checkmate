@@ -19,6 +19,12 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 		homeserverUrl: data?.homeserverUrl || "",
 		roomId: data?.roomId || "",
 		topic: data?.topic || "",
+		customTitle: data?.customTitle || "Monitor Down: {{monitor_name}}",
+		customBody:
+			data?.customBody || 'Monitor "{{monitor_name}}" is currently down and unreachable.',
+		pingContent: data?.pingContent || "",
+		showMonitorUrl: data?.showMonitorUrl ?? true,
+		showDetails: data?.showDetails ?? true,
 	};
 }
 
