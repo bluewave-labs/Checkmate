@@ -1555,7 +1555,7 @@
 				},
 				"url": {
 					"title": "Monitor IP/URL on status page",
-					"description": "Display the IP address or URL of monitor on the public Status page. If it's disabled, only the monitor name will be shown to protect sensitive information.",
+					"description": "Master privacy control: monitor IPs and URLs are shown only when this is enabled and the individual status page also allows them.",
 					"option": {
 						"showURL": {
 							"label": "Display IP/URL on status page"
@@ -1921,7 +1921,7 @@
 				},
 				"features": {
 					"title": "Features",
-					"description": "Configure what information is displayed on your status page.",
+					"description": "Configure what information is displayed. Monitor URLs require this setting and the global URL privacy setting.",
 					"option": {
 						"showCharts": {
 							"label": "Show response time charts"
@@ -1934,6 +1934,9 @@
 						},
 						"showInfrastructure": {
 							"label": "Show infrastructure metrics"
+						},
+						"showMonitorUrls": {
+							"label": "Show monitor URLs"
 						}
 					}
 				}

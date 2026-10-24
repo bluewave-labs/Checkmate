@@ -161,7 +161,7 @@ export class StatusPageService implements IStatusPageService {
 
 	getPublicStatusPagePayload = async (statusPage: StatusPage, range: StatusPageRange = "latest"): Promise<PublicStatusPagePayload> => {
 		const dbSettings = await this.settingsService.getDBSettings();
-		const showURL = dbSettings.showURL;
+		const showURL = dbSettings.showURL && statusPage.showMonitorUrls;
 		const monitors = await this.monitorsRepository.findByIds(statusPage.monitors, { recentChecks: range === "latest" ? "all" : "latestHardware" });
 		const order = new Map(statusPage.monitors.map((id, i) => [id, i]));
 		const sorted = [...monitors].sort((a, b) => (order.get(a.id) ?? Number.MAX_SAFE_INTEGER) - (order.get(b.id) ?? Number.MAX_SAFE_INTEGER));
