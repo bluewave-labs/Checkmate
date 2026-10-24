@@ -1,0 +1,32 @@
+name: Helm chart check
+
+on:
+  pull_request:
+    paths:
+      - "charts/helm/checkmate/**"
+      - ".github/workflows/chart-check.yml"
+  push:
+    branches: ["develop", "master"]
+    paths:
+      - "charts/helm/checkmate/**"
+      - ".github/workflows/chart-check.yml"
+
+jobs:
+  lint-and-render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Pinned: the smoke test's negative fixtures rely on v4.2.x `helm template`/lint
+      # exit-code behavior (template `fail`s hard; lint tolerates them). If this version
+      # changes, re-verify that behavior.
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v4.2.2
+
+      # Runs helm lint (strict, with valid values) + positive/negative render assertions.
+      # Lint/render only — kind/image-pull validation is covered manually before releases.
+      - name: Run chart smoke tests
+        run: bash charts/helm/checkmate/tests/smoke-chart.sh
