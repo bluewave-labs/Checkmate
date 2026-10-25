@@ -4,7 +4,11 @@ import { ColoredLabel } from "@/Components/design-elements";
 import MenuItem from "@mui/material/MenuItem";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-import type { MonitorType } from "@/Types/Monitor";
+import {
+	MonitorStateFilters,
+	MonitorStatusFilters,
+	type MonitorType,
+} from "@/Types/Monitor";
 import type { Tag } from "@/Types/Tag";
 import { Typography, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -18,8 +22,6 @@ const typeDisplayNames: Record<string, string> = {
 	grpc: "gRPC",
 	websocket: "WebSocket",
 };
-const statuses = ["up", "down"];
-const states = ["active", "paused"];
 
 export const ControlsFilter = ({
 	showTypes = true,
@@ -36,14 +38,14 @@ export const ControlsFilter = ({
 }: {
 	showTypes?: boolean;
 	selectedTypes?: MonitorType[];
-	setSelectedTypes?: React.Dispatch<React.SetStateAction<MonitorType[]>>;
+	setSelectedTypes?: (types: MonitorType[]) => void;
 	selectedStatus?: string;
-	setSelectedStatus?: React.Dispatch<React.SetStateAction<string>>;
+	setSelectedStatus?: (status: string) => void;
 	selectedState?: string;
-	setSelectedState?: React.Dispatch<React.SetStateAction<string>>;
+	setSelectedState?: (state: string) => void;
 	tagOptions?: Tag[];
 	selectedTags?: string[];
-	setSelectedTags?: React.Dispatch<React.SetStateAction<string[]>>;
+	setSelectedTags?: (tags: string[]) => void;
 	onClearFilters: () => void;
 }) => {
 	const theme = useTheme();
@@ -85,7 +87,7 @@ export const ControlsFilter = ({
 					value={selectedStatus ?? ""}
 					onChange={(e) => setSelectedStatus(e.target.value)}
 				>
-					{statuses.map((status) => (
+					{MonitorStatusFilters.map((status) => (
 						<MenuItem
 							key={status}
 							value={status}
@@ -101,7 +103,7 @@ export const ControlsFilter = ({
 					value={selectedState ?? ""}
 					onChange={(e) => setSelectedState(e.target.value)}
 				>
-					{states.map((state) => (
+					{MonitorStateFilters.map((state) => (
 						<MenuItem
 							key={state}
 							value={state}

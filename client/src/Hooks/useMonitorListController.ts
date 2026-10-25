@@ -5,14 +5,17 @@ import useDebounce from "@/Hooks/useDebounce";
 import type { RootState } from "@/store";
 import {
 	type MonitorsWithChecksResponse,
+	MonitorStateFilters,
+	MonitorStatusFilters,
 	SelectableMonitorTypes,
 	type Monitor,
 	type MonitorType,
 } from "@/Types/Monitor";
 import type { Tag } from "@/Types/Tag";
 import type { SortOrder } from "@/Types/Query";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 
 interface MonitorListConfig {
 	types: MonitorType[] | "selectable";
@@ -23,6 +26,13 @@ interface MonitorListConfig {
 	initialSortField?: string; // default ""
 }
 
+type ParamChanges = Record<string, string | string[] | undefined>;
+
+// Keeps a URL value only when the filter offers it, so a hand-edited URL cannot send an
+// unknown type, status or state to the API.
+const pickAllowed = <T extends string>(allowed: readonly T[], value: string | null) =>
+	allowed.find((option) => option === value);
+
 export const useMonitorListController = (config: MonitorListConfig) => {
 	const dispatch = useDispatch();
 	const tableState = useSelector(
@@ -32,15 +42,102 @@ export const useMonitorListController = (config: MonitorListConfig) => {
 	const sortField = tableState?.sortField ?? config.initialSortField ?? "";
 	const sortOrder = tableState?.sortOrder ?? "asc";
 
-	// Filter states
-	const [selectedTypes, setSelectedTypes] = useState<MonitorType[]>([]);
-	const [selectedStatus, setSelectedStatus] = useState<string>("");
-	const [selectedState, setSelectedState] = useState<string>("");
-	const [selectedTags, setSelectedTags] = useState<string[]>([]);
-	const [page, setPage] = useState<number>(0);
-	const [search, setSearch] = useState<string>("");
+	// Filters, search and page live in the URL, so a filtered list survives a refresh and
+	// can be shared as a link. The page number in the URL starts at 1.
+	const [searchParams, setSearchParams] = useSearchParams();
+	const selectedTypes = useMemo<MonitorType[]>(
+		() =>
+			config.types === "selectable"
+				? searchParams
+						.getAll("type")
+						.flatMap((type) => pickAllowed(SelectableMonitorTypes, type) ?? [])
+				: [],
+		[config.types, searchParams]
+	);
+	const selectedStatus =
+		pickAllowed(MonitorStatusFilters, searchParams.get("status")) ?? "";
+	const selectedState = pickAllowed(MonitorStateFilters, searchParams.get("state")) ?? "";
+	const selectedTags = useMemo(() => searchParams.getAll("tags"), [searchParams]);
+	const urlPage = Number(searchParams.get("page"));
+	const page = Number.isInteger(urlPage) && urlPage > 1 ? urlPage - 1 : 0;
+	const urlSearch = searchParams.get("search") ?? "";
+	const [search, setSearch] = useState<string>(urlSearch);
 	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
 	const debouncedSearch = useDebounce<string>(search, 300);
+
+	// Writes all changes in one URL update. Replace, not push, so the back button leaves the
+	// page instead of stepping through every filter change.
+	const updateParams = useCallback(
+		(changes: ParamChanges) => {
+			setSearchParams(
+				(prev) => {
+					const next = new URLSearchParams(prev);
+					Object.entries(changes).forEach(([key, value]) => {
+						next.delete(key);
+						[value ?? []]
+							.flat()
+							.filter(Boolean)
+							.forEach((item) => next.append(key, item));
+					});
+					return next;
+				},
+				{ replace: true }
+			);
+		},
+		[setSearchParams]
+	);
+
+	// A new filter can have fewer pages, so every filter change goes back to the first page.
+	const updateFilters = useCallback(
+		(changes: ParamChanges) => updateParams({ ...changes, page: undefined }),
+		[updateParams]
+	);
+
+	// Sets the selected monitor types and returns to the first page.
+	const setSelectedTypes = useCallback(
+		(types: MonitorType[]) => updateFilters({ type: types }),
+		[updateFilters]
+	);
+
+	// Sets the status filter ("up" or "down") and returns to the first page.
+	const setSelectedStatus = useCallback(
+		(status: string) => updateFilters({ status }),
+		[updateFilters]
+	);
+
+	// Sets the state filter ("active" or "paused") and returns to the first page.
+	const setSelectedState = useCallback(
+		(state: string) => updateFilters({ state }),
+		[updateFilters]
+	);
+
+	// Sets the selected tag ids and returns to the first page.
+	const setSelectedTags = useCallback(
+		(tags: string[]) => updateFilters({ tags }),
+		[updateFilters]
+	);
+
+	// Sets the table page. Page 0 is the default, so it is left out of the URL.
+	const setPage = useCallback(
+		(next: number) => updateParams({ page: next > 0 ? String(next + 1) : undefined }),
+		[updateParams]
+	);
+
+	// The search box keeps its own state so typing stays smooth; the URL gets the value once
+	// typing pauses. lastUrlSearch tells a URL change made here (skip) from one made by
+	// navigation, such as the back button (copy it into the search box).
+	const lastUrlSearch = useRef(urlSearch);
+	useEffect(() => {
+		if (urlSearch !== lastUrlSearch.current) {
+			lastUrlSearch.current = urlSearch;
+			setSearch(urlSearch);
+			return;
+		}
+		if (debouncedSearch !== urlSearch) {
+			lastUrlSearch.current = debouncedSearch;
+			updateFilters({ search: debouncedSearch });
+		}
+	}, [urlSearch, debouncedSearch, updateFilters]);
 
 	// Convert filter selections to API filter values
 	// Status: pass "up"/"down" directly to the API
@@ -124,12 +221,15 @@ export const useMonitorListController = (config: MonitorListConfig) => {
 
 	// Handle filters
 	const handleClearFilters = useCallback(() => {
-		setSelectedTypes([]);
-		setSelectedStatus("");
-		setSelectedState("");
-		setSelectedTags([]);
 		setSearch("");
-	}, []);
+		updateFilters({
+			type: undefined,
+			status: undefined,
+			state: undefined,
+			tags: undefined,
+			search: undefined,
+		});
+	}, [updateFilters]);
 
 	const handleSetRowsPerPage = (value: number) => {
 		dispatch(setRowsPerPage({ value, table: config.rowsPerPageTable }));
