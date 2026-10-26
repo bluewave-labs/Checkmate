@@ -1,7 +1,7 @@
 import Autocomplete from "@mui/material/Autocomplete";
 import type { AutocompleteProps } from "@mui/material/Autocomplete";
 import { TextField, Checkbox } from "@/Components/inputs";
-import ListItem from "@mui/material/ListItem";
+import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
 import { FieldLabel } from "./FieldLabel";
@@ -63,9 +63,14 @@ export const AutoCompleteInput = ({
 				((props, option, { selected }) => {
 					const { key, ...optionProps } = props;
 					return (
-						<ListItem
+						<MenuItem
 							key={key}
 							{...optionProps}
+							// The checkbox ships with MUI's 9px touch padding, which is
+							// taller than the row itself and pushed options to 46px against
+							// the 32px of every other dropdown. Trimming it here keeps the
+							// larger target on standalone checkboxes elsewhere.
+							sx={{ "& .MuiCheckbox-root": { padding: 0 } }}
 						>
 							<Stack
 								direction={"row"}
@@ -76,7 +81,7 @@ export const AutoCompleteInput = ({
 								{multiple && <Checkbox checked={selected} />}
 								{renderOptionContent ? renderOptionContent(option) : option.name}
 							</Stack>
-						</ListItem>
+						</MenuItem>
 					);
 				})
 			}
