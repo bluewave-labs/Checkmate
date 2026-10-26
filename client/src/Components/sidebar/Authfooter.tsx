@@ -29,7 +29,7 @@ interface AuthFooterProps {
 export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const { transitionTiming } = useSidebar();
+	const { transitionTiming, footerButtonPadding } = useSidebar();
 	const mode = useSelector((state: RootState) => state.ui.mode);
 	const user = useSelector((state: RootState) => state.auth.user);
 	const navigate = useNavigate();
@@ -118,7 +118,7 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 				onClick={handleMenuOpen}
 				aria-label={t("components.sidebar.authFooter.navControls")}
 				sx={{
-					padding: theme.spacing(2),
+					padding: theme.spacing(footerButtonPadding),
 					flexShrink: 0,
 					"&:focus": { outline: "none" },
 					"& svg": { stroke: theme.palette.text.secondary },

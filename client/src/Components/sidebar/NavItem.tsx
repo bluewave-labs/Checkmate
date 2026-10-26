@@ -21,7 +21,7 @@ export const NavItem = ({
 	selected: boolean;
 	onClick: (event: React.MouseEvent) => void;
 }) => {
-	const { collapsed } = useSidebar();
+	const { collapsed, itemInset } = useSidebar();
 	const theme = useTheme();
 	const iconStroke = selected
 		? theme.palette.sidebar.accent
@@ -63,7 +63,7 @@ export const NavItem = ({
 					gap: theme.spacing(SPACING.MD),
 					borderRadius: theme.shape.borderRadius,
 					px: theme.spacing(SPACING.MD),
-					pl: theme.spacing(3.5),
+					pl: theme.spacing(itemInset),
 				}}
 				onClick={onClick}
 			>
