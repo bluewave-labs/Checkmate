@@ -221,6 +221,10 @@
 					"user": "使用者",
 					"demoUser": "示範用戶"
 				}
+			},
+			"toggle": {
+				"collapse": "收合側邊欄",
+				"expand": "展開側邊欄"
 			}
 		},
 		"starPrompt": {

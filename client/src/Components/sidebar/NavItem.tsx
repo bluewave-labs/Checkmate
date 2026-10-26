@@ -4,6 +4,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
+import { SPACING } from "@/Utils/Theme/constants";
 import useSidebar from "@/Hooks/useSidebar";
 
 export interface NavData {
@@ -59,10 +60,10 @@ export const NavItem = ({
 						backgroundImage: "none",
 					},
 					height: 32,
-					gap: theme.spacing(4),
+					gap: collapsed ? 0 : theme.spacing(SPACING.MD),
+					justifyContent: collapsed ? "center" : "flex-start",
 					borderRadius: theme.shape.borderRadius,
-					px: theme.spacing(4),
-					pl: theme.spacing(5),
+					px: theme.spacing(SPACING.MD),
 				}}
 				onClick={onClick}
 			>
@@ -90,8 +91,9 @@ export const NavItem = ({
 				<Box
 					sx={{
 						overflow: "hidden",
-						transition: "opacity 900ms ease",
+						transition: "opacity 900ms ease, width 900ms ease",
 						opacity: collapsed ? 0 : 1,
+						width: collapsed ? 0 : "auto",
 						whiteSpace: "nowrap",
 					}}
 				>

@@ -259,6 +259,10 @@
 					"user": "User",
 					"demoUser": "Demo user"
 				}
+			},
+			"toggle": {
+				"collapse": "Collapse sidebar",
+				"expand": "Expand sidebar"
 			}
 		},
 		"starPrompt": {

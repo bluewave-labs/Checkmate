@@ -233,6 +233,10 @@
 			"starPrompt": {
 				"description": "Zobacz najnowsze wydania i pomóż rozwijać społeczność na GitHub",
 				"title": "Zagwiazdkuj Checkmate"
+			},
+			"toggle": {
+				"collapse": "Zwiń panel boczny",
+				"expand": "Rozwiń panel boczny"
 			}
 		},
 		"starPrompt": {

@@ -39,7 +39,6 @@ export const StarPrompt = ({
 			padding={theme.spacing(LAYOUT.SM)}
 			width={"100%"}
 			borderTop={`1px solid ${theme.palette.divider}`}
-			borderBottom={`1px solid ${theme.palette.divider}`}
 		>
 			<Stack
 				direction="row"

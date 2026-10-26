@@ -221,6 +221,10 @@
 					"user": "Kullanıcı",
 					"demoUser": "Demo kullanıcısı"
 				}
+			},
+			"toggle": {
+				"collapse": "Kenar çubuğunu daralt",
+				"expand": "Kenar çubuğunu genişlet"
 			}
 		},
 		"starPrompt": {

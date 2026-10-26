@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { MoreVertical, LogOut, Moon, Sun } from "lucide-react";
-import { Avatar, Icon } from "@/Components/design-elements";
+import { Icon } from "@/Components/design-elements";
 import { clearAuthState } from "@/Features/Auth/authSlice.js";
 import type { RootState } from "@/Types/state.js";
 import { setMode } from "@/Features/UI/uiSlice.js";
@@ -83,14 +83,24 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 			direction="row"
 			alignItems="center"
 			py={theme.spacing(LAYOUT.XS)}
-			px={theme.spacing(LAYOUT.MD)}
-			gap={theme.spacing(LAYOUT.MD)}
+			px={theme.spacing(LAYOUT.SM)}
+			gap={theme.spacing(SPACING.MD)}
 		>
-			<Avatar
-				small
-				onClick={collapsed ? handleMenuOpen : undefined}
-				sx={{ cursor: collapsed ? "pointer" : "default" }}
-			/>
+			{collapsed && (
+				<IconButton
+					onClick={handleMenuOpen}
+					aria-label={t("components.sidebar.authFooter.navControls")}
+					sx={{
+						"&:focus": { outline: "none" },
+						"& svg": { stroke: theme.palette.text.secondary },
+					}}
+				>
+					<Icon
+						icon={MoreVertical}
+						size={22}
+					/>
+				</IconButton>
+			)}
 
 			{!collapsed && (
 				<Stack

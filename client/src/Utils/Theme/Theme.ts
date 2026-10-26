@@ -224,6 +224,10 @@ export const theme = (mode: string, palette: any) =>
 						height: "100%",
 					},
 					root: ({ theme }) => ({
+						// Inputs are transparent by default, so they pick up whatever sits
+						// behind them: white inside a ConfigBox, grey on a bare page. Pin
+						// them to paper so controls match across Settings and the list pages.
+						backgroundColor: theme.palette.background.paper,
 						"& .MuiSelect-select": {
 							paddingTop: 0,
 							paddingBottom: 0,

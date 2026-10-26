@@ -1,7 +1,12 @@
 import Stack, { type StackProps } from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import Tooltip from "@mui/material/Tooltip";
+import IconButton from "@mui/material/IconButton";
 import { useTheme } from "@mui/material/styles";
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Icon } from "@/Components/design-elements";
+import { SPACING } from "@/Utils/Theme/constants";
 import { toggleSidebar } from "@/Features/UI/uiSlice.js";
 import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
@@ -17,28 +22,27 @@ export const Logo = (props: StackProps) => {
 		<Stack
 			direction="row"
 			alignItems="center"
-			gap={theme.spacing(4)}
-			onClick={() => {
-				dispatch(toggleSidebar());
-			}}
-			sx={{ cursor: "pointer" }}
+			justifyContent={collapsed ? "center" : "flex-start"}
+			gap={theme.spacing(SPACING.MD)}
 			{...props}
 		>
-			<Box
-				sx={{
-					width: theme.spacing(16),
-					height: theme.spacing(16),
-					display: "flex",
-					justifyContent: "center",
-					alignItems: "center",
-					"& svg": {
-						width: "100%",
-						height: "100%",
-					},
-				}}
-			>
-				<KingIcon />
-			</Box>
+			{!collapsed && (
+				<Box
+					sx={{
+						width: theme.spacing(16),
+						height: theme.spacing(16),
+						display: "flex",
+						justifyContent: "center",
+						alignItems: "center",
+						"& svg": {
+							width: "100%",
+							height: "100%",
+						},
+					}}
+				>
+					<KingIcon />
+				</Box>
+			)}
 			<Box
 				overflow={"hidden"}
 				sx={{
@@ -58,6 +62,36 @@ export const Logo = (props: StackProps) => {
 					{t("common.appName")}
 				</Typography>
 			</Box>
+			<Tooltip
+				placement="right"
+				title={
+					collapsed
+						? t("components.sidebar.toggle.expand")
+						: t("components.sidebar.toggle.collapse")
+				}
+				disableInteractive
+			>
+				<IconButton
+					onClick={() => dispatch(toggleSidebar())}
+					aria-label={
+						collapsed
+							? t("components.sidebar.toggle.expand")
+							: t("components.sidebar.toggle.collapse")
+					}
+					sx={{
+						// IconButton is not a MUI system component, so these cannot be hoisted to props
+						marginLeft: collapsed ? 0 : "auto",
+						flexShrink: 0,
+						"&:focus": { outline: "none" },
+						"& svg": { stroke: theme.palette.text.secondary },
+					}}
+				>
+					<Icon
+						icon={collapsed ? PanelLeftOpen : PanelLeftClose}
+						size={18}
+					/>
+				</IconButton>
+			</Tooltip>
 		</Stack>
 	);
 };

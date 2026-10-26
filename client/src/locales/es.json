@@ -221,6 +221,10 @@
 					"user": "Usuario",
 					"demoUser": "Usuario demo"
 				}
+			},
+			"toggle": {
+				"collapse": "Contraer la barra lateral",
+				"expand": "Expandir la barra lateral"
 			}
 		},
 		"starPrompt": {
