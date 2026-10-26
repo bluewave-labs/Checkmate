@@ -89,11 +89,11 @@ export const NavItem = ({
 					{item.icon}
 				</ListItemIcon>
 				<Box
+					width={collapsed ? 0 : "auto"}
 					sx={{
 						overflow: "hidden",
 						transition: "opacity 900ms ease, width 900ms ease",
 						opacity: collapsed ? 0 : 1,
-						width: collapsed ? 0 : "auto",
 						whiteSpace: "nowrap",
 					}}
 				>
