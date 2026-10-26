@@ -627,6 +627,12 @@ export const Pagination = ({ ...props }: PaginationProps) => {
 			labelDisplayedRows={labelDisplayedRows}
 			{...rest}
 			sx={{
+				// TablePagination defaults to body2, which lands at 11px here and
+				// leaves the row noticeably smaller than the cells above it.
+				"& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows, & .MuiTablePagination-select":
+					{
+						fontSize: theme.typography.fontSize,
+					},
 				"& .MuiTablePagination-toolbar": isSmall
 					? {
 							display: "grid",

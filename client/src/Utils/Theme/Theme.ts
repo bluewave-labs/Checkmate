@@ -194,6 +194,13 @@ export const theme = (mode: string, palette: any) =>
 					disableTouchRipple: true,
 					disableFocusRipple: true,
 				},
+				styleOverrides: {
+					// size="small" scales the label down to ~12px, leaving these a step
+					// below the text they sit beside. Hold them at the body size.
+					root: {
+						fontSize: typographyLevels.base,
+					},
+				},
 			},
 
 			MuiFormLabel: {
@@ -228,12 +235,32 @@ export const theme = (mode: string, palette: any) =>
 						// behind them: white inside a ConfigBox, grey on a bare page. Pin
 						// them to paper so controls match across Settings and the list pages.
 						backgroundColor: theme.palette.background.paper,
+						// A select should read and behave as a button across its whole
+						// face, not just over the text.
+						"&.MuiInputBase-root:has(.MuiSelect-select)": {
+							cursor: "pointer",
+						},
 						"& .MuiSelect-select": {
 							paddingTop: 0,
 							paddingBottom: 0,
 							display: "flex",
 							alignItems: "center",
 							minHeight: "unset",
+							alignSelf: "stretch",
+							// MUI reserves room for the arrow with a 32px right padding.
+							// With content-box that padding extends the select's box out
+							// over the arrow instead of being absorbed inside it, so the
+							// strip beside the arrow becomes part of the click target. The
+							// control's own width is unchanged.
+							boxSizing: "content-box",
+						},
+						// The dropdown arrow is a custom Lucide svg rendered as a sibling of
+						// the select, so it is not a .MuiSelect-icon and it sits on top of
+						// the right edge of the control. Left alone it swallows the click
+						// and shows a text cursor; ignoring pointer events there passes the
+						// click through to the select underneath.
+						"& > svg": {
+							pointerEvents: "none",
 						},
 						"& .MuiOutlinedInput-notchedOutline": {
 							borderColor: theme.palette.divider,
