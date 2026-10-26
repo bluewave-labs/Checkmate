@@ -627,6 +627,10 @@ export const Pagination = ({ ...props }: PaginationProps) => {
 			labelDisplayedRows={labelDisplayedRows}
 			{...rest}
 			sx={{
+				"& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows, & .MuiTablePagination-select":
+					{
+						fontSize: theme.typography.fontSize,
+					},
 				"& .MuiTablePagination-toolbar": isSmall
 					? {
 							display: "grid",

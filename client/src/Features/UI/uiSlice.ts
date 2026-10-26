@@ -2,7 +2,6 @@ import {
 	dashboardCardKeys,
 	type DashboardCardKey,
 	type DashboardSortOrder,
-	type DashboardResponse,
 } from "@/Types/Dashboard";
 import type { SortOrder } from "@/Types/Query";
 import type { TimeFormat } from "@/Utils/TimeUtils";
@@ -51,7 +50,6 @@ interface UIState {
 	chartType: ChartType;
 	dashboardVisibleCards: DashboardCardKey[];
 	dashboardUptimeSortOrder: DashboardSortOrder;
-	dashboardData: DashboardResponse | null;
 }
 
 const initialMode: ThemeMode = window?.matchMedia?.("(prefers-color-scheme: dark)")
@@ -97,7 +95,6 @@ const initialState: UIState = {
 	chartType: "histogram",
 	dashboardVisibleCards: [...dashboardCardKeys],
 	dashboardUptimeSortOrder: "ascending",
-	dashboardData: null,
 };
 
 const uiSlice = createSlice({
@@ -157,9 +154,6 @@ const uiSlice = createSlice({
 		setDashboardUptimeSortOrder: (state, action: PayloadAction<DashboardSortOrder>) => {
 			state.dashboardUptimeSortOrder = action.payload;
 		},
-		setDashboardData: (state, action: PayloadAction<DashboardResponse>) => {
-			state.dashboardData = action.payload;
-		},
 	},
 });
 
@@ -180,5 +174,4 @@ export const {
 	setChartType,
 	setDashboardVisibleCards,
 	setDashboardUptimeSortOrder,
-	setDashboardData,
 } = uiSlice.actions;

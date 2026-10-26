@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useState, type ReactNode } from "react";
+import { Fragment, useMemo, useState, type ReactNode } from "react";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { BasePage } from "@/Components/design-elements/BasePage";
 import { Button } from "@/Components/inputs";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { setDashboardVisibleCards, setDashboardData } from "@/Features/UI/uiSlice";
+import { setDashboardVisibleCards } from "@/Features/UI/uiSlice";
 import { useGet } from "@/Hooks/UseApi";
 import type { DashboardResponse } from "@/Types/Dashboard";
 import type { RootState, AppDispatch } from "@/store";
@@ -30,21 +30,16 @@ const Dashboard = () => {
 	);
 	const visibleCards = useMemo(() => new Set(visibleCardsList), [visibleCardsList]);
 
-	const dashboard = useSelector((state: RootState) => state.ui.dashboardData);
 	const uptimeSortOrder = useSelector(
 		(state: RootState) => state.ui.dashboardUptimeSortOrder
 	);
 	const order = uptimeSortOrder === "ascending" ? "asc" : "desc";
 
-	const { data, error } = useGet<DashboardResponse>(
+	const { data: dashboard, error } = useGet<DashboardResponse>(
 		`/monitors/team/dashboard?order=${order}`,
 		{},
 		{ refreshInterval: 30000, keepPreviousData: true }
 	);
-
-	useEffect(() => {
-		if (data) dispatch(setDashboardData(data));
-	}, [data, dispatch]);
 
 	const cardComponents: Record<DashboardCardKey, ReactNode> = {
 		monitorStatus: <MonitorStatusCard summary={dashboard?.summary ?? null} />,
@@ -61,7 +56,7 @@ const Dashboard = () => {
 	return (
 		<BasePage
 			headerKey="dashboard"
-			error={!!error}
+			error={!!error && !dashboard}
 		>
 			<Stack gap={theme.spacing(LAYOUT.SM)}>
 				<Stack

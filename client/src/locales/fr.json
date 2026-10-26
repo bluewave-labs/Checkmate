@@ -221,6 +221,10 @@
 					"user": "Utilisateur",
 					"demoUser": "Utilisateur de démonstration"
 				}
+			},
+			"toggle": {
+				"collapse": "Réduire la barre latérale",
+				"expand": "Développer la barre latérale"
 			}
 		},
 		"starPrompt": {

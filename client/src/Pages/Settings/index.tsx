@@ -618,6 +618,13 @@ export const SettingsPage = () => {
 										{t("pages.settings.form.about.developedBy")}
 									</Typography>
 									<Link
+										href="https://checkmate.so"
+										target="_blank"
+										rel="noopener noreferrer"
+									>
+										https://checkmate.so
+									</Link>
+									<Link
 										href="https://github.com/bluewave-labs/checkmate"
 										target="_blank"
 										rel="noopener noreferrer"

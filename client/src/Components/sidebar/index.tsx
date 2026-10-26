@@ -103,7 +103,7 @@ export const Sidebar = () => {
 									component="div"
 									color={theme.palette.text.disabled}
 									fontSize={typographyLevels.s}
-									paddingLeft={theme.spacing(5)}
+									paddingLeft={theme.spacing(LAYOUT.XS)}
 									paddingTop={theme.spacing(LAYOUT.SM)}
 									paddingBottom={theme.spacing(LAYOUT.XXS)}
 									whiteSpace="nowrap"
