@@ -52,10 +52,12 @@ Checkmate also has an agent, called [Capture](https://github.com/bluewave-labs/c
 
 ## 🚀 Proven at scale
 
-**Checkmate** is used in production to monitor **1,600+ servers** on a single deployment.
+**Checkmate** is used in production to monitor **1,600+ servers** on a single deployment. 
 
 ✅ No reported performance bottlenecks  
 ✅ No significant operational issues
+
+Checkmate also scales horizontally for more than 5000 servers: you can run dedicated [worker nodes](https://checkmate.so/docs/getting-started/distributed-workers) that share the check load through MongoDB.
 
 </td>
 </tr>
