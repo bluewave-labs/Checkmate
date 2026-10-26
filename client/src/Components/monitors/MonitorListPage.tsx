@@ -15,8 +15,6 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Pause, Play } from "lucide-react";
 
-// Caps the filter-row search field on desktop so it does not stretch across
-// the whole row; the filters sit at one end and the search at the other.
 const SEARCH_FIELD_WIDTH = 320;
 
 interface MonitorListPageProps {
@@ -100,9 +98,6 @@ export const MonitorListPage = ({
 					onChange={(event) => {
 						controller.setSearch(event.target.value);
 					}}
-					// Left uncapped this is a flex child of a space-between row, so it
-					// soaks up every spare pixel - about 850px on a desktop viewport.
-					// Full width still on mobile, where the row stacks.
 					sx={{ width: isSmall ? "100%" : SEARCH_FIELD_WIDTH }}
 				/>
 			</Stack>

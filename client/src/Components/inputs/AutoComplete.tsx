@@ -66,10 +66,6 @@ export const AutoCompleteInput = ({
 						<MenuItem
 							key={key}
 							{...optionProps}
-							// The checkbox ships with MUI's 9px touch padding, which is
-							// taller than the row itself and pushed options to 46px against
-							// the 32px of every other dropdown. Trimming it here keeps the
-							// larger target on standalone checkboxes elsewhere.
 							sx={{ "& .MuiCheckbox-root": { padding: 0 } }}
 						>
 							<Stack
