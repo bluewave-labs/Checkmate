@@ -66,7 +66,7 @@ export const AutoCompleteInput = ({
 						<MenuItem
 							key={key}
 							{...optionProps}
-							sx={{ "& .MuiCheckbox-root": { padding: 0 } }}
+							sx={{ whiteSpace: "normal", "& .MuiCheckbox-root": { padding: 0 } }}
 						>
 							<Stack
 								direction={"row"}
