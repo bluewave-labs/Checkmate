@@ -241,9 +241,6 @@ export const theme = (mode: string, palette: any) =>
 							minHeight: "unset",
 							alignSelf: "stretch",
 						},
-						"& > svg": {
-							pointerEvents: "none",
-						},
 						"& .MuiOutlinedInput-notchedOutline": {
 							borderColor: theme.palette.divider,
 							transition: "border-color 0.15s ease",
