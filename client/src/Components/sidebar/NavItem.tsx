@@ -4,6 +4,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
+import { SPACING } from "@/Utils/Theme/constants";
 import useSidebar from "@/Hooks/useSidebar";
 
 export interface NavData {
@@ -20,7 +21,7 @@ export const NavItem = ({
 	selected: boolean;
 	onClick: (event: React.MouseEvent) => void;
 }) => {
-	const { collapsed } = useSidebar();
+	const { collapsed, itemInset } = useSidebar();
 	const theme = useTheme();
 	const iconStroke = selected
 		? theme.palette.sidebar.accent
@@ -59,10 +60,10 @@ export const NavItem = ({
 						backgroundImage: "none",
 					},
 					height: 32,
-					gap: theme.spacing(4),
+					gap: theme.spacing(SPACING.MD),
 					borderRadius: theme.shape.borderRadius,
-					px: theme.spacing(4),
-					pl: theme.spacing(5),
+					px: theme.spacing(SPACING.MD),
+					pl: theme.spacing(itemInset),
 				}}
 				onClick={onClick}
 			>

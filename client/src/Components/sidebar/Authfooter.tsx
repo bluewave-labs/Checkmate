@@ -11,10 +11,11 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { MoreVertical, LogOut, Moon, Sun } from "lucide-react";
-import { Avatar, Icon } from "@/Components/design-elements";
+import { Icon } from "@/Components/design-elements";
 import { clearAuthState } from "@/Features/Auth/authSlice.js";
 import type { RootState } from "@/Types/state.js";
 import { setMode } from "@/Features/UI/uiSlice.js";
+import useSidebar from "@/Hooks/useSidebar";
 
 interface AuthFooterProps {
 	collapsed: boolean;
@@ -28,6 +29,7 @@ interface AuthFooterProps {
 export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
+	const { transitionTiming, footerButtonPadding } = useSidebar();
 	const mode = useSelector((state: RootState) => state.ui.mode);
 	const user = useSelector((state: RootState) => state.auth.user);
 	const navigate = useNavigate();
@@ -83,56 +85,50 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 			direction="row"
 			alignItems="center"
 			py={theme.spacing(LAYOUT.XS)}
-			px={theme.spacing(LAYOUT.MD)}
-			gap={theme.spacing(LAYOUT.MD)}
+			px={theme.spacing(LAYOUT.SM)}
 		>
-			<Avatar
-				small
-				onClick={collapsed ? handleMenuOpen : undefined}
-				sx={{ cursor: collapsed ? "pointer" : "default" }}
-			/>
-
-			{!collapsed && (
-				<Stack
-					direction="row"
-					alignItems="center"
-					gap={theme.spacing(SPACING.MD)}
-					minWidth={0}
-					flex={1}
-				>
-					<Stack
-						minWidth={0}
-						flex={1}
+			<Box
+				minWidth={0}
+				flex={1}
+				overflow="hidden"
+				aria-hidden={collapsed}
+				sx={{
+					opacity: collapsed ? 0 : 1,
+					transition: `opacity ${transitionTiming}`,
+				}}
+			>
+				<Stack pr={theme.spacing(SPACING.MD)}>
+					<Typography
+						fontWeight={500}
+						noWrap
+						color={theme.palette.text.primary}
 					>
-						<Typography
-							fontWeight={500}
-							noWrap
-							color={theme.palette.text.primary}
-						>
-							{user?.firstName} {user?.lastName}
-						</Typography>
-						<Typography
-							noWrap
-							textTransform={"capitalize"}
-							color={theme.palette.text.secondary}
-						>
-							{getRoleText()}
-						</Typography>
-					</Stack>
-					<IconButton
-						onClick={handleMenuOpen}
-						sx={{
-							"&:focus": { outline: "none" },
-							"& svg": { stroke: theme.palette.text.secondary },
-						}}
+						{user?.firstName} {user?.lastName}
+					</Typography>
+					<Typography
+						noWrap
+						textTransform={"capitalize"}
+						color={theme.palette.text.secondary}
 					>
-						<Icon
-							icon={MoreVertical}
-							size={22}
-						/>
-					</IconButton>
+						{getRoleText()}
+					</Typography>
 				</Stack>
-			)}
+			</Box>
+			<IconButton
+				onClick={handleMenuOpen}
+				aria-label={t("components.sidebar.authFooter.navControls")}
+				sx={{
+					padding: theme.spacing(footerButtonPadding),
+					flexShrink: 0,
+					"&:focus": { outline: "none" },
+					"& svg": { stroke: theme.palette.text.secondary },
+				}}
+			>
+				<Icon
+					icon={MoreVertical}
+					size={22}
+				/>
+			</IconButton>
 
 			<Menu
 				anchorEl={anchorEl}

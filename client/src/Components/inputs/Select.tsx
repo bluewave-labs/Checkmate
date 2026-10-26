@@ -68,7 +68,7 @@ const SelectInputInner = <T,>(
 				<ChevronDown
 					size={18}
 					strokeWidth={1.5}
-					style={{ marginRight: theme.spacing(3) }}
+					style={{ marginRight: theme.spacing(3), pointerEvents: "none" }}
 				/>
 			)}
 			sx={{

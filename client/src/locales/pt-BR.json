@@ -259,6 +259,10 @@
 					"user": "Usuário",
 					"demoUser": "Usuário demo"
 				}
+			},
+			"toggle": {
+				"collapse": "Recolher a barra lateral",
+				"expand": "Expandir a barra lateral"
 			}
 		},
 		"starPrompt": {

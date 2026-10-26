@@ -221,6 +221,10 @@
 					"user": "Käyttäjä",
 					"demoUser": "Demokäyttäjä"
 				}
+			},
+			"toggle": {
+				"collapse": "Kutista sivupalkki",
+				"expand": "Laajenna sivupalkki"
 			}
 		},
 		"starPrompt": {

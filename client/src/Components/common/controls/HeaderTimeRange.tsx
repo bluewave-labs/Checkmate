@@ -74,9 +74,7 @@ export const HeaderTimeRange = ({
 			>
 				{isLoading && <CircularProgress size={16} />}
 			</Box>
-			<Typography variant="body2">
-				{t(`components.headerTimeRange.description.${dateRange}`)}
-			</Typography>
+			<Typography>{t(`components.headerTimeRange.description.${dateRange}`)}</Typography>
 			{timeFramePicker}
 		</Stack>
 	);

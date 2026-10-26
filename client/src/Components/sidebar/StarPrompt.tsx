@@ -1,4 +1,4 @@
-import { Typography, IconButton, Stack, Box } from "@mui/material";
+import { Typography, IconButton, Stack, Box, Collapse } from "@mui/material";
 import { Icon } from "@/Components/design-elements";
 import { X } from "lucide-react";
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
@@ -20,7 +20,14 @@ export const StarPrompt = ({
 	const { t } = useTranslation();
 	const isOpen = useSelector((state: RootState) => state.ui?.starPromptOpen ?? true);
 	const mode = useSelector((state: RootState) => state.ui.mode);
-	const { collapsed } = useSidebar();
+	const {
+		collapsed,
+		expandedWidth,
+		transitionTiming,
+		transitionDuration,
+		transitionEasing,
+	} = useSidebar();
+	const visible = isOpen && !collapsed;
 	const handleClose = () => {
 		dispatch(setStarPromptOpen(false));
 	};
@@ -29,75 +36,84 @@ export const StarPrompt = ({
 		window.open(repoUrl, "_blank");
 	};
 
-	if (collapsed) return null;
-	if (!isOpen) return null;
-
 	return (
-		<Stack
-			direction="column"
-			gap={theme.spacing(LAYOUT.MD)}
-			padding={theme.spacing(LAYOUT.SM)}
-			width={"100%"}
-			borderTop={`1px solid ${theme.palette.divider}`}
-			borderBottom={`1px solid ${theme.palette.divider}`}
+		<Collapse
+			in={visible}
+			orientation="horizontal"
+			timeout={transitionDuration}
+			easing={transitionEasing}
+			unmountOnExit
+			sx={{ overflow: "hidden", flexShrink: 0 }}
 		>
 			<Stack
-				direction="row"
-				justifyContent="space-between"
-				alignItems="center"
-				width="100%"
-				pl={theme.spacing(LAYOUT.XS)}
+				direction="column"
+				gap={theme.spacing(LAYOUT.MD)}
+				padding={theme.spacing(LAYOUT.SM)}
+				width={expandedWidth}
+				borderTop={`1px solid ${theme.palette.divider}`}
+				sx={{
+					opacity: visible ? 1 : 0,
+					transition: `opacity ${transitionTiming}`,
+				}}
 			>
-				<Typography
-					variant="subtitle2"
-					mt={theme.spacing(SPACING.XXL)}
+				<Stack
+					direction="row"
+					justifyContent="space-between"
+					alignItems="center"
+					width="100%"
+					pl={theme.spacing(LAYOUT.XS)}
 				>
-					{t("components.sidebar.starPrompt.title")}
-				</Typography>
-				<IconButton
-					onClick={handleClose}
-					size="small"
+					<Typography
+						variant="subtitle2"
+						mt={theme.spacing(SPACING.XXL)}
+					>
+						{t("components.sidebar.starPrompt.title")}
+					</Typography>
+					<IconButton
+						onClick={handleClose}
+						size="small"
+						sx={{
+							color: theme.palette.text.primary,
+							padding: 0,
+							"&:hover": {
+								backgroundColor: "transparent",
+								opacity: 0.8,
+							},
+						}}
+					>
+						<Icon
+							icon={X}
+							size={20}
+						/>
+					</IconButton>
+				</Stack>
+
+				<Typography
 					sx={{
-						color: theme.palette.text.primary,
-						padding: 0,
-						"&:hover": {
-							backgroundColor: "transparent",
-							opacity: 0.8,
-						},
+						mb: 1,
+						px: theme.spacing(LAYOUT.XS),
 					}}
 				>
-					<Icon
-						icon={X}
-						size={20}
-					/>
-				</IconButton>
+					{t("components.sidebar.starPrompt.description")}
+				</Typography>
+
+				<Box
+					component="img"
+					src={`https://img.shields.io/github/stars/bluewave-labs/checkmate?label=checkmate&style=social${mode === "dark" ? "&color=white" : ""}`}
+					alt="GitHub stars"
+					onClick={handleStarClick}
+					sx={{
+						cursor: "pointer",
+						transform: "scale(0.65)",
+						transformOrigin: "left center",
+						"&:hover": {
+							opacity: 0.8,
+						},
+						pl: theme.spacing(LAYOUT.XS),
+						filter: mode === "dark" ? "invert(1)" : "none",
+					}}
+				/>
 			</Stack>
-
-			<Typography
-				sx={{
-					mb: 1,
-					px: theme.spacing(LAYOUT.XS),
-				}}
-			>
-				{t("components.sidebar.starPrompt.description")}
-			</Typography>
-
-			<Box
-				component="img"
-				src={`https://img.shields.io/github/stars/bluewave-labs/checkmate?label=checkmate&style=social${mode === "dark" ? "&color=white" : ""}`}
-				alt="GitHub stars"
-				onClick={handleStarClick}
-				sx={{
-					cursor: "pointer",
-					transform: "scale(0.65)",
-					transformOrigin: "left center",
-					"&:hover": {
-						opacity: 0.8,
-					},
-					pl: theme.spacing(LAYOUT.XS),
-					filter: mode === "dark" ? "invert(1)" : "none",
-				}}
-			/>
-		</Stack>
+		</Collapse>
 	);
 };
