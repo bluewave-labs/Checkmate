@@ -13,27 +13,73 @@ import { useTranslation } from "react-i18next";
 import useSidebar from "@/Hooks/useSidebar";
 import KingIcon from "@/assets/icons/checkmate-icon.svg?react";
 
-export const Logo = (props: StackProps) => {
+const ToggleButton = ({ expand, sx }: { expand: boolean; sx?: object }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const dispatch = useDispatch();
-	const { collapsed } = useSidebar();
+	const { collapsed, transitionTiming } = useSidebar();
+	const visible = expand === collapsed;
+	const label = expand
+		? t("components.sidebar.toggle.expand")
+		: t("components.sidebar.toggle.collapse");
+	return (
+		<Tooltip
+			placement="right"
+			title={label}
+			disableInteractive
+		>
+			<IconButton
+				onClick={() => dispatch(toggleSidebar())}
+				aria-label={label}
+				aria-hidden={!visible}
+				tabIndex={visible ? 0 : -1}
+				sx={{
+					// IconButton is not a MUI system component, so these cannot be hoisted to props
+					flexShrink: 0,
+					opacity: visible ? 1 : 0,
+					visibility: visible ? "visible" : "hidden",
+					transition: `opacity ${transitionTiming}, visibility ${transitionTiming}`,
+					"&:focus": { outline: "none" },
+					"& svg": { stroke: theme.palette.text.secondary },
+					...sx,
+				}}
+			>
+				<Icon
+					icon={expand ? PanelLeftOpen : PanelLeftClose}
+					size={18}
+				/>
+			</IconButton>
+		</Tooltip>
+	);
+};
+
+export const Logo = (props: StackProps) => {
+	const { t } = useTranslation();
+	const theme = useTheme();
+	const { collapsed, transitionTiming } = useSidebar();
 	return (
 		<Stack
 			direction="row"
 			alignItems="center"
-			justifyContent={collapsed ? "center" : "flex-start"}
 			gap={theme.spacing(SPACING.MD)}
+			overflow="hidden"
 			{...props}
 		>
-			{!collapsed && (
+			<Box
+				position="relative"
+				flexShrink={0}
+				width={theme.spacing(16)}
+				height={theme.spacing(16)}
+			>
 				<Box
+					width="100%"
+					height="100%"
+					display="flex"
+					justifyContent="center"
+					alignItems="center"
 					sx={{
-						width: theme.spacing(16),
-						height: theme.spacing(16),
-						display: "flex",
-						justifyContent: "center",
-						alignItems: "center",
+						opacity: collapsed ? 0 : 1,
+						transition: `opacity ${transitionTiming}`,
 						"& svg": {
 							width: "100%",
 							height: "100%",
@@ -42,7 +88,16 @@ export const Logo = (props: StackProps) => {
 				>
 					<KingIcon />
 				</Box>
-			)}
+				<ToggleButton
+					expand
+					sx={{
+						position: "absolute",
+						top: "50%",
+						left: "50%",
+						transform: "translate(-50%, -50%)",
+					}}
+				/>
+			</Box>
 			<Box
 				overflow={"hidden"}
 				sx={{
@@ -62,36 +117,10 @@ export const Logo = (props: StackProps) => {
 					{t("common.appName")}
 				</Typography>
 			</Box>
-			<Tooltip
-				placement="right"
-				title={
-					collapsed
-						? t("components.sidebar.toggle.expand")
-						: t("components.sidebar.toggle.collapse")
-				}
-				disableInteractive
-			>
-				<IconButton
-					onClick={() => dispatch(toggleSidebar())}
-					aria-label={
-						collapsed
-							? t("components.sidebar.toggle.expand")
-							: t("components.sidebar.toggle.collapse")
-					}
-					sx={{
-						// IconButton is not a MUI system component, so these cannot be hoisted to props
-						marginLeft: collapsed ? 0 : "auto",
-						flexShrink: 0,
-						"&:focus": { outline: "none" },
-						"& svg": { stroke: theme.palette.text.secondary },
-					}}
-				>
-					<Icon
-						icon={collapsed ? PanelLeftOpen : PanelLeftClose}
-						size={18}
-					/>
-				</IconButton>
-			</Tooltip>
+			<ToggleButton
+				expand={false}
+				sx={{ marginLeft: "auto" }}
+			/>
 		</Stack>
 	);
 };

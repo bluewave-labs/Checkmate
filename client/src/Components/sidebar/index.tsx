@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
-import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
+import { LAYOUT } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import { useSidebar } from "@/Hooks/useSidebar.js";
 import { Logo } from "@/Components/sidebar/Logo";
@@ -103,7 +103,7 @@ export const Sidebar = () => {
 									component="div"
 									color={theme.palette.text.disabled}
 									fontSize={typographyLevels.s}
-									paddingLeft={theme.spacing(SPACING.MD)}
+									paddingLeft={theme.spacing(LAYOUT.XS)}
 									paddingTop={theme.spacing(LAYOUT.SM)}
 									paddingBottom={theme.spacing(LAYOUT.XXS)}
 									whiteSpace="nowrap"

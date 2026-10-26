@@ -60,10 +60,10 @@ export const NavItem = ({
 						backgroundImage: "none",
 					},
 					height: 32,
-					gap: collapsed ? 0 : theme.spacing(SPACING.MD),
-					justifyContent: collapsed ? "center" : "flex-start",
+					gap: theme.spacing(SPACING.MD),
 					borderRadius: theme.shape.borderRadius,
 					px: theme.spacing(SPACING.MD),
+					pl: theme.spacing(3.5),
 				}}
 				onClick={onClick}
 			>
@@ -89,10 +89,9 @@ export const NavItem = ({
 					{item.icon}
 				</ListItemIcon>
 				<Box
-					width={collapsed ? 0 : "auto"}
 					sx={{
 						overflow: "hidden",
-						transition: "opacity 900ms ease, width 900ms ease",
+						transition: "opacity 900ms ease",
 						opacity: collapsed ? 0 : 1,
 						whiteSpace: "nowrap",
 					}}

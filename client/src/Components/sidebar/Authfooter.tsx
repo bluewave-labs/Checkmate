@@ -91,6 +91,7 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 					onClick={handleMenuOpen}
 					aria-label={t("components.sidebar.authFooter.navControls")}
 					sx={{
+						padding: theme.spacing(2.5),
 						"&:focus": { outline: "none" },
 						"& svg": { stroke: theme.palette.text.secondary },
 					}}
