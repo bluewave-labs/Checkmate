@@ -109,7 +109,7 @@ client/src/
 - **State Management**: Redux Toolkit + Redux-Persist
 - **Data Fetching**: SWR + Axios
 - **Database**: MongoDB with Mongoose ODM
-- **Queue/Cache**: Redis + BullMQ + Pulse (cron scheduling)
+- **Queue**: custom MongoDB-backed job queue in `server/src/worker/` (no Redis, no BullMQ, no Pulse)
 - **i18n**: i18next + react-i18next (non-English locales are machine translated, not managed through a translation service)
 
 ---
@@ -132,33 +132,51 @@ This separation makes each layer independently testable and keeps Mongoose-speci
 
 ### Monitoring Flow: From Check to Notification
 
-Background monitoring runs on a scheduled queue, not on the HTTP request cycle. The high-level flow for uptime monitoring is:
+Background monitoring runs on a polled, MongoDB-backed job queue, not on the HTTP request
+cycle. There is **no Redis, BullMQ or Pulse** anywhere in the server dependencies — the queue
+is implemented in `server/src/worker/`. The high-level flow for uptime monitoring is:
 
 ```
-Pulse (cron) → BullMQ Job → StatusService
-                                 ├── performs HTTP/port/ping check
-                                 ├── saves Check via CheckRepository
-                                 ├── evaluates monitor state change
-                                 │     └── calls IncidentService (create / resolve incident)
-                                 └── calls NotificationService (email, Slack, Discord, webhook)
+JobScheduler (worker.job-scheduler.ts)   → seeds/claims due jobs in Mongo
+  → DBQueueWorker (worker.db-queue.ts)   → claims a job under a lock lease
+    → WorkerPipeline (worker.pipeline.ts)
+        ├── produce(): performs the HTTP/port/ping/docker check
+        ├── ingestChecks(): buffers + persists Check docs via the repository layer
+        └── handleEvaluate() / evaluateCheck(): decides the monitor's state change
+              ├── IncidentService  (create / resolve incident)
+              └── NotificationService (email, Slack, Discord, webhook)
 ```
 
-1. **Pulse** (cron scheduler) enqueues a job into a **BullMQ** queue for each active monitor at its configured interval.
-2. A **BullMQ worker** picks up the job and calls `StatusService`, which performs the actual check (HTTP request, TCP port probe, ping, etc.).
-3. The result is persisted as a `Check` document via the repository layer.
-4. `StatusService` compares the new result against the monitor's previous state. If the monitor transitions from up → down (or down → up), it delegates to `IncidentService` to open or resolve an `Incident` document.
-5. On a state change, `NotificationService` reads the monitor's configured `Notification` documents and dispatches alerts to all enabled channels (email, Discord, Slack, webhooks).
+1. **`JobScheduler`** keeps a per-job-type polling loop. Each loop claims jobs that are due
+   from the Mongo `jobs` collection, backing off on idle (`POLL_MS` 250 ms → `POLL_MAX_MS`
+   5 s) and resetting on work or an explicit `wake()`.
+2. **`DBQueueWorker`** claims a job by taking a **lock lease** (`LOCK_MS`), renewing it at
+   1/3 the lease so an in-flight job survives two missed renewals. Concurrency is per job
+   type (`CONCURRENCY`: `check` 500, `geo-check`/`evaluate` 20, cleanup/telemetry 1).
+3. **`WorkerPipeline.produce()`** performs the actual check and `ingestChecks()` persists the
+   results as `Check` documents through the repository layer.
+4. A separate **`evaluate`** job compares the result against the monitor's previous state and
+   delegates to `IncidentService` to open or resolve an `Incident`.
+5. On a state change, `NotificationService` dispatches to the monitor's configured channels.
 
-### Queue System (BullMQ + Redis)
+Job types are a const tuple in `server/src/domain/jobs/job.type.ts`:
+`check`, `geo-check`, `evaluate`, `cleanup-orphaned`, `cleanup-retention`, `telemetry`.
 
-Redis serves two roles: job queue storage for BullMQ and ephemeral caching. BullMQ manages concurrency, retries, and backpressure for monitoring jobs, ensuring checks are processed reliably even under load.
+### Queue System (MongoDB-backed)
 
-- Each monitor type (HTTP, port, ping, infrastructure) maps to its own queue worker so failures in one type don't block others.
-- Job scheduling interval is driven by the `interval` field on the `Monitor` model.
-- Failed jobs are retried with configurable backoff before being moved to a dead-letter state.
-- Redis is also used to cache frequently read data (e.g. aggregated stats) to reduce MongoDB query pressure.
+MongoDB is the queue's only backing store. Workers coordinate through two collections — the
+`jobs` collection (claim + lock lease) and `queue-workers` (liveness).
 
-When working on anything related to check scheduling, incident lifecycle, or notifications, trace the flow starting from the relevant BullMQ worker rather than from the controller layer.
+- Each job type has its own polling loop and concurrency cap, so a slow type does not block others.
+- Scheduling interval is driven by the `interval` field on the `Monitor` model.
+- Workers send **heartbeats** at `WORKER_STALE_MS / 3`, so a worker can miss two beats before
+  being treated as stale and having its jobs reclaimed.
+- Shutdown **drains** in-flight jobs (`DRAIN_TIMEOUT_MS` 25 s) rather than dropping them.
+- `QueueMode` (see `domain/app-settings`) selects whether a process schedules, processes, or both.
+
+When working on anything related to check scheduling, incident lifecycle, or notifications,
+trace the flow starting from `server/src/worker/worker.job-scheduler.ts` and
+`worker.pipeline.ts` rather than from the controller layer.
 
 ---
 
