@@ -12,7 +12,7 @@ import { getUptimePercentageColor } from "@/Utils/MonitorUtils";
 import { formatPercentage } from "@/Utils/FormatUtils";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { setDashboardUptimeSortOrder } from "@/Features/UI/uiSlice";
+import { setDashboardUptimeOrder } from "@/Features/UI/uiSlice";
 import type { DashboardMonitor } from "@/Types/Dashboard";
 import type { AppDispatch, RootState } from "@/store";
 
@@ -24,7 +24,7 @@ export const UptimeCard = ({ monitors }: UptimeCardProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const dispatch = useDispatch<AppDispatch>();
-	const sortOrder = useSelector((state: RootState) => state.ui.dashboardUptimeSortOrder);
+	const order = useSelector((state: RootState) => state.ui.dashboardUptimeOrder);
 
 	// The server already sorts by uptime in the selected order and caps the list.
 	const ranked = monitors.filter(
@@ -40,15 +40,11 @@ export const UptimeCard = ({ monitors }: UptimeCardProps) => {
 					size="small"
 					aria-label={t("pages.dashboard.uptimeCard.toggleSortOrder")}
 					onClick={() =>
-						dispatch(
-							setDashboardUptimeSortOrder(
-								sortOrder === "ascending" ? "descending" : "ascending"
-							)
-						)
+						dispatch(setDashboardUptimeOrder(order === "asc" ? "desc" : "asc"))
 					}
 				>
 					<Icon
-						icon={sortOrder === "ascending" ? ArrowUp : ArrowDown}
+						icon={order === "asc" ? ArrowUp : ArrowDown}
 						size={16}
 						color={theme.palette.text.secondary}
 					/>

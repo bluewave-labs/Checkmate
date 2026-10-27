@@ -30,12 +30,13 @@ const Dashboard = () => {
 	);
 	const visibleCards = useMemo(() => new Set(visibleCardsList), [visibleCardsList]);
 
-	const uptimeSortOrder = useSelector(
-		(state: RootState) => state.ui.dashboardUptimeSortOrder
-	);
-	const order = uptimeSortOrder === "ascending" ? "asc" : "desc";
+	const order = useSelector((state: RootState) => state.ui.dashboardUptimeOrder);
 
-	const { data: dashboard, error } = useGet<DashboardResponse>(
+	const {
+		data: dashboard,
+		isLoading,
+		error,
+	} = useGet<DashboardResponse>(
 		`/monitors/team/dashboard?order=${order}`,
 		{},
 		{ refreshInterval: 30000, keepPreviousData: true }
@@ -56,6 +57,7 @@ const Dashboard = () => {
 	return (
 		<BasePage
 			headerKey="dashboard"
+			loading={isLoading && !dashboard}
 			error={!!error && !dashboard}
 		>
 			<Stack gap={theme.spacing(LAYOUT.SM)}>

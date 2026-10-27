@@ -1,8 +1,4 @@
-import {
-	dashboardCardKeys,
-	type DashboardCardKey,
-	type DashboardSortOrder,
-} from "@/Types/Dashboard";
+import { dashboardCardKeys, type DashboardCardKey } from "@/Types/Dashboard";
 import type { SortOrder } from "@/Types/Query";
 import type { TimeFormat } from "@/Utils/TimeUtils";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
@@ -11,7 +7,6 @@ type ThemeMode = "light" | "dark";
 type ChartType = "histogram" | "line";
 
 type TableName =
-	| "dashboard"
 	| "monitors"
 	| "team"
 	| "maintenance"
@@ -31,7 +26,6 @@ interface SidebarState {
 }
 
 interface UIState {
-	dashboard: TableState;
 	monitors: TableState;
 	pagespeed: TableState;
 	team: TableState;
@@ -49,7 +43,7 @@ interface UIState {
 	starPromptOpen: boolean;
 	chartType: ChartType;
 	dashboardVisibleCards: DashboardCardKey[];
-	dashboardUptimeSortOrder: DashboardSortOrder;
+	dashboardUptimeOrder: SortOrder;
 }
 
 const initialMode: ThemeMode = window?.matchMedia?.("(prefers-color-scheme: dark)")
@@ -58,9 +52,6 @@ const initialMode: ThemeMode = window?.matchMedia?.("(prefers-color-scheme: dark
 	: "light";
 
 const initialState: UIState = {
-	dashboard: {
-		rowsPerPage: 100,
-	},
 	monitors: {
 		rowsPerPage: 10,
 	},
@@ -94,7 +85,7 @@ const initialState: UIState = {
 	starPromptOpen: true,
 	chartType: "histogram",
 	dashboardVisibleCards: [...dashboardCardKeys],
-	dashboardUptimeSortOrder: "ascending",
+	dashboardUptimeOrder: "asc",
 };
 
 const uiSlice = createSlice({
@@ -151,8 +142,8 @@ const uiSlice = createSlice({
 		setDashboardVisibleCards: (state, action: PayloadAction<DashboardCardKey[]>) => {
 			state.dashboardVisibleCards = action.payload;
 		},
-		setDashboardUptimeSortOrder: (state, action: PayloadAction<DashboardSortOrder>) => {
-			state.dashboardUptimeSortOrder = action.payload;
+		setDashboardUptimeOrder: (state, action: PayloadAction<SortOrder>) => {
+			state.dashboardUptimeOrder = action.payload;
 		},
 	},
 });
@@ -173,5 +164,5 @@ export const {
 	setStarPromptOpen,
 	setChartType,
 	setDashboardVisibleCards,
-	setDashboardUptimeSortOrder,
+	setDashboardUptimeOrder,
 } = uiSlice.actions;
