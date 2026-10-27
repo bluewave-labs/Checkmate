@@ -48,6 +48,7 @@ export const monitorSchema = z.object({
 	tags: z.array(z.string()),
 	customUpCodes: z.array(z.number()),
 	secret: z.string().optional(),
+	heartbeatToken: z.string().optional(),
 	cpuAlertThreshold: z.number(),
 	cpuAlertCounter: z.number(),
 	memoryAlertThreshold: z.number(),

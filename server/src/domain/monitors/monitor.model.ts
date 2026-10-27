@@ -199,7 +199,10 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		},
 		url: {
 			type: String,
-			required: true,
+			required: function (this: MonitorDocument) {
+				return this.type !== "heartbeat";
+			},
+			default: "",
 		},
 		port: {
 			type: Number,
@@ -235,6 +238,9 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		secret: {
 			type: String,
 		},
+		heartbeatToken: {
+			type: String,
+		}
 		cpuAlertThreshold: {
 			type: Number,
 			default: 100,
@@ -351,6 +357,13 @@ const MonitorSchema = new Schema<MonitorDocument>(
 );
 
 MonitorSchema.index({ teamId: 1, type: 1 });
+MonitorSchema.index(
+  { heartbeatToken: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { heartbeatToken: { $type: "string" } },
+  },
+);
 
 const MonitorModel = model<MonitorDocument>("Monitor", MonitorSchema);
 

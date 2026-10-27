@@ -47,7 +47,20 @@ export const HttpStatusCodes = [
 export const HttpStatusCodeSet = new Set(HttpStatusCodes);
 export type HttpStatusCode = number;
 
-export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"] as const;
+export const MonitorTypes = [
+	"http",
+	"ping",
+	"pagespeed",
+	"hardware",
+	"docker",
+	"port",
+	"game",
+	"grpc",
+	"websocket",
+	"dns",
+	"heartbeat",
+	"unknown",
+] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
 export const PageSpeedStrategies = ["desktop", "mobile"] as const;
@@ -60,7 +73,16 @@ export const supportsGeoCheck = (type: MonitorType): boolean => GeoCheckSupporte
 export const ProxyModes = ["inherit", "none", "custom"] as const;
 export type ProxyMode = (typeof ProxyModes)[number];
 
-export const UptimeDetailsSupportedTypes = ["http", "ping", "port", "game", "grpc", "websocket", "dns"] as const satisfies readonly MonitorType[];
+export const UptimeDetailsSupportedTypes = [
+	"http",
+	"ping",
+	"port",
+	"game",
+	"grpc",
+	"websocket",
+	"dns",
+	"heartbeat",
+] as const satisfies readonly MonitorType[];
 export type UptimeDetailsSupportedType = (typeof UptimeDetailsSupportedTypes)[number];
 export const supportsUptimeDetails = (type: MonitorType): type is UptimeDetailsSupportedType => UptimeDetailsSupportedTypes.some((t) => t === type);
 
@@ -77,6 +99,7 @@ const MonitorPaths: Record<MonitorType, string> = {
 	grpc: "uptime",
 	websocket: "uptime",
 	dns: "uptime",
+	heartbeat: "uptime",
 	unknown: "uptime",
 	docker: "docker/host",
 	hardware: "infrastructure",

@@ -76,6 +76,14 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return monitor ? this.toEntity(monitor) : null;
 	};
 
+	findByHeartbeatToken = async (token: string) => {
+		const doc = await MonitorModel.findOne({
+			heartbeatToken: token,
+			type: "heartbeat",
+		}).lean();
+		return doc ? this.toEntity(doc) : null;
+	};
+
 	findAllForScheduling = async (): Promise<MonitorScheduleFields[]> => {
 		const docs = await MonitorModel.find({}, { type: 1, isActive: 1, interval: 1, geoCheckEnabled: 1, geoCheckInterval: 1 }).lean();
 		return docs.map((doc) => ({
@@ -549,6 +557,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			tags: tagIds,
 			customUpCodes: doc.customUpCodes ?? [],
 			secret: doc.secret ?? undefined,
+			heartbeatToken: doc.heartbeatToken ?? undefined,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
 			cpuAlertCounter: doc.cpuAlertCounter,
 			memoryAlertThreshold: doc.memoryAlertThreshold,
@@ -589,6 +598,16 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	findAllMonitorIds = async (): Promise<string[]> => {
 		const monitors = await MonitorModel.find({}, { _id: 1 }).lean();
 		return monitors.map((doc) => doc._id.toString());
+	};
+
+	setHeartbeatToken = async (monitorId: string, teamId: string, token: string) => {
+		const doc = await MonitorModel.findOneAndUpdate(
+			{ _id: monitorId, teamId, type: "heartbeat" },
+			{ $set: { heartbeatToken: token } },
+			{ new: true }
+		).lean();
+		if (!doc) throw new AppError(monitorErrors.notFound, { service: SERVICE_NAME });
+		return this.toEntity(doc);
 	};
 }
 
