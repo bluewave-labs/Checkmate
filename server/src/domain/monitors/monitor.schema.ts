@@ -139,6 +139,26 @@ export const monitorsWithChecksByTeamIdResultSchema = z.object({
 	monitors: z.array(monitorResponseSchema),
 });
 
+export const dashboardMonitorSchema = monitorSchema
+	.pick({ id: true, name: true, url: true, type: true, status: true, uptimePercentage: true })
+	.extend({
+		lastCheckTimestamp: z.number().optional(), // epoch ms
+	});
+
+export const monitorTypeCountSchema = z.object({
+	type: z.enum(MonitorTypes),
+	count: z.number(),
+});
+
+export const dashboardByTeamIdResultSchema = z
+	.object({
+		summary: monitorsSummarySchema,
+		byType: z.array(monitorTypeCountSchema),
+		down: z.array(dashboardMonitorSchema),
+		uptime: z.array(dashboardMonitorSchema),
+	})
+	.meta({ id: "MonitorsDashboard" });
+
 export const uptimeDetailsResultSchema = z
 	.object({
 		monitorData: z.object({

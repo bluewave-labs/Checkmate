@@ -15,6 +15,8 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Pause, Play } from "lucide-react";
 
+const SEARCH_FIELD_WIDTH = 320;
+
 interface MonitorListPageProps {
 	headerKey: string;
 	page: string;
@@ -96,6 +98,7 @@ export const MonitorListPage = ({
 					onChange={(event) => {
 						controller.setSearch(event.target.value);
 					}}
+					sx={{ width: isSmall ? "100%" : SEARCH_FIELD_WIDTH }}
 				/>
 			</Stack>
 			{controller.selectedTags.length > 0 && (

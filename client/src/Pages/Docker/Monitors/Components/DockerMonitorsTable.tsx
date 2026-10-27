@@ -221,7 +221,7 @@ export const DockerMonitorsTable = ({
 				render: (row) => {
 					return (
 						<Stack>
-							<Typography variant="body2">{row.name}</Typography>
+							<Typography>{row.name}</Typography>
 							<Typography
 								variant="caption"
 								color={theme.palette.text.secondary}
@@ -259,7 +259,7 @@ export const DockerMonitorsTable = ({
 				render: (row) => {
 					const summary = summaryOf(row);
 					return (
-						<Typography variant="body2">
+						<Typography>
 							{summary
 								? t("pages.docker.table.containersRunning", {
 										running: summary.running,

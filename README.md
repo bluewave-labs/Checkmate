@@ -45,7 +45,24 @@ This repository contains both the frontend and the backend of Checkmate, an open
 
 Checkmate also has an agent, called [Capture](https://github.com/bluewave-labs/capture), to retrieve data from remote servers. While Capture is not required to run Checkmate, it provides additional insights about your servers' CPU, RAM, disk, and temperature status. Capture can run on Linux, Windows, Mac, Raspberry Pi, or any device that can run Go.
 
-Checkmate has been stress-tested with 1000+ active monitors without any particular issues or performance bottlenecks.
+
+<table>
+<tr>
+<td>
+
+## 🚀 Proven at scale
+
+**Checkmate** is used in production to monitor **1,600+ servers** on a single deployment. 
+
+✅ No reported performance bottlenecks  
+✅ No significant operational issues
+
+Checkmate also scales horizontally for more than 5000 servers: you can run dedicated [worker nodes](https://checkmate.so/docs/getting-started/distributed-workers) that share the check load through MongoDB.
+
+</td>
+</tr>
+</table>
+
 
 ## 📚 Table of contents
 
@@ -92,7 +109,9 @@ JWT_SECRET="$(openssl rand -hex 32)" docker compose up -d
 Then open http://localhost:52345. If the app is reached at another origin (domain or LAN IP), set `CLIENT_HOST` accordingly. To build the image yourself, run `docker build -f docker/Dockerfile -t checkmate .` from a checkout. For TLS, put any reverse proxy (Caddy, Traefik, nginx) in front of port 52345.
 
 There are also 1-click installation options like [Repocloud](https://repocloud.io/details/Checkmate),
-[Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [Easypanel](https://easypanel.io/templates/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (South Africa), [Cloudzy](https://cloudzy.com/marketplace/checkmate) or [Pethost](https://pethost.dev/templates/checkmate/). Note that the Helm chart has not yet been migrated to the all-in-one image: it still deploys the legacy `checkmate-client`, `checkmate-backend` and `checkmate-mongo` images, pinned at v3.8.1.
+[Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [Easypanel](https://easypanel.io/templates/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Railyard](https://railyard.run/templates/checkmate), [Sive Host](https://sive.host) (South Africa), [Cloudzy](https://cloudzy.com/marketplace/checkmate) or [Pethost](https://pethost.dev/templates/checkmate/). 
+
+Note that the Helm chart has not yet been migrated to the all-in-one image: it still deploys the legacy `checkmate-client`, `checkmate-backend` and `checkmate-mongo` images, pinned at v3.8.1.
 
 
 ### Configuration

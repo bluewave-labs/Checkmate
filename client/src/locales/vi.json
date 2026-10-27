@@ -221,6 +221,10 @@
 					"user": "Người dùng",
 					"demoUser": "Người dùng demo"
 				}
+			},
+			"toggle": {
+				"collapse": "Thu gọn thanh bên",
+				"expand": "Mở rộng thanh bên"
 			}
 		},
 		"starPrompt": {

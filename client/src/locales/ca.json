@@ -229,6 +229,10 @@
 					"user": "Usuari",
 					"demoUser": "Usuari de demostració"
 				}
+			},
+			"toggle": {
+				"collapse": "Replega la barra lateral",
+				"expand": "Desplega la barra lateral"
 			}
 		},
 		"starPrompt": {

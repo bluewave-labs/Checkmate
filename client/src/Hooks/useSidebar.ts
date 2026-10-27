@@ -2,12 +2,18 @@ import type { RootState } from "@/Types/state";
 import { useSelector } from "react-redux";
 
 // CSS variable names for sidebar widths
-const SIDEBAR_WIDTH_VAR = 250;
-const SIDEBAR_COLLAPSED_WIDTH_VAR = 64;
+const SIDEBAR_WIDTH_VAR = 210;
+const SIDEBAR_COLLAPSED_WIDTH_VAR = 56;
 
 // Transition timing for sidebar width changes
-const SIDEBAR_TRANSITION_TIMING = "650ms cubic-bezier(0.36, -0.01, 0, 0.77)";
+const SIDEBAR_TRANSITION_DURATION = 650;
+const SIDEBAR_TRANSITION_EASING = "cubic-bezier(0.36, -0.01, 0, 0.77)";
+const SIDEBAR_TRANSITION_TIMING = `${SIDEBAR_TRANSITION_DURATION}ms ${SIDEBAR_TRANSITION_EASING}`;
 const SIDEBAR_TRANSITION = `width ${SIDEBAR_TRANSITION_TIMING}`;
+
+// Spacing units that keep icons centred in the collapsed sidebar
+const SIDEBAR_ITEM_INSET = 3.5;
+const SIDEBAR_FOOTER_BUTTON_PADDING = 2;
 
 export const useSidebar = () => {
 	const collapsed = useSelector(
@@ -21,6 +27,10 @@ export const useSidebar = () => {
 		width: collapsed ? SIDEBAR_COLLAPSED_WIDTH_VAR : SIDEBAR_WIDTH_VAR,
 		transition: SIDEBAR_TRANSITION,
 		transitionTiming: SIDEBAR_TRANSITION_TIMING,
+		transitionDuration: SIDEBAR_TRANSITION_DURATION,
+		transitionEasing: SIDEBAR_TRANSITION_EASING,
+		itemInset: SIDEBAR_ITEM_INSET,
+		footerButtonPadding: SIDEBAR_FOOTER_BUTTON_PADDING,
 	};
 };
 

@@ -221,6 +221,10 @@
 					"user": "Uživatel",
 					"demoUser": "Demo uživatel"
 				}
+			},
+			"toggle": {
+				"collapse": "Sbalit postranní panel",
+				"expand": "Rozbalit postranní panel"
 			}
 		},
 		"starPrompt": {

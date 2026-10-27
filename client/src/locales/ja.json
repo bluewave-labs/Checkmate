@@ -221,6 +221,10 @@
 					"user": "ユーザー",
 					"demoUser": "デモユーザー"
 				}
+			},
+			"toggle": {
+				"collapse": "サイドバーを折りたたむ",
+				"expand": "サイドバーを展開する"
 			}
 		},
 		"starPrompt": {

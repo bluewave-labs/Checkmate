@@ -22,6 +22,7 @@ const createMonitorsRepositoryMock = () =>
 		findByIds: jest.fn(),
 		findMonitorCountByTeamIdAndType: jest.fn(),
 		findMonitorsSummaryByTeamId: jest.fn(),
+		findDashboardByTeamId: jest.fn(),
 		updateById: jest.fn(),
 		updateNotifications: jest.fn(),
 		togglePauseById: jest.fn(),
@@ -876,6 +877,20 @@ describe("MonitorService", () => {
 
 			await service.getMonitorsByTeamId({ teamId: TEAM_ID, type: "http", filter: "test" });
 			expect(monitorsRepository.findByTeamId).toHaveBeenCalledWith(TEAM_ID, { type: "http", filter: "test" });
+		});
+	});
+
+	describe("getDashboardByTeamId", () => {
+		it("returns the repository dashboard for the team, passing limit and order through", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const dashboard = { summary: { totalMonitors: 1, upMonitors: 1 }, byType: [{ type: "http", count: 1 }], down: [], uptime: [] };
+			(monitorsRepository.findDashboardByTeamId as jest.Mock).mockResolvedValue(dashboard);
+
+			const { service } = createService({ monitorsRepository });
+			const result = await service.getDashboardByTeamId({ teamId: TEAM_ID, limit: 3, order: "desc" });
+
+			expect(monitorsRepository.findDashboardByTeamId).toHaveBeenCalledWith(TEAM_ID, { limit: 3, order: "desc" });
+			expect(result).toBe(dashboard);
 		});
 	});
 
