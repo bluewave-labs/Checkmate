@@ -6,24 +6,23 @@ import { DashboardCard } from "@/Pages/Dashboard/components/DashboardCard";
 import { Dot } from "@/Components/design-elements";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import type { Monitor } from "@/Types/Monitor";
+import type { DashboardMonitor } from "@/Types/Dashboard";
 
 interface CurrentlyDownCardProps {
-	monitors: Monitor[];
+	monitors: DashboardMonitor[];
+	total: number;
 }
 
-export const CurrentlyDownCard = ({ monitors }: CurrentlyDownCardProps) => {
+export const CurrentlyDownCard = ({ monitors, total }: CurrentlyDownCardProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
-
-	const downMonitors = monitors.filter((monitor) => monitor.status === "down");
 
 	return (
 		<DashboardCard
 			title={t("pages.dashboard.cards.currentlyDown")}
-			topRight={downMonitors.length > 0 ? downMonitors.length : undefined}
+			topRight={total > 0 ? total : undefined}
 		>
-			{downMonitors.length === 0 ? (
+			{monitors.length === 0 ? (
 				<Typography
 					fontSize={typographyLevels.m}
 					color={theme.palette.text.disabled}
@@ -32,7 +31,7 @@ export const CurrentlyDownCard = ({ monitors }: CurrentlyDownCardProps) => {
 				</Typography>
 			) : (
 				<Stack gap={theme.spacing(LAYOUT.SM)}>
-					{downMonitors.map((monitor) => (
+					{monitors.map((monitor) => (
 						<Stack
 							key={monitor.id}
 							direction="row"

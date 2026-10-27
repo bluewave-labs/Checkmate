@@ -13,13 +13,11 @@ import { formatPercentage } from "@/Utils/FormatUtils";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { setDashboardUptimeSortOrder } from "@/Features/UI/uiSlice";
-import type { Monitor } from "@/Types/Monitor";
+import type { DashboardMonitor } from "@/Types/Dashboard";
 import type { AppDispatch, RootState } from "@/store";
 
-const TOP_N = 5;
-
 interface UptimeCardProps {
-	monitors: Monitor[];
+	monitors: DashboardMonitor[];
 }
 
 export const UptimeCard = ({ monitors }: UptimeCardProps) => {
@@ -28,15 +26,11 @@ export const UptimeCard = ({ monitors }: UptimeCardProps) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const sortOrder = useSelector((state: RootState) => state.ui.dashboardUptimeSortOrder);
 
-	const direction = sortOrder === "ascending" ? 1 : -1;
-	const ranked = monitors
-		.filter((monitor) => monitor.status !== "paused")
-		.filter(
-			(monitor): monitor is Monitor & { uptimePercentage: number } =>
-				typeof monitor.uptimePercentage === "number"
-		)
-		.sort((a, b) => direction * (a.uptimePercentage - b.uptimePercentage))
-		.slice(0, TOP_N);
+	// The server already sorts by uptime in the selected order and caps the list.
+	const ranked = monitors.filter(
+		(monitor): monitor is DashboardMonitor & { uptimePercentage: number } =>
+			typeof monitor.uptimePercentage === "number"
+	);
 
 	return (
 		<DashboardCard
