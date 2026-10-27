@@ -58,6 +58,9 @@ export interface IJobsRepository {
 	// Re-arm the check/geo-check rows.  Add jitter to prevent herd
 	markMonitorsDue(monitorIds: string[], now: number): Promise<number>;
 
+	// Push check rows out by their own interval for heartbeat monitors.  This is the dead man's switch
+	rescheduleChecks(monitorIds: string[], now: number): Promise<number>;
+
 	// Delete, drop all rows
 	deleteById(refId: string): Promise<boolean>;
 
@@ -72,6 +75,9 @@ export interface IJobsRepository {
 
 	// Get job
 	findById(refId: string): Promise<Job[]>;
+
+	// Find check job by monitor id, used for heartbeat
+	findCheckJob(monitorId: string): Promise<Job | null>;
 
 	// ********************
 	// Observability

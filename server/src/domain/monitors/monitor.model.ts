@@ -240,7 +240,7 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		},
 		heartbeatToken: {
 			type: String,
-		}
+		},
 		cpuAlertThreshold: {
 			type: Number,
 			default: 100,
@@ -358,11 +358,11 @@ const MonitorSchema = new Schema<MonitorDocument>(
 
 MonitorSchema.index({ teamId: 1, type: 1 });
 MonitorSchema.index(
-  { heartbeatToken: 1 },
-  {
-    unique: true,
-    partialFilterExpression: { heartbeatToken: { $type: "string" } },
-  },
+	{ heartbeatToken: 1 },
+	{
+		unique: true,
+		partialFilterExpression: { heartbeatToken: { $type: "string" } },
+	}
 );
 
 const MonitorModel = model<MonitorDocument>("Monitor", MonitorSchema);
