@@ -6,6 +6,7 @@ import type { RequestHandler } from "express";
 import { randomUUID } from "node:crypto";
 import { pinoHttp } from "pino-http";
 import type { LogLevel } from "@/domain/app-settings/app-settings.type.js";
+import { IncomingMessage } from "node:http";
 
 // Keys the logger writes itself; a field with the same name would be written twice
 type ReservedLogKey = "message" | "level" | "timestamp" | "service";
@@ -66,6 +67,9 @@ const ERROR_KEYS = new Set(["type", "message", "stack", "code", "errno", "syscal
 const URL_PATTERN = /\b(https?:\/\/)(?:[^\s/?#@]+@)?([^\s/?#@]+)([^\s"'<>)]*)/gi;
 const maskUrls = (text: string): string =>
 	text.replace(URL_PATTERN, (_match, scheme: string, host: string, rest: string) => `${scheme}${host}${rest ? "/[Redacted]" : ""}`);
+
+const HEARTBEAT_TOKEN_PATTERN = /(\/api\/v1\/heartbeat\/)[^/?#]+/;
+export const redactRequestPath = (url: string): string => url.replace(HEARTBEAT_TOKEN_PATTERN, "$1[Redacted]");
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
 
@@ -182,9 +186,10 @@ class Logger implements ILogger {
 			},
 			// Names unique to request lines, so the pretty-print ignore list and the cache filter can't catch app fields
 			customAttributeKeys: { req: "httpRequest", res: "httpResponse", responseTime: "httpDurationMs" },
-			customSuccessMessage: (req, res, responseTime) => `${req.method} ${req.url} ${res.statusCode} ${Math.round(responseTime)}ms`,
+			customSuccessMessage: (req, res, responseTime) =>
+				`${req.method} ${redactRequestPath((req as IncomingMessage & { originalUrl?: string }).originalUrl ?? req.url ?? "")} ${res.statusCode} ${Math.round(responseTime)}ms`,
 			serializers: {
-				req: (req) => ({ id: req.id, method: req.method, url: req.url }), // no headers, no body
+				req: (req) => ({ id: req.id, method: req.method, url: redactRequestPath(req.url) }),
 				res: (res) => ({ statusCode: res.statusCode }), // the default also logs response headers
 				err: serializeError, // pino-http ignores the logger's serializer
 			},

@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { MulterError } from "multer";
-import type { ILogger } from "@/utils/logger/logger.js";
+import { redactRequestPath, type ILogger } from "@/utils/logger/logger.js";
 import { AppError } from "@/utils/AppError.js";
 import { ZodError } from "zod";
 import type { ErrorBody } from "@/api/routes/openapiHelpers.js";
@@ -41,7 +41,7 @@ const describeError = (error: unknown): ErrorReport => {
 
 const describeRequest = (req: Request): string | undefined => {
 	if (!req.method || !req.originalUrl) return undefined;
-	return `${req.method} ${req.originalUrl.split("?")[0]}`;
+	return `${req.method} ${redactRequestPath(req.originalUrl.split("?")[0] ?? "")}`;
 };
 
 const handleErrors = (logger: ILogger) => {

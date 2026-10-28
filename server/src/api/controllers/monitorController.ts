@@ -30,8 +30,6 @@ import { AppError } from "@/utils/AppError.js";
 import { IMonitorService } from "@/domain/monitors/monitor.service.js";
 import { INotificationsService } from "@/domain/notifications/notification.service.js";
 import { monitorErrors } from "@/domain/monitors/monitor.errors.js";
-import { ParamsDictionary } from "express-serve-static-core";
-import { ParsedQs } from "qs";
 
 const SERVICE_NAME = "monitorController";
 
