@@ -12,6 +12,7 @@ import {
 import { TrendingUp, AlertTriangle } from "lucide-react";
 import { ChecksTable } from "@/Pages/Uptime/Details/Components/ChecksTable";
 import { GeoChecksTable } from "@/Pages/Uptime/Details/Components/GeoChecksTable";
+import { HeartbeatUrlPanel } from "@/Pages/Uptime/Details/Components/HeartbeatUrlPanel";
 import { MonitorStatBoxes } from "@/Components/monitors";
 
 import { useTheme } from "@mui/material/styles";
@@ -182,6 +183,7 @@ const UptimeDetailsPage = () => {
 	if (!monitor) {
 		return null;
 	}
+	const isHeartbeat = monitor.type === "heartbeat";
 
 	const geoChecksForTable = geoChecksTableData?.geoChecks ?? [];
 	const geoChecksCount = geoChecksTableData?.geoChecksCount ?? 0;
@@ -228,15 +230,21 @@ const UptimeDetailsPage = () => {
 					checks={monitorData?.groupedDownChecks ?? []}
 					range={dateRange}
 				/>
-				<RadialAvgResponse
-					avg={monitorStats?.avgResponseTime || 0}
-					max={500}
-				/>
+				{!isHeartbeat && (
+					<RadialAvgResponse
+						avg={monitorStats?.avgResponseTime || 0}
+						max={500}
+					/>
+				)}
 			</Stack>
-			<HistogramDetails
-				checks={monitorData.groupedChecks}
-				range={dateRange}
-			/>
+			{/* Heartbeat checks have no response time */}
+			{!isHeartbeat && (
+				<HistogramDetails
+					checks={monitorData.groupedChecks}
+					range={dateRange}
+				/>
+			)}
+			{isHeartbeat && isAdmin && <HeartbeatUrlPanel monitorId={monitor.id} />}
 			<ChecksTable
 				checks={checks}
 				count={checksCount}

@@ -487,7 +487,8 @@
 					"optionHardware": "インフラストラクチャ",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "ハートビート"
 				},
 				"bulkPause": {
 					"paused_one": "{{count}} 個のモニターを一時停止しました",
@@ -544,6 +545,12 @@
 								"twoMinutes": "2分"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "アラート期間",
+						"description": "このモニターをダウンとみなすまで、ping をどれくらい待ちますか？",
+						"label": "ping がない場合にアラートするまでの時間",
+						"hint": "ジョブのスケジュールに余裕を持たせて選んでください（例：1 時間ごとのジョブなら 65 分）。"
 					},
 					"title": "チェック頻度"
 				},
@@ -621,7 +628,8 @@
 						"grpc": "gRPCサーバーのホスト名とポートを入力し、必要に応じてヘルスチェック用のサービス名を指定し、表示名を追加してください。",
 						"websocket": "監視するWebSocket URLを入力し（例: wss://example.com/socket）、表示名を追加してください。",
 						"hardware": "インフラの CPU、メモリ、ディスク使用率、温度を監視します。Capture エンドポイント URL には完全なパス /api/v1/metrics を含める必要があります (例: http://192.168.1.10:5001/api/v1/metrics)。認証シークレットにはトークン文字列のみを貼り付けてください — 'Bearer' は含めないでください。",
-						"dns": "特定のDNSサーバーが応答しているかを監視します。"
+						"dns": "特定のDNSサーバーが応答しているかを監視します。",
+						"heartbeat": "ダッシュボードに表示されるわかりやすい表示名を追加してください。保存後、ping URL はモニターの詳細ページに表示されます。"
 					}
 				},
 				"ignoreTls": {
@@ -659,7 +667,8 @@
 					"optionPingDescription": "ICMP Pingを使用してサーバーがオンラインかどうかを監視します。",
 					"optionPortDescription": "サーバーの特定のポートが開いているかどうかを監視します。",
 					"title": "タイプ",
-					"optionDnsDescription": "特定のDNSサーバーが応答しているかを監視します。"
+					"optionDnsDescription": "特定のDNSサーバーが応答しているかを監視します。",
+					"optionHeartbeatDescription": "cron ジョブやスケジュールされたタスクからの通知が途絶えたときにアラートを受け取ります。"
 				},
 				"thresholds": {
 					"title": "アラートしきい値",
@@ -1623,6 +1632,25 @@
 			"header": {
 				"title": "稼働監視",
 				"description": "HTTPエンドポイント、Ping、コンテナ、ポートを監視し、ダウンした瞬間に通知を受け取ります。"
+			},
+			"details": {
+				"heartbeat": {
+					"title": "ハートビート URL",
+					"description": "ジョブが実行されるたびにこの URL にリクエストを送信させてください。アラート期間内にリクエストが届かない場合、モニターはダウンになります。",
+					"pingUrl": "Ping URL",
+					"examples": {
+						"post": "成功時に ping",
+						"cron": "cron ジョブ成功後に ping",
+						"exitCode": "ジョブの終了コードを報告（0 はアップ、それ以外はダウン）",
+						"fail": "失敗を報告"
+					},
+					"copy": "クリップボードにコピー",
+					"copied": "クリップボードにコピーしました",
+					"copyFailed": "コピーできませんでした。テキストを選択して手動でコピーしてください。",
+					"rotate": "トークンを再発行",
+					"rotateConfirmTitle": "このハートビートトークンを再発行しますか？",
+					"rotateConfirmBody": "現在の URL はすぐに使用できなくなります。この URL に ping を送るすべてのジョブを更新してください。"
+				}
 			}
 		},
 		"docker": {

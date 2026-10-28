@@ -268,8 +268,8 @@ describe("MonitorService", () => {
 			expect(result.monitorData.monitor).toMatchObject({ id: MONITOR_ID });
 		});
 
-		it("supports all uptime monitor types: ping, port, game, grpc, websocket, dns", async () => {
-			for (const monitorType of ["ping", "port", "game", "grpc", "websocket", "dns"] as const) {
+		it("supports all uptime monitor types: ping, port, game, grpc, websocket, dns, heartbeat", async () => {
+			for (const monitorType of ["ping", "port", "game", "grpc", "websocket", "dns", "heartbeat"] as const) {
 				const monitorsRepository = createMonitorsRepositoryMock();
 				const checksRepository = createChecksRepositoryMock();
 				const monitorStatsRepository = createMonitorStatsRepositoryMock();
@@ -289,6 +289,29 @@ describe("MonitorService", () => {
 				const result = await service.getUptimeDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "day" });
 				expect(result.monitorData.monitor.type).toBe(monitorType);
 			}
+		});
+
+		// Stats only exist once the first check is evaluated; a new heartbeat waits for its first ping
+		it("returns null stats for a monitor with no evaluated checks yet", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			const monitorStatsRepository = createMonitorStatsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "heartbeat" }));
+			(checksRepository.findByDateRangeAndMonitorId as jest.Mock).mockResolvedValue({
+				monitorType: "heartbeat",
+				groupedChecks: [],
+				groupedUpChecks: [],
+				groupedDownChecks: [],
+				uptimePercentage: 0,
+				avgResponseTime: 0,
+			});
+			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(null);
+			const { service } = createService({ monitorsRepository, checksRepository, monitorStatsRepository });
+
+			const result = await service.getUptimeDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "recent" });
+
+			expect(result.monitorStats).toBeNull();
+			expect(result.monitorData.monitor.type).toBe("heartbeat");
 		});
 
 		it("throws 404 when monitor not found", async () => {

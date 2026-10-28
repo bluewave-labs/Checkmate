@@ -587,7 +587,8 @@
 					"optionHardware": "Infrastructure",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "Heartbeat"
 				}
 			}
 		},
@@ -644,6 +645,12 @@
 								"twoMinutes": "2 minutes"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "Alert window",
+						"description": "How long to wait for a ping before marking this monitor down?",
+						"label": "Alert if no ping for",
+						"hint": "Pick your job's schedule plus some slack, e.g. 65 minutes for an hourly job."
 					},
 					"title": "Check frequency"
 				},
@@ -742,7 +749,8 @@
 						"grpc": "Enter the hostname and port of the gRPC server, optionally specify a service name for the health check, and add a display name.",
 						"websocket": "Enter the WebSocket URL to monitor (e.g., wss://example.com/socket) and add a display name.",
 						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure. The Capture endpoint URL must include the full path /api/v1/metrics (e.g. http://192.168.1.10:5001/api/v1/metrics). For the authorization secret, paste only the token string — don't include 'Bearer'.",
-						"dns": "Monitor if a specific DNS server is responding."
+						"dns": "Monitor if a specific DNS server is responding.",
+						"heartbeat": "Add a clear display name that appears on the dashboard. The ping URL is shown on the monitor's details page after you save."
 					}
 				},
 				"ignoreTls": {
@@ -784,6 +792,7 @@
 					"optionPingDescription": "Use ICMP Ping to monitor if a server is online.",
 					"optionPortDescription": "Monitor if a specific port on a server is open.",
 					"optionDnsDescription": "Monitor if a specific DNS server is responding.",
+					"optionHeartbeatDescription": "Get alerted when a cron job or scheduled task stops checking in.",
 					"title": "Type"
 				},
 				"thresholds": {
@@ -1971,6 +1980,25 @@
 			"header": {
 				"title": "Uptime monitors",
 				"description": "Watch HTTP endpoints, pings, containers, and ports — and get alerted the moment something goes down."
+			},
+			"details": {
+				"heartbeat": {
+					"title": "Heartbeat URL",
+					"description": "Have your job request this URL every time it runs. If no request arrives within the alert window, the monitor goes down.",
+					"pingUrl": "Ping URL",
+					"examples": {
+						"post": "Ping on success",
+						"cron": "Ping after a cron job succeeds",
+						"exitCode": "Report the job's exit code (0 is up, anything else is down)",
+						"fail": "Report a failure"
+					},
+					"copy": "Copy to clipboard",
+					"copied": "Copied to clipboard",
+					"copyFailed": "Could not copy. Select the text and copy it manually.",
+					"rotate": "Rotate token",
+					"rotateConfirmTitle": "Rotate this heartbeat token?",
+					"rotateConfirmBody": "The current URL stops working immediately. Update every job that pings it."
+				}
 			}
 		},
 		"dashboard": {

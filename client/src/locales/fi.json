@@ -487,7 +487,8 @@
 					"optionHardware": "Infrastruktuuri",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "Heartbeat"
 				},
 				"bulkPause": {
 					"paused_one": "{{count}} näyttö keskeytetty",
@@ -544,6 +545,12 @@
 								"twoMinutes": "2 minuuttia"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "Hälytysikkuna",
+						"description": "Kuinka kauan pingiä odotetaan, ennen kuin valvonta merkitään alhaalla olevaksi?",
+						"label": "Hälytä, jos pingiä ei tule ajassa",
+						"hint": "Valitse työn aikataulu ja hieman pelivaraa, esim. 65 minuuttia tunnin välein ajettavalle työlle."
 					},
 					"title": "Tarkistusväli"
 				},
@@ -621,7 +628,8 @@
 						"grpc": "Syötä gRPC-palvelimen isäntänimi ja portti, määritä halutessasi palvelun nimi terveystarkistusta varten ja lisää näyttönimi.",
 						"websocket": "Syötä monitoroitava WebSocket URL (esim. wss://example.com/socket) ja lisää näyttönimi.",
 						"hardware": "Seuraa infrastruktuurisi suorittimen, muistin, levyn käyttöä ja lämpötilaa. Capture-päätepisteen URL-osoitteen on sisällettävä koko polku /api/v1/metrics (esim. http://192.168.1.10:5001/api/v1/metrics). Liitä valtuutusavaimeen vain tokenin merkkijono — älä sisällytä sanaa 'Bearer'.",
-						"dns": "Tarkkaile, vastaako tietty DNS-palvelin."
+						"dns": "Tarkkaile, vastaako tietty DNS-palvelin.",
+						"heartbeat": "Lisää selkeä näyttönimi, joka näkyy hallintapaneelissa. Ping-URL näkyy valvonnan tietosivulla tallennuksen jälkeen."
 					}
 				},
 				"ignoreTls": {
@@ -659,7 +667,8 @@
 					"optionPingDescription": "Käytä ICMP Ping -komentoa monitoroimaan, onko palvelin verkossa.",
 					"optionPortDescription": "Monitoroi, onko tietty palvelimen portti auki.",
 					"title": "Tyyppi",
-					"optionDnsDescription": "Tarkkaile, vastaako tietty DNS-palvelin."
+					"optionDnsDescription": "Tarkkaile, vastaako tietty DNS-palvelin.",
+					"optionHeartbeatDescription": "Saat hälytyksen, kun cron-työ tai ajastettu tehtävä lakkaa ilmoittamasta itsestään."
 				},
 				"thresholds": {
 					"title": "Hälytysrajat",
@@ -1623,6 +1632,25 @@
 			"header": {
 				"title": "Käytettävyysmonitorit",
 				"description": "Tarkkaile HTTP-päätepisteitä, pingejä, kontteja ja portteja — saat hälytyksen heti, kun jokin kaatuu."
+			},
+			"details": {
+				"heartbeat": {
+					"title": "Heartbeat-URL",
+					"description": "Anna työn kutsua tätä URL-osoitetta joka ajokerralla. Jos pyyntöä ei tule hälytysikkunan aikana, valvonta merkitään alhaalla olevaksi.",
+					"pingUrl": "Ping-URL",
+					"examples": {
+						"post": "Ping onnistumisen jälkeen",
+						"cron": "Ping onnistuneen cron-työn jälkeen",
+						"exitCode": "Ilmoita työn paluukoodi (0 on ylhäällä, kaikki muu alhaalla)",
+						"fail": "Ilmoita epäonnistumisesta"
+					},
+					"copy": "Kopioi leikepöydälle",
+					"copied": "Kopioitu leikepöydälle",
+					"copyFailed": "Kopiointi epäonnistui. Valitse teksti ja kopioi se käsin.",
+					"rotate": "Vaihda tunniste",
+					"rotateConfirmTitle": "Vaihdetaanko tämä heartbeat-tunniste?",
+					"rotateConfirmBody": "Nykyinen URL lakkaa toimimasta heti. Päivitä kaikki työt, jotka lähettävät siihen pingin."
+				}
 			}
 		},
 		"docker": {

@@ -487,7 +487,8 @@
 					"optionHardware": "Infrastruktura",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "Heartbeat"
 				},
 				"bulkPause": {
 					"paused_one": "{{count}} monitor pozastaven",
@@ -544,6 +545,12 @@
 								"twoMinutes": "2 minuty"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "Okno upozornění",
+						"description": "Jak dlouho čekat na ping, než bude monitor označen jako nedostupný?",
+						"label": "Upozornit, pokud nepřijde ping do",
+						"hint": "Zvolte plán úlohy s rezervou, např. 65 minut pro úlohu spouštěnou každou hodinu."
 					},
 					"title": "Frekvence kontroly"
 				},
@@ -621,7 +628,8 @@
 						"grpc": "Zadejte název hostitele a port gRPC serveru, volitelně zadejte název služby pro kontrolu stavu a přidejte zobrazovaný název.",
 						"websocket": "Zadejte WebSocket URL ke sledování (např. wss://example.com/socket) a přidejte zobrazovaný název.",
 						"hardware": "Sledujte využití CPU, paměti, disku a teplotu vaší infrastruktury. URL endpointu Capture musí obsahovat celou cestu /api/v1/metrics (např. http://192.168.1.10:5001/api/v1/metrics). Do autorizačního klíče vložte pouze řetězec tokenu — nezahrnujte 'Bearer'.",
-						"dns": "Sledujte, zda konkrétní DNS server odpovídá."
+						"dns": "Sledujte, zda konkrétní DNS server odpovídá.",
+						"heartbeat": "Přidejte srozumitelný zobrazovaný název, který se objeví na nástěnce. URL pro ping se po uložení zobrazí na stránce s detaily monitoru."
 					}
 				},
 				"ignoreTls": {
@@ -659,7 +667,8 @@
 					"optionPingDescription": "Použijte ICMP Ping ke sledování, zda je server online.",
 					"optionPortDescription": "Sledujte, zda je konkrétní port na serveru otevřen.",
 					"title": "Typ",
-					"optionDnsDescription": "Sledujte, zda konkrétní DNS server odpovídá."
+					"optionDnsDescription": "Sledujte, zda konkrétní DNS server odpovídá.",
+					"optionHeartbeatDescription": "Dostávejte upozornění, když se úloha cron nebo naplánovaná úloha přestane hlásit."
 				},
 				"thresholds": {
 					"title": "Prahové hodnoty upozornění",
@@ -1623,6 +1632,25 @@
 			"header": {
 				"title": "Monitory dostupnosti",
 				"description": "Sledujte HTTP koncové body, pingy, kontejnery a porty — buďte upozorněni v okamžiku, kdy něco vypadne."
+			},
+			"details": {
+				"heartbeat": {
+					"title": "Heartbeat URL",
+					"description": "Nechte úlohu při každém spuštění zavolat tuto URL. Pokud během okna upozornění nepřijde žádný požadavek, monitor přejde do stavu nedostupný.",
+					"pingUrl": "URL pro ping",
+					"examples": {
+						"post": "Ping při úspěchu",
+						"cron": "Ping po úspěšném dokončení úlohy cron",
+						"exitCode": "Nahlásit návratový kód úlohy (0 znamená dostupný, cokoli jiného nedostupný)",
+						"fail": "Nahlásit selhání"
+					},
+					"copy": "Kopírovat do schránky",
+					"copied": "Zkopírováno do schránky",
+					"copyFailed": "Kopírování se nezdařilo. Označte text a zkopírujte ho ručně.",
+					"rotate": "Obnovit token",
+					"rotateConfirmTitle": "Obnovit tento heartbeat token?",
+					"rotateConfirmBody": "Současná URL okamžitě přestane fungovat. Aktualizujte všechny úlohy, které na ni posílají ping."
+				}
 			}
 		},
 		"docker": {
