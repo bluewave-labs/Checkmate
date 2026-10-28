@@ -1,9 +1,7 @@
 import { RequestHandler } from "express";
 import { Handler } from "@/api/controllers/controllerUtils.js";
-import type { IHeartbeatService } from "@/domain/heartbeats/heartbeat.service.js";
+import type { IHeartbeatService } from "@/domain/heartbeat/heartbeat.service.js";
 import { heartbeatExitCodeParamValidation, heartbeatParamValidation, heartbeatQueryValidation } from "@/api/validation/index.js";
-import { ParamsDictionary } from "express-serve-static-core";
-import { ParsedQs } from "qs";
 
 export interface IHeartbeatController {
 	ping: RequestHandler;
@@ -41,7 +39,6 @@ class HeartbeatController implements IHeartbeatController {
 			token,
 			action: "fail",
 			message: msg,
-			received,
 		});
 		res.json(received);
 	};
