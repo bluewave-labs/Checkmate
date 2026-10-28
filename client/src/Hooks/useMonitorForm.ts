@@ -146,6 +146,17 @@ export const getMonitorDefaults = (
 				dnsRecordType: data?.dnsRecordType || "A",
 			};
 			break;
+		case "heartbeat":
+			defaults = {
+				...base,
+				type: "heartbeat",
+				url: "",
+				interval: data?.interval || 3900000,
+				// Ignored by the server (statusService uses 1/100) set so the form matches
+				statusWindowSize: 1,
+				statusWindowThreshold: 100,
+			};
+			break;
 		default:
 			defaults = {
 				...base,
