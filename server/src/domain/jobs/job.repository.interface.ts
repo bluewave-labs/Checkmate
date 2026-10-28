@@ -55,11 +55,17 @@ export interface IJobsRepository {
 	// Edit job schedule
 	updateScheduleById(refId: string, type: JobType, intervalMs: number | null): Promise<boolean>;
 
+	// Update heartbeat jobs
+	updateHeartbeatScheduleById(refId: string, intervalMs: number): Promise<boolean>;
+
 	// Re-arm the check/geo-check rows.  Add jitter to prevent herd
 	markMonitorsDue(monitorIds: string[], now: number): Promise<number>;
 
 	// Push check rows out by their own interval for heartbeat monitors.  This is the dead man's switch
 	rescheduleChecks(monitorIds: string[], now: number): Promise<number>;
+
+	// Re arm only check rows already due
+	rescheduleOverdueChecks(monitorIds: string[], now: number): Promise<number>;
 
 	// Delete, drop all rows
 	deleteById(refId: string): Promise<boolean>;

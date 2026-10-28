@@ -272,6 +272,22 @@ class MongoJobsRepository implements IJobsRepository {
 		return res.modifiedCount === 1;
 	};
 
+	updateHeartbeatScheduleById = async (refId: string, intervalMs: number): Promise<boolean> => {
+		const res = await JobModel.updateOne({ refId, type: "check" }, [
+			{
+				$set: {
+					// nextScheduledAt - oldInterval is the last scheduled run.
+					// Reset the deadline by adding the new intervalMs
+					nextScheduledAt: {
+						$add: [{ $subtract: ["$nextScheduledAt", "$intervalMs"] }, intervalMs],
+					},
+					intervalMs,
+				},
+			},
+		]);
+		return res.modifiedCount === 1;
+	};
+
 	markMonitorsDue = async (monitorIds: string[], now: number) => {
 		if (monitorIds.length === 0) return 0;
 		const res = await JobModel.updateMany({ refId: { $in: monitorIds }, type: { $in: ["check", "geo-check"] } }, [
@@ -292,6 +308,19 @@ class MongoJobsRepository implements IJobsRepository {
 		const res = await JobModel.updateMany({ refId: { $in: monitorIds }, type: "check" }, [
 			{ $set: { nextScheduledAt: { $add: [now, "$intervalMs"] } } },
 		]);
+		return res.modifiedCount;
+	};
+
+	rescheduleOverdueChecks = async (monitorIds: string[], now: number): Promise<number> => {
+		if (monitorIds.length === 0) return 0;
+		const res = await JobModel.updateMany(
+			{
+				refId: { $in: monitorIds },
+				type: "check",
+				nextScheduledAt: { $lte: now },
+			},
+			[{ $set: { nextScheduledAt: { $add: [now, "$intervalMs"] } } }]
+		);
 		return res.modifiedCount;
 	};
 
