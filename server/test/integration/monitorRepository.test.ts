@@ -269,6 +269,35 @@ describe("MongoMonitorsRepository", () => {
 		});
 	});
 
+	describe("url validation", () => {
+		// Edits post the whole form, so a heartbeat edit always carries url: ""
+		it("updates a heartbeat monitor whose url is empty", async () => {
+			const repo = new MongoMonitorsRepository();
+			const doc = await MonitorModel.create({
+				userId: new mongoose.Types.ObjectId(),
+				teamId: new mongoose.Types.ObjectId(),
+				name: "cron",
+				type: "heartbeat",
+			});
+
+			const updated = await repo.updateById(doc._id.toString(), doc.teamId.toString(), { name: "renamed", url: "" });
+
+			expect(updated.name).toBe("renamed");
+			expect(updated.url).toBe("");
+		});
+
+		it("still requires a url when creating a non-heartbeat monitor", async () => {
+			await expect(
+				MonitorModel.create({
+					userId: new mongoose.Types.ObjectId(),
+					teamId: new mongoose.Types.ObjectId(),
+					name: "site",
+					type: "http",
+				})
+			).rejects.toThrow(/url/);
+		});
+	});
+
 	describe("findDashboardByTeamId", () => {
 		const seedDashboardMonitor = async (teamId: mongoose.Types.ObjectId, name: string, type: string, status: string, uptimePercentage?: number) => {
 			const monitor = await MonitorModel.create({ userId: new mongoose.Types.ObjectId(), teamId, name, type, status, url: "https://example.com" });

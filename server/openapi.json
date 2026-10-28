@@ -9195,7 +9195,7 @@
 						}
 					},
 					"404": {
-						"description": "Monitor not found, or monitor stats not found",
+						"description": "Monitor not found",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -9302,7 +9302,7 @@
 						}
 					},
 					"404": {
-						"description": "Monitor not found, or monitor stats not found",
+						"description": "Monitor not found",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -9409,7 +9409,7 @@
 						}
 					},
 					"404": {
-						"description": "Monitor not found, or monitor stats not found",
+						"description": "Monitor not found",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -9516,7 +9516,7 @@
 						}
 					},
 					"404": {
-						"description": "Monitor not found, or monitor stats not found",
+						"description": "Monitor not found",
 						"content": {
 							"application/json": {
 								"schema": {

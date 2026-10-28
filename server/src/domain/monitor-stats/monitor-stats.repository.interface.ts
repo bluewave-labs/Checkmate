@@ -4,7 +4,7 @@ export interface IMonitorStatsRepository {
 	// create
 	create(data: Omit<MonitorStats, "id" | "createdAt" | "updatedAt">): Promise<MonitorStats>;
 	// single fetch
-	findByMonitorId(monitorId: string): Promise<MonitorStats>;
+	findByMonitorId(monitorId: string): Promise<MonitorStats | null>;
 	// Upsert must be atomic to prevent race conditions
 	updateByMonitorId(monitorId: string, result: CheckResultInput): Promise<MonitorStats>;
 	// delete
