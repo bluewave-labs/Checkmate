@@ -239,6 +239,11 @@ const dnsSchema = baseSchema.extend({
 	dnsRecordType: z.enum(DnsRecordTypes),
 });
 
+const heartbeatSchema = baseSchema.extend({
+	type: z.literal("heartbeat"),
+	url: z.string(),
+});
+
 // Discriminated union of all monitor types
 const monitorSchemaUnion = z.discriminatedUnion("type", [
 	httpSchema,
@@ -251,6 +256,7 @@ const monitorSchemaUnion = z.discriminatedUnion("type", [
 	hardwareSchema,
 	websocketSchema,
 	dnsSchema,
+	heartbeatSchema,
 ]);
 
 // Mirrors the server's refineProxySelection and refineDockerTls
