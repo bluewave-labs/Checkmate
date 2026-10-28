@@ -872,3 +872,81 @@ describe("monitorValidation — docker alert switches", () => {
 		});
 	});
 });
+
+describe("monitorValidation — heartbeat", () => {
+	const heartbeatBody = { name: "Nightly backup", type: "heartbeat" as const, interval: 3600000 };
+
+	const issuePaths = (result: { success: boolean; error?: { issues: { path: PropertyKey[] }[] } }) =>
+		(result.error?.issues ?? []).map((issue) => issue.path.join("."));
+
+	const importOne = (monitor: Record<string, unknown>) => importMonitorsBodyValidation.safeParse({ monitors: [monitor] });
+
+	describe("createMonitorBodyValidation", () => {
+		it("accepts a heartbeat without a url and defaults it to empty", () => {
+			const parsed = createMonitorBodyValidation.parse(heartbeatBody);
+
+			expect(parsed.url).toBe("");
+		});
+
+		it("still requires a url for other types", () => {
+			expect(issuePaths(createMonitorBodyValidation.safeParse({ name: "Site", type: "http" }))).toContain("url");
+			expect(issuePaths(createMonitorBodyValidation.safeParse({ name: "Site", type: "http", url: " " }))).toContain("url");
+		});
+
+		it("rejects geo checks and a custom proxy on a heartbeat", () => {
+			expect(issuePaths(createMonitorBodyValidation.safeParse({ ...heartbeatBody, geoCheckEnabled: true }))).toContain("geoCheckEnabled");
+			expect(issuePaths(createMonitorBodyValidation.safeParse({ ...heartbeatBody, proxyMode: "custom" }))).toContain("proxyMode");
+		});
+
+		it("drops a client-sent heartbeatToken", () => {
+			const parsed = createMonitorBodyValidation.parse({ ...heartbeatBody, heartbeatToken: "x" });
+
+			expect(parsed).not.toHaveProperty("heartbeatToken");
+		});
+	});
+
+	describe("editMonitorBodyValidation", () => {
+		it("accepts a partial edit that leaves the url out", () => {
+			expect(editMonitorBodyValidation.safeParse({ type: "http", name: "x" }).success).toBe(true);
+		});
+
+		it("rejects an edit that sends an empty url for a non-heartbeat type", () => {
+			expect(issuePaths(editMonitorBodyValidation.safeParse({ type: "http", url: "" }))).toContain("url");
+		});
+
+		it("rejects geo checks and a custom proxy on a heartbeat", () => {
+			expect(issuePaths(editMonitorBodyValidation.safeParse({ type: "heartbeat", geoCheckEnabled: true }))).toContain("geoCheckEnabled");
+			expect(issuePaths(editMonitorBodyValidation.safeParse({ type: "heartbeat", proxyMode: "custom" }))).toContain("proxyMode");
+		});
+
+		it("drops a client-sent heartbeatToken", () => {
+			const parsed = editMonitorBodyValidation.parse({ type: "heartbeat", heartbeatToken: "x" });
+
+			expect(parsed).not.toHaveProperty("heartbeatToken");
+		});
+	});
+
+	describe("importMonitorsBodyValidation", () => {
+		it("accepts a heartbeat without a url and defaults it to empty", () => {
+			const parsed = importMonitorsBodyValidation.parse({ monitors: [heartbeatBody] });
+
+			expect(parsed.monitors[0].url).toBe("");
+		});
+
+		it("still requires a url for other types", () => {
+			expect(issuePaths(importOne({ name: "Site", type: "http" }))).toContain("monitors.0.url");
+			expect(issuePaths(importOne({ name: "Site", type: "http", url: " " }))).toContain("monitors.0.url");
+		});
+
+		it("rejects geo checks and a custom proxy on a heartbeat", () => {
+			expect(issuePaths(importOne({ ...heartbeatBody, geoCheckEnabled: true }))).toContain("monitors.0.geoCheckEnabled");
+			expect(issuePaths(importOne({ ...heartbeatBody, proxyMode: "custom" }))).toContain("monitors.0.proxyMode");
+		});
+
+		it("drops a heartbeatToken from the import file", () => {
+			const parsed = importMonitorsBodyValidation.parse({ monitors: [{ ...heartbeatBody, heartbeatToken: "x" }] });
+
+			expect(parsed.monitors[0]).not.toHaveProperty("heartbeatToken");
+		});
+	});
+});

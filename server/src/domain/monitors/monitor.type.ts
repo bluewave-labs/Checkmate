@@ -91,6 +91,11 @@ export type HardwareMetricKey = (typeof HardwareMetricKeys)[number];
 export type HardwareBreaches = Record<HardwareMetricKey, boolean>;
 export type HardwareCounters = Record<HardwareMetricKey, number>;
 
+export const HEARTBEAT_STATUS_WINDOW = {
+	statusWindowSize: 1,
+	statusWindowThreshold: 100,
+} as const;
+
 const MonitorPaths: Record<MonitorType, string> = {
 	http: "uptime",
 	port: "uptime",

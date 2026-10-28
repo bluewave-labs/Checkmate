@@ -28,6 +28,7 @@ export interface IEncryptionService {
 	needsReencryption(ciphertext: string): boolean;
 	encrypt(plaintext: string): string;
 	decrypt(ciphertext: string): string;
+	getRandomToken(bytes: number): string;
 }
 
 export class EncryptionService implements IEncryptionService {
@@ -102,6 +103,10 @@ export class EncryptionService implements IEncryptionService {
 		} catch {
 			throw this.fail("Ciphertext failed authentication");
 		}
+	};
+
+	getRandomToken = (bytes: number): string => {
+		return this.cryptoLib.randomBytes(bytes).toString("base64url");
 	};
 
 	private fail = (message: string, details?: Record<string, unknown>): AppError => {

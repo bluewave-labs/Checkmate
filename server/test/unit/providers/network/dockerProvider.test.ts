@@ -24,6 +24,7 @@ const makeEncryptionService = (overrides?: Partial<IEncryptionService>): IEncryp
 	needsReencryption: jest.fn(() => false),
 	encrypt: jest.fn(() => KEY_CIPHERTEXT),
 	decrypt: jest.fn(() => KEY_PEM),
+	getRandomToken: jest.fn(() => "token"),
 	...overrides,
 });
 

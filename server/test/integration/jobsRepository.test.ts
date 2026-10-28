@@ -181,6 +181,18 @@ describe("MongoJobsRepository", () => {
 			expect(await repo.recordSuccess("missing", NOW, 60_000, NOW)).toBe(false);
 		});
 
+		it("never moves a deadline earlier that a heartbeat ping pushed out during the run ($max)", async () => {
+			const pushed = NOW + 10 * 60_000;
+			await seedJob({ lockedBy: ownedBy(repo), lockedUntil: NOW + LOCK_MS, nextScheduledAt: pushed });
+
+			const ok = await repo.recordSuccess("check:mon-1", NOW, 60_000, NOW + 1_000);
+
+			expect(ok).toBe(true);
+			const row = await readRow("check:mon-1");
+			expect(row?.nextScheduledAt).toBe(pushed);
+			expect(row?.lockedBy).toBeNull();
+		});
+
 		it("does not release a lock owned by another worker (fenced no-op)", async () => {
 			// A worker whose lease expired and was reclaimed must not clobber the new owner's lock.
 			await seedJob({ lockedBy: "other-worker", lockedUntil: NOW + LOCK_MS, runCount: 7, failCount: 2, lastFailReason: "timeout" });
@@ -342,6 +354,18 @@ describe("MongoJobsRepository", () => {
 
 		it("returns false for an unknown id", async () => {
 			expect(await repo.recordFailure("missing", new Error("x"), NOW)).toBe(false);
+		});
+
+		it("never moves a deadline earlier that a heartbeat ping pushed out during the run ($max)", async () => {
+			const pushed = NOW + BACKOFF_MS + 10 * 60_000;
+			await seedJob({ lockedBy: ownedBy(repo), lockedUntil: NOW + LOCK_MS, nextScheduledAt: pushed });
+
+			const ok = await repo.recordFailure("check:mon-1", new Error("boom"), NOW);
+
+			expect(ok).toBe(true);
+			const row = await readRow("check:mon-1");
+			expect(row?.nextScheduledAt).toBe(pushed);
+			expect(row?.failCount).toBe(1);
 		});
 	});
 

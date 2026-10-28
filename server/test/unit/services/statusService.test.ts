@@ -211,6 +211,57 @@ describe("StatusService", () => {
 	// ── updateMonitorStatus ──────────────────────────────────────────────────
 
 	describe("updateMonitorStatus", () => {
+		// Heartbeat: one missed ping trips the switch and one ping recovers it, whatever window is stored
+		it("evaluates a heartbeat with a 1/100 window, ignoring a stored 5/60", async () => {
+			const monitor = makeMonitor({ type: "heartbeat", statusWindow: [true], statusWindowSize: 5, statusWindowThreshold: 60, status: "up" });
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+
+			const result = await service.updateMonitorStatus(makeCheck({ status: false }), monitor);
+
+			expect(result.statusChanged).toBe(true);
+			expect(result.monitor.status).toBe("down");
+			expect(monitorsRepository.updateStatusWindowAndChecks).toHaveBeenCalledWith(
+				"mon-1",
+				"team-1",
+				false,
+				expect.any(Object),
+				1,
+				MAX_RECENT_CHECKS,
+				expect.objectContaining({ status: "down" })
+			);
+		});
+
+		it("recovers a down heartbeat on the next successful ping", async () => {
+			const monitor = makeMonitor({ type: "heartbeat", statusWindow: [false], statusWindowSize: 5, statusWindowThreshold: 60, status: "down" });
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+
+			const result = await service.updateMonitorStatus(makeCheck({ status: true }), monitor);
+
+			expect(result.statusChanged).toBe(true);
+			expect(result.monitor.status).toBe("up");
+		});
+
+		it("keeps using the stored window for other monitor types", async () => {
+			const monitor = makeMonitor({ type: "http", statusWindow: [true], statusWindowSize: 5, statusWindowThreshold: 60, status: "up" });
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+
+			const result = await service.updateMonitorStatus(makeCheck({ status: false }), monitor);
+
+			expect(result.statusChanged).toBe(false);
+			expect(monitorsRepository.updateStatusWindowAndChecks).toHaveBeenCalledWith(
+				"mon-1",
+				"team-1",
+				false,
+				expect.any(Object),
+				5,
+				MAX_RECENT_CHECKS,
+				expect.any(Object)
+			);
+		});
+
 		it("returns early with no status change when statusWindow is not full", async () => {
 			const monitor = makeMonitor({ statusWindow: [], statusWindowSize: 5, status: "up" });
 			const { service, monitorsRepository } = createService();

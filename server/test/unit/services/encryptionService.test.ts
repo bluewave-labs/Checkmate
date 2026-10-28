@@ -241,3 +241,24 @@ describe("EncryptionService", () => {
 		});
 	});
 });
+
+describe("EncryptionService.getRandomToken", () => {
+	it("returns a base64url token sized from the byte count", () => {
+		const { service } = setup([newKey()]);
+
+		expect(service.getRandomToken(24)).toMatch(/^[A-Za-z0-9_-]{32}$/);
+	});
+
+	it("returns a different token on each call", () => {
+		const { service } = setup([newKey()]);
+
+		expect(service.getRandomToken(24)).not.toBe(service.getRandomToken(24));
+	});
+
+	it("works without ENCRYPTION_KEY, since no key is involved", () => {
+		const { service } = setup([]);
+
+		expect(service.isConfigured()).toBe(false);
+		expect(service.getRandomToken(24)).toMatch(/^[A-Za-z0-9_-]{32}$/);
+	});
+});
