@@ -360,7 +360,7 @@ const importedMonitorSchema = z
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
 		matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
 		method: z.enum(HttpMethods).optional().default("GET"),
-		url: z.string().min(1, "URL is required"),
+		url: z.string().default(""),
 		port: z.number().optional(),
 		isActive: z.boolean().default(true),
 		interval: z.number().default(60000),
