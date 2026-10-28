@@ -120,9 +120,11 @@ const monitorExample = {
 	createdAt: "2026-04-01T10:00:00.000Z",
 	updatedAt: "2026-04-15T14:30:00.000Z",
 	lastEvaluatedAt: 1776254400000,
-} satisfies Omit<z.infer<typeof monitorSchema>, "dockerTlsKey">;
+} satisfies Omit<z.infer<typeof monitorSchema>, "dockerTlsKey" | "heartbeatToken">;
 
-export const monitorResponseSchema = monitorSchema.omit({ dockerTlsKey: true }).meta({ id: "Monitor", example: monitorExample });
+export const monitorResponseSchema = monitorSchema
+	.omit({ dockerTlsKey: true, heartbeatToken: true })
+	.meta({ id: "Monitor", example: monitorExample });
 
 export const monitorsSummarySchema = z.object({
 	totalMonitors: z.number(),

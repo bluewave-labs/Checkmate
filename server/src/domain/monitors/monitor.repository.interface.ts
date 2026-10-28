@@ -72,6 +72,7 @@ export interface IMonitorsRepository {
 	findDockerTlsKeyById(monitorId: string): Promise<string | null>;
 	findAllDockerTlsKeys(): Promise<{ id: string; dockerTlsKey: string }[]>;
 	updateDockerTlsKey(monitorId: string, dockerTlsKey: string): Promise<void>; // Needed for worker to rotate keys, no teamId/userId
+	findHeartbeatTokenById(monitorId: string, teamId: string): Promise<string | null>;
 
 	// other
 	findMonitorsSummaryByTeamId(teamId: string, config?: SummaryConfig): Promise<MonitorsSummary>;
@@ -81,5 +82,5 @@ export interface IMonitorsRepository {
 	updateNotifications(teamId: string, monitorIds: string[], notificationIds: string[], action: "add" | "remove" | "set"): Promise<number>;
 	deleteByTeamIdsNotIn(teamIds: string[]): Promise<number>;
 	findAllMonitorIds(): Promise<string[]>;
-	setHeartbeatToken(monitorId: string, teamId: string, token: string): Promise<Monitor>;
+	setHeartbeatToken(monitorId: string, teamId: string, token: string): Promise<void>;
 }

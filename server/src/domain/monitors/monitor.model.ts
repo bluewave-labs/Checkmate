@@ -240,6 +240,7 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		},
 		heartbeatToken: {
 			type: String,
+			select: false,
 		},
 		cpuAlertThreshold: {
 			type: Number,

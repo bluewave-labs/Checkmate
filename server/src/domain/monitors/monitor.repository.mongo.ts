@@ -371,6 +371,11 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		await MonitorModel.updateOne({ _id: monitorId }, { $set: { dockerTlsKey } });
 	};
 
+	findHeartbeatTokenById = async (monitorId: string, teamId: string): Promise<string | null> => {
+		const doc = await MonitorModel.findOne({ _id: monitorId, teamId, type: "heartbeat" }, { heartbeatToken: 1 }).lean();
+		return doc?.heartbeatToken ?? null;
+	};
+
 	private summaryStages: PipelineStage.FacetPipelineStage[] = [
 		{
 			$group: {
@@ -557,7 +562,6 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			tags: tagIds,
 			customUpCodes: doc.customUpCodes ?? [],
 			secret: doc.secret ?? undefined,
-			heartbeatToken: doc.heartbeatToken ?? undefined,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
 			cpuAlertCounter: doc.cpuAlertCounter,
 			memoryAlertThreshold: doc.memoryAlertThreshold,
@@ -600,14 +604,9 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return monitors.map((doc) => doc._id.toString());
 	};
 
-	setHeartbeatToken = async (monitorId: string, teamId: string, token: string) => {
-		const doc = await MonitorModel.findOneAndUpdate(
-			{ _id: monitorId, teamId, type: "heartbeat" },
-			{ $set: { heartbeatToken: token } },
-			{ new: true }
-		).lean();
-		if (!doc) throw new AppError(monitorErrors.notFound, { service: SERVICE_NAME });
-		return this.toEntity(doc);
+	setHeartbeatToken = async (monitorId: string, teamId: string, token: string): Promise<void> => {
+		const res = await MonitorModel.updateOne({ _id: monitorId, teamId, type: "heartbeat" }, { $set: { heartbeatToken: token } });
+		if (res.matchedCount === 0) throw new AppError(monitorErrors.notFound, { service: SERVICE_NAME });
 	};
 }
 
