@@ -180,6 +180,12 @@ describe("Logger.httpMiddleware", () => {
 		app.get("/static.js", (_req, res) => {
 			res.send("// js");
 		});
+		app.use(
+			"/api/v1/heartbeat",
+			express.Router().get("/:token", (_req, res) => {
+				res.json({ ok: true });
+			})
+		);
 		const server = app.listen(0);
 		await new Promise((resolve) => server.once("listening", resolve));
 		const base = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
@@ -231,6 +237,19 @@ describe("Logger.httpMiddleware", () => {
 			expect(ok).toMatchObject({ level: "debug", httpResponse: { statusCode: 200 }, httpDurationMs: expect.any(Number) });
 			expect(ok?.message).toMatch(/^GET \/api\/v1\/ok 200 \d+ms$/);
 			expect(missing).toMatchObject({ level: "warn", httpResponse: { statusCode: 404 } });
+		} finally {
+			await close();
+		}
+	});
+
+	it("redacts a heartbeat token from the request line and message", async () => {
+		const { request, requestLines, close } = await setupApp();
+		try {
+			await request("/api/v1/heartbeat/secret-tok");
+
+			const [line] = requestLines();
+			expect(JSON.stringify(line)).not.toContain("secret-tok");
+			expect(line?.message).toMatch(/^GET \/api\/v1\/heartbeat\/\[Redacted\] 200/);
 		} finally {
 			await close();
 		}
