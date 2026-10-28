@@ -49,13 +49,20 @@ export class JobScheduler implements IJobScheduler {
 		"cleanup-retention": POLL_MS,
 		telemetry: POLL_MS,
 	};
+
+	// Figures out when a job should first be run
+	private initialRunScheduledAt = (monitor: MonitorScheduleFields, now: number, immediate: boolean): number => {
+		if (monitor.type === "heartbeat") return now + monitor.interval;
+		return immediate ? now : now + Math.floor(Math.random() * monitor.interval);
+	};
+
 	// Helpers, builds job seeds. immediate=true runs on the next tick; otherwise jitter spreads the herd.
 	protected toCheckJob = (monitor: MonitorScheduleFields, now: number, immediate = false): JobSeed => ({
 		id: jobId("check", monitor.id),
 		type: "check",
 		refId: monitor.id,
 		isActive: monitor.isActive,
-		nextScheduledAt: immediate ? now : now + Math.floor(Math.random() * monitor.interval), // Avoid herd
+		nextScheduledAt: this.initialRunScheduledAt(monitor, now, immediate),
 		intervalMs: monitor.interval,
 	});
 
@@ -110,7 +117,7 @@ export class JobScheduler implements IJobScheduler {
 	addJob = async (_monitorId: string, monitor: Monitor) => {
 		const now = Date.now();
 		await this.jobsRepository.upsertJob(this.toCheckJob(monitor, now, true));
-		this.wake("check");
+		if (monitor.type !== "heartbeat") this.wake("check");
 		if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) {
 			await this.jobsRepository.upsertJob(this.toGeoCheckJob(monitor, now, true));
 			this.wake("geo-check");
@@ -126,13 +133,22 @@ export class JobScheduler implements IJobScheduler {
 	};
 
 	resumeJob = async (monitor: Monitor) => {
+		if (monitor.type === "heartbeat") {
+			await this.jobsRepository.rescheduleOverdueChecks([monitor.id], Date.now());
+			await this.jobsRepository.setActiveById(monitor.id, true);
+			return;
+		}
 		await this.jobsRepository.setActiveById(monitor.id, true); // a paused job's nextScheduledAt is now in the past, so it's due immediately
 		this.wake("check");
 		if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) this.wake("geo-check");
 	};
 
 	updateJob = async (monitor: Monitor) => {
-		await this.jobsRepository.updateScheduleById(monitor.id, "check", monitor.interval);
+		if (monitor.type === "heartbeat") {
+			await this.jobsRepository.updateHeartbeatScheduleById(monitor.id, monitor.interval);
+		} else {
+			await this.jobsRepository.updateScheduleById(monitor.id, "check", monitor.interval);
+		}
 		if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) {
 			await this.jobsRepository.upsertJob(this.toGeoCheckJob(monitor, Date.now(), true)); // a newly enabled geo check should run right away
 			this.wake("geo-check");
@@ -204,12 +220,17 @@ export class JobScheduler implements IJobScheduler {
 	protected reconcile = async () => {
 		const now = Date.now();
 		const monitors = await this.monitorsRepository.findAllForScheduling();
+		const heartbeatIds: string[] = [];
 		for (const monitor of monitors) {
 			await this.jobsRepository.upsertJob(this.toCheckJob(monitor, now));
+			if (monitor.type === "heartbeat") heartbeatIds.push(monitor.id);
 			if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) {
 				await this.jobsRepository.upsertJob(this.toGeoCheckJob(monitor, now));
 			}
 		}
+
+		await this.jobsRepository.rescheduleOverdueChecks(heartbeatIds, now);
+
 		// Both cleanup jobs run immediately on every startup, then once a day
 		await this.jobsRepository.upsertCleanupJob(this.toCleanupJob("cleanup-orphaned", now));
 		await this.jobsRepository.upsertCleanupJob(this.toCleanupJob("cleanup-retention", now));

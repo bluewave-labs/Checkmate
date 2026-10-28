@@ -29,6 +29,7 @@ const createMonitorsRepositoryMock = () =>
 		bulkTogglePause: jest.fn(),
 		deleteById: jest.fn(),
 		deleteByTeamId: jest.fn(),
+		setHeartbeatToken: jest.fn(),
 	}) as unknown as IMonitorsRepository;
 
 const createChecksRepositoryMock = () =>
@@ -82,6 +83,7 @@ const createEncryptionServiceMock = (overrides: Partial<IEncryptionService> = {}
 		needsReencryption: jest.fn(() => false),
 		encrypt: jest.fn((plaintext: string) => `enc:${plaintext}`),
 		decrypt: jest.fn((ciphertext: string) => ciphertext.replace(/^enc:/, "")),
+		getRandomToken: jest.fn(() => "tok-1"),
 		...overrides,
 	}) as unknown as IEncryptionService;
 
@@ -2199,6 +2201,111 @@ describe("MonitorService — Docker TLS credentials", () => {
 			expect(monitorsRepository.findById).not.toHaveBeenCalled();
 			const [, , patch] = (monitorsRepository.updateById as jest.Mock).mock.calls[0] as [string, string, Record<string, unknown>];
 			expect(patch.secret).toBe("");
+		});
+	});
+});
+
+describe("MonitorService — heartbeat monitors", () => {
+	const expectAppError = async (fn: () => Promise<unknown>, status: number) => {
+		let caught: unknown;
+		try {
+			await fn();
+		} catch (error) {
+			caught = error;
+		}
+		expect(caught).toBeInstanceOf(AppError);
+		expect((caught as AppError).status).toBe(status);
+	};
+
+	describe("createMonitor", () => {
+		it("issues a ping token and clears probe-only settings", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const encryptionService = createEncryptionServiceMock();
+			(monitorsRepository.create as jest.Mock).mockResolvedValue(makeMonitor({ type: "heartbeat" }));
+			const { service } = createService({ monitorsRepository, encryptionService });
+
+			await service.createMonitor(TEAM_ID, USER_ID, {
+				...makeMonitor({ type: "heartbeat", url: "https://ignored.example" }),
+				geoCheckEnabled: true,
+				proxyMode: "custom",
+				proxyId: "64b7a1f2c9e77a001a2b3c4d",
+			} as any);
+
+			const createdBody = (monitorsRepository.create as jest.Mock).mock.calls[0][0] as Record<string, unknown>;
+			expect(encryptionService.getRandomToken).toHaveBeenCalledWith(24);
+			expect(createdBody).toMatchObject({ heartbeatToken: "tok-1", url: "", geoCheckEnabled: false, proxyMode: "none" });
+			expect(createdBody.proxyId).toBeUndefined();
+		});
+
+		it("does not issue a token for other monitor types", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const encryptionService = createEncryptionServiceMock();
+			(monitorsRepository.create as jest.Mock).mockResolvedValue(makeMonitor());
+			const { service } = createService({ monitorsRepository, encryptionService });
+
+			await service.createMonitor(TEAM_ID, USER_ID, makeMonitor() as any);
+
+			const createdBody = (monitorsRepository.create as jest.Mock).mock.calls[0][0] as Record<string, unknown>;
+			expect(createdBody.heartbeatToken).toBeUndefined();
+			expect(encryptionService.getRandomToken).not.toHaveBeenCalled();
+		});
+	});
+
+	describe("importMonitorsFromJSON", () => {
+		it("issues a fresh token to every imported heartbeat monitor", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const getRandomToken = jest.fn<() => string>().mockReturnValueOnce("tok-1").mockReturnValueOnce("tok-2");
+			const encryptionService = createEncryptionServiceMock({ getRandomToken });
+			(monitorsRepository.createMonitors as jest.Mock).mockResolvedValue([makeMonitor({ id: "new1" }), makeMonitor({ id: "new2" })]);
+			const { service } = createService({ monitorsRepository, encryptionService });
+
+			await service.importMonitorsFromJSON({
+				teamId: TEAM_ID,
+				userId: USER_ID,
+				monitors: [
+					{ name: "Backup", type: "heartbeat", url: "", interval: 3600000 },
+					{ name: "Report", type: "heartbeat", url: "", interval: 86400000 },
+				] as any,
+			});
+
+			const callArg = (monitorsRepository.createMonitors as jest.Mock).mock.calls[0]![0] as any[];
+			expect(callArg.map((m) => m.heartbeatToken)).toEqual(["tok-1", "tok-2"]);
+		});
+	});
+
+	describe("editMonitor", () => {
+		it("drops type from the patch so a monitor's type never changes", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.updateById as jest.Mock).mockResolvedValue(makeMonitor());
+			const { service } = createService({ monitorsRepository });
+
+			await service.editMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID, body: { type: "heartbeat", name: "x" } });
+
+			expect(monitorsRepository.updateById).toHaveBeenCalledWith(MONITOR_ID, TEAM_ID, { name: "x" }, { unsetProxyId: false });
+		});
+	});
+
+	describe("rotateHeartbeatToken", () => {
+		it("rejects a monitor that is not a heartbeat monitor", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor());
+			const { service } = createService({ monitorsRepository });
+
+			await expectAppError(() => service.rotateHeartbeatToken({ teamId: TEAM_ID, monitorId: MONITOR_ID }), 400);
+			expect(monitorsRepository.setHeartbeatToken).not.toHaveBeenCalled();
+		});
+
+		it("stores a new token and returns the updated monitor", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const rotated = makeMonitor({ type: "heartbeat", heartbeatToken: "tok-1" });
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "heartbeat", heartbeatToken: "old" }));
+			(monitorsRepository.setHeartbeatToken as jest.Mock).mockResolvedValue(rotated);
+			const { service } = createService({ monitorsRepository });
+
+			const result = await service.rotateHeartbeatToken({ teamId: TEAM_ID, monitorId: MONITOR_ID });
+
+			expect(monitorsRepository.setHeartbeatToken).toHaveBeenCalledWith(MONITOR_ID, TEAM_ID, "tok-1");
+			expect(result).toBe(rotated);
 		});
 	});
 });

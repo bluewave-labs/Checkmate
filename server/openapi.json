@@ -224,7 +224,7 @@
 							},
 							"type": {
 								"type": "string",
-								"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+								"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 							}
 						},
 						"required": ["monitorId", "teamId", "type"]
@@ -900,7 +900,7 @@
 					},
 					"type": {
 						"type": "string",
-						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 					},
 					"location": {
 						"type": "object",
@@ -1204,7 +1204,7 @@
 					},
 					"type": {
 						"type": "string",
-						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 					},
 					"ignoreTlsErrors": {
 						"type": "boolean"
@@ -1271,6 +1271,9 @@
 						}
 					},
 					"secret": {
+						"type": "string"
+					},
+					"heartbeatToken": {
 						"type": "string"
 					},
 					"cpuAlertThreshold": {
@@ -1822,7 +1825,7 @@
 							"properties": {
 								"type": {
 									"type": "string",
-									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 								},
 								"count": {
 									"type": "number"
@@ -1847,7 +1850,7 @@
 								},
 								"type": {
 									"type": "string",
-									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 								},
 								"status": {
 									"type": "string",
@@ -1879,7 +1882,7 @@
 								},
 								"type": {
 									"type": "string",
-									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 								},
 								"status": {
 									"type": "string",
@@ -3709,7 +3712,7 @@
 								},
 								"type": {
 									"type": "string",
-									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 								},
 								"status": {
 									"type": "string",
@@ -6525,7 +6528,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 						},
 						"required": false,
 						"name": "type",
@@ -6920,7 +6923,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 						},
 						"required": false,
 						"name": "type",
@@ -8647,13 +8650,13 @@
 							"anyOf": [
 								{
 									"type": "string",
-									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 								},
 								{
 									"type": "array",
 									"items": {
 										"type": "string",
-										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 									}
 								}
 							]
@@ -8845,13 +8848,13 @@
 							"anyOf": [
 								{
 									"type": "string",
-									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 								},
 								{
 									"type": "array",
 									"items": {
 										"type": "string",
-										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 									}
 								}
 							]
@@ -10576,7 +10579,7 @@
 									},
 									"type": {
 										"type": "string",
-										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 									},
 									"statusWindowSize": {
 										"type": "number",
@@ -10592,7 +10595,7 @@
 									},
 									"url": {
 										"type": "string",
-										"minLength": 1
+										"default": ""
 									},
 									"ignoreTlsErrors": {
 										"type": "boolean",
@@ -10804,7 +10807,7 @@
 										"enum": ["A", "AAAA", "CNAME", "MX", "TXT", "NS"]
 									}
 								},
-								"required": ["name", "type", "url"]
+								"required": ["name", "type"]
 							}
 						}
 					}
@@ -11206,7 +11209,20 @@
 												},
 												"type": {
 													"type": "string",
-													"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+													"enum": [
+														"http",
+														"ping",
+														"pagespeed",
+														"hardware",
+														"docker",
+														"port",
+														"game",
+														"grpc",
+														"websocket",
+														"dns",
+														"heartbeat",
+														"unknown"
+													]
 												},
 												"ignoreTlsErrors": {
 													"type": "boolean",
@@ -11265,7 +11281,7 @@
 												},
 												"url": {
 													"type": "string",
-													"minLength": 1
+													"default": ""
 												},
 												"port": {
 													"type": "number"
@@ -11427,7 +11443,7 @@
 													"type": "string"
 												}
 											},
-											"required": ["name", "type", "url"]
+											"required": ["name", "type"]
 										},
 										"minItems": 1
 									}
@@ -11752,7 +11768,7 @@
 									},
 									"type": {
 										"type": "string",
-										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 									},
 									"url": {
 										"type": "string"

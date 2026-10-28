@@ -123,6 +123,7 @@ export interface IMonitorService {
 	editMonitor(args: { teamId: string; monitorId: string; body: Partial<Monitor> }): Promise<Monitor>;
 	pauseMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 	bulkPauseMonitors(args: { teamId: string; monitorIds: string[]; pause: boolean }): Promise<{ monitors: Monitor[]; failedCount: number }>;
+	rotateHeartbeatToken(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 
 	// delete
 	deleteMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
@@ -189,7 +190,18 @@ export class MonitorService implements IMonitorService {
 		this.encryptionService = encryptionService;
 	}
 
+	private generateHeartbeatToken = (): string => this.encryptionService.getRandomToken(24);
+
+	private applyHeartbeatDefaults = (body: Partial<Monitor>) => {
+		if (body.type !== "heartbeat") return;
+		body.url = "";
+		body.heartbeatToken = this.generateHeartbeatToken();
+		body.geoCheckEnabled = false;
+		body.proxyMode = "none";
+	};
+
 	createMonitor = async (teamId: string, userId: string, body: Monitor): Promise<Monitor> => {
+		this.applyHeartbeatDefaults(body); // Set defaults for heartbeat monitors, does nothing otherwise
 		// proxyId is only needed in custom mode
 		if (body.proxyMode !== "custom") {
 			delete body.proxyId;
@@ -211,6 +223,7 @@ export class MonitorService implements IMonitorService {
 	};
 
 	createMonitors = async (monitors: Array<Monitor>): Promise<Monitor[] | null> => {
+		monitors.forEach((monitor) => this.applyHeartbeatDefaults(monitor));
 		const createdMonitors = await this.monitorsRepository.createMonitors(monitors);
 		if (!createdMonitors || createdMonitors.length === 0) {
 			throw new AppError(internalError, { message: "Failed to create monitors", service: SERVICE_NAME });
@@ -619,6 +632,7 @@ export class MonitorService implements IMonitorService {
 			}
 		}
 		await this.normalizeCaptureDocker(body, monitorId, teamId);
+		delete body.type; // Monitor types are fixed at creation
 		const editedMonitor = await this.monitorsRepository.updateById(monitorId, teamId, body, { unsetProxyId });
 		await this.scheduler.updateJob(editedMonitor);
 		return editedMonitor;
@@ -689,6 +703,14 @@ export class MonitorService implements IMonitorService {
 		});
 
 		return { monitors, failedCount };
+	};
+
+	rotateHeartbeatToken = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
+		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
+		if (monitor.type !== "heartbeat") {
+			throw new AppError(monitorErrors.notHeartbeat, { service: SERVICE_NAME });
+		}
+		return this.monitorsRepository.setHeartbeatToken(monitorId, teamId, this.generateHeartbeatToken());
 	};
 
 	private deleteMonitorChildren = async (monitor: Monitor, teamId: string) => {

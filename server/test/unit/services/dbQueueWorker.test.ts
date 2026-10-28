@@ -91,6 +91,7 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 		claimDueBatch: jest.fn<any>().mockResolvedValue([]),
 		upsertJob: jest.fn<any>().mockResolvedValue(true),
 		upsertCleanupJob: jest.fn<any>().mockResolvedValue(true),
+		rescheduleOverdueChecks: jest.fn<any>().mockResolvedValue(0),
 		deleteGlobalJob: jest.fn<any>().mockResolvedValue(true),
 		upsertEvaluate: jest.fn<any>().mockResolvedValue(true),
 		pullEvaluated: jest.fn<any>().mockResolvedValue(true),
