@@ -160,6 +160,16 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 		},
 		{
 			method: "post",
+			path: "/:monitorId/heartbeat-token",
+			handler: "rotateHeartbeatToken",
+			summary: "Rotate a heartbeat monitor's ping token (admin/superadmin)",
+			errors: [monitorErrors.notFound, monitorErrors.notHeartbeat],
+			roles: ["admin", "superadmin"],
+			params: getMonitorByIdParamValidation,
+			response: monitorResponseSchema,
+		},
+		{
+			method: "post",
 			path: "/bulk/pause",
 			handler: "bulkPauseMonitors",
 			summary: "Pause or resume several monitors (admin/superadmin)",

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
-import { HeartbeatProvider, HEARTBEAT_MISSED_CODE } from "../../../../src/service/networkProviders/HeartbeatProvider.ts";
+import { HeartbeatProvider } from "../../../../src/service/networkProviders/HeartbeatProvider.ts";
+import { HEARTBEAT_MISSED_CODE } from "../../../../src/domain/heartbeat/heartbeat.type.ts";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
 import type { Monitor } from "../../../../src/domain/monitors/monitor.type.ts";
 
