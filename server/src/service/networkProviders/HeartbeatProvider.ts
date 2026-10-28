@@ -1,8 +1,7 @@
 import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { MonitorStatusResponse } from "@/types/network.js";
 import { IStatusProvider } from "./IStatusProvider.js";
-
-export const HEARTBEAT_MISSED_CODE = 408;
+import { HEARTBEAT_MISSED_CODE } from "@/domain/heartbeat/heartbeat.type.js";
 
 export class HeartbeatProvider implements IStatusProvider<null> {
 	readonly type = "heartbeat";
