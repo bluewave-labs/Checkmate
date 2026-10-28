@@ -220,6 +220,55 @@ describe("MongoMonitorsRepository", () => {
 		});
 	});
 
+	describe("heartbeat token access", () => {
+		const seedHeartbeatMonitor = (overrides: Record<string, unknown> = {}) =>
+			MonitorModel.create({
+				userId: new mongoose.Types.ObjectId(),
+				teamId: new mongoose.Types.ObjectId(),
+				name: "cron",
+				type: "heartbeat",
+				heartbeatToken: "stored-token-0123456789",
+				...overrides,
+			});
+
+		it("never returns the token on a normal load", async () => {
+			const repo = new MongoMonitorsRepository();
+			const doc = await seedHeartbeatMonitor();
+
+			const monitor = await repo.findById(doc._id.toString(), doc.teamId.toString());
+
+			expect(monitor).not.toHaveProperty("heartbeatToken");
+			expect(await repo.findByHeartbeatToken("stored-token-0123456789")).not.toHaveProperty("heartbeatToken");
+		});
+
+		it("findHeartbeatTokenById returns the stored token despite select: false", async () => {
+			const repo = new MongoMonitorsRepository();
+			const doc = await seedHeartbeatMonitor();
+
+			await expect(repo.findHeartbeatTokenById(doc._id.toString(), doc.teamId.toString())).resolves.toBe("stored-token-0123456789");
+		});
+
+		it("findHeartbeatTokenById returns null for another team and for a non-heartbeat monitor", async () => {
+			const repo = new MongoMonitorsRepository();
+			const doc = await seedHeartbeatMonitor();
+			const http = await seedMonitor(doc.teamId, "site", []);
+
+			await expect(repo.findHeartbeatTokenById(doc._id.toString(), new mongoose.Types.ObjectId().toString())).resolves.toBeNull();
+			await expect(repo.findHeartbeatTokenById(http._id.toString(), doc.teamId.toString())).resolves.toBeNull();
+		});
+
+		it("setHeartbeatToken replaces the token, and throws notFound for a non-heartbeat monitor", async () => {
+			const repo = new MongoMonitorsRepository();
+			const doc = await seedHeartbeatMonitor();
+			const http = await seedMonitor(doc.teamId, "site", []);
+
+			await repo.setHeartbeatToken(doc._id.toString(), doc.teamId.toString(), "rotated-token-0123456789");
+
+			await expect(repo.findHeartbeatTokenById(doc._id.toString(), doc.teamId.toString())).resolves.toBe("rotated-token-0123456789");
+			await expect(repo.setHeartbeatToken(http._id.toString(), doc.teamId.toString(), "x")).rejects.toMatchObject({ status: 404 });
+		});
+	});
+
 	describe("findDashboardByTeamId", () => {
 		const seedDashboardMonitor = async (teamId: mongoose.Types.ObjectId, name: string, type: string, status: string, uptimePercentage?: number) => {
 			const monitor = await MonitorModel.create({ userId: new mongoose.Types.ObjectId(), teamId, name, type, status, url: "https://example.com" });

@@ -37,6 +37,7 @@ import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.int
 import { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import { isCaptureDockerUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
 import { monitorErrors } from "@/domain/monitors/monitor.errors.js";
+import { HeartbeatTokenResult } from "@/domain/heartbeat/heartbeat.schema.js";
 
 const SERVICE_NAME = "MonitorService";
 
@@ -123,7 +124,8 @@ export interface IMonitorService {
 	editMonitor(args: { teamId: string; monitorId: string; body: Partial<Monitor> }): Promise<Monitor>;
 	pauseMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 	bulkPauseMonitors(args: { teamId: string; monitorIds: string[]; pause: boolean }): Promise<{ monitors: Monitor[]; failedCount: number }>;
-	rotateHeartbeatToken(args: { teamId: string; monitorId: string }): Promise<Monitor>;
+	getHeartbeatToken(args: { teamId: string; monitorId: string }): Promise<HeartbeatTokenResult>;
+	rotateHeartbeatToken(args: { teamId: string; monitorId: string }): Promise<HeartbeatTokenResult>;
 
 	// delete
 	deleteMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
@@ -705,12 +707,28 @@ export class MonitorService implements IMonitorService {
 		return { monitors, failedCount };
 	};
 
-	rotateHeartbeatToken = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
+	// 404 for a missing monitor, 400 for one that has no token
+	private assertHeartbeat = async (monitorId: string, teamId: string) => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (monitor.type !== "heartbeat") {
 			throw new AppError(monitorErrors.notHeartbeat, { service: SERVICE_NAME });
 		}
-		return this.monitorsRepository.setHeartbeatToken(monitorId, teamId, this.generateHeartbeatToken());
+	};
+
+	getHeartbeatToken = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<HeartbeatTokenResult> => {
+		await this.assertHeartbeat(monitorId, teamId);
+		const heartbeatToken = await this.monitorsRepository.findHeartbeatTokenById(monitorId, teamId);
+		if (!heartbeatToken) {
+			throw new AppError(internalError, { message: "Heartbeat monitor has no token", service: SERVICE_NAME });
+		}
+		return { heartbeatToken };
+	};
+
+	rotateHeartbeatToken = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<HeartbeatTokenResult> => {
+		await this.assertHeartbeat(monitorId, teamId);
+		const heartbeatToken = this.generateHeartbeatToken();
+		await this.monitorsRepository.setHeartbeatToken(monitorId, teamId, heartbeatToken);
+		return { heartbeatToken };
 	};
 
 	private deleteMonitorChildren = async (monitor: Monitor, teamId: string) => {

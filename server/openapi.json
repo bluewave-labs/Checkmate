@@ -1277,9 +1277,6 @@
 					"secret": {
 						"type": "string"
 					},
-					"heartbeatToken": {
-						"type": "string"
-					},
 					"cpuAlertThreshold": {
 						"type": "number"
 					},
@@ -2523,6 +2520,15 @@
 					}
 				},
 				"required": ["id", "metadata", "lines", "gap", "checkedAt", "expiry", "createdAt", "updatedAt"]
+			},
+			"HeartbeatToken": {
+				"type": "object",
+				"properties": {
+					"heartbeatToken": {
+						"type": "string"
+					}
+				},
+				"required": ["heartbeatToken"]
 			},
 			"Notification": {
 				"type": "object",
@@ -10101,6 +10107,111 @@
 			}
 		},
 		"/monitors/{monitorId}/heartbeat-token": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Get a heartbeat monitor's ping token (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "monitorId",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HeartbeatToken"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request, or monitor is not a heartbeat monitor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Monitor not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			},
 			"post": {
 				"tags": ["monitors"],
 				"summary": "Rotate a heartbeat monitor's ping token (admin/superadmin)",
@@ -10136,7 +10247,7 @@
 											"type": "string"
 										},
 										"data": {
-											"$ref": "#/components/schemas/Monitor"
+											"$ref": "#/components/schemas/HeartbeatToken"
 										}
 									},
 									"required": ["success", "msg", "data"]

@@ -56,6 +56,7 @@ const SECRET_KEYS = [
 	"systemEmailPassword",
 	"pagespeedApiKey",
 	"dockerTlsKey",
+	"heartbeatToken",
 	"token",
 ];
 const REDACT_PATHS = SECRET_KEYS.flatMap((key) => [key, `*.${key}`, `*.*.${key}`]);
