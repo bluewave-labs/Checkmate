@@ -487,7 +487,8 @@
 					"optionHardware": "Hạ tầng",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "Heartbeat"
 				},
 				"bulkPause": {
 					"paused_one": "Đã tạm dừng {{count}} màn hình",
@@ -544,6 +545,12 @@
 								"twoMinutes": "2 phút"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "Khoảng thời gian cảnh báo",
+						"description": "Chờ ping trong bao lâu trước khi đánh dấu monitor này là ngừng hoạt động?",
+						"label": "Cảnh báo nếu không có ping trong",
+						"hint": "Chọn lịch chạy của tác vụ cộng thêm một khoảng dự phòng, ví dụ 65 phút cho tác vụ chạy mỗi giờ."
 					},
 					"title": "Tần suất kiểm tra"
 				},
@@ -621,7 +628,8 @@
 						"grpc": "Nhập tên máy chủ và cổng của máy chủ gRPC, tùy chọn chỉ định tên dịch vụ cho kiểm tra sức khỏe và thêm tên hiển thị.",
 						"websocket": "Nhập URL WebSocket cần giám sát (vd: wss://example.com/socket) và thêm tên hiển thị.",
 						"hardware": "Giám sát mức sử dụng CPU, bộ nhớ, ổ đĩa và nhiệt độ của hạ tầng. URL điểm cuối Capture phải bao gồm đường dẫn đầy đủ /api/v1/metrics (ví dụ: http://192.168.1.10:5001/api/v1/metrics). Đối với khóa xác thực, chỉ dán chuỗi token — không bao gồm 'Bearer'.",
-						"dns": "Giám sát xem một máy chủ DNS cụ thể có phản hồi hay không."
+						"dns": "Giám sát xem một máy chủ DNS cụ thể có phản hồi hay không.",
+						"heartbeat": "Thêm tên hiển thị rõ ràng xuất hiện trên bảng điều khiển. URL ping sẽ hiển thị trên trang chi tiết của monitor sau khi lưu."
 					}
 				},
 				"ignoreTls": {
@@ -659,7 +667,8 @@
 					"optionPingDescription": "Sử dụng ICMP Ping để giám sát xem máy chủ có trực tuyến không.",
 					"optionPortDescription": "Giám sát xem một cổng cụ thể trên máy chủ có mở không.",
 					"title": "Loại",
-					"optionDnsDescription": "Giám sát xem một máy chủ DNS cụ thể có phản hồi hay không."
+					"optionDnsDescription": "Giám sát xem một máy chủ DNS cụ thể có phản hồi hay không.",
+					"optionHeartbeatDescription": "Nhận cảnh báo khi một cron job hoặc tác vụ đã lên lịch ngừng gửi tín hiệu."
 				},
 				"thresholds": {
 					"title": "Ngưỡng cảnh báo",
@@ -1623,6 +1632,25 @@
 			"header": {
 				"title": "Trình giám sát uptime",
 				"description": "Theo dõi các endpoint HTTP, ping, container và cổng — nhận cảnh báo ngay khi có sự cố."
+			},
+			"details": {
+				"heartbeat": {
+					"title": "URL heartbeat",
+					"description": "Cho tác vụ của bạn gọi URL này mỗi lần chạy. Nếu không có yêu cầu nào trong khoảng thời gian cảnh báo, monitor sẽ chuyển sang ngừng hoạt động.",
+					"pingUrl": "URL ping",
+					"examples": {
+						"post": "Ping khi thành công",
+						"cron": "Ping sau khi cron job chạy thành công",
+						"exitCode": "Báo mã thoát của tác vụ (0 là hoạt động, giá trị khác là ngừng hoạt động)",
+						"fail": "Báo lỗi"
+					},
+					"copy": "Sao chép vào bộ nhớ tạm",
+					"copied": "Đã sao chép vào bộ nhớ tạm",
+					"copyFailed": "Không thể sao chép. Hãy chọn văn bản và sao chép thủ công.",
+					"rotate": "Làm mới token",
+					"rotateConfirmTitle": "Làm mới token heartbeat này?",
+					"rotateConfirmBody": "URL hiện tại sẽ ngừng hoạt động ngay lập tức. Hãy cập nhật mọi tác vụ đang ping tới URL này."
+				}
 			}
 		},
 		"docker": {

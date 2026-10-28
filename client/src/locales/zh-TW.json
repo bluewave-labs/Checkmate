@@ -487,7 +487,8 @@
 					"optionHardware": "基礎架構",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "心跳"
 				},
 				"bulkPause": {
 					"paused_one": "已暫停 {{count}} 個監視器",
@@ -544,6 +545,12 @@
 								"twoMinutes": "2 分鐘"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "警示時間範圍",
+						"description": "在將此監控標記為停機之前，要等待 ping 多久？",
+						"label": "未收到 ping 時警示的時間",
+						"hint": "依工作的排程再加一些緩衝來選擇，例如每小時執行的工作選 65 分鐘。"
 					},
 					"title": "檢查頻率"
 				},
@@ -621,7 +628,8 @@
 						"grpc": "輸入 gRPC 伺服器的主機名稱和連接埠，可選擇指定健康檢查的服務名稱，並新增一個顯示名稱。",
 						"websocket": "輸入要監控的 WebSocket URL（例如 wss://example.com/socket），並新增一個顯示名稱。",
 						"hardware": "監控基礎架構的 CPU、記憶體、磁碟使用情況和溫度。Capture 端點 URL 必須包含完整路徑 /api/v1/metrics（例如 http://192.168.1.10:5001/api/v1/metrics）。授權密鑰僅貼上權杖字串——請勿包含 'Bearer'。",
-						"dns": "監控特定DNS伺服器是否回應。"
+						"dns": "監控特定DNS伺服器是否回應。",
+						"heartbeat": "新增一個清楚的顯示名稱，它會顯示在儀表板上。儲存後，Ping URL 會顯示在監控的詳細資料頁面中。"
 					}
 				},
 				"ignoreTls": {
@@ -659,7 +667,8 @@
 					"optionPingDescription": "使用 ICMP Ping 監控伺服器是否上線。",
 					"optionPortDescription": "監控伺服器上的特定連接埠是否開啟。",
 					"title": "類型",
-					"optionDnsDescription": "監控特定DNS伺服器是否回應。"
+					"optionDnsDescription": "監控特定DNS伺服器是否回應。",
+					"optionHeartbeatDescription": "當 cron 工作或排程任務停止回報時收到警示。"
 				},
 				"thresholds": {
 					"title": "警報閾值",
@@ -1623,6 +1632,25 @@
 			"header": {
 				"title": "運行時間監視器",
 				"description": "監控 HTTP 端點、Ping、容器和連接埠 — 一旦發生故障即刻收到提醒。"
+			},
+			"details": {
+				"heartbeat": {
+					"title": "心跳 URL",
+					"description": "讓工作每次執行時請求此 URL。若在警示時間範圍內沒有收到請求，監控會變為停機。",
+					"pingUrl": "Ping URL",
+					"examples": {
+						"post": "成功時 ping",
+						"cron": "cron 工作成功後 ping",
+						"exitCode": "回報工作的結束代碼（0 表示正常，其他值表示停機）",
+						"fail": "回報失敗"
+					},
+					"copy": "複製到剪貼簿",
+					"copied": "已複製到剪貼簿",
+					"copyFailed": "無法複製。請選取文字並手動複製。",
+					"rotate": "輪替權杖",
+					"rotateConfirmTitle": "要輪替此心跳權杖嗎？",
+					"rotateConfirmBody": "目前的 URL 會立即失效。請更新所有 ping 此 URL 的工作。"
+				}
 			}
 		},
 		"docker": {

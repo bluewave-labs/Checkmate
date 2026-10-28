@@ -502,7 +502,8 @@
 					"optionHardware": "Infrastruttura",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "Heartbeat"
 				}
 			}
 		},
@@ -559,6 +560,12 @@
 								"twoMinutes": "2 minuti"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "Finestra di avviso",
+						"description": "Quanto attendere un ping prima di segnare questo monitor come inattivo?",
+						"label": "Avvisa se nessun ping per",
+						"hint": "Scegli la pianificazione del job più un margine, ad es. 65 minuti per un job orario."
 					},
 					"title": "Frequenza di verifica"
 				},
@@ -636,7 +643,8 @@
 						"grpc": "Inserisci l'hostname e la porta del server gRPC, specifica opzionalmente un nome di servizio per la verifica di stato e aggiungi un nome visualizzato.",
 						"websocket": "Inserisci l'URL WebSocket da monitorare (es. wss://example.com/socket) e aggiungi un nome visualizzato.",
 						"hardware": "Monitora CPU, memoria, utilizzo del disco e temperatura per la tua infrastruttura. L'URL dell'endpoint Capture deve includere il percorso completo /api/v1/metrics (es. http://192.168.1.10:5001/api/v1/metrics). Per il segreto di autorizzazione, incolla solo la stringa del token — non includere 'Bearer'.",
-						"dns": "Monitora se uno specifico server DNS sta rispondendo."
+						"dns": "Monitora se uno specifico server DNS sta rispondendo.",
+						"heartbeat": "Aggiungi un nome visualizzato chiaro che compare nella dashboard. L'URL di ping viene mostrato nella pagina dei dettagli del monitor dopo il salvataggio."
 					}
 				},
 				"ignoreTls": {
@@ -678,6 +686,7 @@
 					"optionPingDescription": "Usa ICMP Ping per monitorare se un server è online.",
 					"optionPortDescription": "Monitora se una specifica porta su un server è aperta.",
 					"optionDnsDescription": "Monitora se uno specifico server DNS sta rispondendo.",
+					"optionHeartbeatDescription": "Ricevi un avviso quando un cron job o un'attività pianificata smette di segnalarsi.",
 					"title": "Tipo"
 				},
 				"thresholds": {
@@ -1743,6 +1752,25 @@
 			"header": {
 				"title": "Monitor uptime",
 				"description": "Controlla endpoint HTTP, ping, container e porte — e ricevi un avviso nel momento in cui qualcosa va giù."
+			},
+			"details": {
+				"heartbeat": {
+					"title": "URL heartbeat",
+					"description": "Fai chiamare questo URL dal tuo job a ogni esecuzione. Se non arriva alcuna richiesta entro la finestra di avviso, il monitor risulta inattivo.",
+					"pingUrl": "URL di ping",
+					"examples": {
+						"post": "Ping in caso di successo",
+						"cron": "Ping dopo il completamento di un cron job",
+						"exitCode": "Segnala il codice di uscita del job (0 è attivo, qualsiasi altro valore è inattivo)",
+						"fail": "Segnala un errore"
+					},
+					"copy": "Copia negli appunti",
+					"copied": "Copiato negli appunti",
+					"copyFailed": "Impossibile copiare. Seleziona il testo e copialo manualmente.",
+					"rotate": "Rigenera token",
+					"rotateConfirmTitle": "Rigenerare questo token heartbeat?",
+					"rotateConfirmBody": "L'URL attuale smette subito di funzionare. Aggiorna ogni job che lo chiama."
+				}
 			}
 		},
 		"docker": {

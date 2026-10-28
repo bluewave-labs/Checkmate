@@ -487,7 +487,8 @@
 					"optionHardware": "Infraestructura",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "Heartbeat"
 				},
 				"bulkPause": {
 					"paused_one": "{{count}} monitor pausado",
@@ -544,6 +545,12 @@
 								"twoMinutes": "2 minutos"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "Ventana de alerta",
+						"description": "¿Cuánto tiempo esperar un ping antes de marcar este monitor como caído?",
+						"label": "Alertar si no hay ping durante",
+						"hint": "Elija la programación de su tarea más un margen, p. ej., 65 minutos para una tarea que se ejecuta cada hora."
 					},
 					"title": "Frecuencia de verificación"
 				},
@@ -621,7 +628,8 @@
 						"grpc": "Ingrese el nombre de host y puerto del servidor gRPC, opcionalmente especifique un nombre de servicio para la verificación de salud, y agregue un nombre para mostrar.",
 						"websocket": "Ingrese la URL de WebSocket a monitorear (p. ej., wss://example.com/socket) y agregue un nombre para mostrar.",
 						"hardware": "Supervisa el uso de CPU, memoria, disco y temperatura de tu infraestructura. La URL del endpoint de Capture debe incluir la ruta completa /api/v1/metrics (p. ej., http://192.168.1.10:5001/api/v1/metrics). Para el secreto de autorización, pega solo la cadena del token — no incluyas 'Bearer'.",
-						"dns": "Monitorea si un servidor DNS específico responde."
+						"dns": "Monitorea si un servidor DNS específico responde.",
+						"heartbeat": "Agregue un nombre para mostrar claro que aparezca en el panel. La URL de ping se muestra en la página de detalles del monitor después de guardar."
 					}
 				},
 				"ignoreTls": {
@@ -659,7 +667,8 @@
 					"optionPingDescription": "Use ICMP Ping para monitorear si un servidor está en línea.",
 					"optionPortDescription": "Monitoree si un puerto específico de un servidor está abierto.",
 					"title": "Tipo",
-					"optionDnsDescription": "Monitorea si un servidor DNS específico responde."
+					"optionDnsDescription": "Monitorea si un servidor DNS específico responde.",
+					"optionHeartbeatDescription": "Reciba una alerta cuando un cron job o una tarea programada deje de reportarse."
 				},
 				"thresholds": {
 					"title": "Umbrales de alerta",
@@ -1623,6 +1632,25 @@
 			"header": {
 				"title": "Monitores de uptime",
 				"description": "Observa endpoints HTTP, pings, contenedores y puertos — recibe alertas en el momento en que algo falla."
+			},
+			"details": {
+				"heartbeat": {
+					"title": "URL de heartbeat",
+					"description": "Haga que su tarea solicite esta URL cada vez que se ejecute. Si no llega ninguna solicitud dentro de la ventana de alerta, el monitor pasa a caído.",
+					"pingUrl": "URL de ping",
+					"examples": {
+						"post": "Ping al terminar con éxito",
+						"cron": "Ping después de que un cron job termine con éxito",
+						"exitCode": "Informar el código de salida de la tarea (0 es activo, cualquier otro es caído)",
+						"fail": "Informar un fallo"
+					},
+					"copy": "Copiar al portapapeles",
+					"copied": "Copiado al portapapeles",
+					"copyFailed": "No se pudo copiar. Seleccione el texto y cópielo manualmente.",
+					"rotate": "Rotar token",
+					"rotateConfirmTitle": "¿Rotar este token de heartbeat?",
+					"rotateConfirmBody": "La URL actual deja de funcionar de inmediato. Actualice todas las tareas que le hacen ping."
+				}
 			}
 		},
 		"docker": {

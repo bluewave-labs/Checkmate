@@ -487,7 +487,8 @@
 					"optionHardware": "Infraestructura",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "Heartbeat"
 				},
 				"bulkPause": {
 					"alreadyPaused_one": "El monitor seleccionat ja està pausat",
@@ -544,6 +545,12 @@
 								"twoMinutes": "2 minuts"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "Finestra d'alerta",
+						"description": "Quant de temps cal esperar un ping abans de marcar aquest monitor com a caigut?",
+						"label": "Alerta si no hi ha ping durant",
+						"hint": "Tria la planificació de la tasca més un marge, p. ex. 65 minuts per a una tasca horària."
 					},
 					"title": "Freqüència de comprovació"
 				},
@@ -621,7 +628,8 @@
 						"grpc": "Introdueix el nom d'host i el port del servidor gRPC, opcionalment especifica un nom de servei per a la comprovació de salut, i afegeix un nom de visualització.",
 						"websocket": "Introdueix la URL de WebSocket a monitorar (p. ex., wss://example.com/socket) i afegeix un nom de visualització.",
 						"hardware": "Monitoritza l'ús de CPU, memòria, disc i temperatura per a la teva infraestructura. La URL de l'endpoint de captura ha d'incloure la ruta completa /api/v1/metrics (p. ex., http://192.168.1.10:5001/api/v1/metrics). Per al secret d'autorització, enganxa només la cadena del token — no incloguis 'Bearer'.",
-						"dns": "Monitoritza si un servidor DNS específic respon."
+						"dns": "Monitoritza si un servidor DNS específic respon.",
+						"heartbeat": "Afegeix un nom visible clar que aparegui al tauler. L'URL de ping es mostra a la pàgina de detalls del monitor després de desar."
 					}
 				},
 				"ignoreTls": {
@@ -659,7 +667,8 @@
 					"optionPingDescription": "Usa ICMP Ping per monitorar si un servidor és en línia.",
 					"optionPortDescription": "Monitoritza si un port específic d'un servidor és obert.",
 					"title": "Tipus",
-					"optionDnsDescription": "Monitoritza si un servidor DNS específic respon."
+					"optionDnsDescription": "Monitoritza si un servidor DNS específic respon.",
+					"optionHeartbeatDescription": "Rep una alerta quan una tasca cron o programada deixi de donar senyals."
 				},
 				"thresholds": {
 					"title": "Llindars d'alerta",
@@ -1623,6 +1632,25 @@
 			"header": {
 				"title": "Monitors de temps en línia",
 				"description": "Vigila endpoints HTTP, pings, contenidors i ports — i rep alertes en el moment en que alguna cosa cau."
+			},
+			"details": {
+				"heartbeat": {
+					"title": "URL de heartbeat",
+					"description": "Fes que la teva tasca sol·liciti aquesta URL cada vegada que s'executi. Si no arriba cap sol·licitud dins la finestra d'alerta, el monitor cau.",
+					"pingUrl": "URL de ping",
+					"examples": {
+						"post": "Ping en cas d'èxit",
+						"cron": "Ping després que una tasca cron acabi bé",
+						"exitCode": "Informa del codi de sortida de la tasca (0 és actiu, qualsevol altre és caigut)",
+						"fail": "Informa d'un error"
+					},
+					"copy": "Copia al porta-retalls",
+					"copied": "Copiat al porta-retalls",
+					"copyFailed": "No s'ha pogut copiar. Selecciona el text i copia'l manualment.",
+					"rotate": "Rota el testimoni",
+					"rotateConfirmTitle": "Vols rotar aquest testimoni de heartbeat?",
+					"rotateConfirmBody": "L'URL actual deixa de funcionar immediatament. Actualitza totes les tasques que hi fan ping."
+				}
 			}
 		},
 		"docker": {
