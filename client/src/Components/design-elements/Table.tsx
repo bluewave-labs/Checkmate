@@ -585,16 +585,16 @@ export const Pagination = ({ ...props }: PaginationProps) => {
 	const theme = useTheme();
 
 	useEffect(() => {
+		const lastPage = Math.max(0, Math.ceil(rest.count / rest.rowsPerPage) - 1);
 		if (
 			typeof itemsOnPage === "number" &&
 			itemsOnPage === 0 &&
-			rest.count > 0 &&
-			rest.page > 0 &&
+			rest.page > lastPage &&
 			rest.onPageChange
 		) {
-			rest.onPageChange(null, rest.page - 1);
+			rest.onPageChange(null, lastPage);
 		}
-	}, [itemsOnPage, rest.count, rest.page, rest.onPageChange]);
+	}, [itemsOnPage, rest.count, rest.rowsPerPage, rest.page, rest.onPageChange]);
 
 	const labelDisplayedRows = ({
 		from,

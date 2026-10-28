@@ -108,7 +108,6 @@ export const MonitorStatuses = [
 ] as const;
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 
-// Options for the status and state filters on the monitor lists.
 export const MonitorStatusFilters = ["up", "down"] as const;
 export type MonitorStatusFilter = (typeof MonitorStatusFilters)[number];
 export const MonitorStateFilters = ["active", "paused"] as const;

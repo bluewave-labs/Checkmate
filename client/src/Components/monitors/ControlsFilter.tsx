@@ -7,6 +7,8 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import {
 	MonitorStateFilters,
 	MonitorStatusFilters,
+	type MonitorStateFilter,
+	type MonitorStatusFilter,
 	type MonitorType,
 } from "@/Types/Monitor";
 import type { Tag } from "@/Types/Tag";
@@ -39,10 +41,10 @@ export const ControlsFilter = ({
 	showTypes?: boolean;
 	selectedTypes?: MonitorType[];
 	setSelectedTypes?: (types: MonitorType[]) => void;
-	selectedStatus?: string;
-	setSelectedStatus?: (status: string) => void;
-	selectedState?: string;
-	setSelectedState?: (state: string) => void;
+	selectedStatus?: MonitorStatusFilter | "";
+	setSelectedStatus?: (status: MonitorStatusFilter) => void;
+	selectedState?: MonitorStateFilter | "";
+	setSelectedState?: (state: MonitorStateFilter) => void;
 	tagOptions?: Tag[];
 	selectedTags?: string[];
 	setSelectedTags?: (tags: string[]) => void;
@@ -85,7 +87,7 @@ export const ControlsFilter = ({
 				<Select
 					placeholder="Status"
 					value={selectedStatus ?? ""}
-					onChange={(e) => setSelectedStatus(e.target.value)}
+					onChange={(e) => setSelectedStatus(e.target.value as MonitorStatusFilter)}
 				>
 					{MonitorStatusFilters.map((status) => (
 						<MenuItem
@@ -101,7 +103,7 @@ export const ControlsFilter = ({
 				<Select
 					placeholder="State"
 					value={selectedState ?? ""}
-					onChange={(e) => setSelectedState(e.target.value)}
+					onChange={(e) => setSelectedState(e.target.value as MonitorStateFilter)}
 				>
 					{MonitorStateFilters.map((state) => (
 						<MenuItem
