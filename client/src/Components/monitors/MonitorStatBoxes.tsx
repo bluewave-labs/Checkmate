@@ -65,10 +65,13 @@ export const MonitorStatBoxes = ({
 				title={t("pages.common.monitors.statBoxes.lastCheck")}
 				subtitle={lastCheckTime}
 			/>
-			<StatBox
-				title={t("pages.common.monitors.statBoxes.lastResponseTime")}
-				subtitle={formatMs(monitorStats?.lastResponseTime ?? 0)}
-			/>
+			{/* Heartbeat checks have no response time */}
+			{monitor?.type !== "heartbeat" && (
+				<StatBox
+					title={t("pages.common.monitors.statBoxes.lastResponseTime")}
+					subtitle={formatMs(monitorStats?.lastResponseTime ?? 0)}
+				/>
+			)}
 
 			{monitor?.type === "http" && (
 				<>
