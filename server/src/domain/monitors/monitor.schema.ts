@@ -48,7 +48,7 @@ export const monitorSchema = z.object({
 	tags: z.array(z.string()),
 	customUpCodes: z.array(z.number()),
 	secret: z.string().optional(),
-	heartbeatToken: z.string().optional(),
+	heartbeatSlug: z.string().optional(),
 	cpuAlertThreshold: z.number(),
 	cpuAlertCounter: z.number(),
 	memoryAlertThreshold: z.number(),
@@ -120,11 +120,9 @@ const monitorExample = {
 	createdAt: "2026-04-01T10:00:00.000Z",
 	updatedAt: "2026-04-15T14:30:00.000Z",
 	lastEvaluatedAt: 1776254400000,
-} satisfies Omit<z.infer<typeof monitorSchema>, "dockerTlsKey" | "heartbeatToken">;
+} satisfies Omit<z.infer<typeof monitorSchema>, "dockerTlsKey">;
 
-export const monitorResponseSchema = monitorSchema
-	.omit({ dockerTlsKey: true, heartbeatToken: true })
-	.meta({ id: "Monitor", example: monitorExample });
+export const monitorResponseSchema = monitorSchema.omit({ dockerTlsKey: true }).meta({ id: "Monitor", example: monitorExample });
 
 export const monitorsSummarySchema = z.object({
 	totalMonitors: z.number(),
