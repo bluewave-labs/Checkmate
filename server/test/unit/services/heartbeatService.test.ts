@@ -131,6 +131,14 @@ describe("HeartbeatService.recordPing", () => {
 		expect(createdCheck(checkService)).toMatchObject({ status: true, statusCode: 200, message: "Ping received" });
 	});
 
+	it("stores a reported duration as the response time", async () => {
+		const { service, checkService } = setup();
+
+		await service.recordPing({ token: "t", action: "success", duration: 1234 });
+
+		expect(checkService.toCheck).toHaveBeenCalledWith(expect.objectContaining({ responseTime: 1234 }));
+	});
+
 	it("uses a client message, and falls back to the default for an empty one", async () => {
 		const withMessage = setup();
 		await withMessage.service.recordPing({ token: "t", action: "success", message: "backup ok" });

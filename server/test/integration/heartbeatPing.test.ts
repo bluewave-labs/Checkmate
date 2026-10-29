@@ -137,6 +137,43 @@ describe("heartbeat ping endpoint", () => {
 		}
 	});
 
+	it("stores a reported duration as the response time", async () => {
+		const { base, close, checksFor } = await setup();
+		try {
+			await fetch(`${base}/${TOKEN}/0?duration=1234`);
+
+			const checks = await checksFor();
+			expect(checks[0]).toMatchObject({ status: true, responseTime: 1234 });
+		} finally {
+			await close();
+		}
+	});
+
+	it("defaults the response time to 0 without a duration", async () => {
+		const { base, close, checksFor } = await setup();
+		try {
+			await fetch(`${base}/${TOKEN}`);
+
+			const checks = await checksFor();
+			expect(checks[0]).toMatchObject({ responseTime: 0 });
+		} finally {
+			await close();
+		}
+	});
+
+	it("rejects an invalid duration with a 400 and writes nothing", async () => {
+		const { base, close, checksFor } = await setup();
+		try {
+			for (const duration of ["-1", "1.5", "abc", "604800001"]) {
+				const response = await fetch(`${base}/${TOKEN}?duration=${duration}`);
+				expect(response.status).toBe(400);
+			}
+			expect(await checksFor()).toHaveLength(0);
+		} finally {
+			await close();
+		}
+	});
+
 	it("answers an unknown token with a 404 and writes nothing", async () => {
 		const { base, close, checksFor } = await setup();
 		try {
