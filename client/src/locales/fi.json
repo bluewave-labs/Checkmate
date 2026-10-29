@@ -1426,9 +1426,9 @@
 				},
 				"heartbeatKey": {
 					"title": "Heartbeat-pingiavain",
-					"description": "Yksi salaisuus, jonka kaikki tämän tiimin heartbeat-valvojat jakavat. Työt lähettävät sen ping-URL:ssa valvojan slugin kanssa.",
+					"description": "Avain heartbeat-valvojien pingaamiseen.",
 					"noKey": "Avainta ei vielä ole. Luo avain aloittaaksesi heartbeat-pingien lähettämisen.",
-					"keySet": "Avain on asetettu. Se näytettiin kerran, kun se luotiin.",
+					"keySet": "Avain on asetettu. Vaihda se saadaksesi uuden avaimen, jonka voit kopioida.",
 					"generate": "Luo avain",
 					"rotate": "Vaihda avain",
 					"rotateConfirmTitle": "Vaihdetaanko heartbeat-pingiavain?",

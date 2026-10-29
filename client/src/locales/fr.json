@@ -1426,9 +1426,9 @@
 				},
 				"heartbeatKey": {
 					"title": "Clé de ping heartbeat",
-					"description": "Un secret partagé par tous les moniteurs heartbeat de cette équipe. Les tâches l'envoient dans l'URL de ping avec le slug du moniteur.",
+					"description": "Clé utilisée pour envoyer des pings aux moniteurs heartbeat.",
 					"noKey": "Aucune clé pour l'instant. Générez-en une pour commencer à envoyer des pings heartbeat.",
-					"keySet": "Une clé est définie. Elle a été affichée une seule fois, lors de sa génération.",
+					"keySet": "Une clé est définie. Renouvelez-la pour obtenir une nouvelle clé à copier.",
 					"generate": "Générer une clé",
 					"rotate": "Renouveler la clé",
 					"rotateConfirmTitle": "Renouveler la clé de ping heartbeat ?",

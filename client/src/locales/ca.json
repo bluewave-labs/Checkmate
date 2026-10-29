@@ -1426,9 +1426,9 @@
 				},
 				"heartbeatKey": {
 					"title": "Clau de ping del heartbeat",
-					"description": "Un secret compartit per tots els monitors de heartbeat d'aquest equip. Les tasques l'envien a l'URL de ping juntament amb l'slug del monitor.",
+					"description": "Clau per fer ping als monitors de heartbeat.",
 					"noKey": "Encara no hi ha cap clau. Genera'n una per començar a enviar pings de heartbeat.",
-					"keySet": "Hi ha una clau definida. Es va mostrar una sola vegada, quan es va generar.",
+					"keySet": "Hi ha una clau definida. Rota-la per obtenir-ne una de nova que puguis copiar.",
 					"generate": "Genera una clau",
 					"rotate": "Rota la clau",
 					"rotateConfirmTitle": "Vols rotar la clau de ping del heartbeat?",

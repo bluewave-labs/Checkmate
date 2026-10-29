@@ -1426,9 +1426,9 @@
 				},
 				"heartbeatKey": {
 					"title": "Klíč pro ping heartbeatu",
-					"description": "Jeden tajný klíč sdílený všemi heartbeat monitory v tomto týmu. Úlohy ho posílají v URL pingu spolu se slugem monitoru.",
+					"description": "Klíč pro pingování heartbeat monitorů.",
 					"noKey": "Zatím žádný klíč. Vygenerujte ho, abyste mohli začít posílat heartbeat pingy.",
-					"keySet": "Klíč je nastaven. Byl zobrazen jen jednou, při vygenerování.",
+					"keySet": "Klíč je nastaven. Obnovte ho a získáte nový klíč, který si můžete zkopírovat.",
 					"generate": "Vygenerovat klíč",
 					"rotate": "Obnovit klíč",
 					"rotateConfirmTitle": "Obnovit klíč pro ping heartbeatu?",

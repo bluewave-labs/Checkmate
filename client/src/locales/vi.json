@@ -1426,9 +1426,9 @@
 				},
 				"heartbeatKey": {
 					"title": "Khóa ping heartbeat",
-					"description": "Một bí mật dùng chung cho mọi trình giám sát heartbeat trong nhóm này. Tác vụ gửi khóa trong URL ping cùng với slug của trình giám sát.",
+					"description": "Khóa dùng để ping các trình giám sát heartbeat.",
 					"noKey": "Chưa có khóa. Hãy tạo một khóa để bắt đầu gửi ping heartbeat.",
-					"keySet": "Đã đặt khóa. Khóa chỉ hiển thị một lần khi được tạo.",
+					"keySet": "Đã đặt khóa. Xoay vòng khóa để nhận khóa mới mà bạn có thể sao chép.",
 					"generate": "Tạo khóa",
 					"rotate": "Xoay vòng khóa",
 					"rotateConfirmTitle": "Xoay vòng khóa ping heartbeat?",

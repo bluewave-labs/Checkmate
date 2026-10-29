@@ -1427,9 +1427,9 @@
 				},
 				"heartbeatKey": {
 					"title": "Heartbeat-Ping-Schlüssel",
-					"description": "Ein gemeinsames Geheimnis für alle Heartbeat-Monitore dieses Teams. Jobs senden es zusammen mit dem Slug des Monitors in der Ping-URL.",
+					"description": "Schlüssel zum Anpingen von Heartbeat-Monitoren.",
 					"noKey": "Noch kein Schlüssel. Erstellen Sie einen, um Heartbeat-Pings zu senden.",
-					"keySet": "Ein Schlüssel ist gesetzt. Er wurde einmal beim Erstellen angezeigt.",
+					"keySet": "Ein Schlüssel ist gesetzt. Rotieren Sie ihn, um einen neuen Schlüssel zum Kopieren zu erhalten.",
 					"generate": "Schlüssel erstellen",
 					"rotate": "Schlüssel rotieren",
 					"rotateConfirmTitle": "Heartbeat-Ping-Schlüssel rotieren?",

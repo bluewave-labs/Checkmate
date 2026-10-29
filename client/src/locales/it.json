@@ -1522,9 +1522,9 @@
 				},
 				"heartbeatKey": {
 					"title": "Chiave di ping heartbeat",
-					"description": "Un segreto condiviso da tutti i monitor heartbeat di questo team. I job lo inviano nell'URL di ping insieme allo slug del monitor.",
+					"description": "Chiave usata per inviare ping ai monitor heartbeat.",
 					"noKey": "Nessuna chiave. Generane una per iniziare a inviare ping heartbeat.",
-					"keySet": "Una chiave è impostata. È stata mostrata una sola volta, alla generazione.",
+					"keySet": "Una chiave è impostata. Ruotala per ottenere una nuova chiave da copiare.",
 					"generate": "Genera chiave",
 					"rotate": "Ruota chiave",
 					"rotateConfirmTitle": "Ruotare la chiave di ping heartbeat?",

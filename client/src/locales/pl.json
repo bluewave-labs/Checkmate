@@ -1491,9 +1491,9 @@
 				},
 				"heartbeatKey": {
 					"title": "Klucz pingu heartbeat",
-					"description": "Jeden sekret wspólny dla wszystkich monitorów heartbeat w tym zespole. Zadania wysyłają go w adresie URL pingu razem ze slugiem monitora.",
+					"description": "Klucz do pingowania monitorów heartbeat.",
 					"noKey": "Brak klucza. Wygeneruj go, aby zacząć wysyłać pingi heartbeat.",
-					"keySet": "Klucz jest ustawiony. Został pokazany raz, podczas generowania.",
+					"keySet": "Klucz jest ustawiony. Zmień go, aby otrzymać nowy klucz do skopiowania.",
 					"generate": "Wygeneruj klucz",
 					"rotate": "Zmień klucz",
 					"rotateConfirmTitle": "Zmienić klucz pingu heartbeat?",

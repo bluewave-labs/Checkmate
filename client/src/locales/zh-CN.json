@@ -1427,9 +1427,9 @@
 				},
 				"heartbeatKey": {
 					"title": "心跳 ping 密钥",
-					"description": "此团队所有心跳监控共用的一个密钥。任务会在 ping URL 中连同监控的 slug 一起发送它。",
+					"description": "用于向心跳监控发送 ping 的密钥。",
 					"noKey": "尚无密钥。生成一个密钥即可开始发送心跳 ping。",
-					"keySet": "已设置密钥。它仅在生成时显示过一次。",
+					"keySet": "已设置密钥。轮换密钥即可获得可复制的新密钥。",
 					"generate": "生成密钥",
 					"rotate": "轮换密钥",
 					"rotateConfirmTitle": "轮换心跳 ping 密钥？",
