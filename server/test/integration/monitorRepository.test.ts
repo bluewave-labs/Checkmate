@@ -4,6 +4,8 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import { MonitorModel } from "../../src/domain/monitors/monitor.model.ts";
 import { MonitorStatsModel } from "../../src/domain/monitor-stats/monitor-stats.model.ts";
 import MongoMonitorsRepository from "../../src/domain/monitors/monitor.repository.mongo.ts";
+import { monitorErrors } from "../../src/domain/monitors/monitor.errors.ts";
+import type { Monitor } from "../../src/domain/monitors/monitor.type.ts";
 
 let mongod: MongoMemoryServer;
 
@@ -220,52 +222,88 @@ describe("MongoMonitorsRepository", () => {
 		});
 	});
 
-	describe("heartbeat token access", () => {
-		const seedHeartbeatMonitor = (overrides: Record<string, unknown> = {}) =>
+	describe("heartbeat slugs", () => {
+		const seedHeartbeatMonitor = (teamId: mongoose.Types.ObjectId, heartbeatSlug: string) =>
 			MonitorModel.create({
 				userId: new mongoose.Types.ObjectId(),
-				teamId: new mongoose.Types.ObjectId(),
-				name: "cron",
+				teamId,
+				name: heartbeatSlug,
 				type: "heartbeat",
-				heartbeatToken: "stored-token-0123456789",
-				...overrides,
+				heartbeatSlug,
 			});
 
-		it("never returns the token on a normal load", async () => {
+		const heartbeatBody = (heartbeatSlug: string) =>
+			({ name: heartbeatSlug, type: "heartbeat", interval: 60_000, heartbeatSlug }) as unknown as Monitor;
+
+		it("findHeartbeatBySlug finds the team's heartbeat monitor", async () => {
 			const repo = new MongoMonitorsRepository();
-			const doc = await seedHeartbeatMonitor();
+			const teamId = new mongoose.Types.ObjectId();
+			const doc = await seedHeartbeatMonitor(teamId, "backup");
 
-			const monitor = await repo.findById(doc._id.toString(), doc.teamId.toString());
-
-			expect(monitor).not.toHaveProperty("heartbeatToken");
-			expect(await repo.findByHeartbeatToken("stored-token-0123456789")).not.toHaveProperty("heartbeatToken");
+			await expect(repo.findHeartbeatBySlug(teamId.toString(), "backup")).resolves.toMatchObject({ id: doc._id.toString(), heartbeatSlug: "backup" });
 		});
 
-		it("findHeartbeatTokenById returns the stored token despite select: false", async () => {
+		it("findHeartbeatBySlug returns null for another team, an unknown slug and a non-heartbeat monitor", async () => {
 			const repo = new MongoMonitorsRepository();
-			const doc = await seedHeartbeatMonitor();
+			const teamId = new mongoose.Types.ObjectId();
+			await seedHeartbeatMonitor(teamId, "backup");
+			await MonitorModel.create({
+				userId: new mongoose.Types.ObjectId(),
+				teamId,
+				name: "site",
+				type: "http",
+				url: "https://example.com",
+				heartbeatSlug: "site",
+			});
 
-			await expect(repo.findHeartbeatTokenById(doc._id.toString(), doc.teamId.toString())).resolves.toBe("stored-token-0123456789");
+			await expect(repo.findHeartbeatBySlug(new mongoose.Types.ObjectId().toString(), "backup")).resolves.toBeNull();
+			await expect(repo.findHeartbeatBySlug(teamId.toString(), "missing")).resolves.toBeNull();
+			await expect(repo.findHeartbeatBySlug(teamId.toString(), "site")).resolves.toBeNull();
 		});
 
-		it("findHeartbeatTokenById returns null for another team and for a non-heartbeat monitor", async () => {
+		it("rejects a duplicate slug in one team on create", async () => {
 			const repo = new MongoMonitorsRepository();
-			const doc = await seedHeartbeatMonitor();
-			const http = await seedMonitor(doc.teamId, "site", []);
+			const teamId = new mongoose.Types.ObjectId();
+			await seedHeartbeatMonitor(teamId, "backup");
 
-			await expect(repo.findHeartbeatTokenById(doc._id.toString(), new mongoose.Types.ObjectId().toString())).resolves.toBeNull();
-			await expect(repo.findHeartbeatTokenById(http._id.toString(), doc.teamId.toString())).resolves.toBeNull();
+			await expect(repo.create(heartbeatBody("backup"), teamId.toString(), new mongoose.Types.ObjectId().toString())).rejects.toMatchObject({
+				definition: monitorErrors.heartbeatSlugTaken,
+			});
 		});
 
-		it("setHeartbeatToken replaces the token, and throws notFound for a non-heartbeat monitor", async () => {
+		it("allows the same slug in two teams", async () => {
 			const repo = new MongoMonitorsRepository();
-			const doc = await seedHeartbeatMonitor();
-			const http = await seedMonitor(doc.teamId, "site", []);
+			await seedHeartbeatMonitor(new mongoose.Types.ObjectId(), "backup");
 
-			await repo.setHeartbeatToken(doc._id.toString(), doc.teamId.toString(), "rotated-token-0123456789");
+			await expect(
+				repo.create(heartbeatBody("backup"), new mongoose.Types.ObjectId().toString(), new mongoose.Types.ObjectId().toString())
+			).resolves.toMatchObject({
+				heartbeatSlug: "backup",
+			});
+		});
 
-			await expect(repo.findHeartbeatTokenById(doc._id.toString(), doc.teamId.toString())).resolves.toBe("rotated-token-0123456789");
-			await expect(repo.setHeartbeatToken(http._id.toString(), doc.teamId.toString(), "x")).rejects.toMatchObject({ status: 404 });
+		it("rejects changing a slug to one the team already uses", async () => {
+			const repo = new MongoMonitorsRepository();
+			const teamId = new mongoose.Types.ObjectId();
+			await seedHeartbeatMonitor(teamId, "backup");
+			const other = await seedHeartbeatMonitor(teamId, "vacuum");
+
+			await expect(repo.updateById(other._id.toString(), teamId.toString(), { heartbeatSlug: "backup" })).rejects.toMatchObject({
+				definition: monitorErrors.heartbeatSlugTaken,
+			});
+		});
+
+		it("findExistingHeartbeatSlugs returns only the slugs the team already uses", async () => {
+			const repo = new MongoMonitorsRepository();
+			const teamId = new mongoose.Types.ObjectId();
+			await seedHeartbeatMonitor(teamId, "a");
+			await seedHeartbeatMonitor(teamId, "c");
+			await seedHeartbeatMonitor(new mongoose.Types.ObjectId(), "b");
+
+			const existing = await repo.findExistingHeartbeatSlugs(teamId.toString(), ["a", "b", "c"]);
+
+			expect(existing.sort()).toEqual(["a", "c"]);
+			await expect(repo.findExistingHeartbeatSlugs(teamId.toString(), [])).resolves.toEqual([]);
 		});
 	});
 

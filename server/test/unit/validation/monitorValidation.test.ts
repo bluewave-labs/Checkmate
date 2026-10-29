@@ -875,6 +875,8 @@ describe("monitorValidation — docker alert switches", () => {
 
 describe("monitorValidation — heartbeat", () => {
 	const heartbeatBody = { name: "Nightly backup", type: "heartbeat" as const, interval: 3600000 };
+	const createBody = { ...heartbeatBody, heartbeatSlug: "nightly-backup" };
+	const badSlugs = ["Nightly", "nightly_backup", "-backup", "backup-", "night--backup", "a".repeat(65)];
 
 	const issuePaths = (result: { success: boolean; error?: { issues: { path: PropertyKey[] }[] } }) =>
 		(result.error?.issues ?? []).map((issue) => issue.path.join("."));
@@ -883,9 +885,24 @@ describe("monitorValidation — heartbeat", () => {
 
 	describe("createMonitorBodyValidation", () => {
 		it("accepts a heartbeat without a url and defaults it to empty", () => {
-			const parsed = createMonitorBodyValidation.parse(heartbeatBody);
+			const parsed = createMonitorBodyValidation.parse(createBody);
 
 			expect(parsed.url).toBe("");
+		});
+
+		it("requires a slug on a heartbeat", () => {
+			expect(issuePaths(createMonitorBodyValidation.safeParse(heartbeatBody))).toContain("heartbeatSlug");
+			expect(issuePaths(createMonitorBodyValidation.safeParse({ ...heartbeatBody, heartbeatSlug: "" }))).toContain("heartbeatSlug");
+		});
+
+		it("does not require a slug for other types", () => {
+			expect(issuePaths(createMonitorBodyValidation.safeParse({ name: "Site", type: "http", url: "https://example.com" }))).not.toContain(
+				"heartbeatSlug"
+			);
+		});
+
+		it.each(badSlugs)("rejects the slug %j", (heartbeatSlug) => {
+			expect(issuePaths(createMonitorBodyValidation.safeParse({ ...heartbeatBody, heartbeatSlug }))).toContain("heartbeatSlug");
 		});
 
 		it("still requires a url for other types", () => {
@@ -894,14 +911,8 @@ describe("monitorValidation — heartbeat", () => {
 		});
 
 		it("rejects geo checks and a custom proxy on a heartbeat", () => {
-			expect(issuePaths(createMonitorBodyValidation.safeParse({ ...heartbeatBody, geoCheckEnabled: true }))).toContain("geoCheckEnabled");
-			expect(issuePaths(createMonitorBodyValidation.safeParse({ ...heartbeatBody, proxyMode: "custom" }))).toContain("proxyMode");
-		});
-
-		it("drops a client-sent heartbeatToken", () => {
-			const parsed = createMonitorBodyValidation.parse({ ...heartbeatBody, heartbeatToken: "x" });
-
-			expect(parsed).not.toHaveProperty("heartbeatToken");
+			expect(issuePaths(createMonitorBodyValidation.safeParse({ ...createBody, geoCheckEnabled: true }))).toContain("geoCheckEnabled");
+			expect(issuePaths(createMonitorBodyValidation.safeParse({ ...createBody, proxyMode: "custom" }))).toContain("proxyMode");
 		});
 	});
 
@@ -919,10 +930,12 @@ describe("monitorValidation — heartbeat", () => {
 			expect(issuePaths(editMonitorBodyValidation.safeParse({ type: "heartbeat", proxyMode: "custom" }))).toContain("proxyMode");
 		});
 
-		it("drops a client-sent heartbeatToken", () => {
-			const parsed = editMonitorBodyValidation.parse({ type: "heartbeat", heartbeatToken: "x" });
+		it("accepts an edit that leaves the slug out", () => {
+			expect(editMonitorBodyValidation.safeParse({ type: "heartbeat", name: "x" }).success).toBe(true);
+		});
 
-			expect(parsed).not.toHaveProperty("heartbeatToken");
+		it.each(badSlugs)("rejects the slug %j", (heartbeatSlug) => {
+			expect(issuePaths(editMonitorBodyValidation.safeParse({ type: "heartbeat", heartbeatSlug }))).toContain("heartbeatSlug");
 		});
 	});
 
@@ -943,10 +956,13 @@ describe("monitorValidation — heartbeat", () => {
 			expect(issuePaths(importOne({ ...heartbeatBody, proxyMode: "custom" }))).toContain("monitors.0.proxyMode");
 		});
 
-		it("drops a heartbeatToken from the import file", () => {
-			const parsed = importMonitorsBodyValidation.parse({ monitors: [{ ...heartbeatBody, heartbeatToken: "x" }] });
+		it("accepts a heartbeat without a slug, since import derives one from the name", () => {
+			expect(importOne(heartbeatBody).success).toBe(true);
+		});
 
-			expect(parsed.monitors[0]).not.toHaveProperty("heartbeatToken");
+		it("keeps a valid slug and rejects a malformed one", () => {
+			expect(importMonitorsBodyValidation.parse({ monitors: [createBody] }).monitors[0]).toMatchObject({ heartbeatSlug: "nightly-backup" });
+			expect(issuePaths(importOne({ ...heartbeatBody, heartbeatSlug: "Not_A_Slug" }))).toContain("monitors.0.heartbeatSlug");
 		});
 	});
 });

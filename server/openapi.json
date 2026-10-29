@@ -1277,6 +1277,9 @@
 					"secret": {
 						"type": "string"
 					},
+					"heartbeatSlug": {
+						"type": "string"
+					},
 					"cpuAlertThreshold": {
 						"type": "number"
 					},
@@ -2520,15 +2523,6 @@
 					}
 				},
 				"required": ["id", "metadata", "lines", "gap", "checkedAt", "expiry", "createdAt", "updatedAt"]
-			},
-			"HeartbeatToken": {
-				"type": "object",
-				"properties": {
-					"heartbeatToken": {
-						"type": "string"
-					}
-				},
-				"required": ["heartbeatToken"]
 			},
 			"Notification": {
 				"type": "object",
@@ -10124,218 +10118,6 @@
 				}
 			}
 		},
-		"/monitors/{monitorId}/heartbeat-token": {
-			"get": {
-				"tags": ["monitors"],
-				"summary": "Get a heartbeat monitor's ping token (admin/superadmin)",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"schema": {
-							"type": "string",
-							"minLength": 1
-						},
-						"required": true,
-						"name": "monitorId",
-						"in": "path"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"$ref": "#/components/schemas/HeartbeatToken"
-										}
-									},
-									"required": ["success", "msg", "data"]
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Invalid request, or monitor is not a heartbeat monitor",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Monitor not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					},
-					"429": {
-						"description": "Too many requests",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					}
-				}
-			},
-			"post": {
-				"tags": ["monitors"],
-				"summary": "Rotate a heartbeat monitor's ping token (admin/superadmin)",
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"schema": {
-							"type": "string",
-							"minLength": 1
-						},
-						"required": true,
-						"name": "monitorId",
-						"in": "path"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [true]
-										},
-										"msg": {
-											"type": "string"
-										},
-										"data": {
-											"$ref": "#/components/schemas/HeartbeatToken"
-										}
-									},
-									"required": ["success", "msg", "data"]
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Invalid request, or monitor is not a heartbeat monitor",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Forbidden",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Monitor not found",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					},
-					"429": {
-						"description": "Too many requests",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Internal server error",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
 		"/monitors/bulk/pause": {
 			"post": {
 				"tags": ["monitors"],
@@ -11054,6 +10836,11 @@
 									"dnsRecordType": {
 										"type": "string",
 										"enum": ["A", "AAAA", "CNAME", "MX", "TXT", "NS"]
+									},
+									"heartbeatSlug": {
+										"type": "string",
+										"maxLength": 64,
+										"pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
 									}
 								},
 								"required": ["name", "type"]
@@ -11107,6 +10894,16 @@
 					},
 					"403": {
 						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "A heartbeat monitor with this slug already exists",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -11685,6 +11482,11 @@
 													"type": "string",
 													"enum": ["A", "AAAA", "CNAME", "MX", "TXT", "NS"]
 												},
+												"heartbeatSlug": {
+													"type": "string",
+													"maxLength": 64,
+													"pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+												},
 												"createdAt": {
 													"type": "string"
 												},
@@ -11760,6 +11562,16 @@
 					},
 					"403": {
 						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "A heartbeat monitor with this slug already exists",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -12247,6 +12059,11 @@
 									"dnsRecordType": {
 										"type": "string",
 										"enum": ["A", "AAAA", "CNAME", "MX", "TXT", "NS"]
+									},
+									"heartbeatSlug": {
+										"type": "string",
+										"maxLength": 64,
+										"pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
 									}
 								}
 							}
@@ -12309,6 +12126,16 @@
 					},
 					"404": {
 						"description": "Monitor not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "A heartbeat monitor with this slug already exists",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -15854,7 +15681,7 @@
 				}
 			}
 		},
-		"/heartbeat/{token}": {
+		"/heartbeat/{pingKey}/{slug}": {
 			"get": {
 				"tags": ["heartbeat"],
 				"summary": "Record a successful heartbeat",
@@ -15866,7 +15693,17 @@
 							"maxLength": 64
 						},
 						"required": true,
-						"name": "token",
+						"name": "pingKey",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 64,
+							"pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+						},
+						"required": true,
+						"name": "slug",
 						"in": "path"
 					},
 					{
@@ -15925,7 +15762,7 @@
 						}
 					},
 					"404": {
-						"description": "No heartbeat monitor for this token",
+						"description": "No heartbeat monitor for this key and slug",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -15967,7 +15804,17 @@
 							"maxLength": 64
 						},
 						"required": true,
-						"name": "token",
+						"name": "pingKey",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 64,
+							"pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+						},
+						"required": true,
+						"name": "slug",
 						"in": "path"
 					},
 					{
@@ -16026,7 +15873,7 @@
 						}
 					},
 					"404": {
-						"description": "No heartbeat monitor for this token",
+						"description": "No heartbeat monitor for this key and slug",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -16058,7 +15905,7 @@
 				}
 			}
 		},
-		"/heartbeat/{token}/fail": {
+		"/heartbeat/{pingKey}/{slug}/fail": {
 			"get": {
 				"tags": ["heartbeat"],
 				"summary": "Record a failed run",
@@ -16070,7 +15917,17 @@
 							"maxLength": 64
 						},
 						"required": true,
-						"name": "token",
+						"name": "pingKey",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 64,
+							"pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+						},
+						"required": true,
+						"name": "slug",
 						"in": "path"
 					},
 					{
@@ -16129,7 +15986,7 @@
 						}
 					},
 					"404": {
-						"description": "No heartbeat monitor for this token",
+						"description": "No heartbeat monitor for this key and slug",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -16171,7 +16028,17 @@
 							"maxLength": 64
 						},
 						"required": true,
-						"name": "token",
+						"name": "pingKey",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 64,
+							"pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+						},
+						"required": true,
+						"name": "slug",
 						"in": "path"
 					},
 					{
@@ -16230,7 +16097,7 @@
 						}
 					},
 					"404": {
-						"description": "No heartbeat monitor for this token",
+						"description": "No heartbeat monitor for this key and slug",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -16262,7 +16129,7 @@
 				}
 			}
 		},
-		"/heartbeat/{token}/{exitCode}": {
+		"/heartbeat/{pingKey}/{slug}/{exitCode}": {
 			"get": {
 				"tags": ["heartbeat"],
 				"summary": "Record a run by exit code",
@@ -16274,7 +16141,17 @@
 							"maxLength": 64
 						},
 						"required": true,
-						"name": "token",
+						"name": "pingKey",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 64,
+							"pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+						},
+						"required": true,
+						"name": "slug",
 						"in": "path"
 					},
 					{
@@ -16344,7 +16221,7 @@
 						}
 					},
 					"404": {
-						"description": "No heartbeat monitor for this token",
+						"description": "No heartbeat monitor for this key and slug",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -16386,7 +16263,17 @@
 							"maxLength": 64
 						},
 						"required": true,
-						"name": "token",
+						"name": "pingKey",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 64,
+							"pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+						},
+						"required": true,
+						"name": "slug",
 						"in": "path"
 					},
 					{
@@ -16456,7 +16343,7 @@
 						}
 					},
 					"404": {
-						"description": "No heartbeat monitor for this token",
+						"description": "No heartbeat monitor for this key and slug",
 						"content": {
 							"application/json": {
 								"schema": {

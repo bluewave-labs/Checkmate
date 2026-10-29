@@ -9,6 +9,9 @@ import type { IMaintenanceWindowsRepository } from "../../../src/domain/maintena
 import type { IJobsRepository } from "../../../src/domain/jobs/job.repository.interface.ts";
 import type { ICheckService } from "../../../src/domain/checks/check.service.ts";
 import type { IJobScheduler } from "../../../src/worker/worker.interface.ts";
+import type { ITeamsRepository } from "../../../src/domain/teams/team.repository.interface.ts";
+import type { IEncryptionService } from "../../../src/service/encryption/encryptionService.ts";
+import type { Team } from "../../../src/domain/teams/team.type.ts";
 import type { ILogger } from "../../../src/utils/logger/logger.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 
@@ -27,9 +30,15 @@ const activeWindow = (): MaintenanceWindow =>
 		end: new Date(Date.now() + 60_000).toISOString(),
 	}) as MaintenanceWindow;
 
-const setup = (opts?: { monitor?: Monitor | null; windows?: MaintenanceWindow[] }) => {
+const setup = (opts?: { team?: Team | null; monitor?: Monitor | null; windows?: MaintenanceWindow[] }) => {
+	const teamsRepository = {
+		findByHeartbeatKeyHash: jest.fn<any>().mockResolvedValue(opts?.team === undefined ? ({ id: "team-1" } as Team) : opts.team),
+	} as unknown as jest.Mocked<ITeamsRepository>;
+	const encryptionService = {
+		hash: jest.fn((value: string) => `hash(${value})`),
+	} as unknown as jest.Mocked<IEncryptionService>;
 	const monitorsRepository = {
-		findByHeartbeatToken: jest.fn<any>().mockResolvedValue(opts?.monitor === undefined ? makeMonitor() : opts.monitor),
+		findHeartbeatBySlug: jest.fn<any>().mockResolvedValue(opts?.monitor === undefined ? makeMonitor() : opts.monitor),
 	} as unknown as jest.Mocked<IMonitorsRepository>;
 	const maintenanceWindowsRepository = {
 		findByMonitorId: jest.fn<any>().mockResolvedValue(opts?.windows ?? []),
@@ -51,13 +60,15 @@ const setup = (opts?: { monitor?: Monitor | null; windows?: MaintenanceWindow[] 
 	const scheduler = { wake: jest.fn() } as unknown as jest.Mocked<IJobScheduler>;
 	const service = new HeartbeatService({
 		logger: createMockLogger() as unknown as ILogger,
+		teamsRepository,
+		encryptionService,
 		monitorsRepository,
 		maintenanceWindowsRepository,
 		jobsRepository,
 		checkService,
 		scheduler,
 	});
-	return { service, monitorsRepository, maintenanceWindowsRepository, jobsRepository, checkService, scheduler };
+	return { service, teamsRepository, encryptionService, monitorsRepository, maintenanceWindowsRepository, jobsRepository, checkService, scheduler };
 };
 
 const createdCheck = (checkService: jest.Mocked<ICheckService>) => (checkService.createChecks.mock.calls[0]?.[0] as Check[])[0];
@@ -65,17 +76,35 @@ const createdCheck = (checkService: jest.Mocked<ICheckService>) => (checkService
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("HeartbeatService.recordPing", () => {
-	it("rejects an unknown token without touching the job row", async () => {
+	it("looks up the team by the key's hash and the monitor by slug within that team", async () => {
+		const { service, teamsRepository, encryptionService, monitorsRepository } = setup();
+
+		await service.recordPing({ pingKey: "k", slug: "s", action: "success" });
+
+		expect(encryptionService.hash).toHaveBeenCalledWith("k");
+		expect(teamsRepository.findByHeartbeatKeyHash).toHaveBeenCalledWith("hash(k)");
+		expect(monitorsRepository.findHeartbeatBySlug).toHaveBeenCalledWith("team-1", "s");
+	});
+
+	it("rejects an unknown key without looking up a monitor or touching the job row", async () => {
+		const { service, monitorsRepository, jobsRepository } = setup({ team: null });
+
+		await expect(service.recordPing({ pingKey: "k", slug: "s", action: "success" })).rejects.toMatchObject({ definition: heartbeatErrors.notFound });
+		expect(monitorsRepository.findHeartbeatBySlug).not.toHaveBeenCalled();
+		expect(jobsRepository.rescheduleChecks).not.toHaveBeenCalled();
+	});
+
+	it("rejects an unknown slug without touching the job row", async () => {
 		const { service, jobsRepository } = setup({ monitor: null });
 
-		await expect(service.recordPing({ token: "t", action: "success" })).rejects.toMatchObject({ definition: heartbeatErrors.notFound });
+		await expect(service.recordPing({ pingKey: "k", slug: "s", action: "success" })).rejects.toMatchObject({ definition: heartbeatErrors.notFound });
 		expect(jobsRepository.rescheduleChecks).not.toHaveBeenCalled();
 	});
 
 	it("ignores a ping for a paused monitor", async () => {
 		const { service, jobsRepository, checkService, scheduler } = setup({ monitor: makeMonitor({ isActive: false }) });
 
-		await service.recordPing({ token: "t", action: "success" });
+		await service.recordPing({ pingKey: "k", slug: "s", action: "success" });
 
 		expect(jobsRepository.rescheduleChecks).not.toHaveBeenCalled();
 		expect(checkService.createChecks).not.toHaveBeenCalled();
@@ -86,7 +115,7 @@ describe("HeartbeatService.recordPing", () => {
 	it("pushes the deadline back during maintenance but records no check", async () => {
 		const { service, jobsRepository, checkService, scheduler } = setup({ windows: [activeWindow()] });
 
-		await service.recordPing({ token: "t", action: "success" });
+		await service.recordPing({ pingKey: "k", slug: "s", action: "success" });
 
 		expect(jobsRepository.rescheduleChecks).toHaveBeenCalledWith(["mon-1"], expect.any(Number));
 		expect(checkService.toCheck).not.toHaveBeenCalled();
@@ -98,7 +127,7 @@ describe("HeartbeatService.recordPing", () => {
 	it("pushes the deadline back, stores an up check and queues it for evaluation", async () => {
 		const { service, jobsRepository, checkService, scheduler } = setup();
 
-		await service.recordPing({ token: "t", action: "success" });
+		await service.recordPing({ pingKey: "k", slug: "s", action: "success" });
 
 		expect(jobsRepository.rescheduleChecks).toHaveBeenCalledWith(["mon-1"], expect.any(Number));
 		expect(checkService.toCheck).toHaveBeenCalledWith(expect.objectContaining({ type: "heartbeat", responseTime: 0 }));
@@ -110,7 +139,7 @@ describe("HeartbeatService.recordPing", () => {
 	it("records a reported failure as down", async () => {
 		const { service, checkService } = setup();
 
-		await service.recordPing({ token: "t", action: "fail" });
+		await service.recordPing({ pingKey: "k", slug: "s", action: "fail" });
 
 		expect(createdCheck(checkService)).toMatchObject({ status: false, statusCode: 500, message: "Reported failure" });
 	});
@@ -118,7 +147,7 @@ describe("HeartbeatService.recordPing", () => {
 	it("records a non-zero exit code as down with the code in the message", async () => {
 		const { service, checkService } = setup();
 
-		await service.recordPing({ token: "t", action: "fail", exitCode: 3 });
+		await service.recordPing({ pingKey: "k", slug: "s", action: "fail", exitCode: 3 });
 
 		expect(createdCheck(checkService)).toMatchObject({ status: false, statusCode: 500, message: "Exited with code 3" });
 	});
@@ -126,7 +155,7 @@ describe("HeartbeatService.recordPing", () => {
 	it("records exit code 0 as up", async () => {
 		const { service, checkService } = setup();
 
-		await service.recordPing({ token: "t", action: "success", exitCode: 0 });
+		await service.recordPing({ pingKey: "k", slug: "s", action: "success", exitCode: 0 });
 
 		expect(createdCheck(checkService)).toMatchObject({ status: true, statusCode: 200, message: "Ping received" });
 	});
@@ -134,18 +163,18 @@ describe("HeartbeatService.recordPing", () => {
 	it("stores a reported duration as the response time", async () => {
 		const { service, checkService } = setup();
 
-		await service.recordPing({ token: "t", action: "success", duration: 1234 });
+		await service.recordPing({ pingKey: "k", slug: "s", action: "success", duration: 1234 });
 
 		expect(checkService.toCheck).toHaveBeenCalledWith(expect.objectContaining({ responseTime: 1234 }));
 	});
 
 	it("uses a client message, and falls back to the default for an empty one", async () => {
 		const withMessage = setup();
-		await withMessage.service.recordPing({ token: "t", action: "success", message: "backup ok" });
+		await withMessage.service.recordPing({ pingKey: "k", slug: "s", action: "success", message: "backup ok" });
 		expect(createdCheck(withMessage.checkService)).toMatchObject({ message: "backup ok" });
 
 		const emptyMessage = setup();
-		await emptyMessage.service.recordPing({ token: "t", action: "success", message: "" });
+		await emptyMessage.service.recordPing({ pingKey: "k", slug: "s", action: "success", message: "" });
 		expect(createdCheck(emptyMessage.checkService)).toMatchObject({ message: "Ping received" });
 	});
 });
