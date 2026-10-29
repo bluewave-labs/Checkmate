@@ -1,7 +1,7 @@
 import type { Application } from "express";
 import { createVerifyJWT } from "../api/middleware/verifyJWT.js";
 import { createVerifyStatusPageAccess } from "../api/middleware/verifyStatusPageAccess.js";
-import { authApiLimiter, heartbeatApiLimiter } from "../api/middleware/rateLimiter.js";
+import { authApiLimiter, heartbeatApiLimiter, heartbeatCreateLimiter } from "../api/middleware/rateLimiter.js";
 import type { InitializedControllers } from "./controllers.js";
 import type { ApiServices } from "@/config/services.api.js";
 
@@ -50,6 +50,11 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 	app.use("/api/v1/incidents", buildRouter(incidentRoutes, controllers.incidentController, middleware));
 	app.use("/api/v1/proxies", buildRouter(proxyRoutes, controllers.proxyController, middleware));
 	app.use("/api/v1/egress", buildRouter(egressRoutes, controllers.egressController, middleware));
-	app.use("/api/v1/heartbeat", heartbeatApiLimiter, buildRouter(heartbeatRoutes, controllers.heartbeatController, middleware));
+	app.use(
+		"/api/v1/heartbeat",
+		heartbeatApiLimiter,
+		heartbeatCreateLimiter,
+		buildRouter(heartbeatRoutes, controllers.heartbeatController, middleware)
+	);
 	app.use("/api/v1/teams", buildRouter(teamRoutes, controllers.teamController, middleware));
 };

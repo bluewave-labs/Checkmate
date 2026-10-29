@@ -20,7 +20,7 @@ class HeartbeatController implements IHeartbeatController {
 
 	ping: Handler = async (req, res) => {
 		const { pingKey, slug } = heartbeatParamValidation.parse(req.params);
-		const { msg, duration } = heartbeatQueryValidation.parse(req.query);
+		const { msg, duration, create, interval } = heartbeatQueryValidation.parse(req.query);
 
 		await this.heartbeatService.recordPing({
 			pingKey,
@@ -28,6 +28,8 @@ class HeartbeatController implements IHeartbeatController {
 			action: "success",
 			message: msg,
 			duration,
+			create,
+			interval,
 		});
 
 		res.json(received);
@@ -35,7 +37,7 @@ class HeartbeatController implements IHeartbeatController {
 
 	fail: Handler = async (req, res) => {
 		const { pingKey, slug } = heartbeatParamValidation.parse(req.params);
-		const { msg, duration } = heartbeatQueryValidation.parse(req.query);
+		const { msg, duration, create, interval } = heartbeatQueryValidation.parse(req.query);
 
 		await this.heartbeatService.recordPing({
 			pingKey,
@@ -43,13 +45,15 @@ class HeartbeatController implements IHeartbeatController {
 			action: "fail",
 			message: msg,
 			duration,
+			create,
+			interval,
 		});
 		res.json(received);
 	};
 
 	exitCode: Handler = async (req, res) => {
 		const { pingKey, slug, exitCode } = heartbeatExitCodeParamValidation.parse(req.params);
-		const { msg, duration } = heartbeatQueryValidation.parse(req.query);
+		const { msg, duration, create, interval } = heartbeatQueryValidation.parse(req.query);
 
 		await this.heartbeatService.recordPing({
 			pingKey,
@@ -58,6 +62,8 @@ class HeartbeatController implements IHeartbeatController {
 			exitCode,
 			message: msg,
 			duration,
+			create,
+			interval,
 		});
 		res.json(received);
 	};

@@ -1,11 +1,14 @@
 import type { ErrorBody } from "@/api/routes/openapiHelpers.js";
 import { Request } from "express";
 import rateLimit, { ipKeyGenerator, type Options } from "express-rate-limit";
+import { HEARTBEAT_CREATE_LIMIT_PER_HOUR } from "@/domain/heartbeat/heartbeat.type.js";
 
 export const heartbeatRateLimitKey = (req: Request): string => {
 	const [, pingKey, slug] = req.path.split("/");
 	return pingKey && slug ? `${pingKey}/${slug}` : ipKeyGenerator(req.ip ?? "", 64);
 };
+
+export const heartbeatCreateRateLimitKey = (req: Request): string => req.path.split("/")[1] || ipKeyGenerator(req.ip ?? "", 64);
 
 export const tooManyRequests: Options["handler"] = (_req, res) => {
 	const body: ErrorBody = { status: 429, msg: "Too many requests, please try again later." };
@@ -38,5 +41,15 @@ export const heartbeatApiLimiter = rateLimit({
 	standardHeaders: true,
 	legacyHeaders: false,
 	keyGenerator: heartbeatRateLimitKey,
+	handler: tooManyRequests,
+});
+
+export const heartbeatCreateLimiter = rateLimit({
+	windowMs: 60 * 60 * 1000,
+	limit: HEARTBEAT_CREATE_LIMIT_PER_HOUR,
+	standardHeaders: true,
+	legacyHeaders: false,
+	keyGenerator: heartbeatCreateRateLimitKey,
+	skip: (req) => req.query.create !== "true",
 	handler: tooManyRequests,
 });

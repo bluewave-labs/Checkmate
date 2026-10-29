@@ -15725,6 +15725,24 @@
 						"required": false,
 						"name": "duration",
 						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "boolean"
+						},
+						"required": false,
+						"name": "create",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"minimum": 10000,
+							"maximum": 2678400000
+						},
+						"required": false,
+						"name": "interval",
+						"in": "query"
 					}
 				],
 				"responses": {
@@ -15835,6 +15853,24 @@
 						},
 						"required": false,
 						"name": "duration",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "boolean"
+						},
+						"required": false,
+						"name": "create",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"minimum": 10000,
+							"maximum": 2678400000
+						},
+						"required": false,
+						"name": "interval",
 						"in": "query"
 					}
 				],
@@ -15949,6 +15985,24 @@
 						"required": false,
 						"name": "duration",
 						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "boolean"
+						},
+						"required": false,
+						"name": "create",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"minimum": 10000,
+							"maximum": 2678400000
+						},
+						"required": false,
+						"name": "interval",
+						"in": "query"
 					}
 				],
 				"responses": {
@@ -16059,6 +16113,24 @@
 						},
 						"required": false,
 						"name": "duration",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "boolean"
+						},
+						"required": false,
+						"name": "create",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"minimum": 10000,
+							"maximum": 2678400000
+						},
+						"required": false,
+						"name": "interval",
 						"in": "query"
 					}
 				],
@@ -16184,6 +16256,24 @@
 						"required": false,
 						"name": "duration",
 						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "boolean"
+						},
+						"required": false,
+						"name": "create",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"minimum": 10000,
+							"maximum": 2678400000
+						},
+						"required": false,
+						"name": "interval",
+						"in": "query"
 					}
 				],
 				"responses": {
@@ -16305,6 +16395,24 @@
 						},
 						"required": false,
 						"name": "duration",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "boolean"
+						},
+						"required": false,
+						"name": "create",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"minimum": 10000,
+							"maximum": 2678400000
+						},
+						"required": false,
+						"name": "interval",
 						"in": "query"
 					}
 				],
