@@ -133,6 +133,11 @@
 				"tls": "Ha fallat la negociació TLS o SSL (problema de certificat o xifratge).",
 				"unknown": "No s'ha rebut cap resposta HTTP de l'objectiu."
 			}
+		},
+		"copy": {
+			"copy": "Copia al porta-retalls",
+			"copied": "Copiat al porta-retalls",
+			"copyFailed": "No s'ha pogut copiar. Selecciona el text i copia'l manualment."
 		}
 	},
 	"components": {
@@ -1413,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "Si us plau, corregiu els errors de validació següents:"
+				},
+				"heartbeatKey": {
+					"title": "Clau de ping del heartbeat",
+					"description": "Un secret compartit per tots els monitors de heartbeat d'aquest equip. Les tasques l'envien a l'URL de ping juntament amb l'slug del monitor.",
+					"noKey": "Encara no hi ha cap clau. Genera'n una per començar a enviar pings de heartbeat.",
+					"keySet": "Hi ha una clau definida. Es va mostrar una sola vegada, quan es va generar.",
+					"generate": "Genera una clau",
+					"rotate": "Rota la clau",
+					"rotateConfirmTitle": "Vols rotar la clau de ping del heartbeat?",
+					"rotateConfirmBody": "La clau actual deixa de funcionar immediatament. Cal actualitzar totes les tasques que fan ping a un monitor de heartbeat d'aquest equip.",
+					"keyLabel": "Clau de ping",
+					"copyNow": "Copia aquesta clau ara. No es tornarà a mostrar."
 				}
 			},
 			"header": {
@@ -1657,9 +1674,6 @@
 						"msg": "adjunta un missatge a la comprovació",
 						"combine": "Fes servir /fail o un codi de sortida, no tots dos. Els paràmetres de consulta funcionen amb qualsevol URL i es poden combinar amb &, per exemple /1?duration=5000&msg=disk%20full."
 					},
-					"copy": "Copia al porta-retalls",
-					"copied": "Copiat al porta-retalls",
-					"copyFailed": "No s'ha pogut copiar. Selecciona el text i copia'l manualment.",
 					"rotate": "Rota el testimoni",
 					"rotateConfirmTitle": "Vols rotar aquest testimoni de heartbeat?",
 					"rotateConfirmBody": "L'URL actual deixa de funcionar immediatament. Actualitza totes les tasques que hi fan ping."

@@ -161,6 +161,11 @@
 				"responseTime": "Response time",
 				"tags": "Tags"
 			}
+		},
+		"copy": {
+			"copy": "Copy to clipboard",
+			"copied": "Copied to clipboard",
+			"copyFailed": "Could not copy. Select the text and copy it manually."
 		}
 	},
 	"components": {
@@ -1722,6 +1727,18 @@
 				},
 				"validation": {
 					"errorMessage": "Please fix the following validation errors:"
+				},
+				"heartbeatKey": {
+					"title": "Heartbeat ping key",
+					"description": "One secret shared by every heartbeat monitor in this team. Jobs send it in the ping URL together with the monitor's slug.",
+					"noKey": "No key yet. Generate one to start sending heartbeat pings.",
+					"keySet": "A key is set. It was shown once, when it was generated.",
+					"generate": "Generate key",
+					"rotate": "Rotate key",
+					"rotateConfirmTitle": "Rotate the heartbeat ping key?",
+					"rotateConfirmBody": "The current key stops working immediately. Every job that pings a heartbeat monitor in this team must be updated.",
+					"keyLabel": "Ping key",
+					"copyNow": "Copy this key now. It won't be shown again."
 				}
 			},
 			"header": {
@@ -2005,9 +2022,6 @@
 						"msg": "attaches a message to the check",
 						"combine": "Use /fail or an exit code, not both. Query parameters work on any URL and can be joined with &, for example /1?duration=5000&msg=disk%20full."
 					},
-					"copy": "Copy to clipboard",
-					"copied": "Copied to clipboard",
-					"copyFailed": "Could not copy. Select the text and copy it manually.",
 					"rotate": "Rotate token",
 					"rotateConfirmTitle": "Rotate this heartbeat token?",
 					"rotateConfirmBody": "The current URL stops working immediately. Update every job that pings it."

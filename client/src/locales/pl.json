@@ -136,6 +136,11 @@
 				"type": "Typ",
 				"url": "Url"
 			}
+		},
+		"copy": {
+			"copy": "Kopiuj do schowka",
+			"copied": "Skopiowano do schowka",
+			"copyFailed": "Nie udało się skopiować. Zaznacz tekst i skopiuj go ręcznie."
 		}
 	},
 	"components": {
@@ -1478,6 +1483,18 @@
 				},
 				"validation": {
 					"errorMessage": "Proszę poprawić następujące błędy walidacji:"
+				},
+				"heartbeatKey": {
+					"title": "Klucz pingu heartbeat",
+					"description": "Jeden sekret wspólny dla wszystkich monitorów heartbeat w tym zespole. Zadania wysyłają go w adresie URL pingu razem ze slugiem monitora.",
+					"noKey": "Brak klucza. Wygeneruj go, aby zacząć wysyłać pingi heartbeat.",
+					"keySet": "Klucz jest ustawiony. Został pokazany raz, podczas generowania.",
+					"generate": "Wygeneruj klucz",
+					"rotate": "Zmień klucz",
+					"rotateConfirmTitle": "Zmienić klucz pingu heartbeat?",
+					"rotateConfirmBody": "Obecny klucz natychmiast przestanie działać. Trzeba zaktualizować każde zadanie, które pinguje monitor heartbeat w tym zespole.",
+					"keyLabel": "Klucz pingu",
+					"copyNow": "Skopiuj ten klucz teraz. Nie zostanie pokazany ponownie."
 				}
 			},
 			"header": {
@@ -1771,9 +1788,6 @@
 						"msg": "dołącza wiadomość do sprawdzenia",
 						"combine": "Użyj /fail albo kodu wyjścia, nie obu naraz. Parametry zapytania działają z każdym adresem URL i można je łączyć znakiem &, na przykład /1?duration=5000&msg=disk%20full."
 					},
-					"copy": "Kopiuj do schowka",
-					"copied": "Skopiowano do schowka",
-					"copyFailed": "Nie udało się skopiować. Zaznacz tekst i skopiuj go ręcznie.",
 					"rotate": "Odnów token",
 					"rotateConfirmTitle": "Odnowić ten token heartbeat?",
 					"rotateConfirmBody": "Obecny adres URL natychmiast przestanie działać. Zaktualizuj każde zadanie, które go wywołuje."

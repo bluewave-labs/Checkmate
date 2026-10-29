@@ -133,6 +133,11 @@
 				"tls": "TLS- tai SSL-kättely epäonnistui (sertifikaatti- tai salausongelma).",
 				"unknown": "Kohteesta ei vastaanotettu HTTP-vastausta."
 			}
+		},
+		"copy": {
+			"copy": "Kopioi leikepöydälle",
+			"copied": "Kopioitu leikepöydälle",
+			"copyFailed": "Kopiointi epäonnistui. Valitse teksti ja kopioi se käsin."
 		}
 	},
 	"components": {
@@ -1413,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "Korjaa seuraavat vahvistusvirheet:"
+				},
+				"heartbeatKey": {
+					"title": "Heartbeat-pingiavain",
+					"description": "Yksi salaisuus, jonka kaikki tämän tiimin heartbeat-valvojat jakavat. Työt lähettävät sen ping-URL:ssa valvojan slugin kanssa.",
+					"noKey": "Avainta ei vielä ole. Luo avain aloittaaksesi heartbeat-pingien lähettämisen.",
+					"keySet": "Avain on asetettu. Se näytettiin kerran, kun se luotiin.",
+					"generate": "Luo avain",
+					"rotate": "Vaihda avain",
+					"rotateConfirmTitle": "Vaihdetaanko heartbeat-pingiavain?",
+					"rotateConfirmBody": "Nykyinen avain lakkaa toimimasta heti. Jokainen työ, joka pingaa tämän tiimin heartbeat-valvojaa, on päivitettävä.",
+					"keyLabel": "Pingiavain",
+					"copyNow": "Kopioi avain nyt. Sitä ei näytetä uudelleen."
 				}
 			},
 			"header": {
@@ -1657,9 +1674,6 @@
 						"msg": "liittää tarkistukseen viestin",
 						"combine": "Käytä joko /fail tai poistumiskoodia, ei molempia. Kyselyparametrit toimivat missä tahansa URL:ssa ja ne voi yhdistää &-merkillä, esimerkiksi /1?duration=5000&msg=disk%20full."
 					},
-					"copy": "Kopioi leikepöydälle",
-					"copied": "Kopioitu leikepöydälle",
-					"copyFailed": "Kopiointi epäonnistui. Valitse teksti ja kopioi se käsin.",
 					"rotate": "Vaihda tunniste",
 					"rotateConfirmTitle": "Vaihdetaanko tämä heartbeat-tunniste?",
 					"rotateConfirmBody": "Nykyinen URL lakkaa toimimasta heti. Päivitä kaikki työt, jotka lähettävät siihen pingin."

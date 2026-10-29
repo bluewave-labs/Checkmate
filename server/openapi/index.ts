@@ -21,6 +21,7 @@ import { statusPageRoutes } from "@/api/routes/statusPageRoutes.js";
 import { logRoutes } from "@/api/routes/logRoutes.js";
 import { egressRoutes } from "@/api/routes/egressRoutes.js";
 import { heartbeatRoutes } from "@/api/routes/heartbeatRoutes.js";
+import { teamRoutes } from "@/api/routes/teamRoutes.js";
 let cached: JsonObject | null = null;
 
 registerRoutes(registry, tagRoutes);
@@ -40,6 +41,7 @@ registerRoutes(registry, statusPageRoutes);
 registerRoutes(registry, logRoutes);
 registerRoutes(registry, egressRoutes);
 registerRoutes(registry, heartbeatRoutes);
+registerRoutes(registry, teamRoutes);
 export function getOpenApiSpec(): JsonObject {
 	if (cached) return cached;
 

@@ -133,6 +133,11 @@
 				"tls": "TLS veya SSL el sıkışması başarısız (sertifika veya şifreleme sorunu).",
 				"unknown": "Hedeften HTTP yanıtı alınamadı."
 			}
+		},
+		"copy": {
+			"copy": "Panoya kopyala",
+			"copied": "Panoya kopyalandı",
+			"copyFailed": "Kopyalanamadı. Metni seçip elle kopyalayın."
 		}
 	},
 	"components": {
@@ -1413,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "Lütfen aşağıdaki doğrulama hatalarını düzeltin:"
+				},
+				"heartbeatKey": {
+					"title": "Heartbeat ping anahtarı",
+					"description": "Bu takımdaki tüm heartbeat monitörlerinin paylaştığı tek bir gizli anahtar. İşler bunu monitörün slug'ı ile birlikte ping URL'sinde gönderir.",
+					"noKey": "Henüz anahtar yok. Heartbeat ping'leri göndermeye başlamak için bir anahtar oluşturun.",
+					"keySet": "Bir anahtar ayarlı. Oluşturulduğunda yalnızca bir kez gösterildi.",
+					"generate": "Anahtar oluştur",
+					"rotate": "Anahtarı yenile",
+					"rotateConfirmTitle": "Heartbeat ping anahtarı yenilensin mi?",
+					"rotateConfirmBody": "Mevcut anahtar hemen çalışmayı bırakır. Bu takımdaki bir heartbeat monitörüne ping gönderen her iş güncellenmelidir.",
+					"keyLabel": "Ping anahtarı",
+					"copyNow": "Bu anahtarı şimdi kopyalayın. Tekrar gösterilmeyecek."
 				}
 			},
 			"header": {
@@ -1657,9 +1674,6 @@
 						"msg": "kontrole bir mesaj ekler",
 						"combine": "/fail veya bir çıkış kodu kullanın, ikisini birden değil. Sorgu parametreleri her URL ile çalışır ve & ile birleştirilebilir, örneğin /1?duration=5000&msg=disk%20full."
 					},
-					"copy": "Panoya kopyala",
-					"copied": "Panoya kopyalandı",
-					"copyFailed": "Kopyalanamadı. Metni seçip elle kopyalayın.",
 					"rotate": "Token'ı yenile",
 					"rotateConfirmTitle": "Bu heartbeat token'ı yenilensin mi?",
 					"rotateConfirmBody": "Mevcut URL hemen çalışmayı durdurur. Bu URL'ye ping gönderen tüm işleri güncelleyin."

@@ -24,6 +24,7 @@ import { statusPageRoutes } from "@/api/routes/statusPageRoutes.js";
 import { logRoutes } from "@/api/routes/logRoutes.js";
 import { egressRoutes } from "@/api/routes/egressRoutes.js";
 import { heartbeatRoutes } from "@/api/routes/heartbeatRoutes.js";
+import { teamRoutes } from "@/api/routes/teamRoutes.js";
 
 export const setupRoutes = (app: Application, controllers: InitializedControllers, apiServices: ApiServices) => {
 	const verifyJWT = createVerifyJWT(apiServices.settingsService);
@@ -50,4 +51,5 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 	app.use("/api/v1/proxies", buildRouter(proxyRoutes, controllers.proxyController, middleware));
 	app.use("/api/v1/egress", buildRouter(egressRoutes, controllers.egressController, middleware));
 	app.use("/api/v1/heartbeat", heartbeatApiLimiter, buildRouter(heartbeatRoutes, controllers.heartbeatController, middleware));
+	app.use("/api/v1/teams", buildRouter(teamRoutes, controllers.teamController, middleware));
 };

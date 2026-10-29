@@ -23,6 +23,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import DummyChart from "@/Pages/Settings/DummyChart";
+import { HeartbeatKeyBox } from "@/Pages/Settings/components/HeartbeatKeyBox";
 import { useGet, usePatch, usePost, useLazyGet } from "@/Hooks/UseApi";
 import { useToast } from "@/Hooks/UseToast";
 import { useSettingsForm } from "@/Hooks/useSettingsForm";
@@ -737,6 +738,9 @@ export const SettingsPage = () => {
 								}
 							/>
 						)}
+
+						{/* Heartbeat ping key - Admin Only */}
+						{isAdmin && <HeartbeatKeyBox />}
 
 						{/* Demo Monitors - Admin Only */}
 						{isAdmin && (

@@ -15,6 +15,7 @@ import IncidentController from "../api/controllers/incidentController.js";
 import ProxyController from "@/api/controllers/proxyController.js";
 import EgressController from "@/api/controllers/egressController.js";
 import HeartbeatController from "@/api/controllers/heartbeatController.js";
+import TeamController from "@/api/controllers/teamController.js";
 import { ApiServices } from "@/config/services.api.js";
 
 export interface InitializedControllers {
@@ -35,6 +36,7 @@ export interface InitializedControllers {
 	proxyController: ProxyController;
 	egressController: EgressController;
 	heartbeatController: HeartbeatController;
+	teamController: TeamController;
 }
 export const initializeControllers = (apiServices: ApiServices): InitializedControllers => {
 	return {
@@ -55,5 +57,6 @@ export const initializeControllers = (apiServices: ApiServices): InitializedCont
 		proxyController: new ProxyController(apiServices.proxiesService),
 		egressController: new EgressController(apiServices.egressStateService),
 		heartbeatController: new HeartbeatController(apiServices.heartbeatService),
+		teamController: new TeamController(apiServices.teamService),
 	};
 };

@@ -161,6 +161,11 @@
 				"responseTime": "Tempo de resposta",
 				"tags": "Tags"
 			}
+		},
+		"copy": {
+			"copy": "Copiar para a área de transferência",
+			"copied": "Copiado para a área de transferência",
+			"copyFailed": "Não foi possível copiar. Selecione o texto e copie manualmente."
 		}
 	},
 	"components": {
@@ -1718,6 +1723,18 @@
 				},
 				"validation": {
 					"errorMessage": "Por favor, corrija os seguintes erros de validação:"
+				},
+				"heartbeatKey": {
+					"title": "Chave de ping do heartbeat",
+					"description": "Um segredo compartilhado por todos os monitores de heartbeat desta equipe. Os jobs o enviam na URL de ping junto com o slug do monitor.",
+					"noKey": "Ainda não há chave. Gere uma para começar a enviar pings de heartbeat.",
+					"keySet": "Há uma chave definida. Ela foi exibida uma única vez, ao ser gerada.",
+					"generate": "Gerar chave",
+					"rotate": "Rotacionar chave",
+					"rotateConfirmTitle": "Rotacionar a chave de ping do heartbeat?",
+					"rotateConfirmBody": "A chave atual para de funcionar imediatamente. Todo job que envia ping a um monitor de heartbeat desta equipe precisa ser atualizado.",
+					"keyLabel": "Chave de ping",
+					"copyNow": "Copie esta chave agora. Ela não será exibida novamente."
 				}
 			},
 			"header": {
@@ -1994,9 +2011,6 @@
 						"msg": "anexa uma mensagem à verificação",
 						"combine": "Use /fail ou um código de saída, não os dois. Parâmetros de consulta funcionam em qualquer URL e podem ser combinados com &, por exemplo /1?duration=5000&msg=disk%20full."
 					},
-					"copy": "Copiar para a área de transferência",
-					"copied": "Copiado para a área de transferência",
-					"copyFailed": "Não foi possível copiar. Selecione o texto e copie manualmente.",
 					"rotate": "Renovar token",
 					"rotateConfirmTitle": "Renovar este token de heartbeat?",
 					"rotateConfirmBody": "A URL atual deixa de funcionar imediatamente. Atualize todas as tarefas que fazem ping nela."

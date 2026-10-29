@@ -133,6 +133,11 @@
 				"tls": "Bắt tay TLS hoặc SSL thất bại (vấn đề chứng chỉ hoặc mã hóa).",
 				"unknown": "Không nhận được phản hồi HTTP từ mục tiêu."
 			}
+		},
+		"copy": {
+			"copy": "Sao chép vào bộ nhớ tạm",
+			"copied": "Đã sao chép vào bộ nhớ tạm",
+			"copyFailed": "Không thể sao chép. Hãy chọn văn bản và sao chép thủ công."
 		}
 	},
 	"components": {
@@ -1413,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "Vui lòng sửa các lỗi xác thực sau:"
+				},
+				"heartbeatKey": {
+					"title": "Khóa ping heartbeat",
+					"description": "Một bí mật dùng chung cho mọi trình giám sát heartbeat trong nhóm này. Tác vụ gửi khóa trong URL ping cùng với slug của trình giám sát.",
+					"noKey": "Chưa có khóa. Hãy tạo một khóa để bắt đầu gửi ping heartbeat.",
+					"keySet": "Đã đặt khóa. Khóa chỉ hiển thị một lần khi được tạo.",
+					"generate": "Tạo khóa",
+					"rotate": "Xoay vòng khóa",
+					"rotateConfirmTitle": "Xoay vòng khóa ping heartbeat?",
+					"rotateConfirmBody": "Khóa hiện tại sẽ ngừng hoạt động ngay lập tức. Mọi tác vụ ping tới trình giám sát heartbeat trong nhóm này đều phải được cập nhật.",
+					"keyLabel": "Khóa ping",
+					"copyNow": "Hãy sao chép khóa này ngay. Khóa sẽ không hiển thị lại."
 				}
 			},
 			"header": {
@@ -1657,9 +1674,6 @@
 						"msg": "đính kèm một thông điệp vào lần kiểm tra",
 						"combine": "Dùng /fail hoặc mã thoát, không dùng cả hai. Tham số truy vấn dùng được với mọi URL và có thể nối bằng &, ví dụ /1?duration=5000&msg=disk%20full."
 					},
-					"copy": "Sao chép vào bộ nhớ tạm",
-					"copied": "Đã sao chép vào bộ nhớ tạm",
-					"copyFailed": "Không thể sao chép. Hãy chọn văn bản và sao chép thủ công.",
 					"rotate": "Làm mới token",
 					"rotateConfirmTitle": "Làm mới token heartbeat này?",
 					"rotateConfirmBody": "URL hiện tại sẽ ngừng hoạt động ngay lập tức. Hãy cập nhật mọi tác vụ đang ping tới URL này."

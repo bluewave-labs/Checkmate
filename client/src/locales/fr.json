@@ -133,6 +133,11 @@
 				"tls": "Échec de la négociation TLS ou SSL (problème de certificat ou de chiffrement).",
 				"unknown": "Aucune réponse HTTP reçue de la cible."
 			}
+		},
+		"copy": {
+			"copy": "Copier dans le presse-papiers",
+			"copied": "Copié dans le presse-papiers",
+			"copyFailed": "Copie impossible. Sélectionnez le texte et copiez-le manuellement."
 		}
 	},
 	"components": {
@@ -1413,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "Veuillez corriger les erreurs de validation suivantes :"
+				},
+				"heartbeatKey": {
+					"title": "Clé de ping heartbeat",
+					"description": "Un secret partagé par tous les moniteurs heartbeat de cette équipe. Les tâches l'envoient dans l'URL de ping avec le slug du moniteur.",
+					"noKey": "Aucune clé pour l'instant. Générez-en une pour commencer à envoyer des pings heartbeat.",
+					"keySet": "Une clé est définie. Elle a été affichée une seule fois, lors de sa génération.",
+					"generate": "Générer une clé",
+					"rotate": "Renouveler la clé",
+					"rotateConfirmTitle": "Renouveler la clé de ping heartbeat ?",
+					"rotateConfirmBody": "La clé actuelle cesse de fonctionner immédiatement. Chaque tâche qui envoie un ping à un moniteur heartbeat de cette équipe doit être mise à jour.",
+					"keyLabel": "Clé de ping",
+					"copyNow": "Copiez cette clé maintenant. Elle ne sera plus affichée."
 				}
 			},
 			"header": {
@@ -1657,9 +1674,6 @@
 						"msg": "joint un message à la vérification",
 						"combine": "Utilisez /fail ou un code de sortie, pas les deux. Les paramètres de requête fonctionnent avec n'importe quelle URL et se combinent avec &, par exemple /1?duration=5000&msg=disk%20full."
 					},
-					"copy": "Copier dans le presse-papiers",
-					"copied": "Copié dans le presse-papiers",
-					"copyFailed": "Copie impossible. Sélectionnez le texte et copiez-le manuellement.",
 					"rotate": "Renouveler le jeton",
 					"rotateConfirmTitle": "Renouveler ce jeton de heartbeat ?",
 					"rotateConfirmBody": "L'URL actuelle cesse de fonctionner immédiatement. Mettez à jour chaque tâche qui l'appelle."

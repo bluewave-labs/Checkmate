@@ -133,6 +133,11 @@
 				"tls": "TLS或SSL握手失败（证书或加密问题）。",
 				"unknown": "未从目标接收HTTP响应。"
 			}
+		},
+		"copy": {
+			"copy": "复制到剪贴板",
+			"copied": "已复制到剪贴板",
+			"copyFailed": "无法复制。请选中文本并手动复制。"
 		}
 	},
 	"components": {
@@ -1414,6 +1419,18 @@
 				},
 				"validation": {
 					"errorMessage": "请修复以下验证错误："
+				},
+				"heartbeatKey": {
+					"title": "心跳 ping 密钥",
+					"description": "此团队所有心跳监控共用的一个密钥。任务会在 ping URL 中连同监控的 slug 一起发送它。",
+					"noKey": "尚无密钥。生成一个密钥即可开始发送心跳 ping。",
+					"keySet": "已设置密钥。它仅在生成时显示过一次。",
+					"generate": "生成密钥",
+					"rotate": "轮换密钥",
+					"rotateConfirmTitle": "轮换心跳 ping 密钥？",
+					"rotateConfirmBody": "当前密钥将立即失效。此团队中所有向心跳监控发送 ping 的任务都需要更新。",
+					"keyLabel": "Ping 密钥",
+					"copyNow": "请立即复制此密钥。它不会再次显示。"
 				}
 			},
 			"header": {
@@ -1658,9 +1675,6 @@
 						"msg": "为检查附加一条消息",
 						"combine": "/fail 和退出码只能二选一。查询参数适用于任何 URL，并可用 & 连接，例如 /1?duration=5000&msg=disk%20full。"
 					},
-					"copy": "复制到剪贴板",
-					"copied": "已复制到剪贴板",
-					"copyFailed": "无法复制。请选中文本并手动复制。",
 					"rotate": "轮换令牌",
 					"rotateConfirmTitle": "要轮换此心跳令牌吗？",
 					"rotateConfirmBody": "当前 URL 将立即失效。请更新所有 ping 该 URL 的任务。"

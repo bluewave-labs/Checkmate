@@ -133,6 +133,11 @@
 				"tls": "Selhal handshake TLS nebo SSL (problém s certifikátem nebo šifrováním).",
 				"unknown": "Z cíle nebyla obdržena žádná odpověď HTTP."
 			}
+		},
+		"copy": {
+			"copy": "Kopírovat do schránky",
+			"copied": "Zkopírováno do schránky",
+			"copyFailed": "Kopírování se nezdařilo. Označte text a zkopírujte ho ručně."
 		}
 	},
 	"components": {
@@ -1413,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "Opravte prosím následující chyby validace:"
+				},
+				"heartbeatKey": {
+					"title": "Klíč pro ping heartbeatu",
+					"description": "Jeden tajný klíč sdílený všemi heartbeat monitory v tomto týmu. Úlohy ho posílají v URL pingu spolu se slugem monitoru.",
+					"noKey": "Zatím žádný klíč. Vygenerujte ho, abyste mohli začít posílat heartbeat pingy.",
+					"keySet": "Klíč je nastaven. Byl zobrazen jen jednou, při vygenerování.",
+					"generate": "Vygenerovat klíč",
+					"rotate": "Obnovit klíč",
+					"rotateConfirmTitle": "Obnovit klíč pro ping heartbeatu?",
+					"rotateConfirmBody": "Současný klíč okamžitě přestane fungovat. Je nutné aktualizovat všechny úlohy, které pingují heartbeat monitor v tomto týmu.",
+					"keyLabel": "Klíč pro ping",
+					"copyNow": "Zkopírujte si klíč hned. Znovu se nezobrazí."
 				}
 			},
 			"header": {
@@ -1657,9 +1674,6 @@
 						"msg": "připojí ke kontrole zprávu",
 						"combine": "Použijte /fail nebo návratový kód, ne obojí. Parametry dotazu fungují s jakoukoli URL a lze je spojit pomocí &, například /1?duration=5000&msg=disk%20full."
 					},
-					"copy": "Kopírovat do schránky",
-					"copied": "Zkopírováno do schránky",
-					"copyFailed": "Kopírování se nezdařilo. Označte text a zkopírujte ho ručně.",
 					"rotate": "Obnovit token",
 					"rotateConfirmTitle": "Obnovit tento heartbeat token?",
 					"rotateConfirmBody": "Současná URL okamžitě přestane fungovat. Aktualizujte všechny úlohy, které na ni posílají ping."
