@@ -18,6 +18,7 @@ import { isCaptureDockerUrl, isDockerSocketUrl, isDockerTlsUrl } from "@/utils/d
 import { X509Certificate } from "node:crypto";
 import { keyMatchesCertificate, parseCertificates, parsePrivateKey } from "@/utils/pem.js";
 import { monitorResponseSchema } from "@/domain/monitors/monitor.schema.js";
+import { HEARTBEAT_SLUG_MAX_LENGTH, HEARTBEAT_SLUG_PATTERN } from "@/domain/heartbeat/heartbeat.type.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
@@ -168,6 +169,17 @@ const refineHeartbeat = (data: { type?: string; geoCheckEnabled?: boolean; proxy
 		});
 };
 
+const refineHeartbeatSlugRequired = (data: { type?: string; heartbeatSlug?: string }, ctx: z.RefinementCtx) => {
+	if (data.type !== "heartbeat") return;
+	if (!data.heartbeatSlug) {
+		ctx.addIssue({
+			code: "custom",
+			path: ["heartbeatSlug"],
+			message: "A slug is required for heartbeat monitors",
+		});
+	}
+};
+
 type DockerTlsFields = {
 	type?: string;
 	url?: string;
@@ -255,6 +267,11 @@ export const createMonitorBodyValidation = z
 		dockerTlsKey: z.union([z.string(), z.literal("")]).optional(),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
+		heartbeatSlug: z
+			.string()
+			.max(HEARTBEAT_SLUG_MAX_LENGTH)
+			.regex(HEARTBEAT_SLUG_PATTERN, "Use lowercase letters, numbers and single hyphens")
+			.optional(),
 	})
 	.superRefine(refineDnsHostname)
 	.superRefine(refineStrategyType)
@@ -265,7 +282,8 @@ export const createMonitorBodyValidation = z
 	.superRefine(refineCaptureSecret)
 	.superRefine(refineDockerTls("create"))
 	.superRefine(refineUrlRequired("create"))
-	.superRefine(refineHeartbeat);
+	.superRefine(refineHeartbeat)
+	.superRefine(refineHeartbeatSlugRequired);
 
 export const editMonitorBodyValidation = z
 	.object({
@@ -309,6 +327,11 @@ export const editMonitorBodyValidation = z
 		dockerTlsKey: z.union([z.string(), z.literal("")]).optional(),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
+		heartbeatSlug: z
+			.string()
+			.max(HEARTBEAT_SLUG_MAX_LENGTH)
+			.regex(HEARTBEAT_SLUG_PATTERN, "Use lowercase letters, numbers and single hyphens")
+			.optional(),
 	})
 	.superRefine(refineDnsHostname)
 	.superRefine(refineStrategyType)
@@ -390,6 +413,11 @@ const importedMonitorSchema = z
 		dockerAlertOnUnhealthy: z.boolean().default(false),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
+		heartbeatSlug: z
+			.string()
+			.max(HEARTBEAT_SLUG_MAX_LENGTH)
+			.regex(HEARTBEAT_SLUG_PATTERN, "Use lowercase letters, numbers and single hyphens")
+			.optional(),
 		createdAt: z.string().optional(),
 		updatedAt: z.string().optional(),
 	})
