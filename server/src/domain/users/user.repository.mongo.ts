@@ -129,6 +129,16 @@ class MongoUsersRepository implements IUsersRepository {
 		return this.toEntity(deletedUser);
 	};
 
+	findIdInTeam = async (userId: string, teamId: string): Promise<string | null> => {
+		const user = await UserModel.findOne({ _id: userId, teamId }, { _id: 1 }).lean();
+		return user ? toStringId(user._id) : null;
+	};
+
+	findSuperAdminIdByTeamId = async (teamId: string): Promise<string | null> => {
+		const user = await UserModel.findOne({ teamId, role: "superadmin" }, { _id: 1 }).lean();
+		return user ? toStringId(user._id) : null;
+	};
+
 	findSuperAdmin = async () => {
 		const superAdmin = await UserModel.findOne({ role: "superadmin" });
 		if (superAdmin !== null) {

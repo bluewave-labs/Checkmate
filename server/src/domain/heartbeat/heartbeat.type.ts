@@ -9,3 +9,8 @@ export const HEARTBEAT_MAX_MESSAGE_LENGTH = 500;
 export const HEARTBEAT_MAX_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
 export const HEARTBEAT_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/; // lowercase, digits, single inner hyphens
 export const HEARTBEAT_SLUG_MAX_LENGTH = 64;
+
+export const HEARTBEAT_DEFAULT_INTERVAL_MS = 24 * 60 * 60 * 1000;
+export const HEARTBEAT_MIN_INTERVAL_MS = 10_000; // matches client MIN_MONITOR_INTERVAL_MS
+export const HEARTBEAT_MAX_INTERVAL_MS = 31 * 24 * 60 * 60 * 1000;
+export const HEARTBEAT_CREATE_LIMIT_PER_HOUR = 20;

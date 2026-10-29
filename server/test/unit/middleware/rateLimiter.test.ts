@@ -3,7 +3,14 @@ import express from "express";
 import type { NextFunction, Request, Response } from "express";
 import type { Options } from "express-rate-limit";
 import type { AddressInfo } from "node:net";
-import { heartbeatApiLimiter, heartbeatRateLimitKey, tooManyRequests } from "../../../src/api/middleware/rateLimiter.ts";
+import {
+	heartbeatApiLimiter,
+	heartbeatCreateLimiter,
+	heartbeatCreateRateLimitKey,
+	heartbeatRateLimitKey,
+	tooManyRequests,
+} from "../../../src/api/middleware/rateLimiter.ts";
+import { HEARTBEAT_CREATE_LIMIT_PER_HOUR } from "../../../src/domain/heartbeat/heartbeat.type.ts";
 
 const makeRes = (): Response => {
 	const res = {} as Response;
@@ -60,6 +67,43 @@ describe("heartbeatApiLimiter", () => {
 			expect(await ping("/key-limit/backup/1")).toBe(429); // sub-paths share the monitor's budget
 			expect(await ping("/key-limit/vacuum")).toBe(200); // another slug under the same key
 			expect(await ping("/key-other/backup")).toBe(200); // the same slug under another key
+		} finally {
+			await close();
+		}
+	});
+});
+
+const setupCreateApp = async () => {
+	const app = express();
+	app.use("/api/v1/heartbeat", heartbeatCreateLimiter, (_req, res) => {
+		res.json({ ok: true });
+	});
+	const server = app.listen(0);
+	await new Promise((resolve) => server.once("listening", resolve));
+	const base = `http://127.0.0.1:${(server.address() as AddressInfo).port}/api/v1/heartbeat`;
+	const ping = async (path: string) => (await fetch(`${base}${path}`)).status;
+	const close = () => new Promise((resolve) => server.close(resolve));
+	return { ping, close };
+};
+
+describe("heartbeatCreateLimiter", () => {
+	it("keys a create request by the ping key alone", () => {
+		expect(heartbeatCreateRateLimitKey({ path: "/key-a/backup", ip: "1.2.3.4" } as Request)).toBe("key-a");
+		expect(heartbeatCreateRateLimitKey({ path: "/key-a/vacuum/fail", ip: "1.2.3.4" } as Request)).toBe("key-a");
+	});
+
+	it("falls back to the client IP when the path has no key", () => {
+		expect(heartbeatCreateRateLimitKey({ path: "/", ip: "1.2.3.4" } as Request)).toBe("1.2.3.4");
+	});
+
+	it("caps create=true requests per key across slugs, and leaves other requests alone", async () => {
+		const { ping, close } = await setupCreateApp();
+		try {
+			for (let i = 0; i < HEARTBEAT_CREATE_LIMIT_PER_HOUR; i++) expect(await ping(`/key-create/slug-${i}?create=true`)).toBe(200);
+			expect(await ping("/key-create/one-more?create=true")).toBe(429);
+			expect(await ping("/key-create/one-more")).toBe(200);
+			expect(await ping("/key-create/one-more?create=false")).toBe(200);
+			expect(await ping("/key-create-other/one-more?create=true")).toBe(200);
 		} finally {
 			await close();
 		}

@@ -9,7 +9,12 @@ import type { IJobScheduler } from "@/worker/worker.interface.js";
 import type { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
 import type { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import { heartbeatErrors } from "@/domain/heartbeat/heartbeat.errors.js";
-import { HEARTBEAT_FAIL_CODE, HEARTBEAT_UP_CODE, type HeartbeatAction } from "@/domain/heartbeat/heartbeat.type.js";
+import { HEARTBEAT_DEFAULT_INTERVAL_MS, HEARTBEAT_FAIL_CODE, HEARTBEAT_UP_CODE, type HeartbeatAction } from "@/domain/heartbeat/heartbeat.type.js";
+import type { IUsersRepository } from "@/domain/users/user.repository.interface.js";
+import type { IMonitorService } from "@/domain/monitors/monitor.service.js";
+import type { Team } from "@/domain/teams/team.type.js";
+import { monitorErrors } from "@/domain/monitors/monitor.errors.js";
+import type { Monitor } from "@/domain/monitors/monitor.type.js";
 
 const SERVICE_NAME = "HeartbeatService";
 
@@ -20,6 +25,8 @@ type RecordPingArgs = {
 	exitCode?: number;
 	message?: string;
 	duration?: number;
+	create?: boolean;
+	interval?: number;
 };
 
 export interface IHeartbeatService {
@@ -35,6 +42,8 @@ export interface HeartbeatServiceDependencies {
 	jobsRepository: IJobsRepository;
 	checkService: ICheckService;
 	scheduler: IJobScheduler;
+	usersRepository: IUsersRepository;
+	monitorService: IMonitorService;
 }
 
 export class HeartbeatService implements IHeartbeatService {
@@ -45,11 +54,41 @@ export class HeartbeatService implements IHeartbeatService {
 		this.logger = deps.logger.child({ service: SERVICE_NAME });
 	}
 
-	recordPing = async ({ pingKey, slug, action, exitCode, message, duration }: RecordPingArgs): Promise<void> => {
+	private resolveOwner = async (team: Team): Promise<string> => {
+		const keyCreator = team.heartbeatKeyCreatedBy ? await this.deps.usersRepository.findIdInTeam(team.heartbeatKeyCreatedBy, team.id) : null;
+		const owner = keyCreator ? keyCreator : await this.deps.usersRepository.findSuperAdminIdByTeamId(team.id);
+		if (!owner) throw new AppError(internalError, { message: "No owner for auto-created heartbeat monitor", service: SERVICE_NAME });
+		return owner;
+	};
+
+	private createFromPing = async (team: Team, slug: string, interval?: number) => {
+		const ownerId = await this.resolveOwner(team);
+		const body: Partial<Monitor> = {
+			type: "heartbeat",
+			name: slug,
+			heartbeatSlug: slug,
+			interval: interval ?? HEARTBEAT_DEFAULT_INTERVAL_MS,
+		};
+
+		const monitor = await this.deps.monitorService.createMonitor(team.id, ownerId, body).catch((error: unknown) => {
+			if (error instanceof AppError && error.definition === monitorErrors.heartbeatSlugTaken) return null;
+			throw error;
+		});
+		if (!monitor) return this.deps.monitorsRepository.findHeartbeatBySlug(team.id, slug);
+
+		this.logger.info({ teamId: team.id, slug, monitorId: monitor.id }, "Heartbeat monitor auto-created");
+		return monitor;
+	};
+
+	recordPing = async ({ pingKey, slug, action, exitCode, message, duration, create, interval }: RecordPingArgs): Promise<void> => {
 		const team = await this.deps.teamsRepository.findByHeartbeatKeyHash(this.deps.encryptionService.hash(pingKey));
 		if (!team) throw new AppError(heartbeatErrors.notFound, { service: SERVICE_NAME });
 
-		const monitor = await this.deps.monitorsRepository.findHeartbeatBySlug(team.id, slug);
+		let monitor = await this.deps.monitorsRepository.findHeartbeatBySlug(team.id, slug);
+
+		if (!monitor && create) {
+			monitor = await this.createFromPing(team, slug, interval);
+		}
 
 		if (!monitor) {
 			throw new AppError(heartbeatErrors.notFound, { service: SERVICE_NAME });

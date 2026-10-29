@@ -1,6 +1,9 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { HeartbeatService } from "../../../src/domain/heartbeat/heartbeat.service.ts";
 import { heartbeatErrors } from "../../../src/domain/heartbeat/heartbeat.errors.ts";
+import { HEARTBEAT_DEFAULT_INTERVAL_MS } from "../../../src/domain/heartbeat/heartbeat.type.ts";
+import { monitorErrors } from "../../../src/domain/monitors/monitor.errors.ts";
+import { AppError } from "../../../src/utils/AppError.ts";
 import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { MaintenanceWindow } from "../../../src/domain/maintenance-windows/maintenance-window.type.ts";
 import type { Check } from "../../../src/domain/checks/check.type.ts";
@@ -12,6 +15,8 @@ import type { IJobScheduler } from "../../../src/worker/worker.interface.ts";
 import type { ITeamsRepository } from "../../../src/domain/teams/team.repository.interface.ts";
 import type { IEncryptionService } from "../../../src/service/encryption/encryptionService.ts";
 import type { Team } from "../../../src/domain/teams/team.type.ts";
+import type { IUsersRepository } from "../../../src/domain/users/user.repository.interface.ts";
+import type { IMonitorService } from "../../../src/domain/monitors/monitor.service.ts";
 import type { ILogger } from "../../../src/utils/logger/logger.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 
@@ -30,10 +35,30 @@ const activeWindow = (): MaintenanceWindow =>
 		end: new Date(Date.now() + 60_000).toISOString(),
 	}) as MaintenanceWindow;
 
-const setup = (opts?: { team?: Team | null; monitor?: Monitor | null; windows?: MaintenanceWindow[] }) => {
+type SetupOptions = {
+	team?: Team | null;
+	monitor?: Monitor | null;
+	windows?: MaintenanceWindow[];
+	keyCreatorInTeam?: string | null;
+	superAdminId?: string | null;
+	createError?: Error;
+};
+
+const setup = (opts?: SetupOptions) => {
 	const teamsRepository = {
-		findByHeartbeatKeyHash: jest.fn<any>().mockResolvedValue(opts?.team === undefined ? ({ id: "team-1" } as Team) : opts.team),
+		findByHeartbeatKeyHash: jest
+			.fn<any>()
+			.mockResolvedValue(opts?.team === undefined ? ({ id: "team-1", heartbeatKeyCreatedBy: "user-1" } as Team) : opts.team),
 	} as unknown as jest.Mocked<ITeamsRepository>;
+	const usersRepository = {
+		findIdInTeam: jest.fn<any>().mockResolvedValue(opts?.keyCreatorInTeam === undefined ? "user-1" : opts.keyCreatorInTeam),
+		findSuperAdminIdByTeamId: jest.fn<any>().mockResolvedValue(opts?.superAdminId === undefined ? "admin-1" : opts.superAdminId),
+	} as unknown as jest.Mocked<IUsersRepository>;
+	const monitorService = {
+		createMonitor: opts?.createError
+			? jest.fn<any>().mockRejectedValue(opts.createError)
+			: jest.fn<any>().mockResolvedValue(makeMonitor({ id: "mon-new" })),
+	} as unknown as jest.Mocked<IMonitorService>;
 	const encryptionService = {
 		hash: jest.fn((value: string) => `hash(${value})`),
 	} as unknown as jest.Mocked<IEncryptionService>;
@@ -67,8 +92,21 @@ const setup = (opts?: { team?: Team | null; monitor?: Monitor | null; windows?: 
 		jobsRepository,
 		checkService,
 		scheduler,
+		usersRepository,
+		monitorService,
 	});
-	return { service, teamsRepository, encryptionService, monitorsRepository, maintenanceWindowsRepository, jobsRepository, checkService, scheduler };
+	return {
+		service,
+		teamsRepository,
+		encryptionService,
+		usersRepository,
+		monitorService,
+		monitorsRepository,
+		maintenanceWindowsRepository,
+		jobsRepository,
+		checkService,
+		scheduler,
+	};
 };
 
 const createdCheck = (checkService: jest.Mocked<ICheckService>) => (checkService.createChecks.mock.calls[0]?.[0] as Check[])[0];
@@ -176,5 +214,89 @@ describe("HeartbeatService.recordPing", () => {
 		const emptyMessage = setup();
 		await emptyMessage.service.recordPing({ pingKey: "k", slug: "s", action: "success", message: "" });
 		expect(createdCheck(emptyMessage.checkService)).toMatchObject({ message: "Ping received" });
+	});
+});
+
+describe("HeartbeatService.recordPing with create", () => {
+	it("creates a missing monitor owned by the key creator and records the ping on it", async () => {
+		const { service, usersRepository, monitorService, jobsRepository, checkService } = setup({ monitor: null });
+
+		await service.recordPing({ pingKey: "k", slug: "backup", action: "success", create: true });
+
+		expect(usersRepository.findIdInTeam).toHaveBeenCalledWith("user-1", "team-1");
+		expect(monitorService.createMonitor).toHaveBeenCalledWith("team-1", "user-1", {
+			type: "heartbeat",
+			name: "backup",
+			heartbeatSlug: "backup",
+			interval: HEARTBEAT_DEFAULT_INTERVAL_MS,
+		});
+		expect(jobsRepository.rescheduleChecks).toHaveBeenCalledWith(["mon-new"], expect.any(Number));
+		expect(checkService.toCheck).toHaveBeenCalledWith(expect.objectContaining({ monitorId: "mon-new", status: true }));
+	});
+
+	it("uses the requested interval", async () => {
+		const { service, monitorService } = setup({ monitor: null });
+
+		await service.recordPing({ pingKey: "k", slug: "backup", action: "success", create: true, interval: 3_600_000 });
+
+		expect(monitorService.createMonitor).toHaveBeenCalledWith("team-1", "user-1", expect.objectContaining({ interval: 3_600_000 }));
+	});
+
+	it("does not create when the monitor already exists", async () => {
+		const { service, monitorService, checkService } = setup();
+
+		await service.recordPing({ pingKey: "k", slug: "s", action: "success", create: true });
+
+		expect(monitorService.createMonitor).not.toHaveBeenCalled();
+		expect(checkService.createChecks).toHaveBeenCalled();
+	});
+
+	it.each([[undefined], [false]])("answers a missing monitor with a 404 when create is %s", async (create) => {
+		const { service, monitorService } = setup({ monitor: null });
+
+		await expect(service.recordPing({ pingKey: "k", slug: "s", action: "success", create })).rejects.toMatchObject({
+			definition: heartbeatErrors.notFound,
+		});
+		expect(monitorService.createMonitor).not.toHaveBeenCalled();
+	});
+
+	it("falls back to the team's superadmin when the key creator is gone", async () => {
+		const { service, monitorService } = setup({ monitor: null, keyCreatorInTeam: null });
+
+		await service.recordPing({ pingKey: "k", slug: "s", action: "success", create: true });
+
+		expect(monitorService.createMonitor).toHaveBeenCalledWith("team-1", "admin-1", expect.any(Object));
+	});
+
+	it("falls back to the superadmin when the team has no key creator recorded", async () => {
+		const { service, usersRepository, monitorService } = setup({ team: { id: "team-1" } as Team, monitor: null });
+
+		await service.recordPing({ pingKey: "k", slug: "s", action: "success", create: true });
+
+		expect(usersRepository.findIdInTeam).not.toHaveBeenCalled();
+		expect(monitorService.createMonitor).toHaveBeenCalledWith("team-1", "admin-1", expect.any(Object));
+	});
+
+	it("fails with a 500 and creates nothing when the team has no owner", async () => {
+		const { service, monitorService } = setup({ monitor: null, keyCreatorInTeam: null, superAdminId: null });
+
+		await expect(service.recordPing({ pingKey: "k", slug: "s", action: "success", create: true })).rejects.toMatchObject({ status: 500 });
+		expect(monitorService.createMonitor).not.toHaveBeenCalled();
+	});
+
+	it("uses the winner's monitor when a concurrent ping created it first", async () => {
+		const { service, monitorsRepository, checkService } = setup({ monitor: null, createError: new AppError(monitorErrors.heartbeatSlugTaken) });
+		monitorsRepository.findHeartbeatBySlug.mockResolvedValueOnce(null).mockResolvedValueOnce(makeMonitor({ id: "mon-winner" }));
+
+		await service.recordPing({ pingKey: "k", slug: "s", action: "success", create: true });
+
+		expect(checkService.toCheck).toHaveBeenCalledWith(expect.objectContaining({ monitorId: "mon-winner" }));
+	});
+
+	it("rethrows other creation errors", async () => {
+		const { service, checkService } = setup({ monitor: null, createError: new Error("db down") });
+
+		await expect(service.recordPing({ pingKey: "k", slug: "s", action: "success", create: true })).rejects.toThrow("db down");
+		expect(checkService.createChecks).not.toHaveBeenCalled();
 	});
 });

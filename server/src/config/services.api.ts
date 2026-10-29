@@ -119,6 +119,8 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		jobsRepository,
 		checkService,
 		scheduler: jobScheduler,
+		usersRepository,
+		monitorService,
 	});
 	const teamService = new TeamService({ logger, teamsRepository, encryptionService });
 	return {
