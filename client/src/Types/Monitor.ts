@@ -73,30 +73,32 @@ export const getMonitorTypeLabel = (
 export const MIN_MONITOR_INTERVAL_MS = 10000;
 
 export const MonitorIntervalOptions = [
-	{ value: 15000, labelKey: "fifteenSeconds" },
-	{ value: 30000, labelKey: "thirtySeconds" },
-	{ value: 60000, labelKey: "oneMinute" },
-	{ value: 120000, labelKey: "twoMinutes" },
-	{ value: 180000, labelKey: "threeMinutes" },
-	{ value: 240000, labelKey: "fourMinutes" },
+	{ value: 15000 },
+	{ value: 30000 },
+	{ value: 60000 },
+	{ value: 120000 },
+	{ value: 180000 },
+	{ value: 240000 },
+	{ value: 300000 },
+	{ value: 600000 },
+	{ value: 900000 },
+	{ value: 1800000 },
+	{ value: 3600000 },
+	{ value: 7200000 },
+	{ value: 21600000 },
+	{ value: 43200000 },
+	{ value: 86400000 },
+] as const;
+
+// Geo checks keep their own 5-30 minute list: their labels are translated through
+// geoChecks.option.interval.value.*, unlike the monitor intervals above, which
+// formatDuration() renders directly.
+export const GeoCheckIntervalOptions = [
 	{ value: 300000, labelKey: "fiveMinutes" },
 	{ value: 600000, labelKey: "tenMinutes" },
 	{ value: 900000, labelKey: "fifteenMinutes" },
 	{ value: 1800000, labelKey: "thirtyMinutes" },
-	// Longer intervals for checks that do not need frequent sampling, such as PageSpeed.
-	// Labels come from formatDuration(), so these need no translation keys.
-	{ value: 3600000, labelKey: "oneHour" },
-	{ value: 7200000, labelKey: "twoHours" },
-	{ value: 21600000, labelKey: "sixHours" },
-	{ value: 43200000, labelKey: "twelveHours" },
-	{ value: 86400000, labelKey: "oneDay" },
 ] as const;
-
-// Geo checks keep their original 5–30 minute range; they have their own, shorter set of
-// translated labels, so they deliberately do not follow the longer monitor intervals.
-export const GeoCheckIntervalOptions = MonitorIntervalOptions.filter(
-	({ value }) => value >= 300000 && value <= 1800000
-);
 
 export const HeartbeatIntervalOptions = [
 	{ value: 60000 },
