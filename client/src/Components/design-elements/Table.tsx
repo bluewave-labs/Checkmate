@@ -589,6 +589,7 @@ export const Pagination = ({ ...props }: PaginationProps) => {
 		if (
 			typeof itemsOnPage === "number" &&
 			itemsOnPage === 0 &&
+			rest.count > 0 &&
 			rest.page > lastPage &&
 			rest.onPageChange
 		) {
