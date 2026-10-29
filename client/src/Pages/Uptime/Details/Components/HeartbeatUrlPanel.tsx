@@ -1,18 +1,15 @@
-import { useState } from "react";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import { RefreshCw } from "lucide-react";
-import { ConfigBox, CopyRow, Icon } from "@/Components/design-elements";
-import { Button, Dialog } from "@/Components/inputs";
-import { useGet, usePost } from "@/Hooks/UseApi";
+import { ConfigBox, CopyRow, TextLink } from "@/Components/design-elements";
 import { BASE_URL } from "@/Utils/ApiClient";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import type { HeartbeatTokenResponse } from "@/Types/Monitor";
 
 const CURL = "curl -fsS -m 10 --retry 3";
+// The plaintext key is only shown once, in Settings, so the URL carries a placeholder for it
+const PING_KEY_PLACEHOLDER = "<pingKey>";
 
 const HeartbeatExamples = ["post", "cron", "exitCode", "fail", "duration"] as const;
 type HeartbeatExample = (typeof HeartbeatExamples)[number];
@@ -39,112 +36,74 @@ const optionSyntax: Record<HeartbeatOption, string> = {
 	msg: "?msg=<text>",
 };
 
-// Rendered for admins only (the token endpoint is admin/superadmin)
 interface HeartbeatUrlPanelProps {
-	monitorId: string;
+	slug: string;
 }
 
-export const HeartbeatUrlPanel = ({ monitorId }: HeartbeatUrlPanelProps) => {
+export const HeartbeatUrlPanel = ({ slug }: HeartbeatUrlPanelProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const [isRotateDialogOpen, setIsRotateDialogOpen] = useState(false);
-	const tokenUrl = `/monitors/${monitorId}/heartbeat-token`;
-	const { data, refetch } = useGet<HeartbeatTokenResponse>(tokenUrl);
-	const { post, loading: isRotating } = usePost<
-		Record<string, never>,
-		HeartbeatTokenResponse
-	>();
 
-	if (!data?.heartbeatToken) {
-		return null;
-	}
-
-	const pingUrl = new URL(
-		`${BASE_URL}/heartbeat/${data.heartbeatToken}`,
-		window.location.origin
-	).toString();
-
-	const handleRotateConfirm = async () => {
-		const result = await post(tokenUrl, {});
-		setIsRotateDialogOpen(false);
-		if (result?.success) {
-			await refetch();
-		}
-	};
+	// Only the base goes through URL: it would percent-encode the placeholder's < and >
+	const apiBase = new URL(BASE_URL, window.location.origin).toString().replace(/\/$/, "");
+	const pingUrl = `${apiBase}/heartbeat/${PING_KEY_PLACEHOLDER}/${slug}`;
 
 	return (
-		<>
-			<ConfigBox
-				title={t("pages.uptime.details.heartbeat.title")}
-				subtitle={t("pages.uptime.details.heartbeat.description")}
-				leftContent={
-					<Stack gap={theme.spacing(LAYOUT.MD)}>
-						<Typography variant="h2">
-							{t("pages.uptime.details.heartbeat.options.title")}
-						</Typography>
-						<Typography color={theme.palette.text.secondary}>
-							{t("pages.uptime.details.heartbeat.options.description")}
-						</Typography>
-						{HeartbeatOptions.map((option) => (
-							<Typography key={option}>
-								<Box
-									component="code"
-									fontFamily={theme.typography.fontFamilyMonospace}
-								>
-									{optionSyntax[option]}
-								</Box>{" "}
-								{t(`pages.uptime.details.heartbeat.options.${option}`)}
-							</Typography>
-						))}
-						<Typography color={theme.palette.text.secondary}>
-							{t("pages.uptime.details.heartbeat.options.combine")}
-						</Typography>
-						<Box>
-							<Button
-								variant="contained"
-								color="secondary"
-								startIcon={<Icon icon={RefreshCw} />}
-								onClick={() => setIsRotateDialogOpen(true)}
+		<ConfigBox
+			title={t("pages.uptime.details.heartbeat.title")}
+			subtitle={t("pages.uptime.details.heartbeat.description")}
+			leftContent={
+				<Stack gap={theme.spacing(LAYOUT.MD)}>
+					<Typography variant="h2">
+						{t("pages.uptime.details.heartbeat.options.title")}
+					</Typography>
+					<Typography color={theme.palette.text.secondary}>
+						{t("pages.uptime.details.heartbeat.options.description")}
+					</Typography>
+					{HeartbeatOptions.map((option) => (
+						<Typography key={option}>
+							<Box
+								component="code"
+								fontFamily={theme.typography.fontFamilyMonospace}
 							>
-								{t("pages.uptime.details.heartbeat.rotate")}
-							</Button>
-						</Box>
+								{optionSyntax[option]}
+							</Box>{" "}
+							{t(`pages.uptime.details.heartbeat.options.${option}`)}
+						</Typography>
+					))}
+					<Typography color={theme.palette.text.secondary}>
+						{t("pages.uptime.details.heartbeat.options.combine")}
+					</Typography>
+					<TextLink
+						text={t("pages.uptime.details.heartbeat.keyHint")}
+						linkText={t("pages.uptime.details.heartbeat.keyLink")}
+						href="/settings?tab=monitoring"
+					/>
+				</Stack>
+			}
+			rightContent={
+				<Stack spacing={theme.spacing(LAYOUT.MD)}>
+					<CopyRow
+						label={t("pages.uptime.details.heartbeat.pingUrl")}
+						value={pingUrl}
+					/>
+					<Stack gap={theme.spacing(LAYOUT.XS)}>
+						<Typography variant="h2">
+							{t("pages.uptime.details.heartbeat.examplesTitle")}
+						</Typography>
+						<Typography color={theme.palette.text.secondary}>
+							{t("pages.uptime.details.heartbeat.examplesDescription")}
+						</Typography>
 					</Stack>
-				}
-				rightContent={
-					<Stack spacing={theme.spacing(LAYOUT.MD)}>
+					{HeartbeatExamples.map((example) => (
 						<CopyRow
-							label={t("pages.uptime.details.heartbeat.pingUrl")}
-							value={pingUrl}
+							key={example}
+							label={t(`pages.uptime.details.heartbeat.examples.${example}`)}
+							value={buildExample[example](pingUrl)}
 						/>
-						<Stack gap={theme.spacing(LAYOUT.XS)}>
-							<Typography variant="h2">
-								{t("pages.uptime.details.heartbeat.examplesTitle")}
-							</Typography>
-							<Typography color={theme.palette.text.secondary}>
-								{t("pages.uptime.details.heartbeat.examplesDescription")}
-							</Typography>
-						</Stack>
-						{HeartbeatExamples.map((example) => (
-							<CopyRow
-								key={example}
-								label={t(`pages.uptime.details.heartbeat.examples.${example}`)}
-								value={buildExample[example](pingUrl)}
-							/>
-						))}
-					</Stack>
-				}
-			/>
-			<Dialog
-				open={isRotateDialogOpen}
-				title={t("pages.uptime.details.heartbeat.rotateConfirmTitle")}
-				content={t("pages.uptime.details.heartbeat.rotateConfirmBody")}
-				confirmText={t("pages.uptime.details.heartbeat.rotate")}
-				confirmColor="error"
-				onConfirm={handleRotateConfirm}
-				onCancel={() => setIsRotateDialogOpen(false)}
-				loading={isRotating}
-			/>
-		</>
+					))}
+				</Stack>
+			}
+		/>
 	);
 };

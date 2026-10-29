@@ -240,9 +240,8 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		secret: {
 			type: String,
 		},
-		heartbeatToken: {
+		heartbeatSlug: {
 			type: String,
-			select: false,
 		},
 		cpuAlertThreshold: {
 			type: Number,
@@ -360,13 +359,7 @@ const MonitorSchema = new Schema<MonitorDocument>(
 );
 
 MonitorSchema.index({ teamId: 1, type: 1 });
-MonitorSchema.index(
-	{ heartbeatToken: 1 },
-	{
-		unique: true,
-		partialFilterExpression: { heartbeatToken: { $type: "string" } },
-	}
-);
+MonitorSchema.index({ teamId: 1, heartbeatSlug: 1 }, { unique: true, partialFilterExpression: { heartbeatSlug: { $type: "string" } } });
 
 const MonitorModel = model<MonitorDocument>("Monitor", MonitorSchema);
 

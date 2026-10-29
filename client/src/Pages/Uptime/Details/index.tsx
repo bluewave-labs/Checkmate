@@ -244,7 +244,9 @@ const UptimeDetailsPage = () => {
 					range={dateRange}
 				/>
 			)}
-			{isHeartbeat && isAdmin && <HeartbeatUrlPanel monitorId={monitor.id} />}
+			{isHeartbeat && isAdmin && monitor.heartbeatSlug && (
+				<HeartbeatUrlPanel slug={monitor.heartbeatSlug} />
+			)}
 			<ChecksTable
 				checks={checks}
 				count={checksCount}

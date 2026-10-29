@@ -6,13 +6,16 @@ import type { IMaintenanceWindowsRepository } from "@/domain/maintenance-windows
 import type { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import type { ICheckService } from "@/domain/checks/check.service.js";
 import type { IJobScheduler } from "@/worker/worker.interface.js";
+import type { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
+import type { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import { heartbeatErrors } from "@/domain/heartbeat/heartbeat.errors.js";
 import { HEARTBEAT_FAIL_CODE, HEARTBEAT_UP_CODE, type HeartbeatAction } from "@/domain/heartbeat/heartbeat.type.js";
 
 const SERVICE_NAME = "HeartbeatService";
 
 type RecordPingArgs = {
-	token: string;
+	pingKey: string;
+	slug: string;
 	action: HeartbeatAction;
 	exitCode?: number;
 	message?: string;
@@ -25,6 +28,8 @@ export interface IHeartbeatService {
 
 export interface HeartbeatServiceDependencies {
 	logger: ILogger;
+	teamsRepository: ITeamsRepository;
+	encryptionService: IEncryptionService;
 	monitorsRepository: IMonitorsRepository;
 	maintenanceWindowsRepository: IMaintenanceWindowsRepository;
 	jobsRepository: IJobsRepository;
@@ -40,8 +45,11 @@ export class HeartbeatService implements IHeartbeatService {
 		this.logger = deps.logger.child({ service: SERVICE_NAME });
 	}
 
-	recordPing = async ({ token, action, exitCode, message, duration }: RecordPingArgs): Promise<void> => {
-		const monitor = await this.deps.monitorsRepository.findByHeartbeatToken(token);
+	recordPing = async ({ pingKey, slug, action, exitCode, message, duration }: RecordPingArgs): Promise<void> => {
+		const team = await this.deps.teamsRepository.findByHeartbeatKeyHash(this.deps.encryptionService.hash(pingKey));
+		if (!team) throw new AppError(heartbeatErrors.notFound, { service: SERVICE_NAME });
+
+		const monitor = await this.deps.monitorsRepository.findHeartbeatBySlug(team.id, slug);
 
 		if (!monitor) {
 			throw new AppError(heartbeatErrors.notFound, { service: SERVICE_NAME });

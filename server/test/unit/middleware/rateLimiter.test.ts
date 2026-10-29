@@ -36,21 +36,30 @@ const setupHeartbeatApp = async () => {
 };
 
 describe("heartbeatApiLimiter", () => {
-	it("keys a heartbeat request by the token segment", () => {
-		expect(heartbeatRateLimitKey({ path: "/tok-a/fail", ip: "1.2.3.4" } as Request)).toBe("tok-a");
-		expect(heartbeatRateLimitKey({ path: "/tok-a", ip: "1.2.3.4" } as Request)).toBe("tok-a");
+	it("keys a heartbeat request by ping key and slug", () => {
+		expect(heartbeatRateLimitKey({ path: "/key-a/backup", ip: "1.2.3.4" } as Request)).toBe("key-a/backup");
+		expect(heartbeatRateLimitKey({ path: "/key-a/backup/fail", ip: "1.2.3.4" } as Request)).toBe("key-a/backup");
+		expect(heartbeatRateLimitKey({ path: "/key-a/backup/1", ip: "1.2.3.4" } as Request)).toBe("key-a/backup");
 	});
 
-	it("falls back to the client IP when the path has no token", () => {
+	it("gives each slug under one key its own bucket", () => {
+		expect(heartbeatRateLimitKey({ path: "/key-a/backup", ip: "1.2.3.4" } as Request)).not.toBe(
+			heartbeatRateLimitKey({ path: "/key-a/vacuum", ip: "1.2.3.4" } as Request)
+		);
+	});
+
+	it("falls back to the client IP when the path has no key and slug", () => {
 		expect(heartbeatRateLimitKey({ path: "/", ip: "1.2.3.4" } as Request)).toBe("1.2.3.4");
+		expect(heartbeatRateLimitKey({ path: "/key-a", ip: "1.2.3.4" } as Request)).toBe("1.2.3.4");
 	});
 
-	it("limits one token to 60 a minute without touching another token", async () => {
+	it("limits one monitor to 60 a minute without touching other slugs or keys", async () => {
 		const { ping, close } = await setupHeartbeatApp();
 		try {
-			for (let i = 0; i < 60; i++) expect(await ping("/tok-limit")).toBe(200);
-			expect(await ping("/tok-limit/1")).toBe(429); // sub-paths share the token's budget
-			expect(await ping("/tok-other")).toBe(200);
+			for (let i = 0; i < 60; i++) expect(await ping("/key-limit/backup")).toBe(200);
+			expect(await ping("/key-limit/backup/1")).toBe(429); // sub-paths share the monitor's budget
+			expect(await ping("/key-limit/vacuum")).toBe(200); // another slug under the same key
+			expect(await ping("/key-other/backup")).toBe(200); // the same slug under another key
 		} finally {
 			await close();
 		}

@@ -777,6 +777,11 @@
 							"description": "Daemon'un sertifikasının doğrulanmasını atlar, böylece CA sertifikası isteğe bağlı hale gelir. Daemon istemciyi doğruladığı için istemci sertifikası ve anahtarı yine de gereklidir."
 						}
 					}
+				},
+				"heartbeatSlug": {
+					"label": "Slug",
+					"hint": "Bu monitörü ping URL'sinde tanımlar. Küçük harfler, rakamlar ve kısa çizgiler.",
+					"editAlert": "Slug'ı değiştirmek ping URL'sini değiştirir. Mevcut URL'yi kullanan işler çalışmayı bırakır."
 				}
 			}
 		},
@@ -1421,9 +1426,9 @@
 				},
 				"heartbeatKey": {
 					"title": "Heartbeat ping anahtarı",
-					"description": "Bu takımdaki tüm heartbeat monitörlerinin paylaştığı tek bir gizli anahtar. İşler bunu monitörün slug'ı ile birlikte ping URL'sinde gönderir.",
+					"description": "Heartbeat monitörlerine ping göndermek için kullanılan anahtar.",
 					"noKey": "Henüz anahtar yok. Heartbeat ping'leri göndermeye başlamak için bir anahtar oluşturun.",
-					"keySet": "Bir anahtar ayarlı. Oluşturulduğunda yalnızca bir kez gösterildi.",
+					"keySet": "Bir anahtar ayarlı. Kopyalayabileceğiniz yeni bir anahtar almak için yenileyin.",
 					"generate": "Anahtar oluştur",
 					"rotate": "Anahtarı yenile",
 					"rotateConfirmTitle": "Heartbeat ping anahtarı yenilensin mi?",
@@ -1674,9 +1679,8 @@
 						"msg": "kontrole bir mesaj ekler",
 						"combine": "/fail veya bir çıkış kodu kullanın, ikisini birden değil. Sorgu parametreleri her URL ile çalışır ve & ile birleştirilebilir, örneğin /1?duration=5000&msg=disk%20full."
 					},
-					"rotate": "Token'ı yenile",
-					"rotateConfirmTitle": "Bu heartbeat token'ı yenilensin mi?",
-					"rotateConfirmBody": "Mevcut URL hemen çalışmayı durdurur. Bu URL'ye ping gönderen tüm işleri güncelleyin."
+					"keyHint": "<pingKey> yerine takımınızın ping anahtarını yazın.",
+					"keyLink": "Ayarlar → İzleme bölümünden yönetin"
 				}
 			}
 		},

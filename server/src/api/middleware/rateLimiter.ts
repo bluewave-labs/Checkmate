@@ -2,7 +2,10 @@ import type { ErrorBody } from "@/api/routes/openapiHelpers.js";
 import { Request } from "express";
 import rateLimit, { ipKeyGenerator, type Options } from "express-rate-limit";
 
-export const heartbeatRateLimitKey = (req: Request): string => req.path.split("/")[1] || ipKeyGenerator(req.ip ?? "", 64);
+export const heartbeatRateLimitKey = (req: Request): string => {
+	const [, pingKey, slug] = req.path.split("/");
+	return pingKey && slug ? `${pingKey}/${slug}` : ipKeyGenerator(req.ip ?? "", 64);
+};
 
 export const tooManyRequests: Options["handler"] = (_req, res) => {
 	const body: ErrorBody = { status: 429, msg: "Too many requests, please try again later." };

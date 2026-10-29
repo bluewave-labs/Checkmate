@@ -777,6 +777,11 @@
 							"description": "Ohittaa demonin varmenteen tarkistuksen, joten CA-varmenne muuttuu valinnaiseksi. Asiakasvarmenne ja -avain vaaditaan silti, koska demoni tarkistaa ne."
 						}
 					}
+				},
+				"heartbeatSlug": {
+					"label": "Slug",
+					"hint": "Tunnistaa tämän valvojan ping-URL:ssa. Pienet kirjaimet, numerot ja yhdysmerkit.",
+					"editAlert": "Slugin vaihtaminen muuttaa ping-URL:n. Nykyistä URL:ää käyttävät työt lakkaavat toimimasta."
 				}
 			}
 		},
@@ -1421,9 +1426,9 @@
 				},
 				"heartbeatKey": {
 					"title": "Heartbeat-pingiavain",
-					"description": "Yksi salaisuus, jonka kaikki tämän tiimin heartbeat-valvojat jakavat. Työt lähettävät sen ping-URL:ssa valvojan slugin kanssa.",
+					"description": "Avain heartbeat-valvojien pingaamiseen.",
 					"noKey": "Avainta ei vielä ole. Luo avain aloittaaksesi heartbeat-pingien lähettämisen.",
-					"keySet": "Avain on asetettu. Se näytettiin kerran, kun se luotiin.",
+					"keySet": "Avain on asetettu. Vaihda se saadaksesi uuden avaimen, jonka voit kopioida.",
 					"generate": "Luo avain",
 					"rotate": "Vaihda avain",
 					"rotateConfirmTitle": "Vaihdetaanko heartbeat-pingiavain?",
@@ -1674,9 +1679,8 @@
 						"msg": "liittää tarkistukseen viestin",
 						"combine": "Käytä joko /fail tai poistumiskoodia, ei molempia. Kyselyparametrit toimivat missä tahansa URL:ssa ja ne voi yhdistää &-merkillä, esimerkiksi /1?duration=5000&msg=disk%20full."
 					},
-					"rotate": "Vaihda tunniste",
-					"rotateConfirmTitle": "Vaihdetaanko tämä heartbeat-tunniste?",
-					"rotateConfirmBody": "Nykyinen URL lakkaa toimimasta heti. Päivitä kaikki työt, jotka lähettävät siihen pingin."
+					"keyHint": "Korvaa <pingKey> tiimisi pingiavaimella.",
+					"keyLink": "Hallitse sitä kohdassa Asetukset → Valvonta"
 				}
 			}
 		},

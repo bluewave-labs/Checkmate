@@ -777,6 +777,11 @@
 							"description": "略過對守護程序憑證的驗證，因此 CA 憑證變為選填。用戶端憑證與金鑰仍為必填，因為守護程序會驗證它們。"
 						}
 					}
+				},
+				"heartbeatSlug": {
+					"label": "Slug",
+					"hint": "在 ping URL 中識別此監控。可使用小寫字母、數字和連字號。",
+					"editAlert": "變更 slug 會改變 ping URL。使用目前 URL 的工作將停止運作。"
 				}
 			}
 		},
@@ -1421,9 +1426,9 @@
 				},
 				"heartbeatKey": {
 					"title": "心跳 ping 金鑰",
-					"description": "此團隊所有心跳監控共用的一組密鑰。工作會在 ping URL 中連同監控的 slug 一起傳送它。",
+					"description": "用於向心跳監控傳送 ping 的金鑰。",
 					"noKey": "尚無金鑰。產生一組金鑰即可開始傳送心跳 ping。",
-					"keySet": "已設定金鑰。它只在產生時顯示過一次。",
+					"keySet": "已設定金鑰。輪替金鑰即可取得可複製的新金鑰。",
 					"generate": "產生金鑰",
 					"rotate": "輪替金鑰",
 					"rotateConfirmTitle": "要輪替心跳 ping 金鑰嗎？",
@@ -1674,9 +1679,8 @@
 						"msg": "為檢查附加一則訊息",
 						"combine": "/fail 和結束代碼只能擇一使用。查詢參數適用於任何 URL，並可用 & 串接，例如 /1?duration=5000&msg=disk%20full。"
 					},
-					"rotate": "輪替權杖",
-					"rotateConfirmTitle": "要輪替此心跳權杖嗎？",
-					"rotateConfirmBody": "目前的 URL 會立即失效。請更新所有 ping 此 URL 的工作。"
+					"keyHint": "將 <pingKey> 替換為你團隊的 ping 金鑰。",
+					"keyLink": "在 設定 → 監控 中管理"
 				}
 			}
 		},

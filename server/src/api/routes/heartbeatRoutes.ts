@@ -18,7 +18,7 @@ export const heartbeatRoutes: RouteTable<IHeartbeatController> = {
 	routes: [
 		{
 			method: "get",
-			path: "/:token",
+			path: "/:pingKey/:slug",
 			handler: "ping",
 			summary: "Record a successful heartbeat",
 			params: heartbeatParamValidation,
@@ -26,7 +26,7 @@ export const heartbeatRoutes: RouteTable<IHeartbeatController> = {
 		},
 		{
 			method: "post",
-			path: "/:token",
+			path: "/:pingKey/:slug",
 			handler: "ping",
 			summary: "Record a successful heartbeat",
 			params: heartbeatParamValidation,
@@ -34,7 +34,7 @@ export const heartbeatRoutes: RouteTable<IHeartbeatController> = {
 		},
 		{
 			method: "get",
-			path: "/:token/fail",
+			path: "/:pingKey/:slug/fail",
 			handler: "fail",
 			summary: "Record a failed run",
 			params: heartbeatParamValidation,
@@ -42,7 +42,7 @@ export const heartbeatRoutes: RouteTable<IHeartbeatController> = {
 		},
 		{
 			method: "post",
-			path: "/:token/fail",
+			path: "/:pingKey/:slug/fail",
 			handler: "fail",
 			summary: "Record a failed run",
 			params: heartbeatParamValidation,
@@ -50,7 +50,7 @@ export const heartbeatRoutes: RouteTable<IHeartbeatController> = {
 		},
 		{
 			method: "get",
-			path: "/:token/:exitCode",
+			path: "/:pingKey/:slug/:exitCode",
 			handler: "exitCode",
 			summary: "Record a run by exit code",
 			params: heartbeatExitCodeParamValidation,
@@ -58,7 +58,7 @@ export const heartbeatRoutes: RouteTable<IHeartbeatController> = {
 		},
 		{
 			method: "post",
-			path: "/:token/:exitCode",
+			path: "/:pingKey/:slug/:exitCode",
 			handler: "exitCode",
 			summary: "Record a run by exit code",
 			params: heartbeatExitCodeParamValidation,

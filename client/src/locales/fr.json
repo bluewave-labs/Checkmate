@@ -777,6 +777,11 @@
 							"description": "Ignore la vérification du certificat du démon, ce qui rend le certificat d'autorité optionnel. Le certificat et la clé client restent obligatoires car le démon les vérifie."
 						}
 					}
+				},
+				"heartbeatSlug": {
+					"label": "Slug",
+					"hint": "Identifie ce moniteur dans l'URL de ping. Lettres minuscules, chiffres et tirets.",
+					"editAlert": "Modifier le slug modifie l'URL de ping. Les tâches qui utilisent l'URL actuelle cesseront de fonctionner."
 				}
 			}
 		},
@@ -1421,9 +1426,9 @@
 				},
 				"heartbeatKey": {
 					"title": "Clé de ping heartbeat",
-					"description": "Un secret partagé par tous les moniteurs heartbeat de cette équipe. Les tâches l'envoient dans l'URL de ping avec le slug du moniteur.",
+					"description": "Clé utilisée pour envoyer des pings aux moniteurs heartbeat.",
 					"noKey": "Aucune clé pour l'instant. Générez-en une pour commencer à envoyer des pings heartbeat.",
-					"keySet": "Une clé est définie. Elle a été affichée une seule fois, lors de sa génération.",
+					"keySet": "Une clé est définie. Renouvelez-la pour obtenir une nouvelle clé à copier.",
 					"generate": "Générer une clé",
 					"rotate": "Renouveler la clé",
 					"rotateConfirmTitle": "Renouveler la clé de ping heartbeat ?",
@@ -1674,9 +1679,8 @@
 						"msg": "joint un message à la vérification",
 						"combine": "Utilisez /fail ou un code de sortie, pas les deux. Les paramètres de requête fonctionnent avec n'importe quelle URL et se combinent avec &, par exemple /1?duration=5000&msg=disk%20full."
 					},
-					"rotate": "Renouveler le jeton",
-					"rotateConfirmTitle": "Renouveler ce jeton de heartbeat ?",
-					"rotateConfirmBody": "L'URL actuelle cesse de fonctionner immédiatement. Mettez à jour chaque tâche qui l'appelle."
+					"keyHint": "Remplacez <pingKey> par la clé de ping de votre équipe.",
+					"keyLink": "Gérez-la dans Paramètres → Surveillance"
 				}
 			}
 		},

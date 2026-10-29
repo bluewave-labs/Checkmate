@@ -796,6 +796,11 @@
 							"description": "Salta la verifica del certificato del daemon, così il certificato CA diventa opzionale. Il certificato e la chiave client restano obbligatori perché il daemon li verifica."
 						}
 					}
+				},
+				"heartbeatSlug": {
+					"label": "Slug",
+					"hint": "Identifica questo monitor nell'URL di ping. Lettere minuscole, numeri e trattini.",
+					"editAlert": "Cambiare lo slug cambia l'URL di ping. I job che usano l'URL attuale smetteranno di funzionare."
 				}
 			}
 		},
@@ -1517,9 +1522,9 @@
 				},
 				"heartbeatKey": {
 					"title": "Chiave di ping heartbeat",
-					"description": "Un segreto condiviso da tutti i monitor heartbeat di questo team. I job lo inviano nell'URL di ping insieme allo slug del monitor.",
+					"description": "Chiave usata per inviare ping ai monitor heartbeat.",
 					"noKey": "Nessuna chiave. Generane una per iniziare a inviare ping heartbeat.",
-					"keySet": "Una chiave è impostata. È stata mostrata una sola volta, alla generazione.",
+					"keySet": "Una chiave è impostata. Ruotala per ottenere una nuova chiave da copiare.",
 					"generate": "Genera chiave",
 					"rotate": "Ruota chiave",
 					"rotateConfirmTitle": "Ruotare la chiave di ping heartbeat?",
@@ -1794,9 +1799,8 @@
 						"msg": "allega un messaggio al controllo",
 						"combine": "Usa /fail oppure un codice di uscita, non entrambi. I parametri di query funzionano con qualsiasi URL e si possono combinare con &, ad esempio /1?duration=5000&msg=disk%20full."
 					},
-					"rotate": "Rigenera token",
-					"rotateConfirmTitle": "Rigenerare questo token heartbeat?",
-					"rotateConfirmBody": "L'URL attuale smette subito di funzionare. Aggiorna ogni job che lo chiama."
+					"keyHint": "Sostituisci <pingKey> con la chiave di ping del tuo team.",
+					"keyLink": "Gestiscila in Impostazioni → Monitoraggio"
 				}
 			}
 		},

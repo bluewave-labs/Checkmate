@@ -778,6 +778,11 @@
 							"description": "Überspringt die Überprüfung des Daemon-Zertifikats, sodass das CA-Zertifikat optional wird. Client-Zertifikat und Schlüssel sind weiterhin erforderlich, da der Daemon sie überprüft."
 						}
 					}
+				},
+				"heartbeatSlug": {
+					"label": "Slug",
+					"hint": "Identifiziert diesen Monitor in der Ping-URL. Kleinbuchstaben, Ziffern und Bindestriche.",
+					"editAlert": "Wenn Sie den Slug ändern, ändert sich die Ping-URL. Jobs mit der aktuellen URL funktionieren dann nicht mehr."
 				}
 			}
 		},
@@ -1422,9 +1427,9 @@
 				},
 				"heartbeatKey": {
 					"title": "Heartbeat-Ping-Schlüssel",
-					"description": "Ein gemeinsames Geheimnis für alle Heartbeat-Monitore dieses Teams. Jobs senden es zusammen mit dem Slug des Monitors in der Ping-URL.",
+					"description": "Schlüssel zum Anpingen von Heartbeat-Monitoren.",
 					"noKey": "Noch kein Schlüssel. Erstellen Sie einen, um Heartbeat-Pings zu senden.",
-					"keySet": "Ein Schlüssel ist gesetzt. Er wurde einmal beim Erstellen angezeigt.",
+					"keySet": "Ein Schlüssel ist gesetzt. Rotieren Sie ihn, um einen neuen Schlüssel zum Kopieren zu erhalten.",
 					"generate": "Schlüssel erstellen",
 					"rotate": "Schlüssel rotieren",
 					"rotateConfirmTitle": "Heartbeat-Ping-Schlüssel rotieren?",
@@ -1675,9 +1680,8 @@
 						"msg": "hängt eine Nachricht an die Prüfung an",
 						"combine": "Verwenden Sie /fail oder einen Exit-Code, nicht beides. Query-Parameter funktionieren mit jeder URL und lassen sich mit & kombinieren, z. B. /1?duration=5000&msg=disk%20full."
 					},
-					"rotate": "Token erneuern",
-					"rotateConfirmTitle": "Diesen Heartbeat-Token erneuern?",
-					"rotateConfirmBody": "Die aktuelle URL funktioniert sofort nicht mehr. Aktualisieren Sie jeden Job, der sie anpingt."
+					"keyHint": "Ersetzen Sie <pingKey> durch den Ping-Schlüssel Ihres Teams.",
+					"keyLink": "Verwalten unter Einstellungen → Überwachung"
 				}
 			}
 		},

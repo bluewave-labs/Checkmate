@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useEffect } from "react";
 import { logger } from "@/Utils/logger";
 import { ALL_HTTP_STATUS_CODES } from "@/Utils/statusCode";
@@ -70,6 +70,7 @@ import { FormSliderField } from "@/Components/inputs/forms/FormSliderField";
 import { FormSwitchField } from "@/Components/inputs/forms/FormSwitchField";
 import type { ProxyResponse } from "@/Types/Proxy";
 import { formatDuration } from "@/Utils/TimeUtils";
+import { toHeartbeatSlug } from "@/Utils/heartbeat";
 
 const httpMethodOptions = HttpMethods.map((method) => ({
 	value: method,
@@ -375,6 +376,20 @@ const CreateMonitorPage = () => {
 	const watchGeoCheckEnabled = watch("geoCheckEnabled") as boolean;
 	const watchedInterval = watch("interval");
 	const isHeartbeat = watchedType === "heartbeat";
+	const watchedName = watch("name") as string;
+	const watchedSlug = watch("heartbeatSlug") as string | undefined;
+
+	// Create mode: the slug follows the name until the user edits it to something else
+	const autoSlugRef = useRef("");
+	useEffect(() => {
+		if (!isHeartbeat || isEditMode) return;
+		const current = watchedSlug ?? "";
+		if (current !== "" && current !== autoSlugRef.current) return;
+		const next = watchedName?.trim() ? toHeartbeatSlug(watchedName) : "";
+		autoSlugRef.current = next;
+		if (next !== current)
+			setValue("heartbeatSlug", next, { shouldValidate: next !== "" });
+	}, [isHeartbeat, isEditMode, watchedName, watchedSlug, setValue]);
 
 	// Steps without an advanced section drop it, so the last step is the form's.
 	const totalSteps = monitorStepCount(watchedType);
@@ -664,6 +679,24 @@ const CreateMonitorPage = () => {
 									fieldLabel={t("pages.createMonitor.form.general.option.name.label")}
 									placeholder={generalSettingsConfig.namePlaceholder}
 								/>
+								{isHeartbeat && (
+									<FormTextField
+										name="heartbeatSlug"
+										fieldLabel={t("pages.createMonitor.form.heartbeatSlug.label")}
+										placeholder="nightly-backup"
+										helperText={t("pages.createMonitor.form.heartbeatSlug.hint")}
+									/>
+								)}
+								{isHeartbeat &&
+									isEditMode &&
+									"heartbeatSlug" in formState.dirtyFields && (
+										<Alert
+											severity="warning"
+											sx={{ alignItems: "center" }}
+										>
+											{t("pages.createMonitor.form.heartbeatSlug.editAlert")}
+										</Alert>
+									)}
 								{/* URL/Host/Container field - not shown for hardware */}
 								{generalSettingsConfig.showUrl && (
 									<FormTextField

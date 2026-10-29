@@ -792,6 +792,11 @@
 							"description": "Pomija weryfikację certyfikatu daemona, więc certyfikat CA staje się opcjonalny. Certyfikat i klucz klienta są nadal wymagane, ponieważ daemon je weryfikuje."
 						}
 					}
+				},
+				"heartbeatSlug": {
+					"label": "Slug",
+					"hint": "Identyfikuje ten monitor w adresie URL pingu. Małe litery, cyfry i myślniki.",
+					"editAlert": "Zmiana sluga zmienia adres URL pingu. Zadania używające obecnego adresu przestaną działać."
 				}
 			}
 		},
@@ -1486,9 +1491,9 @@
 				},
 				"heartbeatKey": {
 					"title": "Klucz pingu heartbeat",
-					"description": "Jeden sekret wspólny dla wszystkich monitorów heartbeat w tym zespole. Zadania wysyłają go w adresie URL pingu razem ze slugiem monitora.",
+					"description": "Klucz do pingowania monitorów heartbeat.",
 					"noKey": "Brak klucza. Wygeneruj go, aby zacząć wysyłać pingi heartbeat.",
-					"keySet": "Klucz jest ustawiony. Został pokazany raz, podczas generowania.",
+					"keySet": "Klucz jest ustawiony. Zmień go, aby otrzymać nowy klucz do skopiowania.",
 					"generate": "Wygeneruj klucz",
 					"rotate": "Zmień klucz",
 					"rotateConfirmTitle": "Zmienić klucz pingu heartbeat?",
@@ -1788,9 +1793,8 @@
 						"msg": "dołącza wiadomość do sprawdzenia",
 						"combine": "Użyj /fail albo kodu wyjścia, nie obu naraz. Parametry zapytania działają z każdym adresem URL i można je łączyć znakiem &, na przykład /1?duration=5000&msg=disk%20full."
 					},
-					"rotate": "Odnów token",
-					"rotateConfirmTitle": "Odnowić ten token heartbeat?",
-					"rotateConfirmBody": "Obecny adres URL natychmiast przestanie działać. Zaktualizuj każde zadanie, które go wywołuje."
+					"keyHint": "Zastąp <pingKey> kluczem pingu swojego zespołu.",
+					"keyLink": "Zarządzaj nim w Ustawienia → Monitorowanie"
 				}
 			},
 			"table": {

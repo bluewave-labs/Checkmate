@@ -22,6 +22,18 @@ import { monitorErrors } from "@/domain/monitors/monitor.errors.js";
 
 const SERVICE_NAME = "MonitorsRepository";
 
+const isSlugConflict = (error: unknown): boolean =>
+	typeof error === "object" &&
+	error !== null &&
+	(error as { code?: number }).code === 11000 &&
+	"heartbeatSlug" in ((error as { keyPattern?: Record<string, unknown> }).keyPattern ?? {});
+
+const slugTaken = (slug: string | undefined) =>
+	new AppError(monitorErrors.heartbeatSlugTaken, {
+		message: `Slug "${slug}" is already used by another heartbeat monitor`,
+		service: SERVICE_NAME,
+	});
+
 const emptySummary: MonitorsSummary = {
 	totalMonitors: 0,
 	upMonitors: 0,
@@ -41,9 +53,14 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	create = async (monitor: Monitor, teamId: string, userId: string) => {
-		const monitorModel = new MonitorModel({ ...monitor, teamId, userId });
-		const saved = await monitorModel.save();
-		return this.toEntity(saved);
+		try {
+			const monitorModel = new MonitorModel({ ...monitor, teamId, userId });
+			const saved = await monitorModel.save();
+			return this.toEntity(saved);
+		} catch (error) {
+			if (isSlugConflict(error)) throw slugTaken(monitor.heartbeatSlug);
+			throw error;
+		}
 	};
 
 	createMonitors = async (monitors: Monitor[]): Promise<Monitor[]> => {
@@ -76,12 +93,15 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return monitor ? this.toEntity(monitor) : null;
 	};
 
-	findByHeartbeatToken = async (token: string) => {
-		const doc = await MonitorModel.findOne({
-			heartbeatToken: token,
-			type: "heartbeat",
-		}).lean();
+	findHeartbeatBySlug = async (teamId: string, slug: string): Promise<Monitor | null> => {
+		const doc = await MonitorModel.findOne({ teamId, type: "heartbeat", heartbeatSlug: slug }).lean();
 		return doc ? this.toEntity(doc) : null;
+	};
+
+	findExistingHeartbeatSlugs = async (teamId: string, slugs: string[]): Promise<string[]> => {
+		if (!slugs.length) return [];
+		const docs = await MonitorModel.find({ teamId, heartbeatSlug: { $in: slugs } }, { heartbeatSlug: 1 }).lean();
+		return docs.map((doc) => doc.heartbeatSlug).filter((slug): slug is string => typeof slug === "string");
 	};
 
 	findAllForScheduling = async (): Promise<MonitorScheduleFields[]> => {
@@ -234,7 +254,13 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			delete fields.proxyId;
 			update.$unset = { proxyId: "" };
 		}
-		const updatedMonitor = await MonitorModel.findOneAndUpdate({ _id: monitorId, teamId }, update, { new: true, runValidators: true });
+		let updatedMonitor;
+		try {
+			updatedMonitor = await MonitorModel.findOneAndUpdate({ _id: monitorId, teamId }, update, { new: true, runValidators: true });
+		} catch (error) {
+			if (isSlugConflict(error)) throw slugTaken(patch.heartbeatSlug);
+			throw error;
+		}
 		if (!updatedMonitor) {
 			throw new AppError(internalError, { message: `Failed to update monitor with id ${monitorId}`, service: SERVICE_NAME });
 		}
@@ -369,11 +395,6 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 
 	updateDockerTlsKey = async (monitorId: string, dockerTlsKey: string): Promise<void> => {
 		await MonitorModel.updateOne({ _id: monitorId }, { $set: { dockerTlsKey } });
-	};
-
-	findHeartbeatTokenById = async (monitorId: string, teamId: string): Promise<string | null> => {
-		const doc = await MonitorModel.findOne({ _id: monitorId, teamId, type: "heartbeat" }, { heartbeatToken: 1 }).lean();
-		return doc?.heartbeatToken ?? null;
 	};
 
 	private summaryStages: PipelineStage.FacetPipelineStage[] = [
@@ -562,6 +583,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			tags: tagIds,
 			customUpCodes: doc.customUpCodes ?? [],
 			secret: doc.secret ?? undefined,
+			heartbeatSlug: doc.heartbeatSlug ?? undefined,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
 			cpuAlertCounter: doc.cpuAlertCounter,
 			memoryAlertThreshold: doc.memoryAlertThreshold,
@@ -602,11 +624,6 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	findAllMonitorIds = async (): Promise<string[]> => {
 		const monitors = await MonitorModel.find({}, { _id: 1 }).lean();
 		return monitors.map((doc) => doc._id.toString());
-	};
-
-	setHeartbeatToken = async (monitorId: string, teamId: string, token: string): Promise<void> => {
-		const res = await MonitorModel.updateOne({ _id: monitorId, teamId, type: "heartbeat" }, { $set: { heartbeatToken: token } });
-		if (res.matchedCount === 0) throw new AppError(monitorErrors.notFound, { service: SERVICE_NAME });
 	};
 }
 

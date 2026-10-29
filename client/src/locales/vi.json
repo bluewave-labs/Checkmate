@@ -777,6 +777,11 @@
 							"description": "Bỏ qua việc xác minh chứng chỉ của daemon, nên chứng chỉ CA trở thành không bắt buộc. Chứng chỉ và khóa máy khách vẫn bắt buộc vì daemon xác minh chúng."
 						}
 					}
+				},
+				"heartbeatSlug": {
+					"label": "Slug",
+					"hint": "Xác định trình giám sát này trong URL ping. Chữ thường, số và dấu gạch ngang.",
+					"editAlert": "Thay đổi slug sẽ thay đổi URL ping. Các tác vụ dùng URL hiện tại sẽ ngừng hoạt động."
 				}
 			}
 		},
@@ -1421,9 +1426,9 @@
 				},
 				"heartbeatKey": {
 					"title": "Khóa ping heartbeat",
-					"description": "Một bí mật dùng chung cho mọi trình giám sát heartbeat trong nhóm này. Tác vụ gửi khóa trong URL ping cùng với slug của trình giám sát.",
+					"description": "Khóa dùng để ping các trình giám sát heartbeat.",
 					"noKey": "Chưa có khóa. Hãy tạo một khóa để bắt đầu gửi ping heartbeat.",
-					"keySet": "Đã đặt khóa. Khóa chỉ hiển thị một lần khi được tạo.",
+					"keySet": "Đã đặt khóa. Xoay vòng khóa để nhận khóa mới mà bạn có thể sao chép.",
 					"generate": "Tạo khóa",
 					"rotate": "Xoay vòng khóa",
 					"rotateConfirmTitle": "Xoay vòng khóa ping heartbeat?",
@@ -1674,9 +1679,8 @@
 						"msg": "đính kèm một thông điệp vào lần kiểm tra",
 						"combine": "Dùng /fail hoặc mã thoát, không dùng cả hai. Tham số truy vấn dùng được với mọi URL và có thể nối bằng &, ví dụ /1?duration=5000&msg=disk%20full."
 					},
-					"rotate": "Làm mới token",
-					"rotateConfirmTitle": "Làm mới token heartbeat này?",
-					"rotateConfirmBody": "URL hiện tại sẽ ngừng hoạt động ngay lập tức. Hãy cập nhật mọi tác vụ đang ping tới URL này."
+					"keyHint": "Thay <pingKey> bằng khóa ping của nhóm bạn.",
+					"keyLink": "Quản lý tại Cài đặt → Giám sát"
 				}
 			}
 		},

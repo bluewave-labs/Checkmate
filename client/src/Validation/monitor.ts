@@ -11,6 +11,7 @@ import {
 } from "@/Types/Monitor";
 import { ALL_HTTP_STATUS_CODES } from "@/Utils/statusCode";
 import { hostnamePattern } from "@/Validation/patterns";
+import { HEARTBEAT_SLUG_MAX_LENGTH, HEARTBEAT_SLUG_PATTERN } from "@/Utils/heartbeat";
 
 // Wizard step a field is validated on. Attached inline to each field below so
 // the grouping lives next to the field definition; unannotated fields default
@@ -242,6 +243,14 @@ const dnsSchema = baseSchema.extend({
 const heartbeatSchema = baseSchema.extend({
 	type: z.literal("heartbeat"),
 	url: z.string(),
+	heartbeatSlug: z
+		.string()
+		.min(1, "Slug is required")
+		.max(
+			HEARTBEAT_SLUG_MAX_LENGTH,
+			`Slug must be at most ${HEARTBEAT_SLUG_MAX_LENGTH} characters`
+		)
+		.regex(HEARTBEAT_SLUG_PATTERN, "Use lowercase letters, numbers and single hyphens"),
 });
 
 // Discriminated union of all monitor types

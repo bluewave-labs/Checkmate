@@ -46,7 +46,6 @@ import {
 	uptimeDetailsResultSchema,
 } from "@/domain/monitors/monitor.schema.js";
 import { monitorErrors } from "@/domain/monitors/monitor.errors.js";
-import { heartbeatTokenResponseSchema } from "@/domain/heartbeat/heartbeat.schema.js";
 
 export const monitorRoutes: RouteTable<IMonitorController> = {
 	prefix: "/monitors",
@@ -159,26 +158,6 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			response: monitorResponseSchema,
 		},
 		{
-			method: "get",
-			path: "/:monitorId/heartbeat-token",
-			handler: "getHeartbeatToken",
-			summary: "Get a heartbeat monitor's ping token (admin/superadmin)",
-			errors: [monitorErrors.notFound, monitorErrors.notHeartbeat],
-			roles: ["admin", "superadmin"],
-			params: getMonitorByIdParamValidation,
-			response: heartbeatTokenResponseSchema,
-		},
-		{
-			method: "post",
-			path: "/:monitorId/heartbeat-token",
-			handler: "rotateHeartbeatToken",
-			summary: "Rotate a heartbeat monitor's ping token (admin/superadmin)",
-			errors: [monitorErrors.notFound, monitorErrors.notHeartbeat],
-			roles: ["admin", "superadmin"],
-			params: getMonitorByIdParamValidation,
-			response: heartbeatTokenResponseSchema,
-		},
-		{
 			method: "post",
 			path: "/bulk/pause",
 			handler: "bulkPauseMonitors",
@@ -220,7 +199,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			path: "/",
 			handler: "createMonitor",
 			summary: "Create a new monitor (admin/superadmin)",
-			errors: [monitorErrors.encryptionKeyMissing],
+			errors: [monitorErrors.encryptionKeyMissing, monitorErrors.heartbeatSlugTaken],
 			roles: ["admin", "superadmin"],
 			body: createMonitorBodyValidation,
 			response: monitorResponseSchema,
@@ -255,6 +234,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			path: "/import/json",
 			handler: "importMonitorsFromJSON",
 			summary: "Import monitors from JSON (admin/superadmin)",
+			errors: [monitorErrors.heartbeatSlugTaken],
 			roles: ["admin", "superadmin"],
 			body: importMonitorsBodyValidation,
 			response: importMonitorsResponseSchema,
@@ -280,7 +260,13 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			path: "/:monitorId",
 			handler: "editMonitor",
 			summary: "Edit a monitor (admin/superadmin)",
-			errors: [monitorErrors.notFound, monitorErrors.dockerTlsKeyRequired, monitorErrors.captureSecretRequired, monitorErrors.encryptionKeyMissing],
+			errors: [
+				monitorErrors.notFound,
+				monitorErrors.dockerTlsKeyRequired,
+				monitorErrors.captureSecretRequired,
+				monitorErrors.encryptionKeyMissing,
+				monitorErrors.heartbeatSlugTaken,
+			],
 			roles: ["admin", "superadmin"],
 			params: getMonitorByIdParamValidation,
 			body: editMonitorBodyValidation,

@@ -36,8 +36,8 @@ import { DateRange, type SortOrder } from "@/types/query.js";
 import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
 import { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import { isCaptureDockerUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
+import { toHeartbeatSlug } from "@/utils/heartbeatSlug.js";
 import { monitorErrors } from "@/domain/monitors/monitor.errors.js";
-import { HeartbeatTokenResult } from "@/domain/heartbeat/heartbeat.schema.js";
 
 const SERVICE_NAME = "MonitorService";
 
@@ -124,8 +124,6 @@ export interface IMonitorService {
 	editMonitor(args: { teamId: string; monitorId: string; body: Partial<Monitor> }): Promise<Monitor>;
 	pauseMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 	bulkPauseMonitors(args: { teamId: string; monitorIds: string[]; pause: boolean }): Promise<{ monitors: Monitor[]; failedCount: number }>;
-	getHeartbeatToken(args: { teamId: string; monitorId: string }): Promise<HeartbeatTokenResult>;
-	rotateHeartbeatToken(args: { teamId: string; monitorId: string }): Promise<HeartbeatTokenResult>;
 
 	// delete
 	deleteMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
@@ -192,12 +190,12 @@ export class MonitorService implements IMonitorService {
 		this.encryptionService = encryptionService;
 	}
 
-	private generateHeartbeatToken = (): string => this.encryptionService.getRandomToken(24);
-
 	private applyHeartbeatDefaults = (body: Partial<Monitor>) => {
-		if (body.type !== "heartbeat") return;
+		if (body.type !== "heartbeat") {
+			delete body.heartbeatSlug; // Not needed for non-heartbeat
+			return;
+		}
 		body.url = "";
-		body.heartbeatToken = this.generateHeartbeatToken();
 		body.geoCheckEnabled = false;
 		body.proxyMode = "none";
 	};
@@ -617,6 +615,10 @@ export class MonitorService implements IMonitorService {
 	};
 
 	editMonitor = async ({ teamId, monitorId, body }: { teamId: string; monitorId: string; body: Partial<Monitor> }) => {
+		if (body.heartbeatSlug !== undefined) {
+			const stored = await this.monitorsRepository.findById(monitorId, teamId);
+			if (stored.type !== "heartbeat") delete body.heartbeatSlug;
+		}
 		// Moving off custom mode orphans the stored proxyId. Unset it so the stale reference doesn't block deleting that proxy
 		const unsetProxyId = body.proxyMode !== undefined && body.proxyMode !== "custom";
 		if (unsetProxyId) {
@@ -707,30 +709,6 @@ export class MonitorService implements IMonitorService {
 		return { monitors, failedCount };
 	};
 
-	// 404 for a missing monitor, 400 for one that has no token
-	private assertHeartbeat = async (monitorId: string, teamId: string) => {
-		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
-		if (monitor.type !== "heartbeat") {
-			throw new AppError(monitorErrors.notHeartbeat, { service: SERVICE_NAME });
-		}
-	};
-
-	getHeartbeatToken = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<HeartbeatTokenResult> => {
-		await this.assertHeartbeat(monitorId, teamId);
-		const heartbeatToken = await this.monitorsRepository.findHeartbeatTokenById(monitorId, teamId);
-		if (!heartbeatToken) {
-			throw new AppError(internalError, { message: "Heartbeat monitor has no token", service: SERVICE_NAME });
-		}
-		return { heartbeatToken };
-	};
-
-	rotateHeartbeatToken = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<HeartbeatTokenResult> => {
-		await this.assertHeartbeat(monitorId, teamId);
-		const heartbeatToken = this.generateHeartbeatToken();
-		await this.monitorsRepository.setHeartbeatToken(monitorId, teamId, heartbeatToken);
-		return { heartbeatToken };
-	};
-
 	private deleteMonitorChildren = async (monitor: Monitor, teamId: string) => {
 		await this.checksRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
 			this.logger.warn({ err, monitorId: monitor.id, monitorName: monitor.name }, "Error deleting checks for monitor");
@@ -812,6 +790,31 @@ export class MonitorService implements IMonitorService {
 			updatedAt: "",
 			lastEvaluatedAt: 0,
 		}));
+
+		// Reject duplicate slugs up front
+		const heartbeats = cleanedMonitors.filter((monitor) => monitor.type === "heartbeat");
+		for (const monitor of heartbeats) {
+			if (!monitor.heartbeatSlug) {
+				monitor.heartbeatSlug = toHeartbeatSlug(monitor.name);
+			}
+		}
+
+		const slugs = heartbeats.map((monitor) => monitor.heartbeatSlug as string);
+		const duplicateInFile = slugs.find((slug, index) => slugs.indexOf(slug) !== index);
+		if (duplicateInFile) {
+			throw new AppError(monitorErrors.heartbeatSlugTaken, {
+				message: `Slug "${duplicateInFile}" appears more than once in the import`,
+				service: SERVICE_NAME,
+			});
+		}
+
+		const existing = await this.monitorsRepository.findExistingHeartbeatSlugs(teamId, slugs);
+		if (existing.length) {
+			throw new AppError(monitorErrors.heartbeatSlugTaken, {
+				message: `Slugs already in use: ${existing.join(", ")}`,
+				service: SERVICE_NAME,
+			});
+		}
 
 		const createdMonitors = await this.createMonitors(cleanedMonitors);
 
