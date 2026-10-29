@@ -7,3 +7,5 @@ export const HEARTBEAT_MISSED_CODE = 408;
 export const HEARTBEAT_MAX_EXIT_CODE = 255;
 export const HEARTBEAT_MAX_MESSAGE_LENGTH = 500;
 export const HEARTBEAT_MAX_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
+export const HEARTBEAT_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/; // lowercase, digits, single inner hyphens
+export const HEARTBEAT_SLUG_MAX_LENGTH = 64;
