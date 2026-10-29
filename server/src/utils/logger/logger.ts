@@ -56,7 +56,6 @@ const SECRET_KEYS = [
 	"systemEmailPassword",
 	"pagespeedApiKey",
 	"dockerTlsKey",
-	"heartbeatToken",
 	"heartbeatKey",
 	"heartbeatKeyHash",
 	"token",
@@ -71,8 +70,9 @@ const URL_PATTERN = /\b(https?:\/\/)(?:[^\s/?#@]+@)?([^\s/?#@]+)([^\s"'<>)]*)/gi
 const maskUrls = (text: string): string =>
 	text.replace(URL_PATTERN, (_match, scheme: string, host: string, rest: string) => `${scheme}${host}${rest ? "/[Redacted]" : ""}`);
 
-const HEARTBEAT_TOKEN_PATTERN = /(\/api\/v1\/heartbeat\/)[^/?#]+/;
-export const redactRequestPath = (url: string): string => url.replace(HEARTBEAT_TOKEN_PATTERN, "$1[Redacted]");
+// The first segment after /heartbeat/ is the team ping key; the slug stays visible
+const HEARTBEAT_KEY_PATTERN = /(\/api\/v1\/heartbeat\/)[^/?#]+/;
+export const redactRequestPath = (url: string): string => url.replace(HEARTBEAT_KEY_PATTERN, "$1[Redacted]");
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
 

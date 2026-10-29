@@ -182,7 +182,7 @@ describe("Logger.httpMiddleware", () => {
 		});
 		app.use(
 			"/api/v1/heartbeat",
-			express.Router().get("/:token", (_req, res) => {
+			express.Router().get("/:pingKey/:slug", (_req, res) => {
 				res.json({ ok: true });
 			})
 		);
@@ -242,14 +242,14 @@ describe("Logger.httpMiddleware", () => {
 		}
 	});
 
-	it("redacts a heartbeat token from the request line and message", async () => {
+	it("redacts the heartbeat ping key from the request line and message, keeping the slug", async () => {
 		const { request, requestLines, close } = await setupApp();
 		try {
-			await request("/api/v1/heartbeat/secret-tok");
+			await request("/api/v1/heartbeat/secret-key/backup");
 
 			const [line] = requestLines();
-			expect(JSON.stringify(line)).not.toContain("secret-tok");
-			expect(line?.message).toMatch(/^GET \/api\/v1\/heartbeat\/\[Redacted\] 200/);
+			expect(JSON.stringify(line)).not.toContain("secret-key");
+			expect(line?.message).toMatch(/^GET \/api\/v1\/heartbeat\/\[Redacted\]\/backup 200/);
 		} finally {
 			await close();
 		}
