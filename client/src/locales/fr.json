@@ -133,6 +133,11 @@
 				"tls": "Échec de la négociation TLS ou SSL (problème de certificat ou de chiffrement).",
 				"unknown": "Aucune réponse HTTP reçue de la cible."
 			}
+		},
+		"copy": {
+			"copy": "Copier dans le presse-papiers",
+			"copied": "Copié dans le presse-papiers",
+			"copyFailed": "Copie impossible. Sélectionnez le texte et copiez-le manuellement."
 		}
 	},
 	"components": {
@@ -1657,9 +1662,6 @@
 						"msg": "joint un message à la vérification",
 						"combine": "Utilisez /fail ou un code de sortie, pas les deux. Les paramètres de requête fonctionnent avec n'importe quelle URL et se combinent avec &, par exemple /1?duration=5000&msg=disk%20full."
 					},
-					"copy": "Copier dans le presse-papiers",
-					"copied": "Copié dans le presse-papiers",
-					"copyFailed": "Copie impossible. Sélectionnez le texte et copiez-le manuellement.",
 					"rotate": "Renouveler le jeton",
 					"rotateConfirmTitle": "Renouveler ce jeton de heartbeat ?",
 					"rotateConfirmBody": "L'URL actuelle cesse de fonctionner immédiatement. Mettez à jour chaque tâche qui l'appelle."

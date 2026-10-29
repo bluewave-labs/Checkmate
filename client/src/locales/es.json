@@ -133,6 +133,11 @@
 				"tls": "Falló el protocolo TLS o SSL (problema de certificado o cifrado).",
 				"unknown": "No se recibió ninguna respuesta HTTP del destino."
 			}
+		},
+		"copy": {
+			"copy": "Copiar al portapapeles",
+			"copied": "Copiado al portapapeles",
+			"copyFailed": "No se pudo copiar. Seleccione el texto y cópielo manualmente."
 		}
 	},
 	"components": {
@@ -1657,9 +1662,6 @@
 						"msg": "adjunta un mensaje a la comprobación",
 						"combine": "Usa /fail o un código de salida, no ambos. Los parámetros de consulta funcionan con cualquier URL y se pueden combinar con &, por ejemplo /1?duration=5000&msg=disk%20full."
 					},
-					"copy": "Copiar al portapapeles",
-					"copied": "Copiado al portapapeles",
-					"copyFailed": "No se pudo copiar. Seleccione el texto y cópielo manualmente.",
 					"rotate": "Rotar token",
 					"rotateConfirmTitle": "¿Rotar este token de heartbeat?",
 					"rotateConfirmBody": "La URL actual deja de funcionar de inmediato. Actualice todas las tareas que le hacen ping."

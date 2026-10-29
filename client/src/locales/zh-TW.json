@@ -133,6 +133,11 @@
 				"tls": "TLS或SSL交握失敗（憑證或加密問題）。",
 				"unknown": "未從目標接收HTTP回應。"
 			}
+		},
+		"copy": {
+			"copy": "複製到剪貼簿",
+			"copied": "已複製到剪貼簿",
+			"copyFailed": "無法複製。請選取文字並手動複製。"
 		}
 	},
 	"components": {
@@ -1657,9 +1662,6 @@
 						"msg": "為檢查附加一則訊息",
 						"combine": "/fail 和結束代碼只能擇一使用。查詢參數適用於任何 URL，並可用 & 串接，例如 /1?duration=5000&msg=disk%20full。"
 					},
-					"copy": "複製到剪貼簿",
-					"copied": "已複製到剪貼簿",
-					"copyFailed": "無法複製。請選取文字並手動複製。",
 					"rotate": "輪替權杖",
 					"rotateConfirmTitle": "要輪替此心跳權杖嗎？",
 					"rotateConfirmBody": "目前的 URL 會立即失效。請更新所有 ping 此 URL 的工作。"

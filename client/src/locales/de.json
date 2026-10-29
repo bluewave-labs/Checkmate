@@ -133,6 +133,11 @@
 				"tls": "TLS- oder SSL-Handshake fehlgeschlagen (Zertifikats- oder Verschlüsselungsproblem).",
 				"unknown": "Es wurde keine HTTP-Antwort vom Ziel empfangen."
 			}
+		},
+		"copy": {
+			"copy": "In die Zwischenablage kopieren",
+			"copied": "In die Zwischenablage kopiert",
+			"copyFailed": "Kopieren fehlgeschlagen. Markieren Sie den Text und kopieren Sie ihn manuell."
 		}
 	},
 	"components": {
@@ -1658,9 +1663,6 @@
 						"msg": "hängt eine Nachricht an die Prüfung an",
 						"combine": "Verwenden Sie /fail oder einen Exit-Code, nicht beides. Query-Parameter funktionieren mit jeder URL und lassen sich mit & kombinieren, z. B. /1?duration=5000&msg=disk%20full."
 					},
-					"copy": "In die Zwischenablage kopieren",
-					"copied": "In die Zwischenablage kopiert",
-					"copyFailed": "Kopieren fehlgeschlagen. Markieren Sie den Text und kopieren Sie ihn manuell.",
 					"rotate": "Token erneuern",
 					"rotateConfirmTitle": "Diesen Heartbeat-Token erneuern?",
 					"rotateConfirmBody": "Die aktuelle URL funktioniert sofort nicht mehr. Aktualisieren Sie jeden Job, der sie anpingt."

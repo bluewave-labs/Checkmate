@@ -136,6 +136,11 @@
 				"responseTime": "Tempo di risposta",
 				"tags": "Tag"
 			}
+		},
+		"copy": {
+			"copy": "Copia negli appunti",
+			"copied": "Copiato negli appunti",
+			"copyFailed": "Impossibile copiare. Seleziona il testo e copialo manualmente."
 		}
 	},
 	"components": {
@@ -1777,9 +1782,6 @@
 						"msg": "allega un messaggio al controllo",
 						"combine": "Usa /fail oppure un codice di uscita, non entrambi. I parametri di query funzionano con qualsiasi URL e si possono combinare con &, ad esempio /1?duration=5000&msg=disk%20full."
 					},
-					"copy": "Copia negli appunti",
-					"copied": "Copiato negli appunti",
-					"copyFailed": "Impossibile copiare. Seleziona il testo e copialo manualmente.",
 					"rotate": "Rigenera token",
 					"rotateConfirmTitle": "Rigenerare questo token heartbeat?",
 					"rotateConfirmBody": "L'URL attuale smette subito di funzionare. Aggiorna ogni job che lo chiama."

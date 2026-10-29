@@ -133,6 +133,11 @@
 				"tls": "Selhal handshake TLS nebo SSL (problém s certifikátem nebo šifrováním).",
 				"unknown": "Z cíle nebyla obdržena žádná odpověď HTTP."
 			}
+		},
+		"copy": {
+			"copy": "Kopírovat do schránky",
+			"copied": "Zkopírováno do schránky",
+			"copyFailed": "Kopírování se nezdařilo. Označte text a zkopírujte ho ručně."
 		}
 	},
 	"components": {
@@ -1657,9 +1662,6 @@
 						"msg": "připojí ke kontrole zprávu",
 						"combine": "Použijte /fail nebo návratový kód, ne obojí. Parametry dotazu fungují s jakoukoli URL a lze je spojit pomocí &, například /1?duration=5000&msg=disk%20full."
 					},
-					"copy": "Kopírovat do schránky",
-					"copied": "Zkopírováno do schránky",
-					"copyFailed": "Kopírování se nezdařilo. Označte text a zkopírujte ho ručně.",
 					"rotate": "Obnovit token",
 					"rotateConfirmTitle": "Obnovit tento heartbeat token?",
 					"rotateConfirmBody": "Současná URL okamžitě přestane fungovat. Aktualizujte všechny úlohy, které na ni posílají ping."

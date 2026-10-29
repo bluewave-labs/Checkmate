@@ -133,6 +133,11 @@
 				"tls": "Ha fallat la negociació TLS o SSL (problema de certificat o xifratge).",
 				"unknown": "No s'ha rebut cap resposta HTTP de l'objectiu."
 			}
+		},
+		"copy": {
+			"copy": "Copia al porta-retalls",
+			"copied": "Copiat al porta-retalls",
+			"copyFailed": "No s'ha pogut copiar. Selecciona el text i copia'l manualment."
 		}
 	},
 	"components": {
@@ -1657,9 +1662,6 @@
 						"msg": "adjunta un missatge a la comprovació",
 						"combine": "Fes servir /fail o un codi de sortida, no tots dos. Els paràmetres de consulta funcionen amb qualsevol URL i es poden combinar amb &, per exemple /1?duration=5000&msg=disk%20full."
 					},
-					"copy": "Copia al porta-retalls",
-					"copied": "Copiat al porta-retalls",
-					"copyFailed": "No s'ha pogut copiar. Selecciona el text i copia'l manualment.",
 					"rotate": "Rota el testimoni",
 					"rotateConfirmTitle": "Vols rotar aquest testimoni de heartbeat?",
 					"rotateConfirmBody": "L'URL actual deixa de funcionar immediatament. Actualitza totes les tasques que hi fan ping."

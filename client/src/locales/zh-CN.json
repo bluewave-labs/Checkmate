@@ -133,6 +133,11 @@
 				"tls": "TLS或SSL握手失败（证书或加密问题）。",
 				"unknown": "未从目标接收HTTP响应。"
 			}
+		},
+		"copy": {
+			"copy": "复制到剪贴板",
+			"copied": "已复制到剪贴板",
+			"copyFailed": "无法复制。请选中文本并手动复制。"
 		}
 	},
 	"components": {
@@ -1658,9 +1663,6 @@
 						"msg": "为检查附加一条消息",
 						"combine": "/fail 和退出码只能二选一。查询参数适用于任何 URL，并可用 & 连接，例如 /1?duration=5000&msg=disk%20full。"
 					},
-					"copy": "复制到剪贴板",
-					"copied": "已复制到剪贴板",
-					"copyFailed": "无法复制。请选中文本并手动复制。",
 					"rotate": "轮换令牌",
 					"rotateConfirmTitle": "要轮换此心跳令牌吗？",
 					"rotateConfirmBody": "当前 URL 将立即失效。请更新所有 ping 该 URL 的任务。"

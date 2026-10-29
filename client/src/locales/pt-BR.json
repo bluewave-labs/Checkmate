@@ -161,6 +161,11 @@
 				"responseTime": "Tempo de resposta",
 				"tags": "Tags"
 			}
+		},
+		"copy": {
+			"copy": "Copiar para a área de transferência",
+			"copied": "Copiado para a área de transferência",
+			"copyFailed": "Não foi possível copiar. Selecione o texto e copie manualmente."
 		}
 	},
 	"components": {
@@ -1994,9 +1999,6 @@
 						"msg": "anexa uma mensagem à verificação",
 						"combine": "Use /fail ou um código de saída, não os dois. Parâmetros de consulta funcionam em qualquer URL e podem ser combinados com &, por exemplo /1?duration=5000&msg=disk%20full."
 					},
-					"copy": "Copiar para a área de transferência",
-					"copied": "Copiado para a área de transferência",
-					"copyFailed": "Não foi possível copiar. Selecione o texto e copie manualmente.",
 					"rotate": "Renovar token",
 					"rotateConfirmTitle": "Renovar este token de heartbeat?",
 					"rotateConfirmBody": "A URL atual deixa de funcionar imediatamente. Atualize todas as tarefas que fazem ping nela."

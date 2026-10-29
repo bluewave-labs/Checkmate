@@ -133,6 +133,11 @@
 				"tls": "TLS- tai SSL-kättely epäonnistui (sertifikaatti- tai salausongelma).",
 				"unknown": "Kohteesta ei vastaanotettu HTTP-vastausta."
 			}
+		},
+		"copy": {
+			"copy": "Kopioi leikepöydälle",
+			"copied": "Kopioitu leikepöydälle",
+			"copyFailed": "Kopiointi epäonnistui. Valitse teksti ja kopioi se käsin."
 		}
 	},
 	"components": {
@@ -1657,9 +1662,6 @@
 						"msg": "liittää tarkistukseen viestin",
 						"combine": "Käytä joko /fail tai poistumiskoodia, ei molempia. Kyselyparametrit toimivat missä tahansa URL:ssa ja ne voi yhdistää &-merkillä, esimerkiksi /1?duration=5000&msg=disk%20full."
 					},
-					"copy": "Kopioi leikepöydälle",
-					"copied": "Kopioitu leikepöydälle",
-					"copyFailed": "Kopiointi epäonnistui. Valitse teksti ja kopioi se käsin.",
 					"rotate": "Vaihda tunniste",
 					"rotateConfirmTitle": "Vaihdetaanko tämä heartbeat-tunniste?",
 					"rotateConfirmBody": "Nykyinen URL lakkaa toimimasta heti. Päivitä kaikki työt, jotka lähettävät siihen pingin."

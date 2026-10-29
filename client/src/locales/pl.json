@@ -136,6 +136,11 @@
 				"type": "Typ",
 				"url": "Url"
 			}
+		},
+		"copy": {
+			"copy": "Kopiuj do schowka",
+			"copied": "Skopiowano do schowka",
+			"copyFailed": "Nie udało się skopiować. Zaznacz tekst i skopiuj go ręcznie."
 		}
 	},
 	"components": {
@@ -1771,9 +1776,6 @@
 						"msg": "dołącza wiadomość do sprawdzenia",
 						"combine": "Użyj /fail albo kodu wyjścia, nie obu naraz. Parametry zapytania działają z każdym adresem URL i można je łączyć znakiem &, na przykład /1?duration=5000&msg=disk%20full."
 					},
-					"copy": "Kopiuj do schowka",
-					"copied": "Skopiowano do schowka",
-					"copyFailed": "Nie udało się skopiować. Zaznacz tekst i skopiuj go ręcznie.",
 					"rotate": "Odnów token",
 					"rotateConfirmTitle": "Odnowić ten token heartbeat?",
 					"rotateConfirmBody": "Obecny adres URL natychmiast przestanie działać. Zaktualizuj każde zadanie, które go wywołuje."
