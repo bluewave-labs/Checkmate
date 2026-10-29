@@ -529,6 +529,7 @@
 				},
 				"frequency": {
 					"description": "您希望多久檢查一次此監控的狀態？",
+					"customHint": "清單中沒有？輸入任意數字，然後選擇秒、分鐘、小時或天。",
 					"option": {
 						"frequency": {
 							"label": "檢查頻率",
@@ -1638,11 +1639,23 @@
 					"title": "心跳 URL",
 					"description": "讓工作每次執行時請求此 URL。若在警示時間範圍內沒有收到請求，監控會變為停機。",
 					"pingUrl": "Ping URL",
+					"examplesTitle": "傳送 ping 的方式",
+					"examplesDescription": "選擇適合你工作的一種。每個範例都是完整的指令，只需使用其中一個。",
 					"examples": {
 						"post": "成功時 ping",
 						"cron": "cron 工作成功後 ping",
 						"exitCode": "回報工作的結束代碼（0 表示正常，其他值表示停機）",
-						"fail": "回報失敗"
+						"fail": "回報失敗",
+						"duration": "回報結束代碼和工作執行時間"
+					},
+					"options": {
+						"title": "組合 ping URL",
+						"description": "在 ping URL 結尾加上以下任一項：",
+						"fail": "記錄一次失敗",
+						"exitCode": "記錄結束代碼：0 表示正常，其他值表示停止運作",
+						"duration": "記錄工作執行時間，單位為毫秒",
+						"msg": "為檢查附加一則訊息",
+						"combine": "/fail 和結束代碼只能擇一使用。查詢參數適用於任何 URL，並可用 & 串接，例如 /1?duration=5000&msg=disk%20full。"
 					},
 					"copy": "複製到剪貼簿",
 					"copied": "已複製到剪貼簿",

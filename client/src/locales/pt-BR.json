@@ -628,6 +628,7 @@
 				},
 				"frequency": {
 					"description": "Com que frequência você deseja verificar o status deste monitor?",
+					"customHint": "Não está na lista? Digite qualquer número e escolha segundos, minutos, horas ou dias.",
 					"option": {
 						"frequency": {
 							"label": "Frequência de verificação",
@@ -1975,11 +1976,23 @@
 					"title": "URL de heartbeat",
 					"description": "Faça sua tarefa chamar esta URL sempre que for executada. Se nenhuma requisição chegar dentro da janela de alerta, o monitor fica fora do ar.",
 					"pingUrl": "URL de ping",
+					"examplesTitle": "Formas de enviar um ping",
+					"examplesDescription": "Escolha a que combina com o seu job. Cada exemplo é um comando completo, então você só precisa de um.",
 					"examples": {
 						"post": "Ping em caso de sucesso",
 						"cron": "Ping depois que um cron job terminar com sucesso",
 						"exitCode": "Informar o código de saída da tarefa (0 é no ar, qualquer outro é fora do ar)",
-						"fail": "Informar uma falha"
+						"fail": "Informar uma falha",
+						"duration": "Informar o código de saída e quanto tempo o job levou"
+					},
+					"options": {
+						"title": "Montando a URL de ping",
+						"description": "Adicione qualquer um destes ao final da URL de ping:",
+						"fail": "registra uma falha",
+						"exitCode": "registra um código de saída: 0 é ativo, qualquer outro valor é inativo",
+						"duration": "registra quanto tempo o job levou, em milissegundos",
+						"msg": "anexa uma mensagem à verificação",
+						"combine": "Use /fail ou um código de saída, não os dois. Parâmetros de consulta funcionam em qualquer URL e podem ser combinados com &, por exemplo /1?duration=5000&msg=disk%20full."
 					},
 					"copy": "Copiar para a área de transferência",
 					"copied": "Copiado para a área de transferência",

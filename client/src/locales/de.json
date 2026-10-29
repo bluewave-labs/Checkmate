@@ -530,6 +530,7 @@
 				},
 				"frequency": {
 					"description": "Wie oft möchten Sie den Status dieses Monitors überprüfen?",
+					"customHint": "Nicht in der Liste? Geben Sie eine beliebige Zahl ein und wählen Sie Sekunden, Minuten, Stunden oder Tage.",
 					"option": {
 						"frequency": {
 							"label": "Prüffrequenz",
@@ -1639,11 +1640,23 @@
 					"title": "Heartbeat-URL",
 					"description": "Lassen Sie Ihren Job diese URL bei jedem Lauf aufrufen. Kommt innerhalb des Alarmfensters keine Anfrage an, gilt der Monitor als ausgefallen.",
 					"pingUrl": "Ping-URL",
+					"examplesTitle": "Möglichkeiten, einen Ping zu senden",
+					"examplesDescription": "Wählen Sie die passende für Ihren Job. Jedes Beispiel ist ein vollständiger Befehl, Sie brauchen also nur einen.",
 					"examples": {
 						"post": "Ping bei Erfolg",
 						"cron": "Ping nach erfolgreichem Cronjob",
 						"exitCode": "Exit-Code des Jobs melden (0 ist verfügbar, alles andere ist ausgefallen)",
-						"fail": "Fehler melden"
+						"fail": "Fehler melden",
+						"duration": "Exit-Code und Laufzeit des Jobs melden"
+					},
+					"options": {
+						"title": "Die Ping-URL zusammenstellen",
+						"description": "Hängen Sie eines davon an das Ende der Ping-URL an:",
+						"fail": "meldet einen Fehler",
+						"exitCode": "meldet einen Exit-Code: 0 ist aktiv, alles andere ist ausgefallen",
+						"duration": "meldet die Laufzeit des Jobs in Millisekunden",
+						"msg": "hängt eine Nachricht an die Prüfung an",
+						"combine": "Verwenden Sie /fail oder einen Exit-Code, nicht beides. Query-Parameter funktionieren mit jeder URL und lassen sich mit & kombinieren, z. B. /1?duration=5000&msg=disk%20full."
 					},
 					"copy": "In die Zwischenablage kopieren",
 					"copied": "In die Zwischenablage kopiert",

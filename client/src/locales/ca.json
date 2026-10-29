@@ -529,6 +529,7 @@
 				},
 				"frequency": {
 					"description": "Amb quina freqüència voleu comprovar l'estat d'aquest monitor?",
+					"customHint": "No és a la llista? Escriu qualsevol número i tria segons, minuts, hores o dies.",
 					"option": {
 						"frequency": {
 							"label": "Freqüència de comprovació",
@@ -1638,11 +1639,23 @@
 					"title": "URL de heartbeat",
 					"description": "Fes que la teva tasca sol·liciti aquesta URL cada vegada que s'executi. Si no arriba cap sol·licitud dins la finestra d'alerta, el monitor cau.",
 					"pingUrl": "URL de ping",
+					"examplesTitle": "Maneres d'enviar un ping",
+					"examplesDescription": "Tria la que s'adapti a la teva tasca. Cada exemple és una ordre completa, així que només en necessites una.",
 					"examples": {
 						"post": "Ping en cas d'èxit",
 						"cron": "Ping després que una tasca cron acabi bé",
 						"exitCode": "Informa del codi de sortida de la tasca (0 és actiu, qualsevol altre és caigut)",
-						"fail": "Informa d'un error"
+						"fail": "Informa d'un error",
+						"duration": "Informa del codi de sortida i de quant ha durat la tasca"
+					},
+					"options": {
+						"title": "Com construir l'URL de ping",
+						"description": "Afegeix qualsevol d'aquests elements al final de l'URL de ping:",
+						"fail": "registra un error",
+						"exitCode": "registra un codi de sortida: 0 és actiu, qualsevol altre valor és inactiu",
+						"duration": "registra quant ha durat la tasca, en mil·lisegons",
+						"msg": "adjunta un missatge a la comprovació",
+						"combine": "Fes servir /fail o un codi de sortida, no tots dos. Els paràmetres de consulta funcionen amb qualsevol URL i es poden combinar amb &, per exemple /1?duration=5000&msg=disk%20full."
 					},
 					"copy": "Copia al porta-retalls",
 					"copied": "Copiat al porta-retalls",

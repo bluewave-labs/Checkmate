@@ -629,6 +629,7 @@
 				},
 				"frequency": {
 					"description": "How often do you want to check the status of this monitor?",
+					"customHint": "Not in the list? Type any number, then pick seconds, minutes, hours or days.",
 					"option": {
 						"frequency": {
 							"label": "Check frequency",
@@ -1986,11 +1987,23 @@
 					"title": "Heartbeat URL",
 					"description": "Have your job request this URL every time it runs. If no request arrives within the alert window, the monitor goes down.",
 					"pingUrl": "Ping URL",
+					"examplesTitle": "Ways to send a ping",
+					"examplesDescription": "Pick the one that fits your job. Each example is a complete command, so you only need one.",
 					"examples": {
 						"post": "Ping on success",
 						"cron": "Ping after a cron job succeeds",
 						"exitCode": "Report the job's exit code (0 is up, anything else is down)",
-						"fail": "Report a failure"
+						"fail": "Report a failure",
+						"duration": "Report the exit code and how long the job took"
+					},
+					"options": {
+						"title": "Building the ping URL",
+						"description": "Add any of these to the end of the ping URL:",
+						"fail": "records a failure",
+						"exitCode": "records an exit code: 0 is up, anything else is down",
+						"duration": "records how long the job ran, in milliseconds",
+						"msg": "attaches a message to the check",
+						"combine": "Use /fail or an exit code, not both. Query parameters work on any URL and can be joined with &, for example /1?duration=5000&msg=disk%20full."
 					},
 					"copy": "Copy to clipboard",
 					"copied": "Copied to clipboard",

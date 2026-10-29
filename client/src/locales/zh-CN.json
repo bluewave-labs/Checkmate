@@ -530,6 +530,7 @@
 				},
 				"frequency": {
 					"description": "您希望多久检查一次此监控的状态？",
+					"customHint": "列表中没有？输入任意数字，然后选择秒、分钟、小时或天。",
 					"option": {
 						"frequency": {
 							"label": "检查频率",
@@ -1639,11 +1640,23 @@
 					"title": "心跳 URL",
 					"description": "让任务每次运行时请求此 URL。如果在告警窗口内没有收到请求，监控将变为宕机。",
 					"pingUrl": "Ping URL",
+					"examplesTitle": "发送 ping 的方式",
+					"examplesDescription": "选择适合你任务的一种。每个示例都是完整的命令，只需使用其中一个。",
 					"examples": {
 						"post": "成功时 ping",
 						"cron": "cron 任务成功后 ping",
 						"exitCode": "上报任务的退出码（0 表示正常，其他值表示宕机）",
-						"fail": "上报失败"
+						"fail": "上报失败",
+						"duration": "报告退出码和任务运行时长"
+					},
+					"options": {
+						"title": "构建 ping URL",
+						"description": "在 ping URL 末尾添加以下任意一项：",
+						"fail": "记录一次失败",
+						"exitCode": "记录退出码：0 表示正常，其他值表示宕机",
+						"duration": "记录任务运行时长，单位为毫秒",
+						"msg": "为检查附加一条消息",
+						"combine": "/fail 和退出码只能二选一。查询参数适用于任何 URL，并可用 & 连接，例如 /1?duration=5000&msg=disk%20full。"
 					},
 					"copy": "复制到剪贴板",
 					"copied": "已复制到剪贴板",
