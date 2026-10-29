@@ -6,10 +6,10 @@ import type { IMaintenanceWindowsRepository } from "@/domain/maintenance-windows
 import type { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import type { ICheckService } from "@/domain/checks/check.service.js";
 import type { IJobScheduler } from "@/worker/worker.interface.js";
+import type { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
+import type { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import { heartbeatErrors } from "@/domain/heartbeat/heartbeat.errors.js";
 import { HEARTBEAT_FAIL_CODE, HEARTBEAT_UP_CODE, type HeartbeatAction } from "@/domain/heartbeat/heartbeat.type.js";
-import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
-import { IEncryptionService } from "@/service/encryption/encryptionService.js";
 
 const SERVICE_NAME = "HeartbeatService";
 

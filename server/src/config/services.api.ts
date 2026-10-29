@@ -112,6 +112,8 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 	const egressStateService = new EgressStateService(queueWorkersRepository, settingsService);
 	const heartbeatService = new HeartbeatService({
 		logger,
+		teamsRepository,
+		encryptionService,
 		monitorsRepository,
 		maintenanceWindowsRepository,
 		jobsRepository,

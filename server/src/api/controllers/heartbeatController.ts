@@ -19,11 +19,12 @@ class HeartbeatController implements IHeartbeatController {
 	constructor(private heartbeatService: IHeartbeatService) {}
 
 	ping: Handler = async (req, res) => {
-		const { token } = heartbeatParamValidation.parse(req.params);
+		const { pingKey, slug } = heartbeatParamValidation.parse(req.params);
 		const { msg, duration } = heartbeatQueryValidation.parse(req.query);
 
 		await this.heartbeatService.recordPing({
-			token,
+			pingKey,
+			slug,
 			action: "success",
 			message: msg,
 			duration,
@@ -33,11 +34,12 @@ class HeartbeatController implements IHeartbeatController {
 	};
 
 	fail: Handler = async (req, res) => {
-		const { token } = heartbeatParamValidation.parse(req.params);
+		const { pingKey, slug } = heartbeatParamValidation.parse(req.params);
 		const { msg, duration } = heartbeatQueryValidation.parse(req.query);
 
 		await this.heartbeatService.recordPing({
-			token,
+			pingKey,
+			slug,
 			action: "fail",
 			message: msg,
 			duration,
@@ -46,11 +48,12 @@ class HeartbeatController implements IHeartbeatController {
 	};
 
 	exitCode: Handler = async (req, res) => {
-		const { token, exitCode } = heartbeatExitCodeParamValidation.parse(req.params);
+		const { pingKey, slug, exitCode } = heartbeatExitCodeParamValidation.parse(req.params);
 		const { msg, duration } = heartbeatQueryValidation.parse(req.query);
 
 		await this.heartbeatService.recordPing({
-			token,
+			pingKey,
+			slug,
 			action: exitCode === 0 ? "success" : "fail",
 			exitCode,
 			message: msg,
