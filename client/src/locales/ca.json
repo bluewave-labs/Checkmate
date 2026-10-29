@@ -1418,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "Si us plau, corregiu els errors de validació següents:"
+				},
+				"heartbeatKey": {
+					"title": "Clau de ping del heartbeat",
+					"description": "Un secret compartit per tots els monitors de heartbeat d'aquest equip. Les tasques l'envien a l'URL de ping juntament amb l'slug del monitor.",
+					"noKey": "Encara no hi ha cap clau. Genera'n una per començar a enviar pings de heartbeat.",
+					"keySet": "Hi ha una clau definida. Es va mostrar una sola vegada, quan es va generar.",
+					"generate": "Genera una clau",
+					"rotate": "Rota la clau",
+					"rotateConfirmTitle": "Vols rotar la clau de ping del heartbeat?",
+					"rotateConfirmBody": "La clau actual deixa de funcionar immediatament. Cal actualitzar totes les tasques que fan ping a un monitor de heartbeat d'aquest equip.",
+					"keyLabel": "Clau de ping",
+					"copyNow": "Copia aquesta clau ara. No es tornarà a mostrar."
 				}
 			},
 			"header": {

@@ -1418,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "Korjaa seuraavat vahvistusvirheet:"
+				},
+				"heartbeatKey": {
+					"title": "Heartbeat-pingiavain",
+					"description": "Yksi salaisuus, jonka kaikki tämän tiimin heartbeat-valvojat jakavat. Työt lähettävät sen ping-URL:ssa valvojan slugin kanssa.",
+					"noKey": "Avainta ei vielä ole. Luo avain aloittaaksesi heartbeat-pingien lähettämisen.",
+					"keySet": "Avain on asetettu. Se näytettiin kerran, kun se luotiin.",
+					"generate": "Luo avain",
+					"rotate": "Vaihda avain",
+					"rotateConfirmTitle": "Vaihdetaanko heartbeat-pingiavain?",
+					"rotateConfirmBody": "Nykyinen avain lakkaa toimimasta heti. Jokainen työ, joka pingaa tämän tiimin heartbeat-valvojaa, on päivitettävä.",
+					"keyLabel": "Pingiavain",
+					"copyNow": "Kopioi avain nyt. Sitä ei näytetä uudelleen."
 				}
 			},
 			"header": {

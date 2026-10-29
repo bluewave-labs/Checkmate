@@ -1418,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "Opravte prosím následující chyby validace:"
+				},
+				"heartbeatKey": {
+					"title": "Klíč pro ping heartbeatu",
+					"description": "Jeden tajný klíč sdílený všemi heartbeat monitory v tomto týmu. Úlohy ho posílají v URL pingu spolu se slugem monitoru.",
+					"noKey": "Zatím žádný klíč. Vygenerujte ho, abyste mohli začít posílat heartbeat pingy.",
+					"keySet": "Klíč je nastaven. Byl zobrazen jen jednou, při vygenerování.",
+					"generate": "Vygenerovat klíč",
+					"rotate": "Obnovit klíč",
+					"rotateConfirmTitle": "Obnovit klíč pro ping heartbeatu?",
+					"rotateConfirmBody": "Současný klíč okamžitě přestane fungovat. Je nutné aktualizovat všechny úlohy, které pingují heartbeat monitor v tomto týmu.",
+					"keyLabel": "Klíč pro ping",
+					"copyNow": "Zkopírujte si klíč hned. Znovu se nezobrazí."
 				}
 			},
 			"header": {

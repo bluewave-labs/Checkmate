@@ -1514,6 +1514,18 @@
 				},
 				"validation": {
 					"errorMessage": "Correggi i seguenti errori di validazione:"
+				},
+				"heartbeatKey": {
+					"title": "Chiave di ping heartbeat",
+					"description": "Un segreto condiviso da tutti i monitor heartbeat di questo team. I job lo inviano nell'URL di ping insieme allo slug del monitor.",
+					"noKey": "Nessuna chiave. Generane una per iniziare a inviare ping heartbeat.",
+					"keySet": "Una chiave è impostata. È stata mostrata una sola volta, alla generazione.",
+					"generate": "Genera chiave",
+					"rotate": "Ruota chiave",
+					"rotateConfirmTitle": "Ruotare la chiave di ping heartbeat?",
+					"rotateConfirmBody": "La chiave attuale smette subito di funzionare. Ogni job che invia ping a un monitor heartbeat di questo team deve essere aggiornato.",
+					"keyLabel": "Chiave di ping",
+					"copyNow": "Copia subito questa chiave. Non verrà più mostrata."
 				}
 			},
 			"header": {

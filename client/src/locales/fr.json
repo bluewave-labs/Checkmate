@@ -1418,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "Veuillez corriger les erreurs de validation suivantes :"
+				},
+				"heartbeatKey": {
+					"title": "Clé de ping heartbeat",
+					"description": "Un secret partagé par tous les moniteurs heartbeat de cette équipe. Les tâches l'envoient dans l'URL de ping avec le slug du moniteur.",
+					"noKey": "Aucune clé pour l'instant. Générez-en une pour commencer à envoyer des pings heartbeat.",
+					"keySet": "Une clé est définie. Elle a été affichée une seule fois, lors de sa génération.",
+					"generate": "Générer une clé",
+					"rotate": "Renouveler la clé",
+					"rotateConfirmTitle": "Renouveler la clé de ping heartbeat ?",
+					"rotateConfirmBody": "La clé actuelle cesse de fonctionner immédiatement. Chaque tâche qui envoie un ping à un moniteur heartbeat de cette équipe doit être mise à jour.",
+					"keyLabel": "Clé de ping",
+					"copyNow": "Copiez cette clé maintenant. Elle ne sera plus affichée."
 				}
 			},
 			"header": {

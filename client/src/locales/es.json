@@ -1418,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "Corrija los siguientes errores de validación:"
+				},
+				"heartbeatKey": {
+					"title": "Clave de ping de heartbeat",
+					"description": "Un secreto compartido por todos los monitores de heartbeat de este equipo. Los trabajos lo envían en la URL de ping junto con el slug del monitor.",
+					"noKey": "Todavía no hay clave. Genera una para empezar a enviar pings de heartbeat.",
+					"keySet": "Hay una clave configurada. Se mostró una sola vez, al generarla.",
+					"generate": "Generar clave",
+					"rotate": "Rotar clave",
+					"rotateConfirmTitle": "¿Rotar la clave de ping de heartbeat?",
+					"rotateConfirmBody": "La clave actual deja de funcionar de inmediato. Hay que actualizar todos los trabajos que hacen ping a un monitor de heartbeat de este equipo.",
+					"keyLabel": "Clave de ping",
+					"copyNow": "Copia esta clave ahora. No se volverá a mostrar."
 				}
 			},
 			"header": {

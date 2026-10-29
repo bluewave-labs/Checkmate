@@ -1418,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "請修正以下驗證錯誤："
+				},
+				"heartbeatKey": {
+					"title": "心跳 ping 金鑰",
+					"description": "此團隊所有心跳監控共用的一組密鑰。工作會在 ping URL 中連同監控的 slug 一起傳送它。",
+					"noKey": "尚無金鑰。產生一組金鑰即可開始傳送心跳 ping。",
+					"keySet": "已設定金鑰。它只在產生時顯示過一次。",
+					"generate": "產生金鑰",
+					"rotate": "輪替金鑰",
+					"rotateConfirmTitle": "要輪替心跳 ping 金鑰嗎？",
+					"rotateConfirmBody": "目前的金鑰會立即失效。此團隊中所有對心跳監控傳送 ping 的工作都必須更新。",
+					"keyLabel": "Ping 金鑰",
+					"copyNow": "請立即複製此金鑰。它不會再次顯示。"
 				}
 			},
 			"header": {

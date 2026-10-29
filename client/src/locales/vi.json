@@ -1418,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "Vui lòng sửa các lỗi xác thực sau:"
+				},
+				"heartbeatKey": {
+					"title": "Khóa ping heartbeat",
+					"description": "Một bí mật dùng chung cho mọi trình giám sát heartbeat trong nhóm này. Tác vụ gửi khóa trong URL ping cùng với slug của trình giám sát.",
+					"noKey": "Chưa có khóa. Hãy tạo một khóa để bắt đầu gửi ping heartbeat.",
+					"keySet": "Đã đặt khóa. Khóa chỉ hiển thị một lần khi được tạo.",
+					"generate": "Tạo khóa",
+					"rotate": "Xoay vòng khóa",
+					"rotateConfirmTitle": "Xoay vòng khóa ping heartbeat?",
+					"rotateConfirmBody": "Khóa hiện tại sẽ ngừng hoạt động ngay lập tức. Mọi tác vụ ping tới trình giám sát heartbeat trong nhóm này đều phải được cập nhật.",
+					"keyLabel": "Khóa ping",
+					"copyNow": "Hãy sao chép khóa này ngay. Khóa sẽ không hiển thị lại."
 				}
 			},
 			"header": {

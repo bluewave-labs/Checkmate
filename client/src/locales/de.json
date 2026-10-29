@@ -1419,6 +1419,18 @@
 				},
 				"validation": {
 					"errorMessage": "Bitte beheben Sie die folgenden Validierungsfehler:"
+				},
+				"heartbeatKey": {
+					"title": "Heartbeat-Ping-Schlüssel",
+					"description": "Ein gemeinsames Geheimnis für alle Heartbeat-Monitore dieses Teams. Jobs senden es zusammen mit dem Slug des Monitors in der Ping-URL.",
+					"noKey": "Noch kein Schlüssel. Erstellen Sie einen, um Heartbeat-Pings zu senden.",
+					"keySet": "Ein Schlüssel ist gesetzt. Er wurde einmal beim Erstellen angezeigt.",
+					"generate": "Schlüssel erstellen",
+					"rotate": "Schlüssel rotieren",
+					"rotateConfirmTitle": "Heartbeat-Ping-Schlüssel rotieren?",
+					"rotateConfirmBody": "Der aktuelle Schlüssel funktioniert sofort nicht mehr. Jeder Job, der einen Heartbeat-Monitor dieses Teams anpingt, muss aktualisiert werden.",
+					"keyLabel": "Ping-Schlüssel",
+					"copyNow": "Kopieren Sie diesen Schlüssel jetzt. Er wird nicht erneut angezeigt."
 				}
 			},
 			"header": {
