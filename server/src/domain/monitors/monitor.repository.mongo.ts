@@ -583,6 +583,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			tags: tagIds,
 			customUpCodes: doc.customUpCodes ?? [],
 			secret: doc.secret ?? undefined,
+			heartbeatSlug: doc.heartbeatSlug ?? undefined,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
 			cpuAlertCounter: doc.cpuAlertCounter,
 			memoryAlertThreshold: doc.memoryAlertThreshold,
