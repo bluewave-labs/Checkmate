@@ -38,6 +38,7 @@ describe("isCaptureDockerUrl", () => {
 
 	it.each([
 		"https://host:2376",
+		"http://host:59232/api/v1/metric",
 		"tcp://host:2376/api/v1/metrics/docker",
 		"https://example.com/api/v1/metrics/docker/containers",
 		"https://example.com/?path=/metrics/docker",
