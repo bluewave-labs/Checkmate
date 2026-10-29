@@ -24,6 +24,7 @@ export const MonitorTypes = [
 	"grpc",
 	"websocket",
 	"dns",
+	"heartbeat",
 	"unknown",
 ] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
@@ -38,6 +39,7 @@ export const SelectableMonitorTypes = [
 	"grpc",
 	"websocket",
 	"dns",
+	"heartbeat",
 ] as const;
 export type SelectableMonitorType = (typeof SelectableMonitorTypes)[number];
 
@@ -58,6 +60,7 @@ export const monitorTypeLabelKey: Record<SelectableMonitorType, string> &
 	dns: "optionDns",
 	hardware: "optionHardware",
 	pagespeed: "optionPagespeed",
+	heartbeat: "optionHeartbeat",
 };
 
 export const getMonitorTypeLabel = (
@@ -85,6 +88,18 @@ export const MonitorIntervalOptions = [
 export const GeoCheckIntervalOptions = MonitorIntervalOptions.filter(
 	({ value }) => value >= 300000
 );
+
+export const HeartbeatIntervalOptions = [
+	{ value: 60000 },
+	{ value: 300000 },
+	{ value: 900000 },
+	{ value: 1800000 },
+	{ value: 3600000 },
+	{ value: 21600000 },
+	{ value: 43200000 },
+	{ value: 86400000 },
+	{ value: 604800000 },
+] as const;
 
 export const DnsRecordTypes = ["A", "AAAA", "CNAME", "MX", "TXT", "NS"] as const;
 export type DnsRecordType = (typeof DnsRecordTypes)[number];
@@ -183,6 +198,11 @@ export interface Monitor {
 }
 
 export type MonitorWithChecks = Monitor;
+
+// For GET and POST /monitors/:monitorId/heartbeat-token (admin/superadmin)
+export interface HeartbeatTokenResponse {
+	heartbeatToken: string;
+}
 
 export interface MonitorsSummary {
 	totalMonitors: number;

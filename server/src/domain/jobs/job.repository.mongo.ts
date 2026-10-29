@@ -97,25 +97,19 @@ class MongoJobsRepository implements IJobsRepository {
 			nextScheduledAt = now + intervalMs + Math.floor(Math.random() * intervalMs);
 		}
 
-		const res = await JobModel.updateOne(
-			{
-				_id: id,
-				lockedBy: this.workerId, // Only the worker that claimed can record success
-			},
+		const res = await JobModel.updateOne({ _id: id, lockedBy: this.workerId }, [
 			{
 				$set: {
-					nextScheduledAt,
-					lockedBy: null, // Remove lock
+					nextScheduledAt: { $max: ["$nextScheduledAt", nextScheduledAt] },
+					lockedBy: null,
 					lockedUntil: null,
 					lastFinishedAt: now,
 					failCount: 0,
 					lastFailReason: null,
+					runCount: { $add: ["$runCount", 1] },
 				},
-				$inc: {
-					runCount: 1, // Increment run count
-				},
-			}
-		);
+			},
+		]);
 		return res.modifiedCount === 1;
 	};
 
@@ -123,20 +117,22 @@ class MongoJobsRepository implements IJobsRepository {
 		const res = await JobModel.updateOne(
 			{
 				_id: id,
-				lockedBy: this.workerId, // Only the worker that claimed can record success
+				lockedBy: this.workerId, // Only the worker that claimed can record failure
 			},
-			{
-				$set: {
-					nextScheduledAt: now + BACKOFF_MS,
-					lockedBy: null, // Remove lock
-					lockedUntil: null,
-					lastFinishedAt: now, // a failed run still finished used in getMetrics for failedAt timestamp
-					lastFailReason: error instanceof Error ? error.message : String(error),
+			[
+				{
+					$set: {
+						nextScheduledAt: { $max: ["$nextScheduledAt", now + BACKOFF_MS] },
+						lockedBy: null, // Remove lock
+						lockedUntil: null,
+						lastFinishedAt: now, // a failed run still finished used in getMetrics for failedAt timestamp
+						lastFailReason: {
+							$literal: error instanceof Error ? error.message : String(error),
+						},
+						failCount: { $add: ["$failCount", 1] }, // Increment fail count
+					},
 				},
-				$inc: {
-					failCount: 1, // Increment fail count
-				},
-			}
+			]
 		);
 		return res.modifiedCount === 1;
 	};
@@ -276,6 +272,22 @@ class MongoJobsRepository implements IJobsRepository {
 		return res.modifiedCount === 1;
 	};
 
+	updateHeartbeatScheduleById = async (refId: string, intervalMs: number): Promise<boolean> => {
+		const res = await JobModel.updateOne({ refId, type: "check" }, [
+			{
+				$set: {
+					// nextScheduledAt - oldInterval is the last scheduled run.
+					// Reset the deadline by adding the new intervalMs
+					nextScheduledAt: {
+						$add: [{ $subtract: ["$nextScheduledAt", "$intervalMs"] }, intervalMs],
+					},
+					intervalMs,
+				},
+			},
+		]);
+		return res.modifiedCount === 1;
+	};
+
 	markMonitorsDue = async (monitorIds: string[], now: number) => {
 		if (monitorIds.length === 0) return 0;
 		const res = await JobModel.updateMany({ refId: { $in: monitorIds }, type: { $in: ["check", "geo-check"] } }, [
@@ -288,6 +300,27 @@ class MongoJobsRepository implements IJobsRepository {
 				},
 			},
 		]);
+		return res.modifiedCount;
+	};
+
+	rescheduleChecks = async (monitorIds: string[], now: number) => {
+		if (monitorIds.length === 0) return 0;
+		const res = await JobModel.updateMany({ refId: { $in: monitorIds }, type: "check" }, [
+			{ $set: { nextScheduledAt: { $add: [now, "$intervalMs"] } } },
+		]);
+		return res.modifiedCount;
+	};
+
+	rescheduleOverdueChecks = async (monitorIds: string[], now: number): Promise<number> => {
+		if (monitorIds.length === 0) return 0;
+		const res = await JobModel.updateMany(
+			{
+				refId: { $in: monitorIds },
+				type: "check",
+				nextScheduledAt: { $lte: now },
+			},
+			[{ $set: { nextScheduledAt: { $add: [now, "$intervalMs"] } } }]
+		);
 		return res.modifiedCount;
 	};
 
@@ -315,6 +348,13 @@ class MongoJobsRepository implements IJobsRepository {
 	findById = async (refId: string) => {
 		const docs = await JobModel.find({ refId }).lean<JobDocument[]>();
 		return docs.map(this.toEntity);
+	};
+
+	findCheckJob = async (monitorId: string) => {
+		const doc = await JobModel.findOne({
+			_id: jobId("check", monitorId),
+		}).lean<JobDocument>();
+		return doc ? this.toEntity(doc) : null;
 	};
 
 	findPage = async ({ page = 0, rowsPerPage = 0 }: JobPageQuery) => {

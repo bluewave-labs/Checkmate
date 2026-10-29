@@ -133,6 +133,11 @@
 				"tls": "Ha fallat la negociació TLS o SSL (problema de certificat o xifratge).",
 				"unknown": "No s'ha rebut cap resposta HTTP de l'objectiu."
 			}
+		},
+		"copy": {
+			"copy": "Copia al porta-retalls",
+			"copied": "Copiat al porta-retalls",
+			"copyFailed": "No s'ha pogut copiar. Selecciona el text i copia'l manualment."
 		}
 	},
 	"components": {
@@ -487,7 +492,8 @@
 					"optionHardware": "Infraestructura",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "Heartbeat"
 				},
 				"bulkPause": {
 					"alreadyPaused_one": "El monitor seleccionat ja està pausat",
@@ -528,6 +534,7 @@
 				},
 				"frequency": {
 					"description": "Amb quina freqüència voleu comprovar l'estat d'aquest monitor?",
+					"customHint": "No és a la llista? Escriu qualsevol número i tria segons, minuts, hores o dies.",
 					"option": {
 						"frequency": {
 							"label": "Freqüència de comprovació",
@@ -544,6 +551,12 @@
 								"twoMinutes": "2 minuts"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "Finestra d'alerta",
+						"description": "Quant de temps cal esperar un ping abans de marcar aquest monitor com a caigut?",
+						"label": "Alerta si no hi ha ping durant",
+						"hint": "Tria la planificació de la tasca més un marge, p. ex. 65 minuts per a una tasca horària."
 					},
 					"title": "Freqüència de comprovació"
 				},
@@ -621,7 +634,8 @@
 						"grpc": "Introdueix el nom d'host i el port del servidor gRPC, opcionalment especifica un nom de servei per a la comprovació de salut, i afegeix un nom de visualització.",
 						"websocket": "Introdueix la URL de WebSocket a monitorar (p. ex., wss://example.com/socket) i afegeix un nom de visualització.",
 						"hardware": "Monitoritza l'ús de CPU, memòria, disc i temperatura per a la teva infraestructura. La URL de l'endpoint de captura ha d'incloure la ruta completa /api/v1/metrics (p. ex., http://192.168.1.10:5001/api/v1/metrics). Per al secret d'autorització, enganxa només la cadena del token — no incloguis 'Bearer'.",
-						"dns": "Monitoritza si un servidor DNS específic respon."
+						"dns": "Monitoritza si un servidor DNS específic respon.",
+						"heartbeat": "Afegeix un nom visible clar que aparegui al tauler. L'URL de ping es mostra a la pàgina de detalls del monitor després de desar."
 					}
 				},
 				"ignoreTls": {
@@ -659,7 +673,8 @@
 					"optionPingDescription": "Usa ICMP Ping per monitorar si un servidor és en línia.",
 					"optionPortDescription": "Monitoritza si un port específic d'un servidor és obert.",
 					"title": "Tipus",
-					"optionDnsDescription": "Monitoritza si un servidor DNS específic respon."
+					"optionDnsDescription": "Monitoritza si un servidor DNS específic respon.",
+					"optionHeartbeatDescription": "Rep una alerta quan una tasca cron o programada deixi de donar senyals."
 				},
 				"thresholds": {
 					"title": "Llindars d'alerta",
@@ -1403,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "Si us plau, corregiu els errors de validació següents:"
+				},
+				"heartbeatKey": {
+					"title": "Clau de ping del heartbeat",
+					"description": "Un secret compartit per tots els monitors de heartbeat d'aquest equip. Les tasques l'envien a l'URL de ping juntament amb l'slug del monitor.",
+					"noKey": "Encara no hi ha cap clau. Genera'n una per començar a enviar pings de heartbeat.",
+					"keySet": "Hi ha una clau definida. Es va mostrar una sola vegada, quan es va generar.",
+					"generate": "Genera una clau",
+					"rotate": "Rota la clau",
+					"rotateConfirmTitle": "Vols rotar la clau de ping del heartbeat?",
+					"rotateConfirmBody": "La clau actual deixa de funcionar immediatament. Cal actualitzar totes les tasques que fan ping a un monitor de heartbeat d'aquest equip.",
+					"keyLabel": "Clau de ping",
+					"copyNow": "Copia aquesta clau ara. No es tornarà a mostrar."
 				}
 			},
 			"header": {
@@ -1623,6 +1650,34 @@
 			"header": {
 				"title": "Monitors de temps en línia",
 				"description": "Vigila endpoints HTTP, pings, contenidors i ports — i rep alertes en el moment en que alguna cosa cau."
+			},
+			"details": {
+				"heartbeat": {
+					"title": "URL de heartbeat",
+					"description": "Fes que la teva tasca sol·liciti aquesta URL cada vegada que s'executi. Si no arriba cap sol·licitud dins la finestra d'alerta, el monitor cau.",
+					"pingUrl": "URL de ping",
+					"examplesTitle": "Maneres d'enviar un ping",
+					"examplesDescription": "Tria la que s'adapti a la teva tasca. Cada exemple és una ordre completa, així que només en necessites una.",
+					"examples": {
+						"post": "Ping en cas d'èxit",
+						"cron": "Ping després que una tasca cron acabi bé",
+						"exitCode": "Informa del codi de sortida de la tasca (0 és actiu, qualsevol altre és caigut)",
+						"fail": "Informa d'un error",
+						"duration": "Informa del codi de sortida i de quant ha durat la tasca"
+					},
+					"options": {
+						"title": "Com construir l'URL de ping",
+						"description": "Afegeix qualsevol d'aquests elements al final de l'URL de ping:",
+						"fail": "registra un error",
+						"exitCode": "registra un codi de sortida: 0 és actiu, qualsevol altre valor és inactiu",
+						"duration": "registra quant ha durat la tasca, en mil·lisegons",
+						"msg": "adjunta un missatge a la comprovació",
+						"combine": "Fes servir /fail o un codi de sortida, no tots dos. Els paràmetres de consulta funcionen amb qualsevol URL i es poden combinar amb &, per exemple /1?duration=5000&msg=disk%20full."
+					},
+					"rotate": "Rota el testimoni",
+					"rotateConfirmTitle": "Vols rotar aquest testimoni de heartbeat?",
+					"rotateConfirmBody": "L'URL actual deixa de funcionar immediatament. Actualitza totes les tasques que hi fan ping."
+				}
 			}
 		},
 		"docker": {

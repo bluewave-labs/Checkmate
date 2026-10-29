@@ -32,7 +32,12 @@ const createScheduler = (overrides?: { queueMode?: QueueMode; telemetryEnabled?:
 	const jobsRepository = {
 		upsertJob: jest.fn<any>().mockResolvedValue(true),
 		upsertCleanupJob: jest.fn<any>().mockResolvedValue(true),
+		rescheduleOverdueChecks: jest.fn<any>().mockResolvedValue(0),
 		deleteGlobalJob: jest.fn<any>().mockResolvedValue(true),
+		setActiveById: jest.fn<any>().mockResolvedValue(true),
+		updateScheduleById: jest.fn<any>().mockResolvedValue(true),
+		updateHeartbeatScheduleById: jest.fn<any>().mockResolvedValue(true),
+		deleteByIdAndType: jest.fn<any>().mockResolvedValue(true),
 	};
 	const queueWorkersRepository = {
 		upsert: jest.fn<any>().mockResolvedValue(undefined),
@@ -150,6 +155,18 @@ describe("JobScheduler", () => {
 			expect((scheduler as any).timers.has("heartbeat")).toBe(false);
 			expect(mocks.queueWorkersRepository.deleteById).toHaveBeenCalledWith("worker-1");
 		});
+
+		it("primary mode re-arms only heartbeat rows that went overdue while down", async () => {
+			const monitors = [makeMonitor({ id: "hb1", type: "heartbeat" }), makeMonitor({ id: "m1" }), makeMonitor({ id: "hb2", type: "heartbeat" })];
+			const { scheduler, mocks } = createScheduler({
+				queueMode: "primary",
+				mocks: { monitorsRepository: { findAllForScheduling: jest.fn<any>().mockResolvedValue(monitors) } },
+			});
+			await scheduler.init();
+
+			expect(mocks.jobsRepository.rescheduleOverdueChecks).toHaveBeenCalledTimes(1);
+			expect(mocks.jobsRepository.rescheduleOverdueChecks).toHaveBeenCalledWith(["hb1", "hb2"], Date.now());
+		});
 	});
 
 	describe("drain", () => {
@@ -188,6 +205,83 @@ describe("JobScheduler", () => {
 					intervalMs: 75000,
 				})
 			);
+		});
+	});
+
+	// Heartbeat rows are dead man's switches: the deadline is one interval out, and nothing
+	// should make the row due early, or the switch fires before the job has had a chance to ping.
+	describe("heartbeat scheduling", () => {
+		const NOW = 1_000_000;
+
+		beforeEach(() => {
+			jest.useFakeTimers({ now: NOW });
+		});
+
+		afterEach(() => {
+			jest.useRealTimers();
+		});
+
+		it("addJob seeds a heartbeat row one interval out and does not wake the check loop", async () => {
+			const { scheduler, mocks } = createScheduler();
+			const wake = jest.spyOn(scheduler, "wake");
+
+			await scheduler.addJob("hb1", makeMonitor({ id: "hb1", type: "heartbeat", interval: 120000 }));
+
+			expect(mocks.jobsRepository.upsertJob).toHaveBeenCalledWith(expect.objectContaining({ id: "check:hb1", nextScheduledAt: NOW + 120000 }));
+			expect(wake).not.toHaveBeenCalled();
+		});
+
+		it("addJob seeds a probe row due now and wakes the check loop", async () => {
+			const { scheduler, mocks } = createScheduler();
+			const wake = jest.spyOn(scheduler, "wake");
+
+			await scheduler.addJob("m1", makeMonitor());
+
+			expect(mocks.jobsRepository.upsertJob).toHaveBeenCalledWith(expect.objectContaining({ id: "check:m1", nextScheduledAt: NOW }));
+			expect(wake).toHaveBeenCalledWith("check");
+		});
+
+		it("resumeJob re-arms an overdue heartbeat row before activating it, without waking", async () => {
+			const { scheduler, mocks } = createScheduler();
+			const wake = jest.spyOn(scheduler, "wake");
+
+			await scheduler.resumeJob(makeMonitor({ id: "hb1", type: "heartbeat" }));
+
+			const { rescheduleOverdueChecks, setActiveById } = mocks.jobsRepository;
+			expect(rescheduleOverdueChecks).toHaveBeenCalledWith(["hb1"], NOW);
+			expect(setActiveById).toHaveBeenCalledWith("hb1", true);
+			// Activating first would leave an active, overdue row for a worker to claim
+			expect(rescheduleOverdueChecks.mock.invocationCallOrder[0]).toBeLessThan(setActiveById.mock.invocationCallOrder[0]);
+			expect(wake).not.toHaveBeenCalled();
+		});
+
+		it("resumeJob activates a probe row and wakes the check loop without re-arming", async () => {
+			const { scheduler, mocks } = createScheduler();
+			const wake = jest.spyOn(scheduler, "wake");
+
+			await scheduler.resumeJob(makeMonitor());
+
+			expect(mocks.jobsRepository.setActiveById).toHaveBeenCalledWith("m1", true);
+			expect(mocks.jobsRepository.rescheduleOverdueChecks).not.toHaveBeenCalled();
+			expect(wake).toHaveBeenCalledWith("check");
+		});
+
+		it("updateJob shifts a heartbeat deadline with the interval instead of only changing the interval", async () => {
+			const { scheduler, mocks } = createScheduler();
+
+			await scheduler.updateJob(makeMonitor({ id: "hb1", type: "heartbeat", interval: 120000 }));
+
+			expect(mocks.jobsRepository.updateHeartbeatScheduleById).toHaveBeenCalledWith("hb1", 120000);
+			expect(mocks.jobsRepository.updateScheduleById).not.toHaveBeenCalled();
+		});
+
+		it("updateJob changes only the interval on a probe row", async () => {
+			const { scheduler, mocks } = createScheduler();
+
+			await scheduler.updateJob(makeMonitor({ interval: 120000 }));
+
+			expect(mocks.jobsRepository.updateScheduleById).toHaveBeenCalledWith("m1", "check", 120000);
+			expect(mocks.jobsRepository.updateHeartbeatScheduleById).not.toHaveBeenCalled();
 		});
 	});
 

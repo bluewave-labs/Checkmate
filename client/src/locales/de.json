@@ -133,6 +133,11 @@
 				"tls": "TLS- oder SSL-Handshake fehlgeschlagen (Zertifikats- oder Verschlüsselungsproblem).",
 				"unknown": "Es wurde keine HTTP-Antwort vom Ziel empfangen."
 			}
+		},
+		"copy": {
+			"copy": "In die Zwischenablage kopieren",
+			"copied": "In die Zwischenablage kopiert",
+			"copyFailed": "Kopieren fehlgeschlagen. Markieren Sie den Text und kopieren Sie ihn manuell."
 		}
 	},
 	"components": {
@@ -488,7 +493,8 @@
 					"optionHardware": "Infrastruktur",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "Heartbeat"
 				},
 				"bulkPause": {
 					"paused_one": "{{count}} Monitor pausiert",
@@ -529,6 +535,7 @@
 				},
 				"frequency": {
 					"description": "Wie oft möchten Sie den Status dieses Monitors überprüfen?",
+					"customHint": "Nicht in der Liste? Geben Sie eine beliebige Zahl ein und wählen Sie Sekunden, Minuten, Stunden oder Tage.",
 					"option": {
 						"frequency": {
 							"label": "Prüffrequenz",
@@ -545,6 +552,12 @@
 								"twoMinutes": "Zwei Minuten"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "Alarmfenster",
+						"description": "Wie lange soll auf einen Ping gewartet werden, bevor dieser Monitor als ausgefallen gilt?",
+						"label": "Alarm, wenn kein Ping kommt innerhalb von",
+						"hint": "Wählen Sie den Zeitplan Ihres Jobs plus etwas Puffer, z. B. 65 Minuten für einen stündlichen Job."
 					},
 					"title": "Prüffrequenz"
 				},
@@ -622,7 +635,8 @@
 						"grpc": "Geben Sie den Hostnamen und Port des gRPC-Servers ein, optional einen Dienstnamen für den Health-Check, und fügen Sie einen Anzeigenamen hinzu.",
 						"websocket": "Geben Sie die zu überwachende WebSocket-URL ein (z. B. wss://example.com/socket) und fügen Sie einen Anzeigenamen hinzu.",
 						"hardware": "Überwachen Sie CPU-, Speicher-, Festplattenauslastung und Temperatur Ihrer Infrastruktur. Die URL des Capture-Endpunkts muss den vollständigen Pfad /api/v1/metrics enthalten (z. B. http://192.168.1.10:5001/api/v1/metrics). Fügen Sie für das Autorisierungsgeheimnis nur den Token-String ein — geben Sie 'Bearer' nicht mit an.",
-						"dns": "Überwachen Sie, ob ein bestimmter DNS-Server antwortet."
+						"dns": "Überwachen Sie, ob ein bestimmter DNS-Server antwortet.",
+						"heartbeat": "Fügen Sie einen eindeutigen Anzeigenamen hinzu, der im Dashboard erscheint. Die Ping-URL wird nach dem Speichern auf der Detailseite des Monitors angezeigt."
 					}
 				},
 				"ignoreTls": {
@@ -660,7 +674,8 @@
 					"optionPingDescription": "ICMP-Ping verwenden, um zu überwachen, ob ein Server online ist.",
 					"optionPortDescription": "Überwachen, ob ein bestimmter Port auf einem Server geöffnet ist.",
 					"title": "Typ",
-					"optionDnsDescription": "Überwachen Sie, ob ein bestimmter DNS-Server antwortet."
+					"optionDnsDescription": "Überwachen Sie, ob ein bestimmter DNS-Server antwortet.",
+					"optionHeartbeatDescription": "Lassen Sie sich benachrichtigen, wenn ein Cronjob oder eine geplante Aufgabe sich nicht mehr meldet."
 				},
 				"thresholds": {
 					"title": "Alarmschwellenwerte",
@@ -1404,6 +1419,18 @@
 				},
 				"validation": {
 					"errorMessage": "Bitte beheben Sie die folgenden Validierungsfehler:"
+				},
+				"heartbeatKey": {
+					"title": "Heartbeat-Ping-Schlüssel",
+					"description": "Ein gemeinsames Geheimnis für alle Heartbeat-Monitore dieses Teams. Jobs senden es zusammen mit dem Slug des Monitors in der Ping-URL.",
+					"noKey": "Noch kein Schlüssel. Erstellen Sie einen, um Heartbeat-Pings zu senden.",
+					"keySet": "Ein Schlüssel ist gesetzt. Er wurde einmal beim Erstellen angezeigt.",
+					"generate": "Schlüssel erstellen",
+					"rotate": "Schlüssel rotieren",
+					"rotateConfirmTitle": "Heartbeat-Ping-Schlüssel rotieren?",
+					"rotateConfirmBody": "Der aktuelle Schlüssel funktioniert sofort nicht mehr. Jeder Job, der einen Heartbeat-Monitor dieses Teams anpingt, muss aktualisiert werden.",
+					"keyLabel": "Ping-Schlüssel",
+					"copyNow": "Kopieren Sie diesen Schlüssel jetzt. Er wird nicht erneut angezeigt."
 				}
 			},
 			"header": {
@@ -1624,6 +1651,34 @@
 			"header": {
 				"title": "Uptime-Monitore",
 				"description": "Überwachen Sie HTTP-Endpunkte, Pings, Container und Ports und werden Sie sofort benachrichtigt, wenn etwas ausfällt."
+			},
+			"details": {
+				"heartbeat": {
+					"title": "Heartbeat-URL",
+					"description": "Lassen Sie Ihren Job diese URL bei jedem Lauf aufrufen. Kommt innerhalb des Alarmfensters keine Anfrage an, gilt der Monitor als ausgefallen.",
+					"pingUrl": "Ping-URL",
+					"examplesTitle": "Möglichkeiten, einen Ping zu senden",
+					"examplesDescription": "Wählen Sie die passende für Ihren Job. Jedes Beispiel ist ein vollständiger Befehl, Sie brauchen also nur einen.",
+					"examples": {
+						"post": "Ping bei Erfolg",
+						"cron": "Ping nach erfolgreichem Cronjob",
+						"exitCode": "Exit-Code des Jobs melden (0 ist verfügbar, alles andere ist ausgefallen)",
+						"fail": "Fehler melden",
+						"duration": "Exit-Code und Laufzeit des Jobs melden"
+					},
+					"options": {
+						"title": "Die Ping-URL zusammenstellen",
+						"description": "Hängen Sie eines davon an das Ende der Ping-URL an:",
+						"fail": "meldet einen Fehler",
+						"exitCode": "meldet einen Exit-Code: 0 ist aktiv, alles andere ist ausgefallen",
+						"duration": "meldet die Laufzeit des Jobs in Millisekunden",
+						"msg": "hängt eine Nachricht an die Prüfung an",
+						"combine": "Verwenden Sie /fail oder einen Exit-Code, nicht beides. Query-Parameter funktionieren mit jeder URL und lassen sich mit & kombinieren, z. B. /1?duration=5000&msg=disk%20full."
+					},
+					"rotate": "Token erneuern",
+					"rotateConfirmTitle": "Diesen Heartbeat-Token erneuern?",
+					"rotateConfirmBody": "Die aktuelle URL funktioniert sofort nicht mehr. Aktualisieren Sie jeden Job, der sie anpingt."
+				}
 			}
 		},
 		"docker": {

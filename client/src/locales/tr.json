@@ -133,6 +133,11 @@
 				"tls": "TLS veya SSL el sıkışması başarısız (sertifika veya şifreleme sorunu).",
 				"unknown": "Hedeften HTTP yanıtı alınamadı."
 			}
+		},
+		"copy": {
+			"copy": "Panoya kopyala",
+			"copied": "Panoya kopyalandı",
+			"copyFailed": "Kopyalanamadı. Metni seçip elle kopyalayın."
 		}
 	},
 	"components": {
@@ -487,7 +492,8 @@
 					"optionHardware": "Altyapı",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "Heartbeat"
 				},
 				"bulkPause": {
 					"paused_one": "{{count}} monitör duraklatıldı",
@@ -528,6 +534,7 @@
 				},
 				"frequency": {
 					"description": "Bu monitörün durumunu ne sıklıkla kontrol etmek istiyorsunuz?",
+					"customHint": "Listede yok mu? Herhangi bir sayı yazın, ardından saniye, dakika, saat veya gün seçin.",
 					"option": {
 						"frequency": {
 							"label": "Kontrol sıklığı",
@@ -544,6 +551,12 @@
 								"twoMinutes": "2 dakika"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "Uyarı aralığı",
+						"description": "Bu monitörü kapalı olarak işaretlemeden önce ping için ne kadar beklensin?",
+						"label": "Şu süre boyunca ping gelmezse uyar",
+						"hint": "İşinizin zamanlamasını biraz pay bırakarak seçin; örneğin saatlik bir iş için 65 dakika."
 					},
 					"title": "Kontrol sıklığı"
 				},
@@ -621,7 +634,8 @@
 						"grpc": "gRPC sunucusunun ana bilgisayar adını ve portunu girin, isteğe bağlı olarak sağlık kontrolü için bir servis adı belirtin ve bir görünen ad ekleyin.",
 						"websocket": "İzlenecek WebSocket URL'sini girin (örn. wss://example.com/socket) ve bir görünen ad ekleyin.",
 						"hardware": "Altyapınızın CPU, bellek, disk kullanımını ve sıcaklığını izleyin. Capture uç nokta URL'si tam yolu /api/v1/metrics içermelidir (ör. http://192.168.1.10:5001/api/v1/metrics). Yetkilendirme anahtarına yalnızca token dizesini yapıştırın — 'Bearer' eklemeyin.",
-						"dns": "Belirli bir DNS sunucusunun yanıt verip vermediğini izleyin."
+						"dns": "Belirli bir DNS sunucusunun yanıt verip vermediğini izleyin.",
+						"heartbeat": "Panoda görünen anlaşılır bir görünen ad ekleyin. Ping URL'si kaydettikten sonra monitörün ayrıntılar sayfasında gösterilir."
 					}
 				},
 				"ignoreTls": {
@@ -659,7 +673,8 @@
 					"optionPingDescription": "Bir sunucunun çevrimiçi olup olmadığını izlemek için ICMP Ping kullanın.",
 					"optionPortDescription": "Bir sunucuda belirli bir portun açık olup olmadığını izleyin.",
 					"title": "Tür",
-					"optionDnsDescription": "Belirli bir DNS sunucusunun yanıt verip vermediğini izleyin."
+					"optionDnsDescription": "Belirli bir DNS sunucusunun yanıt verip vermediğini izleyin.",
+					"optionHeartbeatDescription": "Bir cron işi veya zamanlanmış görev sinyal göndermeyi bıraktığında uyarı alın."
 				},
 				"thresholds": {
 					"title": "Uyarı eşikleri",
@@ -1403,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "Lütfen aşağıdaki doğrulama hatalarını düzeltin:"
+				},
+				"heartbeatKey": {
+					"title": "Heartbeat ping anahtarı",
+					"description": "Bu takımdaki tüm heartbeat monitörlerinin paylaştığı tek bir gizli anahtar. İşler bunu monitörün slug'ı ile birlikte ping URL'sinde gönderir.",
+					"noKey": "Henüz anahtar yok. Heartbeat ping'leri göndermeye başlamak için bir anahtar oluşturun.",
+					"keySet": "Bir anahtar ayarlı. Oluşturulduğunda yalnızca bir kez gösterildi.",
+					"generate": "Anahtar oluştur",
+					"rotate": "Anahtarı yenile",
+					"rotateConfirmTitle": "Heartbeat ping anahtarı yenilensin mi?",
+					"rotateConfirmBody": "Mevcut anahtar hemen çalışmayı bırakır. Bu takımdaki bir heartbeat monitörüne ping gönderen her iş güncellenmelidir.",
+					"keyLabel": "Ping anahtarı",
+					"copyNow": "Bu anahtarı şimdi kopyalayın. Tekrar gösterilmeyecek."
 				}
 			},
 			"header": {
@@ -1623,6 +1650,34 @@
 			"header": {
 				"title": "Çalışma süresi izleyicileri",
 				"description": "HTTP uç noktalarını, ping'leri, konteynerleri ve portları izleyin — bir şey kapandığında anında uyarı alın."
+			},
+			"details": {
+				"heartbeat": {
+					"title": "Heartbeat URL'si",
+					"description": "İşinizin her çalıştığında bu URL'ye istek göndermesini sağlayın. Uyarı aralığı içinde istek gelmezse monitör kapalı duruma geçer.",
+					"pingUrl": "Ping URL'si",
+					"examplesTitle": "Ping gönderme yolları",
+					"examplesDescription": "İşinize uyanı seçin. Her örnek kendi başına eksiksiz bir komuttur, bu yüzden yalnızca birine ihtiyacınız var.",
+					"examples": {
+						"post": "Başarıda ping gönder",
+						"cron": "Cron işi başarılı olduktan sonra ping gönder",
+						"exitCode": "İşin çıkış kodunu bildir (0 açık, diğer her şey kapalı)",
+						"fail": "Hata bildir",
+						"duration": "Çıkış kodunu ve işin ne kadar sürdüğünü bildir"
+					},
+					"options": {
+						"title": "Ping URL'sini oluşturma",
+						"description": "Bunlardan herhangi birini ping URL'sinin sonuna ekleyin:",
+						"fail": "bir hata kaydeder",
+						"exitCode": "bir çıkış kodu kaydeder: 0 çalışıyor, diğer her değer çalışmıyor demektir",
+						"duration": "işin ne kadar sürdüğünü milisaniye cinsinden kaydeder",
+						"msg": "kontrole bir mesaj ekler",
+						"combine": "/fail veya bir çıkış kodu kullanın, ikisini birden değil. Sorgu parametreleri her URL ile çalışır ve & ile birleştirilebilir, örneğin /1?duration=5000&msg=disk%20full."
+					},
+					"rotate": "Token'ı yenile",
+					"rotateConfirmTitle": "Bu heartbeat token'ı yenilensin mi?",
+					"rotateConfirmBody": "Mevcut URL hemen çalışmayı durdurur. Bu URL'ye ping gönderen tüm işleri güncelleyin."
+				}
 			}
 		},
 		"docker": {

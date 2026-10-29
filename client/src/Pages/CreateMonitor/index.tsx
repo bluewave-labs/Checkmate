@@ -39,6 +39,7 @@ import {
 	PageSpeedStrategies,
 	DnsRecordTypes,
 	MonitorIntervalOptions,
+	HeartbeatIntervalOptions,
 	MIN_MONITOR_INTERVAL_MS,
 	DefaultMonitorMatchMethod,
 	MonitorMatchMethods,
@@ -288,6 +289,21 @@ const getGeneralSettingsConfig = (
 			showDnsServer: true,
 			showDnsRecordType: true,
 		},
+		heartbeat: {
+			urlLabel: "",
+			urlPlaceholder: "",
+			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
+			showUrl: false,
+			showProxy: false,
+			showPort: false,
+			showGameSelect: false,
+			showSecret: false,
+			showGrpcServiceName: false,
+			showIgnoreTls: false,
+			showStrategy: false,
+			showDnsServer: false,
+			showDnsRecordType: false,
+		},
 	};
 	return configs[type] || configs.http;
 };
@@ -358,6 +374,7 @@ const CreateMonitorPage = () => {
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
 	const watchGeoCheckEnabled = watch("geoCheckEnabled") as boolean;
 	const watchedInterval = watch("interval");
+	const isHeartbeat = watchedType === "heartbeat";
 
 	// Steps without an advanced section drop it, so the last step is the form's.
 	const totalSteps = monitorStepCount(watchedType);
@@ -435,7 +452,9 @@ const CreateMonitorPage = () => {
 		}
 
 		if (result?.success) {
-			if (pageType === "pagespeed") {
+			if (!isEditMode && data.type === "heartbeat") {
+				navigate(`/uptime/${result.data.id}`);
+			} else if (pageType === "pagespeed") {
 				navigate("/pagespeed");
 			} else if (pageType === "hardware") {
 				navigate("/infrastructure");
@@ -523,7 +542,10 @@ const CreateMonitorPage = () => {
 	);
 
 	const intervalOptions = useMemo(() => {
-		const options = MonitorIntervalOptions.map(({ value }) =>
+		const presets: readonly { value: number }[] = isHeartbeat
+			? HeartbeatIntervalOptions
+			: MonitorIntervalOptions;
+		const options = presets.map(({ value }) =>
 			toIntervalOption(value, i18n.resolvedLanguage)
 		);
 		if (
@@ -533,7 +555,7 @@ const CreateMonitorPage = () => {
 			options.push(toIntervalOption(watchedInterval, i18n.resolvedLanguage));
 		}
 		return options;
-	}, [watchedInterval, i18n.resolvedLanguage]);
+	}, [isHeartbeat, watchedInterval, i18n.resolvedLanguage]);
 
 	const matchMethodOptions = useMemo(
 		() =>
@@ -824,21 +846,49 @@ const CreateMonitorPage = () => {
 				)}
 				{showStep(1) && (
 					<ConfigBox
-						title={t("pages.createMonitor.form.frequency.title")}
-						subtitle={t("pages.createMonitor.form.frequency.description")}
+						title={t(
+							isHeartbeat
+								? "pages.createMonitor.form.frequency.heartbeat.title"
+								: "pages.createMonitor.form.frequency.title"
+						)}
+						subtitle={t(
+							isHeartbeat
+								? "pages.createMonitor.form.frequency.heartbeat.description"
+								: "pages.createMonitor.form.frequency.description"
+						)}
 						rightContent={
-							<FormAutocompleteField
-								name="interval"
-								fieldLabel={t(
-									"pages.createMonitor.form.frequency.option.frequency.label"
+							<Stack spacing={theme.spacing(LAYOUT.MD)}>
+								<FormAutocompleteField
+									name="interval"
+									fieldLabel={t(
+										isHeartbeat
+											? "pages.createMonitor.form.frequency.heartbeat.label"
+											: "pages.createMonitor.form.frequency.option.frequency.label"
+									)}
+									options={intervalOptions}
+									filterOptions={(options, { inputValue }) =>
+										filterIntervalOptions(options, inputValue, i18n.resolvedLanguage)
+									}
+									getOptionDisabled={(option) => option.id < MIN_MONITOR_INTERVAL_MS}
+									disableClearable
+								/>
+								<Typography
+									component="span"
+									color={theme.palette.text.secondary}
+									sx={{ opacity: 0.8 }}
+								>
+									{t("pages.createMonitor.form.frequency.customHint")}
+								</Typography>
+								{isHeartbeat && (
+									<Typography
+										component="span"
+										color={theme.palette.text.secondary}
+										sx={{ opacity: 0.8 }}
+									>
+										{t("pages.createMonitor.form.frequency.heartbeat.hint")}
+									</Typography>
 								)}
-								options={intervalOptions}
-								filterOptions={(options, { inputValue }) =>
-									filterIntervalOptions(options, inputValue, i18n.resolvedLanguage)
-								}
-								getOptionDisabled={(option) => option.id < MIN_MONITOR_INTERVAL_MS}
-								disableClearable
-							/>
+							</Stack>
 						}
 					/>
 				)}
@@ -897,7 +947,7 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-				{showStep(1) && (
+				{showStep(1) && !isHeartbeat && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.incidents.title")}
 						subtitle={t("pages.createMonitor.form.incidents.description")}

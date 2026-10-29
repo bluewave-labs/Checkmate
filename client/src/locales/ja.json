@@ -133,6 +133,11 @@
 				"tls": "TLSまたはSSLハンドシェイクに失敗しました（証明書または暗号化の問題）。",
 				"unknown": "ターゲットからのHTTP応答がありませんでした。"
 			}
+		},
+		"copy": {
+			"copy": "クリップボードにコピー",
+			"copied": "クリップボードにコピーしました",
+			"copyFailed": "コピーできませんでした。テキストを選択して手動でコピーしてください。"
 		}
 	},
 	"components": {
@@ -487,7 +492,8 @@
 					"optionHardware": "インフラストラクチャ",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "ハートビート"
 				},
 				"bulkPause": {
 					"paused_one": "{{count}} 個のモニターを一時停止しました",
@@ -528,6 +534,7 @@
 				},
 				"frequency": {
 					"description": "このモニターのステータスをどのくらいの頻度で確認しますか？",
+					"customHint": "一覧にない場合は、任意の数値を入力してから秒・分・時間・日を選択してください。",
 					"option": {
 						"frequency": {
 							"label": "チェック頻度",
@@ -544,6 +551,12 @@
 								"twoMinutes": "2分"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "アラート期間",
+						"description": "このモニターをダウンとみなすまで、ping をどれくらい待ちますか？",
+						"label": "ping がない場合にアラートするまでの時間",
+						"hint": "ジョブのスケジュールに余裕を持たせて選んでください（例：1 時間ごとのジョブなら 65 分）。"
 					},
 					"title": "チェック頻度"
 				},
@@ -621,7 +634,8 @@
 						"grpc": "gRPCサーバーのホスト名とポートを入力し、必要に応じてヘルスチェック用のサービス名を指定し、表示名を追加してください。",
 						"websocket": "監視するWebSocket URLを入力し（例: wss://example.com/socket）、表示名を追加してください。",
 						"hardware": "インフラの CPU、メモリ、ディスク使用率、温度を監視します。Capture エンドポイント URL には完全なパス /api/v1/metrics を含める必要があります (例: http://192.168.1.10:5001/api/v1/metrics)。認証シークレットにはトークン文字列のみを貼り付けてください — 'Bearer' は含めないでください。",
-						"dns": "特定のDNSサーバーが応答しているかを監視します。"
+						"dns": "特定のDNSサーバーが応答しているかを監視します。",
+						"heartbeat": "ダッシュボードに表示されるわかりやすい表示名を追加してください。保存後、ping URL はモニターの詳細ページに表示されます。"
 					}
 				},
 				"ignoreTls": {
@@ -659,7 +673,8 @@
 					"optionPingDescription": "ICMP Pingを使用してサーバーがオンラインかどうかを監視します。",
 					"optionPortDescription": "サーバーの特定のポートが開いているかどうかを監視します。",
 					"title": "タイプ",
-					"optionDnsDescription": "特定のDNSサーバーが応答しているかを監視します。"
+					"optionDnsDescription": "特定のDNSサーバーが応答しているかを監視します。",
+					"optionHeartbeatDescription": "cron ジョブやスケジュールされたタスクからの通知が途絶えたときにアラートを受け取ります。"
 				},
 				"thresholds": {
 					"title": "アラートしきい値",
@@ -1403,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "以下のバリデーションエラーを修正してください："
+				},
+				"heartbeatKey": {
+					"title": "ハートビートpingキー",
+					"description": "このチームのすべてのハートビートモニターで共有するシークレットです。ジョブはモニターのスラッグと一緒にping URLで送信します。",
+					"noKey": "キーはまだありません。ハートビートpingを送信するにはキーを生成してください。",
+					"keySet": "キーは設定済みです。生成時に一度だけ表示されました。",
+					"generate": "キーを生成",
+					"rotate": "キーを再生成",
+					"rotateConfirmTitle": "ハートビートpingキーを再生成しますか？",
+					"rotateConfirmBody": "現在のキーはすぐに使えなくなります。このチームのハートビートモニターにpingを送るすべてのジョブを更新する必要があります。",
+					"keyLabel": "pingキー",
+					"copyNow": "今すぐこのキーをコピーしてください。再表示されません。"
 				}
 			},
 			"header": {
@@ -1623,6 +1650,34 @@
 			"header": {
 				"title": "稼働監視",
 				"description": "HTTPエンドポイント、Ping、コンテナ、ポートを監視し、ダウンした瞬間に通知を受け取ります。"
+			},
+			"details": {
+				"heartbeat": {
+					"title": "ハートビート URL",
+					"description": "ジョブが実行されるたびにこの URL にリクエストを送信させてください。アラート期間内にリクエストが届かない場合、モニターはダウンになります。",
+					"pingUrl": "Ping URL",
+					"examplesTitle": "pingの送信方法",
+					"examplesDescription": "ジョブに合うものを1つ選んでください。各例はそれだけで完結したコマンドなので、使うのは1つだけです。",
+					"examples": {
+						"post": "成功時に ping",
+						"cron": "cron ジョブ成功後に ping",
+						"exitCode": "ジョブの終了コードを報告（0 はアップ、それ以外はダウン）",
+						"fail": "失敗を報告",
+						"duration": "終了コードとジョブの実行時間を報告"
+					},
+					"options": {
+						"title": "ping URLの組み立て方",
+						"description": "ping URLの末尾に次のいずれかを追加します:",
+						"fail": "失敗を記録します",
+						"exitCode": "終了コードを記録します: 0は稼働中、それ以外は停止",
+						"duration": "ジョブの実行時間をミリ秒単位で記録します",
+						"msg": "チェックにメッセージを添付します",
+						"combine": "/fail と終了コードはどちらか一方だけを使用してください。クエリパラメータはどのURLでも使え、& で組み合わせられます。例: /1?duration=5000&msg=disk%20full"
+					},
+					"rotate": "トークンを再発行",
+					"rotateConfirmTitle": "このハートビートトークンを再発行しますか？",
+					"rotateConfirmBody": "現在の URL はすぐに使用できなくなります。この URL に ping を送るすべてのジョブを更新してください。"
+				}
 			}
 		},
 		"docker": {

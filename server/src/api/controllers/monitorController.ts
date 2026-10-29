@@ -50,6 +50,8 @@ export interface IMonitorController {
 	deleteAllMonitors: RequestHandler;
 	editMonitor: RequestHandler;
 	pauseMonitor: RequestHandler;
+	getHeartbeatToken: RequestHandler;
+	rotateHeartbeatToken: RequestHandler;
 	bulkPauseMonitors: RequestHandler;
 	addDemoMonitors: RequestHandler;
 	getMonitorsByTeamId: RequestHandler;
@@ -201,6 +203,35 @@ class MonitorController implements IMonitorController {
 		const data = await this.monitorService.pauseMonitor({ teamId, monitorId });
 		const msg = data.isActive ? "Monitor resumed successfully" : "Monitor paused successfully";
 		res.json({ success: true, msg, data });
+	};
+
+	getHeartbeatToken: Handler = async (req, res) => {
+		const { monitorId } = getMonitorByIdParamValidation.parse(req.params);
+		const teamId = requireTeamId(req.user?.teamId);
+		const data = await this.monitorService.getHeartbeatToken({
+			teamId,
+			monitorId,
+		});
+		res.json({
+			success: true,
+			msg: "Heartbeat token retrieved successfully",
+			data,
+		});
+	};
+
+	rotateHeartbeatToken: Handler = async (req, res) => {
+		const { monitorId } = getMonitorByIdParamValidation.parse(req.params);
+		const teamId = requireTeamId(req.user?.teamId);
+		const data = await this.monitorService.rotateHeartbeatToken({
+			teamId,
+			monitorId,
+		});
+
+		res.json({
+			success: true,
+			msg: "Heartbeat token rotated successfully",
+			data,
+		});
 	};
 
 	bulkPauseMonitors: Handler = async (req, res) => {

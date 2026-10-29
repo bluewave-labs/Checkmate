@@ -133,6 +133,11 @@
 				"tls": "Selhal handshake TLS nebo SSL (problém s certifikátem nebo šifrováním).",
 				"unknown": "Z cíle nebyla obdržena žádná odpověď HTTP."
 			}
+		},
+		"copy": {
+			"copy": "Kopírovat do schránky",
+			"copied": "Zkopírováno do schránky",
+			"copyFailed": "Kopírování se nezdařilo. Označte text a zkopírujte ho ručně."
 		}
 	},
 	"components": {
@@ -487,7 +492,8 @@
 					"optionHardware": "Infrastruktura",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "Heartbeat"
 				},
 				"bulkPause": {
 					"paused_one": "{{count}} monitor pozastaven",
@@ -528,6 +534,7 @@
 				},
 				"frequency": {
 					"description": "Jak často chcete kontrolovat stav tohoto monitoru?",
+					"customHint": "Není v seznamu? Zadejte libovolné číslo a vyberte sekundy, minuty, hodiny nebo dny.",
 					"option": {
 						"frequency": {
 							"label": "Frekvence kontroly",
@@ -544,6 +551,12 @@
 								"twoMinutes": "2 minuty"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "Okno upozornění",
+						"description": "Jak dlouho čekat na ping, než bude monitor označen jako nedostupný?",
+						"label": "Upozornit, pokud nepřijde ping do",
+						"hint": "Zvolte plán úlohy s rezervou, např. 65 minut pro úlohu spouštěnou každou hodinu."
 					},
 					"title": "Frekvence kontroly"
 				},
@@ -621,7 +634,8 @@
 						"grpc": "Zadejte název hostitele a port gRPC serveru, volitelně zadejte název služby pro kontrolu stavu a přidejte zobrazovaný název.",
 						"websocket": "Zadejte WebSocket URL ke sledování (např. wss://example.com/socket) a přidejte zobrazovaný název.",
 						"hardware": "Sledujte využití CPU, paměti, disku a teplotu vaší infrastruktury. URL endpointu Capture musí obsahovat celou cestu /api/v1/metrics (např. http://192.168.1.10:5001/api/v1/metrics). Do autorizačního klíče vložte pouze řetězec tokenu — nezahrnujte 'Bearer'.",
-						"dns": "Sledujte, zda konkrétní DNS server odpovídá."
+						"dns": "Sledujte, zda konkrétní DNS server odpovídá.",
+						"heartbeat": "Přidejte srozumitelný zobrazovaný název, který se objeví na nástěnce. URL pro ping se po uložení zobrazí na stránce s detaily monitoru."
 					}
 				},
 				"ignoreTls": {
@@ -659,7 +673,8 @@
 					"optionPingDescription": "Použijte ICMP Ping ke sledování, zda je server online.",
 					"optionPortDescription": "Sledujte, zda je konkrétní port na serveru otevřen.",
 					"title": "Typ",
-					"optionDnsDescription": "Sledujte, zda konkrétní DNS server odpovídá."
+					"optionDnsDescription": "Sledujte, zda konkrétní DNS server odpovídá.",
+					"optionHeartbeatDescription": "Dostávejte upozornění, když se úloha cron nebo naplánovaná úloha přestane hlásit."
 				},
 				"thresholds": {
 					"title": "Prahové hodnoty upozornění",
@@ -1403,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "Opravte prosím následující chyby validace:"
+				},
+				"heartbeatKey": {
+					"title": "Klíč pro ping heartbeatu",
+					"description": "Jeden tajný klíč sdílený všemi heartbeat monitory v tomto týmu. Úlohy ho posílají v URL pingu spolu se slugem monitoru.",
+					"noKey": "Zatím žádný klíč. Vygenerujte ho, abyste mohli začít posílat heartbeat pingy.",
+					"keySet": "Klíč je nastaven. Byl zobrazen jen jednou, při vygenerování.",
+					"generate": "Vygenerovat klíč",
+					"rotate": "Obnovit klíč",
+					"rotateConfirmTitle": "Obnovit klíč pro ping heartbeatu?",
+					"rotateConfirmBody": "Současný klíč okamžitě přestane fungovat. Je nutné aktualizovat všechny úlohy, které pingují heartbeat monitor v tomto týmu.",
+					"keyLabel": "Klíč pro ping",
+					"copyNow": "Zkopírujte si klíč hned. Znovu se nezobrazí."
 				}
 			},
 			"header": {
@@ -1623,6 +1650,34 @@
 			"header": {
 				"title": "Monitory dostupnosti",
 				"description": "Sledujte HTTP koncové body, pingy, kontejnery a porty — buďte upozorněni v okamžiku, kdy něco vypadne."
+			},
+			"details": {
+				"heartbeat": {
+					"title": "Heartbeat URL",
+					"description": "Nechte úlohu při každém spuštění zavolat tuto URL. Pokud během okna upozornění nepřijde žádný požadavek, monitor přejde do stavu nedostupný.",
+					"pingUrl": "URL pro ping",
+					"examplesTitle": "Způsoby odeslání pingu",
+					"examplesDescription": "Vyberte ten, který se hodí k vaší úloze. Každý příklad je samostatný příkaz, takže potřebujete jen jeden.",
+					"examples": {
+						"post": "Ping při úspěchu",
+						"cron": "Ping po úspěšném dokončení úlohy cron",
+						"exitCode": "Nahlásit návratový kód úlohy (0 znamená dostupný, cokoli jiného nedostupný)",
+						"fail": "Nahlásit selhání",
+						"duration": "Nahlásit návratový kód a dobu trvání úlohy"
+					},
+					"options": {
+						"title": "Sestavení URL pro ping",
+						"description": "Na konec URL pro ping přidejte kteroukoli z těchto částí:",
+						"fail": "zaznamená selhání",
+						"exitCode": "zaznamená návratový kód: 0 je v provozu, cokoli jiného je mimo provoz",
+						"duration": "zaznamená, jak dlouho úloha běžela, v milisekundách",
+						"msg": "připojí ke kontrole zprávu",
+						"combine": "Použijte /fail nebo návratový kód, ne obojí. Parametry dotazu fungují s jakoukoli URL a lze je spojit pomocí &, například /1?duration=5000&msg=disk%20full."
+					},
+					"rotate": "Obnovit token",
+					"rotateConfirmTitle": "Obnovit tento heartbeat token?",
+					"rotateConfirmBody": "Současná URL okamžitě přestane fungovat. Aktualizujte všechny úlohy, které na ni posílají ping."
+				}
 			}
 		},
 		"docker": {

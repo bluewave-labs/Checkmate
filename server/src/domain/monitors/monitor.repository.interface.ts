@@ -35,6 +35,8 @@ export interface IMonitorsRepository {
 	findById(monitorId: string, teamId: string): Promise<Monitor>;
 	// for workers, don't need all details
 	findByIdLean(monitorId: string): Promise<Monitor | null>;
+	// Lookup by token for heartbeat monitors
+	findByHeartbeatToken(token: string): Promise<Monitor | null>;
 
 	// collection fetch
 	findAllForScheduling(): Promise<MonitorScheduleFields[]>;
@@ -54,6 +56,7 @@ export interface IMonitorsRepository {
 		maxRecentChecks: number,
 		statusPatch?: Partial<Monitor>
 	): Promise<Monitor>;
+
 	togglePauseById(monitorId: string, teamId: string): Promise<Monitor>;
 	bulkTogglePause(monitorIds: string[], teamId: string, pause: boolean): Promise<Monitor[]>;
 	// delete
@@ -69,6 +72,7 @@ export interface IMonitorsRepository {
 	findDockerTlsKeyById(monitorId: string): Promise<string | null>;
 	findAllDockerTlsKeys(): Promise<{ id: string; dockerTlsKey: string }[]>;
 	updateDockerTlsKey(monitorId: string, dockerTlsKey: string): Promise<void>; // Needed for worker to rotate keys, no teamId/userId
+	findHeartbeatTokenById(monitorId: string, teamId: string): Promise<string | null>;
 
 	// other
 	findMonitorsSummaryByTeamId(teamId: string, config?: SummaryConfig): Promise<MonitorsSummary>;
@@ -78,4 +82,5 @@ export interface IMonitorsRepository {
 	updateNotifications(teamId: string, monitorIds: string[], notificationIds: string[], action: "add" | "remove" | "set"): Promise<number>;
 	deleteByTeamIdsNotIn(teamIds: string[]): Promise<number>;
 	findAllMonitorIds(): Promise<string[]>;
+	setHeartbeatToken(monitorId: string, teamId: string, token: string): Promise<void>;
 }

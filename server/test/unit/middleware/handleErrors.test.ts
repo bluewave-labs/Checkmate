@@ -87,6 +87,13 @@ describe("handleErrors", () => {
 		);
 	});
 
+	it("redacts a heartbeat token from the logged request", () => {
+		const localLogger = createMockLogger();
+		const req = { method: "GET", originalUrl: "/api/v1/heartbeat/secret-tok/fail" } as Request;
+		handleErrors(localLogger)(new Error("boom"), req, makeRes(), (() => {}) as NextFunction);
+		expect(localLogger.error).toHaveBeenCalledWith(expect.objectContaining({ request: "GET /api/v1/heartbeat/[Redacted]/fail" }), "Request failed");
+	});
+
 	it("keeps existing details alongside the request", () => {
 		const localLogger = createMockLogger();
 		const req = { method: "POST", originalUrl: "/api/v1/monitors" } as Request;

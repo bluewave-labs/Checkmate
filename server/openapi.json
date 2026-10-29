@@ -75,6 +75,10 @@
 		{
 			"name": "egress",
 			"description": "The instance's outbound connectivity self-check state."
+		},
+		{
+			"name": "heartbeat",
+			"description": "Unauthenticated ping endpoints for heartbeat (dead man's switch) monitors, addressed by token."
 		}
 	],
 	"components": {
@@ -224,7 +228,7 @@
 							},
 							"type": {
 								"type": "string",
-								"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+								"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 							}
 						},
 						"required": ["monitorId", "teamId", "type"]
@@ -900,7 +904,7 @@
 					},
 					"type": {
 						"type": "string",
-						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 					},
 					"location": {
 						"type": "object",
@@ -1204,7 +1208,7 @@
 					},
 					"type": {
 						"type": "string",
-						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 					},
 					"ignoreTlsErrors": {
 						"type": "boolean"
@@ -1822,7 +1826,7 @@
 							"properties": {
 								"type": {
 									"type": "string",
-									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 								},
 								"count": {
 									"type": "number"
@@ -1847,7 +1851,7 @@
 								},
 								"type": {
 									"type": "string",
-									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 								},
 								"status": {
 									"type": "string",
@@ -1879,7 +1883,7 @@
 								},
 								"type": {
 									"type": "string",
-									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 								},
 								"status": {
 									"type": "string",
@@ -2516,6 +2520,15 @@
 					}
 				},
 				"required": ["id", "metadata", "lines", "gap", "checkedAt", "expiry", "createdAt", "updatedAt"]
+			},
+			"HeartbeatToken": {
+				"type": "object",
+				"properties": {
+					"heartbeatToken": {
+						"type": "string"
+					}
+				},
+				"required": ["heartbeatToken"]
 			},
 			"Notification": {
 				"type": "object",
@@ -3709,7 +3722,7 @@
 								},
 								"type": {
 									"type": "string",
-									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 								},
 								"status": {
 									"type": "string",
@@ -4123,6 +4136,33 @@
 					}
 				},
 				"required": ["enabled", "status", "degradedSince", "degradedWorkers", "totalWorkers"]
+			},
+			"HeartbeatResponse": {
+				"type": "object",
+				"properties": {
+					"received": {
+						"type": "boolean"
+					}
+				},
+				"required": ["received"]
+			},
+			"HeartbeatKeyStatus": {
+				"type": "object",
+				"properties": {
+					"hasKey": {
+						"type": "boolean"
+					}
+				},
+				"required": ["hasKey"]
+			},
+			"HeartbeatKey": {
+				"type": "object",
+				"properties": {
+					"heartbeatKey": {
+						"type": "string"
+					}
+				},
+				"required": ["heartbeatKey"]
 			}
 		},
 		"parameters": {}
@@ -6525,7 +6565,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 						},
 						"required": false,
 						"name": "type",
@@ -6920,7 +6960,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 						},
 						"required": false,
 						"name": "type",
@@ -8647,13 +8687,13 @@
 							"anyOf": [
 								{
 									"type": "string",
-									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 								},
 								{
 									"type": "array",
 									"items": {
 										"type": "string",
-										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 									}
 								}
 							]
@@ -8845,13 +8885,13 @@
 							"anyOf": [
 								{
 									"type": "string",
-									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 								},
 								{
 									"type": "array",
 									"items": {
 										"type": "string",
-										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 									}
 								}
 							]
@@ -9173,7 +9213,7 @@
 						}
 					},
 					"404": {
-						"description": "Monitor not found, or monitor stats not found",
+						"description": "Monitor not found",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -9280,7 +9320,7 @@
 						}
 					},
 					"404": {
-						"description": "Monitor not found, or monitor stats not found",
+						"description": "Monitor not found",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -9387,7 +9427,7 @@
 						}
 					},
 					"404": {
-						"description": "Monitor not found, or monitor stats not found",
+						"description": "Monitor not found",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -9494,7 +9534,7 @@
 						}
 					},
 					"404": {
-						"description": "Monitor not found, or monitor stats not found",
+						"description": "Monitor not found",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -10084,6 +10124,218 @@
 				}
 			}
 		},
+		"/monitors/{monitorId}/heartbeat-token": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Get a heartbeat monitor's ping token (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "monitorId",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HeartbeatToken"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request, or monitor is not a heartbeat monitor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Monitor not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["monitors"],
+				"summary": "Rotate a heartbeat monitor's ping token (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "monitorId",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HeartbeatToken"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request, or monitor is not a heartbeat monitor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Monitor not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/monitors/bulk/pause": {
 			"post": {
 				"tags": ["monitors"],
@@ -10576,7 +10828,7 @@
 									},
 									"type": {
 										"type": "string",
-										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 									},
 									"statusWindowSize": {
 										"type": "number",
@@ -10592,7 +10844,7 @@
 									},
 									"url": {
 										"type": "string",
-										"minLength": 1
+										"default": ""
 									},
 									"ignoreTlsErrors": {
 										"type": "boolean",
@@ -10804,7 +11056,7 @@
 										"enum": ["A", "AAAA", "CNAME", "MX", "TXT", "NS"]
 									}
 								},
-								"required": ["name", "type", "url"]
+								"required": ["name", "type"]
 							}
 						}
 					}
@@ -11206,7 +11458,20 @@
 												},
 												"type": {
 													"type": "string",
-													"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+													"enum": [
+														"http",
+														"ping",
+														"pagespeed",
+														"hardware",
+														"docker",
+														"port",
+														"game",
+														"grpc",
+														"websocket",
+														"dns",
+														"heartbeat",
+														"unknown"
+													]
 												},
 												"ignoreTlsErrors": {
 													"type": "boolean",
@@ -11265,7 +11530,7 @@
 												},
 												"url": {
 													"type": "string",
-													"minLength": 1
+													"default": ""
 												},
 												"port": {
 													"type": "number"
@@ -11427,7 +11692,7 @@
 													"type": "string"
 												}
 											},
-											"required": ["name", "type", "url"]
+											"required": ["name", "type"]
 										},
 										"minItems": 1
 									}
@@ -11752,7 +12017,7 @@
 									},
 									"type": {
 										"type": "string",
-										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 									},
 									"url": {
 										"type": "string"
@@ -15558,6 +15823,800 @@
 					},
 					"401": {
 						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/heartbeat/{token}": {
+			"get": {
+				"tags": ["heartbeat"],
+				"summary": "Record a successful heartbeat",
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 16,
+							"maxLength": 64
+						},
+						"required": true,
+						"name": "token",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 500
+						},
+						"required": false,
+						"name": "msg",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 604800000
+						},
+						"required": false,
+						"name": "duration",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HeartbeatResponse"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "No heartbeat monitor for this token",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["heartbeat"],
+				"summary": "Record a successful heartbeat",
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 16,
+							"maxLength": 64
+						},
+						"required": true,
+						"name": "token",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 500
+						},
+						"required": false,
+						"name": "msg",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 604800000
+						},
+						"required": false,
+						"name": "duration",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HeartbeatResponse"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "No heartbeat monitor for this token",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/heartbeat/{token}/fail": {
+			"get": {
+				"tags": ["heartbeat"],
+				"summary": "Record a failed run",
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 16,
+							"maxLength": 64
+						},
+						"required": true,
+						"name": "token",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 500
+						},
+						"required": false,
+						"name": "msg",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 604800000
+						},
+						"required": false,
+						"name": "duration",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HeartbeatResponse"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "No heartbeat monitor for this token",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["heartbeat"],
+				"summary": "Record a failed run",
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 16,
+							"maxLength": 64
+						},
+						"required": true,
+						"name": "token",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 500
+						},
+						"required": false,
+						"name": "msg",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 604800000
+						},
+						"required": false,
+						"name": "duration",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HeartbeatResponse"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "No heartbeat monitor for this token",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/heartbeat/{token}/{exitCode}": {
+			"get": {
+				"tags": ["heartbeat"],
+				"summary": "Record a run by exit code",
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 16,
+							"maxLength": 64
+						},
+						"required": true,
+						"name": "token",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 255
+						},
+						"required": false,
+						"name": "exitCode",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 500
+						},
+						"required": false,
+						"name": "msg",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 604800000
+						},
+						"required": false,
+						"name": "duration",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HeartbeatResponse"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "No heartbeat monitor for this token",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["heartbeat"],
+				"summary": "Record a run by exit code",
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 16,
+							"maxLength": 64
+						},
+						"required": true,
+						"name": "token",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 255
+						},
+						"required": false,
+						"name": "exitCode",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 500
+						},
+						"required": false,
+						"name": "msg",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 604800000
+						},
+						"required": false,
+						"name": "duration",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HeartbeatResponse"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "No heartbeat monitor for this token",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/teams/heartbeat-key": {
+			"get": {
+				"tags": ["teams"],
+				"summary": "Whether the caller's team has a heartbeat ping key (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HeartbeatKeyStatus"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["teams"],
+				"summary": "Generate or rotate the team's heartbeat ping key; the key is returned once (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HeartbeatKey"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Team not found",
 						"content": {
 							"application/json": {
 								"schema": {

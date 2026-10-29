@@ -8,6 +8,8 @@ import { IUserService, UserService } from "@/domain/users/user.service.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
 import { ProxiesService, IProxiesService } from "@/domain/proxies/proxy.service.js";
 import { EgressStateService, IEgressStateService } from "@/domain/egress/egress-state.service.js";
+import { HeartbeatService, IHeartbeatService } from "@/domain/heartbeat/heartbeat.service.js";
+import { TeamService, ITeamService } from "@/domain/teams/team.service.js";
 import { SharedServices } from "@/config/services.shared.js";
 
 // Third-party
@@ -26,6 +28,8 @@ export interface ApiServices extends SharedServices {
 	diagnosticService: IDiagnosticService;
 	proxiesService: IProxiesService;
 	egressStateService: IEgressStateService;
+	heartbeatService: IHeartbeatService;
+	teamService: ITeamService;
 }
 
 export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): ApiServices => {
@@ -33,6 +37,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		logger,
 		db,
 		settingsService,
+		checkService,
 		emailService,
 		monitorsRepository,
 		checksRepository,
@@ -51,6 +56,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		jobsRepository,
 		proxiesRepository,
 		queueWorkersRepository,
+		encryptionService,
 	} = shared;
 
 	const userService = new UserService({
@@ -104,6 +110,15 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 	const diagnosticService = new DiagnosticService(db);
 	const proxiesService = new ProxiesService(proxiesRepository, monitorsRepository, settingsService);
 	const egressStateService = new EgressStateService(queueWorkersRepository, settingsService);
+	const heartbeatService = new HeartbeatService({
+		logger,
+		monitorsRepository,
+		maintenanceWindowsRepository,
+		jobsRepository,
+		checkService,
+		scheduler: jobScheduler,
+	});
+	const teamService = new TeamService({ logger, teamsRepository, encryptionService });
 	return {
 		...shared,
 		worker: jobScheduler,
@@ -116,5 +131,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		diagnosticService,
 		proxiesService,
 		egressStateService,
+		heartbeatService,
+		teamService,
 	};
 };

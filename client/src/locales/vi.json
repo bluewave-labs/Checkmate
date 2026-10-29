@@ -133,6 +133,11 @@
 				"tls": "Bắt tay TLS hoặc SSL thất bại (vấn đề chứng chỉ hoặc mã hóa).",
 				"unknown": "Không nhận được phản hồi HTTP từ mục tiêu."
 			}
+		},
+		"copy": {
+			"copy": "Sao chép vào bộ nhớ tạm",
+			"copied": "Đã sao chép vào bộ nhớ tạm",
+			"copyFailed": "Không thể sao chép. Hãy chọn văn bản và sao chép thủ công."
 		}
 	},
 	"components": {
@@ -487,7 +492,8 @@
 					"optionHardware": "Hạ tầng",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "Heartbeat"
 				},
 				"bulkPause": {
 					"paused_one": "Đã tạm dừng {{count}} màn hình",
@@ -528,6 +534,7 @@
 				},
 				"frequency": {
 					"description": "Bạn muốn kiểm tra trạng thái trình giám sát này bao lâu một lần?",
+					"customHint": "Không có trong danh sách? Nhập số bất kỳ, rồi chọn giây, phút, giờ hoặc ngày.",
 					"option": {
 						"frequency": {
 							"label": "Tần suất kiểm tra",
@@ -544,6 +551,12 @@
 								"twoMinutes": "2 phút"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "Khoảng thời gian cảnh báo",
+						"description": "Chờ ping trong bao lâu trước khi đánh dấu monitor này là ngừng hoạt động?",
+						"label": "Cảnh báo nếu không có ping trong",
+						"hint": "Chọn lịch chạy của tác vụ cộng thêm một khoảng dự phòng, ví dụ 65 phút cho tác vụ chạy mỗi giờ."
 					},
 					"title": "Tần suất kiểm tra"
 				},
@@ -621,7 +634,8 @@
 						"grpc": "Nhập tên máy chủ và cổng của máy chủ gRPC, tùy chọn chỉ định tên dịch vụ cho kiểm tra sức khỏe và thêm tên hiển thị.",
 						"websocket": "Nhập URL WebSocket cần giám sát (vd: wss://example.com/socket) và thêm tên hiển thị.",
 						"hardware": "Giám sát mức sử dụng CPU, bộ nhớ, ổ đĩa và nhiệt độ của hạ tầng. URL điểm cuối Capture phải bao gồm đường dẫn đầy đủ /api/v1/metrics (ví dụ: http://192.168.1.10:5001/api/v1/metrics). Đối với khóa xác thực, chỉ dán chuỗi token — không bao gồm 'Bearer'.",
-						"dns": "Giám sát xem một máy chủ DNS cụ thể có phản hồi hay không."
+						"dns": "Giám sát xem một máy chủ DNS cụ thể có phản hồi hay không.",
+						"heartbeat": "Thêm tên hiển thị rõ ràng xuất hiện trên bảng điều khiển. URL ping sẽ hiển thị trên trang chi tiết của monitor sau khi lưu."
 					}
 				},
 				"ignoreTls": {
@@ -659,7 +673,8 @@
 					"optionPingDescription": "Sử dụng ICMP Ping để giám sát xem máy chủ có trực tuyến không.",
 					"optionPortDescription": "Giám sát xem một cổng cụ thể trên máy chủ có mở không.",
 					"title": "Loại",
-					"optionDnsDescription": "Giám sát xem một máy chủ DNS cụ thể có phản hồi hay không."
+					"optionDnsDescription": "Giám sát xem một máy chủ DNS cụ thể có phản hồi hay không.",
+					"optionHeartbeatDescription": "Nhận cảnh báo khi một cron job hoặc tác vụ đã lên lịch ngừng gửi tín hiệu."
 				},
 				"thresholds": {
 					"title": "Ngưỡng cảnh báo",
@@ -1403,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "Vui lòng sửa các lỗi xác thực sau:"
+				},
+				"heartbeatKey": {
+					"title": "Khóa ping heartbeat",
+					"description": "Một bí mật dùng chung cho mọi trình giám sát heartbeat trong nhóm này. Tác vụ gửi khóa trong URL ping cùng với slug của trình giám sát.",
+					"noKey": "Chưa có khóa. Hãy tạo một khóa để bắt đầu gửi ping heartbeat.",
+					"keySet": "Đã đặt khóa. Khóa chỉ hiển thị một lần khi được tạo.",
+					"generate": "Tạo khóa",
+					"rotate": "Xoay vòng khóa",
+					"rotateConfirmTitle": "Xoay vòng khóa ping heartbeat?",
+					"rotateConfirmBody": "Khóa hiện tại sẽ ngừng hoạt động ngay lập tức. Mọi tác vụ ping tới trình giám sát heartbeat trong nhóm này đều phải được cập nhật.",
+					"keyLabel": "Khóa ping",
+					"copyNow": "Hãy sao chép khóa này ngay. Khóa sẽ không hiển thị lại."
 				}
 			},
 			"header": {
@@ -1623,6 +1650,34 @@
 			"header": {
 				"title": "Trình giám sát uptime",
 				"description": "Theo dõi các endpoint HTTP, ping, container và cổng — nhận cảnh báo ngay khi có sự cố."
+			},
+			"details": {
+				"heartbeat": {
+					"title": "URL heartbeat",
+					"description": "Cho tác vụ của bạn gọi URL này mỗi lần chạy. Nếu không có yêu cầu nào trong khoảng thời gian cảnh báo, monitor sẽ chuyển sang ngừng hoạt động.",
+					"pingUrl": "URL ping",
+					"examplesTitle": "Các cách gửi ping",
+					"examplesDescription": "Chọn cách phù hợp với tác vụ của bạn. Mỗi ví dụ là một lệnh hoàn chỉnh, nên bạn chỉ cần một.",
+					"examples": {
+						"post": "Ping khi thành công",
+						"cron": "Ping sau khi cron job chạy thành công",
+						"exitCode": "Báo mã thoát của tác vụ (0 là hoạt động, giá trị khác là ngừng hoạt động)",
+						"fail": "Báo lỗi",
+						"duration": "Báo cáo mã thoát và thời gian chạy của tác vụ"
+					},
+					"options": {
+						"title": "Tạo URL ping",
+						"description": "Thêm bất kỳ phần nào sau đây vào cuối URL ping:",
+						"fail": "ghi nhận một lỗi",
+						"exitCode": "ghi nhận mã thoát: 0 là hoạt động, giá trị khác là ngừng hoạt động",
+						"duration": "ghi nhận thời gian chạy của tác vụ, tính bằng mili giây",
+						"msg": "đính kèm một thông điệp vào lần kiểm tra",
+						"combine": "Dùng /fail hoặc mã thoát, không dùng cả hai. Tham số truy vấn dùng được với mọi URL và có thể nối bằng &, ví dụ /1?duration=5000&msg=disk%20full."
+					},
+					"rotate": "Làm mới token",
+					"rotateConfirmTitle": "Làm mới token heartbeat này?",
+					"rotateConfirmBody": "URL hiện tại sẽ ngừng hoạt động ngay lập tức. Hãy cập nhật mọi tác vụ đang ping tới URL này."
+				}
 			}
 		},
 		"docker": {

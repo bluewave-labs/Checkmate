@@ -38,6 +38,7 @@ import { GameProvider } from "@/service/networkProviders/GameProvider.js";
 import { GrpcProvider } from "@/service/networkProviders/GrpcProvider.js";
 import { WebSocketProvider } from "@/service/networkProviders/WebSocketProvider.js";
 import { DNSProvider } from "@/service/networkProviders/DNSProvider.js";
+import { HeartbeatProvider } from "@/service/networkProviders/HeartbeatProvider.js";
 import { WorkerPipeline } from "@/worker/worker.pipeline.js";
 export interface WorkerServices {
 	worker: IQueueWorker;
@@ -85,6 +86,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	const grpcProvider = new GrpcProvider(grpc, protoLoader);
 	const webSocketProvider = new WebSocketProvider(WebSocket);
 	const dnsProvider = new DNSProvider(() => new Resolver());
+	const heartbeatProvider = new HeartbeatProvider();
 
 	const providerRegistry = new ProviderRegistry([
 		pingProvider,
@@ -97,6 +99,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		grpcProvider,
 		webSocketProvider,
 		dnsProvider,
+		heartbeatProvider,
 	]);
 
 	const proxyResolver = new ProxyResolver(proxiesRepository, settingsService, logger);

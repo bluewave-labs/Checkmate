@@ -133,6 +133,11 @@
 				"tls": "Échec de la négociation TLS ou SSL (problème de certificat ou de chiffrement).",
 				"unknown": "Aucune réponse HTTP reçue de la cible."
 			}
+		},
+		"copy": {
+			"copy": "Copier dans le presse-papiers",
+			"copied": "Copié dans le presse-papiers",
+			"copyFailed": "Copie impossible. Sélectionnez le texte et copiez-le manuellement."
 		}
 	},
 	"components": {
@@ -487,7 +492,8 @@
 					"optionHardware": "Infrastructure",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "Heartbeat"
 				},
 				"bulkPause": {
 					"paused_one": "{{count}} moniteur en pause",
@@ -528,6 +534,7 @@
 				},
 				"frequency": {
 					"description": "À quelle fréquence souhaitez-vous vérifier le statut de ce moniteur ?",
+					"customHint": "Pas dans la liste ? Saisissez un nombre, puis choisissez secondes, minutes, heures ou jours.",
 					"option": {
 						"frequency": {
 							"label": "Fréquence de vérification",
@@ -544,6 +551,12 @@
 								"twoMinutes": "2 minutes"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "Fenêtre d'alerte",
+						"description": "Combien de temps attendre un ping avant de considérer ce moniteur comme hors service ?",
+						"label": "Alerter si aucun ping pendant",
+						"hint": "Choisissez la planification de votre tâche plus une marge, par ex. 65 minutes pour une tâche horaire."
 					},
 					"title": "Fréquence de vérification"
 				},
@@ -621,7 +634,8 @@
 						"grpc": "Saisissez le nom d'hôte et le port du serveur gRPC, spécifiez éventuellement un nom de service pour le bilan de santé, et ajoutez un nom d'affichage.",
 						"websocket": "Saisissez l'URL WebSocket à surveiller (ex. wss://example.com/socket) et ajoutez un nom d'affichage.",
 						"hardware": "Surveillez l'utilisation du processeur, de la mémoire, du disque et la température de votre infrastructure. L'URL du point de terminaison Capture doit inclure le chemin complet /api/v1/metrics (par ex. http://192.168.1.10:5001/api/v1/metrics). Pour le secret d'autorisation, collez uniquement la chaîne du jeton — n'incluez pas 'Bearer'.",
-						"dns": "Surveillez si un serveur DNS spécifique répond."
+						"dns": "Surveillez si un serveur DNS spécifique répond.",
+						"heartbeat": "Ajoutez un nom d'affichage clair qui apparaît sur le tableau de bord. L'URL de ping s'affiche sur la page de détails du moniteur après l'enregistrement."
 					}
 				},
 				"ignoreTls": {
@@ -659,7 +673,8 @@
 					"optionPingDescription": "Utilisez le Ping ICMP pour surveiller si un serveur est en ligne.",
 					"optionPortDescription": "Surveillez si un port spécifique sur un serveur est ouvert.",
 					"title": "Type",
-					"optionDnsDescription": "Surveillez si un serveur DNS spécifique répond."
+					"optionDnsDescription": "Surveillez si un serveur DNS spécifique répond.",
+					"optionHeartbeatDescription": "Soyez alerté lorsqu'une tâche cron ou planifiée cesse de se signaler."
 				},
 				"thresholds": {
 					"title": "Seuils d'alerte",
@@ -1403,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "Veuillez corriger les erreurs de validation suivantes :"
+				},
+				"heartbeatKey": {
+					"title": "Clé de ping heartbeat",
+					"description": "Un secret partagé par tous les moniteurs heartbeat de cette équipe. Les tâches l'envoient dans l'URL de ping avec le slug du moniteur.",
+					"noKey": "Aucune clé pour l'instant. Générez-en une pour commencer à envoyer des pings heartbeat.",
+					"keySet": "Une clé est définie. Elle a été affichée une seule fois, lors de sa génération.",
+					"generate": "Générer une clé",
+					"rotate": "Renouveler la clé",
+					"rotateConfirmTitle": "Renouveler la clé de ping heartbeat ?",
+					"rotateConfirmBody": "La clé actuelle cesse de fonctionner immédiatement. Chaque tâche qui envoie un ping à un moniteur heartbeat de cette équipe doit être mise à jour.",
+					"keyLabel": "Clé de ping",
+					"copyNow": "Copiez cette clé maintenant. Elle ne sera plus affichée."
 				}
 			},
 			"header": {
@@ -1623,6 +1650,34 @@
 			"header": {
 				"title": "Moniteurs de disponibilité",
 				"description": "Surveillez les points de terminaison HTTP, les pings, les conteneurs et les ports — soyez alerté dès qu'une panne survient."
+			},
+			"details": {
+				"heartbeat": {
+					"title": "URL de heartbeat",
+					"description": "Faites appeler cette URL par votre tâche à chaque exécution. Si aucune requête n'arrive pendant la fenêtre d'alerte, le moniteur passe hors service.",
+					"pingUrl": "URL de ping",
+					"examplesTitle": "Façons d'envoyer un ping",
+					"examplesDescription": "Choisissez celle qui convient à votre tâche. Chaque exemple est une commande complète, une seule suffit.",
+					"examples": {
+						"post": "Ping en cas de succès",
+						"cron": "Ping après la réussite d'une tâche cron",
+						"exitCode": "Signaler le code de sortie de la tâche (0 = en service, toute autre valeur = hors service)",
+						"fail": "Signaler un échec",
+						"duration": "Indiquer le code de sortie et la durée de la tâche"
+					},
+					"options": {
+						"title": "Construire l'URL de ping",
+						"description": "Ajoutez l'un de ces éléments à la fin de l'URL de ping :",
+						"fail": "enregistre un échec",
+						"exitCode": "enregistre un code de sortie : 0 signifie opérationnel, toute autre valeur signifie hors service",
+						"duration": "enregistre la durée d'exécution de la tâche, en millisecondes",
+						"msg": "joint un message à la vérification",
+						"combine": "Utilisez /fail ou un code de sortie, pas les deux. Les paramètres de requête fonctionnent avec n'importe quelle URL et se combinent avec &, par exemple /1?duration=5000&msg=disk%20full."
+					},
+					"rotate": "Renouveler le jeton",
+					"rotateConfirmTitle": "Renouveler ce jeton de heartbeat ?",
+					"rotateConfirmBody": "L'URL actuelle cesse de fonctionner immédiatement. Mettez à jour chaque tâche qui l'appelle."
+				}
 			}
 		},
 		"docker": {

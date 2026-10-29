@@ -133,6 +133,11 @@
 				"tls": "Falló el protocolo TLS o SSL (problema de certificado o cifrado).",
 				"unknown": "No se recibió ninguna respuesta HTTP del destino."
 			}
+		},
+		"copy": {
+			"copy": "Copiar al portapapeles",
+			"copied": "Copiado al portapapeles",
+			"copyFailed": "No se pudo copiar. Seleccione el texto y cópielo manualmente."
 		}
 	},
 	"components": {
@@ -487,7 +492,8 @@
 					"optionHardware": "Infraestructura",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "Heartbeat"
 				},
 				"bulkPause": {
 					"paused_one": "{{count}} monitor pausado",
@@ -528,6 +534,7 @@
 				},
 				"frequency": {
 					"description": "¿Con qué frecuencia desea verificar el estado de este monitor?",
+					"customHint": "¿No está en la lista? Escribe cualquier número y elige segundos, minutos, horas o días.",
 					"option": {
 						"frequency": {
 							"label": "Frecuencia de verificación",
@@ -544,6 +551,12 @@
 								"twoMinutes": "2 minutos"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "Ventana de alerta",
+						"description": "¿Cuánto tiempo esperar un ping antes de marcar este monitor como caído?",
+						"label": "Alertar si no hay ping durante",
+						"hint": "Elija la programación de su tarea más un margen, p. ej., 65 minutos para una tarea que se ejecuta cada hora."
 					},
 					"title": "Frecuencia de verificación"
 				},
@@ -621,7 +634,8 @@
 						"grpc": "Ingrese el nombre de host y puerto del servidor gRPC, opcionalmente especifique un nombre de servicio para la verificación de salud, y agregue un nombre para mostrar.",
 						"websocket": "Ingrese la URL de WebSocket a monitorear (p. ej., wss://example.com/socket) y agregue un nombre para mostrar.",
 						"hardware": "Supervisa el uso de CPU, memoria, disco y temperatura de tu infraestructura. La URL del endpoint de Capture debe incluir la ruta completa /api/v1/metrics (p. ej., http://192.168.1.10:5001/api/v1/metrics). Para el secreto de autorización, pega solo la cadena del token — no incluyas 'Bearer'.",
-						"dns": "Monitorea si un servidor DNS específico responde."
+						"dns": "Monitorea si un servidor DNS específico responde.",
+						"heartbeat": "Agregue un nombre para mostrar claro que aparezca en el panel. La URL de ping se muestra en la página de detalles del monitor después de guardar."
 					}
 				},
 				"ignoreTls": {
@@ -659,7 +673,8 @@
 					"optionPingDescription": "Use ICMP Ping para monitorear si un servidor está en línea.",
 					"optionPortDescription": "Monitoree si un puerto específico de un servidor está abierto.",
 					"title": "Tipo",
-					"optionDnsDescription": "Monitorea si un servidor DNS específico responde."
+					"optionDnsDescription": "Monitorea si un servidor DNS específico responde.",
+					"optionHeartbeatDescription": "Reciba una alerta cuando un cron job o una tarea programada deje de reportarse."
 				},
 				"thresholds": {
 					"title": "Umbrales de alerta",
@@ -1403,6 +1418,18 @@
 				},
 				"validation": {
 					"errorMessage": "Corrija los siguientes errores de validación:"
+				},
+				"heartbeatKey": {
+					"title": "Clave de ping de heartbeat",
+					"description": "Un secreto compartido por todos los monitores de heartbeat de este equipo. Los trabajos lo envían en la URL de ping junto con el slug del monitor.",
+					"noKey": "Todavía no hay clave. Genera una para empezar a enviar pings de heartbeat.",
+					"keySet": "Hay una clave configurada. Se mostró una sola vez, al generarla.",
+					"generate": "Generar clave",
+					"rotate": "Rotar clave",
+					"rotateConfirmTitle": "¿Rotar la clave de ping de heartbeat?",
+					"rotateConfirmBody": "La clave actual deja de funcionar de inmediato. Hay que actualizar todos los trabajos que hacen ping a un monitor de heartbeat de este equipo.",
+					"keyLabel": "Clave de ping",
+					"copyNow": "Copia esta clave ahora. No se volverá a mostrar."
 				}
 			},
 			"header": {
@@ -1623,6 +1650,34 @@
 			"header": {
 				"title": "Monitores de uptime",
 				"description": "Observa endpoints HTTP, pings, contenedores y puertos — recibe alertas en el momento en que algo falla."
+			},
+			"details": {
+				"heartbeat": {
+					"title": "URL de heartbeat",
+					"description": "Haga que su tarea solicite esta URL cada vez que se ejecute. Si no llega ninguna solicitud dentro de la ventana de alerta, el monitor pasa a caído.",
+					"pingUrl": "URL de ping",
+					"examplesTitle": "Formas de enviar un ping",
+					"examplesDescription": "Elige la que mejor se adapte a tu trabajo. Cada ejemplo es un comando completo, así que solo necesitas uno.",
+					"examples": {
+						"post": "Ping al terminar con éxito",
+						"cron": "Ping después de que un cron job termine con éxito",
+						"exitCode": "Informar el código de salida de la tarea (0 es activo, cualquier otro es caído)",
+						"fail": "Informar un fallo",
+						"duration": "Informar el código de salida y cuánto tardó el trabajo"
+					},
+					"options": {
+						"title": "Cómo construir la URL de ping",
+						"description": "Añade cualquiera de estos al final de la URL de ping:",
+						"fail": "registra un fallo",
+						"exitCode": "registra un código de salida: 0 es activo, cualquier otro valor es caído",
+						"duration": "registra cuánto duró el trabajo, en milisegundos",
+						"msg": "adjunta un mensaje a la comprobación",
+						"combine": "Usa /fail o un código de salida, no ambos. Los parámetros de consulta funcionan con cualquier URL y se pueden combinar con &, por ejemplo /1?duration=5000&msg=disk%20full."
+					},
+					"rotate": "Rotar token",
+					"rotateConfirmTitle": "¿Rotar este token de heartbeat?",
+					"rotateConfirmBody": "La URL actual deja de funcionar de inmediato. Actualice todas las tareas que le hacen ping."
+				}
 			}
 		},
 		"docker": {

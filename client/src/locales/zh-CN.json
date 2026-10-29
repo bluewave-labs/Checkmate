@@ -133,6 +133,11 @@
 				"tls": "TLS或SSL握手失败（证书或加密问题）。",
 				"unknown": "未从目标接收HTTP响应。"
 			}
+		},
+		"copy": {
+			"copy": "复制到剪贴板",
+			"copied": "已复制到剪贴板",
+			"copyFailed": "无法复制。请选中文本并手动复制。"
 		}
 	},
 	"components": {
@@ -488,7 +493,8 @@
 					"optionHardware": "基础设施",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "心跳"
 				},
 				"bulkPause": {
 					"paused_one": "已暂停 {{count}} 个监视器",
@@ -529,6 +535,7 @@
 				},
 				"frequency": {
 					"description": "您希望多久检查一次此监控的状态？",
+					"customHint": "列表中没有？输入任意数字，然后选择秒、分钟、小时或天。",
 					"option": {
 						"frequency": {
 							"label": "检查频率",
@@ -545,6 +552,12 @@
 								"twoMinutes": "2 分钟"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "告警窗口",
+						"description": "在将此监控标记为宕机之前，要等待 ping 多长时间？",
+						"label": "未收到 ping 时告警的时长",
+						"hint": "按任务的执行周期再加一些余量来选择，例如每小时执行的任务选 65 分钟。"
 					},
 					"title": "检查频率"
 				},
@@ -622,7 +635,8 @@
 						"grpc": "输入 gRPC 服务器的主机名和端口，可选指定健康检查的服务名称，并添加显示名称。",
 						"websocket": "输入要监控的 WebSocket URL（例如 wss://example.com/socket），并添加显示名称。",
 						"hardware": "监控基础设施的 CPU、内存、磁盘使用情况和温度。Capture 端点 URL 必须包含完整路径 /api/v1/metrics（例如 http://192.168.1.10:5001/api/v1/metrics）。授权密钥只需粘贴令牌字符串——请勿包含 'Bearer'。",
-						"dns": "监控特定DNS服务器是否响应。"
+						"dns": "监控特定DNS服务器是否响应。",
+						"heartbeat": "添加一个清晰的显示名称，它会显示在仪表盘上。保存后，Ping URL 会显示在监控的详情页面中。"
 					}
 				},
 				"ignoreTls": {
@@ -660,7 +674,8 @@
 					"optionPingDescription": "使用 ICMP Ping 监控服务器是否在线。",
 					"optionPortDescription": "监控服务器上的特定端口是否开放。",
 					"title": "类型",
-					"optionDnsDescription": "监控特定DNS服务器是否响应。"
+					"optionDnsDescription": "监控特定DNS服务器是否响应。",
+					"optionHeartbeatDescription": "当 cron 任务或计划任务停止上报时收到告警。"
 				},
 				"thresholds": {
 					"title": "告警阈值",
@@ -1404,6 +1419,18 @@
 				},
 				"validation": {
 					"errorMessage": "请修复以下验证错误："
+				},
+				"heartbeatKey": {
+					"title": "心跳 ping 密钥",
+					"description": "此团队所有心跳监控共用的一个密钥。任务会在 ping URL 中连同监控的 slug 一起发送它。",
+					"noKey": "尚无密钥。生成一个密钥即可开始发送心跳 ping。",
+					"keySet": "已设置密钥。它仅在生成时显示过一次。",
+					"generate": "生成密钥",
+					"rotate": "轮换密钥",
+					"rotateConfirmTitle": "轮换心跳 ping 密钥？",
+					"rotateConfirmBody": "当前密钥将立即失效。此团队中所有向心跳监控发送 ping 的任务都需要更新。",
+					"keyLabel": "Ping 密钥",
+					"copyNow": "请立即复制此密钥。它不会再次显示。"
 				}
 			},
 			"header": {
@@ -1624,6 +1651,34 @@
 			"header": {
 				"title": "运行时间监控器",
 				"description": "监控 HTTP 端点、Ping、容器和端口 — 一旦故障即刻收到提醒。"
+			},
+			"details": {
+				"heartbeat": {
+					"title": "心跳 URL",
+					"description": "让任务每次运行时请求此 URL。如果在告警窗口内没有收到请求，监控将变为宕机。",
+					"pingUrl": "Ping URL",
+					"examplesTitle": "发送 ping 的方式",
+					"examplesDescription": "选择适合你任务的一种。每个示例都是完整的命令，只需使用其中一个。",
+					"examples": {
+						"post": "成功时 ping",
+						"cron": "cron 任务成功后 ping",
+						"exitCode": "上报任务的退出码（0 表示正常，其他值表示宕机）",
+						"fail": "上报失败",
+						"duration": "报告退出码和任务运行时长"
+					},
+					"options": {
+						"title": "构建 ping URL",
+						"description": "在 ping URL 末尾添加以下任意一项：",
+						"fail": "记录一次失败",
+						"exitCode": "记录退出码：0 表示正常，其他值表示宕机",
+						"duration": "记录任务运行时长，单位为毫秒",
+						"msg": "为检查附加一条消息",
+						"combine": "/fail 和退出码只能二选一。查询参数适用于任何 URL，并可用 & 连接，例如 /1?duration=5000&msg=disk%20full。"
+					},
+					"rotate": "轮换令牌",
+					"rotateConfirmTitle": "要轮换此心跳令牌吗？",
+					"rotateConfirmBody": "当前 URL 将立即失效。请更新所有 ping 该 URL 的任务。"
+				}
 			}
 		},
 		"docker": {

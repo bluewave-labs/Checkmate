@@ -161,6 +161,11 @@
 				"responseTime": "Tempo de resposta",
 				"tags": "Tags"
 			}
+		},
+		"copy": {
+			"copy": "Copiar para a área de transferência",
+			"copied": "Copiado para a área de transferência",
+			"copyFailed": "Não foi possível copiar. Selecione o texto e copie manualmente."
 		}
 	},
 	"components": {
@@ -586,7 +591,8 @@
 					"optionHardware": "Infraestrutura",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "Heartbeat"
 				}
 			}
 		},
@@ -627,6 +633,7 @@
 				},
 				"frequency": {
 					"description": "Com que frequência você deseja verificar o status deste monitor?",
+					"customHint": "Não está na lista? Digite qualquer número e escolha segundos, minutos, horas ou dias.",
 					"option": {
 						"frequency": {
 							"label": "Frequência de verificação",
@@ -643,6 +650,12 @@
 								"twoMinutes": "2 minutos"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "Janela de alerta",
+						"description": "Quanto tempo esperar por um ping antes de marcar este monitor como fora do ar?",
+						"label": "Alertar se não houver ping por",
+						"hint": "Escolha o agendamento da tarefa com uma folga, por exemplo 65 minutos para uma tarefa de hora em hora."
 					},
 					"title": "Frequência de verificação"
 				},
@@ -738,7 +751,8 @@
 						"grpc": "Digite o hostname e a porta do servidor gRPC, opcionalmente especifique um nome de serviço para a verificação de saúde e adicione um nome de exibição.",
 						"websocket": "Digite a URL do WebSocket para monitorar (ex.: wss://exemplo.com/socket) e adicione um nome de exibição.",
 						"hardware": "Monitore o uso de CPU, memória, disco e temperatura da sua infraestrutura. A URL do endpoint do Capture deve incluir o caminho completo /api/v1/metrics (por exemplo, http://192.168.1.10:5001/api/v1/metrics). Para a chave de autorização, cole apenas a string do token — não inclua 'Bearer'.",
-						"dns": "Monitore se um servidor DNS específico está respondendo."
+						"dns": "Monitore se um servidor DNS específico está respondendo.",
+						"heartbeat": "Adicione um nome de exibição claro que aparece no painel. A URL de ping é exibida na página de detalhes do monitor depois de salvar."
 					}
 				},
 				"ignoreTls": {
@@ -780,6 +794,7 @@
 					"optionPingDescription": "Use ICMP Ping para monitorar se um servidor está online.",
 					"optionPortDescription": "Monitore se uma porta específica em um servidor está aberta.",
 					"optionDnsDescription": "Monitore se um servidor DNS específico está respondendo.",
+					"optionHeartbeatDescription": "Receba um alerta quando um cron job ou tarefa agendada parar de se reportar.",
 					"title": "Tipo"
 				},
 				"thresholds": {
@@ -1708,6 +1723,18 @@
 				},
 				"validation": {
 					"errorMessage": "Por favor, corrija os seguintes erros de validação:"
+				},
+				"heartbeatKey": {
+					"title": "Chave de ping do heartbeat",
+					"description": "Um segredo compartilhado por todos os monitores de heartbeat desta equipe. Os jobs o enviam na URL de ping junto com o slug do monitor.",
+					"noKey": "Ainda não há chave. Gere uma para começar a enviar pings de heartbeat.",
+					"keySet": "Há uma chave definida. Ela foi exibida uma única vez, ao ser gerada.",
+					"generate": "Gerar chave",
+					"rotate": "Rotacionar chave",
+					"rotateConfirmTitle": "Rotacionar a chave de ping do heartbeat?",
+					"rotateConfirmBody": "A chave atual para de funcionar imediatamente. Todo job que envia ping a um monitor de heartbeat desta equipe precisa ser atualizado.",
+					"keyLabel": "Chave de ping",
+					"copyNow": "Copie esta chave agora. Ela não será exibida novamente."
 				}
 			},
 			"header": {
@@ -1960,6 +1987,34 @@
 			"header": {
 				"title": "Monitores de uptime",
 				"description": "Acompanhe endpoints HTTP, pings, containers e portas — receba alertas no momento em que algo falhar."
+			},
+			"details": {
+				"heartbeat": {
+					"title": "URL de heartbeat",
+					"description": "Faça sua tarefa chamar esta URL sempre que for executada. Se nenhuma requisição chegar dentro da janela de alerta, o monitor fica fora do ar.",
+					"pingUrl": "URL de ping",
+					"examplesTitle": "Formas de enviar um ping",
+					"examplesDescription": "Escolha a que combina com o seu job. Cada exemplo é um comando completo, então você só precisa de um.",
+					"examples": {
+						"post": "Ping em caso de sucesso",
+						"cron": "Ping depois que um cron job terminar com sucesso",
+						"exitCode": "Informar o código de saída da tarefa (0 é no ar, qualquer outro é fora do ar)",
+						"fail": "Informar uma falha",
+						"duration": "Informar o código de saída e quanto tempo o job levou"
+					},
+					"options": {
+						"title": "Montando a URL de ping",
+						"description": "Adicione qualquer um destes ao final da URL de ping:",
+						"fail": "registra uma falha",
+						"exitCode": "registra um código de saída: 0 é ativo, qualquer outro valor é inativo",
+						"duration": "registra quanto tempo o job levou, em milissegundos",
+						"msg": "anexa uma mensagem à verificação",
+						"combine": "Use /fail ou um código de saída, não os dois. Parâmetros de consulta funcionam em qualquer URL e podem ser combinados com &, por exemplo /1?duration=5000&msg=disk%20full."
+					},
+					"rotate": "Renovar token",
+					"rotateConfirmTitle": "Renovar este token de heartbeat?",
+					"rotateConfirmBody": "A URL atual deixa de funcionar imediatamente. Atualize todas as tarefas que fazem ping nela."
+				}
 			}
 		},
 		"dashboard": {

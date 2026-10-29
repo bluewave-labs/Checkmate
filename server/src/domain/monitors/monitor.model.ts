@@ -1,4 +1,4 @@
-import { Schema, model, Types } from "mongoose";
+import { Query, Schema, model, Types } from "mongoose";
 import type { Monitor, MonitorMatchMethod, CheckSnapshot } from "@/domain/monitors/monitor.type.js";
 import { DnsRecordTypes, MonitorTypes, MonitorStatuses, PageSpeedStrategies, HttpMethods, ProxyModes } from "@/domain/monitors/monitor.type.js";
 import type {
@@ -199,7 +199,12 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		},
 		url: {
 			type: String,
-			required: true,
+			// Update validators run with `this` as the query, which has no type; edits are checked by refineUrlRequired("edit")
+			required: function (this: MonitorDocument | Query<unknown, MonitorDocument>) {
+				if (this instanceof Query) return false;
+				return this.type !== "heartbeat";
+			},
+			default: "",
 		},
 		port: {
 			type: Number,
@@ -234,6 +239,10 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		},
 		secret: {
 			type: String,
+		},
+		heartbeatToken: {
+			type: String,
+			select: false,
 		},
 		cpuAlertThreshold: {
 			type: Number,
@@ -351,6 +360,13 @@ const MonitorSchema = new Schema<MonitorDocument>(
 );
 
 MonitorSchema.index({ teamId: 1, type: 1 });
+MonitorSchema.index(
+	{ heartbeatToken: 1 },
+	{
+		unique: true,
+		partialFilterExpression: { heartbeatToken: { $type: "string" } },
+	}
+);
 
 const MonitorModel = model<MonitorDocument>("Monitor", MonitorSchema);
 

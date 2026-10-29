@@ -136,6 +136,11 @@
 				"type": "Typ",
 				"url": "Url"
 			}
+		},
+		"copy": {
+			"copy": "Kopiuj do schowka",
+			"copied": "Skopiowano do schowka",
+			"copyFailed": "Nie udało się skopiować. Zaznacz tekst i skopiuj go ręcznie."
 		}
 	},
 	"components": {
@@ -473,6 +478,7 @@
 				},
 				"monitorTypes": {
 					"optionDns": "DNS",
+					"optionHeartbeat": "Heartbeat",
 					"optionDocker": "Docker",
 					"optionGame": "Gra",
 					"optionGrpc": "gRPC",
@@ -539,6 +545,7 @@
 				},
 				"frequency": {
 					"description": "Jak często chcesz sprawdzać status tego monitora?",
+					"customHint": "Nie ma na liście? Wpisz dowolną liczbę, a potem wybierz sekundy, minuty, godziny lub dni.",
 					"option": {
 						"frequency": {
 							"label": "Sprawdź częstotliwość",
@@ -556,11 +563,18 @@
 							}
 						}
 					},
+					"heartbeat": {
+						"title": "Okno alertu",
+						"description": "Jak długo czekać na ping, zanim monitor zostanie oznaczony jako niedostępny?",
+						"label": "Alert, jeśli brak pingu przez",
+						"hint": "Wybierz harmonogram zadania z zapasem, np. 65 minut dla zadania uruchamianego co godzinę."
+					},
 					"title": "Częstotliwość sprawdzania"
 				},
 				"general": {
 					"description": {
 						"dns": "Monitoruj, czy określony serwer DNS odpowiada.",
+						"heartbeat": "Dodaj czytelną nazwę wyświetlaną, która pojawi się na pulpicie. Adres URL pingu pojawi się na stronie szczegółów monitora po zapisaniu.",
 						"docker": "Wprowadź nazwę lub identyfikator kontenera Docker. Możesz użyć nazwy kontenera (np. my-app) lub identyfikatora kontenera (pełny 64-znakowy identyfikator lub skrócony identyfikator).",
 						"game": "Wprowadź adres IP lub nazwę hosta oraz numer portu do pingowania (np. 192.168.1.100 lub example.com) i wybierz typ gry. Niektóre gry wymagają włączenia zapytań serwera w pliku konfiguracyjnym — sprawdź dokumentację swojego serwera gry. Zobacz <gamedigLink>listę obsługiwanych gier</gamedigLink>, aby uzyskać szczegóły dotyczące protokołu.",
 						"grpc": "Wprowadź nazwę hosta i port serwera gRPC, opcjonalnie określ nazwę usługi do sprawdzania stanu oraz dodaj nazwę.",
@@ -725,6 +739,7 @@
 				"type": {
 					"description": "Wybierz typ sprawdzenia do wykonania",
 					"optionDnsDescription": "Monitoruj, czy określony serwer DNS odpowiada.",
+					"optionHeartbeatDescription": "Otrzymuj alert, gdy zadanie cron lub zaplanowane zadanie przestanie się zgłaszać.",
 					"optionDockerDescription": "Użyj Dockera, aby monitorować, czy kontener jest uruchomiony.",
 					"optionGameDescription": "Monitoruj, czy konkretny serwer gry jest online.",
 					"optionGrpcDescription": "Monitoruj usługi gRPC za pomocą standardowego protokołu kontroli stanu.",
@@ -1468,6 +1483,18 @@
 				},
 				"validation": {
 					"errorMessage": "Proszę poprawić następujące błędy walidacji:"
+				},
+				"heartbeatKey": {
+					"title": "Klucz pingu heartbeat",
+					"description": "Jeden sekret wspólny dla wszystkich monitorów heartbeat w tym zespole. Zadania wysyłają go w adresie URL pingu razem ze slugiem monitora.",
+					"noKey": "Brak klucza. Wygeneruj go, aby zacząć wysyłać pingi heartbeat.",
+					"keySet": "Klucz jest ustawiony. Został pokazany raz, podczas generowania.",
+					"generate": "Wygeneruj klucz",
+					"rotate": "Zmień klucz",
+					"rotateConfirmTitle": "Zmienić klucz pingu heartbeat?",
+					"rotateConfirmBody": "Obecny klucz natychmiast przestanie działać. Trzeba zaktualizować każde zadanie, które pinguje monitor heartbeat w tym zespole.",
+					"keyLabel": "Klucz pingu",
+					"copyNow": "Skopiuj ten klucz teraz. Nie zostanie pokazany ponownie."
 				}
 			},
 			"header": {
@@ -1737,6 +1764,34 @@
 			"header": {
 				"description": "Monitoruj punkty końcowe HTTP, ping, kontenery i porty — i otrzymuj powiadomienia natychmiast, gdy coś przestanie działać.",
 				"title": "Monitory dostępności"
+			},
+			"details": {
+				"heartbeat": {
+					"title": "Adres URL heartbeat",
+					"description": "Niech zadanie wywołuje ten adres URL przy każdym uruchomieniu. Jeśli w oknie alertu nie dotrze żadne żądanie, monitor zostanie oznaczony jako niedostępny.",
+					"pingUrl": "Adres URL pingu",
+					"examplesTitle": "Sposoby wysyłania pingu",
+					"examplesDescription": "Wybierz ten, który pasuje do Twojego zadania. Każdy przykład to kompletne polecenie, więc potrzebujesz tylko jednego.",
+					"examples": {
+						"post": "Ping po powodzeniu",
+						"cron": "Ping po pomyślnym zakończeniu zadania cron",
+						"exitCode": "Zgłoś kod wyjścia zadania (0 oznacza dostępny, każdy inny niedostępny)",
+						"fail": "Zgłoś niepowodzenie",
+						"duration": "Zgłoś kod wyjścia i czas trwania zadania"
+					},
+					"options": {
+						"title": "Tworzenie adresu URL pingu",
+						"description": "Dodaj dowolny z tych elementów na końcu adresu URL pingu:",
+						"fail": "rejestruje niepowodzenie",
+						"exitCode": "rejestruje kod wyjścia: 0 oznacza działanie, każda inna wartość awarię",
+						"duration": "rejestruje czas trwania zadania w milisekundach",
+						"msg": "dołącza wiadomość do sprawdzenia",
+						"combine": "Użyj /fail albo kodu wyjścia, nie obu naraz. Parametry zapytania działają z każdym adresem URL i można je łączyć znakiem &, na przykład /1?duration=5000&msg=disk%20full."
+					},
+					"rotate": "Odnów token",
+					"rotateConfirmTitle": "Odnowić ten token heartbeat?",
+					"rotateConfirmBody": "Obecny adres URL natychmiast przestanie działać. Zaktualizuj każde zadanie, które go wywołuje."
+				}
 			},
 			"table": {
 				"headers": {

@@ -145,6 +145,29 @@ const refineCaptureSecret = (data: { type?: string; url?: string; secret?: strin
 	if (!data.secret?.trim()) ctx.addIssue({ code: "custom", path: ["secret"], message: "Capture API secret is required" });
 };
 
+// Edit is a partial update, so only reject a url that is sent empty
+const refineUrlRequired = (mode: "create" | "edit") => (data: { type?: string; url?: string }, ctx: z.RefinementCtx) => {
+	if (data.type === undefined || data.type === "heartbeat") return;
+	if (mode === "edit" && data.url === undefined) return;
+	if (!data.url?.trim()) ctx.addIssue({ code: "custom", path: ["url"], message: "URL is required" });
+};
+
+const refineHeartbeat = (data: { type?: string; geoCheckEnabled?: boolean; proxyMode?: string }, ctx: z.RefinementCtx) => {
+	if (data.type !== "heartbeat") return;
+	if (data.geoCheckEnabled)
+		ctx.addIssue({
+			code: "custom",
+			path: ["geoCheckEnabled"],
+			message: "Geo checks are not supported for heartbeat monitors",
+		});
+	if (data.proxyMode === "custom")
+		ctx.addIssue({
+			code: "custom",
+			path: ["proxyMode"],
+			message: "Proxies are not supported for heartbeat monitors",
+		});
+};
+
 type DockerTlsFields = {
 	type?: string;
 	url?: string;
@@ -196,7 +219,7 @@ export const createMonitorBodyValidation = z
 		type: z.enum(MonitorTypes, "Invalid monitor type"),
 		statusWindowSize: z.number().min(1).max(20).default(5),
 		statusWindowThreshold: z.number().min(1).max(100).default(60),
-		url: z.string().min(1, "URL is required"),
+		url: z.string().default(""),
 		ignoreTlsErrors: z.boolean().default(false),
 		proxyMode: z.enum(ProxyModes).default("inherit"),
 		proxyId: proxyIdValidation,
@@ -240,7 +263,9 @@ export const createMonitorBodyValidation = z
 	.superRefine(refineProxySelection)
 	.superRefine(refineDockerUrl)
 	.superRefine(refineCaptureSecret)
-	.superRefine(refineDockerTls("create"));
+	.superRefine(refineDockerTls("create"))
+	.superRefine(refineUrlRequired("create"))
+	.superRefine(refineHeartbeat);
 
 export const editMonitorBodyValidation = z
 	.object({
@@ -291,7 +316,9 @@ export const editMonitorBodyValidation = z
 	.superRefine(refineRegexPattern)
 	.superRefine(refineProxySelection)
 	.superRefine(refineDockerUrl)
-	.superRefine(refineDockerTls("edit"));
+	.superRefine(refineDockerTls("edit"))
+	.superRefine(refineUrlRequired("edit"))
+	.superRefine(refineHeartbeat);
 
 export const pauseMonitorParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -333,7 +360,7 @@ const importedMonitorSchema = z
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
 		matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
 		method: z.enum(HttpMethods).optional().default("GET"),
-		url: z.string().min(1, "URL is required"),
+		url: z.string().default(""),
 		port: z.number().optional(),
 		isActive: z.boolean().default(true),
 		interval: z.number().default(60000),
@@ -372,7 +399,9 @@ const importedMonitorSchema = z
 	.superRefine(refineRegexPattern)
 	.superRefine(refineProxySelection)
 	.superRefine(refineDockerUrl)
-	.superRefine(refineCaptureSecret);
+	.superRefine(refineCaptureSecret)
+	.superRefine(refineUrlRequired("create"))
+	.superRefine(refineHeartbeat);
 
 export const importMonitorsBodyValidation = z.object({
 	monitors: z.array(importedMonitorSchema).min(1, "At least one monitor is required"),

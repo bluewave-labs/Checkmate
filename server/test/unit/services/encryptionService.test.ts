@@ -241,3 +241,39 @@ describe("EncryptionService", () => {
 		});
 	});
 });
+
+describe("EncryptionService.getRandomToken", () => {
+	it("returns a base64url token sized from the byte count", () => {
+		const { service } = setup([newKey()]);
+
+		expect(service.getRandomToken(24)).toMatch(/^[A-Za-z0-9_-]{32}$/);
+	});
+
+	it("returns a different token on each call", () => {
+		const { service } = setup([newKey()]);
+
+		expect(service.getRandomToken(24)).not.toBe(service.getRandomToken(24));
+	});
+
+	it("works without ENCRYPTION_KEY, since no key is involved", () => {
+		const { service } = setup([]);
+
+		expect(service.isConfigured()).toBe(false);
+		expect(service.getRandomToken(24)).toMatch(/^[A-Za-z0-9_-]{32}$/);
+	});
+});
+
+describe("EncryptionService.hash", () => {
+	it("returns the sha256 hex digest", () => {
+		const { service } = setup([]);
+
+		expect(service.hash("abc")).toBe("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+	});
+
+	it("is deterministic and distinguishes inputs", () => {
+		const { service } = setup([]);
+
+		expect(service.hash("key-a")).toBe(service.hash("key-a"));
+		expect(service.hash("key-a")).not.toBe(service.hash("key-b"));
+	});
+});
