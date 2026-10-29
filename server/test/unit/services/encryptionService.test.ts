@@ -262,3 +262,18 @@ describe("EncryptionService.getRandomToken", () => {
 		expect(service.getRandomToken(24)).toMatch(/^[A-Za-z0-9_-]{32}$/);
 	});
 });
+
+describe("EncryptionService.hash", () => {
+	it("returns the sha256 hex digest", () => {
+		const { service } = setup([]);
+
+		expect(service.hash("abc")).toBe("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+	});
+
+	it("is deterministic and distinguishes inputs", () => {
+		const { service } = setup([]);
+
+		expect(service.hash("key-a")).toBe(service.hash("key-a"));
+		expect(service.hash("key-a")).not.toBe(service.hash("key-b"));
+	});
+});

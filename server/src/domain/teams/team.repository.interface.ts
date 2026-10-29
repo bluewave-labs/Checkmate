@@ -7,4 +7,7 @@ export interface ITeamsRepository {
 	// delete
 	// other
 	findAllTeamIds(): Promise<string[]>;
+	setHeartbeatKey(teamId: string, hash: string, userId: string): Promise<void>;
+	findByHeartbeatKeyHash(hash: string): Promise<Team | null>;
+	hasHeartbeatKey(teamId: string): Promise<boolean>;
 }

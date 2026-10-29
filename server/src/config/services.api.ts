@@ -9,6 +9,7 @@ import { IJobScheduler } from "@/worker/worker.interface.js";
 import { ProxiesService, IProxiesService } from "@/domain/proxies/proxy.service.js";
 import { EgressStateService, IEgressStateService } from "@/domain/egress/egress-state.service.js";
 import { HeartbeatService, IHeartbeatService } from "@/domain/heartbeat/heartbeat.service.js";
+import { TeamService, ITeamService } from "@/domain/teams/team.service.js";
 import { SharedServices } from "@/config/services.shared.js";
 
 // Third-party
@@ -28,6 +29,7 @@ export interface ApiServices extends SharedServices {
 	proxiesService: IProxiesService;
 	egressStateService: IEgressStateService;
 	heartbeatService: IHeartbeatService;
+	teamService: ITeamService;
 }
 
 export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): ApiServices => {
@@ -54,6 +56,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		jobsRepository,
 		proxiesRepository,
 		queueWorkersRepository,
+		encryptionService,
 	} = shared;
 
 	const userService = new UserService({
@@ -115,6 +118,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		checkService,
 		scheduler: jobScheduler,
 	});
+	const teamService = new TeamService({ logger, teamsRepository, encryptionService });
 	return {
 		...shared,
 		worker: jobScheduler,
@@ -128,5 +132,6 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		proxiesService,
 		egressStateService,
 		heartbeatService,
+		teamService,
 	};
 };

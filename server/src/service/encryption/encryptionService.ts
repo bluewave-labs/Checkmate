@@ -29,6 +29,7 @@ export interface IEncryptionService {
 	encrypt(plaintext: string): string;
 	decrypt(ciphertext: string): string;
 	getRandomToken(bytes: number): string;
+	hash(value: string): string;
 }
 
 export class EncryptionService implements IEncryptionService {
@@ -107,6 +108,10 @@ export class EncryptionService implements IEncryptionService {
 
 	getRandomToken = (bytes: number): string => {
 		return this.cryptoLib.randomBytes(bytes).toString("base64url");
+	};
+
+	hash = (value: string): string => {
+		return this.cryptoLib.createHash("sha256").update(value).digest("hex");
 	};
 
 	private fail = (message: string, details?: Record<string, unknown>): AppError => {
