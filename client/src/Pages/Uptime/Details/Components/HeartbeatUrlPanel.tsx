@@ -16,7 +16,7 @@ import type { HeartbeatTokenResponse } from "@/Types/Monitor";
 
 const CURL = "curl -fsS -m 10 --retry 3";
 
-const HeartbeatExamples = ["post", "cron", "exitCode", "fail"] as const;
+const HeartbeatExamples = ["post", "cron", "exitCode", "fail", "duration"] as const;
 type HeartbeatExample = (typeof HeartbeatExamples)[number];
 
 // No request body: a malformed JSON body is rejected by the server before the ping is recorded
@@ -25,6 +25,20 @@ const buildExample: Record<HeartbeatExample, (url: string) => string> = {
 	cron: (url) => `0 * * * * /path/to/job.sh && ${CURL} ${url}`,
 	exitCode: (url) => `/path/to/job.sh; ${CURL} ${url}/$?`,
 	fail: (url) => `${CURL} ${url}/fail`,
+	// Whole seconds via `date +%s` so it runs under both GNU and BSD date; the server takes milliseconds
+	// CODE=$? captures the job's exit code before `date` overwrites $?
+	duration: (url) =>
+		`START=$(date +%s); /path/to/job.sh; CODE=$?; ${CURL} "${url}/$CODE?duration=$((($(date +%s) - START) * 1000))"`,
+};
+
+const HeartbeatOptions = ["fail", "exitCode", "duration", "msg"] as const;
+type HeartbeatOption = (typeof HeartbeatOptions)[number];
+
+const optionSyntax: Record<HeartbeatOption, string> = {
+	fail: "/fail",
+	exitCode: "/<code>",
+	duration: "?duration=<ms>",
+	msg: "?msg=<text>",
 };
 
 const CopyRow = ({ label, value }: { label: string; value: string }) => {
@@ -54,7 +68,7 @@ const CopyRow = ({ label, value }: { label: string; value: string }) => {
 					flex={1}
 					minWidth={0}
 				>
-					<CodeBlock>{value}</CodeBlock>
+					<CodeBlock wrap>{value}</CodeBlock>
 				</Box>
 				<IconButton
 					size="small"
@@ -107,16 +121,38 @@ export const HeartbeatUrlPanel = ({ monitorId }: HeartbeatUrlPanelProps) => {
 				title={t("pages.uptime.details.heartbeat.title")}
 				subtitle={t("pages.uptime.details.heartbeat.description")}
 				leftContent={
-					<Box>
-						<Button
-							variant="contained"
-							color="secondary"
-							startIcon={<Icon icon={RefreshCw} />}
-							onClick={() => setIsRotateDialogOpen(true)}
-						>
-							{t("pages.uptime.details.heartbeat.rotate")}
-						</Button>
-					</Box>
+					<Stack gap={theme.spacing(LAYOUT.MD)}>
+						<Typography variant="h2">
+							{t("pages.uptime.details.heartbeat.options.title")}
+						</Typography>
+						<Typography color={theme.palette.text.secondary}>
+							{t("pages.uptime.details.heartbeat.options.description")}
+						</Typography>
+						{HeartbeatOptions.map((option) => (
+							<Typography key={option}>
+								<Box
+									component="code"
+									fontFamily={theme.typography.fontFamilyMonospace}
+								>
+									{optionSyntax[option]}
+								</Box>{" "}
+								{t(`pages.uptime.details.heartbeat.options.${option}`)}
+							</Typography>
+						))}
+						<Typography color={theme.palette.text.secondary}>
+							{t("pages.uptime.details.heartbeat.options.combine")}
+						</Typography>
+						<Box>
+							<Button
+								variant="contained"
+								color="secondary"
+								startIcon={<Icon icon={RefreshCw} />}
+								onClick={() => setIsRotateDialogOpen(true)}
+							>
+								{t("pages.uptime.details.heartbeat.rotate")}
+							</Button>
+						</Box>
+					</Stack>
 				}
 				rightContent={
 					<Stack spacing={theme.spacing(LAYOUT.MD)}>
@@ -124,6 +160,14 @@ export const HeartbeatUrlPanel = ({ monitorId }: HeartbeatUrlPanelProps) => {
 							label={t("pages.uptime.details.heartbeat.pingUrl")}
 							value={pingUrl}
 						/>
+						<Stack gap={theme.spacing(LAYOUT.XS)}>
+							<Typography variant="h2">
+								{t("pages.uptime.details.heartbeat.examplesTitle")}
+							</Typography>
+							<Typography color={theme.palette.text.secondary}>
+								{t("pages.uptime.details.heartbeat.examplesDescription")}
+							</Typography>
+						</Stack>
 						{HeartbeatExamples.map((example) => (
 							<CopyRow
 								key={example}

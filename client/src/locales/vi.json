@@ -529,6 +529,7 @@
 				},
 				"frequency": {
 					"description": "Bạn muốn kiểm tra trạng thái trình giám sát này bao lâu một lần?",
+					"customHint": "Không có trong danh sách? Nhập số bất kỳ, rồi chọn giây, phút, giờ hoặc ngày.",
 					"option": {
 						"frequency": {
 							"label": "Tần suất kiểm tra",
@@ -1638,11 +1639,23 @@
 					"title": "URL heartbeat",
 					"description": "Cho tác vụ của bạn gọi URL này mỗi lần chạy. Nếu không có yêu cầu nào trong khoảng thời gian cảnh báo, monitor sẽ chuyển sang ngừng hoạt động.",
 					"pingUrl": "URL ping",
+					"examplesTitle": "Các cách gửi ping",
+					"examplesDescription": "Chọn cách phù hợp với tác vụ của bạn. Mỗi ví dụ là một lệnh hoàn chỉnh, nên bạn chỉ cần một.",
 					"examples": {
 						"post": "Ping khi thành công",
 						"cron": "Ping sau khi cron job chạy thành công",
 						"exitCode": "Báo mã thoát của tác vụ (0 là hoạt động, giá trị khác là ngừng hoạt động)",
-						"fail": "Báo lỗi"
+						"fail": "Báo lỗi",
+						"duration": "Báo cáo mã thoát và thời gian chạy của tác vụ"
+					},
+					"options": {
+						"title": "Tạo URL ping",
+						"description": "Thêm bất kỳ phần nào sau đây vào cuối URL ping:",
+						"fail": "ghi nhận một lỗi",
+						"exitCode": "ghi nhận mã thoát: 0 là hoạt động, giá trị khác là ngừng hoạt động",
+						"duration": "ghi nhận thời gian chạy của tác vụ, tính bằng mili giây",
+						"msg": "đính kèm một thông điệp vào lần kiểm tra",
+						"combine": "Dùng /fail hoặc mã thoát, không dùng cả hai. Tham số truy vấn dùng được với mọi URL và có thể nối bằng &, ví dụ /1?duration=5000&msg=disk%20full."
 					},
 					"copy": "Sao chép vào bộ nhớ tạm",
 					"copied": "Đã sao chép vào bộ nhớ tạm",

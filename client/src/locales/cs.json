@@ -529,6 +529,7 @@
 				},
 				"frequency": {
 					"description": "Jak často chcete kontrolovat stav tohoto monitoru?",
+					"customHint": "Není v seznamu? Zadejte libovolné číslo a vyberte sekundy, minuty, hodiny nebo dny.",
 					"option": {
 						"frequency": {
 							"label": "Frekvence kontroly",
@@ -1638,11 +1639,23 @@
 					"title": "Heartbeat URL",
 					"description": "Nechte úlohu při každém spuštění zavolat tuto URL. Pokud během okna upozornění nepřijde žádný požadavek, monitor přejde do stavu nedostupný.",
 					"pingUrl": "URL pro ping",
+					"examplesTitle": "Způsoby odeslání pingu",
+					"examplesDescription": "Vyberte ten, který se hodí k vaší úloze. Každý příklad je samostatný příkaz, takže potřebujete jen jeden.",
 					"examples": {
 						"post": "Ping při úspěchu",
 						"cron": "Ping po úspěšném dokončení úlohy cron",
 						"exitCode": "Nahlásit návratový kód úlohy (0 znamená dostupný, cokoli jiného nedostupný)",
-						"fail": "Nahlásit selhání"
+						"fail": "Nahlásit selhání",
+						"duration": "Nahlásit návratový kód a dobu trvání úlohy"
+					},
+					"options": {
+						"title": "Sestavení URL pro ping",
+						"description": "Na konec URL pro ping přidejte kteroukoli z těchto částí:",
+						"fail": "zaznamená selhání",
+						"exitCode": "zaznamená návratový kód: 0 je v provozu, cokoli jiného je mimo provoz",
+						"duration": "zaznamená, jak dlouho úloha běžela, v milisekundách",
+						"msg": "připojí ke kontrole zprávu",
+						"combine": "Použijte /fail nebo návratový kód, ne obojí. Parametry dotazu fungují s jakoukoli URL a lze je spojit pomocí &, například /1?duration=5000&msg=disk%20full."
 					},
 					"copy": "Kopírovat do schránky",
 					"copied": "Zkopírováno do schránky",

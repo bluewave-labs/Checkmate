@@ -529,6 +529,7 @@
 				},
 				"frequency": {
 					"description": "À quelle fréquence souhaitez-vous vérifier le statut de ce moniteur ?",
+					"customHint": "Pas dans la liste ? Saisissez un nombre, puis choisissez secondes, minutes, heures ou jours.",
 					"option": {
 						"frequency": {
 							"label": "Fréquence de vérification",
@@ -1638,11 +1639,23 @@
 					"title": "URL de heartbeat",
 					"description": "Faites appeler cette URL par votre tâche à chaque exécution. Si aucune requête n'arrive pendant la fenêtre d'alerte, le moniteur passe hors service.",
 					"pingUrl": "URL de ping",
+					"examplesTitle": "Façons d'envoyer un ping",
+					"examplesDescription": "Choisissez celle qui convient à votre tâche. Chaque exemple est une commande complète, une seule suffit.",
 					"examples": {
 						"post": "Ping en cas de succès",
 						"cron": "Ping après la réussite d'une tâche cron",
 						"exitCode": "Signaler le code de sortie de la tâche (0 = en service, toute autre valeur = hors service)",
-						"fail": "Signaler un échec"
+						"fail": "Signaler un échec",
+						"duration": "Indiquer le code de sortie et la durée de la tâche"
+					},
+					"options": {
+						"title": "Construire l'URL de ping",
+						"description": "Ajoutez l'un de ces éléments à la fin de l'URL de ping :",
+						"fail": "enregistre un échec",
+						"exitCode": "enregistre un code de sortie : 0 signifie opérationnel, toute autre valeur signifie hors service",
+						"duration": "enregistre la durée d'exécution de la tâche, en millisecondes",
+						"msg": "joint un message à la vérification",
+						"combine": "Utilisez /fail ou un code de sortie, pas les deux. Les paramètres de requête fonctionnent avec n'importe quelle URL et se combinent avec &, par exemple /1?duration=5000&msg=disk%20full."
 					},
 					"copy": "Copier dans le presse-papiers",
 					"copied": "Copié dans le presse-papiers",

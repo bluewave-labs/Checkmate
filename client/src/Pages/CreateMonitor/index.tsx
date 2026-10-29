@@ -872,6 +872,13 @@ const CreateMonitorPage = () => {
 									getOptionDisabled={(option) => option.id < MIN_MONITOR_INTERVAL_MS}
 									disableClearable
 								/>
+								<Typography
+									component="span"
+									color={theme.palette.text.secondary}
+									sx={{ opacity: 0.8 }}
+								>
+									{t("pages.createMonitor.form.frequency.customHint")}
+								</Typography>
 								{isHeartbeat && (
 									<Typography
 										component="span"

@@ -540,6 +540,7 @@
 				},
 				"frequency": {
 					"description": "Jak często chcesz sprawdzać status tego monitora?",
+					"customHint": "Nie ma na liście? Wpisz dowolną liczbę, a potem wybierz sekundy, minuty, godziny lub dni.",
 					"option": {
 						"frequency": {
 							"label": "Sprawdź częstotliwość",
@@ -1752,11 +1753,23 @@
 					"title": "Adres URL heartbeat",
 					"description": "Niech zadanie wywołuje ten adres URL przy każdym uruchomieniu. Jeśli w oknie alertu nie dotrze żadne żądanie, monitor zostanie oznaczony jako niedostępny.",
 					"pingUrl": "Adres URL pingu",
+					"examplesTitle": "Sposoby wysyłania pingu",
+					"examplesDescription": "Wybierz ten, który pasuje do Twojego zadania. Każdy przykład to kompletne polecenie, więc potrzebujesz tylko jednego.",
 					"examples": {
 						"post": "Ping po powodzeniu",
 						"cron": "Ping po pomyślnym zakończeniu zadania cron",
 						"exitCode": "Zgłoś kod wyjścia zadania (0 oznacza dostępny, każdy inny niedostępny)",
-						"fail": "Zgłoś niepowodzenie"
+						"fail": "Zgłoś niepowodzenie",
+						"duration": "Zgłoś kod wyjścia i czas trwania zadania"
+					},
+					"options": {
+						"title": "Tworzenie adresu URL pingu",
+						"description": "Dodaj dowolny z tych elementów na końcu adresu URL pingu:",
+						"fail": "rejestruje niepowodzenie",
+						"exitCode": "rejestruje kod wyjścia: 0 oznacza działanie, każda inna wartość awarię",
+						"duration": "rejestruje czas trwania zadania w milisekundach",
+						"msg": "dołącza wiadomość do sprawdzenia",
+						"combine": "Użyj /fail albo kodu wyjścia, nie obu naraz. Parametry zapytania działają z każdym adresem URL i można je łączyć znakiem &, na przykład /1?duration=5000&msg=disk%20full."
 					},
 					"copy": "Kopiuj do schowka",
 					"copied": "Skopiowano do schowka",

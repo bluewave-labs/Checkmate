@@ -529,6 +529,7 @@
 				},
 				"frequency": {
 					"description": "Kuinka usein haluat tarkistaa tämän monitorin tilan?",
+					"customHint": "Eikö löydy listalta? Kirjoita mikä tahansa luku ja valitse sekunnit, minuutit, tunnit tai päivät.",
 					"option": {
 						"frequency": {
 							"label": "Tarkistusväli",
@@ -1638,11 +1639,23 @@
 					"title": "Heartbeat-URL",
 					"description": "Anna työn kutsua tätä URL-osoitetta joka ajokerralla. Jos pyyntöä ei tule hälytysikkunan aikana, valvonta merkitään alhaalla olevaksi.",
 					"pingUrl": "Ping-URL",
+					"examplesTitle": "Tapoja lähettää ping",
+					"examplesDescription": "Valitse työhösi sopiva. Jokainen esimerkki on kokonainen komento, joten tarvitset vain yhden.",
 					"examples": {
 						"post": "Ping onnistumisen jälkeen",
 						"cron": "Ping onnistuneen cron-työn jälkeen",
 						"exitCode": "Ilmoita työn paluukoodi (0 on ylhäällä, kaikki muu alhaalla)",
-						"fail": "Ilmoita epäonnistumisesta"
+						"fail": "Ilmoita epäonnistumisesta",
+						"duration": "Ilmoita poistumiskoodi ja työn kesto"
+					},
+					"options": {
+						"title": "Ping-URL:n muodostaminen",
+						"description": "Lisää mikä tahansa näistä ping-URL:n loppuun:",
+						"fail": "kirjaa virheen",
+						"exitCode": "kirjaa poistumiskoodin: 0 on toiminnassa, mikä tahansa muu on alhaalla",
+						"duration": "kirjaa työn keston millisekunteina",
+						"msg": "liittää tarkistukseen viestin",
+						"combine": "Käytä joko /fail tai poistumiskoodia, ei molempia. Kyselyparametrit toimivat missä tahansa URL:ssa ja ne voi yhdistää &-merkillä, esimerkiksi /1?duration=5000&msg=disk%20full."
 					},
 					"copy": "Kopioi leikepöydälle",
 					"copied": "Kopioitu leikepöydälle",

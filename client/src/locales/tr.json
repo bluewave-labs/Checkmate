@@ -529,6 +529,7 @@
 				},
 				"frequency": {
 					"description": "Bu monitörün durumunu ne sıklıkla kontrol etmek istiyorsunuz?",
+					"customHint": "Listede yok mu? Herhangi bir sayı yazın, ardından saniye, dakika, saat veya gün seçin.",
 					"option": {
 						"frequency": {
 							"label": "Kontrol sıklığı",
@@ -1638,11 +1639,23 @@
 					"title": "Heartbeat URL'si",
 					"description": "İşinizin her çalıştığında bu URL'ye istek göndermesini sağlayın. Uyarı aralığı içinde istek gelmezse monitör kapalı duruma geçer.",
 					"pingUrl": "Ping URL'si",
+					"examplesTitle": "Ping gönderme yolları",
+					"examplesDescription": "İşinize uyanı seçin. Her örnek kendi başına eksiksiz bir komuttur, bu yüzden yalnızca birine ihtiyacınız var.",
 					"examples": {
 						"post": "Başarıda ping gönder",
 						"cron": "Cron işi başarılı olduktan sonra ping gönder",
 						"exitCode": "İşin çıkış kodunu bildir (0 açık, diğer her şey kapalı)",
-						"fail": "Hata bildir"
+						"fail": "Hata bildir",
+						"duration": "Çıkış kodunu ve işin ne kadar sürdüğünü bildir"
+					},
+					"options": {
+						"title": "Ping URL'sini oluşturma",
+						"description": "Bunlardan herhangi birini ping URL'sinin sonuna ekleyin:",
+						"fail": "bir hata kaydeder",
+						"exitCode": "bir çıkış kodu kaydeder: 0 çalışıyor, diğer her değer çalışmıyor demektir",
+						"duration": "işin ne kadar sürdüğünü milisaniye cinsinden kaydeder",
+						"msg": "kontrole bir mesaj ekler",
+						"combine": "/fail veya bir çıkış kodu kullanın, ikisini birden değil. Sorgu parametreleri her URL ile çalışır ve & ile birleştirilebilir, örneğin /1?duration=5000&msg=disk%20full."
 					},
 					"copy": "Panoya kopyala",
 					"copied": "Panoya kopyalandı",

@@ -544,6 +544,7 @@
 				},
 				"frequency": {
 					"description": "Con quale frequenza vuoi verificare lo stato di questo monitor?",
+					"customHint": "Non è nell'elenco? Digita un numero qualsiasi, poi scegli secondi, minuti, ore o giorni.",
 					"option": {
 						"frequency": {
 							"label": "Frequenza di verifica",
@@ -1758,11 +1759,23 @@
 					"title": "URL heartbeat",
 					"description": "Fai chiamare questo URL dal tuo job a ogni esecuzione. Se non arriva alcuna richiesta entro la finestra di avviso, il monitor risulta inattivo.",
 					"pingUrl": "URL di ping",
+					"examplesTitle": "Modi per inviare un ping",
+					"examplesDescription": "Scegli quello adatto al tuo job. Ogni esempio è un comando completo, quindi te ne serve solo uno.",
 					"examples": {
 						"post": "Ping in caso di successo",
 						"cron": "Ping dopo il completamento di un cron job",
 						"exitCode": "Segnala il codice di uscita del job (0 è attivo, qualsiasi altro valore è inattivo)",
-						"fail": "Segnala un errore"
+						"fail": "Segnala un errore",
+						"duration": "Segnala il codice di uscita e quanto è durato il job"
+					},
+					"options": {
+						"title": "Costruire l'URL di ping",
+						"description": "Aggiungi uno di questi alla fine dell'URL di ping:",
+						"fail": "registra un errore",
+						"exitCode": "registra un codice di uscita: 0 è attivo, qualsiasi altro valore è inattivo",
+						"duration": "registra quanto è durato il job, in millisecondi",
+						"msg": "allega un messaggio al controllo",
+						"combine": "Usa /fail oppure un codice di uscita, non entrambi. I parametri di query funzionano con qualsiasi URL e si possono combinare con &, ad esempio /1?duration=5000&msg=disk%20full."
 					},
 					"copy": "Copia negli appunti",
 					"copied": "Copiato negli appunti",
