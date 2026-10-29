@@ -36,6 +36,7 @@ import { DateRange, type SortOrder } from "@/types/query.js";
 import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
 import { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import { isCaptureDockerUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
+import { toHeartbeatSlug } from "@/utils/heartbeatSlug.js";
 import { monitorErrors } from "@/domain/monitors/monitor.errors.js";
 
 const SERVICE_NAME = "MonitorService";
@@ -789,6 +790,31 @@ export class MonitorService implements IMonitorService {
 			updatedAt: "",
 			lastEvaluatedAt: 0,
 		}));
+
+		// Reject duplicate slugs up front
+		const heartbeats = cleanedMonitors.filter((monitor) => monitor.type === "heartbeat");
+		for (const monitor of heartbeats) {
+			if (!monitor.heartbeatSlug) {
+				monitor.heartbeatSlug = toHeartbeatSlug(monitor.name);
+			}
+		}
+
+		const slugs = heartbeats.map((monitor) => monitor.heartbeatSlug as string);
+		const duplicateInFile = slugs.find((slug, index) => slugs.indexOf(slug) !== index);
+		if (duplicateInFile) {
+			throw new AppError(monitorErrors.heartbeatSlugTaken, {
+				message: `Slug "${duplicateInFile}" appears more than once in the import`,
+				service: SERVICE_NAME,
+			});
+		}
+
+		const existing = await this.monitorsRepository.findExistingHeartbeatSlugs(teamId, slugs);
+		if (existing.length) {
+			throw new AppError(monitorErrors.heartbeatSlugTaken, {
+				message: `Slugs already in use: ${existing.join(", ")}`,
+				service: SERVICE_NAME,
+			});
+		}
 
 		const createdMonitors = await this.createMonitors(cleanedMonitors);
 
