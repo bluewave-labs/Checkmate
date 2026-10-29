@@ -898,6 +898,11 @@
 							"label": "Alertar quando um contêiner estiver com problema"
 						}
 					}
+				},
+				"heartbeatSlug": {
+					"label": "Slug",
+					"hint": "Identifica este monitor na URL de ping. Letras minúsculas, números e hifens.",
+					"editAlert": "Alterar o slug altera a URL de ping. Os jobs que usam a URL atual deixarão de funcionar."
 				}
 			}
 		},
@@ -2011,9 +2016,8 @@
 						"msg": "anexa uma mensagem à verificação",
 						"combine": "Use /fail ou um código de saída, não os dois. Parâmetros de consulta funcionam em qualquer URL e podem ser combinados com &, por exemplo /1?duration=5000&msg=disk%20full."
 					},
-					"rotate": "Renovar token",
-					"rotateConfirmTitle": "Renovar este token de heartbeat?",
-					"rotateConfirmBody": "A URL atual deixa de funcionar imediatamente. Atualize todas as tarefas que fazem ping nela."
+					"keyHint": "Substitua <pingKey> pela chave de ping da sua equipe.",
+					"keyLink": "Gerencie em Configurações → Monitoramento"
 				}
 			}
 		},

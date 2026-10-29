@@ -902,6 +902,11 @@
 							"description": "Skips verifying the daemon's certificate, so the CA certificate becomes optional. The client certificate and key are still required because the daemon verifies them."
 						}
 					}
+				},
+				"heartbeatSlug": {
+					"label": "Slug",
+					"hint": "Identifies this monitor in the ping URL. Lowercase letters, numbers and hyphens.",
+					"editAlert": "Changing the slug changes the ping URL. Jobs using the current URL stop working."
 				}
 			}
 		},
@@ -2022,9 +2027,8 @@
 						"msg": "attaches a message to the check",
 						"combine": "Use /fail or an exit code, not both. Query parameters work on any URL and can be joined with &, for example /1?duration=5000&msg=disk%20full."
 					},
-					"rotate": "Rotate token",
-					"rotateConfirmTitle": "Rotate this heartbeat token?",
-					"rotateConfirmBody": "The current URL stops working immediately. Update every job that pings it."
+					"keyHint": "Replace <pingKey> with your team's ping key.",
+					"keyLink": "Manage it in Settings → Monitoring"
 				}
 			}
 		},

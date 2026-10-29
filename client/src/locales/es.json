@@ -777,6 +777,11 @@
 							"description": "Omite la verificación del certificado del demonio, por lo que el certificado de la CA pasa a ser opcional. El certificado y la clave de cliente siguen siendo obligatorios porque el demonio los verifica."
 						}
 					}
+				},
+				"heartbeatSlug": {
+					"label": "Slug",
+					"hint": "Identifica este monitor en la URL de ping. Letras minúsculas, números y guiones.",
+					"editAlert": "Cambiar el slug cambia la URL de ping. Los trabajos que usan la URL actual dejarán de funcionar."
 				}
 			}
 		},
@@ -1674,9 +1679,8 @@
 						"msg": "adjunta un mensaje a la comprobación",
 						"combine": "Usa /fail o un código de salida, no ambos. Los parámetros de consulta funcionan con cualquier URL y se pueden combinar con &, por ejemplo /1?duration=5000&msg=disk%20full."
 					},
-					"rotate": "Rotar token",
-					"rotateConfirmTitle": "¿Rotar este token de heartbeat?",
-					"rotateConfirmBody": "La URL actual deja de funcionar de inmediato. Actualice todas las tareas que le hacen ping."
+					"keyHint": "Sustituye <pingKey> por la clave de ping de tu equipo.",
+					"keyLink": "Gestiónala en Configuración → Monitorización"
 				}
 			}
 		},

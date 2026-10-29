@@ -778,6 +778,11 @@
 							"description": "跳过对守护进程证书的验证，因此 CA 证书变为可选。客户端证书和密钥仍为必填，因为守护进程会验证它们。"
 						}
 					}
+				},
+				"heartbeatSlug": {
+					"label": "Slug",
+					"hint": "在 ping URL 中标识此监控。可使用小写字母、数字和连字符。",
+					"editAlert": "更改 slug 会改变 ping URL。使用当前 URL 的任务将停止工作。"
 				}
 			}
 		},
@@ -1675,9 +1680,8 @@
 						"msg": "为检查附加一条消息",
 						"combine": "/fail 和退出码只能二选一。查询参数适用于任何 URL，并可用 & 连接，例如 /1?duration=5000&msg=disk%20full。"
 					},
-					"rotate": "轮换令牌",
-					"rotateConfirmTitle": "要轮换此心跳令牌吗？",
-					"rotateConfirmBody": "当前 URL 将立即失效。请更新所有 ping 该 URL 的任务。"
+					"keyHint": "将 <pingKey> 替换为你团队的 ping 密钥。",
+					"keyLink": "在 设置 → 监控 中管理"
 				}
 			}
 		},

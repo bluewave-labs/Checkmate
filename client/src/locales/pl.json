@@ -792,6 +792,11 @@
 							"description": "Pomija weryfikację certyfikatu daemona, więc certyfikat CA staje się opcjonalny. Certyfikat i klucz klienta są nadal wymagane, ponieważ daemon je weryfikuje."
 						}
 					}
+				},
+				"heartbeatSlug": {
+					"label": "Slug",
+					"hint": "Identyfikuje ten monitor w adresie URL pingu. Małe litery, cyfry i myślniki.",
+					"editAlert": "Zmiana sluga zmienia adres URL pingu. Zadania używające obecnego adresu przestaną działać."
 				}
 			}
 		},
@@ -1788,9 +1793,8 @@
 						"msg": "dołącza wiadomość do sprawdzenia",
 						"combine": "Użyj /fail albo kodu wyjścia, nie obu naraz. Parametry zapytania działają z każdym adresem URL i można je łączyć znakiem &, na przykład /1?duration=5000&msg=disk%20full."
 					},
-					"rotate": "Odnów token",
-					"rotateConfirmTitle": "Odnowić ten token heartbeat?",
-					"rotateConfirmBody": "Obecny adres URL natychmiast przestanie działać. Zaktualizuj każde zadanie, które go wywołuje."
+					"keyHint": "Zastąp <pingKey> kluczem pingu swojego zespołu.",
+					"keyLink": "Zarządzaj nim w Ustawienia → Monitorowanie"
 				}
 			},
 			"table": {

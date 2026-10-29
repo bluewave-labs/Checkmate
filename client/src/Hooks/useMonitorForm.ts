@@ -151,6 +151,7 @@ export const getMonitorDefaults = (
 				...base,
 				type: "heartbeat",
 				url: "",
+				heartbeatSlug: data?.heartbeatSlug ?? "",
 				interval: data?.interval || 3900000,
 				// Ignored by the server (statusService uses 1/100) set so the form matches
 				statusWindowSize: 1,

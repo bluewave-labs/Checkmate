@@ -191,6 +191,7 @@ export interface Monitor {
 	dockerTlsKeySet?: boolean;
 	dnsServer?: string;
 	dnsRecordType?: DnsRecordType;
+	heartbeatSlug?: string;
 	recentChecks: CheckSnapshot[];
 	dailyChecks?: DailyCheckBucket[];
 	createdAt: string;
@@ -198,11 +199,6 @@ export interface Monitor {
 }
 
 export type MonitorWithChecks = Monitor;
-
-// For GET and POST /monitors/:monitorId/heartbeat-token (admin/superadmin)
-export interface HeartbeatTokenResponse {
-	heartbeatToken: string;
-}
 
 export interface MonitorsSummary {
 	totalMonitors: number;
