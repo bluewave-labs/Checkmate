@@ -16,6 +16,7 @@ type RecordPingArgs = {
 	action: HeartbeatAction;
 	exitCode?: number;
 	message?: string;
+	duration?: number;
 };
 
 export interface IHeartbeatService {
@@ -39,7 +40,7 @@ export class HeartbeatService implements IHeartbeatService {
 		this.logger = deps.logger.child({ service: SERVICE_NAME });
 	}
 
-	recordPing = async ({ token, action, exitCode, message }: RecordPingArgs): Promise<void> => {
+	recordPing = async ({ token, action, exitCode, message, duration }: RecordPingArgs): Promise<void> => {
 		const monitor = await this.deps.monitorsRepository.findByHeartbeatToken(token);
 
 		if (!monitor) {
@@ -68,7 +69,7 @@ export class HeartbeatService implements IHeartbeatService {
 			status: !failed,
 			code: failed ? HEARTBEAT_FAIL_CODE : HEARTBEAT_UP_CODE,
 			message: message || defaultMessage,
-			responseTime: 0,
+			responseTime: duration ?? 0,
 			payload: null,
 		});
 

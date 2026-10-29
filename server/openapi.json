@@ -15859,6 +15859,17 @@
 						"required": false,
 						"name": "msg",
 						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 604800000
+						},
+						"required": false,
+						"name": "duration",
+						"in": "query"
 					}
 				],
 				"responses": {
@@ -15948,6 +15959,17 @@
 						},
 						"required": false,
 						"name": "msg",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 604800000
+						},
+						"required": false,
+						"name": "duration",
 						"in": "query"
 					}
 				],
@@ -16041,6 +16063,17 @@
 						"required": false,
 						"name": "msg",
 						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 604800000
+						},
+						"required": false,
+						"name": "duration",
+						"in": "query"
 					}
 				],
 				"responses": {
@@ -16130,6 +16163,17 @@
 						},
 						"required": false,
 						"name": "msg",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 604800000
+						},
+						"required": false,
+						"name": "duration",
 						"in": "query"
 					}
 				],
@@ -16234,6 +16278,17 @@
 						"required": false,
 						"name": "msg",
 						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 604800000
+						},
+						"required": false,
+						"name": "duration",
+						"in": "query"
 					}
 				],
 				"responses": {
@@ -16334,6 +16389,17 @@
 						},
 						"required": false,
 						"name": "msg",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 604800000
+						},
+						"required": false,
+						"name": "duration",
 						"in": "query"
 					}
 				],
