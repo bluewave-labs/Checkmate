@@ -282,6 +282,46 @@ docker --tlsverify --tlscacert=ca.pem --tlscert=cert.pem --tlskey=key.pem \
   -H=docker.example.com:2376 version
 ```
 
+### Heartbeat monitors
+
+A heartbeat monitor is passive: your job pings Checkmate when it runs, and the monitor goes down if no ping arrives within its alert window. Use it for cron jobs, backups and scheduled tasks.
+
+Each ping URL combines the team's ping key with the monitor's slug:
+
+```
+https://<checkmate-host>/api/v1/heartbeat/<pingKey>/<slug>
+```
+
+- **Ping key**: one per team. Generate or rotate it in **Settings → Monitoring**. It is shown once, so copy it when it appears; rotating replaces it and the old key stops working.
+- **Slug**: set when you create the monitor, for example `nightly-backup`. Lowercase letters, numbers and single hyphens.
+
+| Route | Records |
+|---|---|
+| `GET` or `POST /<pingKey>/<slug>` | an up check |
+| `GET` or `POST /<pingKey>/<slug>/fail` | a down check |
+| `GET` or `POST /<pingKey>/<slug>/<exitCode>` | up for `0`, down for anything else |
+
+Optional query parameters, on any route:
+
+| Parameter | Effect |
+|---|---|
+| `duration=<ms>` | How long the run took, stored as the check's response time |
+| `msg=<text>` | A message stored on the check |
+| `create=true` | Creates the monitor if the slug doesn't exist yet (see below) |
+| `interval=<ms>` | Alert window for a monitor created by `create=true` (default 1 day) |
+
+```bash
+# Report the exit code and how long the job took
+START=$(date +%s); /path/to/job.sh; CODE=$?
+curl -fsS -m 10 --retry 3 "https://<checkmate-host>/api/v1/heartbeat/<pingKey>/nightly-backup/$CODE?duration=$((($(date +%s) - START) * 1000))"
+```
+
+**Creating monitors from a job.** Add `create=true` and a ping to an unknown slug creates the heartbeat monitor, then records the ping. Later pings reuse it. The new monitor is named after the slug, owned by the admin who generated the ping key, and has no notifications until you add them in the UI. Requests with `create=true` are limited to 20 per hour per ping key, including pings to monitors that already exist, so remove the flag after the first run for jobs that ping more often than every 3 minutes. Without `create=true`, an unknown slug returns `404`, so a typo never creates a monitor silently.
+
+```bash
+curl -fsS "https://<checkmate-host>/api/v1/heartbeat/<pingKey>/nightly-backup?create=true&interval=3600000"
+```
+
 For more documentation, see the [docs directory](./docs/).
 
 <a id="performance"></a>

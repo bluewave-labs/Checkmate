@@ -637,7 +637,8 @@
 						"hardware": "Überwachen Sie CPU-, Speicher-, Festplattenauslastung und Temperatur Ihrer Infrastruktur. Die URL des Capture-Endpunkts muss den vollständigen Pfad /api/v1/metrics enthalten (z. B. http://192.168.1.10:5001/api/v1/metrics). Fügen Sie für das Autorisierungsgeheimnis nur den Token-String ein — geben Sie 'Bearer' nicht mit an.",
 						"dns": "Überwachen Sie, ob ein bestimmter DNS-Server antwortet.",
 						"heartbeat": "Fügen Sie einen eindeutigen Anzeigenamen hinzu, der im Dashboard erscheint. Die Ping-URL wird nach dem Speichern auf der Detailseite des Monitors angezeigt."
-					}
+					},
+					"heartbeatAutoCreate": "Jobs können Heartbeat-Monitore auch selbst anlegen: Hängen Sie <code>?create=true</code> an die Ping-URL an."
 				},
 				"ignoreTls": {
 					"description": "Konfigurieren Sie die TLS/SSL-Zertifikatsvalidierung für HTTPS-Verbindungen.",

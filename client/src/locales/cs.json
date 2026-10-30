@@ -636,7 +636,8 @@
 						"hardware": "Sledujte využití CPU, paměti, disku a teplotu vaší infrastruktury. URL endpointu Capture musí obsahovat celou cestu /api/v1/metrics (např. http://192.168.1.10:5001/api/v1/metrics). Do autorizačního klíče vložte pouze řetězec tokenu — nezahrnujte 'Bearer'.",
 						"dns": "Sledujte, zda konkrétní DNS server odpovídá.",
 						"heartbeat": "Přidejte srozumitelný zobrazovaný název, který se objeví na nástěnce. URL pro ping se po uložení zobrazí na stránce s detaily monitoru."
-					}
+					},
+					"heartbeatAutoCreate": "Úlohy mohou heartbeat monitory vytvářet i samy: přidejte <code>?create=true</code> do URL pingu."
 				},
 				"ignoreTls": {
 					"description": "Nastavte ověřování TLS/SSL certifikátů pro HTTPS připojení.",

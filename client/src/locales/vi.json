@@ -636,7 +636,8 @@
 						"hardware": "Giám sát mức sử dụng CPU, bộ nhớ, ổ đĩa và nhiệt độ của hạ tầng. URL điểm cuối Capture phải bao gồm đường dẫn đầy đủ /api/v1/metrics (ví dụ: http://192.168.1.10:5001/api/v1/metrics). Đối với khóa xác thực, chỉ dán chuỗi token — không bao gồm 'Bearer'.",
 						"dns": "Giám sát xem một máy chủ DNS cụ thể có phản hồi hay không.",
 						"heartbeat": "Thêm tên hiển thị rõ ràng xuất hiện trên bảng điều khiển. URL ping sẽ hiển thị trên trang chi tiết của monitor sau khi lưu."
-					}
+					},
+					"heartbeatAutoCreate": "Tác vụ cũng có thể tự tạo trình giám sát heartbeat: thêm <code>?create=true</code> vào URL ping."
 				},
 				"ignoreTls": {
 					"description": "Cấu hình xác thực chứng chỉ TLS/SSL cho kết nối HTTPS.",

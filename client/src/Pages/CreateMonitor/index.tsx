@@ -19,6 +19,7 @@ import {
 	BasePage,
 	ColoredLabel,
 	ConfigBox,
+	NoticeBanner,
 	StepProgress,
 } from "@/Components/design-elements";
 import { Button, Dialog } from "@/Components/inputs";
@@ -671,6 +672,24 @@ const CreateMonitorPage = () => {
 									),
 								}}
 							/>
+						}
+						leftContent={
+							isHeartbeat && (
+								<NoticeBanner>
+									<Trans
+										i18nKey="pages.createMonitor.form.general.heartbeatAutoCreate"
+										components={{
+											code: (
+												<Box
+													component="code"
+													fontFamily={theme.typography.fontFamilyMonospace}
+													whiteSpace="nowrap"
+												/>
+											),
+										}}
+									/>
+								</NoticeBanner>
+							)
 						}
 						rightContent={
 							<Stack spacing={theme.spacing(LAYOUT.MD)}>
