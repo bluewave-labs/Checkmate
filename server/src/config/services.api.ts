@@ -10,10 +10,12 @@ import { ProxiesService, IProxiesService } from "@/domain/proxies/proxy.service.
 import { EgressStateService, IEgressStateService } from "@/domain/egress/egress-state.service.js";
 import { HeartbeatService, IHeartbeatService } from "@/domain/heartbeat/heartbeat.service.js";
 import { TeamService, ITeamService } from "@/domain/teams/team.service.js";
+import { AppVersionService, IAppVersionService } from "@/domain/app-version/app-version.service.js";
 import { SharedServices } from "@/config/services.shared.js";
 
 // Third-party
 import jwt from "jsonwebtoken";
+import got from "got";
 import crypto from "crypto";
 import { games } from "gamedig";
 
@@ -30,6 +32,7 @@ export interface ApiServices extends SharedServices {
 	egressStateService: IEgressStateService;
 	heartbeatService: IHeartbeatService;
 	teamService: ITeamService;
+	appVersionService: IAppVersionService;
 }
 
 export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): ApiServices => {
@@ -123,6 +126,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		monitorService,
 	});
 	const teamService = new TeamService({ logger, teamsRepository, encryptionService });
+	const appVersionService = new AppVersionService(got, logger);
 	return {
 		...shared,
 		worker: jobScheduler,
@@ -137,5 +141,6 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		egressStateService,
 		heartbeatService,
 		teamService,
+		appVersionService,
 	};
 };

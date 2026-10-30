@@ -79,6 +79,10 @@
 		{
 			"name": "heartbeat",
 			"description": "Unauthenticated ping endpoints for heartbeat (dead man's switch) monitors, addressed by token."
+		},
+		{
+			"name": "app-version",
+			"description": "The running Checkmate version and the latest published release."
 		}
 	],
 	"components": {
@@ -4157,6 +4161,26 @@
 					}
 				},
 				"required": ["heartbeatKey"]
+			},
+			"AppVersion": {
+				"type": "object",
+				"properties": {
+					"current": {
+						"type": "string"
+					},
+					"latest": {
+						"type": "string",
+						"nullable": true
+					},
+					"updateAvailable": {
+						"type": "boolean"
+					},
+					"releaseUrl": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"required": ["current", "latest", "updateAvailable", "releaseUrl"]
 			}
 		},
 		"parameters": {}
@@ -16612,6 +16636,72 @@
 					},
 					"404": {
 						"description": "Team not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/app-version": {
+			"get": {
+				"tags": ["app-version"],
+				"summary": "Get the running version and the latest published release",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/AppVersion"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {

@@ -175,6 +175,10 @@
 				"discussions": "Discussions",
 				"docs": "Documentation",
 				"changelog": "Changelog"
+			},
+			"update": {
+				"available": "{{version}} available",
+				"tooltip": "A newer version of Checkmate is available. View the release notes."
 			}
 		},
 		"imageUpload": {

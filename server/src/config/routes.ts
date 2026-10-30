@@ -8,6 +8,7 @@ import type { ApiServices } from "@/config/services.api.js";
 import { AuthMiddleware, buildRouter } from "@/api/routes/buildRouter.js";
 
 import { tagRoutes } from "@/api/routes/tagRoutes.js";
+import { appVersionRoutes } from "@/api/routes/appVersionRoutes.js";
 import { authRoutes } from "@/api/routes/authRoutes.js";
 import { checkRoutes } from "@/api/routes/checkRoutes.js";
 import { diagnosticRoutes } from "@/api/routes/diagnosticRoutes.js";
@@ -57,4 +58,5 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 		buildRouter(heartbeatRoutes, controllers.heartbeatController, middleware)
 	);
 	app.use("/api/v1/teams", buildRouter(teamRoutes, controllers.teamController, middleware));
+	app.use("/api/v1/app-version", buildRouter(appVersionRoutes, controllers.appVersionController, middleware));
 };

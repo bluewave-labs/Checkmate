@@ -15,21 +15,23 @@ const ripple = keyframes`
 
 interface PulseDotProps {
 	color: string;
+	/** Diameter of the solid dot. The ripple and the inner hole scale with it. */
+	size?: number;
 }
 
-export const PulseDot = ({ color }: PulseDotProps) => {
+export const PulseDot = ({ color, size = 18 }: PulseDotProps) => {
 	const theme = useTheme();
 
 	return (
 		<Stack
-			width="26px"
-			height="24px"
+			width={`${size + 8}px`}
+			height={`${size + 6}px`}
 			alignItems="center"
 			justifyContent="center"
 		>
 			<Box
-				minWidth="18px"
-				minHeight="18px"
+				minWidth={`${size}px`}
+				minHeight={`${size}px`}
 				sx={{
 					position: "relative",
 					backgroundColor: color,
@@ -46,8 +48,8 @@ export const PulseDot = ({ color }: PulseDotProps) => {
 					"&::after": {
 						content: `""`,
 						position: "absolute",
-						width: "7px",
-						height: "7px",
+						width: `${Math.round(size * 0.39)}px`,
+						height: `${Math.round(size * 0.39)}px`,
 						borderRadius: "50%",
 						backgroundColor: theme.palette.background.paper,
 						top: "50%",
