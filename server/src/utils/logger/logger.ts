@@ -98,13 +98,15 @@ export const serializeError = (error: unknown): unknown => {
 	return pickErrorKeys(pino.stdSerializers.errWithCause(error as unknown as Error) as unknown as Record<string, unknown>);
 };
 
+type LoggerOptions = { stdout?: NodeJS.WritableStream };
+
 class Logger implements ILogger {
 	private pino: PinoLogger;
 	private logCache: LogEntry[] = [];
 
 	// A child wraps a pino child and shares the parent's cache, so getLogs() is the same on every logger.
 	// Its lines still reach the cache: pino children write to the root logger's multistream.
-	constructor(parent?: { pino: PinoLogger; logCache: LogEntry[] }) {
+	constructor(parent?: { pino: PinoLogger; logCache: LogEntry[] }, { stdout = process.stdout }: LoggerOptions = {}) {
 		if (parent) {
 			this.pino = parent.pino;
 			this.logCache = parent.logCache;
@@ -119,6 +121,16 @@ class Logger implements ILogger {
 				} catch {
 					// A line that is not JSON is never produced by pino, ignore
 				}
+			},
+		};
+
+		let stdoutOpen = true;
+		stdout.on("error", () => {
+			stdoutOpen = false;
+		});
+		const stdoutStream = {
+			write: (line: string) => {
+				if (stdoutOpen) stdout.write(line);
 			},
 		};
 
@@ -137,7 +149,7 @@ class Logger implements ILogger {
 				mixin: () => logContext.getStore() ?? {},
 			},
 			pino.multistream([
-				{ stream: process.stdout, level: "debug" },
+				{ stream: stdoutStream, level: "debug" },
 				{ stream: cacheStream, level: "debug" },
 			])
 		);
