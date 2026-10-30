@@ -16,21 +16,15 @@ type GithubRelease = {
 	prerelease?: boolean;
 };
 
-/**
- * Parse a semver-ish tag ("v3.14.0", "3.14.0") into comparable parts.
- * Returns null for anything that is not a plain three-part version, which
- * keeps release candidates and date tags from being compared numerically.
- */
+// Null for anything that is not a plain three-part version, so release
+// candidates and date tags are never compared numerically.
 const parseVersion = (version: string): [number, number, number] | null => {
 	const match = /^v?(\d+)\.(\d+)\.(\d+)$/.exec(version.trim());
 	if (!match) return null;
 	return [Number(match[1]), Number(match[2]), Number(match[3])];
 };
 
-/**
- * True when latest is strictly newer than current. Compared part by part so
- * that 3.10.0 sorts above 3.9.0, which a string comparison gets wrong.
- */
+// Compared part by part: a string comparison puts 3.9.0 above 3.10.0.
 export const isNewerVersion = (latest: string, current: string): boolean => {
 	const latestParts = parseVersion(latest);
 	const currentParts = parseVersion(current);
@@ -58,11 +52,8 @@ export class AppVersionService implements IAppVersionService {
 		this.logger = logger.child({ service: SERVICE_NAME });
 	}
 
-	/**
-	 * Current version always resolves locally; the GitHub lookup is best effort.
-	 * A failed or rate-limited lookup is cached too, so an unreachable network
-	 * costs one request per TTL rather than one per page load.
-	 */
+	// A failed lookup is cached too, so an unreachable network costs one
+	// request per TTL rather than one per page load.
 	getVersionInfo = async (): Promise<AppVersionInfo> => {
 		if (this.cache && this.cache.expiresAt > Date.now()) return this.cache.value;
 
