@@ -636,7 +636,8 @@
 						"hardware": "Monitoritza l'ús de CPU, memòria, disc i temperatura per a la teva infraestructura. La URL de l'endpoint de captura ha d'incloure la ruta completa /api/v1/metrics (p. ex., http://192.168.1.10:5001/api/v1/metrics). Per al secret d'autorització, enganxa només la cadena del token — no incloguis 'Bearer'.",
 						"dns": "Monitoritza si un servidor DNS específic respon.",
 						"heartbeat": "Afegeix un nom visible clar que aparegui al tauler. L'URL de ping es mostra a la pàgina de detalls del monitor després de desar."
-					}
+					},
+					"heartbeatAutoCreate": "Les tasques també poden crear monitors de heartbeat per si soles: afegeix <code>?create=true</code> a l'URL de ping."
 				},
 				"ignoreTls": {
 					"description": "Configura la validació del certificat TLS/SSL per a connexions HTTPS.",

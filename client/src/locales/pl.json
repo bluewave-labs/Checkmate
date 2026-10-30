@@ -647,7 +647,8 @@
 							"placeholder": "unix:///var/run/docker.sock"
 						}
 					},
-					"title": "Ustawienia ogólne"
+					"title": "Ustawienia ogólne",
+					"heartbeatAutoCreate": "Zadania mogą też same tworzyć monitory heartbeat: dodaj <code>?create=true</code> do adresu URL pingu."
 				},
 				"geoChecks": {
 					"description": "Przeprowadzaj sprawdzenia z różnych lokalizacji geograficznych, aby monitorować globalną dostępność i wydajność.",

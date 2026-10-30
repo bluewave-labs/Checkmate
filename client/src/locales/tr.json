@@ -636,7 +636,8 @@
 						"hardware": "Altyapınızın CPU, bellek, disk kullanımını ve sıcaklığını izleyin. Capture uç nokta URL'si tam yolu /api/v1/metrics içermelidir (ör. http://192.168.1.10:5001/api/v1/metrics). Yetkilendirme anahtarına yalnızca token dizesini yapıştırın — 'Bearer' eklemeyin.",
 						"dns": "Belirli bir DNS sunucusunun yanıt verip vermediğini izleyin.",
 						"heartbeat": "Panoda görünen anlaşılır bir görünen ad ekleyin. Ping URL'si kaydettikten sonra monitörün ayrıntılar sayfasında gösterilir."
-					}
+					},
+					"heartbeatAutoCreate": "İşler heartbeat monitörlerini kendileri de oluşturabilir: ping URL'sine <code>?create=true</code> ekleyin."
 				},
 				"ignoreTls": {
 					"description": "HTTPS bağlantıları için TLS/SSL sertifika doğrulamasını yapılandırın.",

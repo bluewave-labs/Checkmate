@@ -636,7 +636,8 @@
 						"hardware": "Surveillez l'utilisation du processeur, de la mémoire, du disque et la température de votre infrastructure. L'URL du point de terminaison Capture doit inclure le chemin complet /api/v1/metrics (par ex. http://192.168.1.10:5001/api/v1/metrics). Pour le secret d'autorisation, collez uniquement la chaîne du jeton — n'incluez pas 'Bearer'.",
 						"dns": "Surveillez si un serveur DNS spécifique répond.",
 						"heartbeat": "Ajoutez un nom d'affichage clair qui apparaît sur le tableau de bord. L'URL de ping s'affiche sur la page de détails du moniteur après l'enregistrement."
-					}
+					},
+					"heartbeatAutoCreate": "Les tâches peuvent aussi créer elles-mêmes des moniteurs heartbeat : ajoutez <code>?create=true</code> à l'URL de ping."
 				},
 				"ignoreTls": {
 					"description": "Configurez la validation des certificats TLS/SSL pour les connexions HTTPS.",

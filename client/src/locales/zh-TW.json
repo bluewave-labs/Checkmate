@@ -636,7 +636,8 @@
 						"hardware": "監控基礎架構的 CPU、記憶體、磁碟使用情況和溫度。Capture 端點 URL 必須包含完整路徑 /api/v1/metrics（例如 http://192.168.1.10:5001/api/v1/metrics）。授權密鑰僅貼上權杖字串——請勿包含 'Bearer'。",
 						"dns": "監控特定DNS伺服器是否回應。",
 						"heartbeat": "新增一個清楚的顯示名稱，它會顯示在儀表板上。儲存後，Ping URL 會顯示在監控的詳細資料頁面中。"
-					}
+					},
+					"heartbeatAutoCreate": "工作也可以自行建立心跳監控：在 ping URL 中加入 <code>?create=true</code>。"
 				},
 				"ignoreTls": {
 					"description": "設定 HTTPS 連線的 TLS/SSL 憑證驗證。",

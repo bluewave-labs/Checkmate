@@ -636,7 +636,8 @@
 						"hardware": "インフラの CPU、メモリ、ディスク使用率、温度を監視します。Capture エンドポイント URL には完全なパス /api/v1/metrics を含める必要があります (例: http://192.168.1.10:5001/api/v1/metrics)。認証シークレットにはトークン文字列のみを貼り付けてください — 'Bearer' は含めないでください。",
 						"dns": "特定のDNSサーバーが応答しているかを監視します。",
 						"heartbeat": "ダッシュボードに表示されるわかりやすい表示名を追加してください。保存後、ping URL はモニターの詳細ページに表示されます。"
-					}
+					},
+					"heartbeatAutoCreate": "ジョブがハートビートモニターを自動で作成することもできます。ping URL に <code>?create=true</code> を追加してください。"
 				},
 				"ignoreTls": {
 					"description": "HTTPS接続のTLS/SSL証明書検証を設定します。",

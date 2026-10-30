@@ -636,7 +636,8 @@
 						"hardware": "Supervisa el uso de CPU, memoria, disco y temperatura de tu infraestructura. La URL del endpoint de Capture debe incluir la ruta completa /api/v1/metrics (p. ej., http://192.168.1.10:5001/api/v1/metrics). Para el secreto de autorización, pega solo la cadena del token — no incluyas 'Bearer'.",
 						"dns": "Monitorea si un servidor DNS específico responde.",
 						"heartbeat": "Agregue un nombre para mostrar claro que aparezca en el panel. La URL de ping se muestra en la página de detalles del monitor después de guardar."
-					}
+					},
+					"heartbeatAutoCreate": "Los trabajos también pueden crear monitores de heartbeat por sí mismos: añade <code>?create=true</code> a la URL de ping."
 				},
 				"ignoreTls": {
 					"description": "Configure la validación de certificados TLS/SSL para conexiones HTTPS.",
