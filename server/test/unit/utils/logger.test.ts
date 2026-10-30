@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import express from "express";
 import got from "got";
+import { EventEmitter } from "node:events";
 import http from "node:http";
 import type { AddressInfo } from "node:net";
 import Logger from "../../../src/utils/logger/logger.ts";
@@ -8,17 +9,24 @@ import { AppError } from "../../../src/utils/AppError.ts";
 import { logContext } from "../../../src/utils/logger/logContext.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 
-// Captures what the logger writes to stdout. pino's multistream calls process.stdout.write per line.
-const setup = (level = "debug") => {
+// A fake stdout that collects each line pino's multistream writes
+const createStdout = () => {
 	const lines: string[] = [];
-	jest.spyOn(process.stdout, "write").mockImplementation((chunk: string | Uint8Array) => {
-		lines.push(chunk.toString());
-		return true;
+	const stdout = Object.assign(new EventEmitter(), {
+		write: jest.fn((chunk: string | Uint8Array) => {
+			lines.push(chunk.toString());
+			return true;
+		}),
 	});
-	const logger = new Logger();
+	return { stdout, lines };
+};
+
+const setup = (level = "debug") => {
+	const { stdout, lines } = createStdout();
+	const logger = new Logger(undefined, { stdout: stdout as unknown as NodeJS.WritableStream });
 	logger.setLogLevel(level);
 	const parsed = () => lines.map((line) => JSON.parse(line) as Record<string, unknown>);
-	return { logger, lines, parsed };
+	return { logger, stdout, lines, parsed };
 };
 
 afterEach(() => {
@@ -554,5 +562,44 @@ describe("reserved field names", () => {
 		logger.info({ monitorId: "m1", details: { message: "nested is fine" } }, "ok");
 
 		expect(parsed()[0]).toMatchObject({ monitorId: "m1", details: { message: "nested is fine" }, message: "ok" });
+	});
+});
+
+describe("Logger stdout errors", () => {
+	const epipe = () => Object.assign(new Error("write EPIPE"), { code: "EPIPE" });
+
+	it("stops writing to stdout after it errors, without throwing", () => {
+		const { logger, stdout } = setup();
+		logger.info("before");
+
+		stdout.emit("error", epipe());
+
+		expect(() => logger.info("after")).not.toThrow();
+		expect(stdout.write).toHaveBeenCalledTimes(1);
+	});
+
+	it("keeps caching lines after stdout errors, including from children", () => {
+		const { logger, stdout } = setup();
+		logger.info("before");
+
+		stdout.emit("error", epipe());
+		logger.child({ service: "Child" }).warn("after");
+
+		expect(logger.getLogs().map((entry) => entry.message)).toEqual(["before", "after"]);
+	});
+
+	it("handles the error itself, so it never becomes an uncaught exception", () => {
+		const { stdout } = setup();
+
+		expect(stdout.listenerCount("error")).toBe(1);
+		expect(() => stdout.emit("error", epipe())).not.toThrow();
+	});
+
+	it("attaches no stdout listener for child loggers", () => {
+		const { logger, stdout } = setup();
+
+		logger.child({ service: "A" }).child({ service: "B" });
+
+		expect(stdout.listenerCount("error")).toBe(1);
 	});
 });
