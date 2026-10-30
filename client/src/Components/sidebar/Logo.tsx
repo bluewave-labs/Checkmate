@@ -61,6 +61,7 @@ export const Logo = (props: StackProps) => {
 		<Stack
 			direction="row"
 			alignItems="center"
+			flexShrink={0}
 			gap={theme.spacing(SPACING.MD)}
 			overflow="hidden"
 			{...props}

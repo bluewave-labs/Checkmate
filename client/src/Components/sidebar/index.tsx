@@ -70,7 +70,6 @@ export const Sidebar = () => {
 				maxHeight={"100vh"}
 				paddingTop={theme.spacing(LAYOUT.SM)}
 				paddingBottom={theme.spacing(LAYOUT.SM)}
-				gap={theme.spacing(LAYOUT.SM)}
 				borderRight={`1px solid ${theme.palette.divider}`}
 				width={width}
 				bgcolor={theme.palette.background.paper}
@@ -80,18 +79,26 @@ export const Sidebar = () => {
 					zIndex: 1000,
 				}}
 			>
+				<Logo
+					pt={theme.spacing(LAYOUT.MD)}
+					pb={theme.spacing(LAYOUT.MD)}
+					px={theme.spacing(LAYOUT.SM)}
+				/>
 				<List
 					component="nav"
 					disablePadding
 					sx={{
 						px: theme.spacing(LAYOUT.SM),
 						flex: 1,
+						overflowY: "auto",
+						scrollbarWidth: "none",
+						overscrollBehaviorY: "contain",
+						"&:hover": {
+							scrollbarWidth: "thin",
+							scrollbarColor: `${theme.palette.scrollbar.thumb} transparent`,
+						},
 					}}
 				>
-					<Logo
-						pt={theme.spacing(LAYOUT.MD)}
-						pb={theme.spacing(LAYOUT.MD)}
-					/>
 					{menu.map((group) => (
 						<Box key={group.group}>
 							<Box
@@ -141,7 +148,12 @@ export const Sidebar = () => {
 				</List>
 				<StarPrompt />
 
-				<Divider sx={{ borderColor: theme.palette.divider }} />
+				<Divider
+					sx={{
+						borderColor: theme.palette.divider,
+						marginBottom: theme.spacing(LAYOUT.SM),
+					}}
+				/>
 
 				<AuthFooter
 					collapsed={collapsed}
