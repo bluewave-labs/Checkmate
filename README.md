@@ -35,7 +35,7 @@
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1461" height="853" alt="image" src="https://github.com/user-attachments/assets/d5ee1a4e-9db9-47cc-ad47-e1ba88a9d796" />
+<img width="1680" height="955" alt="image" src="https://github.com/user-attachments/assets/1ed9ab90-8a05-4a10-83e8-19ced72f43d5" />
 </p>
 <br>
 
