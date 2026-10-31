@@ -1,30 +1,13 @@
-client:
-  image: ghcr.io/bluewave-labs/checkmate-client
-  tag: "" # defaults to Chart.appVersion; set a full repo:tag in `image` to pin (e.g. a :latest dev tag)
-  imagePullPolicy: IfNotPresent # IfNotPresent so kind-loaded :latest images are used (not pulled)
-  port: 80
-  protocol: http
-  ingress:
-    enabled: true
-    host: change_me
-    className: nginx
-    annotations: {}
-    # Example annotations for cert-manager:
-    # annotations:
-    #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    tls:
-      enabled: false
-      # secretName: {{ .Release.Name }}-client-tls  # Optional; defaults to <release>-client-tls if omitted
-      # Note: when enabling TLS, also set client.protocol: https and add
-      # a cert-manager issuer annotation (e.g. cert-manager.io/cluster-issuer: "letsencrypt-prod").
-      # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
-
+# Public application tier. One all-in-one image serves the SPA, /api/v1, /api-docs and /config.js.
+# The separate client tier (checkmate-client) was removed in chart 0.3.0: the all-in-one image
+# serves the built frontend from the API process, so this is the only application workload
+# (plus the optional worker tier below, running the same image in QUEUE_MODE=worker).
 api:
-  image: ghcr.io/bluewave-labs/checkmate-backend
+  image: ghcr.io/bluewave-labs/checkmate
   tag: "" # defaults to Chart.appVersion; set a full repo:tag in `image` to pin (e.g. a :latest dev tag)
   imagePullPolicy: IfNotPresent # IfNotPresent so kind-loaded :latest images are used (not pulled)
   port: 52345
-  protocol: http
+  protocol: http # public scheme of the app; also used to derive CLIENT_HOST from api.ingress.host
   # Liveness/readiness probes hit GET /api/v1/health on the api port (proves the HTTP server is up).
   probes:
     liveness:
@@ -39,6 +22,9 @@ api:
       failureThreshold: 3
   ingress:
     enabled: true
+    # THE public host: the all-in-one server serves the UI (SPA), /api/v1, /api-docs and
+    # /config.js from this single host. When upgrading from 0.2.x, keep your old client host
+    # here so the user-facing URL does not change (see INSTALLATION.md "Upgrade from chart 0.2.x").
     host: change_me
     className: nginx
     annotations: {}
@@ -48,13 +34,19 @@ api:
     tls:
       enabled: false
       # secretName: {{ .Release.Name }}-api-tls  # Optional; defaults to <release>-api-tls if omitted
-      # Note: when enabling TLS, also set api.protocol: https and add
-      # a cert-manager issuer annotation (e.g. cert-manager.io/cluster-issuer: "letsencrypt-prod").
+      # When upgrading from 0.2.x with TLS already enabled, reuse the existing certificate by
+      # pointing secretName at the old client TLS secret (default <release>-client-tls).
+      # Note: when enabling TLS, also set api.protocol: https. Provide either an explicit
+      # secretName (existing secret) or a cert-manager issuer annotation; the chart's prechecks
+      # reject TLS without one of the two.
       # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
 
 mongodb:
-  image: ghcr.io/bluewave-labs/checkmate-mongo
-  tag: "" # defaults to Chart.appVersion; set a full repo:tag in `image` to pin
+  # Upstream official MongoDB — replaces the retired ghcr.io/bluewave-labs/checkmate-mongo image.
+  # chart-era installs created their PVCs with MongoDB 8.2 (FCV 8.2), so the tag must stay at or
+  # above that; the default below is the exact patch the data files are compatible with.
+  image: mongo
+  tag: "8.2.12" # exact upstream patch; independent of Chart.appVersion (never defaulted to it)
   imagePullPolicy: IfNotPresent # IfNotPresent so kind-loaded :latest images are used (not pulled)
   port: 27017
 
@@ -63,7 +55,7 @@ worker:
   # jobs and the API stops processing (QUEUE_PRIMARY_PROCESSES is derived as false). When false, the
   # API is all-in-one and processes jobs itself.
   enabled: false
-  image: "" # defaults to api.image when empty, same as API image
+  image: "" # defaults to api.image when empty — the same all-in-one image, run as QUEUE_MODE=worker
   tag: "" # defaults to api.tag (-> Chart.appVersion) when empty
   imagePullPolicy: "" # defaults to api.imagePullPolicy when empty
   replicas: 1 # used only when autoscaling.enabled = false
@@ -97,7 +89,11 @@ worker:
 secrets:
   JWT_SECRET: change_me
   DB_CONNECTION_STRING: mongodb://checkmate-mongodb:27017/uptime_db
-  CLIENT_HOST: change_me
+  # CLIENT_HOST is not defaulted here anymore: it is derived from api.protocol://api.ingress.host
+  # (the all-in-one server serves the UI from the API origin). Set it explicitly ONLY when the UI
+  # is reachable at a different URL than the ingress host (e.g. an external TLS proxy in front of
+  # the app): it must be a full http(s):// URL. A leftover 0.2.x `change_me` value is treated as
+  # unset so old values files keep working.
   NODE_ENV: production
   LOG_LEVEL: info
   TOKEN_TTL: 99d
