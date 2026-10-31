@@ -3655,6 +3655,9 @@
 					"showInfrastructure": {
 						"type": "boolean"
 					},
+					"showMonitorUrls": {
+						"type": "boolean"
+					},
 					"customCSS": {
 						"type": "string"
 					},
@@ -3690,6 +3693,7 @@
 					"showUptimePercentage",
 					"showAdminLoginLink",
 					"showInfrastructure",
+					"showMonitorUrls",
 					"customCSS",
 					"theme",
 					"themeMode",
@@ -4050,6 +4054,7 @@
 						"showUptimePercentage": true,
 						"showAdminLoginLink": false,
 						"showInfrastructure": false,
+						"showMonitorUrls": false,
 						"customCSS": "",
 						"theme": "refined",
 						"themeMode": "auto",
@@ -14642,6 +14647,9 @@
 									"showInfrastructure": {
 										"type": "boolean"
 									},
+									"showMonitorUrls": {
+										"type": "boolean"
+									},
 									"customCSS": {
 										"type": "string",
 										"maxLength": 100000
@@ -14870,6 +14878,9 @@
 										"type": "boolean"
 									},
 									"showInfrastructure": {
+										"type": "boolean"
+									},
+									"showMonitorUrls": {
 										"type": "boolean"
 									},
 									"customCSS": {

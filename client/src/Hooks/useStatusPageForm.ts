@@ -41,6 +41,7 @@ export const useStatusPageForm = ({
 			showUptimePercentage: data?.showUptimePercentage ?? true,
 			showAdminLoginLink: data?.showAdminLoginLink ?? false,
 			showInfrastructure: data?.showInfrastructure ?? false,
+			showMonitorUrls: data?.showMonitorUrls ?? false,
 			customCSS: data?.customCSS || "",
 			theme: data?.theme ?? DEFAULT_STATUS_PAGE_THEME,
 			themeMode: data?.themeMode ?? DEFAULT_STATUS_PAGE_THEME_MODE,
