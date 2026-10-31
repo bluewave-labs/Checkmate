@@ -91,8 +91,8 @@ The username is demouser@demo.com and the password is Demouser1! (just a note th
 Usage instructions can be found [here](https://checkmate.so/docs). 
 
 ## Prerequisites
-- [Docker](https://www.docker.com/) installed
-- [Git](https://git-scm.com/) installed
+- [Docker](https://www.docker.com/) with Docker Compose installed
+- [Git](https://git-scm.com/) only if you want to build the image yourself
 
 <a id="installation"></a>
 ## Installation
@@ -350,6 +350,7 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 
 - Completely open source, deployable on your servers or home devices (e.g Raspberry Pi 4 or 5)
 - Several monitoring options: HTTP (with SSL certificate expiry), Ping, Port, DNS, Docker, gRPC, WebSocket, Game server
+- Heartbeat monitors for cron jobs, backups and other scheduled tasks
 - Page speed monitoring
 - Infrastructure monitoring (memory, disk usage, CPU performance, network etc) - requires [Capture](https://github.com/bluewave-labs/capture) agent
   - Selective disk monitoring with mountpoint selection
@@ -366,7 +367,7 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 1. A monitor executes a check (HTTP / ping / port / hardware via Capture agent)
 2. The result is stored (success/failure + response time)
 3. Recent check results are evaluated against the monitor's configured status change threshold
-4. If the monitor's status change threshold is met and the current status is not equal to the previous status, the monitor's state changes (e.g. `initializing`, `up`, `down`, `breached`)
+4. If the monitor's status change threshold is met and the current status is not equal to the previous status, the monitor's state changes (e.g. `up`, `down`, `breached`). New monitors start as `initializing`; monitors inside a maintenance window are set to `maintenance` and are not checked
 5. Upon a state change: an incident is either created or resolved, depending on the monitor's current status
 6. Notifications are triggered based on configuration
 
@@ -411,7 +412,7 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 
 We are [Alex](http://github.com/ajhollid) (team lead), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Malena](https://github.com/malenacaroline) and [Mert](https://github.com/mertssmnoglu) helping individuals and businesses monitor their infra and servers.
 
-We pride ourselves on building strong connections with contributors at every level. Despite being a young project, Checkmate has already earned almost 11K stars and attracted 150+ contributors from around the globe.
+We pride ourselves on building strong connections with contributors at every level. Despite being a young project, Checkmate has already earned more than 11K stars and attracted 150+ contributors from around the globe.
 
 Our repo is starred by employees from **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes and NEC**, so don’t hold back — jump in, contribute and learn with us!
 
