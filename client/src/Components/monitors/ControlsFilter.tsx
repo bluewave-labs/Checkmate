@@ -4,7 +4,13 @@ import { ColoredLabel } from "@/Components/design-elements";
 import MenuItem from "@mui/material/MenuItem";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-import type { MonitorType } from "@/Types/Monitor";
+import {
+	MonitorStateFilters,
+	MonitorStatusFilters,
+	type MonitorStateFilter,
+	type MonitorStatusFilter,
+	type MonitorType,
+} from "@/Types/Monitor";
 import type { Tag } from "@/Types/Tag";
 import { Typography, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -19,8 +25,6 @@ const typeDisplayNames: Record<string, string> = {
 	websocket: "WebSocket",
 	heartbeat: "Heartbeat",
 };
-const statuses = ["up", "down"];
-const states = ["active", "paused"];
 
 export const ControlsFilter = ({
 	showTypes = true,
@@ -37,14 +41,14 @@ export const ControlsFilter = ({
 }: {
 	showTypes?: boolean;
 	selectedTypes?: MonitorType[];
-	setSelectedTypes?: React.Dispatch<React.SetStateAction<MonitorType[]>>;
-	selectedStatus?: string;
-	setSelectedStatus?: React.Dispatch<React.SetStateAction<string>>;
-	selectedState?: string;
-	setSelectedState?: React.Dispatch<React.SetStateAction<string>>;
+	setSelectedTypes?: (types: MonitorType[]) => void;
+	selectedStatus?: MonitorStatusFilter | "";
+	setSelectedStatus?: (status: MonitorStatusFilter) => void;
+	selectedState?: MonitorStateFilter | "";
+	setSelectedState?: (state: MonitorStateFilter) => void;
 	tagOptions?: Tag[];
 	selectedTags?: string[];
-	setSelectedTags?: React.Dispatch<React.SetStateAction<string[]>>;
+	setSelectedTags?: (tags: string[]) => void;
 	onClearFilters: () => void;
 }) => {
 	const theme = useTheme();
@@ -84,9 +88,9 @@ export const ControlsFilter = ({
 				<Select
 					placeholder="Status"
 					value={selectedStatus ?? ""}
-					onChange={(e) => setSelectedStatus(e.target.value)}
+					onChange={(e) => setSelectedStatus(e.target.value as MonitorStatusFilter)}
 				>
-					{statuses.map((status) => (
+					{MonitorStatusFilters.map((status) => (
 						<MenuItem
 							key={status}
 							value={status}
@@ -100,9 +104,9 @@ export const ControlsFilter = ({
 				<Select
 					placeholder="State"
 					value={selectedState ?? ""}
-					onChange={(e) => setSelectedState(e.target.value)}
+					onChange={(e) => setSelectedState(e.target.value as MonitorStateFilter)}
 				>
-					{states.map((state) => (
+					{MonitorStateFilters.map((state) => (
 						<MenuItem
 							key={state}
 							value={state}
