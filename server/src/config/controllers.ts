@@ -1,6 +1,7 @@
 import MonitorController from "../api/controllers/monitorController.js";
 import AuthController from "../api/controllers/authController.js";
 import SettingsController from "../api/controllers/settingsController.js";
+import AppVersionController from "../api/controllers/appVersionController.js";
 import CheckController from "../api/controllers/checkController.js";
 import GeoCheckController from "../api/controllers/geoCheckController.js";
 import InviteController from "../api/controllers/inviteController.js";
@@ -22,6 +23,7 @@ export interface InitializedControllers {
 	authController: AuthController;
 	monitorController: MonitorController;
 	settingsController: SettingsController;
+	appVersionController: AppVersionController;
 	checkController: CheckController;
 	geoCheckController: GeoCheckController;
 	inviteController: InviteController;
@@ -43,6 +45,7 @@ export const initializeControllers = (apiServices: ApiServices): InitializedCont
 		authController: new AuthController(apiServices.userService),
 		monitorController: new MonitorController(apiServices.monitorService, apiServices.notificationsService),
 		settingsController: new SettingsController(apiServices.settingsService, apiServices.emailService, apiServices.proxiesService),
+		appVersionController: new AppVersionController(apiServices.appVersionService),
 		checkController: new CheckController(apiServices.checkService),
 		geoCheckController: new GeoCheckController(apiServices.geoChecksService),
 		inviteController: new InviteController(apiServices.inviteService),

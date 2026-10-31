@@ -5,6 +5,7 @@ import { tagRoutes } from "@/api/routes/tagRoutes.js";
 import { OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
 import type { JsonObject } from "swagger-ui-express";
 import { registry } from "./registry.js";
+import { appVersionRoutes } from "@/api/routes/appVersionRoutes.js";
 import { authRoutes } from "@/api/routes/authRoutes.js";
 import { checkRoutes } from "@/api/routes/checkRoutes.js";
 import { diagnosticRoutes } from "@/api/routes/diagnosticRoutes.js";
@@ -42,6 +43,7 @@ registerRoutes(registry, logRoutes);
 registerRoutes(registry, egressRoutes);
 registerRoutes(registry, heartbeatRoutes);
 registerRoutes(registry, teamRoutes);
+registerRoutes(registry, appVersionRoutes);
 export function getOpenApiSpec(): JsonObject {
 	if (cached) return cached;
 
@@ -76,6 +78,7 @@ export function getOpenApiSpec(): JsonObject {
 			{ name: "tags", description: "Labels for grouping and filtering monitors, team-scoped." },
 			{ name: "egress", description: "The instance's outbound connectivity self-check state." },
 			{ name: "heartbeat", description: "Unauthenticated ping endpoints for heartbeat (dead man's switch) monitors, addressed by token." },
+			{ name: "app-version", description: "The running Checkmate version and the latest published release." },
 		],
 	});
 
