@@ -77,7 +77,8 @@ export class NotificationsService implements INotificationsService {
 			this.logger.warn({ type: notification.type }, "Unknown notification type");
 			return false;
 		}
-		return await provider.sendMessage(notification, notificationMessage);
+		const customizedMessage = this.notificationMessageBuilder.applyCustomization(notificationMessage, notification);
+		return await provider.sendMessage(notification, customizedMessage);
 	};
 
 	private sendNotifications = async (monitor: Monitor, check: Check, decision: MonitorActionDecision) => {

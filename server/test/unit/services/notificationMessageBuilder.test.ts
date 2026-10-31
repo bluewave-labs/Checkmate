@@ -4,6 +4,7 @@ import type { HardwareBreaches, Monitor } from "../../../src/domain/monitors/mon
 import type { Check } from "../../../src/domain/checks/check.type.ts";
 import type { DockerContainerInfo } from "../../../src/domain/docker/docker.type.ts";
 import type { MonitorActionDecision } from "../../../src/worker/worker.interface.ts";
+import type { Notification } from "../../../src/domain/notifications/notification.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -76,6 +77,39 @@ describe("NotificationMessageBuilder", () => {
 	});
 
 	// ── buildMessage ─────────────────────────────────────────────────────
+
+	describe("applyCustomization", () => {
+		const makeNotification = (overrides?: Partial<Notification>): Notification =>
+			({
+				id: "notif-1",
+				...overrides,
+			}) as Notification;
+
+		const makeMessage = () => builder.buildMessage(makeMonitor({ status: "down" }), makeCheck(), makeDecision(), "https://app.example.com");
+
+		it("overrides title and body with template variables", () => {
+			const customized = builder.applyCustomization(
+				makeMessage(),
+				makeNotification({ customTitle: "{{monitor_name}} is {{status}}", customBody: "See {{monitor_url}}" })
+			);
+
+			expect(customized.content.title).toBe("Test Monitor is down");
+			expect(customized.content.summary).toBe("See https://example.com");
+		});
+
+		it("hides details and monitor url when toggled off", () => {
+			const customized = builder.applyCustomization(makeMessage(), makeNotification({ showDetails: false, showMonitorUrl: false }));
+
+			expect(customized.content.details).toEqual([]);
+			expect(customized.monitor.url).toBe("");
+		});
+
+		it("decodes entities saved while the sanitizer escaped template fields", () => {
+			const customized = builder.applyCustomization(makeMessage(), makeNotification({ customTitle: "&lt;@123&gt; Monitor down" }));
+
+			expect(customized.content.title).toBe("<@123> Monitor down");
+		});
+	});
 
 	describe("buildMessage", () => {
 		it("builds a monitor_down message", () => {

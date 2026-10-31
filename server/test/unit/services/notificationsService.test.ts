@@ -32,6 +32,7 @@ const createSettingsService = (clientHost = "https://app.example.com") => ({
 
 const createMessageBuilder = () => ({
 	buildMessage: jest.fn().mockReturnValue({ type: "monitor_down", content: { title: "Down" } }),
+	applyCustomization: jest.fn().mockImplementation((message: unknown) => message),
 	buildThresholdBreachMessage: jest.fn(),
 });
 
