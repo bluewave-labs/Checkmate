@@ -31,8 +31,13 @@
 
 <h1 align="center"><a href="https://bluewavelabs.ca" target="_blank">Checkmate</a></h1>
 
-<p align="center"><strong>An open source uptime and infrastructure monitoring application</strong>
+<p align="center"><strong>An open source uptime and infrastructure monitoring application</strong></p>
 
+<p align="center">
+  <a href="https://www.pikapods.com/pods?run=checkmate"><img src="https://www.pikapods.com/static/run-button.svg" alt="Run on PikaPods"></a>
+</p>
+
+<p align="center">
 <img width="1680" height="955" alt="image" src="https://github.com/user-attachments/assets/1ed9ab90-8a05-4a10-83e8-19ced72f43d5" />
 </p>
 <br>
