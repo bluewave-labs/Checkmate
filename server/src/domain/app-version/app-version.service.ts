@@ -10,6 +10,23 @@ const FAILURE_TTL_MS = 10 * 60 * 1000;
 const RELEASES_URL = "https://api.github.com/repos/bluewave-labs/checkmate/releases/latest";
 const VERSION_PATTERN = /^v?(\d+)\.(\d+)\.(\d+)$/;
 
+const toParts = (version: string) => {
+	const match = VERSION_PATTERN.exec(version);
+	return match ? ([Number(match[1]), Number(match[2]), Number(match[3])] as const) : null;
+};
+
+export const isNewerVersion = (latest: string | null, current: string = APP_VERSION): boolean => {
+	if (latest === null) return false;
+	const latestParts = toParts(latest);
+	const currentParts = toParts(current);
+	if (!latestParts || !currentParts) return false;
+	const [latestMajor, latestMinor, latestPatch] = latestParts;
+	const [currentMajor, currentMinor, currentPatch] = currentParts;
+	if (latestMajor !== currentMajor) return latestMajor > currentMajor;
+	if (latestMinor !== currentMinor) return latestMinor > currentMinor;
+	return latestPatch > currentPatch;
+};
+
 export interface IAppVersionService {
 	getVersionInfo(): Promise<AppVersionInfo>;
 }
@@ -25,23 +42,6 @@ export class AppVersionService implements IAppVersionService {
 	) {
 		this.logger = logger.child({ service: SERVICE_NAME });
 	}
-
-	private toParts = (version: string) => {
-		const match = VERSION_PATTERN.exec(version);
-		return match ? ([Number(match[1]), Number(match[2]), Number(match[3])] as const) : null;
-	};
-
-	private isNewerVersion = (latest: string | null): boolean => {
-		if (latest === null) return false;
-		const latestParts = this.toParts(latest);
-		const currentParts = this.toParts(APP_VERSION);
-		if (!latestParts || !currentParts) return false;
-		const [latestMajor, latestMinor, latestPatch] = latestParts;
-		const [currentMajor, currentMinor, currentPatch] = currentParts;
-		if (latestMajor !== currentMajor) return latestMajor > currentMajor;
-		if (latestMinor !== currentMinor) return latestMinor > currentMinor;
-		return latestPatch > currentPatch;
-	};
 
 	private lookupVersion = async () => {
 		let latest: string | null = null;
@@ -59,7 +59,7 @@ export class AppVersionService implements IAppVersionService {
 		}
 
 		// Check if there is a version diff
-		return { latest, updateAvailable: this.isNewerVersion(latest) };
+		return { latest, updateAvailable: isNewerVersion(latest) };
 	};
 
 	getVersionInfo = async (): Promise<AppVersionInfo> => {
