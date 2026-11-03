@@ -1,6 +1,11 @@
 import { ISettingsController } from "@/api/controllers/settingsController.js";
 import { RouteTable } from "@/api/routes/defineRoutes.js";
-import { appSettingsResponseSchema, testEmailResponseSchema, updateAppSettingsBodyValidation } from "@/api/validation/settingsValidation.js";
+import {
+	appSettingsResponseSchema,
+	appVersionResponseSchema,
+	testEmailResponseSchema,
+	updateAppSettingsBodyValidation,
+} from "@/api/validation/settingsValidation.js";
 import { sendTestEmailBodyValidation } from "@/api/validation/notificationValidation.js";
 import { appSettingsErrors } from "@/domain/app-settings/app-settings.errors.js";
 import { emailErrors } from "@/service/email.errors.js";
@@ -16,6 +21,13 @@ export const settingsRoutes: RouteTable<ISettingsController> = {
 			handler: "getAppSettings",
 			summary: "Get application settings",
 			response: appSettingsResponseSchema,
+		},
+		{
+			method: "get",
+			path: "/version",
+			handler: "getVersionInfo",
+			summary: "Get the running version and the latest published release",
+			response: appVersionResponseSchema,
 		},
 		{
 			method: "patch",
