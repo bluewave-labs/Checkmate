@@ -13,29 +13,35 @@ const ripple = keyframes`
 	}
 `;
 
+// Original design proportions: 7px hole, 26×24 box.
+const BASE_SIZE = 18;
+const HOLE_RATIO = 7 / BASE_SIZE;
+const BOX_PAD_X = 26 - BASE_SIZE;
+const BOX_PAD_Y = 24 - BASE_SIZE;
+
 interface PulseDotProps {
 	color: string;
-	/** Diameter of the solid dot. The ripple and the inner hole scale with it. */
 	size?: number;
 }
 
-export const PulseDot = ({ color, size = 18 }: PulseDotProps) => {
+export const PulseDot = ({ color, size = BASE_SIZE }: PulseDotProps) => {
 	const theme = useTheme();
+	const holeSize = Math.round(size * HOLE_RATIO);
 
 	return (
 		<Stack
-			width={`${size + 8}px`}
-			height={`${size + 6}px`}
+			width={`${size + BOX_PAD_X}px`}
+			height={`${size + BOX_PAD_Y}px`}
 			alignItems="center"
 			justifyContent="center"
 		>
 			<Box
 				minWidth={`${size}px`}
 				minHeight={`${size}px`}
+				bgcolor={color}
+				borderRadius={"50%"}
 				sx={{
 					position: "relative",
-					backgroundColor: color,
-					borderRadius: "50%",
 					"&::before": {
 						content: `""`,
 						position: "absolute",
@@ -48,8 +54,8 @@ export const PulseDot = ({ color, size = 18 }: PulseDotProps) => {
 					"&::after": {
 						content: `""`,
 						position: "absolute",
-						width: `${Math.round(size * 0.39)}px`,
-						height: `${Math.round(size * 0.39)}px`,
+						width: `${holeSize}px`,
+						height: `${holeSize}px`,
 						borderRadius: "50%",
 						backgroundColor: theme.palette.background.paper,
 						top: "50%",
