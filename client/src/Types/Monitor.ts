@@ -128,6 +128,11 @@ export const MonitorStatuses = [
 ] as const;
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 
+export const MonitorStatusFilters = ["up", "down"] as const;
+export type MonitorStatusFilter = (typeof MonitorStatusFilters)[number];
+export const MonitorStateFilters = ["active", "paused"] as const;
+export type MonitorStateFilter = (typeof MonitorStateFilters)[number];
+
 export const MonitorMatchMethods = ["equal", "include", "regex"] as const;
 export type MonitorMatchMethod = (typeof MonitorMatchMethods)[number] | "";
 export const DefaultMonitorMatchMethod: MonitorMatchMethod = "equal";
