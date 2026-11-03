@@ -3575,6 +3575,19 @@
 				},
 				"required": ["pagespeedKeySet", "emailPasswordSet", "globalProxy", "settings"]
 			},
+			"AppVersion": {
+				"type": "object",
+				"properties": {
+					"latest": {
+						"type": "string",
+						"nullable": true
+					},
+					"updateAvailable": {
+						"type": "boolean"
+					}
+				},
+				"required": ["latest", "updateAvailable"]
+			},
 			"StatusPage": {
 				"type": "object",
 				"properties": {
@@ -14276,6 +14289,72 @@
 					},
 					"422": {
 						"description": "Referenced proxy does not exist",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/settings/version": {
+			"get": {
+				"tags": ["settings"],
+				"summary": "Get the latest published release and whether an update is available",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/AppVersion"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {

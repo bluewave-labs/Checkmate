@@ -242,6 +242,10 @@
 				"discussions": "Diskuze",
 				"docs": "Dokumentace",
 				"changelog": "Seznam změn"
+			},
+			"update": {
+				"available": "{{version}} k dispozici",
+				"tooltip": "Je k dispozici novější verze Checkmate. Zobrazit poznámky k vydání."
 			}
 		}
 	},

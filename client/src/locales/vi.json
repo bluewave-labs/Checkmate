@@ -242,6 +242,10 @@
 				"discussions": "Thảo luận",
 				"docs": "Tài liệu",
 				"changelog": "Nhật ký thay đổi"
+			},
+			"update": {
+				"available": "Đã có {{version}}",
+				"tooltip": "Đã có phiên bản Checkmate mới hơn. Xem ghi chú phát hành."
 			}
 		}
 	},

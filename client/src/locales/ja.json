@@ -242,6 +242,10 @@
 				"discussions": "ディスカッション",
 				"docs": "ドキュメント",
 				"changelog": "変更履歴"
+			},
+			"update": {
+				"available": "{{version}} が利用可能",
+				"tooltip": "Checkmate の新しいバージョンが利用可能です。リリースノートを表示します。"
 			}
 		}
 	},

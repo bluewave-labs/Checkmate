@@ -242,6 +242,10 @@
 				"discussions": "Keskustelut",
 				"docs": "Dokumentaatio",
 				"changelog": "Muutosloki"
+			},
+			"update": {
+				"available": "{{version}} saatavilla",
+				"tooltip": "Checkmatesta on saatavilla uudempi versio. Näytä julkaisutiedot."
 			}
 		}
 	},

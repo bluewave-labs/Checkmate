@@ -190,6 +190,10 @@
 				"discussions": "Dyskusje",
 				"docs": "Dokumentacja",
 				"support": "Pomoc"
+			},
+			"update": {
+				"available": "Dostępna wersja {{version}}",
+				"tooltip": "Dostępna jest nowsza wersja Checkmate. Zobacz informacje o wydaniu."
 			}
 		},
 		"sidebar": {
