@@ -3578,22 +3578,15 @@
 			"AppVersion": {
 				"type": "object",
 				"properties": {
-					"current": {
-						"type": "string"
-					},
 					"latest": {
 						"type": "string",
 						"nullable": true
 					},
 					"updateAvailable": {
 						"type": "boolean"
-					},
-					"releaseUrl": {
-						"type": "string",
-						"nullable": true
 					}
 				},
-				"required": ["current", "latest", "updateAvailable", "releaseUrl"]
+				"required": ["latest", "updateAvailable"]
 			},
 			"StatusPage": {
 				"type": "object",
@@ -14330,7 +14323,7 @@
 		"/settings/version": {
 			"get": {
 				"tags": ["settings"],
-				"summary": "Get the running version and the latest published release",
+				"summary": "Get the latest published release and whether an update is available",
 				"security": [
 					{
 						"bearerAuth": []
