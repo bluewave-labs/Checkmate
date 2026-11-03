@@ -150,6 +150,10 @@
 				"discussions": "Discussioni",
 				"docs": "Documentazione",
 				"changelog": "Changelog"
+			},
+			"update": {
+				"available": "{{version}} disponibile",
+				"tooltip": "È disponibile una versione più recente di Checkmate. Visualizza le note di rilascio."
 			}
 		},
 		"imageUpload": {

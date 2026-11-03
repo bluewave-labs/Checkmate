@@ -242,6 +242,10 @@
 				"discussions": "المناقشات",
 				"docs": "التوثيق",
 				"changelog": "سجل التغييرات"
+			},
+			"update": {
+				"available": "{{version}} متاح",
+				"tooltip": "يتوفر إصدار أحدث من Checkmate. اعرض ملاحظات الإصدار."
 			}
 		}
 	},

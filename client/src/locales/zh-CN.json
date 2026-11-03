@@ -242,6 +242,10 @@
 				"discussions": "讨论",
 				"docs": "文档",
 				"changelog": "更新日志"
+			},
+			"update": {
+				"available": "{{version}} 可用",
+				"tooltip": "Checkmate 有新版本可用。查看发行说明。"
 			}
 		}
 	},

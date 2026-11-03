@@ -242,6 +242,10 @@
 				"discussions": "Discusiones",
 				"docs": "Documentación",
 				"changelog": "Registro de cambios"
+			},
+			"update": {
+				"available": "{{version}} disponible",
+				"tooltip": "Hay una versión más reciente de Checkmate disponible. Ver las notas de la versión."
 			}
 		}
 	},

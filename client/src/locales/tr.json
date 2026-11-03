@@ -242,6 +242,10 @@
 				"discussions": "Tartışmalar",
 				"docs": "Dokümantasyon",
 				"changelog": "Değişiklik günlüğü"
+			},
+			"update": {
+				"available": "{{version}} kullanılabilir",
+				"tooltip": "Checkmate'in daha yeni bir sürümü mevcut. Sürüm notlarını görüntüleyin."
 			}
 		}
 	},
