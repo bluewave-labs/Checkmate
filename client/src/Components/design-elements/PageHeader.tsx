@@ -138,7 +138,7 @@ export const PageHeader = ({
 					<Tooltip title={t("components.pageHeader.update.tooltip")}>
 						<Box
 							component="a"
-							href={versionInfo?.releaseUrl ?? EXTERNAL_LINKS.changelog}
+							href={EXTERNAL_LINKS.changelog}
 							target="_blank"
 							rel="noopener noreferrer"
 							display="inline-flex"
