@@ -146,7 +146,7 @@ class Logger implements ILogger {
 				base: undefined, // omit pid and hostname
 				serializers: { err: serializeError },
 				redact: { paths: REDACT_PATHS, censor: "[Redacted]" },
-				mixin: () => logContext.getStore() ?? {},
+				mixin: () => ({ ...logContext.getStore() }),
 			},
 			pino.multistream([
 				{ stream: stdoutStream, level: "debug" },

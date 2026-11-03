@@ -7,6 +7,7 @@ import type { AddressInfo } from "node:net";
 import Logger from "../../../src/utils/logger/logger.ts";
 import { AppError } from "../../../src/utils/AppError.ts";
 import { logContext } from "../../../src/utils/logger/logContext.ts";
+import { sanitizeQuery } from "../../../src/api/middleware/sanitization.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 
 // A fake stdout that collects each line pino's multistream writes
@@ -177,9 +178,29 @@ describe("Logger.httpMiddleware", () => {
 		const { logger, parsed } = setup();
 		const app = express();
 		app.use(logger.httpMiddleware());
+		app.use(sanitizeQuery()); // makes req.query an own property, which a deep clone of the request can't copy
 		app.use((req, _res, next) => logContext.run({ reqId: String(req.id) }, next));
 		app.get("/api/v1/ok", (_req, res) => {
 			logger.info("handler line");
+			res.json({ ok: true });
+		});
+		// Logs fields, responds, then logs again once pino-http has written its request line (like a fire-and-forget email)
+		let afterResponse: Promise<void> = Promise.resolve();
+		app.get("/api/v1/deferred", (_req, res) => {
+			logger.info({ userId: "u1" }, "fields line");
+			logger.info("plain line");
+			res.on("finish", () => {
+				afterResponse = new Promise((resolve, reject) => {
+					setImmediate(() => {
+						try {
+							logger.warn({ err: new Error("smtp down") }, "after response line");
+							resolve();
+						} catch (error) {
+							reject(error);
+						}
+					});
+				});
+			});
 			res.json({ ok: true });
 		});
 		app.get("/api/v1/health", (_req, res) => {
@@ -205,7 +226,7 @@ describe("Logger.httpMiddleware", () => {
 		};
 		const close = () => new Promise((resolve) => server.close(resolve));
 		const requestLines = () => parsed().filter((line) => "httpRequest" in line);
-		return { logger, parsed, request, requestLines, close };
+		return { logger, parsed, request, requestLines, close, afterResponse: () => afterResponse };
 	};
 
 	it("returns a generated X-Request-Id and logs the same id", async () => {
@@ -295,6 +316,35 @@ describe("Logger.httpMiddleware", () => {
 
 			const handlerLine = parsed().find((line) => line.message === "handler line");
 			expect(handlerLine?.reqId).toBe(response.headers.get("x-request-id"));
+		} finally {
+			await close();
+		}
+	});
+
+	it("does not carry one line's fields into the next line of the same request", async () => {
+		const { request, parsed, close } = await setupApp();
+		try {
+			const response = await request("/api/v1/deferred");
+
+			const plainLine = parsed().find((line) => line.message === "plain line");
+			expect(plainLine?.reqId).toBe(response.headers.get("x-request-id"));
+			expect(plainLine).not.toHaveProperty("userId");
+		} finally {
+			await close();
+		}
+	});
+
+	it("logs after the response without throwing or picking up the request line's fields", async () => {
+		const { request, parsed, close, afterResponse } = await setupApp();
+		try {
+			const response = await request("/api/v1/deferred");
+			await afterResponse();
+
+			const line = parsed().find((entry) => entry.message === "after response line");
+			expect(line?.reqId).toBe(response.headers.get("x-request-id"));
+			expect(line).not.toHaveProperty("httpResponse");
+			expect(line).not.toHaveProperty("httpDurationMs");
+			expect(line).not.toHaveProperty("userId");
 		} finally {
 			await close();
 		}
