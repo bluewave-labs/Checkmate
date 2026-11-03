@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
-import { AppVersionService } from "../../../src/domain/app-version/app-version.service.ts";
+import { AppVersionService, isNewerVersion } from "../../../src/domain/app-version/app-version.service.ts";
 import { APP_VERSION } from "../../../src/utils/appVersion.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import type { Got } from "got";
@@ -9,73 +9,75 @@ import type { Got } from "got";
 const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
 const TEN_MINUTES_MS = 10 * 60 * 1000;
 
-// Tags are built relative to the running version so the tests survive version bumps.
-const [MAJOR, MINOR, PATCH] = APP_VERSION.split(".").map(Number) as [number, number, number];
-const version = (major: number, minor: number, patch: number) => `v${major}.${minor}.${patch}`;
+// Far enough from any real version that these hold whatever APP_VERSION is.
+const FAR_FUTURE = "v999.0.0";
+const FAR_PAST = "v0.0.1";
 
 type Respond = () => Promise<unknown>;
-
-const setup = (respond: Respond = () => Promise.resolve({ tag_name: version(MAJOR + 1, 0, 0) })) => {
-	jest.useFakeTimers().setSystemTime(new Date("2026-01-01T00:00:00Z"));
-	const get = jest.fn(() => ({ json: respond }));
-	const service = new AppVersionService({ get } as unknown as Got, createMockLogger());
-	return { service, get };
-};
 
 const latestIs =
 	(tag: unknown): Respond =>
 	() =>
 		Promise.resolve({ tag_name: tag });
 
+const setup = (respond: Respond = latestIs(FAR_FUTURE)) => {
+	jest.useFakeTimers().setSystemTime(new Date("2026-01-01T00:00:00Z"));
+	const get = jest.fn(() => ({ json: respond }));
+	const service = new AppVersionService({ get } as unknown as Got, createMockLogger());
+	return { service, get };
+};
+
 afterEach(() => {
 	jest.useRealTimers();
 });
 
-// ── Version comparison ───────────────────────────────────────────────────────
+// ── isNewerVersion ───────────────────────────────────────────────────────────
 
-describe("AppVersionService.getVersionInfo — comparison", () => {
-	it("flags a newer patch, minor or major", async () => {
-		for (const tag of [version(MAJOR, MINOR, PATCH + 1), version(MAJOR, MINOR + 1, 0), version(MAJOR + 1, 0, 0)]) {
-			const { service } = setup(latestIs(tag));
-			expect(await service.getVersionInfo()).toEqual({ latest: tag, updateAvailable: true });
-		}
+describe("isNewerVersion", () => {
+	it("treats a higher patch, minor or major as newer", () => {
+		expect(isNewerVersion("3.13.2", "3.13.1")).toBe(true);
+		expect(isNewerVersion("3.14.0", "3.13.1")).toBe(true);
+		expect(isNewerVersion("4.0.0", "3.13.1")).toBe(true);
 	});
 
-	it("does not flag the same version", async () => {
-		const { service } = setup(latestIs(`v${APP_VERSION}`));
-		expect((await service.getVersionInfo()).updateAvailable).toBe(false);
+	it("treats an equal or older version as not newer", () => {
+		expect(isNewerVersion("3.13.1", "3.13.1")).toBe(false);
+		expect(isNewerVersion("3.13.0", "3.13.1")).toBe(false);
+		expect(isNewerVersion("2.99.99", "3.13.1")).toBe(false);
 	});
 
-	it("does not flag an older release, e.g. when running a develop build ahead of it", async () => {
-		const { service } = setup(latestIs(version(MAJOR - 1, 99, 99)));
-		expect((await service.getVersionInfo()).updateAvailable).toBe(false);
+	it("compares numerically, not as text", () => {
+		// As text, "3.9.0" sorts above "3.10.0".
+		expect(isNewerVersion("3.10.0", "3.9.0")).toBe(true);
+		expect(isNewerVersion("3.9.0", "3.10.0")).toBe(false);
 	});
 
-	it("compares numerically, not as text", async () => {
-		// A minor of 1 followed by zeros, one digit longer than the current minor: numerically higher,
-		// but lower as text (e.g. 13 → 100, and "100" < "13"), so a string comparison would miss it.
-		const textuallyLowerMinor = Number(`1${"0".repeat(String(MINOR).length)}`);
-		const { service } = setup(latestIs(version(MAJOR, textuallyLowerMinor, 0)));
-		expect((await service.getVersionInfo()).updateAvailable).toBe(true);
+	it("tolerates a leading v on either side", () => {
+		expect(isNewerVersion("v3.14.0", "3.13.1")).toBe(true);
+		expect(isNewerVersion("v3.13.1", "v3.13.1")).toBe(false);
 	});
 
-	it("accepts a tag without the leading v", async () => {
-		const { service } = setup(latestIs(`${MAJOR + 1}.0.0`));
-		expect((await service.getVersionInfo()).updateAvailable).toBe(true);
+	it("returns false when either side is not a plain three-part version", () => {
+		expect(isNewerVersion("v4.0.0-rc.1", "3.13.1")).toBe(false);
+		expect(isNewerVersion("2026-10-30", "3.13.1")).toBe(false);
+		expect(isNewerVersion("", "3.13.1")).toBe(false);
+		expect(isNewerVersion("4.0.0", "unknown")).toBe(false);
 	});
 
-	it("never flags a tag that is not a plain three-part version", async () => {
-		for (const tag of [`v${MAJOR + 1}.0.0-rc.1`, "2026-10-30", ""]) {
-			const { service } = setup(latestIs(tag));
-			expect((await service.getVersionInfo()).updateAvailable).toBe(false);
-		}
+	it("returns false when latest is null", () => {
+		expect(isNewerVersion(null, "3.13.1")).toBe(false);
+	});
+
+	it("compares against the running version by default", () => {
+		expect(isNewerVersion(FAR_FUTURE)).toBe(true);
+		expect(isNewerVersion(`v${APP_VERSION}`)).toBe(false);
 	});
 });
 
 // ── Fetching ─────────────────────────────────────────────────────────────────
 
 describe("AppVersionService.getVersionInfo — fetching", () => {
-	it("sends a user-agent and does not retry", async () => {
+	it("requests the latest release with a user-agent and no retries", async () => {
 		const { service, get } = setup();
 		await service.getVersionInfo();
 		expect(get).toHaveBeenCalledWith(
@@ -85,6 +87,14 @@ describe("AppVersionService.getVersionInfo — fetching", () => {
 				headers: expect.objectContaining({ "user-agent": `Checkmate/${APP_VERSION}` }),
 			})
 		);
+	});
+
+	it("reports the latest tag and whether it is newer than the running version", async () => {
+		const newer = setup(latestIs(FAR_FUTURE));
+		expect(await newer.service.getVersionInfo()).toEqual({ latest: FAR_FUTURE, updateAvailable: true });
+
+		const older = setup(latestIs(FAR_PAST));
+		expect(await older.service.getVersionInfo()).toEqual({ latest: FAR_PAST, updateAvailable: false });
 	});
 
 	it("returns latest null and no update when the request fails", async () => {
@@ -113,10 +123,10 @@ describe("AppVersionService.getVersionInfo — caching", () => {
 		let resolve!: (body: unknown) => void;
 		const { service, get } = setup(() => new Promise((r) => (resolve = r)));
 		const calls = [service.getVersionInfo(), service.getVersionInfo(), service.getVersionInfo()];
-		resolve({ tag_name: version(MAJOR + 1, 0, 0) });
+		resolve({ tag_name: FAR_FUTURE });
 		const results = await Promise.all(calls);
 		expect(get).toHaveBeenCalledTimes(1);
-		expect(new Set(results.map((r) => r.latest))).toEqual(new Set([version(MAJOR + 1, 0, 0)]));
+		expect(results.every((r) => r.latest === FAR_FUTURE)).toBe(true);
 	});
 
 	it("refetches after six hours on success", async () => {
