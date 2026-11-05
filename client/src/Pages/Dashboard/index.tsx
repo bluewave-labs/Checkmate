@@ -47,10 +47,6 @@ const Dashboard = () => {
 	const hiddenCardsList = useSelector(
 		(state: RootState) => state.ui.dashboardHiddenCards
 	);
-	const visibleCards = useMemo(() => {
-		const hidden = new Set(hiddenCardsList);
-		return new Set(dashboardCardKeys.filter((key) => !hidden.has(key)));
-	}, [hiddenCardsList]);
 
 	const order = useSelector((state: RootState) => state.ui.dashboardUptimeOrder);
 
@@ -98,6 +94,7 @@ const Dashboard = () => {
 		() => cardOrder.filter((key) => !hiddenCards.has(key)),
 		[cardOrder, hiddenCards]
 	);
+	const visibleCards = useMemo(() => new Set(orderedVisibleKeys), [orderedVisibleKeys]);
 
 	const sensors = useSensors(
 		useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
