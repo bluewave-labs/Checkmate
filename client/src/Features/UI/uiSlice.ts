@@ -1,4 +1,4 @@
-import { type DashboardCardKey } from "@/Types/Dashboard";
+import type { DashboardCardKey } from "@/Types/Dashboard";
 import type { SortOrder } from "@/Types/Query";
 import type { TimeFormat } from "@/Utils/TimeUtils";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
