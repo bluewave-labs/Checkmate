@@ -88,7 +88,8 @@ const publicStatusPagePayloadExample = {
 	],
 };
 
-// range, bucketTimezone and checkTTLDays are present only when range !== "latest".
+// range and checkTTLDays are present only when range !== "latest"; bucketTimezone is always
+// present so public pages can render check times in the page's configured timezone.
 export const publicStatusPagePayloadSchema = z
 	.object({
 		statusPage: statusPageSchema,
