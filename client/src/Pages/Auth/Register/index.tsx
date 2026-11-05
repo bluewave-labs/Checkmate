@@ -82,7 +82,7 @@ const RegisterPage = () => {
 
 		if (result?.success) {
 			dispatch(setAuthState(result));
-			navigate("/uptime");
+			navigate("/dashboard");
 		} else if (result?.msg) {
 			if (result.msg.toLowerCase().includes("email")) {
 				setError("email", { message: result.msg });

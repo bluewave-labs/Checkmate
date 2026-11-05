@@ -10,6 +10,7 @@ import { Button } from "@/Components/inputs";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { setDashboardCardOrder, setDashboardHiddenCards } from "@/Features/UI/uiSlice";
 import { useGet } from "@/Hooks/UseApi";
+import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import type { DashboardResponse } from "@/Types/Dashboard";
 import type { RootState, AppDispatch } from "@/store";
 
@@ -19,7 +20,11 @@ import { UptimeCard } from "@/Pages/Dashboard/components/cards/UptimeCard";
 import { MonitorsByTypeCard } from "@/Pages/Dashboard/components/cards/MonitorsByTypeCard";
 import { EditCardsModal } from "@/Pages/Dashboard/components/EditCardsModal";
 import { SortableCard } from "@/Pages/Dashboard/components/SortableCard";
-import { type DashboardCardKey, dashboardCardKeys } from "@/Types/Dashboard";
+import {
+	type DashboardCardKey,
+	adminDashboardCardKeys,
+	dashboardCardKeys,
+} from "@/Types/Dashboard";
 import { DiagnosticCard } from "@/Pages/Dashboard/components/cards/DiagnosticCard";
 import { QueueCard } from "@/Pages/Dashboard/components/cards/QueueCard";
 import { moveVisibleCard, normalizeCardOrder } from "@/Utils/DashboardUtils";
@@ -44,6 +49,7 @@ const Dashboard = () => {
 	const { t } = useTranslation();
 	const dispatch = useDispatch<AppDispatch>();
 	const [editOpen, setEditOpen] = useState(false);
+	const isAdmin = useIsAdmin();
 	const hiddenCardsList = useSelector(
 		(state: RootState) => state.ui.dashboardHiddenCards
 	);
@@ -89,12 +95,22 @@ const Dashboard = () => {
 	}, [arranging]);
 	const savedOrder = useSelector((state: RootState) => state.ui.dashboardCardOrder);
 	const cardOrder = useMemo(() => normalizeCardOrder(savedOrder), [savedOrder]);
+	const availableCardKeys = useMemo(
+		() =>
+			dashboardCardKeys.filter((key) => isAdmin || !adminDashboardCardKeys.includes(key)),
+		[isAdmin]
+	);
 	const hiddenCards = useMemo(() => new Set(hiddenCardsList), [hiddenCardsList]);
 	const orderedVisibleKeys = useMemo(
-		() => cardOrder.filter((key) => !hiddenCards.has(key)),
-		[cardOrder, hiddenCards]
+		() =>
+			cardOrder.filter((key) => availableCardKeys.includes(key) && !hiddenCards.has(key)),
+		[cardOrder, availableCardKeys, hiddenCards]
 	);
 	const visibleCards = useMemo(() => new Set(orderedVisibleKeys), [orderedVisibleKeys]);
+	const notShownCards = useMemo(
+		() => new Set(cardOrder.filter((key) => !visibleCards.has(key))),
+		[cardOrder, visibleCards]
+	);
 
 	const sensors = useSensors(
 		useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -106,7 +122,7 @@ const Dashboard = () => {
 		if (!over || active.id === over.id) return;
 		const next = moveVisibleCard(
 			cardOrder,
-			hiddenCards,
+			notShownCards,
 			active.id as DashboardCardKey,
 			over.id as DashboardCardKey
 		);
@@ -199,12 +215,15 @@ const Dashboard = () => {
 
 			<EditCardsModal
 				open={editOpen}
+				cardKeys={availableCardKeys}
 				visibleCards={visibleCards}
 				onClose={() => setEditOpen(false)}
 				onSave={(next) => {
-					dispatch(
-						setDashboardHiddenCards(dashboardCardKeys.filter((key) => !next.has(key)))
+					const keptHidden = hiddenCardsList.filter(
+						(key) => !availableCardKeys.includes(key)
 					);
+					const newlyHidden = availableCardKeys.filter((key) => !next.has(key));
+					dispatch(setDashboardHiddenCards([...keptHidden, ...newlyHidden]));
 					setEditOpen(false);
 				}}
 			/>
