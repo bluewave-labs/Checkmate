@@ -1767,7 +1767,8 @@
 				"currentlyDown": "Hiện đang ngừng hoạt động",
 				"uptime": "Thời gian hoạt động",
 				"monitorsByType": "Trình giám sát theo loại",
-				"diagnostic": "Chẩn đoán Checkmate"
+				"diagnostic": "Chẩn đoán Checkmate",
+				"queue": "Hàng đợi"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Đổi thứ tự sắp xếp"

@@ -1768,7 +1768,8 @@
 				"currentlyDown": "Derzeit ausgefallen",
 				"uptime": "Monitor-Verfügbarkeit",
 				"monitorsByType": "Monitore nach Typ",
-				"diagnostic": "Checkmate-Diagnose"
+				"diagnostic": "Checkmate-Diagnose",
+				"queue": "Warteschlange"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Sortierreihenfolge umschalten"

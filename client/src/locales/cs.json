@@ -1767,7 +1767,8 @@
 				"currentlyDown": "Aktuálně nedostupné",
 				"uptime": "Dostupnost monitorů",
 				"monitorsByType": "Monitory podle typu",
-				"diagnostic": "Diagnostika Checkmate"
+				"diagnostic": "Diagnostika Checkmate",
+				"queue": "Fronta"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Přepnout řazení"

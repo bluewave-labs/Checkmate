@@ -1767,7 +1767,8 @@
 				"currentlyDown": "Actualment caiguts",
 				"uptime": "Disponibilitat dels monitors",
 				"monitorsByType": "Monitors per tipus",
-				"diagnostic": "Diagnòstic de Checkmate"
+				"diagnostic": "Diagnòstic de Checkmate",
+				"queue": "Cua"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Canvia l'ordre"

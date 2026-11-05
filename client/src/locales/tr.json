@@ -1767,7 +1767,8 @@
 				"currentlyDown": "Şu anda kapalı",
 				"uptime": "Monitör çalışma süresi",
 				"monitorsByType": "Türe göre monitörler",
-				"diagnostic": "Checkmate tanılama"
+				"diagnostic": "Checkmate tanılama",
+				"queue": "Kuyruk"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Sıralamayı değiştir"

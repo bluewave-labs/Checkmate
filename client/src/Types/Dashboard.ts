@@ -11,6 +11,7 @@ export const dashboardCardKeys = [
 	"uptime",
 	"monitorsByType",
 	"diagnostic",
+	"queue",
 ] as const;
 export type DashboardCardKey = (typeof dashboardCardKeys)[number];
 

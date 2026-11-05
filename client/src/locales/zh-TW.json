@@ -1767,7 +1767,8 @@
 				"currentlyDown": "目前中斷",
 				"uptime": "監控可用率",
 				"monitorsByType": "依類型分類的監控",
-				"diagnostic": "Checkmate 診斷"
+				"diagnostic": "Checkmate 診斷",
+				"queue": "佇列"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "切換排序方式"

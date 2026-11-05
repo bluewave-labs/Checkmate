@@ -2047,7 +2047,8 @@
 				"currentlyDown": "Currently down",
 				"uptime": "Monitor uptime",
 				"monitorsByType": "Monitors by type",
-				"diagnostic": "Checkmate diagnostics"
+				"diagnostic": "Checkmate diagnostics",
+				"queue": "Queue"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Toggle sort order"

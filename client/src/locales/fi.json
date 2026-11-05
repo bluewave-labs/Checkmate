@@ -1767,7 +1767,8 @@
 				"currentlyDown": "Tällä hetkellä alhaalla",
 				"uptime": "Monitorien käytettävyys",
 				"monitorsByType": "Monitorit tyypin mukaan",
-				"diagnostic": "Checkmate-diagnostiikka"
+				"diagnostic": "Checkmate-diagnostiikka",
+				"queue": "Jono"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Vaihda järjestys"

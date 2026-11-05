@@ -1767,7 +1767,8 @@
 				"currentlyDown": "متوقفة حاليًا",
 				"uptime": "مدة تشغيل المراقبات",
 				"monitorsByType": "المراقبات حسب النوع",
-				"diagnostic": "تشخيصات Checkmate"
+				"diagnostic": "تشخيصات Checkmate",
+				"queue": "قائمة الانتظار"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "تغيير ترتيب الفرز"

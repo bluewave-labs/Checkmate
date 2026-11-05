@@ -1767,7 +1767,8 @@
 				"currentlyDown": "Actuellement hors service",
 				"uptime": "Disponibilité des moniteurs",
 				"monitorsByType": "Moniteurs par type",
-				"diagnostic": "Diagnostic de Checkmate"
+				"diagnostic": "Diagnostic de Checkmate",
+				"queue": "File d'attente"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Inverser l'ordre de tri"

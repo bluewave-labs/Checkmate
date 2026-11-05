@@ -1767,7 +1767,8 @@
 				"currentlyDown": "Зараз недоступні",
 				"uptime": "Доступність моніторів",
 				"monitorsByType": "Монітори за типом",
-				"diagnostic": "Діагностика Checkmate"
+				"diagnostic": "Діагностика Checkmate",
+				"queue": "Черга"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Змінити порядок сортування"

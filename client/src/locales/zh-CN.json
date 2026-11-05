@@ -1768,7 +1768,8 @@
 				"currentlyDown": "当前故障",
 				"uptime": "监控可用率",
 				"monitorsByType": "按类型分类的监控",
-				"diagnostic": "Checkmate 诊断"
+				"diagnostic": "Checkmate 诊断",
+				"queue": "队列"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "切换排序方式"
