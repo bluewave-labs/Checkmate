@@ -1805,6 +1805,12 @@
 					"uptime": "Thời gian hoạt động"
 				},
 				"done": "Xong"
+			},
+			"arrange": {
+				"start": "Sắp xếp",
+				"done": "Xong",
+				"reset": "Đặt lại thứ tự",
+				"handle": "Kéo để di chuyển {{card}}"
 			}
 		}
 	}

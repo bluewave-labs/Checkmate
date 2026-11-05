@@ -1806,6 +1806,12 @@
 					"uptime": "Verfügbarkeit"
 				},
 				"done": "Fertig"
+			},
+			"arrange": {
+				"start": "Anordnen",
+				"done": "Fertig",
+				"reset": "Reihenfolge zurücksetzen",
+				"handle": "Ziehen, um {{card}} zu verschieben"
 			}
 		}
 	}

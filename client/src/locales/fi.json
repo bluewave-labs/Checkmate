@@ -1805,6 +1805,12 @@
 					"uptime": "Käytettävyys"
 				},
 				"done": "Valmis"
+			},
+			"arrange": {
+				"start": "Järjestä",
+				"done": "Valmis",
+				"reset": "Palauta järjestys",
+				"handle": "Siirrä {{card}} vetämällä"
 			}
 		}
 	}

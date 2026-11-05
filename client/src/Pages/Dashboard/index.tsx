@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { BasePage } from "@/Components/design-elements/BasePage";
 import { Button } from "@/Components/inputs";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { setDashboardHiddenCards } from "@/Features/UI/uiSlice";
+import { setDashboardCardOrder, setDashboardHiddenCards } from "@/Features/UI/uiSlice";
 import { useGet } from "@/Hooks/UseApi";
 import type { DashboardResponse } from "@/Types/Dashboard";
 import type { RootState, AppDispatch } from "@/store";
@@ -18,9 +18,26 @@ import { CurrentlyDownCard } from "@/Pages/Dashboard/components/cards/CurrentlyD
 import { UptimeCard } from "@/Pages/Dashboard/components/cards/UptimeCard";
 import { MonitorsByTypeCard } from "@/Pages/Dashboard/components/cards/MonitorsByTypeCard";
 import { EditCardsModal } from "@/Pages/Dashboard/components/EditCardsModal";
+import { SortableCard } from "@/Pages/Dashboard/components/SortableCard";
 import { type DashboardCardKey, dashboardCardKeys } from "@/Types/Dashboard";
 import { DiagnosticCard } from "@/Pages/Dashboard/components/cards/DiagnosticCard";
 import { QueueCard } from "@/Pages/Dashboard/components/cards/QueueCard";
+import { moveVisibleCard, normalizeCardOrder } from "@/Utils/DashboardUtils";
+
+import {
+	DndContext,
+	KeyboardSensor,
+	PointerSensor,
+	closestCenter,
+	useSensor,
+	useSensors,
+	type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+	SortableContext,
+	rectSortingStrategy,
+	sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
 
 const Dashboard = () => {
 	const theme = useTheme();
@@ -61,6 +78,44 @@ const Dashboard = () => {
 		queue: <QueueCard />,
 	};
 
+	const [arranging, setArranging] = useState(false);
+	const isDraggingRef = useRef(false);
+
+	useEffect(() => {
+		if (!arranging) return;
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === "Escape" && !isDraggingRef.current) {
+				setArranging(false);
+			}
+		};
+		window.addEventListener("keydown", handleKeyDown, true);
+		return () => window.removeEventListener("keydown", handleKeyDown, true);
+	}, [arranging]);
+	const savedOrder = useSelector((state: RootState) => state.ui.dashboardCardOrder);
+	const cardOrder = useMemo(() => normalizeCardOrder(savedOrder), [savedOrder]);
+	const hiddenCards = useMemo(() => new Set(hiddenCardsList), [hiddenCardsList]);
+	const orderedVisibleKeys = useMemo(
+		() => cardOrder.filter((key) => !hiddenCards.has(key)),
+		[cardOrder, hiddenCards]
+	);
+
+	const sensors = useSensors(
+		useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+		useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+	);
+
+	const handleDragEnd = ({ active, over }: DragEndEvent) => {
+		isDraggingRef.current = false;
+		if (!over || active.id === over.id) return;
+		const next = moveVisibleCard(
+			cardOrder,
+			hiddenCards,
+			active.id as DashboardCardKey,
+			over.id as DashboardCardKey
+		);
+		dispatch(setDashboardCardOrder(next));
+	};
+
 	return (
 		<BasePage
 			headerKey="dashboard"
@@ -71,31 +126,78 @@ const Dashboard = () => {
 				<Stack
 					direction="row"
 					justifyContent="flex-end"
+					gap={theme.spacing(LAYOUT.SM)}
 				>
-					<Button
-						variant="outlined"
-						size="small"
-						onClick={() => setEditOpen(true)}
-					>
-						{t("pages.dashboard.editCards")}
-					</Button>
+					{arranging ? (
+						<>
+							<Button
+								variant="outlined"
+								size="small"
+								onClick={() => dispatch(setDashboardCardOrder([...dashboardCardKeys]))}
+							>
+								{t("pages.dashboard.arrange.reset")}
+							</Button>
+							<Button
+								variant="contained"
+								size="small"
+								onClick={() => setArranging(false)}
+							>
+								{t("pages.dashboard.arrange.done")}
+							</Button>
+						</>
+					) : (
+						<>
+							{orderedVisibleKeys.length > 1 && (
+								<Button
+									variant="outlined"
+									size="small"
+									onClick={() => setArranging(true)}
+								>
+									{t("pages.dashboard.arrange.start")}
+								</Button>
+							)}
+							<Button
+								variant="outlined"
+								size="small"
+								onClick={() => setEditOpen(true)}
+							>
+								{t("pages.dashboard.editCards")}
+							</Button>
+						</>
+					)}
 				</Stack>
 
-				<Grid
-					container
-					spacing={LAYOUT.MD}
+				<DndContext
+					sensors={sensors}
+					collisionDetection={closestCenter}
+					onDragStart={() => {
+						isDraggingRef.current = true;
+					}}
+					onDragCancel={() => {
+						isDraggingRef.current = false;
+					}}
+					onDragEnd={handleDragEnd}
 				>
-					{dashboardCardKeys
-						.filter((key) => visibleCards.has(key))
-						.map((key) => (
-							<Grid
-								key={key}
-								size={{ xs: 12, md: 6 }}
-							>
-								{cardComponents[key]}
-							</Grid>
-						))}
-				</Grid>
+					<SortableContext
+						items={orderedVisibleKeys}
+						strategy={rectSortingStrategy}
+					>
+						<Grid
+							container
+							spacing={LAYOUT.MD}
+						>
+							{orderedVisibleKeys.map((key) => (
+								<SortableCard
+									key={key}
+									cardKey={key}
+									arranging={arranging}
+								>
+									{cardComponents[key]}
+								</SortableCard>
+							))}
+						</Grid>
+					</SortableContext>
+				</DndContext>
 			</Stack>
 
 			<EditCardsModal

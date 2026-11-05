@@ -1925,6 +1925,12 @@
 					"uptime": "Disponibilità"
 				},
 				"done": "Fatto"
+			},
+			"arrange": {
+				"start": "Riordina",
+				"done": "Fatto",
+				"reset": "Ripristina ordine",
+				"handle": "Trascina per spostare {{card}}"
 			}
 		}
 	}

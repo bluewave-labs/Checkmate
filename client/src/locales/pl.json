@@ -1925,6 +1925,12 @@
 					"uptime": "Dostępność"
 				},
 				"done": "Gotowe"
+			},
+			"arrange": {
+				"start": "Uporządkuj",
+				"done": "Gotowe",
+				"reset": "Przywróć kolejność",
+				"handle": "Przeciągnij, aby przenieść {{card}}"
 			}
 		}
 	}

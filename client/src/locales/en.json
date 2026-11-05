@@ -2085,6 +2085,12 @@
 					"uptime": "Uptime"
 				},
 				"done": "Done"
+			},
+			"arrange": {
+				"start": "Arrange",
+				"done": "Done",
+				"reset": "Reset order",
+				"handle": "Drag to move {{card}}"
 			}
 		}
 	}

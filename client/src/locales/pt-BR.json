@@ -2074,6 +2074,12 @@
 					"uptime": "Disponibilidade"
 				},
 				"done": "Concluído"
+			},
+			"arrange": {
+				"start": "Organizar",
+				"done": "Concluído",
+				"reset": "Redefinir ordem",
+				"handle": "Arraste para mover {{card}}"
 			}
 		}
 	}

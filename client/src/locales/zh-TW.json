@@ -1805,6 +1805,12 @@
 					"uptime": "可用率"
 				},
 				"done": "完成"
+			},
+			"arrange": {
+				"start": "排列",
+				"done": "完成",
+				"reset": "重設順序",
+				"handle": "拖曳以移動 {{card}}"
 			}
 		}
 	}
