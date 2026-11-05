@@ -2047,7 +2047,8 @@
 				"currentlyDown": "Currently down",
 				"uptime": "Monitor uptime",
 				"monitorsByType": "Monitors by type",
-				"diagnostic": "Checkmate diagnostics"
+				"diagnostic": "Checkmate diagnostics",
+				"queue": "Queue"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Toggle sort order"
@@ -2064,6 +2065,13 @@
 				"dbSize": "Database size",
 				"dbOperations": "Database operations",
 				"dbOperationsSummary": "{{reads}} reads/s · {{writes}} writes/s"
+			},
+			"queue": {
+				"jobs": "Jobs",
+				"activeJobs": "Active jobs",
+				"failingJobs": "Failing jobs",
+				"workers": "Workers",
+				"overdueChecks": "Overdue checks"
 			},
 			"header": {
 				"title": "Dashboard",

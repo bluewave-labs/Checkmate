@@ -20,6 +20,7 @@ import { MonitorsByTypeCard } from "@/Pages/Dashboard/components/cards/MonitorsB
 import { EditCardsModal } from "@/Pages/Dashboard/components/EditCardsModal";
 import { type DashboardCardKey, dashboardCardKeys } from "@/Types/Dashboard";
 import { DiagnosticCard } from "@/Pages/Dashboard/components/cards/DiagnosticCard";
+import { QueueCard } from "@/Pages/Dashboard/components/cards/QueueCard";
 
 const Dashboard = () => {
 	const theme = useTheme();
@@ -54,6 +55,7 @@ const Dashboard = () => {
 		uptime: <UptimeCard monitors={dashboard?.uptime ?? []} />,
 		monitorsByType: <MonitorsByTypeCard monitorsByType={dashboard?.byType ?? []} />,
 		diagnostic: <DiagnosticCard />,
+		queue: <QueueCard />,
 	};
 
 	return (

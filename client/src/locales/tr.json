@@ -1767,7 +1767,8 @@
 				"currentlyDown": "Şu anda kapalı",
 				"uptime": "Monitör çalışma süresi",
 				"monitorsByType": "Türe göre monitörler",
-				"diagnostic": "Checkmate tanılama"
+				"diagnostic": "Checkmate tanılama",
+				"queue": "Kuyruk"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Sıralamayı değiştir"
@@ -1784,6 +1785,13 @@
 				"dbSize": "Veritabanı boyutu",
 				"dbOperations": "Veritabanı işlemleri",
 				"dbOperationsSummary": "{{reads}} okuma/sn · {{writes}} yazma/sn"
+			},
+			"queue": {
+				"jobs": "İşler",
+				"activeJobs": "Aktif işler",
+				"failingJobs": "Başarısız işler",
+				"workers": "Çalışanlar",
+				"overdueChecks": "Geciken kontroller"
 			},
 			"header": {
 				"title": "Panel",

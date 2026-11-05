@@ -1768,7 +1768,8 @@
 				"currentlyDown": "Derzeit ausgefallen",
 				"uptime": "Monitor-Verfügbarkeit",
 				"monitorsByType": "Monitore nach Typ",
-				"diagnostic": "Checkmate-Diagnose"
+				"diagnostic": "Checkmate-Diagnose",
+				"queue": "Warteschlange"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Sortierreihenfolge umschalten"
@@ -1785,6 +1786,13 @@
 				"dbSize": "Datenbankgröße",
 				"dbOperations": "Datenbankoperationen",
 				"dbOperationsSummary": "{{reads}} Lesevorgänge/s · {{writes}} Schreibvorgänge/s"
+			},
+			"queue": {
+				"jobs": "Jobs",
+				"activeJobs": "Aktive Jobs",
+				"failingJobs": "Fehlerhafte Jobs",
+				"workers": "Worker",
+				"overdueChecks": "Überfällige Prüfungen"
 			},
 			"header": {
 				"title": "Dashboard",

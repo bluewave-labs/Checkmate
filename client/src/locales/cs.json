@@ -1767,7 +1767,8 @@
 				"currentlyDown": "Aktuálně nedostupné",
 				"uptime": "Dostupnost monitorů",
 				"monitorsByType": "Monitory podle typu",
-				"diagnostic": "Diagnostika Checkmate"
+				"diagnostic": "Diagnostika Checkmate",
+				"queue": "Fronta"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Přepnout řazení"
@@ -1784,6 +1785,13 @@
 				"dbSize": "Velikost databáze",
 				"dbOperations": "Operace databáze",
 				"dbOperationsSummary": "{{reads}} čtení/s · {{writes}} zápisů/s"
+			},
+			"queue": {
+				"jobs": "Úlohy",
+				"activeJobs": "Aktivní úlohy",
+				"failingJobs": "Selhávající úlohy",
+				"workers": "Workery",
+				"overdueChecks": "Opožděné kontroly"
 			},
 			"header": {
 				"title": "Přehled",

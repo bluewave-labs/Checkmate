@@ -938,6 +938,7 @@ describe("DBQueueWorker", () => {
 				{ workerId: "w", processesJobs: true },
 				{ workerId: "scheduler", processesJobs: false }, // scheduler-only primary excluded from metrics
 			]);
+			mocks.jobsRepository.countDueBacklog.mockResolvedValue(4);
 
 			const metrics = await worker.getMetrics();
 
@@ -949,6 +950,8 @@ describe("DBQueueWorker", () => {
 			expect(metrics.jobsWithFailures).toHaveLength(1);
 			expect(metrics.jobsWithFailures[0]).toEqual(expect.objectContaining({ failCount: 3, failReason: "boom" }));
 			expect(metrics.workers).toEqual([{ workerId: "w", processesJobs: true }]);
+			expect(metrics.dueBacklog).toBe(4);
+			expect(mocks.jobsRepository.countDueBacklog).toHaveBeenCalledWith(expect.any(Number));
 		});
 	});
 

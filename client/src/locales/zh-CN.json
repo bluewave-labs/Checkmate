@@ -1768,7 +1768,8 @@
 				"currentlyDown": "当前故障",
 				"uptime": "监控可用率",
 				"monitorsByType": "按类型分类的监控",
-				"diagnostic": "Checkmate 诊断"
+				"diagnostic": "Checkmate 诊断",
+				"queue": "队列"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "切换排序方式"
@@ -1785,6 +1786,13 @@
 				"dbSize": "数据库大小",
 				"dbOperations": "数据库操作",
 				"dbOperationsSummary": "{{reads}} 次读取/秒 · {{writes}} 次写入/秒"
+			},
+			"queue": {
+				"jobs": "任务",
+				"activeJobs": "活动任务",
+				"failingJobs": "失败的任务",
+				"workers": "工作进程",
+				"overdueChecks": "逾期检查"
 			},
 			"header": {
 				"title": "仪表板",

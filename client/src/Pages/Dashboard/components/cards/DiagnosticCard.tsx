@@ -1,12 +1,13 @@
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { DashboardCard } from "@/Pages/Dashboard/components/DashboardCard";
+import { InfoRow } from "@/Pages/Dashboard/components/cards/InfoRow";
+import { BarRow } from "@/Pages/Dashboard/components/cards/BarRow";
+import { useTheme } from "@mui/material";
 
 import { useGet } from "@/Hooks/UseApi";
 import type { Diagnostics } from "@/Types/Diagnostics";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { Typography, useTheme } from "@mui/material";
-import { BarRow } from "@/Pages/Dashboard/components/cards/BarRow";
 import prettyBytes from "pretty-bytes";
 import { getSeverityColor } from "@/Utils/MonitorUtils";
 import { formatMs } from "@/Utils/TimeUtils";
@@ -17,7 +18,7 @@ import { useTranslation } from "react-i18next";
 export const DiagnosticCard = () => {
 	const {
 		data: diagnostics,
-		isLoading: _isLoading,
+		isLoading,
 		error: _error,
 		refetch: _refetch,
 	} = useGet<Diagnostics>("/diagnostic/system", {}, { refreshInterval: 30000 });
@@ -28,25 +29,24 @@ export const DiagnosticCard = () => {
 	const showUpdate = Boolean(versionInfo?.updateAvailable && versionInfo.latest);
 	const latestLabel = versionInfo?.latest && formatVersion(versionInfo.latest);
 
-	if (!diagnostics) return null;
+	if (isLoading || !diagnostics) {
+		return (
+			<DashboardCard
+				title={t("pages.dashboard.cards.diagnostic")}
+				isLoading
+			/>
+		);
+	}
+
 	const usedHeap = diagnostics.v8HeapStats.usedHeapSizeBytes;
 	const heapLimit = diagnostics.v8HeapStats.heapSizeLimitBytes;
 	const cpuUSage = diagnostics.cpuUsage;
-	const InfoRow = ({ label, value }: { label: string; value: React.ReactNode }) => {
-		return (
-			<Stack
-				direction={{ xs: "column", md: "row" }}
-				justifyContent="space-between"
-				gap={{ xs: theme.spacing(LAYOUT.XS), md: 0 }}
-			>
-				<Typography fontWeight={{ xs: 500, md: "normal" }}>{label}</Typography>
-				<Typography>{value}</Typography>
-			</Stack>
-		);
-	};
 
 	return (
-		<DashboardCard title={t("pages.dashboard.cards.diagnostic")}>
+		<DashboardCard
+			title={t("pages.dashboard.cards.diagnostic")}
+			isLoading={isLoading}
+		>
 			<Stack gap={theme.spacing(LAYOUT.SM)}>
 				<InfoRow
 					label={t("pages.dashboard.diagnostic.version")}
@@ -69,20 +69,14 @@ export const DiagnosticCard = () => {
 				/>
 				<BarRow
 					label={t("pages.dashboard.diagnostic.heapUsage")}
-					value={
-						<Typography
-							color={getSeverityColor(usedHeap / heapLimit, theme)}
-						>{`${prettyBytes(usedHeap)} / ${prettyBytes(heapLimit)}`}</Typography>
-					}
+					value={`${prettyBytes(usedHeap)} / ${prettyBytes(heapLimit)}`}
+					valueColor={getSeverityColor(usedHeap / heapLimit, theme)}
 					fillRatio={usedHeap / heapLimit}
 				/>
 				<BarRow
 					label={t("pages.dashboard.diagnostic.cpuUsage")}
-					value={
-						<Typography color={getSeverityColor(cpuUSage.usagePercentage, theme)}>
-							{formatPercentage(cpuUSage.usagePercentage)}
-						</Typography>
-					}
+					value={formatPercentage(cpuUSage.usagePercentage)}
+					valueColor={getSeverityColor(cpuUSage.usagePercentage, theme)}
 					fillRatio={cpuUSage.usagePercentage}
 				/>
 				<InfoRow

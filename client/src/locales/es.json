@@ -1767,7 +1767,8 @@
 				"currentlyDown": "Caídos ahora mismo",
 				"uptime": "Disponibilidad de los monitores",
 				"monitorsByType": "Monitores por tipo",
-				"diagnostic": "Diagnóstico de Checkmate"
+				"diagnostic": "Diagnóstico de Checkmate",
+				"queue": "Cola"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Cambiar el orden"
@@ -1784,6 +1785,13 @@
 				"dbSize": "Tamaño de la base de datos",
 				"dbOperations": "Operaciones de la base de datos",
 				"dbOperationsSummary": "{{reads}} lecturas/s · {{writes}} escrituras/s"
+			},
+			"queue": {
+				"jobs": "Tareas",
+				"activeJobs": "Tareas activas",
+				"failingJobs": "Tareas con fallos",
+				"workers": "Workers",
+				"overdueChecks": "Comprobaciones atrasadas"
 			},
 			"header": {
 				"title": "Panel",

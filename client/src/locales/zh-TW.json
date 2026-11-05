@@ -1767,7 +1767,8 @@
 				"currentlyDown": "目前中斷",
 				"uptime": "監控可用率",
 				"monitorsByType": "依類型分類的監控",
-				"diagnostic": "Checkmate 診斷"
+				"diagnostic": "Checkmate 診斷",
+				"queue": "佇列"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "切換排序方式"
@@ -1784,6 +1785,13 @@
 				"dbSize": "資料庫大小",
 				"dbOperations": "資料庫操作",
 				"dbOperationsSummary": "{{reads}} 次讀取/秒 · {{writes}} 次寫入/秒"
+			},
+			"queue": {
+				"jobs": "工作",
+				"activeJobs": "執行中的工作",
+				"failingJobs": "失敗的工作",
+				"workers": "工作程序",
+				"overdueChecks": "逾期檢查"
 			},
 			"header": {
 				"title": "儀表板",

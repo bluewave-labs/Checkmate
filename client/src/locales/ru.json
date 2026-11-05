@@ -1767,7 +1767,8 @@
 				"currentlyDown": "Сейчас недоступны",
 				"uptime": "Доступность мониторов",
 				"monitorsByType": "Мониторы по типу",
-				"diagnostic": "Диагностика Checkmate"
+				"diagnostic": "Диагностика Checkmate",
+				"queue": "Очередь"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Изменить порядок сортировки"
@@ -1784,6 +1785,13 @@
 				"dbSize": "Размер базы данных",
 				"dbOperations": "Операции с базой данных",
 				"dbOperationsSummary": "{{reads}} чтений/с · {{writes}} записей/с"
+			},
+			"queue": {
+				"jobs": "Задания",
+				"activeJobs": "Активные задания",
+				"failingJobs": "Сбойные задания",
+				"workers": "Воркеры",
+				"overdueChecks": "Просроченные проверки"
 			},
 			"header": {
 				"title": "Панель",

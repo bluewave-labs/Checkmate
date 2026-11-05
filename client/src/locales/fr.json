@@ -1767,7 +1767,8 @@
 				"currentlyDown": "Actuellement hors service",
 				"uptime": "Disponibilité des moniteurs",
 				"monitorsByType": "Moniteurs par type",
-				"diagnostic": "Diagnostic de Checkmate"
+				"diagnostic": "Diagnostic de Checkmate",
+				"queue": "File d'attente"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Inverser l'ordre de tri"
@@ -1784,6 +1785,13 @@
 				"dbSize": "Taille de la base de données",
 				"dbOperations": "Opérations de la base de données",
 				"dbOperationsSummary": "{{reads}} lectures/s · {{writes}} écritures/s"
+			},
+			"queue": {
+				"jobs": "Tâches",
+				"activeJobs": "Tâches actives",
+				"failingJobs": "Tâches en échec",
+				"workers": "Workers",
+				"overdueChecks": "Vérifications en retard"
 			},
 			"header": {
 				"title": "Tableau de bord",

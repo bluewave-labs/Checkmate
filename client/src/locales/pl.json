@@ -1887,7 +1887,8 @@
 				"currentlyDown": "Obecnie niedostępne",
 				"uptime": "Dostępność monitorów",
 				"monitorsByType": "Monitory według typu",
-				"diagnostic": "Diagnostyka Checkmate"
+				"diagnostic": "Diagnostyka Checkmate",
+				"queue": "Kolejka"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Zmień kolejność sortowania"
@@ -1904,6 +1905,13 @@
 				"dbSize": "Rozmiar bazy danych",
 				"dbOperations": "Operacje bazy danych",
 				"dbOperationsSummary": "{{reads}} odczytów/s · {{writes}} zapisów/s"
+			},
+			"queue": {
+				"jobs": "Zadania",
+				"activeJobs": "Aktywne zadania",
+				"failingJobs": "Nieudane zadania",
+				"workers": "Workery",
+				"overdueChecks": "Zaległe sprawdzenia"
 			},
 			"header": {
 				"title": "Panel",

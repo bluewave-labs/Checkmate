@@ -1767,7 +1767,8 @@
 				"currentlyDown": "Зараз недоступні",
 				"uptime": "Доступність моніторів",
 				"monitorsByType": "Монітори за типом",
-				"diagnostic": "Діагностика Checkmate"
+				"diagnostic": "Діагностика Checkmate",
+				"queue": "Черга"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Змінити порядок сортування"
@@ -1784,6 +1785,13 @@
 				"dbSize": "Розмір бази даних",
 				"dbOperations": "Операції з базою даних",
 				"dbOperationsSummary": "{{reads}} читань/с · {{writes}} записів/с"
+			},
+			"queue": {
+				"jobs": "Завдання",
+				"activeJobs": "Активні завдання",
+				"failingJobs": "Збійні завдання",
+				"workers": "Воркери",
+				"overdueChecks": "Прострочені перевірки"
 			},
 			"header": {
 				"title": "Панель",

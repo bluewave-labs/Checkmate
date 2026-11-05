@@ -1767,7 +1767,8 @@
 				"currentlyDown": "Actualment caiguts",
 				"uptime": "Disponibilitat dels monitors",
 				"monitorsByType": "Monitors per tipus",
-				"diagnostic": "Diagnòstic de Checkmate"
+				"diagnostic": "Diagnòstic de Checkmate",
+				"queue": "Cua"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Canvia l'ordre"
@@ -1784,6 +1785,13 @@
 				"dbSize": "Mida de la base de dades",
 				"dbOperations": "Operacions de la base de dades",
 				"dbOperationsSummary": "{{reads}} lectures/s · {{writes}} escriptures/s"
+			},
+			"queue": {
+				"jobs": "Tasques",
+				"activeJobs": "Tasques actives",
+				"failingJobs": "Tasques fallides",
+				"workers": "Treballadors",
+				"overdueChecks": "Comprovacions endarrerides"
 			},
 			"header": {
 				"title": "Tauler",

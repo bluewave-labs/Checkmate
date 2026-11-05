@@ -1767,7 +1767,8 @@
 				"currentlyDown": "現在停止中",
 				"uptime": "モニターの稼働率",
 				"monitorsByType": "タイプ別モニター",
-				"diagnostic": "Checkmate 診断"
+				"diagnostic": "Checkmate 診断",
+				"queue": "キュー"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "並び順を切り替える"
@@ -1784,6 +1785,13 @@
 				"dbSize": "データベースのサイズ",
 				"dbOperations": "データベース操作",
 				"dbOperationsSummary": "{{reads}} 読み取り/秒 · {{writes}} 書き込み/秒"
+			},
+			"queue": {
+				"jobs": "ジョブ",
+				"activeJobs": "実行中のジョブ",
+				"failingJobs": "失敗中のジョブ",
+				"workers": "ワーカー",
+				"overdueChecks": "遅延しているチェック"
 			},
 			"header": {
 				"title": "ダッシュボード",

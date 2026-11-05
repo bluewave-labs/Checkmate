@@ -1767,7 +1767,8 @@
 				"currentlyDown": "Tällä hetkellä alhaalla",
 				"uptime": "Monitorien käytettävyys",
 				"monitorsByType": "Monitorit tyypin mukaan",
-				"diagnostic": "Checkmate-diagnostiikka"
+				"diagnostic": "Checkmate-diagnostiikka",
+				"queue": "Jono"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Vaihda järjestys"
@@ -1784,6 +1785,13 @@
 				"dbSize": "Tietokannan koko",
 				"dbOperations": "Tietokantaoperaatiot",
 				"dbOperationsSummary": "{{reads}} lukua/s · {{writes}} kirjoitusta/s"
+			},
+			"queue": {
+				"jobs": "Työt",
+				"activeJobs": "Aktiiviset työt",
+				"failingJobs": "Epäonnistuvat työt",
+				"workers": "Workerit",
+				"overdueChecks": "Myöhässä olevat tarkistukset"
 			},
 			"header": {
 				"title": "Koontinäyttö",

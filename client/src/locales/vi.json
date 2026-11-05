@@ -1767,7 +1767,8 @@
 				"currentlyDown": "Hiện đang ngừng hoạt động",
 				"uptime": "Thời gian hoạt động",
 				"monitorsByType": "Trình giám sát theo loại",
-				"diagnostic": "Chẩn đoán Checkmate"
+				"diagnostic": "Chẩn đoán Checkmate",
+				"queue": "Hàng đợi"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Đổi thứ tự sắp xếp"
@@ -1784,6 +1785,13 @@
 				"dbSize": "Kích thước cơ sở dữ liệu",
 				"dbOperations": "Thao tác cơ sở dữ liệu",
 				"dbOperationsSummary": "{{reads}} lượt đọc/giây · {{writes}} lượt ghi/giây"
+			},
+			"queue": {
+				"jobs": "Tác vụ",
+				"activeJobs": "Tác vụ đang chạy",
+				"failingJobs": "Tác vụ lỗi",
+				"workers": "Worker",
+				"overdueChecks": "Kiểm tra quá hạn"
 			},
 			"header": {
 				"title": "Bảng điều khiển",
