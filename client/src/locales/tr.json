@@ -1766,13 +1766,24 @@
 				"monitorStatus": "Monitör durumu",
 				"currentlyDown": "Şu anda kapalı",
 				"uptime": "Monitör çalışma süresi",
-				"monitorsByType": "Türe göre monitörler"
+				"monitorsByType": "Türe göre monitörler",
+				"diagnostic": "Checkmate tanılama"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Sıralamayı değiştir"
 			},
 			"currentlyDown": {
 				"empty": "Şu anda kapalı monitör yok."
+			},
+			"diagnostic": {
+				"version": "Sürüm",
+				"updateAvailable": "{{version}} mevcut",
+				"heapUsage": "Heap kullanımı",
+				"cpuUsage": "CPU kullanımı",
+				"eventLoopDelay": "Olay döngüsü gecikmesi",
+				"dbSize": "Veritabanı boyutu",
+				"dbOperations": "Veritabanı işlemleri",
+				"dbOperationsSummary": "{{reads}} okuma/sn · {{writes}} yazma/sn"
 			},
 			"header": {
 				"title": "Panel",

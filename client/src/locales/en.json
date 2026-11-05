@@ -2046,13 +2046,24 @@
 				"monitorStatus": "Monitor status",
 				"currentlyDown": "Currently down",
 				"uptime": "Monitor uptime",
-				"monitorsByType": "Monitors by type"
+				"monitorsByType": "Monitors by type",
+				"diagnostic": "Checkmate diagnostics"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Toggle sort order"
 			},
 			"currentlyDown": {
 				"empty": "No monitors are down at this moment."
+			},
+			"diagnostic": {
+				"version": "Version",
+				"updateAvailable": "{{version}} available",
+				"heapUsage": "Heap usage",
+				"cpuUsage": "CPU usage",
+				"eventLoopDelay": "Event loop delay",
+				"dbSize": "Database size",
+				"dbOperations": "Database operations",
+				"dbOperationsSummary": "{{reads}} reads/s · {{writes}} writes/s"
 			},
 			"header": {
 				"title": "Dashboard",

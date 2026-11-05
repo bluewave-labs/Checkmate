@@ -1766,13 +1766,24 @@
 				"monitorStatus": "Стан моніторів",
 				"currentlyDown": "Зараз недоступні",
 				"uptime": "Доступність моніторів",
-				"monitorsByType": "Монітори за типом"
+				"monitorsByType": "Монітори за типом",
+				"diagnostic": "Діагностика Checkmate"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Змінити порядок сортування"
 			},
 			"currentlyDown": {
 				"empty": "Зараз недоступних моніторів немає."
+			},
+			"diagnostic": {
+				"version": "Версія",
+				"updateAvailable": "Доступна версія {{version}}",
+				"heapUsage": "Використання купи",
+				"cpuUsage": "Навантаження CPU",
+				"eventLoopDelay": "Затримка циклу подій",
+				"dbSize": "Розмір бази даних",
+				"dbOperations": "Операції з базою даних",
+				"dbOperationsSummary": "{{reads}} читань/с · {{writes}} записів/с"
 			},
 			"header": {
 				"title": "Панель",

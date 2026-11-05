@@ -13,7 +13,6 @@ import { formatMs } from "@/Utils/TimeUtils";
 import { formatPercentage, formatVersion } from "@/Utils/FormatUtils";
 import { useAppVersion } from "@/Hooks/useAppVersion";
 import { useTranslation } from "react-i18next";
-import type { QueueMetrics } from "@/Types/Queue";
 
 export const DiagnosticCard = () => {
 	const {
@@ -23,11 +22,6 @@ export const DiagnosticCard = () => {
 		refetch: _refetch,
 	} = useGet<Diagnostics>("/diagnostic/system", {}, { refreshInterval: 30000 });
 
-	const { data: queueMetrics } = useGet<QueueMetrics>(
-		"/queue/metrics",
-		{},
-		{ refreshInterval: 30000, keepPreviousData: true }
-	);
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const { versionInfo } = useAppVersion();
@@ -38,17 +32,6 @@ export const DiagnosticCard = () => {
 	const usedHeap = diagnostics.v8HeapStats.usedHeapSizeBytes;
 	const heapLimit = diagnostics.v8HeapStats.heapSizeLimitBytes;
 	const cpuUSage = diagnostics.cpuUsage;
-	// Half the row so stacked StatGrids line up; full width under the heading on small screens.
-	const StatGrid = ({ children }: { children: React.ReactNode }) => (
-		<Box
-			display="grid"
-			gridTemplateColumns="1fr auto"
-			columnGap={theme.spacing(LAYOUT.MD)}
-			width={{ xs: "100%", md: "50%" }}
-		>
-			{children}
-		</Box>
-	);
 	const InfoRow = ({ label, value }: { label: string; value: React.ReactNode }) => {
 		return (
 			<Stack
@@ -57,39 +40,35 @@ export const DiagnosticCard = () => {
 				gap={{ xs: theme.spacing(LAYOUT.XS), md: 0 }}
 			>
 				<Typography fontWeight={{ xs: 500, md: "normal" }}>{label}</Typography>
-				{typeof value === "string" || typeof value === "number" ? (
-					<Typography>{value}</Typography>
-				) : (
-					value
-				)}
+				<Typography>{value}</Typography>
 			</Stack>
 		);
 	};
 
 	return (
-		<DashboardCard title="Checkmate">
+		<DashboardCard title={t("pages.dashboard.cards.diagnostic")}>
 			<Stack gap={theme.spacing(LAYOUT.SM)}>
 				<InfoRow
-					label="Version"
+					label={t("pages.dashboard.diagnostic.version")}
 					value={
-						<Stack
-							direction="row"
-							alignItems="center"
-							gap={theme.spacing(LAYOUT.SM)}
-						>
-							<Typography>{formatVersion(__APP_VERSION__)}</Typography>
+						<>
+							{formatVersion(__APP_VERSION__)}
 							{showUpdate && (
-								<Typography color={theme.palette.text.secondary}>
-									{t("components.pageHeader.update.available", {
+								<Box
+									component="span"
+									ml={theme.spacing(LAYOUT.SM)}
+									color={theme.palette.text.secondary}
+								>
+									{t("pages.dashboard.diagnostic.updateAvailable", {
 										version: latestLabel,
 									})}
-								</Typography>
+								</Box>
 							)}
-						</Stack>
+						</>
 					}
 				/>
 				<BarRow
-					label="Heap usage"
+					label={t("pages.dashboard.diagnostic.heapUsage")}
 					value={
 						<Typography
 							color={getSeverityColor(usedHeap / heapLimit, theme)}
@@ -98,7 +77,7 @@ export const DiagnosticCard = () => {
 					fillRatio={usedHeap / heapLimit}
 				/>
 				<BarRow
-					label="CPU usage"
+					label={t("pages.dashboard.diagnostic.cpuUsage")}
 					value={
 						<Typography color={getSeverityColor(cpuUSage.usagePercentage, theme)}>
 							{formatPercentage(cpuUSage.usagePercentage)}
@@ -107,51 +86,19 @@ export const DiagnosticCard = () => {
 					fillRatio={cpuUSage.usagePercentage}
 				/>
 				<InfoRow
-					label="Event loop delay"
+					label={t("pages.dashboard.diagnostic.eventLoopDelay")}
 					value={formatMs(diagnostics.eventLoopDelayMs)}
 				/>
-				{queueMetrics && (
-					<InfoRow
-						label="Workers"
-						value={
-							<StatGrid>
-								<Typography>{"Alive:"}</Typography>
-								<Typography
-									textAlign="right"
-									color={
-										queueMetrics.workers.length === 0
-											? theme.palette.error.main
-											: theme.palette.success.main
-									}
-								>
-									{queueMetrics.workers.length}
-								</Typography>
-								<Typography>{"Failing jobs:"}</Typography>
-								<Typography
-									textAlign="right"
-									color={getSeverityColor(
-										queueMetrics.jobs ? queueMetrics.failingJobs / queueMetrics.jobs : 0,
-										theme
-									)}
-								>{`${queueMetrics.failingJobs} / ${queueMetrics.jobs}`}</Typography>
-							</StatGrid>
-						}
-					/>
-				)}
 				<InfoRow
-					label="Database"
-					value={
-						<StatGrid>
-							<Typography>{"DB size:"}</Typography>
-							<Typography textAlign="right">
-								{prettyBytes(diagnostics.mongoStats.totalSize)}
-							</Typography>
-							<Typography>{`${diagnostics.mongoStats.readsPerSecond.toFixed(1)} reads/s`}</Typography>
-							<Typography textAlign="right">{`${diagnostics.mongoStats.writesPerSecond.toFixed(1)} writes/s`}</Typography>
-							<Typography>{`${diagnostics.mongoStats.updatesPerSecond.toFixed(1)} update/s`}</Typography>
-							<Typography textAlign="right">{`${diagnostics.mongoStats.deletesPerSecond.toFixed(1)} delete/s`}</Typography>
-						</StatGrid>
-					}
+					label={t("pages.dashboard.diagnostic.dbSize")}
+					value={prettyBytes(diagnostics.mongoStats.totalSize)}
+				/>
+				<InfoRow
+					label={t("pages.dashboard.diagnostic.dbOperations")}
+					value={t("pages.dashboard.diagnostic.dbOperationsSummary", {
+						reads: diagnostics.mongoStats.readsPerSecond.toFixed(1),
+						writes: diagnostics.mongoStats.writesPerSecond.toFixed(1),
+					})}
 				/>
 			</Stack>
 		</DashboardCard>

@@ -1886,13 +1886,24 @@
 				"monitorStatus": "Stato dei monitor",
 				"currentlyDown": "Attualmente non attivi",
 				"uptime": "Disponibilità dei monitor",
-				"monitorsByType": "Monitor per tipo"
+				"monitorsByType": "Monitor per tipo",
+				"diagnostic": "Diagnostica di Checkmate"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Inverti l'ordinamento"
 			},
 			"currentlyDown": {
 				"empty": "Nessun monitor è inattivo in questo momento."
+			},
+			"diagnostic": {
+				"version": "Versione",
+				"updateAvailable": "{{version}} disponibile",
+				"heapUsage": "Utilizzo heap",
+				"cpuUsage": "Utilizzo CPU",
+				"eventLoopDelay": "Ritardo del ciclo di eventi",
+				"dbSize": "Dimensione del database",
+				"dbOperations": "Operazioni del database",
+				"dbOperationsSummary": "{{reads}} letture/s · {{writes}} scritture/s"
 			},
 			"header": {
 				"title": "Dashboard",

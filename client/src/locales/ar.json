@@ -1766,13 +1766,24 @@
 				"monitorStatus": "حالة المراقبات",
 				"currentlyDown": "متوقفة حاليًا",
 				"uptime": "مدة تشغيل المراقبات",
-				"monitorsByType": "المراقبات حسب النوع"
+				"monitorsByType": "المراقبات حسب النوع",
+				"diagnostic": "تشخيصات Checkmate"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "تغيير ترتيب الفرز"
 			},
 			"currentlyDown": {
 				"empty": "لا توجد مراقبات متوقفة في الوقت الحالي."
+			},
+			"diagnostic": {
+				"version": "الإصدار",
+				"updateAvailable": "{{version}} متاح",
+				"heapUsage": "استخدام الذاكرة المؤقتة (Heap)",
+				"cpuUsage": "استخدام المعالج",
+				"eventLoopDelay": "تأخير حلقة الأحداث",
+				"dbSize": "حجم قاعدة البيانات",
+				"dbOperations": "عمليات قاعدة البيانات",
+				"dbOperationsSummary": "{{reads}} قراءة/ث · {{writes}} كتابة/ث"
 			},
 			"header": {
 				"title": "لوحة المعلومات",

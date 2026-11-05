@@ -1766,13 +1766,24 @@
 				"monitorStatus": "สถานะมอนิเตอร์",
 				"currentlyDown": "ขณะนี้ใช้งานไม่ได้",
 				"uptime": "ความพร้อมใช้งานของมอนิเตอร์",
-				"monitorsByType": "มอนิเตอร์แยกตามประเภท"
+				"monitorsByType": "มอนิเตอร์แยกตามประเภท",
+				"diagnostic": "การวินิจฉัย Checkmate"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "สลับลำดับการเรียง"
 			},
 			"currentlyDown": {
 				"empty": "ขณะนี้ไม่มีมอนิเตอร์ที่ใช้งานไม่ได้"
+			},
+			"diagnostic": {
+				"version": "เวอร์ชัน",
+				"updateAvailable": "มี {{version}} ให้ใช้งาน",
+				"heapUsage": "การใช้ฮีป",
+				"cpuUsage": "การใช้ CPU",
+				"eventLoopDelay": "ความหน่วงของ event loop",
+				"dbSize": "ขนาดฐานข้อมูล",
+				"dbOperations": "การดำเนินการฐานข้อมูล",
+				"dbOperationsSummary": "{{reads}} การอ่าน/วิ · {{writes}} การเขียน/วิ"
 			},
 			"header": {
 				"title": "แดชบอร์ด",

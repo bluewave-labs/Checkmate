@@ -1766,13 +1766,24 @@
 				"monitorStatus": "Estat dels monitors",
 				"currentlyDown": "Actualment caiguts",
 				"uptime": "Disponibilitat dels monitors",
-				"monitorsByType": "Monitors per tipus"
+				"monitorsByType": "Monitors per tipus",
+				"diagnostic": "Diagnòstic de Checkmate"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Canvia l'ordre"
 			},
 			"currentlyDown": {
 				"empty": "Cap monitor no està caigut en aquest moment."
+			},
+			"diagnostic": {
+				"version": "Versió",
+				"updateAvailable": "{{version}} disponible",
+				"heapUsage": "Ús del heap",
+				"cpuUsage": "Ús de CPU",
+				"eventLoopDelay": "Retard del bucle d'esdeveniments",
+				"dbSize": "Mida de la base de dades",
+				"dbOperations": "Operacions de la base de dades",
+				"dbOperationsSummary": "{{reads}} lectures/s · {{writes}} escriptures/s"
 			},
 			"header": {
 				"title": "Tauler",
