@@ -26,7 +26,7 @@ export const mongoDiagnosticsSchema = z.object({
 export const diagnosticsSchema = z
 	.object({
 		osStats: z.object({ totalMemoryBytes: z.number() }),
-		cpuUsage: z.object({ usagePercentage: z.number() }),
+		cpuUsage: z.object({ usagePercentage: z.number().meta({ description: "Process CPU usage as a fraction of one core (0.25 = 25%)" }) }),
 		v8HeapStats: z.object({
 			totalHeapSizeBytes: z.number(),
 			usedHeapSizeBytes: z.number(),
