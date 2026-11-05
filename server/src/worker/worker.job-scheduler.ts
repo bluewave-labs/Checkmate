@@ -158,10 +158,13 @@ export class JobScheduler implements IJobScheduler {
 	};
 
 	getMetrics = async (): Promise<WorkerMetrics> => {
-		const rows = await this.jobsRepository.findAll();
-		const recent = await this.queueWorkersRepository.findRecent(WORKER_STALE_MS);
-		const workers = recent.filter((worker) => worker.processesJobs);
 		const now = Date.now();
+		const [rows, recent, dueBacklog] = await Promise.all([
+			this.jobsRepository.findAll(),
+			this.queueWorkersRepository.findRecent(WORKER_STALE_MS),
+			this.jobsRepository.countDueBacklog(now),
+		]);
+		const workers = recent.filter((worker) => worker.processesJobs);
 		return rows.reduce<WorkerMetrics>(
 			(acc, job) => {
 				acc.jobs++;
@@ -188,6 +191,7 @@ export class JobScheduler implements IJobScheduler {
 				jobsWithFailures: [],
 				totalRuns: 0,
 				totalFailures: 0,
+				dueBacklog,
 				workers,
 			}
 		);
