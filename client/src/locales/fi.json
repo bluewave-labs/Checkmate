@@ -1766,13 +1766,24 @@
 				"monitorStatus": "Monitorien tila",
 				"currentlyDown": "Tällä hetkellä alhaalla",
 				"uptime": "Monitorien käytettävyys",
-				"monitorsByType": "Monitorit tyypin mukaan"
+				"monitorsByType": "Monitorit tyypin mukaan",
+				"diagnostic": "Checkmate-diagnostiikka"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Vaihda järjestys"
 			},
 			"currentlyDown": {
 				"empty": "Yksikään monitori ei ole juuri nyt alhaalla."
+			},
+			"diagnostic": {
+				"version": "Versio",
+				"updateAvailable": "{{version}} saatavilla",
+				"heapUsage": "Keon käyttö",
+				"cpuUsage": "Suorittimen käyttö",
+				"eventLoopDelay": "Tapahtumasilmukan viive",
+				"dbSize": "Tietokannan koko",
+				"dbOperations": "Tietokantaoperaatiot",
+				"dbOperationsSummary": "{{reads}} lukua/s · {{writes}} kirjoitusta/s"
 			},
 			"header": {
 				"title": "Koontinäyttö",

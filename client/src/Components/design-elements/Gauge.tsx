@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 
 import { useTheme } from "@mui/material/styles";
 import { forwardRef, useMemo, useState, useEffect } from "react";
-import { getInfraGaugeColor } from "@/Utils/MonitorUtils";
+import { getSeverityColor } from "@/Utils/MonitorUtils";
 
 const MINIMUM_VALUE = 0;
 const MAXIMUM_VALUE = 100;
@@ -54,7 +54,7 @@ export const Gauge = forwardRef<HTMLDivElement, GaugeProps>(function Gauge(
 		return () => clearTimeout(timer);
 	}, [circumference, strokeLength]);
 
-	const fillColor = getInfraGaugeColor(progressWithinRange, theme);
+	const fillColor = getSeverityColor(progressWithinRange, theme, { isFraction: false });
 
 	if (isLoading) {
 		return null;

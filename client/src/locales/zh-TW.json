@@ -1766,13 +1766,24 @@
 				"monitorStatus": "監控狀態",
 				"currentlyDown": "目前中斷",
 				"uptime": "監控可用率",
-				"monitorsByType": "依類型分類的監控"
+				"monitorsByType": "依類型分類的監控",
+				"diagnostic": "Checkmate 診斷"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "切換排序方式"
 			},
 			"currentlyDown": {
 				"empty": "目前沒有中斷的監控。"
+			},
+			"diagnostic": {
+				"version": "版本",
+				"updateAvailable": "{{version}} 可用",
+				"heapUsage": "堆積記憶體使用量",
+				"cpuUsage": "CPU 使用率",
+				"eventLoopDelay": "事件迴圈延遲",
+				"dbSize": "資料庫大小",
+				"dbOperations": "資料庫操作",
+				"dbOperationsSummary": "{{reads}} 次讀取/秒 · {{writes}} 次寫入/秒"
 			},
 			"header": {
 				"title": "儀表板",

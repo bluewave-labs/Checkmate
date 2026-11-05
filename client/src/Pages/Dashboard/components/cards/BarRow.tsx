@@ -7,7 +7,7 @@ import { ProgressBar } from "@/Pages/Dashboard/components/ProgressBar";
 
 interface BarRowProps {
 	label: string;
-	value: string;
+	value: React.ReactNode;
 	fillRatio: number;
 	valueColor?: string;
 }

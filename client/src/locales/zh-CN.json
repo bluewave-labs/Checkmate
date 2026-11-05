@@ -1767,13 +1767,24 @@
 				"monitorStatus": "监控状态",
 				"currentlyDown": "当前故障",
 				"uptime": "监控可用率",
-				"monitorsByType": "按类型分类的监控"
+				"monitorsByType": "按类型分类的监控",
+				"diagnostic": "Checkmate 诊断"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "切换排序方式"
 			},
 			"currentlyDown": {
 				"empty": "当前没有故障的监控。"
+			},
+			"diagnostic": {
+				"version": "版本",
+				"updateAvailable": "{{version}} 可用",
+				"heapUsage": "堆内存使用",
+				"cpuUsage": "CPU 使用率",
+				"eventLoopDelay": "事件循环延迟",
+				"dbSize": "数据库大小",
+				"dbOperations": "数据库操作",
+				"dbOperationsSummary": "{{reads}} 次读取/秒 · {{writes}} 次写入/秒"
 			},
 			"header": {
 				"title": "仪表板",

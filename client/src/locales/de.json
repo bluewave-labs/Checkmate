@@ -1767,13 +1767,24 @@
 				"monitorStatus": "Monitorstatus",
 				"currentlyDown": "Derzeit ausgefallen",
 				"uptime": "Monitor-Verfügbarkeit",
-				"monitorsByType": "Monitore nach Typ"
+				"monitorsByType": "Monitore nach Typ",
+				"diagnostic": "Checkmate-Diagnose"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Sortierreihenfolge umschalten"
 			},
 			"currentlyDown": {
 				"empty": "Derzeit ist kein Monitor ausgefallen."
+			},
+			"diagnostic": {
+				"version": "Version",
+				"updateAvailable": "{{version}} verfügbar",
+				"heapUsage": "Heap-Nutzung",
+				"cpuUsage": "CPU-Auslastung",
+				"eventLoopDelay": "Event-Loop-Verzögerung",
+				"dbSize": "Datenbankgröße",
+				"dbOperations": "Datenbankoperationen",
+				"dbOperationsSummary": "{{reads}} Lesevorgänge/s · {{writes}} Schreibvorgänge/s"
 			},
 			"header": {
 				"title": "Dashboard",

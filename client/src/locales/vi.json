@@ -1766,13 +1766,24 @@
 				"monitorStatus": "Trạng thái trình giám sát",
 				"currentlyDown": "Hiện đang ngừng hoạt động",
 				"uptime": "Thời gian hoạt động",
-				"monitorsByType": "Trình giám sát theo loại"
+				"monitorsByType": "Trình giám sát theo loại",
+				"diagnostic": "Chẩn đoán Checkmate"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Đổi thứ tự sắp xếp"
 			},
 			"currentlyDown": {
 				"empty": "Hiện không có trình giám sát nào ngừng hoạt động."
+			},
+			"diagnostic": {
+				"version": "Phiên bản",
+				"updateAvailable": "Đã có {{version}}",
+				"heapUsage": "Mức dùng heap",
+				"cpuUsage": "Mức dùng CPU",
+				"eventLoopDelay": "Độ trễ vòng lặp sự kiện",
+				"dbSize": "Kích thước cơ sở dữ liệu",
+				"dbOperations": "Thao tác cơ sở dữ liệu",
+				"dbOperationsSummary": "{{reads}} lượt đọc/giây · {{writes}} lượt ghi/giây"
 			},
 			"header": {
 				"title": "Bảng điều khiển",

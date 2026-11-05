@@ -1766,13 +1766,24 @@
 				"monitorStatus": "Stav monitorů",
 				"currentlyDown": "Aktuálně nedostupné",
 				"uptime": "Dostupnost monitorů",
-				"monitorsByType": "Monitory podle typu"
+				"monitorsByType": "Monitory podle typu",
+				"diagnostic": "Diagnostika Checkmate"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Přepnout řazení"
 			},
 			"currentlyDown": {
 				"empty": "Momentálně není žádný monitor nedostupný."
+			},
+			"diagnostic": {
+				"version": "Verze",
+				"updateAvailable": "{{version}} k dispozici",
+				"heapUsage": "Využití haldy",
+				"cpuUsage": "Využití CPU",
+				"eventLoopDelay": "Zpoždění smyčky událostí",
+				"dbSize": "Velikost databáze",
+				"dbOperations": "Operace databáze",
+				"dbOperationsSummary": "{{reads}} čtení/s · {{writes}} zápisů/s"
 			},
 			"header": {
 				"title": "Přehled",

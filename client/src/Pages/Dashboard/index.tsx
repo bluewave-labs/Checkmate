@@ -1,5 +1,5 @@
-import { Fragment, useMemo, useState, type ReactNode } from "react";
-import Box from "@mui/material/Box";
+import { useMemo, useState, type ReactNode } from "react";
+import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
@@ -19,6 +19,7 @@ import { UptimeCard } from "@/Pages/Dashboard/components/cards/UptimeCard";
 import { MonitorsByTypeCard } from "@/Pages/Dashboard/components/cards/MonitorsByTypeCard";
 import { EditCardsModal } from "@/Pages/Dashboard/components/EditCardsModal";
 import { type DashboardCardKey, dashboardCardKeys } from "@/Types/Dashboard";
+import { DiagnosticCard } from "@/Pages/Dashboard/components/cards/DiagnosticCard";
 
 const Dashboard = () => {
 	const theme = useTheme();
@@ -52,6 +53,7 @@ const Dashboard = () => {
 		),
 		uptime: <UptimeCard monitors={dashboard?.uptime ?? []} />,
 		monitorsByType: <MonitorsByTypeCard monitorsByType={dashboard?.byType ?? []} />,
+		diagnostic: <DiagnosticCard />,
 	};
 
 	return (
@@ -74,17 +76,21 @@ const Dashboard = () => {
 					</Button>
 				</Stack>
 
-				<Box
-					display="grid"
-					gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }}
-					gap={theme.spacing(LAYOUT.MD)}
+				<Grid
+					container
+					spacing={LAYOUT.MD}
 				>
 					{dashboardCardKeys
 						.filter((key) => visibleCards.has(key))
 						.map((key) => (
-							<Fragment key={key}>{cardComponents[key]}</Fragment>
+							<Grid
+								key={key}
+								size={{ xs: 12, md: 6 }}
+							>
+								{cardComponents[key]}
+							</Grid>
 						))}
-				</Box>
+				</Grid>
 			</Stack>
 
 			<EditCardsModal

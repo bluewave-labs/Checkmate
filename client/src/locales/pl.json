@@ -1886,13 +1886,24 @@
 				"monitorStatus": "Stan monitorów",
 				"currentlyDown": "Obecnie niedostępne",
 				"uptime": "Dostępność monitorów",
-				"monitorsByType": "Monitory według typu"
+				"monitorsByType": "Monitory według typu",
+				"diagnostic": "Diagnostyka Checkmate"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Zmień kolejność sortowania"
 			},
 			"currentlyDown": {
 				"empty": "Obecnie żaden monitor nie jest niedostępny."
+			},
+			"diagnostic": {
+				"version": "Wersja",
+				"updateAvailable": "Dostępna wersja {{version}}",
+				"heapUsage": "Użycie sterty",
+				"cpuUsage": "Użycie CPU",
+				"eventLoopDelay": "Opóźnienie pętli zdarzeń",
+				"dbSize": "Rozmiar bazy danych",
+				"dbOperations": "Operacje bazy danych",
+				"dbOperationsSummary": "{{reads}} odczytów/s · {{writes}} zapisów/s"
 			},
 			"header": {
 				"title": "Panel",

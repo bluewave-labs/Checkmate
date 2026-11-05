@@ -14,33 +14,28 @@ const percentageFormatter = new Intl.NumberFormat("en-US", {
 });
 
 /**
- * Formats a decimal value as a percentage string.
- * @param value - Decimal value (e.g., 0.75 for 75%)
- * @returns Formatted percentage string (e.g., "75.00%")
+ * Formats a value as a percentage string with two decimals.
+ * @param value - The value to format: a fraction (0.75 for 75%) by default,
+ *   or a percentage (75 for 75%) when `isFraction` is false
+ * @param options.isFraction - Whether `value` is a fraction (0–1) rather than
+ *   a percentage (0–100). Defaults to true.
+ * @returns Formatted percentage string (e.g., "75.00%"), or "0.00%" for NaN
  * @example
- * formatPercentage(0.75)   // "75.00%"
- * formatPercentage(1)      // "100.00%"
- * formatPercentage(0.5432) // "54.32%"
- * formatPercentage(0.9999) // "99.99%"
+ * formatPercentage(0.75)                         // "75.00%"
+ * formatPercentage(1)                            // "100.00%"
+ * formatPercentage(0.9999)                       // "99.99%"
+ * formatPercentage(75, { isFraction: false })    // "75.00%"
+ * formatPercentage(54.32, { isFraction: false }) // "54.32%"
  */
-export const formatPercentage = (value: number): string => {
+export const formatPercentage = (
+	value: number,
+	{ isFraction = true }: { isFraction?: boolean } = {}
+): string => {
 	if (typeof value !== "number" || Number.isNaN(value)) {
 		return "0.00%";
 	}
+	if (!isFraction) value /= 100;
 	return percentageFormatter.format(value);
-};
-
-/**
- * Formats a whole number percentage value as a percentage string.
- * @param value - Whole number percentage (e.g., 75 for 75%)
- * @returns Formatted percentage string (e.g., "75.00%")
- * @example
- * formatPercentageFromWhole(75)    // "75.00%"
- * formatPercentageFromWhole(100)   // "100.00%"
- * formatPercentageFromWhole(54.32) // "54.32%"
- */
-export const formatPercentageFromWhole = (value: number): string => {
-	return formatPercentage(value / 100);
 };
 
 /**
@@ -60,6 +55,15 @@ export const getPercentage = (value: number, total: number) => {
 	if (!value || !total) return 0;
 	return (value / total) * 100;
 };
+
+/**
+ * Formats a version string with exactly one leading "v".
+ * Release tags are usually "v3.14.0" but not always, and the build version has no prefix.
+ * @example
+ * formatVersion("3.14.0")  // "v3.14.0"
+ * formatVersion("v3.14.0") // "v3.14.0"
+ */
+export const formatVersion = (version: string): string => version.replace(/^v?/, "v");
 
 // Shown wherever a value is not available for the current data source.
 export const PLACEHOLDER = "—";

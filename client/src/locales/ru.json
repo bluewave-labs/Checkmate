@@ -1766,13 +1766,24 @@
 				"monitorStatus": "Состояние мониторов",
 				"currentlyDown": "Сейчас недоступны",
 				"uptime": "Доступность мониторов",
-				"monitorsByType": "Мониторы по типу"
+				"monitorsByType": "Мониторы по типу",
+				"diagnostic": "Диагностика Checkmate"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Изменить порядок сортировки"
 			},
 			"currentlyDown": {
 				"empty": "Сейчас недоступных мониторов нет."
+			},
+			"diagnostic": {
+				"version": "Версия",
+				"updateAvailable": "Доступна версия {{version}}",
+				"heapUsage": "Использование кучи",
+				"cpuUsage": "Загрузка CPU",
+				"eventLoopDelay": "Задержка цикла событий",
+				"dbSize": "Размер базы данных",
+				"dbOperations": "Операции с базой данных",
+				"dbOperationsSummary": "{{reads}} чтений/с · {{writes}} записей/с"
 			},
 			"header": {
 				"title": "Панель",

@@ -1766,13 +1766,24 @@
 				"monitorStatus": "Estado de los monitores",
 				"currentlyDown": "Caídos ahora mismo",
 				"uptime": "Disponibilidad de los monitores",
-				"monitorsByType": "Monitores por tipo"
+				"monitorsByType": "Monitores por tipo",
+				"diagnostic": "Diagnóstico de Checkmate"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Cambiar el orden"
 			},
 			"currentlyDown": {
 				"empty": "Ningún monitor está caído en este momento."
+			},
+			"diagnostic": {
+				"version": "Versión",
+				"updateAvailable": "{{version}} disponible",
+				"heapUsage": "Uso del heap",
+				"cpuUsage": "Uso de CPU",
+				"eventLoopDelay": "Retraso del bucle de eventos",
+				"dbSize": "Tamaño de la base de datos",
+				"dbOperations": "Operaciones de la base de datos",
+				"dbOperationsSummary": "{{reads}} lecturas/s · {{writes}} escrituras/s"
 			},
 			"header": {
 				"title": "Panel",

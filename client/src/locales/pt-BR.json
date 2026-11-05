@@ -2035,13 +2035,24 @@
 				"monitorStatus": "Status dos monitores",
 				"currentlyDown": "Fora do ar agora",
 				"uptime": "Disponibilidade dos monitores",
-				"monitorsByType": "Monitores por tipo"
+				"monitorsByType": "Monitores por tipo",
+				"diagnostic": "Diagnóstico do Checkmate"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Alternar a ordenação"
 			},
 			"currentlyDown": {
 				"empty": "Nenhum monitor está fora do ar neste momento."
+			},
+			"diagnostic": {
+				"version": "Versão",
+				"updateAvailable": "{{version}} disponível",
+				"heapUsage": "Uso do heap",
+				"cpuUsage": "Uso de CPU",
+				"eventLoopDelay": "Atraso do loop de eventos",
+				"dbSize": "Tamanho do banco de dados",
+				"dbOperations": "Operações do banco de dados",
+				"dbOperationsSummary": "{{reads}} leituras/s · {{writes}} gravações/s"
 			},
 			"header": {
 				"title": "Painel",
