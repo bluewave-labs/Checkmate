@@ -9,6 +9,7 @@ import { ChevronLeft, HelpCircle, FileText, Code } from "lucide-react";
 import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
 import { useAppVersion } from "@/Hooks/useAppVersion";
 import { PulseDot } from "@/Components/design-elements/PulseDot";
+import { formatVersion } from "@/Utils/FormatUtils";
 
 import type { ReactNode } from "react";
 
@@ -35,8 +36,7 @@ export const PageHeader = ({
 	const { t } = useTranslation();
 	const { versionInfo } = useAppVersion();
 	const showUpdate = Boolean(versionInfo?.updateAvailable && versionInfo.latest);
-	// Release tags are usually "v3.14.0" but not always, so normalise to exactly one prefix.
-	const latestLabel = versionInfo?.latest?.replace(/^v?/, "v");
+	const latestLabel = versionInfo?.latest && formatVersion(versionInfo.latest);
 
 	const linkItems: { key: keyof typeof EXTERNAL_LINKS; icon: ReactNode }[] = [
 		{

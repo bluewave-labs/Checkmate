@@ -56,5 +56,14 @@ export const getPercentage = (value: number, total: number) => {
 	return (value / total) * 100;
 };
 
+/**
+ * Formats a version string with exactly one leading "v".
+ * Release tags are usually "v3.14.0" but not always, and the build version has no prefix.
+ * @example
+ * formatVersion("3.14.0")  // "v3.14.0"
+ * formatVersion("v3.14.0") // "v3.14.0"
+ */
+export const formatVersion = (version: string): string => version.replace(/^v?/, "v");
+
 // Shown wherever a value is not available for the current data source.
 export const PLACEHOLDER = "—";

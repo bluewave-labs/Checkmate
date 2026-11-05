@@ -10,6 +10,7 @@ export const dashboardCardKeys = [
 	"currentlyDown",
 	"uptime",
 	"monitorsByType",
+	"diagnostic",
 ] as const;
 export type DashboardCardKey = (typeof dashboardCardKeys)[number];
 
