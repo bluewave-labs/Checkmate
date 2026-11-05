@@ -32,32 +32,29 @@ export const QueueCard = () => {
 	const failingRatio = jobs ? failingJobs / jobs : 0;
 	const activeRatio = jobs ? activeJobs / jobs : 0;
 	return (
-		<DashboardCard
-			title="Queue"
-			isLoading={isLoading}
-		>
+		<DashboardCard title={t("pages.dashboard.cards.queue")}>
 			<InfoRow
-				label="Jobs"
+				label={t("pages.dashboard.queue.jobs")}
 				value={jobs}
 			/>
 			<BarRow
-				label="Active jobs"
+				label={t("pages.dashboard.queue.activeJobs")}
 				value={`${activeJobs} / ${jobs}`}
 				valueColor={getSeverityColor(activeRatio, theme)}
 				fillRatio={activeRatio}
 			/>
 			<BarRow
-				label="Failing jobs"
+				label={t("pages.dashboard.queue.failingJobs")}
 				value={`${failingJobs} / ${jobs}`}
 				valueColor={getSeverityColor(failingRatio, theme)}
 				fillRatio={failingRatio}
 			/>
 			<InfoRow
-				label="Workers"
+				label={t("pages.dashboard.queue.workers")}
 				value={workers.length}
 			/>
 			<InfoRow
-				label="Overdue checks"
+				label={t("pages.dashboard.queue.overdueChecks")}
 				value={
 					<Box
 						component="span"

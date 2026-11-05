@@ -1786,6 +1786,13 @@
 				"dbOperations": "データベース操作",
 				"dbOperationsSummary": "{{reads}} 読み取り/秒 · {{writes}} 書き込み/秒"
 			},
+			"queue": {
+				"jobs": "ジョブ",
+				"activeJobs": "実行中のジョブ",
+				"failingJobs": "失敗中のジョブ",
+				"workers": "ワーカー",
+				"overdueChecks": "遅延しているチェック"
+			},
 			"header": {
 				"title": "ダッシュボード",
 				"description": "すべてのモニタータイプを一か所で確認し、対応が必要なものを見つけます。"

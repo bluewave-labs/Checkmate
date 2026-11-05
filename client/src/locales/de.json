@@ -1787,6 +1787,13 @@
 				"dbOperations": "Datenbankoperationen",
 				"dbOperationsSummary": "{{reads}} Lesevorgänge/s · {{writes}} Schreibvorgänge/s"
 			},
+			"queue": {
+				"jobs": "Jobs",
+				"activeJobs": "Aktive Jobs",
+				"failingJobs": "Fehlerhafte Jobs",
+				"workers": "Worker",
+				"overdueChecks": "Überfällige Prüfungen"
+			},
 			"header": {
 				"title": "Dashboard",
 				"description": "Alle Monitortypen an einem Ort sehen und erkennen, was Aufmerksamkeit braucht."

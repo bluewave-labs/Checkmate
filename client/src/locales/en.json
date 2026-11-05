@@ -2066,6 +2066,13 @@
 				"dbOperations": "Database operations",
 				"dbOperationsSummary": "{{reads}} reads/s · {{writes}} writes/s"
 			},
+			"queue": {
+				"jobs": "Jobs",
+				"activeJobs": "Active jobs",
+				"failingJobs": "Failing jobs",
+				"workers": "Workers",
+				"overdueChecks": "Overdue checks"
+			},
 			"header": {
 				"title": "Dashboard",
 				"description": "See every monitor type in one place and spot what needs attention."

@@ -1787,6 +1787,13 @@
 				"dbOperations": "数据库操作",
 				"dbOperationsSummary": "{{reads}} 次读取/秒 · {{writes}} 次写入/秒"
 			},
+			"queue": {
+				"jobs": "任务",
+				"activeJobs": "活动任务",
+				"failingJobs": "失败的任务",
+				"workers": "工作进程",
+				"overdueChecks": "逾期检查"
+			},
 			"header": {
 				"title": "仪表板",
 				"description": "在一处查看所有监控类型，发现需要关注的问题。"

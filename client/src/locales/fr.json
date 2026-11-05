@@ -1786,6 +1786,13 @@
 				"dbOperations": "Opérations de la base de données",
 				"dbOperationsSummary": "{{reads}} lectures/s · {{writes}} écritures/s"
 			},
+			"queue": {
+				"jobs": "Tâches",
+				"activeJobs": "Tâches actives",
+				"failingJobs": "Tâches en échec",
+				"workers": "Workers",
+				"overdueChecks": "Vérifications en retard"
+			},
 			"header": {
 				"title": "Tableau de bord",
 				"description": "Voyez tous les types de moniteurs au même endroit et repérez ce qui demande attention."

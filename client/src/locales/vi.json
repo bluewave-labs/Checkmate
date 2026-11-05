@@ -1786,6 +1786,13 @@
 				"dbOperations": "Thao tác cơ sở dữ liệu",
 				"dbOperationsSummary": "{{reads}} lượt đọc/giây · {{writes}} lượt ghi/giây"
 			},
+			"queue": {
+				"jobs": "Tác vụ",
+				"activeJobs": "Tác vụ đang chạy",
+				"failingJobs": "Tác vụ lỗi",
+				"workers": "Worker",
+				"overdueChecks": "Kiểm tra quá hạn"
+			},
 			"header": {
 				"title": "Bảng điều khiển",
 				"description": "Xem mọi loại trình giám sát ở cùng một nơi và phát hiện điều cần chú ý."

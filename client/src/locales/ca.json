@@ -1786,6 +1786,13 @@
 				"dbOperations": "Operacions de la base de dades",
 				"dbOperationsSummary": "{{reads}} lectures/s · {{writes}} escriptures/s"
 			},
+			"queue": {
+				"jobs": "Tasques",
+				"activeJobs": "Tasques actives",
+				"failingJobs": "Tasques fallides",
+				"workers": "Treballadors",
+				"overdueChecks": "Comprovacions endarrerides"
+			},
 			"header": {
 				"title": "Tauler",
 				"description": "Vegeu tots els tipus de monitor en un sol lloc i detecteu què necessita atenció."

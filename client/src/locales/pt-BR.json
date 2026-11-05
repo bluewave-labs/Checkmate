@@ -2055,6 +2055,13 @@
 				"dbOperations": "Operações do banco de dados",
 				"dbOperationsSummary": "{{reads}} leituras/s · {{writes}} gravações/s"
 			},
+			"queue": {
+				"jobs": "Jobs",
+				"activeJobs": "Jobs ativos",
+				"failingJobs": "Jobs com falha",
+				"workers": "Workers",
+				"overdueChecks": "Verificações atrasadas"
+			},
 			"header": {
 				"title": "Painel",
 				"description": "Veja todos os tipos de monitor em um só lugar e identifique o que precisa de atenção."

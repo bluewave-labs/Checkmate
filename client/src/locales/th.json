@@ -1786,6 +1786,13 @@
 				"dbOperations": "การดำเนินการฐานข้อมูล",
 				"dbOperationsSummary": "{{reads}} การอ่าน/วิ · {{writes}} การเขียน/วิ"
 			},
+			"queue": {
+				"jobs": "งาน",
+				"activeJobs": "งานที่กำลังทำงาน",
+				"failingJobs": "งานที่ล้มเหลว",
+				"workers": "เวิร์กเกอร์",
+				"overdueChecks": "การตรวจสอบที่ล่าช้า"
+			},
 			"header": {
 				"title": "แดชบอร์ด",
 				"description": "ดูมอนิเตอร์ทุกประเภทในที่เดียวและสังเกตสิ่งที่ต้องดูแล"

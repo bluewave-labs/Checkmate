@@ -1786,6 +1786,13 @@
 				"dbOperations": "資料庫操作",
 				"dbOperationsSummary": "{{reads}} 次讀取/秒 · {{writes}} 次寫入/秒"
 			},
+			"queue": {
+				"jobs": "工作",
+				"activeJobs": "執行中的工作",
+				"failingJobs": "失敗的工作",
+				"workers": "工作程序",
+				"overdueChecks": "逾期檢查"
+			},
 			"header": {
 				"title": "儀表板",
 				"description": "在一處檢視所有監控類型，找出需要關注的問題。"

@@ -1906,6 +1906,13 @@
 				"dbOperations": "Operazioni del database",
 				"dbOperationsSummary": "{{reads}} letture/s · {{writes}} scritture/s"
 			},
+			"queue": {
+				"jobs": "Job",
+				"activeJobs": "Job attivi",
+				"failingJobs": "Job con errori",
+				"workers": "Worker",
+				"overdueChecks": "Controlli in ritardo"
+			},
 			"header": {
 				"title": "Dashboard",
 				"description": "Vedi ogni tipo di monitor in un unico posto e individua ciò che richiede attenzione."

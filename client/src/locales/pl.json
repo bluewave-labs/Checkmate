@@ -1906,6 +1906,13 @@
 				"dbOperations": "Operacje bazy danych",
 				"dbOperationsSummary": "{{reads}} odczytów/s · {{writes}} zapisów/s"
 			},
+			"queue": {
+				"jobs": "Zadania",
+				"activeJobs": "Aktywne zadania",
+				"failingJobs": "Nieudane zadania",
+				"workers": "Workery",
+				"overdueChecks": "Zaległe sprawdzenia"
+			},
 			"header": {
 				"title": "Panel",
 				"description": "Zobacz wszystkie typy monitorów w jednym miejscu i zauważ, co wymaga uwagi."

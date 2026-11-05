@@ -1786,6 +1786,13 @@
 				"dbOperations": "Tietokantaoperaatiot",
 				"dbOperationsSummary": "{{reads}} lukua/s · {{writes}} kirjoitusta/s"
 			},
+			"queue": {
+				"jobs": "Työt",
+				"activeJobs": "Aktiiviset työt",
+				"failingJobs": "Epäonnistuvat työt",
+				"workers": "Workerit",
+				"overdueChecks": "Myöhässä olevat tarkistukset"
+			},
 			"header": {
 				"title": "Koontinäyttö",
 				"description": "Näe kaikki monitorityypit yhdessä paikassa ja huomaa, mikä vaatii huomiota."
