@@ -15,6 +15,11 @@ export const dashboardCardKeys = [
 ] as const;
 export type DashboardCardKey = (typeof dashboardCardKeys)[number];
 
+export const adminDashboardCardKeys: readonly DashboardCardKey[] = [
+	"diagnostic",
+	"queue",
+];
+
 export interface DashboardMonitor
 	extends
 		Pick<Monitor, "id" | "name" | "url" | "type" | "status" | "uptimePercentage">,

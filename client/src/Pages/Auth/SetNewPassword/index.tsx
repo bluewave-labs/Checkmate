@@ -53,7 +53,7 @@ const SetNewPasswordPage = () => {
 
 		if (result?.success) {
 			dispatch(setAuthState(result));
-			navigate("/uptime");
+			navigate("/dashboard");
 		}
 	};
 
