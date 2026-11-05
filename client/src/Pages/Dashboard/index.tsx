@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { BasePage } from "@/Components/design-elements/BasePage";
 import { Button } from "@/Components/inputs";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { setDashboardVisibleCards } from "@/Features/UI/uiSlice";
+import { setDashboardHiddenCards } from "@/Features/UI/uiSlice";
 import { useGet } from "@/Hooks/UseApi";
 import type { DashboardResponse } from "@/Types/Dashboard";
 import type { RootState, AppDispatch } from "@/store";
@@ -27,10 +27,13 @@ const Dashboard = () => {
 	const { t } = useTranslation();
 	const dispatch = useDispatch<AppDispatch>();
 	const [editOpen, setEditOpen] = useState(false);
-	const visibleCardsList = useSelector(
-		(state: RootState) => state.ui.dashboardVisibleCards
+	const hiddenCardsList = useSelector(
+		(state: RootState) => state.ui.dashboardHiddenCards
 	);
-	const visibleCards = useMemo(() => new Set(visibleCardsList), [visibleCardsList]);
+	const visibleCards = useMemo(() => {
+		const hidden = new Set(hiddenCardsList);
+		return new Set(dashboardCardKeys.filter((key) => !hidden.has(key)));
+	}, [hiddenCardsList]);
 
 	const order = useSelector((state: RootState) => state.ui.dashboardUptimeOrder);
 
@@ -100,7 +103,9 @@ const Dashboard = () => {
 				visibleCards={visibleCards}
 				onClose={() => setEditOpen(false)}
 				onSave={(next) => {
-					dispatch(setDashboardVisibleCards([...next]));
+					dispatch(
+						setDashboardHiddenCards(dashboardCardKeys.filter((key) => !next.has(key)))
+					);
 					setEditOpen(false);
 				}}
 			/>

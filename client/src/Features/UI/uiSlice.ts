@@ -1,4 +1,4 @@
-import { dashboardCardKeys, type DashboardCardKey } from "@/Types/Dashboard";
+import type { DashboardCardKey } from "@/Types/Dashboard";
 import type { SortOrder } from "@/Types/Query";
 import type { TimeFormat } from "@/Utils/TimeUtils";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
@@ -42,7 +42,7 @@ interface UIState {
 	language: string;
 	starPromptOpen: boolean;
 	chartType: ChartType;
-	dashboardVisibleCards: DashboardCardKey[];
+	dashboardHiddenCards: DashboardCardKey[];
 	dashboardUptimeOrder: SortOrder;
 }
 
@@ -84,7 +84,7 @@ const initialState: UIState = {
 	language: "en",
 	starPromptOpen: true,
 	chartType: "histogram",
-	dashboardVisibleCards: [...dashboardCardKeys],
+	dashboardHiddenCards: [],
 	dashboardUptimeOrder: "asc",
 };
 
@@ -139,8 +139,8 @@ const uiSlice = createSlice({
 		setChartType: (state, action: PayloadAction<ChartType>) => {
 			state.chartType = action.payload;
 		},
-		setDashboardVisibleCards: (state, action: PayloadAction<DashboardCardKey[]>) => {
-			state.dashboardVisibleCards = action.payload;
+		setDashboardHiddenCards: (state, action: PayloadAction<DashboardCardKey[]>) => {
+			state.dashboardHiddenCards = action.payload;
 		},
 		setDashboardUptimeOrder: (state, action: PayloadAction<SortOrder>) => {
 			state.dashboardUptimeOrder = action.payload;
@@ -163,6 +163,6 @@ export const {
 	setLanguage,
 	setStarPromptOpen,
 	setChartType,
-	setDashboardVisibleCards,
+	setDashboardHiddenCards,
 	setDashboardUptimeOrder,
 } = uiSlice.actions;
