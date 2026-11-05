@@ -1805,6 +1805,12 @@
 					"uptime": "Disponibilité"
 				},
 				"done": "Terminé"
+			},
+			"arrange": {
+				"start": "Réorganiser",
+				"done": "Terminé",
+				"reset": "Réinitialiser l'ordre",
+				"handle": "Faites glisser pour déplacer {{card}}"
 			}
 		}
 	}

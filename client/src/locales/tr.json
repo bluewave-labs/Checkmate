@@ -1805,6 +1805,12 @@
 					"uptime": "Çalışma süresi"
 				},
 				"done": "Tamam"
+			},
+			"arrange": {
+				"start": "Düzenle",
+				"done": "Bitti",
+				"reset": "Sırayı sıfırla",
+				"handle": "{{card}} kartını taşımak için sürükleyin"
 			}
 		}
 	}

@@ -1805,6 +1805,12 @@
 					"uptime": "Dostupnost"
 				},
 				"done": "Hotovo"
+			},
+			"arrange": {
+				"start": "Uspořádat",
+				"done": "Hotovo",
+				"reset": "Obnovit pořadí",
+				"handle": "Přetažením přesunete {{card}}"
 			}
 		}
 	}

@@ -1805,6 +1805,12 @@
 					"uptime": "Disponibilitat"
 				},
 				"done": "Fet"
+			},
+			"arrange": {
+				"start": "Organitza",
+				"done": "Fet",
+				"reset": "Restableix l'ordre",
+				"handle": "Arrossega per moure {{card}}"
 			}
 		}
 	}
