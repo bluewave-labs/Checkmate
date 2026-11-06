@@ -124,7 +124,7 @@ export const MonitorListPage = ({
 					})}
 				</Stack>
 			)}
-			{bulkActions && !isLoading && (
+			{isAdmin && bulkActions && !isLoading && (
 				<BulkActionsBar
 					selectedCount={controller.selectedRows.length}
 					onCancel={controller.handleCancelSelection}
