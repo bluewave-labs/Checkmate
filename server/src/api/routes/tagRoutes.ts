@@ -24,6 +24,7 @@ export const tagRoutes: RouteTable<ITagsController> = {
 			summary: "Create a tag",
 			errors: [tagErrors.nameTaken],
 			body: createTagBodyValidation,
+			roles: ["admin", "superadmin"],
 			response: tagSchema,
 		},
 		{ method: "get", path: "/team", handler: "getTagsByTeamId", summary: "List the team's tags", response: tagListResponseSchema },
@@ -34,6 +35,7 @@ export const tagRoutes: RouteTable<ITagsController> = {
 			summary: "Get a tag",
 			errors: [tagErrors.notFound],
 			params: getTagByIdParamValidation,
+			roles: ["admin", "superadmin"],
 			response: tagSchema,
 		},
 		{
@@ -44,6 +46,7 @@ export const tagRoutes: RouteTable<ITagsController> = {
 			errors: [tagErrors.notFound],
 			params: editTagParamValidation,
 			body: editTagBodyValidation,
+			roles: ["admin", "superadmin"],
 			response: tagSchema,
 		},
 		{
@@ -52,6 +55,7 @@ export const tagRoutes: RouteTable<ITagsController> = {
 			handler: "deleteTag",
 			summary: "Delete a tag",
 			errors: [tagErrors.notFound],
+			roles: ["admin", "superadmin"],
 			params: deleteTagParamValidation,
 		},
 	],
