@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { setCollapsed } from "@/Features/UI/uiSlice";
+import { useIsAdmin } from "@/Hooks/useIsAdmin";
 
 const URL_MAP: Record<string, string> = {
 	support: "https://discord.com/invite/NAb6H3UTjK",
@@ -35,7 +36,10 @@ export const Sidebar = () => {
 	const { width, transition, transitionTiming, collapsed } = useSidebar();
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
-	const menu = getMenu(t);
+	const isAdmin = useIsAdmin();
+
+	const menu = getMenu(t, isAdmin);
+
 	const accountMenu = getAccountMenu(t);
 
 	useEffect(() => {

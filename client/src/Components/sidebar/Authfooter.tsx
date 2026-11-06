@@ -16,14 +16,11 @@ import { clearAuthState } from "@/Features/Auth/authSlice.js";
 import type { RootState } from "@/Types/state.js";
 import { setMode } from "@/Features/UI/uiSlice.js";
 import useSidebar from "@/Hooks/useSidebar";
+import type { SidebarMenuItem } from "@/Components/sidebar/Menu";
 
 interface AuthFooterProps {
 	collapsed: boolean;
-	accountMenuItems: Array<{
-		name: string;
-		path: string;
-		icon: React.ReactNode;
-	}>;
+	accountMenuItems: SidebarMenuItem[];
 }
 
 export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => {
