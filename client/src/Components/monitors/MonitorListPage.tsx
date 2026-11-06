@@ -59,6 +59,7 @@ export const MonitorListPage = ({
 			error={controller.error || extraError}
 			totalCount={controller.effectiveTotalCount}
 			page={page}
+			showActionButton={isAdmin}
 			actionLink={actionLink}
 			priorityFallback={priorityFallback}
 		>
