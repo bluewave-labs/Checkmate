@@ -19,6 +19,8 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 		homeserverUrl: data?.homeserverUrl || "",
 		roomId: data?.roomId || "",
 		topic: data?.topic || "",
+		ntfyAuthType: data?.ntfyAuthType ?? "none",
+		ntfyUsername: data?.ntfyUsername || "",
 	};
 }
 

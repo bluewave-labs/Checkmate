@@ -13,7 +13,7 @@ import { useNotificationForm } from "@/Hooks/useNotificationForm";
 import type { NotificationFormData } from "@/Validation/notifications";
 import type { Notification } from "@/Types/Notification";
 import { useTranslation } from "react-i18next";
-import { NotificationChannels } from "@/Types/Notification";
+import { NotificationChannels, NtfyAuthTypes } from "@/Types/Notification";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
 
@@ -39,13 +39,20 @@ const NotificationsCreatePage = () => {
 		defaultValues: defaults,
 	});
 
-	const { watch, reset, handleSubmit, clearErrors, trigger, getValues } = form;
+	const { watch, reset, handleSubmit, clearErrors, setValue } = form;
 
 	useEffect(() => {
 		reset(defaults);
 	}, [defaults, reset]);
 
 	const watchedType = watch("type");
+	const watchedNtfyAuthType = watch("ntfyAuthType") ?? "none";
+
+	const clearNtfyCredentials = () => {
+		setValue("accessToken", "", { shouldDirty: true });
+		setValue("ntfyUsername", "", { shouldDirty: true });
+		clearErrors(["accessToken", "ntfyUsername"]);
+	};
 
 	useEffect(() => {
 		clearErrors();
@@ -85,12 +92,9 @@ const NotificationsCreatePage = () => {
 		}
 	};
 
-	const handleTest = async () => {
-		const isValid = await trigger();
-		if (!isValid) return;
-		const data = getValues();
+	const handleTest = handleSubmit(async (data) => {
 		await testPost("/notifications/test", data);
-	};
+	});
 
 	return (
 		<FormProvider {...form}>
@@ -115,6 +119,12 @@ const NotificationsCreatePage = () => {
 					rightContent={
 						<FormSelectField
 							name="type"
+							onValueChange={(value) => {
+								if (value === "ntfy") {
+									setValue("ntfyAuthType", "none");
+									clearNtfyCredentials();
+								}
+							}}
 							fieldLabel={t("pages.notifications.form.type.optionType")}
 							options={NotificationChannels.map((channel) => ({
 								value: channel,
@@ -157,6 +167,37 @@ const NotificationsCreatePage = () => {
 									fieldLabel={t("pages.notifications.form.ntfy.optionTopic")}
 									placeholder={t("pages.notifications.form.ntfy.placeholderTopic")}
 								/>
+								<FormSelectField
+									name="ntfyAuthType"
+									fieldLabel={t("pages.proxies.form.auth.title")}
+									options={NtfyAuthTypes.map((authType) => ({
+										value: authType,
+										label:
+											authType === "token"
+												? t("pages.notifications.form.accessToken.optionAccessToken")
+												: t(`pages.notifications.form.ntfy.authTypes.${authType}`),
+									}))}
+									onValueChange={clearNtfyCredentials}
+								/>
+								{watchedNtfyAuthType === "basic" && (
+									<FormTextField
+										name="ntfyUsername"
+										fieldLabel={t("pages.proxies.form.auth.option.username.label")}
+										autoComplete="username"
+									/>
+								)}
+								{watchedNtfyAuthType !== "none" && (
+									<FormTextField
+										name="accessToken"
+										type="password"
+										fieldLabel={
+											watchedNtfyAuthType === "token"
+												? t("pages.notifications.form.accessToken.optionAccessToken")
+												: t("pages.auth.common.form.option.password.label")
+										}
+										autoComplete="new-password"
+									/>
+								)}
 							</Stack>
 						}
 					/>

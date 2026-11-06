@@ -1463,7 +1463,11 @@
 					"optionServerUrl": "Server URL",
 					"placeholderServerUrl": "https://ntfy.sh",
 					"optionTopic": "Topic",
-					"placeholderTopic": "checkmate-alerts"
+					"placeholderTopic": "checkmate-alerts",
+					"authTypes": {
+						"none": "None",
+						"basic": "Username and password"
+					}
 				}
 			},
 			"table": {
