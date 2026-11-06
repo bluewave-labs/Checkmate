@@ -786,7 +786,8 @@
 						"type": "object",
 						"properties": {
 							"usagePercentage": {
-								"type": "number"
+								"type": "number",
+								"description": "Process CPU usage as a fraction of one core (0.25 = 25%)"
 							}
 						},
 						"required": ["usagePercentage"]
@@ -3362,6 +3363,10 @@
 					"totalFailures": {
 						"type": "number"
 					},
+					"dueBacklog": {
+						"type": "number",
+						"description": "Active check jobs that are due but not claimed by any worker"
+					},
 					"workers": {
 						"type": "array",
 						"items": {
@@ -3369,7 +3374,7 @@
 						}
 					}
 				},
-				"required": ["jobs", "activeJobs", "failingJobs", "jobsWithFailures", "totalRuns", "totalFailures", "workers"]
+				"required": ["jobs", "activeJobs", "failingJobs", "jobsWithFailures", "totalRuns", "totalFailures", "dueBacklog", "workers"]
 			},
 			"QueueWorker": {
 				"type": "object",
@@ -13072,6 +13077,16 @@
 							}
 						}
 					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"409": {
 						"description": "A proxy with that name already exists",
 						"content": {
@@ -13228,6 +13243,16 @@
 							}
 						}
 					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"429": {
 						"description": "Too many requests",
 						"content": {
@@ -13307,6 +13332,16 @@
 					},
 					"401": {
 						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -13403,6 +13438,16 @@
 					},
 					"401": {
 						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -13549,6 +13594,16 @@
 					},
 					"401": {
 						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
 						"content": {
 							"application/json": {
 								"schema": {

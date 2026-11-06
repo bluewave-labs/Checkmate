@@ -228,15 +228,27 @@ const Routes = () => {
 
 				<Route
 					path="proxies"
-					element={<Proxies />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<Proxies />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="proxies/create"
-					element={<CreateProxies />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateProxies />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="proxies/configure/:proxyId"
-					element={<CreateProxies />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateProxies />
+						</RoleProtectedRoute>
+					}
 				/>
 
 				<Route

@@ -22,8 +22,21 @@ import {
 	Container,
 	LayoutDashboard,
 } from "lucide-react";
-export const getMenu = (t: Function) => {
-	return [
+import type { TFunction } from "i18next";
+import type { NavData } from "@/Components/sidebar/NavItem";
+
+export interface SidebarMenuItem extends NavData {
+	path: string;
+	adminOnly?: boolean;
+}
+
+export interface SidebarMenuGroup {
+	group: string;
+	items: SidebarMenuItem[];
+}
+
+export const getMenu = (t: TFunction, isAdmin: boolean): SidebarMenuGroup[] => {
+	const menu: SidebarMenuGroup[] = [
 		{
 			group: t("components.sidebar.menu.groups.monitoring"),
 			items: [
@@ -106,6 +119,7 @@ export const getMenu = (t: Function) => {
 					name: t("components.sidebar.menu.proxies"),
 					path: "proxies",
 					icon: <Icon icon={Waypoints} />,
+					adminOnly: true,
 				},
 				{
 					name: t("components.sidebar.menu.settings"),
@@ -115,9 +129,13 @@ export const getMenu = (t: Function) => {
 			],
 		},
 	];
+	return menu.map((group) => ({
+		...group,
+		items: group.items.filter((item) => !item.adminOnly || isAdmin),
+	}));
 };
 
-export const getBottomMenu = (t: Function) => {
+export const getBottomMenu = (t: TFunction): SidebarMenuItem[] => {
 	return [
 		{
 			name: t("components.sidebar.bottomMenu.support"),
@@ -142,7 +160,7 @@ export const getBottomMenu = (t: Function) => {
 	];
 };
 
-export const getAccountMenu = (t: Function) => {
+export const getAccountMenu = (t: TFunction): SidebarMenuItem[] => {
 	return [
 		{
 			name: t("components.sidebar.accountMenu.profile"),
