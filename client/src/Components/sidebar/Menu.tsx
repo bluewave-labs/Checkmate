@@ -11,9 +11,6 @@ import {
 	Wrench,
 	ScrollText,
 	Settings,
-	HelpCircle,
-	MessageCircle,
-	Code,
 	User,
 	Lock,
 	Users,
@@ -24,10 +21,11 @@ import {
 } from "lucide-react";
 import type { TFunction } from "i18next";
 import type { NavData } from "@/Components/sidebar/NavItem";
+import type { UserRole } from "@/Types/User";
 
 export interface SidebarMenuItem extends NavData {
 	path: string;
-	adminOnly?: boolean;
+	roles?: UserRole[];
 }
 
 export interface SidebarMenuGroup {
@@ -35,7 +33,10 @@ export interface SidebarMenuGroup {
 	items: SidebarMenuItem[];
 }
 
-export const getMenu = (t: TFunction, isAdmin: boolean): SidebarMenuGroup[] => {
+const isVisible = (item: SidebarMenuItem, userRoles: UserRole[]) =>
+	!item.roles || item.roles.some((role) => userRoles.includes(role));
+
+export const getMenu = (t: TFunction, userRoles: UserRole[]): SidebarMenuGroup[] => {
 	const menu: SidebarMenuGroup[] = [
 		{
 			group: t("components.sidebar.menu.groups.monitoring"),
@@ -104,6 +105,7 @@ export const getMenu = (t: TFunction, isAdmin: boolean): SidebarMenuGroup[] => {
 					name: t("components.sidebar.menu.logs"),
 					path: "logs",
 					icon: <Icon icon={ScrollText} />,
+					roles: ["admin", "superadmin"],
 				},
 			],
 		},
@@ -119,7 +121,7 @@ export const getMenu = (t: TFunction, isAdmin: boolean): SidebarMenuGroup[] => {
 					name: t("components.sidebar.menu.proxies"),
 					path: "proxies",
 					icon: <Icon icon={Waypoints} />,
-					adminOnly: true,
+					roles: ["admin", "superadmin"],
 				},
 				{
 					name: t("components.sidebar.menu.settings"),
@@ -131,37 +133,15 @@ export const getMenu = (t: TFunction, isAdmin: boolean): SidebarMenuGroup[] => {
 	];
 	return menu.map((group) => ({
 		...group,
-		items: group.items.filter((item) => !item.adminOnly || isAdmin),
+		items: group.items.filter((item) => isVisible(item, userRoles)),
 	}));
 };
 
-export const getBottomMenu = (t: TFunction): SidebarMenuItem[] => {
-	return [
-		{
-			name: t("components.sidebar.bottomMenu.support"),
-			path: "support",
-			icon: <Icon icon={HelpCircle} />,
-		},
-		{
-			name: t("components.sidebar.bottomMenu.discussions"),
-			path: "discussions",
-			icon: <Icon icon={MessageCircle} />,
-		},
-		{
-			name: t("components.sidebar.bottomMenu.docs"),
-			path: "docs",
-			icon: <Icon icon={FileText} />,
-		},
-		{
-			name: t("components.sidebar.bottomMenu.changelog"),
-			path: "changelog",
-			icon: <Icon icon={Code} />,
-		},
-	];
-};
-
-export const getAccountMenu = (t: TFunction): SidebarMenuItem[] => {
-	return [
+export const getAccountMenu = (
+	t: TFunction,
+	userRoles: UserRole[]
+): SidebarMenuItem[] => {
+	const menu: SidebarMenuItem[] = [
 		{
 			name: t("components.sidebar.accountMenu.profile"),
 			path: "account/profile",
@@ -171,11 +151,14 @@ export const getAccountMenu = (t: TFunction): SidebarMenuItem[] => {
 			name: t("components.sidebar.accountMenu.password"),
 			path: "account/password",
 			icon: <Icon icon={Lock} />,
+			roles: ["user", "admin", "superadmin"],
 		},
 		{
 			name: t("components.sidebar.accountMenu.team"),
 			path: "account/team",
 			icon: <Icon icon={Users} />,
+			roles: ["admin", "superadmin"],
 		},
 	];
+	return menu.filter((item) => isVisible(item, userRoles));
 };

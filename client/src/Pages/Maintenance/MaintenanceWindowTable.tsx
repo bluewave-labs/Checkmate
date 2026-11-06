@@ -18,6 +18,7 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import { useDelete, usePatch } from "@/Hooks/UseApi";
 import { formatDuration } from "@/Utils/TimeUtils";
+import { useIsAdmin } from "@/Hooks/useIsAdmin";
 
 interface MaintenanceWindowTableProps {
 	maintenanceWindows: MaintenanceWindow[];
@@ -67,6 +68,7 @@ export const MaintenanceWindowTable = ({
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const navigate = useNavigate();
+	const isAdmin = useIsAdmin();
 	const dispatch = useDispatch();
 	const rowsPerPage = useSelector(
 		(state: RootState) => state?.ui?.maintenance?.rowsPerPage ?? 5
@@ -127,39 +129,42 @@ export const MaintenanceWindowTable = ({
 		},
 	];
 
-	const getHeaders = (): Header<MaintenanceWindow>[] => [
-		{
-			id: "name",
-			content: t("common.table.headers.name"),
-			render: (row) => row.name,
-		},
-		{
-			id: "status",
-			content: t("common.table.headers.status"),
-			render: (row) => (
-				<ValueLabel
-					value={row.active ? "positive" : "neutral"}
-					text={row.active ? t("common.labels.active") : t("common.labels.paused")}
-				/>
-			),
-		},
-		{
-			id: "nextWindow",
-			content: t("pages.maintenanceWindow.table.headers.nextWindow"),
-			render: (row) => getTimeToNextWindow(row.start, row.end, row.repeat),
-		},
-		{
-			id: "repeat",
-			content: t("pages.maintenanceWindow.table.headers.repeat"),
-			render: (row) =>
-				row.repeat === 0 ? t("common.labels.na") : formatDuration(row.repeat),
-		},
-		{
-			id: "actions",
-			content: t("common.table.headers.actions"),
-			render: (row) => <ActionsMenu items={getActions(row)} />,
-		},
-	];
+	const getHeaders = (): Header<MaintenanceWindow>[] => {
+		const headers: Header<MaintenanceWindow>[] = [
+			{
+				id: "name",
+				content: t("common.table.headers.name"),
+				render: (row) => row.name,
+			},
+			{
+				id: "status",
+				content: t("common.table.headers.status"),
+				render: (row) => (
+					<ValueLabel
+						value={row.active ? "positive" : "neutral"}
+						text={row.active ? t("common.labels.active") : t("common.labels.paused")}
+					/>
+				),
+			},
+			{
+				id: "nextWindow",
+				content: t("pages.maintenanceWindow.table.headers.nextWindow"),
+				render: (row) => getTimeToNextWindow(row.start, row.end, row.repeat),
+			},
+			{
+				id: "repeat",
+				content: t("pages.maintenanceWindow.table.headers.repeat"),
+				render: (row) =>
+					row.repeat === 0 ? t("common.labels.na") : formatDuration(row.repeat),
+			},
+			{
+				id: "actions",
+				content: t("common.table.headers.actions"),
+				render: (row) => <ActionsMenu items={getActions(row)} />,
+			},
+		];
+		return isAdmin ? headers : headers.filter((header) => header.id !== "actions");
+	};
 
 	const handlePageChange = (
 		_e: React.MouseEvent<HTMLButtonElement> | null,
@@ -180,7 +185,9 @@ export const MaintenanceWindowTable = ({
 			<Table
 				headers={getHeaders()}
 				data={maintenanceWindows}
-				onRowClick={(row) => navigate(`/maintenance/create/${row.id}`)}
+				onRowClick={
+					isAdmin ? (row) => navigate(`/maintenance/create/${row.id}`) : undefined
+				}
 				emptyViewText={t("common.table.empty")}
 			/>
 			<Pagination
