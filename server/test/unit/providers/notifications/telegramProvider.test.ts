@@ -4,7 +4,14 @@ import { makeNotification, makeMessage, makeMessageWithThresholds, makeMessageWi
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
 
 const mockGotPost = jest.fn().mockResolvedValue({});
-jest.unstable_mockModule("got", () => ({ default: { post: mockGotPost } }));
+class MockHTTPError extends Error {
+	response: { body: unknown };
+	constructor(body: unknown) {
+		super("Request failed with status code 400 (Bad Request)");
+		this.response = { body };
+	}
+}
+jest.unstable_mockModule("got", () => ({ default: { post: mockGotPost }, HTTPError: MockHTTPError }));
 
 const { TelegramProvider } = await import("../../../../src/domain/notifications/providers/telegram.ts");
 
@@ -116,6 +123,39 @@ describe("TelegramProvider", () => {
 			expect(text).not.toContain("Threshold");
 			expect(text).not.toContain("Additional");
 			expect(text).not.toContain("View Incident");
+		});
+
+		it("escapes HTML in dynamic content so Telegram can parse it (issue #4105)", async () => {
+			const { provider } = createProvider();
+			const msg = makeMessage();
+			msg.monitor.name = "A & B <prod>";
+			msg.content.details = ["<!DOCTYPE html><html><head><title>530</title></head></html>"];
+			await provider.sendMessage(makeNotification() as any, msg);
+			const text = mockGotPost.mock.calls[0][1].json.text as string;
+			expect(text).not.toContain("<!DOCTYPE");
+			expect(text).toContain("&lt;!DOCTYPE html&gt;&lt;html&gt;");
+			expect(text).toContain("A &amp; B &lt;prod&gt;");
+			expect(text).toContain("<b>Monitor Details:</b>");
+		});
+
+		it("truncates very long values and keeps the message within Telegram's limit", async () => {
+			const { provider } = createProvider();
+			const msg = makeMessageWithIncident();
+			msg.content.details = Array.from({ length: 20 }, () => "<p>" + "x".repeat(5000) + "</p>");
+			await provider.sendMessage(makeNotification() as any, msg);
+			const text = mockGotPost.mock.calls[0][1].json.text as string;
+			expect(text.length).toBeLessThanOrEqual(4096);
+			expect(text).toContain("View Incident</a>");
+			expect(text).not.toMatch(/&[a-z]*$/m);
+		});
+
+		it("logs Telegram's error description on HTTP errors", async () => {
+			const body = JSON.stringify({ ok: false, error_code: 400, description: "Bad Request: can't parse entities" });
+			const err = new MockHTTPError(body);
+			mockGotPost.mockRejectedValue(err);
+			const { provider, logger } = createProvider();
+			expect(await provider.sendMessage(makeNotification() as any, makeMessage())).toBe(false);
+			expect(logger.warn).toHaveBeenCalledWith({ err, telegramDescription: "Bad Request: can't parse entities" }, "Telegram alert failed");
 		});
 	});
 });
