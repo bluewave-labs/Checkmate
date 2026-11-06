@@ -251,11 +251,19 @@ const Routes = () => {
 				/>
 				<Route
 					path="tags/create"
-					element={<CreateTags />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateTags />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="tags/configure/:tagId"
-					element={<CreateTags />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateTags />
+						</RoleProtectedRoute>
+					}
 				/>
 
 				<Route

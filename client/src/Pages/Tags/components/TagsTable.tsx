@@ -5,6 +5,7 @@ import type { Header } from "@/Components/design-elements/Table";
 import { Table, ColoredLabel } from "@/Components/design-elements";
 import { Pagination } from "@/Components/design-elements/Table";
 import { useClientPagination } from "@/Hooks/useClientPagination";
+import { useIsAdmin } from "@/Hooks/useIsAdmin";
 
 import type { Tag } from "@/Types/Tag";
 import { useNavigate } from "react-router";
@@ -20,6 +21,7 @@ export const TagsTable = ({ tags, setSelectedTag }: TagsTableProps) => {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 	const theme = useTheme();
+	const isAdmin = useIsAdmin();
 	const { pagedRows, paginationProps } = useClientPagination(tags);
 
 	const getActions = (tag: Tag): ActionMenuItem[] => {
@@ -91,7 +93,7 @@ export const TagsTable = ({ tags, setSelectedTag }: TagsTableProps) => {
 				},
 			},
 		];
-		return headers;
+		return isAdmin ? headers : headers.filter((header) => header.id !== "actions");
 	};
 
 	return (
@@ -99,9 +101,13 @@ export const TagsTable = ({ tags, setSelectedTag }: TagsTableProps) => {
 			<Table
 				headers={getHeaders()}
 				data={pagedRows}
-				onRowClick={(row) => {
-					navigate(`/tags/configure/${row.id}`);
-				}}
+				onRowClick={
+					isAdmin
+						? (row) => {
+								navigate(`/tags/configure/${row.id}`);
+							}
+						: undefined
+				}
 			/>
 			{tags.length > 0 && <Pagination {...paginationProps} />}
 		</>
