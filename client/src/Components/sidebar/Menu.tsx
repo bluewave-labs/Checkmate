@@ -104,6 +104,7 @@ export const getMenu = (t: TFunction, isAdmin: boolean): SidebarMenuGroup[] => {
 					name: t("components.sidebar.menu.logs"),
 					path: "logs",
 					icon: <Icon icon={ScrollText} />,
+					adminOnly: true,
 				},
 			],
 		},
