@@ -108,7 +108,11 @@ const Routes = () => {
 
 				<Route
 					path="/uptime/create"
-					element={<CreateMonitor />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateMonitor />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="/uptime/:monitorId/"
@@ -116,7 +120,11 @@ const Routes = () => {
 				/>
 				<Route
 					path="/uptime/configure/:monitorId/"
-					element={<CreateMonitor />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateMonitor />
+						</RoleProtectedRoute>
+					}
 				/>
 
 				<Route
@@ -125,7 +133,11 @@ const Routes = () => {
 				/>
 				<Route
 					path="pagespeed/create"
-					element={<CreateMonitor />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateMonitor />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="pagespeed/:monitorId"
@@ -133,7 +145,11 @@ const Routes = () => {
 				/>
 				<Route
 					path="pagespeed/configure/:monitorId"
-					element={<CreateMonitor />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateMonitor />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="infrastructure"
@@ -141,11 +157,19 @@ const Routes = () => {
 				/>
 				<Route
 					path="infrastructure/create"
-					element={<CreateMonitor />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateMonitor />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="/infrastructure/configure/:monitorId"
-					element={<CreateMonitor />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateMonitor />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="infrastructure/:monitorId"
@@ -157,11 +181,19 @@ const Routes = () => {
 				/>
 				<Route
 					path="docker/create"
-					element={<CreateMonitor />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateMonitor />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="/docker/configure/:monitorId"
-					element={<CreateMonitor />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateMonitor />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="docker/host/:monitorId/container/:containerName"

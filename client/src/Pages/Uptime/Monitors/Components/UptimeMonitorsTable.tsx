@@ -129,6 +129,7 @@ export const MonitorTable = ({
 			{
 				id: 4,
 				label: t("pages.common.monitors.actions.configure"),
+				adminOnly: true,
 				action: () => {
 					navigate(`/uptime/configure/${monitor.id}`);
 				},
@@ -139,6 +140,7 @@ export const MonitorTable = ({
 					monitor.isActive === false
 						? t("pages.common.monitors.actions.resume")
 						: t("pages.common.monitors.actions.pause"),
+				adminOnly: true,
 				action: async () => {
 					await post(`/monitors/pause/${monitor.id}`, {});
 					refetch();
@@ -152,6 +154,8 @@ export const MonitorTable = ({
 						{t("pages.common.monitors.actions.delete")}
 					</Typography>
 				),
+				adminOnly: true,
+
 				action: () => setSelectedMonitor(monitor),
 				closeMenu: true,
 			}

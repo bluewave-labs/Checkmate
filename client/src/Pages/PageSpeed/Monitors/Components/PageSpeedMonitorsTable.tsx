@@ -112,23 +112,18 @@ export const PageSpeedMonitorsTable = ({
 			{
 				id: 4,
 				label: t("pages.common.monitors.actions.configure"),
+				adminOnly: true,
 				action: () => {
 					navigate(`/pagespeed/configure/${monitor.id}`);
 				},
 			},
-			// {
-			//   id: 5,
-			//   label: "Clone",
-			//   action: () => {
-
-			//   },
-			// },
 			{
 				id: 6,
 				label:
 					monitor.isActive === false
 						? t("common.buttons.resume")
 						: t("common.buttons.pause"),
+				adminOnly: true,
 				action: async () => {
 					await patch(`/monitors/${monitor.id}/active`);
 					refetch();
@@ -142,6 +137,7 @@ export const PageSpeedMonitorsTable = ({
 						{t("common.buttons.delete")}
 					</Typography>
 				),
+				adminOnly: true,
 				action: () => {
 					setSelectedMonitor(monitor);
 				},

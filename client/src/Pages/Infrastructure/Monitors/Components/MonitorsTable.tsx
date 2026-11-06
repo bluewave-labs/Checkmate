@@ -123,6 +123,7 @@ export const InfraMonitorsTable = ({
 			{
 				id: 4,
 				label: t("pages.common.monitors.actions.configure"),
+				adminOnly: true,
 				action: () => {
 					navigate(`/infrastructure/configure/${monitor.id}`);
 				},
@@ -133,6 +134,7 @@ export const InfraMonitorsTable = ({
 					monitor.isActive === false
 						? t("common.buttons.resume")
 						: t("common.buttons.pause"),
+				adminOnly: true,
 				action: async () => {
 					await post(`/monitors/pause/${monitor.id}`, {});
 					refetch();
@@ -146,6 +148,7 @@ export const InfraMonitorsTable = ({
 						{t("common.buttons.delete")}
 					</Typography>
 				),
+				adminOnly: true,
 				action: () => {
 					setSelectedMonitor(monitor);
 				},
