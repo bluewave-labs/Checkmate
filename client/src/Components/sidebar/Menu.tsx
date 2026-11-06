@@ -140,31 +140,6 @@ export const getMenu = (t: TFunction, userRoles: UserRole[]): SidebarMenuGroup[]
 	}));
 };
 
-export const getBottomMenu = (t: TFunction): SidebarMenuItem[] => {
-	return [
-		{
-			name: t("components.sidebar.bottomMenu.support"),
-			path: "support",
-			icon: <Icon icon={HelpCircle} />,
-		},
-		{
-			name: t("components.sidebar.bottomMenu.discussions"),
-			path: "discussions",
-			icon: <Icon icon={MessageCircle} />,
-		},
-		{
-			name: t("components.sidebar.bottomMenu.docs"),
-			path: "docs",
-			icon: <Icon icon={FileText} />,
-		},
-		{
-			name: t("components.sidebar.bottomMenu.changelog"),
-			path: "changelog",
-			icon: <Icon icon={Code} />,
-		},
-	];
-};
-
 export const getAccountMenu = (
 	t: TFunction,
 	userRoles: UserRole[]
