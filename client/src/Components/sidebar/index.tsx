@@ -17,9 +17,9 @@ import { AuthFooter } from "@/Components/sidebar/Authfooter";
 import { useNavigate, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useTheme, useMediaQuery } from "@mui/material";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "@/Types/state";
 import { setCollapsed } from "@/Features/UI/uiSlice";
-import { useIsAdmin } from "@/Hooks/useIsAdmin";
 
 const URL_MAP: Record<string, string> = {
 	support: "https://discord.com/invite/NAb6H3UTjK",
@@ -36,11 +36,9 @@ export const Sidebar = () => {
 	const { width, transition, transitionTiming, collapsed } = useSidebar();
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
-	const isAdmin = useIsAdmin();
-
-	const menu = getMenu(t, isAdmin);
-
-	const accountMenu = getAccountMenu(t);
+	const userRoles = useSelector((state: RootState) => state.auth.user?.role) ?? [];
+	const menu = getMenu(t, userRoles);
+	const accountMenu = getAccountMenu(t, userRoles);
 
 	useEffect(() => {
 		dispatch(setCollapsed({ collapsed: isSmall }));

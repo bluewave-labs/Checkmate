@@ -58,13 +58,6 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 		return role;
 	};
 
-	const filteredMenuItems = accountMenuItems.filter((item) => {
-		if (!user) return false;
-		if (item.name === "Password" && user.role?.includes("demo")) return false;
-		if (item.name === "Team" && !user.role?.includes("superadmin")) return false;
-		return true;
-	});
-
 	const menuItemSx = {
 		gap: theme.spacing(LAYOUT.MD),
 		borderRadius: theme.shape.borderRadius,
@@ -161,7 +154,7 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 						</Typography>
 					</Box>
 				)}
-				{filteredMenuItems.map((item) => (
+				{accountMenuItems.map((item) => (
 					<MenuItem
 						key={item.name}
 						onClick={() => handleNavigate(item.path)}

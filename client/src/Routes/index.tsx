@@ -330,11 +330,19 @@ const Routes = () => {
 				/>
 				<Route
 					path="account/password"
-					element={<Account open={"password"} />}
+					element={
+						<RoleProtectedRoute roles={["user", "admin", "superadmin"]}>
+							<Account open={"password"} />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="account/team"
-					element={<Account open={"team"} />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<Account open={"team"} />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="account/team/:userId"
