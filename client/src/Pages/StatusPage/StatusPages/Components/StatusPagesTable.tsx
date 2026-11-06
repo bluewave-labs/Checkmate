@@ -5,6 +5,7 @@ import { Table, type Header, ValueLabel } from "@/Components/design-elements";
 import { Pagination } from "@/Components/design-elements/Table";
 import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
 import { useClientPagination } from "@/Hooks/useClientPagination";
+import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import { ExternalLink } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
@@ -27,6 +28,7 @@ export const StatusPagesTable = ({
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const navigate = useNavigate();
+	const isAdmin = useIsAdmin();
 	const { pagedRows, paginationProps } = useClientPagination(data);
 
 	const getActions = (row: StatusPage): ActionMenuItem[] => {
@@ -60,7 +62,7 @@ export const StatusPagesTable = ({
 	};
 
 	const getHeaders = (): Header<StatusPage>[] => {
-		return [
+		const headers: Header<StatusPage>[] = [
 			{
 				id: "name",
 				content: t("pages.statusPages.table.headers.name"),
@@ -129,6 +131,7 @@ export const StatusPagesTable = ({
 				},
 			},
 		];
+		return isAdmin ? headers : headers.filter((header) => header.id !== "actions");
 	};
 
 	const handleRowClick = (statusPage: StatusPage) => {

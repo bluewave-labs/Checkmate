@@ -224,12 +224,20 @@ const Routes = () => {
 
 				<Route
 					path="status/create"
-					element={<CreateStatus />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateStatus />
+						</RoleProtectedRoute>
+					}
 				/>
 
 				<Route
 					path="status/configure/:url"
-					element={<CreateStatus />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateStatus />
+						</RoleProtectedRoute>
+					}
 				/>
 
 				<Route
@@ -238,12 +246,20 @@ const Routes = () => {
 				/>
 				<Route
 					path="notifications/create"
-					element={<CreateNotifications />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateNotifications />
+						</RoleProtectedRoute>
+					}
 				/>
 
 				<Route
 					path="notifications/configure/:notificationId"
-					element={<CreateNotifications />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateNotifications />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="tags"
@@ -297,7 +313,11 @@ const Routes = () => {
 				/>
 				<Route
 					path="/maintenance/create/:maintenanceWindowId?"
-					element={<CreateNewMaintenanceWindow />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateNewMaintenanceWindow />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="settings"
