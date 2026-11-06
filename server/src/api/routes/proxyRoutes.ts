@@ -23,6 +23,7 @@ export const proxyRoutes: RouteTable<IProxiesController> = {
 			summary: "Create a proxy for the caller's team",
 			body: createProxyBodyValidation,
 			errors: [proxyErrors.nameTaken],
+			roles: ["admin", "superadmin"],
 			response: proxyResponseSchema,
 		},
 		{
@@ -38,6 +39,7 @@ export const proxyRoutes: RouteTable<IProxiesController> = {
 			path: "/team",
 			handler: "getProxiesByTeamId",
 			summary: "List proxies for the caller's team",
+			roles: ["admin", "superadmin"],
 			response: proxyListResponseSchema,
 		},
 		{
@@ -47,6 +49,7 @@ export const proxyRoutes: RouteTable<IProxiesController> = {
 			summary: "Get a proxy by id",
 			params: getProxyByIdParamValidation,
 			errors: [proxyErrors.notFound],
+			roles: ["admin", "superadmin"],
 			response: proxyResponseSchema,
 		},
 		{
@@ -55,6 +58,7 @@ export const proxyRoutes: RouteTable<IProxiesController> = {
 			handler: "deleteProxy",
 			summary: "Delete a proxy by id",
 			params: deleteProxyParamValidation,
+			roles: ["admin", "superadmin"],
 			errors: [proxyErrors.notFound, proxyErrors.inUseByMonitors, proxyErrors.isGlobalProxy],
 		},
 		{
@@ -65,6 +69,7 @@ export const proxyRoutes: RouteTable<IProxiesController> = {
 			params: editProxyParamValidation,
 			body: editProxyBodyValidation,
 			errors: [proxyErrors.notFound, proxyErrors.nameTaken],
+			roles: ["admin", "superadmin"],
 			response: proxyResponseSchema,
 		},
 	],
