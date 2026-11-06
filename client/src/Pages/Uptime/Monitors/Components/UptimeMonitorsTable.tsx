@@ -155,7 +155,6 @@ export const MonitorTable = ({
 					</Typography>
 				),
 				adminOnly: true,
-
 				action: () => setSelectedMonitor(monitor),
 				closeMenu: true,
 			}
