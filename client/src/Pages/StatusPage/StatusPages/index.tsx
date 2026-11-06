@@ -43,6 +43,7 @@ const StatusPages = () => {
 			description={t("pages.statusPages.fallback.description")}
 			error={!!error}
 			totalCount={statusPages?.length ?? 0}
+			showActionButton={isAdmin}
 			actionButtonText={t("pages.statusPages.fallback.actionButton")}
 			actionLink="/status/create"
 		>
