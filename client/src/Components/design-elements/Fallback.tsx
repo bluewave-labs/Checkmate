@@ -42,11 +42,13 @@ export const ErrorFallback = ({
 export const EmptyFallback = ({
 	title,
 	description,
+	showActionButton = true,
 	actionButtonText,
 	actionLink,
 }: {
 	title: string;
 	description?: string;
+	showActionButton?: boolean;
 	actionButtonText: string;
 	actionLink: string;
 }) => {
@@ -55,18 +57,20 @@ export const EmptyFallback = ({
 			fullscreen
 			title={title}
 			description={description}
-			actionText={actionButtonText}
-			actionTo={actionLink}
+			actionText={showActionButton ? actionButtonText : undefined}
+			actionTo={showActionButton ? actionLink : undefined}
 		/>
 	);
 };
 
 export const EmptyMonitorFallback = ({
+	showActionButton = true,
 	title,
 	description,
 	actionButtonText,
 	actionLink,
 }: {
+	showActionButton?: boolean;
 	page: string;
 	title: string;
 	description?: string;
@@ -78,8 +82,8 @@ export const EmptyMonitorFallback = ({
 			fullscreen
 			title={title}
 			description={description}
-			actionText={actionButtonText}
-			actionTo={actionLink}
+			actionText={showActionButton ? actionButtonText : undefined}
+			actionTo={showActionButton ? actionLink : undefined}
 		/>
 	);
 };

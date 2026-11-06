@@ -128,6 +128,7 @@ export const DockerMonitorsTable = ({
 			{
 				id: 4,
 				label: t("pages.common.monitors.actions.configure"),
+				adminOnly: true,
 				action: () => {
 					navigate(`/docker/configure/${monitor.id}`);
 				},
@@ -138,6 +139,7 @@ export const DockerMonitorsTable = ({
 					monitor.isActive === false
 						? t("common.buttons.resume")
 						: t("common.buttons.pause"),
+				adminOnly: true,
 				action: async () => {
 					await post(`/monitors/pause/${monitor.id}`, {});
 					refetch();
@@ -151,6 +153,7 @@ export const DockerMonitorsTable = ({
 						{t("common.buttons.delete")}
 					</Typography>
 				),
+				adminOnly: true,
 				action: () => {
 					setSelectedMonitor(monitor);
 				},

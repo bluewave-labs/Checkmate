@@ -126,6 +126,7 @@ interface BasePageWithStatesProps extends StackProps {
 	totalCount: number;
 	description?: string;
 	page: string;
+	showActionButton?: boolean;
 	actionButtonText: string;
 	actionLink: string;
 	children: React.ReactNode;
@@ -138,6 +139,7 @@ export const BasePageWithStates = ({
 	totalCount,
 	page,
 	description,
+	showActionButton,
 	actionButtonText,
 	actionLink,
 	children,
@@ -149,6 +151,7 @@ export const BasePageWithStates = ({
 	if (!loading && totalCount === 0) {
 		return (
 			<EmptyFallback
+				showActionButton={showActionButton}
 				description={description}
 				title={page}
 				actionButtonText={actionButtonText}
@@ -170,6 +173,7 @@ export const BasePageWithStates = ({
 };
 
 interface MonitorBasePageWithStatesProps extends StackProps {
+	showActionButton?: boolean;
 	loading: boolean;
 	error: any;
 	totalCount: number;
@@ -181,6 +185,7 @@ interface MonitorBasePageWithStatesProps extends StackProps {
 }
 
 export const MonitorBasePageWithStates = ({
+	showActionButton,
 	loading,
 	error,
 	totalCount,
@@ -202,6 +207,7 @@ export const MonitorBasePageWithStates = ({
 	if (!loading && totalCount === 0) {
 		return (
 			<EmptyMonitorFallback
+				showActionButton={showActionButton}
 				page={page}
 				title={t(`pages.${page}.fallback.title`)}
 				description={t(`pages.${page}.fallback.description`)}

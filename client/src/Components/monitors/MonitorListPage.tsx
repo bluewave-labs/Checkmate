@@ -59,6 +59,7 @@ export const MonitorListPage = ({
 			error={controller.error || extraError}
 			totalCount={controller.effectiveTotalCount}
 			page={page}
+			showActionButton={isAdmin}
 			actionLink={actionLink}
 			priorityFallback={priorityFallback}
 		>
@@ -124,7 +125,7 @@ export const MonitorListPage = ({
 					})}
 				</Stack>
 			)}
-			{bulkActions && !isLoading && (
+			{isAdmin && bulkActions && !isLoading && (
 				<BulkActionsBar
 					selectedCount={controller.selectedRows.length}
 					onCancel={controller.handleCancelSelection}
