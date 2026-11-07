@@ -257,12 +257,29 @@ export const BaseStatusPage = ({
 						>
 							<Box sx={styles.cardRow}>
 								<Box sx={styles.monitorName}>{monitor.name}</Box>
-								<Box
-									component="span"
-									sx={styles.badge(badgeTone)}
+								<Stack
+									gridArea="status"
+									alignItems="flex-end"
+									justifyContent="space-between"
+									spacing={1}
+									sx={{ justifySelf: "end" }}
 								>
-									{t(statusBadgeKey[monitor.status])}
-								</Box>
+									{monitor.url && (
+										<Box
+											component="span"
+											sx={styles.monitorUrl}
+											title={monitor.url}
+										>
+											{monitor.url}
+										</Box>
+									)}
+									<Box
+										component="span"
+										sx={styles.badge(badgeTone)}
+									>
+										{t(statusBadgeKey[monitor.status])}
+									</Box>
+								</Stack>
 								<Stack
 									direction={{ xs: "column", md: "row" }}
 									sx={styles.monitorMeta}
@@ -279,15 +296,6 @@ export const BaseStatusPage = ({
 									>
 										{uptimePercentage}
 									</Box>
-									{monitor.url && (
-										<Box
-											component="span"
-											sx={styles.monitorUrl}
-											title={monitor.url}
-										>
-											{monitor.url}
-										</Box>
-									)}
 								</Stack>
 							</Box>
 

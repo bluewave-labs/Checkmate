@@ -52,6 +52,7 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 			showUptimePercentage: doc.showUptimePercentage,
 			showAdminLoginLink: doc.showAdminLoginLink,
 			showInfrastructure: doc.showInfrastructure,
+			showMonitorUrls: doc.showMonitorUrls,
 			customCSS: doc.customCSS,
 			theme: doc.theme,
 			themeMode: doc.themeMode,
