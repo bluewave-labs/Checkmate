@@ -55,8 +55,10 @@ spec:
               {{- tpl ( . | toYaml) $ | nindent 12 }}
           {{- end }}
           env:
+          # CLIENT_HOST is the public URL the UI is served from — derived from the api ingress
+          # host, or an explicit secrets.CLIENT_HOST override (see the checkmate.clientHost helper).
           - name: CLIENT_HOST
-            value: "{{ .Values.client.protocol }}://{{ .Values.client.ingress.host }}"
+            value: {{ include "checkmate.clientHost" . | trim | quote }}
           - name: QUEUE_MODE
             value: "primary"
           # Derived: when a worker tier is deployed the API only schedules (false); otherwise it is

@@ -1,54 +1,89 @@
+{{- /*
+Prechecks run against the *effective* values — including the legacy server.* -> api.*
+compatibility merge — so a guard cannot be bypassed by a stale override (e.g. server.image).
+All failures are hard: `helm template` / `helm install` / `helm upgrade` refuse to proceed with
+an actionable message instead of silently deploying frozen or retired images.
+
+Rules:
+- Chart 0.3.0 removed the client tier: any leftover `client:` block fails.
+- Application images (api + worker) must not reference the retired repos.
+- MongoDB must be upstream `mongo` with an explicit tag/digest (>= the FCV of existing data).
+- api.protocol is http or https; with ingress enabled the host must be set; with ingress disabled
+  an explicit secrets.CLIENT_HOST is required; an explicit CLIENT_HOST must be an http(s) URL
+  (legacy "change_me" is treated as unset).
+- TLS requires https protocol and either an explicit secretName or a cert-manager issuer annotation.
+*/}}
+
 {{- $api := include "checkmate.api" . | fromYaml -}}
-{{- if eq .Values.client.ingress.host "change_me" }}
-  {{- fail "client.ingress.host must be overridden and not set to 'change_me'" }}
+{{- $secrets := .Values.secrets | default dict -}}
+{{- $explicitClientHost := $secrets.CLIENT_HOST | default "" -}}
+
+{{/* Chart 0.3.0 removed the separate client tier (the all-in-one image serves the UI from the API). */}}
+{{- if hasKey .Values "client" }}
+  {{- fail "Chart 0.3.0 removed the client tier: the all-in-one image (ghcr.io/bluewave-labs/checkmate) serves the UI from the API pod. Delete the client: block from your values and set api.ingress.host / api.protocol to the single public URL. See INSTALLATION.md 'Upgrade from chart 0.2.x'." }}
 {{- end }}
 
-{{- if eq $api.ingress.host "change_me" }}
-  {{- fail "api.ingress.host (or legacy server.ingress.host) must be overridden and not set to 'change_me'" }}
+{{/* Retired application images are frozen at v3.9.2 and never rebuilt; the mono image is required. */}}
+{{- $appImages := list $api.image }}
+{{- $appImages = append $appImages (.Values.worker.image | default "") }}
+{{- range $appImages }}
+  {{- if or (contains "checkmate-client" .) (contains "checkmate-backend" .) }}
+    {{- fail (printf "Image %q is retired: checkmate-client / checkmate-backend / checkmate-backend-mono stopped being published at v3.9.2. Point api.image (and worker.image, if set) at ghcr.io/bluewave-labs/checkmate, or remove the override to use the chart default. See INSTALLATION.md 'Upgrade from chart 0.2.x'." .) }}
+  {{- end }}
 {{- end }}
 
-{{- $apiProtocol := $api.protocol }}
-{{- if not (or (eq $apiProtocol "http") (eq $apiProtocol "https")) }}
+{{/* checkmate-mongo was a custom image; upstream mongo is required now. */}}
+{{- if contains "checkmate-mongo" (.Values.mongodb.image | default "") }}
+  {{- fail "mongodb.image still references the retired checkmate-mongo image. Use the upstream default (image: mongo, tag: \"8.2.12\") or pin an explicit upstream mongo tag/digest in mongodb.image. See INSTALLATION.md 'Upgrade from chart 0.2.x'." }}
+{{- end }}
+
+{{/* Mongo needs an explicit tag/digest: mongodb.tag no longer defaults to Chart.appVersion. */}}
+{{- $mongoImage := .Values.mongodb.image | default "mongo" }}
+{{- $mongoTag := .Values.mongodb.tag | default "" }}
+{{- if not (contains ":" ($mongoImage | splitList "/" | last)) }}
+  {{- if not $mongoTag }}
+    {{- fail "mongodb.tag must be an explicit upstream Mongo version (e.g. \"8.2.12\") — it no longer defaults to Chart.appVersion, and Chart.appVersion is not a valid mongo tag. Alternatively put a full repo:tag or digest in mongodb.image. Keep the tag at or above the FCV of your existing data (see INSTALLATION.md)." }}
+  {{- end }}
+{{- end }}
+
+{{- if not (or (eq $api.protocol "http") (eq $api.protocol "https")) }}
   {{- fail "api.protocol must be either 'http' or 'https'" }}
 {{- end }}
 
-{{- $clientProtocol := .Values.client.protocol }}
-{{- if not (or (eq $clientProtocol "http") (eq $clientProtocol "https")) }}
-  {{- fail "client.protocol must be either 'http' or 'https'" }}
+{{/* An explicit CLIENT_HOST must be a usable URL; the legacy "change_me" placeholder means "unset". */}}
+{{- if and $explicitClientHost (ne $explicitClientHost "change_me") }}
+  {{- if not (or (hasPrefix "http://" $explicitClientHost) (hasPrefix "https://" $explicitClientHost)) }}
+    {{- fail "secrets.CLIENT_HOST must be a full http(s):// URL (e.g. https://checkmate.example.com). Remove it to use the default derived from api.protocol://api.ingress.host." }}
+  {{- end }}
 {{- end }}
 
-{{/* Enforce protocol when TLS is enabled to avoid mixed-content */}}
-{{- if and .Values.client.ingress.tls.enabled (ne $clientProtocol "https") }}
-  {{- fail "client.ingress.tls.enabled is true but client.protocol is not 'https'. Set client.protocol: https to avoid mixed content." }}
-{{- end }}
+{{- if $api.ingress.enabled }}
+  {{- if or (not $api.ingress.host) (eq $api.ingress.host "change_me") }}
+    {{- fail "api.ingress.host (or legacy server.ingress.host) must be overridden and not set to 'change_me' — the all-in-one image serves the UI from this host. When upgrading from 0.2.x, use your old client hostname here to keep the public URL unchanged." }}
+  {{- end }}
 
-{{- if and $api.ingress.tls.enabled (ne $apiProtocol "https") }}
-  {{- fail "api.ingress.tls.enabled is true but api.protocol is not 'https'. Set api.protocol: https to ensure correct API base URL." }}
-{{- end }}
+  {{/* Enforce protocol when TLS is enabled to avoid mixed-content */}}
+  {{- if and $api.ingress.tls.enabled (ne $api.protocol "https") }}
+    {{- fail "api.ingress.tls.enabled is true but api.protocol is not 'https'. Set api.protocol: https to ensure correct API base URL." }}
+  {{- end }}
 
-{{/* If client runs on https, API must also be https to avoid mixed content */}}
-{{- if and (eq $clientProtocol "https") (ne $apiProtocol "https") }}
-  {{- fail "client.protocol is 'https' but api.protocol is not. Set api.protocol: https to prevent browser mixed-content issues." }}
-{{- end }}
-
-{{/* Fail early if TLS enabled without cert-manager annotations (cluster-issuer or issuer) */}}
-{{- $cAnn := .Values.client.ingress.annotations | default dict }}
-{{- $aAnn := $api.ingress.annotations | default dict }}
-
-{{- $clientHasIssuer := or (hasKey $cAnn "cert-manager.io/cluster-issuer") (hasKey $cAnn "cert-manager.io/issuer") }}
-{{- $apiHasIssuer := or (hasKey $aAnn "cert-manager.io/cluster-issuer") (hasKey $aAnn "cert-manager.io/issuer") }}
-
-{{- if and .Values.client.ingress.tls.enabled (not $clientHasIssuer) }}
-  {{- fail "client.ingress.tls.enabled is true but no cert-manager issuer annotation found. Add 'cert-manager.io/cluster-issuer' or 'cert-manager.io/issuer'." }}
-{{- end }}
-
-{{- if and $api.ingress.tls.enabled (not $apiHasIssuer) }}
-  {{- fail "api.ingress.tls.enabled is true but no cert-manager issuer annotation found. Add 'cert-manager.io/cluster-issuer' or 'cert-manager.io/issuer'." }}
+  {{/* Fail early if TLS is enabled without either an existing secret or a cert-manager issuer
+        annotation. With an explicit secretName the secret already exists (or is managed outside
+        cert-manager); only the default <release>-api-tls secret needs cert-manager to create it. */}}
+  {{- $tlsSecretName := $api.ingress.tls.secretName | default "" }}
+  {{- if and $api.ingress.tls.enabled (not $tlsSecretName) }}
+    {{- $ann := $api.ingress.annotations | default dict }}
+    {{- if not (or (hasKey $ann "cert-manager.io/cluster-issuer") (hasKey $ann "cert-manager.io/issuer")) }}
+      {{- fail "api.ingress.tls.enabled is true but no cert-manager issuer annotation found and no explicit tls.secretName is set. Add a 'cert-manager.io/cluster-issuer' or 'cert-manager.io/issuer' annotation, or set tls.secretName to an existing secret (e.g. your old <release>-client-tls when upgrading from 0.2.x)." }}
+    {{- end }}
+  {{- end }}
+{{- else }}
+  {{- if or (not $explicitClientHost) (eq $explicitClientHost "change_me") }}
+    {{- fail "With api.ingress.enabled=false there is no ingress host to derive CLIENT_HOST from. Set secrets.CLIENT_HOST to the http(s):// URL your users reach the app at (e.g. your external proxy or LoadBalancer address)." }}
+  {{- end }}
 {{- end }}
 
 {{/* Worker grace period must exceed the server drain timeout (25s) or workers are SIGKILLed mid-drain */}}
 {{- if and .Values.worker.enabled (le (int .Values.worker.terminationGracePeriodSeconds) 25) }}
   {{- fail "worker.terminationGracePeriodSeconds must be greater than 25 (the server drain timeout) or workers are killed mid-drain" }}
 {{- end }}
-
-{{/* Secret name can be omitted; we default to <release>-client|api-tls in templates */}}

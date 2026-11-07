@@ -1,0 +1,3 @@
+# Worker pinned to a retired image.
+worker:
+  image: ghcr.io/bluewave-labs/checkmate-backend

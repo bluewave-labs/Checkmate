@@ -10,13 +10,6 @@ metadata:
     {{ $key }}: {{ $value | quote }}
     {{- end }}
   {{- end }}
-  {{/*#annotations:
-    #nginx.ingress.kubernetes.io/rewrite-target: /
-    #nginx.ingress.kubernetes.io/enable-cors: "true"
-    #nginx.ingress.kubernetes.io/cors-allow-origin: "http://{{ .Values.client.ingress.host }},https://{{ .Values.client.ingress.host }}"
-    #nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
-    #nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
-    #nginx.ingress.kubernetes.io/cors-allow-credentials: "true"*/}}
 spec:
   ingressClassName: {{ $api.ingress.className }}
   {{- if $api.ingress.tls.enabled }}
@@ -29,7 +22,10 @@ spec:
     - host: {{ $api.ingress.host }}
       http:
         paths:
-          - path: /api/v1
+          # Chart 0.3.0+: the all-in-one image serves the SPA, /config.js, /api-docs and
+          # /api/v1 from one process, so a single root rule covers the UI and the API.
+          # (The client ingress that used to serve "/" was removed with the client tier.)
+          - path: /
             pathType: Prefix
             backend:
               service:

@@ -1,0 +1,3 @@
+# 0.2.x-era pin on the retired backend image.
+api:
+  image: ghcr.io/bluewave-labs/checkmate-backend
