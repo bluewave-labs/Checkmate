@@ -1,7 +1,7 @@
 const SERVICE_NAME = "DiscordProvider";
 import type { AlertDiscordPayload, DiscordEmbedField, Notification } from "@/domain/notifications/notification.type.js";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
-import { getTestMessage } from "@/domain/notifications/providers/utils.js";
+import { decodeHtmlEntities, getTestMessage } from "@/domain/notifications/providers/utils.js";
 import type { NotificationMessage, NotificationSeverity } from "@/domain/notifications/notification.type.js";
 import got from "got";
 
@@ -12,9 +12,12 @@ export class DiscordProvider extends NotificationProvider {
 		if (!notification.address) {
 			return false;
 		}
+		// Include the ping line so the Test button verifies mentions too.
+		const pingContent = notification.pingContent?.trim() ? decodeHtmlEntities(notification.pingContent) : undefined;
+		const content = pingContent ? `${pingContent}\n${getTestMessage()}` : getTestMessage();
 		try {
 			await got.post(notification.address, {
-				json: { content: getTestMessage() },
+				json: { content, allowed_mentions: { parse: ["users", "roles", "everyone"] } },
 				headers: {
 					"Content-Type": "application/json",
 				},
@@ -34,10 +37,23 @@ export class DiscordProvider extends NotificationProvider {
 		}
 
 		const embed = this.buildDiscordEmbed(message);
+		// Plain-text ping outside the embed: mentions here always resolve, unlike inside embeds.
+		const pingContent = notification.pingContent?.trim() ? this.renderTemplate(decodeHtmlEntities(notification.pingContent), message) : undefined;
+		this.logger.debug({
+			message: "Sending Discord notification",
+			service: SERVICE_NAME,
+			method: "sendMessage",
+			details: { hasPingContent: Boolean(pingContent) },
+		});
 
 		try {
 			await got.post(notification.address, {
-				json: { embeds: [embed] },
+				// allowed_mentions makes <@user> / <@&role> in the description ping. Mentions in the embed title never render.
+				json: {
+					...(pingContent ? { content: pingContent } : {}),
+					embeds: [embed],
+					allowed_mentions: { parse: ["users", "roles", "everyone"] },
+				},
 				headers: {
 					"Content-Type": "application/json",
 				},
@@ -48,6 +64,14 @@ export class DiscordProvider extends NotificationProvider {
 			this.logger.warn({ err: error }, "Discord notification failed");
 			return false;
 		}
+	}
+
+	private renderTemplate(template: string, message: NotificationMessage): string {
+		return template
+			.replaceAll("{{monitor_name}}", message.monitor.name)
+			.replaceAll("{{monitor_url}}", message.monitor.url)
+			.replaceAll("{{monitor_type}}", message.monitor.type)
+			.replaceAll("{{status}}", message.monitor.status);
 	}
 
 	private buildDiscordEmbed(message: NotificationMessage): AlertDiscordPayload {
@@ -82,11 +106,13 @@ export class DiscordProvider extends NotificationProvider {
 		});
 
 		// Add monitor URL
-		fields.push({
-			name: "URL",
-			value: message.monitor.url,
-			inline: false,
-		});
+		if (message.monitor.url) {
+			fields.push({
+				name: "URL",
+				value: message.monitor.url,
+				inline: false,
+			});
+		}
 
 		// Add threshold breaches if present
 		if (message.content.thresholds && message.content.thresholds.length > 0) {

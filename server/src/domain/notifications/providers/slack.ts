@@ -94,7 +94,7 @@ export class SlackProvider extends NotificationProvider {
 			{ type: "mrkdwn", text: `*Name:*\n${message.monitor.name}` },
 			{ type: "mrkdwn", text: `*Type:*\n${message.monitor.type}` },
 			{ type: "mrkdwn", text: `*Status:*\n${message.monitor.status}` },
-			{ type: "mrkdwn", text: `*URL:*\n${message.monitor.url}` },
+			...(message.monitor.url ? [{ type: "mrkdwn", text: `*URL:*\n${message.monitor.url}` }] : []),
 		];
 
 		blocks.push({
