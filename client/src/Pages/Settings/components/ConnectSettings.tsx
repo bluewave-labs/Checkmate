@@ -156,6 +156,15 @@ const ConnectSettings = () => {
 	}
 
 	const tunnelConnected = status.tunnel?.connected ?? false;
+	const getTunnelLabel = () => {
+		if (tunnelConnected) return t("pages.settings.form.connect.status.connected");
+		if (!status.remoteAccess?.enabled) {
+			return t("pages.settings.form.connect.status.remoteAccessOff");
+		}
+		return status.tunnel?.lastError
+			? t("pages.settings.form.connect.status.disconnected")
+			: t("pages.settings.form.connect.status.connecting");
+	};
 
 	return (
 		<Stack gap={theme.spacing(LAYOUT.MD)}>
@@ -184,11 +193,7 @@ const ConnectSettings = () => {
 								<Chip
 									size="small"
 									color={tunnelConnected ? "success" : "default"}
-									label={
-										tunnelConnected
-											? t("pages.settings.form.connect.status.connected")
-											: t("pages.settings.form.connect.status.disconnected")
-									}
+									label={getTunnelLabel()}
 								/>
 							)}
 						</Stack>

@@ -1765,6 +1765,8 @@
 						"notEnrolled": "Not enrolled",
 						"connected": "Tunnel connected",
 						"disconnected": "Tunnel disconnected",
+						"connecting": "Tunnel connecting",
+						"remoteAccessOff": "Remote access off",
 						"agentId": "Agent ID",
 						"lastConnected": "Last connected"
 					},
