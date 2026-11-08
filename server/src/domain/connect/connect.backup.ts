@@ -3,7 +3,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { Readable } from "node:stream";
+import { Readable, Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import type { ReadableStream as WebReadableStream } from "node:stream/web";
 import type { ILogger } from "@/utils/logger/logger.js";
@@ -21,6 +21,9 @@ const INFO = "checkmate-connect-backup-v1";
 const HEADER_LEN = 5 + 16 + 12;
 const TAG_LEN = 16;
 const CONTROL_PLANE_TIMEOUT_MS = 15_000;
+const TRANSFER_TIMEOUT_MS = 60 * 60 * 1000;
+const MAX_BACKUP_BYTES = 50 * 1024 ** 3;
+const BLOB_HOST_SUFFIX = ".blob.vercel-storage.com";
 
 // Config backups skip high-churn operational data so frequent schedules stay
 // small; monitors, users, teams, settings and status pages are kept.
@@ -40,6 +43,19 @@ export const buildRestoreArgs = (configFile: string, archiveFile: string) => [
 	"--gzip",
 	"--drop",
 ];
+
+// Transfer URLs come from the control plane, which must not be able to point
+// this server at an internal address. CONNECT_API_URL deployments use their own
+// storage, so the operator setting that variable accepts its URLs.
+export const isAllowedTransferUrl = (raw: string, operatorOverride: boolean) => {
+	try {
+		const url = new URL(raw);
+		if (operatorOverride) return url.protocol === "https:" || url.protocol === "http:";
+		return url.protocol === "https:" && url.hostname.endsWith(BLOB_HOST_SUFFIX);
+	} catch {
+		return false;
+	}
+};
 
 type BackupOptions = {
 	mongoUrl: string;
@@ -91,6 +107,12 @@ export class ConnectBackup {
 		return `https://${new URL(enrollment.connectUrl.replace(/^wss:/, "https:")).host}`;
 	};
 
+	private assertTransferUrl = (raw: string) => {
+		if (!isAllowedTransferUrl(raw, this.options.apiBaseOverride !== null)) {
+			throw new Error("control plane returned an unexpected storage URL");
+		}
+	};
+
 	// Runs in a private temp directory: the database URI goes in a config file
 	// there because command-line arguments are visible to the whole system.
 	private withWorkDir = async <T>(work: (dir: string, configFile: string) => Promise<T>) => {
@@ -137,11 +159,14 @@ export class ConnectBackup {
 				enrollment.token
 			);
 
+			this.assertTransferUrl(ticket.uploadUrl);
 			const upload = await fetch(ticket.uploadUrl, {
 				method: "PUT",
 				headers: { "content-length": String(sizeBytes), "content-type": "application/octet-stream" },
 				body: Readable.toWeb(fs.createReadStream(archive)) as unknown as BodyInit,
 				duplex: "half",
+				redirect: "error",
+				signal: AbortSignal.timeout(TRANSFER_TIMEOUT_MS),
 			} as RequestInit);
 			if (!upload.ok) throw new Error(`blob upload failed (${upload.status})`);
 
@@ -250,18 +275,36 @@ export class ConnectBackup {
 				enrollment.token
 			);
 
-			const download = await fetch(ticket.downloadUrl);
+			this.assertTransferUrl(ticket.downloadUrl);
+			if (!Number.isSafeInteger(ticket.sizeBytes) || ticket.sizeBytes <= 0 || ticket.sizeBytes > MAX_BACKUP_BYTES) {
+				throw new Error("control plane returned an invalid backup size");
+			}
+			const download = await fetch(ticket.downloadUrl, {
+				redirect: "error",
+				signal: AbortSignal.timeout(TRANSFER_TIMEOUT_MS),
+			});
 			if (!download.ok || !download.body) throw new Error(`blob download failed (${download.status})`);
-			const hash = crypto.createHash("sha256");
-			const body = Readable.fromWeb(download.body as WebReadableStream);
-			body.on("data", (chunk: Buffer) => hash.update(chunk));
-			await pipeline(body, fs.createWriteStream(encrypted, { mode: 0o600 }));
 
+			const hash = crypto.createHash("sha256");
+			let received = 0;
+			// Stops before the disk fills if the download exceeds its recorded size.
+			const meter = new Transform({
+				transform(chunk: Buffer, _encoding, callback) {
+					received += chunk.length;
+					if (received > ticket.sizeBytes) {
+						callback(new Error(`download exceeds recorded size ${ticket.sizeBytes}`));
+						return;
+					}
+					hash.update(chunk);
+					callback(null, chunk);
+				},
+			});
+			await pipeline(Readable.fromWeb(download.body as WebReadableStream), meter, fs.createWriteStream(encrypted, { mode: 0o600 }));
+
+			if (received !== ticket.sizeBytes) throw new Error(`downloaded size ${received} != recorded ${ticket.sizeBytes}`);
 			if (hash.digest("hex") !== ticket.sha256) {
 				throw new Error("downloaded archive does not match its recorded checksum");
 			}
-			const size = fs.statSync(encrypted).size;
-			if (size !== ticket.sizeBytes) throw new Error(`downloaded size ${size} != recorded ${ticket.sizeBytes}`);
 
 			await this.decryptFile(encrypted, archive, recoveryKeyHex);
 			await this.mongorestore(configFile, archive);

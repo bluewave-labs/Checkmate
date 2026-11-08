@@ -3,7 +3,7 @@ import type { Mongoose } from "mongoose";
 import { ConnectService, DEFAULT_CONNECT_HOSTS, isConnectHostAllowed } from "../../../src/domain/connect/connect.service.ts";
 import { ConnectHeartbeat } from "../../../src/domain/connect/connect.heartbeat.ts";
 import { validateTunnelRequest } from "../../../src/domain/connect/connect.tunnel.ts";
-import { buildDumpArgs, deriveBackupKey } from "../../../src/domain/connect/connect.backup.ts";
+import { buildDumpArgs, deriveBackupKey, isAllowedTransferUrl } from "../../../src/domain/connect/connect.backup.ts";
 import { CONNECT_STATE_COLLECTION, emptyConnectState, type ConnectState } from "../../../src/domain/connect/connect.type.ts";
 import type { IConnectRepository } from "../../../src/domain/connect/connect.repository.ts";
 import type { IEncryptionService } from "../../../src/service/encryption/encryptionService.ts";
@@ -111,7 +111,51 @@ describe("Connect", () => {
 		});
 	});
 
+	describe("isAllowedTransferUrl", () => {
+		it("accepts Vercel Blob storage over HTTPS", () => {
+			expect(isAllowedTransferUrl("https://store1.private.blob.vercel-storage.com/x?sig=1", false)).toBe(true);
+		});
+
+		it.each([
+			"http://store1.private.blob.vercel-storage.com/x",
+			"https://169.254.169.254/latest/meta-data",
+			"https://127.0.0.1:52345/api/v1/health",
+			"https://blob.vercel-storage.com.evil.com/x",
+			"not a url",
+		])("rejects %s", (url) => {
+			expect(isAllowedTransferUrl(url, false)).toBe(false);
+		});
+
+		it("lets an operator using CONNECT_API_URL choose their storage", () => {
+			expect(isAllowedTransferUrl("http://127.0.0.1:9000/blob", true)).toBe(true);
+			expect(isAllowedTransferUrl("file:///etc/passwd", true)).toBe(false);
+		});
+	});
+
 	describe("ConnectService", () => {
+		it("refuses every change when its state could not be read, so real secrets are not overwritten", async () => {
+			const { service, repository } = setup({
+				load: async () => {
+					throw new Error("decrypt failed");
+				},
+			});
+			services.push(service);
+			await service.start();
+			expect((await service.createRecoveryKey()).status).toBe(503);
+			expect((await service.enroll(enrollInput)).status).toBe(503);
+			expect((await service.setRemoteAccess(false)).status).toBe(503);
+			expect((await service.unenroll()).status).toBe(503);
+			expect((await service.setBackupSchedule({ enabled: false })).status).toBe(503);
+			expect(repository.save).not.toHaveBeenCalled();
+		});
+
+		it("creates one recovery key when two requests race", async () => {
+			const { service, repository } = setup();
+			const [first, second] = await Promise.all([service.createRecoveryKey(), service.createRecoveryKey()]);
+			expect([first.status, second.status].sort()).toEqual([200, 409]);
+			expect(repository.save).toHaveBeenCalledTimes(1);
+		});
+
 		it("does nothing when the installation was never enrolled", async () => {
 			const fetchSpy = jest.spyOn(globalThis, "fetch");
 			const { service } = setup();
