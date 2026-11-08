@@ -62,7 +62,7 @@ export const connectRoutes: RouteTable<IConnectController> = {
 			path: "/backup/recovery-key",
 			handler: "createBackupRecoveryKey",
 			summary: "Generate the backup recovery key (shown once)",
-			roles: ["admin", "superadmin"],
+			roles: ["superadmin"],
 		},
 		{
 			method: "post",
@@ -78,7 +78,9 @@ export const connectRoutes: RouteTable<IConnectController> = {
 			handler: "restoreBackup",
 			summary: "Restore a cloud backup onto this installation",
 			body: connectBackupRestoreBodyValidation,
-			roles: ["admin", "superadmin"],
+			// Restore drops and replaces the database — superadmin only,
+			// matching the other destructive admin surfaces.
+			roles: ["superadmin"],
 		},
 		{
 			method: "post",
