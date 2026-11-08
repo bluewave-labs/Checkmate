@@ -25,6 +25,9 @@ services:
     environment:
       - CHECKMATE_URL=http://checkmate:52345
       - CONNECT_ADMIN_TOKEN=${CONNECT_ADMIN_TOKEN:?set CONNECT_ADMIN_TOKEN in your environment}
+      # Cloud backups dump the bundled MongoDB; point this elsewhere for an
+      # external database. The archive is encrypted locally before upload.
+      - CONNECT_MONGO_URL=mongodb://mongodb:27017/uptime_db
       # Enrollment is limited to connect.checkmate.so. For a staging or
       # preview Connect deployment, allow its hostname explicitly:
       # - CONNECT_ALLOWED_HOSTS=my-preview-host.example.com
