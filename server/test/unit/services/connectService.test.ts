@@ -49,6 +49,12 @@ const setup = (opts: { configured?: boolean; stored?: ConnectState | null; load?
 
 describe("Connect", () => {
 	const services: ConnectService[] = [];
+	const ready = async (opts: Parameters<typeof setup>[0] = {}) => {
+		const result = setup(opts);
+		services.push(result.service);
+		await result.service.start();
+		return result;
+	};
 	afterEach(() => {
 		services.splice(0).forEach((service) => service.stop());
 		jest.restoreAllMocks();
@@ -149,8 +155,16 @@ describe("Connect", () => {
 			expect(repository.save).not.toHaveBeenCalled();
 		});
 
-		it("creates one recovery key when two requests race", async () => {
+		it("refuses changes while state is still loading", async () => {
 			const { service, repository } = setup();
+			expect((await service.createRecoveryKey()).status).toBe(503);
+			expect(service.runBackup().status).toBe(503);
+			expect(service.restoreBackup("id").status).toBe(503);
+			expect(repository.save).not.toHaveBeenCalled();
+		});
+
+		it("creates one recovery key when two requests race", async () => {
+			const { service, repository } = await ready();
 			const [first, second] = await Promise.all([service.createRecoveryKey(), service.createRecoveryKey()]);
 			expect([first.status, second.status].sort()).toEqual([200, 409]);
 			expect(repository.save).toHaveBeenCalledTimes(1);
@@ -177,7 +191,7 @@ describe("Connect", () => {
 		});
 
 		it("refuses enrollment against a host that is not allowed, without saving", async () => {
-			const { service, repository } = setup();
+			const { service, repository } = await ready();
 			const result = await service.enroll({ ...enrollInput, connectUrl: "wss://evil.example/api/tunnel" });
 			expect(result.status).toBe(400);
 			expect(repository.save).not.toHaveBeenCalled();
@@ -185,8 +199,7 @@ describe("Connect", () => {
 
 		it("encrypts the credential at rest and never returns it", async () => {
 			jest.spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}"));
-			const { service, repository } = setup();
-			services.push(service);
+			const { service, repository } = await ready();
 			const result = await service.enroll(enrollInput);
 			expect(repository.save.mock.calls[0]![0].enrollment?.token).toBe(`v1.key.${TOKEN}`);
 			expect(JSON.stringify(result.data)).not.toContain(TOKEN);
@@ -195,8 +208,7 @@ describe("Connect", () => {
 
 		it("stores secrets unencrypted when no ENCRYPTION_KEY is configured", async () => {
 			jest.spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}"));
-			const { service, repository } = setup({ configured: false });
-			services.push(service);
+			const { service, repository } = await ready({ configured: false });
 			await service.enroll(enrollInput);
 			expect(repository.save.mock.calls[0]![0].enrollment?.token).toBe(TOKEN);
 		});
@@ -211,19 +223,19 @@ describe("Connect", () => {
 		});
 
 		it("leaves state unchanged when saving fails", async () => {
-			const { service, repository } = setup();
+			const { service, repository } = await ready();
 			repository.save.mockRejectedValueOnce(new Error("db down"));
 			await expect(service.enroll(enrollInput)).rejects.toThrow("db down");
 			expect(service.getStatus().data).toMatchObject({ enrolled: false });
 		});
 
 		it("requires enrollment for remote access", async () => {
-			const { service } = setup();
+			const { service } = await ready();
 			expect((await service.setRemoteAccess(true)).status).toBe(409);
 		});
 
 		it("generates the recovery key once", async () => {
-			const { service } = setup();
+			const { service } = await ready();
 			const first = await service.createRecoveryKey();
 			expect(first.data.recoveryKey).toMatch(/^[a-f0-9]{64}$/);
 			expect((await service.createRecoveryKey()).status).toBe(409);
@@ -231,8 +243,7 @@ describe("Connect", () => {
 
 		it("keeps the recovery key after unenrolling", async () => {
 			jest.spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}"));
-			const { service } = setup();
-			services.push(service);
+			const { service } = await ready();
 			await service.createRecoveryKey();
 			await service.enroll(enrollInput);
 			await service.unenroll();
@@ -240,7 +251,7 @@ describe("Connect", () => {
 		});
 
 		it("refuses scheduled backups without a recovery key", async () => {
-			const { service } = setup();
+			const { service } = await ready();
 			expect((await service.setBackupSchedule({ enabled: true })).status).toBe(409);
 		});
 	});

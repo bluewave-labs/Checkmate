@@ -75,9 +75,10 @@ export class ConnectService implements IConnectService {
 	private heartbeat: ConnectHeartbeat;
 	private backups: ConnectBackup;
 	private sweepTimer: NodeJS.Timeout | null = null;
-	// When stored state can't be read, writing would overwrite the real
-	// enrollment or recovery key, so every change is refused until a restart.
-	private loadFailed = false;
+	// Until stored state has loaded, writing could overwrite the real enrollment
+	// or recovery key, so changes are refused during startup and after a failed
+	// load.
+	private stateLoaded = false;
 	private creatingRecoveryKey = false;
 
 	constructor({ repository, encryptionService, db, logger, options }: ConnectDeps) {
@@ -120,6 +121,7 @@ export class ConnectService implements IConnectService {
 			const stored = await this.repository.load();
 			if (stored) this.state = this.reveal(stored);
 			if (stored && this.needsEncryptionUpdate(stored)) await this.repository.save(this.protect(this.state));
+			this.stateLoaded = true;
 			this.applyState();
 			this.sweepTimer = setInterval(() => {
 				this.sweepSchedule().catch((error: unknown) => {
@@ -129,14 +131,14 @@ export class ConnectService implements IConnectService {
 			this.sweepTimer.unref();
 		} catch (error) {
 			this.state = emptyConnectState();
-			this.loadFailed = true;
+			this.stateLoaded = false;
 			this.log.error({ err: error }, "Connect could not load its state and stays inactive");
 		}
 	};
 
 	private stateUnavailable = (): ConnectResult => ({
 		status: 503,
-		data: { error: "Connect state could not be loaded. Check ENCRYPTION_KEY and the server logs." },
+		data: { error: "Connect state is not available. If this continues, check ENCRYPTION_KEY and the server logs." },
 	});
 
 	stop = () => {
@@ -206,7 +208,7 @@ export class ConnectService implements IConnectService {
 	});
 
 	enroll = async ({ connectUrl, agentId, token, apiUrl }: ConnectEnrollInput): Promise<ConnectResult> => {
-		if (this.loadFailed) return this.stateUnavailable();
+		if (!this.stateLoaded) return this.stateUnavailable();
 		const { allowedHosts } = this.options;
 		if (!isConnectHostAllowed(connectUrl, allowedHosts) || (apiUrl && !isConnectHostAllowed(apiUrl, allowedHosts))) {
 			return { status: 400, data: { error: "connect host not allowed" } };
@@ -217,7 +219,7 @@ export class ConnectService implements IConnectService {
 	};
 
 	setRemoteAccess = async (enabled: boolean): Promise<ConnectResult> => {
-		if (this.loadFailed) return this.stateUnavailable();
+		if (!this.stateLoaded) return this.stateUnavailable();
 		if (enabled && !this.state.enrollment) return { status: 409, data: { error: "not enrolled" } };
 		await this.commit({ ...this.state, remoteAccessEnabled: enabled });
 		this.applyState();
@@ -225,7 +227,7 @@ export class ConnectService implements IConnectService {
 	};
 
 	unenroll = async (): Promise<ConnectResult> => {
-		if (this.loadFailed) return this.stateUnavailable();
+		if (!this.stateLoaded) return this.stateUnavailable();
 		await this.commit({ ...this.state, enrollment: null, remoteAccessEnabled: false });
 		this.applyState();
 		return this.publicResult();
@@ -245,7 +247,7 @@ export class ConnectService implements IConnectService {
 	// Generated once and returned once; without it the cloud copies cannot be
 	// decrypted, so the caller must have the operator store it safely.
 	createRecoveryKey = async (): Promise<ConnectResult> => {
-		if (this.loadFailed) return this.stateUnavailable();
+		if (!this.stateLoaded) return this.stateUnavailable();
 		if (this.state.recoveryKey || this.creatingRecoveryKey) {
 			return { status: 409, data: { error: "recovery key already set" } };
 		}
@@ -260,6 +262,7 @@ export class ConnectService implements IConnectService {
 	};
 
 	runBackup = (kind: ConnectBackupKind = "full"): ConnectResult => {
+		if (!this.stateLoaded) return this.stateUnavailable();
 		const { enrollment, recoveryKey } = this.state;
 		if (!enrollment) return { status: 409, data: { error: "not enrolled" } };
 		if (!recoveryKey) return { status: 409, data: { error: "no recovery key set" } };
@@ -269,6 +272,7 @@ export class ConnectService implements IConnectService {
 
 	// Destructive (mongorestore --drop); the UI confirms with the operator.
 	restoreBackup = (backupId: string): ConnectResult => {
+		if (!this.stateLoaded) return this.stateUnavailable();
 		const { enrollment, recoveryKey } = this.state;
 		if (!enrollment) return { status: 409, data: { error: "not enrolled" } };
 		if (!recoveryKey) return { status: 409, data: { error: "restores need the original recovery key" } };
@@ -285,7 +289,7 @@ export class ConnectService implements IConnectService {
 		intervalHours?: number;
 		kind?: ConnectBackupKind;
 	}): Promise<ConnectResult> => {
-		if (this.loadFailed) return this.stateUnavailable();
+		if (!this.stateLoaded) return this.stateUnavailable();
 		if (enabled && !this.state.recoveryKey) return { status: 409, data: { error: "no recovery key set" } };
 		await this.commit({
 			...this.state,
