@@ -67,6 +67,8 @@ const envSchema = z.object({
 
 	// Optional
 	ORIGIN: z.string().optional(),
+	CONNECT_AGENT_URL: z.string().url("CONNECT_AGENT_URL must be a valid URL").optional(),
+	CONNECT_ADMIN_TOKEN: z.string().optional(),
 
 	// Feature flags
 	STATUS_PAGE_THEMES_ENABLED: booleanCoercion.default(true),

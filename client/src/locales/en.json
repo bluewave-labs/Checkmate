@@ -1518,7 +1518,8 @@
 				"monitoring": "Monitoring",
 				"email": "Email",
 				"integrations": "Integrations",
-				"data": "Data"
+				"data": "Data",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1749,6 +1750,39 @@
 					"rotateConfirmBody": "The current key stops working immediately. Every job that pings a heartbeat monitor in this team must be updated.",
 					"keyLabel": "Ping key",
 					"copyNow": "Copy this key now. It won't be shown again."
+				},
+				"connect": {
+					"notConfigured": {
+						"title": "Checkmate Connect",
+						"description": "Optional cloud services for this installation: remote access, encrypted backups and an external watchdog.",
+						"help": "No Connect agent is configured. Add the checkmate-connect-agent sidecar to your deployment and set CONNECT_AGENT_URL on the Checkmate server to use it.",
+						"unreachable": "The Connect agent is configured but not reachable. Check that the sidecar container is running."
+					},
+					"status": {
+						"title": "Status",
+						"description": "Connection state of this installation's Connect agent.",
+						"enrolled": "Enrolled",
+						"notEnrolled": "Not enrolled",
+						"connected": "Tunnel connected",
+						"disconnected": "Tunnel disconnected",
+						"agentId": "Agent ID",
+						"lastConnected": "Last connected"
+					},
+					"enroll": {
+						"title": "Enroll installation",
+						"description": "Paste the credential block from your Checkmate Connect dashboard. The credential is stored by the local agent and never leaves your deployment except to authenticate outbound.",
+						"button": "Enroll"
+					},
+					"remoteAccess": {
+						"title": "Remote access",
+						"description": "Keep an outbound tunnel open so you can reach this installation from your Connect address. No inbound ports are opened."
+					},
+					"unenroll": {
+						"title": "Remove enrollment",
+						"description": "Disconnects this installation from Checkmate Connect and deletes the local credential. Local monitoring is not affected.",
+						"button": "Remove enrollment",
+						"confirm": "Click again to confirm"
+					}
 				}
 			},
 			"header": {

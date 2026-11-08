@@ -59,6 +59,7 @@ import type { AppSettingsResponse } from "@/Types/Settings";
 import { useSearchParams } from "react-router-dom";
 import { mutate } from "swr";
 import { SYSTEM_TIMEZONE, TIME_FORMATS, type TimeFormat } from "@/Utils/TimeUtils";
+import ConnectSettings from "./components/ConnectSettings";
 
 const SETTINGS_TABS = [
 	{ key: "general", labelKey: "pages.settings.tabs.general" },
@@ -66,6 +67,7 @@ const SETTINGS_TABS = [
 	{ key: "email", labelKey: "pages.settings.tabs.email", adminOnly: true },
 	{ key: "integrations", labelKey: "pages.settings.tabs.integrations", adminOnly: true },
 	{ key: "data", labelKey: "pages.settings.tabs.data", adminOnly: true },
+	{ key: "connect", labelKey: "pages.settings.tabs.connect", adminOnly: true },
 ] as const;
 
 type SettingsTabKey = (typeof SETTINGS_TABS)[number]["key"];
@@ -504,6 +506,9 @@ export const SettingsPage = () => {
 						))}
 					</Tabs>
 				)}
+
+				{/* checkmate connect tab */}
+				{activeTab === "connect" && <ConnectSettings />}
 
 				{/* general tab */}
 				{activeTab === "general" && (
