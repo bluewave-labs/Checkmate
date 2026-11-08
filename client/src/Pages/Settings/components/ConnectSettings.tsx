@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 import { ConfigBox } from "@/Components/design-elements";
 import { useGet, usePost } from "@/Hooks/UseApi";
 import { useFormatDate } from "@/Hooks/useFormatDate";
+import { useIsSuperAdmin } from "@/Hooks/useIsAdmin";
 import { LAYOUT } from "@/Utils/Theme/constants";
 
 type ConnectStatus = {
@@ -87,6 +88,7 @@ const ConnectSettings = () => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const formatDate = useFormatDate();
+	const canManage = useIsSuperAdmin();
 	const [credentialBlock, setCredentialBlock] = useState("");
 	const [confirmUnenroll, setConfirmUnenroll] = useState(false);
 
@@ -215,7 +217,7 @@ const ConnectSettings = () => {
 				}
 			/>
 
-			{!status.enrolled && (
+			{!status.enrolled && canManage && (
 				<ConfigBox
 					title={t("pages.settings.form.connect.enroll.title")}
 					subtitle={t("pages.settings.form.connect.enroll.description")}
@@ -264,22 +266,24 @@ const ConnectSettings = () => {
 							/>
 						}
 					/>
-					<ConfigBox
-						title={t("pages.settings.form.connect.unenroll.title")}
-						subtitle={t("pages.settings.form.connect.unenroll.description")}
-						rightContent={
-							<Button
-								variant="contained"
-								color="error"
-								disabled={unenrolling}
-								onClick={handleUnenroll}
-							>
-								{confirmUnenroll
-									? t("pages.settings.form.connect.unenroll.confirm")
-									: t("pages.settings.form.connect.unenroll.button")}
-							</Button>
-						}
-					/>
+					{canManage && (
+						<ConfigBox
+							title={t("pages.settings.form.connect.unenroll.title")}
+							subtitle={t("pages.settings.form.connect.unenroll.description")}
+							rightContent={
+								<Button
+									variant="contained"
+									color="error"
+									disabled={unenrolling}
+									onClick={handleUnenroll}
+								>
+									{confirmUnenroll
+										? t("pages.settings.form.connect.unenroll.confirm")
+										: t("pages.settings.form.connect.unenroll.button")}
+								</Button>
+							}
+						/>
+					)}
 				</>
 			)}
 		</Stack>
@@ -299,10 +303,15 @@ type BackupSectionProps = {
 
 const INTERVAL_OPTIONS = [6, 12, 24, 72, 168];
 
-const BackupSection = ({ recoveryKeySet, schedule, refetchStatus }: BackupSectionProps) => {
+const BackupSection = ({
+	recoveryKeySet,
+	schedule,
+	refetchStatus,
+}: BackupSectionProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const formatDate = useFormatDate();
+	const canManage = useIsSuperAdmin();
 	const [recoveryKey, setRecoveryKey] = useState<string | null>(null);
 	const [confirmRestoreId, setConfirmRestoreId] = useState<string | null>(null);
 
@@ -378,7 +387,7 @@ const BackupSection = ({ recoveryKeySet, schedule, refetchStatus }: BackupSectio
 						gap={theme.spacing(LAYOUT.SM)}
 						alignItems="flex-start"
 					>
-						{!recoveryKeySet && !recoveryKey && (
+						{!recoveryKeySet && !recoveryKey && canManage && (
 							<Button
 								variant="contained"
 								disabled={generatingKey}
@@ -427,14 +436,14 @@ const BackupSection = ({ recoveryKeySet, schedule, refetchStatus }: BackupSectio
 								>
 									<Button
 										variant="contained"
-										disabled={busy || startingBackup}
+										disabled={!canManage || busy || startingBackup}
 										onClick={() => void handleRun("full")}
 									>
 										{t("pages.settings.form.connect.backup.runFull")}
 									</Button>
 									<Button
 										variant="outlined"
-										disabled={busy || startingBackup}
+										disabled={!canManage || busy || startingBackup}
 										onClick={() => void handleRun("config")}
 									>
 										{t("pages.settings.form.connect.backup.runConfig")}
@@ -482,7 +491,7 @@ const BackupSection = ({ recoveryKeySet, schedule, refetchStatus }: BackupSectio
 				}
 			/>
 
-			{recoveryKeySet && (
+			{recoveryKeySet && canManage && (
 				<ConfigBox
 					title={t("pages.settings.form.connect.backup.schedule.title")}
 					subtitle={t("pages.settings.form.connect.backup.schedule.description")}
@@ -556,7 +565,7 @@ const BackupSection = ({ recoveryKeySet, schedule, refetchStatus }: BackupSectio
 				/>
 			)}
 
-			{recoveryKeySet && (
+			{recoveryKeySet && canManage && (
 				<ConfigBox
 					title={t("pages.settings.form.connect.backup.restore.title")}
 					subtitle={t("pages.settings.form.connect.backup.restore.description")}

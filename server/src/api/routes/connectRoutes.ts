@@ -26,7 +26,7 @@ export const connectRoutes: RouteTable<IConnectController> = {
 			handler: "enroll",
 			summary: "Enroll this installation with Checkmate Connect",
 			body: connectEnrollBodyValidation,
-			roles: ["admin", "superadmin"],
+			roles: ["superadmin"],
 		},
 		{
 			method: "post",
@@ -41,7 +41,7 @@ export const connectRoutes: RouteTable<IConnectController> = {
 			path: "/unenroll",
 			handler: "unenroll",
 			summary: "Remove this installation's Checkmate Connect enrollment",
-			roles: ["admin", "superadmin"],
+			roles: ["superadmin"],
 		},
 		{
 			method: "get",
@@ -70,7 +70,7 @@ export const connectRoutes: RouteTable<IConnectController> = {
 			handler: "runBackup",
 			summary: "Start an encrypted cloud backup",
 			body: connectBackupRunBodyValidation,
-			roles: ["admin", "superadmin"],
+			roles: ["superadmin"],
 		},
 		{
 			method: "post",
@@ -88,7 +88,7 @@ export const connectRoutes: RouteTable<IConnectController> = {
 			handler: "setBackupSchedule",
 			summary: "Enable or disable scheduled cloud backups",
 			body: connectBackupScheduleBodyValidation,
-			roles: ["admin", "superadmin"],
+			roles: ["superadmin"],
 		},
 	],
 };
