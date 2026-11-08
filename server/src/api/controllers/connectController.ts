@@ -1,17 +1,13 @@
-import { RequestHandler } from "express";
+import { RequestHandler, Response } from "express";
 import { z } from "zod";
-import { Handler } from "./controllerUtils.js";
-
-// Checkmate Connect is an optional cloud companion service. This controller
-// only proxies the admin UI to the local Connect sidecar agent; when no agent
-// is configured (CONNECT_AGENT_URL unset) every endpoint reports unavailable
-// and the rest of Checkmate is unaffected.
+import { ApiEnvelope, Handler } from "./controllerUtils.js";
+import type { ConnectResult, IConnectService } from "@/domain/connect/connect.service.js";
 
 export const connectEnrollBodyValidation = z.object({
 	connectUrl: z.string().regex(/^wss:\/\/[a-z0-9.-]+\/api\/tunnel$/, "Invalid Connect tunnel URL"),
 	agentId: z.string().regex(/^[a-z0-9-]{1,64}$/, "Invalid agent id"),
 	token: z.string().regex(/^cmk_[a-f0-9]{48}$/, "Invalid credential"),
-	// Control-plane origin; optional for pre-0.4.0 credential blocks (ADR-002).
+	// Control-plane origin; optional for older credential blocks.
 	apiUrl: z
 		.string()
 		.regex(/^https:\/\/[a-z0-9.-]+$/, "Invalid Connect API URL")
@@ -49,140 +45,63 @@ export interface IConnectController {
 	setBackupSchedule: RequestHandler;
 }
 
-const AGENT_TIMEOUT_MS = 5000;
+const respond = (res: Response<ApiEnvelope>, result: ConnectResult, successMsg: string, failureMsg: string) => {
+	const ok = result.status < 400;
+	res.status(ok ? 200 : result.status).json({ success: ok, msg: ok ? successMsg : failureMsg, data: result.data });
+};
 
 class ConnectController implements IConnectController {
-	private agentUrl() {
-		return process.env.CONNECT_AGENT_URL ?? "";
-	}
-
-	private async agentRequest(path: string, init?: { method?: string; body?: unknown }) {
-		const headers: Record<string, string> = { "content-type": "application/json" };
-		const adminToken = process.env.CONNECT_ADMIN_TOKEN;
-		if (adminToken) headers.authorization = `Bearer ${adminToken}`;
-		const res = await fetch(`${this.agentUrl()}${path}`, {
-			method: init?.method ?? "GET",
-			headers,
-			body: init?.body !== undefined ? JSON.stringify(init.body) : undefined,
-			signal: AbortSignal.timeout(AGENT_TIMEOUT_MS),
-		});
-		const data = await res.json().catch(() => ({}));
-		return { ok: res.ok, status: res.status, data };
-	}
+	constructor(private connectService: IConnectService) {}
 
 	getStatus: Handler = async (_req, res) => {
-		if (!this.agentUrl()) {
-			res.json({ success: true, msg: "Connect agent not configured", data: { available: false } });
-			return;
-		}
-		try {
-			const result = await this.agentRequest("/status");
-			res.json({
-				success: true,
-				msg: "Connect status retrieved",
-				data: { available: true, ...result.data },
-			});
-		} catch {
-			res.json({
-				success: true,
-				msg: "Connect agent unreachable",
-				data: { available: false, unreachable: true },
-			});
-		}
+		respond(res, this.connectService.getStatus(), "Connect status retrieved", "Connect status failed");
 	};
 
 	enroll: Handler = async (req, res) => {
 		const body = connectEnrollBodyValidation.parse(req.body);
-		const result = await this.agentRequest("/enroll", { method: "POST", body });
-		res.status(result.ok ? 200 : result.status).json({
-			success: result.ok,
-			msg: result.ok ? "Installation enrolled" : "Enrollment failed",
-			data: result.data,
-		});
+		respond(res, await this.connectService.enroll(body), "Installation enrolled", "Enrollment failed");
 	};
 
 	setRemoteAccess: Handler = async (req, res) => {
-		const body = connectRemoteAccessBodyValidation.parse(req.body);
-		const result = await this.agentRequest("/remote-access", { method: "POST", body });
-		res.status(result.ok ? 200 : result.status).json({
-			success: result.ok,
-			msg: result.ok
-				? body.enabled
-					? "Remote access enabled"
-					: "Remote access disabled"
-				: "Updating remote access failed",
-			data: result.data,
-		});
+		const { enabled } = connectRemoteAccessBodyValidation.parse(req.body);
+		respond(
+			res,
+			await this.connectService.setRemoteAccess(enabled),
+			enabled ? "Remote access enabled" : "Remote access disabled",
+			"Updating remote access failed"
+		);
 	};
 
 	unenroll: Handler = async (_req, res) => {
-		const result = await this.agentRequest("/unenroll", { method: "POST" });
-		res.status(result.ok ? 200 : result.status).json({
-			success: result.ok,
-			msg: result.ok ? "Installation unenrolled" : "Unenroll failed",
-			data: result.data,
-		});
+		respond(res, await this.connectService.unenroll(), "Installation unenrolled", "Unenroll failed");
 	};
 
-	// ---- Cloud backups (Phase 3b) ----
-
 	getBackupStatus: Handler = async (_req, res) => {
-		const result = await this.agentRequest("/backup/status");
-		res.status(result.ok ? 200 : result.status).json({
-			success: result.ok,
-			msg: result.ok ? "Backup status retrieved" : "Backup status failed",
-			data: result.data,
-		});
+		respond(res, this.connectService.getBackupStatus(), "Backup status retrieved", "Backup status failed");
 	};
 
 	getBackupList: Handler = async (_req, res) => {
-		const result = await this.agentRequest("/backup/list");
-		res.status(result.ok ? 200 : result.status).json({
-			success: result.ok,
-			msg: result.ok ? "Backup list retrieved" : "Backup list failed",
-			data: result.data,
-		});
+		respond(res, await this.connectService.listBackups(), "Backup list retrieved", "Backup list failed");
 	};
 
+	// The response contains the recovery key exactly once; it is never logged.
 	createBackupRecoveryKey: Handler = async (_req, res) => {
-		// The response contains the recovery key exactly once; it is never
-		// persisted on the Checkmate side and never logged.
-		const result = await this.agentRequest("/backup/recovery-key", { method: "POST" });
-		res.status(result.ok ? 200 : result.status).json({
-			success: result.ok,
-			msg: result.ok ? "Recovery key generated" : "Recovery key generation failed",
-			data: result.data,
-		});
+		respond(res, await this.connectService.createRecoveryKey(), "Recovery key generated", "Recovery key generation failed");
 	};
 
 	runBackup: Handler = async (req, res) => {
-		const body = connectBackupRunBodyValidation.parse(req.body);
-		const result = await this.agentRequest("/backup/run", { method: "POST", body });
-		res.status(result.ok ? 200 : result.status).json({
-			success: result.ok,
-			msg: result.ok ? "Backup started" : "Backup start failed",
-			data: result.data,
-		});
+		const { kind } = connectBackupRunBodyValidation.parse(req.body);
+		respond(res, this.connectService.runBackup(kind), "Backup started", "Backup start failed");
 	};
 
 	restoreBackup: Handler = async (req, res) => {
-		const body = connectBackupRestoreBodyValidation.parse(req.body);
-		const result = await this.agentRequest("/backup/restore", { method: "POST", body });
-		res.status(result.ok ? 200 : result.status).json({
-			success: result.ok,
-			msg: result.ok ? "Restore started" : "Restore start failed",
-			data: result.data,
-		});
+		const { backupId } = connectBackupRestoreBodyValidation.parse(req.body);
+		respond(res, this.connectService.restoreBackup(backupId), "Restore started", "Restore start failed");
 	};
 
 	setBackupSchedule: Handler = async (req, res) => {
 		const body = connectBackupScheduleBodyValidation.parse(req.body);
-		const result = await this.agentRequest("/backup/schedule", { method: "POST", body });
-		res.status(result.ok ? 200 : result.status).json({
-			success: result.ok,
-			msg: result.ok ? "Backup schedule updated" : "Backup schedule update failed",
-			data: result.data,
-		});
+		respond(res, await this.connectService.setBackupSchedule(body), "Backup schedule updated", "Backup schedule update failed");
 	};
 }
 

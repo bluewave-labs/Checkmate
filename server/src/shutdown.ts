@@ -12,6 +12,7 @@ type ShutdownTargets = {
 	db: IDb<Mongoose>;
 	logger: ILogger;
 	healthServer?: IHealthServer;
+	connectService?: { stop(): void };
 };
 export const initShutdownListener = (server: Server | null, shutdownTargets: ShutdownTargets) => {
 	const SERVICE_NAME = "Server";
@@ -30,6 +31,7 @@ export const initShutdownListener = (server: Server | null, shutdownTargets: Shu
 		log.info("Attempting graceful shutdown");
 
 		try {
+			shutdownTargets.connectService?.stop();
 			server?.close();
 			await shutdownTargets.worker.drain();
 			await shutdownTargets.worker.shutdown();

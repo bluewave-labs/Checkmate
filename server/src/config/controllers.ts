@@ -65,6 +65,6 @@ export const initializeControllers = (apiServices: ApiServices): InitializedCont
 		egressController: new EgressController(apiServices.egressStateService),
 		heartbeatController: new HeartbeatController(apiServices.heartbeatService),
 		teamController: new TeamController(apiServices.teamService),
-		connectController: new ConnectController(),
+		connectController: new ConnectController(apiServices.connectService),
 	};
 };

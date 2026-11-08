@@ -74,6 +74,8 @@ describe("SettingsService", () => {
 				dbType: "mongodb",
 				statusPageThemesEnabled: false,
 				clientConfig: {},
+				connectAllowedHosts: null,
+				connectApiUrl: null,
 			});
 		});
 

@@ -15,13 +15,10 @@ import { useIsSuperAdmin } from "@/Hooks/useIsAdmin";
 import { LAYOUT } from "@/Utils/Theme/constants";
 
 type ConnectStatus = {
-	available: boolean;
-	unreachable?: boolean;
 	enrolled?: boolean;
 	agentId?: string | null;
 	connectUrl?: string | null;
 	remoteAccess?: { enabled: boolean };
-	watchdog?: { enabled: boolean };
 	apiUrl?: string | null;
 	backup?: {
 		recoveryKeySet: boolean;
@@ -135,24 +132,6 @@ const ConnectSettings = () => {
 
 	if (!status) {
 		return null;
-	}
-
-	if (!status.available) {
-		return (
-			<Stack gap={theme.spacing(LAYOUT.MD)}>
-				<ConfigBox
-					title={t("pages.settings.form.connect.notConfigured.title")}
-					subtitle={t("pages.settings.form.connect.notConfigured.description")}
-					rightContent={
-						<Typography variant="body2">
-							{status.unreachable
-								? t("pages.settings.form.connect.notConfigured.unreachable")
-								: t("pages.settings.form.connect.notConfigured.help")}
-						</Typography>
-					}
-				/>
-			</Stack>
-		);
 	}
 
 	const tunnelConnected = status.tunnel?.connected ?? false;

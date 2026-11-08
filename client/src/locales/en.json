@@ -1752,15 +1752,9 @@
 					"copyNow": "Copy this key now. It won't be shown again."
 				},
 				"connect": {
-					"notConfigured": {
-						"title": "Checkmate Connect",
-						"description": "Optional cloud services for this installation: remote access, encrypted backups and an external watchdog.",
-						"help": "No Connect agent is configured. Add the checkmate-connect-agent sidecar to your deployment and set CONNECT_AGENT_URL on the Checkmate server to use it.",
-						"unreachable": "The Connect agent is configured but not reachable. Check that the sidecar container is running."
-					},
 					"status": {
 						"title": "Status",
-						"description": "Connection state of this installation's Connect agent.",
+						"description": "Connection state of this installation.",
 						"enrolled": "Enrolled",
 						"notEnrolled": "Not enrolled",
 						"connected": "Tunnel connected",
@@ -1772,7 +1766,7 @@
 					},
 					"enroll": {
 						"title": "Enroll installation",
-						"description": "Paste the credential block from your Checkmate Connect dashboard. The credential is stored by the local agent and never leaves your deployment except to authenticate outbound.",
+						"description": "Paste the credential block from your Checkmate Connect dashboard. The credential is stored in this installation's database and only leaves it to authenticate with Checkmate Connect.",
 						"button": "Enroll"
 					},
 					"remoteAccess": {
