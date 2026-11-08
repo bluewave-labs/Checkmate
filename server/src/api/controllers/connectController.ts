@@ -11,10 +11,29 @@ export const connectEnrollBodyValidation = z.object({
 	connectUrl: z.string().regex(/^wss:\/\/[a-z0-9.-]+\/api\/tunnel$/, "Invalid Connect tunnel URL"),
 	agentId: z.string().regex(/^[a-z0-9-]{1,64}$/, "Invalid agent id"),
 	token: z.string().regex(/^cmk_[a-f0-9]{48}$/, "Invalid credential"),
+	// Control-plane origin; optional for pre-0.4.0 credential blocks (ADR-002).
+	apiUrl: z
+		.string()
+		.regex(/^https:\/\/[a-z0-9.-]+$/, "Invalid Connect API URL")
+		.optional(),
 });
 
 export const connectRemoteAccessBodyValidation = z.object({
 	enabled: z.boolean(),
+});
+
+export const connectBackupRunBodyValidation = z.object({
+	kind: z.enum(["full", "config"]).optional(),
+});
+
+export const connectBackupRestoreBodyValidation = z.object({
+	backupId: z.string().regex(/^[0-9a-f-]{36}$/, "Invalid backup id"),
+});
+
+export const connectBackupScheduleBodyValidation = z.object({
+	enabled: z.boolean(),
+	intervalHours: z.number().int().min(1).max(168).optional(),
+	kind: z.enum(["full", "config"]).optional(),
 });
 
 export interface IConnectController {
@@ -22,6 +41,12 @@ export interface IConnectController {
 	enroll: RequestHandler;
 	setRemoteAccess: RequestHandler;
 	unenroll: RequestHandler;
+	getBackupStatus: RequestHandler;
+	getBackupList: RequestHandler;
+	createBackupRecoveryKey: RequestHandler;
+	runBackup: RequestHandler;
+	restoreBackup: RequestHandler;
+	setBackupSchedule: RequestHandler;
 }
 
 const AGENT_TIMEOUT_MS = 5000;
@@ -95,6 +120,67 @@ class ConnectController implements IConnectController {
 		res.status(result.ok ? 200 : result.status).json({
 			success: result.ok,
 			msg: result.ok ? "Installation unenrolled" : "Unenroll failed",
+			data: result.data,
+		});
+	};
+
+	// ---- Cloud backups (Phase 3b) ----
+
+	getBackupStatus: Handler = async (_req, res) => {
+		const result = await this.agentRequest("/backup/status");
+		res.status(result.ok ? 200 : result.status).json({
+			success: result.ok,
+			msg: result.ok ? "Backup status retrieved" : "Backup status failed",
+			data: result.data,
+		});
+	};
+
+	getBackupList: Handler = async (_req, res) => {
+		const result = await this.agentRequest("/backup/list");
+		res.status(result.ok ? 200 : result.status).json({
+			success: result.ok,
+			msg: result.ok ? "Backup list retrieved" : "Backup list failed",
+			data: result.data,
+		});
+	};
+
+	createBackupRecoveryKey: Handler = async (_req, res) => {
+		// The response contains the recovery key exactly once; it is never
+		// persisted on the Checkmate side and never logged.
+		const result = await this.agentRequest("/backup/recovery-key", { method: "POST" });
+		res.status(result.ok ? 200 : result.status).json({
+			success: result.ok,
+			msg: result.ok ? "Recovery key generated" : "Recovery key generation failed",
+			data: result.data,
+		});
+	};
+
+	runBackup: Handler = async (req, res) => {
+		const body = connectBackupRunBodyValidation.parse(req.body);
+		const result = await this.agentRequest("/backup/run", { method: "POST", body });
+		res.status(result.ok ? 200 : result.status).json({
+			success: result.ok,
+			msg: result.ok ? "Backup started" : "Backup start failed",
+			data: result.data,
+		});
+	};
+
+	restoreBackup: Handler = async (req, res) => {
+		const body = connectBackupRestoreBodyValidation.parse(req.body);
+		const result = await this.agentRequest("/backup/restore", { method: "POST", body });
+		res.status(result.ok ? 200 : result.status).json({
+			success: result.ok,
+			msg: result.ok ? "Restore started" : "Restore start failed",
+			data: result.data,
+		});
+	};
+
+	setBackupSchedule: Handler = async (req, res) => {
+		const body = connectBackupScheduleBodyValidation.parse(req.body);
+		const result = await this.agentRequest("/backup/schedule", { method: "POST", body });
+		res.status(result.ok ? 200 : result.status).json({
+			success: result.ok,
+			msg: result.ok ? "Backup schedule updated" : "Backup schedule update failed",
 			data: result.data,
 		});
 	};

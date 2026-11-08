@@ -1782,6 +1782,42 @@
 						"description": "Disconnects this installation from Checkmate Connect and deletes the local credential. Local monitoring is not affected.",
 						"button": "Remove enrollment",
 						"confirm": "Click again to confirm"
+					},
+					"backup": {
+						"title": "Cloud backups",
+						"description": "Encrypted backups of this installation's database, uploaded to Checkmate Connect. Data is encrypted here before upload; the cloud only ever stores ciphertext.",
+						"generateKey": "Generate recovery key",
+						"keyTitle": "Recovery key",
+						"keyWarning": "Store this key somewhere safe now. It is shown only once, it never leaves this server, and without it no cloud backup can be restored.",
+						"keyCopy": "Copy key",
+						"keyDone": "I have stored the key",
+						"runFull": "Back up now",
+						"runConfig": "Back up configuration only",
+						"running": "Backup in progress…",
+						"restoring": "Restore in progress…",
+						"lastBackup": "Last backup",
+						"lastRestore": "Last restore",
+						"failed": "failed",
+						"succeeded": "succeeded",
+						"schedule": {
+							"title": "Scheduled backups",
+							"description": "Run an encrypted cloud backup automatically on a fixed interval.",
+							"interval": "Interval",
+							"kind": "Backup type",
+							"kindFull": "Full database",
+							"kindConfig": "Configuration only",
+							"hours": "hours"
+						},
+						"restore": {
+							"title": "Restore a backup",
+							"description": "Downloads the selected backup, verifies and decrypts it on this server, then replaces the current database. This cannot be undone.",
+							"empty": "No verified cloud backups yet.",
+							"button": "Restore",
+							"confirm": "Click again to confirm",
+							"columnCreated": "Created",
+							"columnKind": "Type",
+							"columnSize": "Size"
+						}
 					}
 				}
 			},
