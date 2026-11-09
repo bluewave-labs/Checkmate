@@ -1518,7 +1518,8 @@
 				"monitoring": "Monitoring",
 				"email": "Email",
 				"integrations": "Integrations",
-				"data": "Data"
+				"data": "Data",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1729,7 +1730,10 @@
 				},
 				"importExportMonitors": {
 					"title": "Import / Export monitors",
-					"description": "Import or export your monitors data as a JSON file for backup or transfer."
+					"description": "Import or export your monitors data as a JSON file for backup or transfer.",
+					"backupNotice": "This JSON file only contains your monitors, so it isn't a full backup. To back up or restore your Checkmate data, use Checkmate Connect.",
+					"connectTabLink": "Open the Checkmate Connect tab",
+					"connectSiteLink": "Visit the Checkmate Connect website"
 				},
 				"about": {
 					"title": "About",
@@ -1749,6 +1753,115 @@
 					"rotateConfirmBody": "The current key stops working immediately. Every job that pings a heartbeat monitor in this team must be updated.",
 					"keyLabel": "Ping key",
 					"copyNow": "Copy this key now. It won't be shown again."
+				},
+				"connect": {
+					"superadminOnly": "Only a superadmin can enroll this server, run backups or restore them. Sign out and back in if your role changed recently.",
+					"status": {
+						"title": "Status",
+						"description": "Connection state of this installation.",
+						"enrolled": "Enrolled",
+						"notEnrolled": "Not enrolled",
+						"connected": "Tunnel connected",
+						"disconnected": "Tunnel disconnected",
+						"connecting": "Tunnel connecting",
+						"remoteAccessOff": "Remote access off",
+						"agentId": "Agent ID",
+						"lastConnected": "Last connected"
+					},
+					"enroll": {
+						"title": "Enroll installation",
+						"description": "Paste the credential block from your Checkmate Connect dashboard. The credential is stored in this installation's database and only leaves it to authenticate with Checkmate Connect.",
+						"button": "Enroll"
+					},
+					"remoteAccess": {
+						"title": "Remote access",
+						"description": "Keep an outbound tunnel open so you can reach this installation from your Connect address. No inbound ports are opened."
+					},
+					"unenroll": {
+						"title": "Remove enrollment",
+						"description": "Disconnects this installation from Checkmate Connect and deletes the local credential. Local monitoring is not affected.",
+						"button": "Remove enrollment",
+						"confirm": "Click again to confirm"
+					},
+					"backup": {
+						"title": "Cloud backups",
+						"description": "Encrypted backups of this installation's database, uploaded to Checkmate Connect. Data is encrypted here before upload; the cloud only ever stores ciphertext.",
+						"generateKey": "Generate recovery key",
+						"importKey": "I already have a recovery key",
+						"existingBackups": "This account already has cloud backups. Enter the recovery key from your original server to restore them.",
+						"lostKey": "I lost my key",
+						"lostKeyConfirm": "Click again to confirm",
+						"lostKeyWarning": "Your existing cloud backups can't be restored without the original key. They're kept for 30 days after your first backup with a new key, so you can switch back if you find the original.",
+						"importKeyHelp": "Paste the 64-character key from your original server. Checkmate decrypts one of your cloud backups to check the key before saving it.",
+						"replaceKey": "Use a different recovery key",
+						"replaceKeyHelp": "Paste the 64-character key you want to use instead. Checkmate decrypts your cloud backups to check the key, and keeps your current key if none of them open.",
+						"replaceKeyWarning": "Backups made with your current key can't be restored after you switch.",
+						"importKeyPlaceholder": "Recovery key",
+						"importKeyConfirm": "Use this key",
+						"importKeyCancel": "Cancel",
+						"keyTitle": "Recovery key",
+						"keyWarning": "Store this key somewhere safe, away from this server. It is shown only once. If you lose it, your cloud backups can't be restored and nobody can recover it for you.",
+						"keyCopy": "Copy key",
+						"keyCopied": "Copied",
+						"keyContinue": "I have saved it",
+						"keyDone": "I have stored the key",
+						"keyShowAgain": "Show the key again",
+						"keyVerifyHelp": "Open the place you saved the key and paste it here to confirm you have a working copy.",
+						"keyAcknowledge": "I understand that if I lose this key, I can't restore my cloud backups.",
+						"keyMismatch": "That doesn't match your recovery key. Show the key again and save a new copy.",
+						"keyAckRequired": "Tick the box to confirm you understand.",
+						"toolsMissing": "Cloud backups need mongodump and mongorestore, which weren't found on this server.",
+						"toolsMac": "On macOS, run: brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "Download MongoDB Database Tools for Linux",
+						"toolsPath": "If they're installed elsewhere, set CONNECT_MONGODUMP_BIN and CONNECT_MONGORESTORE_BIN. This message clears within a minute of the tools being found.",
+						"runFull": "Back up now",
+						"runConfig": "Back up configuration only",
+						"progress": {
+							"checking": "Checking your key…",
+							"scheduled": "A scheduled backup is running…",
+							"backup": {
+								"dumping": "Step 1 of 3: reading and encrypting your database",
+								"uploading": "Step 2 of 3: uploading the encrypted backup",
+								"saving": "Step 3 of 3: saving the backup to your account"
+							},
+							"restore": {
+								"downloading": "Step 1 of 3: downloading the backup",
+								"decrypting": "Step 2 of 3: decrypting the backup",
+								"restoring": "Step 3 of 3: restoring your database"
+							},
+							"verify": {
+								"downloading": "Checking your key: downloading backup {{attempt}} of {{attempts}}",
+								"decrypting": "Checking your key: decrypting backup {{attempt}} of {{attempts}}"
+							}
+						},
+						"lastBackup": "Last backup",
+						"lastRestore": "Last restore",
+						"failed": "failed",
+						"succeeded": "succeeded",
+						"schedule": {
+							"title": "Scheduled backups",
+							"enabled": "Scheduled backups enabled",
+							"disabled": "Scheduled backups disabled",
+							"description": "Run an encrypted cloud backup automatically on a fixed interval.",
+							"interval": "Interval",
+							"kind": "Backup type",
+							"kindFull": "Full database",
+							"kindConfig": "Configuration only",
+							"hours": "hours"
+						},
+						"restore": {
+							"differentKey": "Different key",
+							"expires": "Removed after {{date}}",
+							"title": "Restore a backup",
+							"description": "Downloads the selected backup, verifies and decrypts it on this server, then replaces the current database. This cannot be undone. User accounts are replaced too, so log in with an account from the backup afterwards.",
+							"empty": "No verified cloud backups yet.",
+							"button": "Restore",
+							"confirm": "Click again to confirm",
+							"columnCreated": "Created",
+							"columnKind": "Type",
+							"columnSize": "Size"
+						}
+					}
 				}
 			},
 			"header": {

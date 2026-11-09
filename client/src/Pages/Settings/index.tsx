@@ -56,9 +56,10 @@ import { FormNumberField } from "@/Components/inputs/forms/FormNumberField";
 import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
 import type { ProxyResponse } from "@/Types/Proxy";
 import type { AppSettingsResponse } from "@/Types/Settings";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link as RouterLink } from "react-router-dom";
 import { mutate } from "swr";
 import { SYSTEM_TIMEZONE, TIME_FORMATS, type TimeFormat } from "@/Utils/TimeUtils";
+import ConnectSettings from "./components/ConnectSettings";
 
 const SETTINGS_TABS = [
 	{ key: "general", labelKey: "pages.settings.tabs.general" },
@@ -66,6 +67,7 @@ const SETTINGS_TABS = [
 	{ key: "email", labelKey: "pages.settings.tabs.email", adminOnly: true },
 	{ key: "integrations", labelKey: "pages.settings.tabs.integrations", adminOnly: true },
 	{ key: "data", labelKey: "pages.settings.tabs.data", adminOnly: true },
+	{ key: "connect", labelKey: "pages.settings.tabs.connect", adminOnly: true },
 ] as const;
 
 type SettingsTabKey = (typeof SETTINGS_TABS)[number]["key"];
@@ -504,6 +506,9 @@ export const SettingsPage = () => {
 						))}
 					</Tabs>
 				)}
+
+				{/* checkmate connect tab */}
+				{activeTab === "connect" && <ConnectSettings />}
 
 				{/* general tab */}
 				{activeTab === "general" && (
@@ -1042,32 +1047,56 @@ export const SettingsPage = () => {
 								title={t("pages.settings.form.importExportMonitors.title")}
 								subtitle={t("pages.settings.form.importExportMonitors.description")}
 								rightContent={
-									<Stack
-										gap={theme.spacing(LAYOUT.MD)}
-										direction={"row"}
-									>
-										<input
-											id="monitor-import-input"
-											type="file"
-											accept=".json"
-											style={{ display: "none" }}
-											onChange={handleFileSelect}
-										/>
-										<Button
-											variant="contained"
-											onClick={() =>
-												document.getElementById("monitor-import-input")?.click()
-											}
-											disabled={isImportingMonitors}
+									<Stack gap={theme.spacing(LAYOUT.MD)}>
+										<Stack
+											gap={theme.spacing(LAYOUT.MD)}
+											direction={"row"}
 										>
-											{t("common.buttons.importFromJSON")}
-										</Button>
-										<Button
-											variant="contained"
-											onClick={handleExportMonitors}
+											<input
+												id="monitor-import-input"
+												type="file"
+												accept=".json"
+												style={{ display: "none" }}
+												onChange={handleFileSelect}
+											/>
+											<Button
+												variant="contained"
+												onClick={() =>
+													document.getElementById("monitor-import-input")?.click()
+												}
+												disabled={isImportingMonitors}
+											>
+												{t("common.buttons.importFromJSON")}
+											</Button>
+											<Button
+												variant="contained"
+												onClick={handleExportMonitors}
+											>
+												{t("common.buttons.exportToJSON")}
+											</Button>
+										</Stack>
+										<Typography>
+											{t("pages.settings.form.importExportMonitors.backupNotice")}
+										</Typography>
+										<Stack
+											direction="row"
+											flexWrap="wrap"
+											gap={theme.spacing(LAYOUT.MD)}
 										>
-											{t("common.buttons.exportToJSON")}
-										</Button>
+											<Link
+												component={RouterLink}
+												to="/settings?tab=connect"
+											>
+												{t("pages.settings.form.importExportMonitors.connectTabLink")}
+											</Link>
+											<Link
+												href="https://checkmateconnect.io"
+												target="_blank"
+												rel="noopener noreferrer"
+											>
+												{t("pages.settings.form.importExportMonitors.connectSiteLink")}
+											</Link>
+										</Stack>
 									</Stack>
 								}
 							/>

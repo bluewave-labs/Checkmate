@@ -11,6 +11,9 @@ import { EgressStateService, IEgressStateService } from "@/domain/egress/egress-
 import { HeartbeatService, IHeartbeatService } from "@/domain/heartbeat/heartbeat.service.js";
 import { TeamService, ITeamService } from "@/domain/teams/team.service.js";
 import { AppVersionService, IAppVersionService } from "@/domain/app-version/app-version.service.js";
+import { ConnectService, DEFAULT_CONNECT_HOSTS, IConnectService } from "@/domain/connect/connect.service.js";
+import { MongoConnectRepository } from "@/domain/connect/connect.repository.js";
+import { APP_VERSION } from "@/utils/appVersion.js";
 import { SharedServices } from "@/config/services.shared.js";
 
 // Third-party
@@ -33,6 +36,7 @@ export interface ApiServices extends SharedServices {
 	heartbeatService: IHeartbeatService;
 	teamService: ITeamService;
 	appVersionService: IAppVersionService;
+	connectService: IConnectService;
 }
 
 export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): ApiServices => {
@@ -127,6 +131,23 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 	});
 	const teamService = new TeamService({ logger, teamsRepository, encryptionService });
 	const appVersionService = new AppVersionService(got, logger);
+	const envSettings = settingsService.getSettings();
+	const connectService = new ConnectService({
+		repository: new MongoConnectRepository(),
+		scheduler: jobScheduler,
+		encryptionService,
+		db,
+		logger,
+		options: {
+			localTarget: `http://127.0.0.1:${envSettings.port}`,
+			version: APP_VERSION,
+			mongoUrl: envSettings.dbConnectionString,
+			allowedHosts: envSettings.connectAllowedHosts ?? DEFAULT_CONNECT_HOSTS,
+			apiBaseOverride: envSettings.connectApiUrl,
+			mongodumpBin: envSettings.connectMongodumpBin,
+			mongorestoreBin: envSettings.connectMongorestoreBin,
+		},
+	});
 	return {
 		...shared,
 		worker: jobScheduler,
@@ -142,5 +163,6 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		heartbeatService,
 		teamService,
 		appVersionService,
+		connectService,
 	};
 };

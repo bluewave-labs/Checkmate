@@ -48,6 +48,7 @@ export class JobScheduler implements IJobScheduler {
 		"cleanup-orphaned": POLL_MS,
 		"cleanup-retention": POLL_MS,
 		telemetry: POLL_MS,
+		"connect-backup": POLL_MS,
 	};
 
 	// Figures out when a job should first be run
@@ -155,6 +156,30 @@ export class JobScheduler implements IJobScheduler {
 		} else {
 			await this.jobsRepository.deleteByIdAndType(monitor.id, "geo-check");
 		}
+	};
+
+	// Only an explicit nextRunAt moves a row that already exists, so a restart never triggers a backup.
+	setConnectBackupJob = async (intervalMs: number, nextRunAt?: number) => {
+		const seed: JobSeed = {
+			id: jobId("connect-backup", null),
+			type: "connect-backup",
+			refId: null,
+			isActive: true,
+			intervalMs,
+			nextScheduledAt: nextRunAt ?? Date.now(),
+		};
+		if (nextRunAt === undefined) await this.jobsRepository.upsertJob(seed);
+		else await this.jobsRepository.upsertCleanupJob(seed);
+		this.wake("connect-backup");
+	};
+
+	removeConnectBackupJob = async () => {
+		await this.jobsRepository.deleteGlobalJob("connect-backup");
+	};
+
+	isConnectBackupRunning = async () => {
+		const job = await this.jobsRepository.findGlobalJob("connect-backup");
+		return job?.lockedUntil !== null && job?.lockedUntil !== undefined && job.lockedUntil > Date.now();
 	};
 
 	getMetrics = async (): Promise<WorkerMetrics> => {

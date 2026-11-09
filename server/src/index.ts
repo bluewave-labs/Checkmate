@@ -110,6 +110,7 @@ const startApp = async () => {
 	});
 
 	initShutdownListener(server, { ...services, healthServer });
+	await services.connectService.start();
 };
 
 startApp().catch((error) => {

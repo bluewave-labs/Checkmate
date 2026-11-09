@@ -67,6 +67,12 @@ const envSchema = z.object({
 
 	// Optional
 	ORIGIN: z.string().optional(),
+	// Checkmate Connect. Comma-separated exact hostnames, or suffixes starting
+	// with "."; the default only allows the official service.
+	CONNECT_ALLOWED_HOSTS: z.string().optional(),
+	CONNECT_API_URL: z.url("CONNECT_API_URL must be a valid URL").optional(),
+	CONNECT_MONGODUMP_BIN: z.string().default("mongodump"),
+	CONNECT_MONGORESTORE_BIN: z.string().default("mongorestore"),
 
 	// Feature flags
 	STATUS_PAGE_THEMES_ENABLED: booleanCoercion.default(true),

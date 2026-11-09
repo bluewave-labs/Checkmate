@@ -350,6 +350,11 @@ class MongoJobsRepository implements IJobsRepository {
 		return docs.map(this.toEntity);
 	};
 
+	findGlobalJob = async (type: JobType) => {
+		const doc = await JobModel.findOne({ _id: jobId(type, null) }).lean<JobDocument>();
+		return doc ? this.toEntity(doc) : null;
+	};
+
 	findCheckJob = async (monitorId: string) => {
 		const doc = await JobModel.findOne({
 			_id: jobId("check", monitorId),
