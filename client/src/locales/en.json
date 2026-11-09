@@ -1804,6 +1804,8 @@
 						"succeeded": "succeeded",
 						"schedule": {
 							"title": "Scheduled backups",
+							"enabled": "Scheduled backups enabled",
+							"disabled": "Scheduled backups disabled",
 							"description": "Run an encrypted cloud backup automatically on a fixed interval.",
 							"interval": "Interval",
 							"kind": "Backup type",

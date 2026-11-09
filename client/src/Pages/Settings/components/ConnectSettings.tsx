@@ -497,17 +497,28 @@ const BackupSection = ({
 							gap={theme.spacing(LAYOUT.SM)}
 							alignItems="flex-start"
 						>
-							<Switch
-								checked={schedule?.enabled ?? false}
-								disabled={savingSchedule}
-								onChange={(_, checked) =>
-									void handleSchedule({
-										enabled: checked,
-										intervalHours: schedule?.intervalHours ?? 24,
-										kind: schedule?.kind ?? "full",
-									})
-								}
-							/>
+							<Stack
+								direction="row"
+								alignItems="center"
+								gap={theme.spacing(LAYOUT.SM)}
+							>
+								<Switch
+									checked={schedule?.enabled ?? false}
+									disabled={savingSchedule}
+									onChange={(_, checked) =>
+										void handleSchedule({
+											enabled: checked,
+											intervalHours: schedule?.intervalHours ?? 24,
+											kind: schedule?.kind ?? "full",
+										})
+									}
+								/>
+								<Typography>
+									{schedule?.enabled
+										? t("pages.settings.form.connect.backup.schedule.enabled")
+										: t("pages.settings.form.connect.backup.schedule.disabled")}
+								</Typography>
+							</Stack>
 							{schedule?.enabled && (
 								<Stack
 									direction="row"
