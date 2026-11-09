@@ -3,13 +3,13 @@ import * as nodeCrypto from "node:crypto";
 import { ConnectService, isConnectHostAllowed } from "../../../src/domain/connect/connect.service.ts";
 import { connectErrors } from "../../../src/domain/connect/connect.errors.ts";
 import { DEFAULT_CONNECT_HOSTS, type ConnectEnrollment } from "../../../src/domain/connect/connect.type.ts";
+import type { ISettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
+import { APP_VERSION } from "../../../src/utils/appVersion.ts";
 import { EncryptionService } from "../../../src/service/encryption/encryptionService.ts";
 import { AppError } from "../../../src/utils/AppError.ts";
 import type { ILogger } from "../../../src/utils/logger/logger.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import { InMemoryConnectRepository } from "../../helpers/InMemoryConnectRepository.ts";
-
-const VERSION = "1.2.3";
 
 const enrollment = (overrides: Partial<ConnectEnrollment> = {}): ConnectEnrollment => ({
 	connectUrl: "wss://relay.checkmate.so/api/tunnel",
@@ -24,10 +24,10 @@ const setup = (opts: { encryptionKey?: boolean; allowedHosts?: readonly string[]
 	const keys = opts.encryptionKey === false ? [] : [nodeCrypto.randomBytes(32)];
 	const encryptionService = new EncryptionService(keys, logger, nodeCrypto);
 	const repository = new InMemoryConnectRepository();
-	const service = new ConnectService(repository, encryptionService, logger, {
-		allowedHosts: opts.allowedHosts ?? DEFAULT_CONNECT_HOSTS,
-		version: VERSION,
-	});
+	const settingsService = {
+		getSettings: () => ({ connectAllowedHosts: [...(opts.allowedHosts ?? DEFAULT_CONNECT_HOSTS)] }),
+	} as unknown as ISettingsService;
+	const service = new ConnectService(repository, encryptionService, settingsService, logger);
 	return { service, repository, encryptionService };
 };
 
@@ -70,7 +70,7 @@ describe("ConnectService.getStatus", () => {
 			agentId: null,
 			connectUrl: null,
 			apiUrl: null,
-			agentVersion: VERSION,
+			agentVersion: APP_VERSION,
 		});
 	});
 });
@@ -87,7 +87,7 @@ describe("ConnectService.enroll", () => {
 			agentId: input.agentId,
 			connectUrl: input.connectUrl,
 			apiUrl: input.apiUrl,
-			agentVersion: VERSION,
+			agentVersion: APP_VERSION,
 		});
 		expect(JSON.stringify(status)).not.toContain(input.token);
 		const stored = (await repository.get()).enrollment;

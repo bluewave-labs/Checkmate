@@ -3,6 +3,7 @@ import { SettingsService } from "../../../src/domain/app-settings/app-settings.s
 import type { ISettingsRepository } from "../../../src/domain/app-settings/app-settings-repository.interface.ts";
 import type { ValidatedEnv } from "../../../src/config/envValidation.ts";
 import type { Settings } from "../../../src/domain/app-settings/app-settings.type.ts";
+import { DEFAULT_CONNECT_HOSTS } from "../../../src/domain/connect/connect.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -17,6 +18,7 @@ const makeEnv = (overrides?: Partial<ValidatedEnv>): ValidatedEnv =>
 		DB_TYPE: "mongodb",
 		STATUS_PAGE_THEMES_ENABLED: false,
 		ENCRYPTION_KEY: [],
+		CONNECT_ALLOWED_HOSTS: DEFAULT_CONNECT_HOSTS.join(","),
 		...overrides,
 	}) as ValidatedEnv;
 
@@ -74,7 +76,7 @@ describe("SettingsService", () => {
 				dbType: "mongodb",
 				statusPageThemesEnabled: false,
 				clientConfig: {},
-				connectAllowedHosts: null,
+				connectAllowedHosts: [...DEFAULT_CONNECT_HOSTS],
 			});
 		});
 
