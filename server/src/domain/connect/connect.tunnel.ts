@@ -63,8 +63,13 @@ export const validateTunnelRequest = (msg: TunnelRequest, localTarget: string) =
 		if (typeof value !== "string" || DROPPED_REQUEST_HEADERS.includes(key)) continue;
 		headers[key] = value;
 	}
+	headers[CONNECT_TUNNEL_HEADER] = "1";
 	return { url, method: msg.method, headers };
 };
+
+// Set on every tunneled request so the server can tell Connect addresses from
+// the hostnames it is configured for.
+export const CONNECT_TUNNEL_HEADER = "x-checkmate-connect-tunnel";
 
 const errorBody = (message: string) => Buffer.from(JSON.stringify({ error: message })).toString("base64");
 

@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "@jest/globals";
 import type { AddressInfo } from "node:net";
 import { WebSocketServer } from "ws";
-import { ConnectTunnel } from "../../../src/domain/connect/connect.tunnel.ts";
+import { CONNECT_TUNNEL_HEADER, ConnectTunnel, validateTunnelRequest } from "../../../src/domain/connect/connect.tunnel.ts";
 import type { ILogger } from "../../../src/utils/logger/logger.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 
@@ -14,6 +14,19 @@ const waitFor = async (condition: () => boolean, timeoutMs = 2000) => {
 		await new Promise((resolve) => setTimeout(resolve, 5));
 	}
 };
+
+describe("validateTunnelRequest", () => {
+	const validated = (headers: Record<string, string>) =>
+		validateTunnelRequest({ type: "request", method: "GET", path: "/config.js", headers }, "http://127.0.0.1:1");
+
+	it("marks requests as coming through the tunnel", () => {
+		expect(validated({})?.headers[CONNECT_TUNNEL_HEADER]).toBe("1");
+	});
+
+	it("overwrites a value sent from outside", () => {
+		expect(validated({ [CONNECT_TUNNEL_HEADER]: "spoofed" })?.headers[CONNECT_TUNNEL_HEADER]).toBe("1");
+	});
+});
 
 describe("ConnectTunnel liveness", () => {
 	let relay: WebSocketServer | undefined;

@@ -16,6 +16,7 @@ import { isPublicStatusPageApiPath } from "@/api/middleware/statusPagePublicApiP
 import { createStatusPageDocumentCsp } from "@/api/middleware/statusPageDocumentCsp.js";
 import { ApiServices } from "@/config/services.api.js";
 import { logContext } from "./utils/logger/logContext.js";
+import { CONNECT_TUNNEL_HEADER } from "@/domain/connect/connect.tunnel.js";
 
 export const createApp = ({
 	apiServices: services,
@@ -57,9 +58,15 @@ export const createApp = ({
 
 	// Client runtime config; registered before express.static so it shadows the
 	// fallback config.js in the client build output
-	const clientConfigScript = `window.__CHECKMATE_CONFIG__ = ${JSON.stringify(envSettings.clientConfig).replace(/</g, "\\u003c")};`;
+	const renderClientConfig = (config: typeof envSettings.clientConfig) =>
+		`window.__CHECKMATE_CONFIG__ = ${JSON.stringify(config).replace(/</g, "\\u003c")};`;
+	const clientConfigScript = renderClientConfig(envSettings.clientConfig);
+	// The client shows only status pages on a hostname other than clientHost,
+	// so Connect addresses must not be compared against it.
+	const tunnelClientConfigScript = renderClientConfig({ ...envSettings.clientConfig, clientHost: undefined });
 	app.get("/config.js", (req, res) => {
-		res.set("Cache-Control", "no-cache").type("application/javascript").send(clientConfigScript);
+		const script = req.get(CONNECT_TUNNEL_HEADER) ? tunnelClientConfigScript : clientConfigScript;
+		res.set("Cache-Control", "no-cache").type("application/javascript").send(script);
 	});
 
 	app.use(express.static(frontendPath));

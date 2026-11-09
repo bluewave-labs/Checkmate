@@ -125,7 +125,10 @@ describe("Connect", () => {
 
 		it("drops host and hop-by-hop headers and non-string values", () => {
 			const headers = { Host: "evil.com", Connection: "close", Authorization: "Bearer x", "x-number": 1 };
-			expect(validateTunnelRequest(request({ headers }), LOCAL)?.headers).toEqual({ authorization: "Bearer x" });
+			expect(validateTunnelRequest(request({ headers }), LOCAL)?.headers).toEqual({
+				authorization: "Bearer x",
+				"x-checkmate-connect-tunnel": "1",
+			});
 		});
 	});
 
