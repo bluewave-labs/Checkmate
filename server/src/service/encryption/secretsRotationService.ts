@@ -1,3 +1,4 @@
+import { IConnectRepository } from "@/domain/connect/connect.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import { ILogger } from "@/utils/logger/logger.js";
@@ -15,6 +16,7 @@ export class SecretsRotationService implements ISecretsRotationService {
 
 	constructor(
 		private monitorsRepository: IMonitorsRepository,
+		private connetRepository: IConnectRepository,
 		private encryptionService: IEncryptionService,
 		logger: ILogger
 	) {
