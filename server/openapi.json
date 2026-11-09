@@ -79,6 +79,10 @@
 		{
 			"name": "heartbeat",
 			"description": "Unauthenticated ping endpoints for heartbeat (dead man's switch) monitors, addressed by token."
+		},
+		{
+			"name": "connect",
+			"description": "Checkmate Connect enrollment for this installation (admin to view, superadmin to change)."
 		}
 	],
 	"components": {
@@ -4175,6 +4179,30 @@
 					}
 				},
 				"required": ["heartbeatKey"]
+			},
+			"ConnectStatus": {
+				"type": "object",
+				"properties": {
+					"enrolled": {
+						"type": "boolean"
+					},
+					"agentId": {
+						"type": "string",
+						"nullable": true
+					},
+					"connectUrl": {
+						"type": "string",
+						"nullable": true
+					},
+					"apiUrl": {
+						"type": "string",
+						"nullable": true
+					},
+					"agentVersion": {
+						"type": "string"
+					}
+				},
+				"required": ["enrolled", "agentId", "connectUrl", "apiUrl", "agentVersion"]
 			}
 		},
 		"parameters": {}
@@ -16786,6 +16814,284 @@
 					},
 					"404": {
 						"description": "Team not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/status": {
+			"get": {
+				"tags": ["connect"],
+				"summary": "Get this installation's Checkmate Connect enrollment status (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectStatus"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/enroll": {
+			"post": {
+				"tags": ["connect"],
+				"summary": "Enroll this installation with Checkmate Connect using a credential block (superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"connectUrl": {
+										"type": "string",
+										"pattern": "^wss:\\/\\/[a-z0-9.-]+\\/api\\/tunnel$"
+									},
+									"agentId": {
+										"type": "string",
+										"pattern": "^[a-z0-9-]{1,64}$"
+									},
+									"token": {
+										"type": "string",
+										"pattern": "^cmk_[a-f0-9]{48}$"
+									},
+									"apiUrl": {
+										"type": "string",
+										"nullable": true,
+										"pattern": "^https:\\/\\/[a-z0-9.-]+$",
+										"default": null
+									}
+								},
+								"required": ["connectUrl", "agentId", "token"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectStatus"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request, or connect host not allowed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Checkmate Connect needs ENCRYPTION_KEY set on the server",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/unenroll": {
+			"post": {
+				"tags": ["connect"],
+				"summary": "Remove this installation's Checkmate Connect enrollment (superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectStatus"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
 						"content": {
 							"application/json": {
 								"schema": {
