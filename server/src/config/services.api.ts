@@ -134,6 +134,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 	const envSettings = settingsService.getSettings();
 	const connectService = new ConnectService({
 		repository: new MongoConnectRepository(),
+		scheduler: jobScheduler,
 		encryptionService,
 		db,
 		logger,

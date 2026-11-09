@@ -3,15 +3,16 @@ import type { Mongoose } from "mongoose";
 import type { IDb } from "@/db/db.interface.js";
 import type { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import type { ILogger } from "@/utils/logger/logger.js";
+import type { IJobScheduler } from "@/worker/worker.interface.js";
 import { ConnectBackup, type RecoveryKeyCheck } from "@/domain/connect/connect.backup.js";
 import { ConnectHeartbeat } from "@/domain/connect/connect.heartbeat.js";
 import type { IConnectRepository } from "@/domain/connect/connect.repository.js";
+import { ENCRYPTED_PREFIX, revealConnectState } from "@/domain/connect/connect.secrets.js";
 import { ConnectTunnel } from "@/domain/connect/connect.tunnel.js";
 import { emptyConnectState, type ConnectBackupKind, type ConnectState } from "@/domain/connect/connect.type.js";
 
 const SERVICE_NAME = "ConnectService";
-const SCHEDULE_SWEEP_MS = 60_000;
-const ENCRYPTED_PREFIX = "v1.";
+const HOUR_MS = 3_600_000;
 const MONGOOSE_CONNECTED = 1;
 
 export const DEFAULT_CONNECT_HOSTS = ["connect.checkmate.so", "relay.checkmate.so"];
@@ -30,6 +31,7 @@ export type ConnectOptions = {
 
 type ConnectDeps = {
 	repository: IConnectRepository;
+	scheduler: Pick<IJobScheduler, "setConnectBackupJob" | "removeConnectBackupJob" | "isConnectBackupRunning">;
 	encryptionService: IEncryptionService;
 	db: IDb<Mongoose>;
 	logger: ILogger;
@@ -45,12 +47,12 @@ export interface IConnectService {
 	enroll(input: ConnectEnrollInput): Promise<ConnectResult>;
 	setRemoteAccess(enabled: boolean): Promise<ConnectResult>;
 	unenroll(): Promise<ConnectResult>;
-	getBackupStatus(): ConnectResult;
+	getBackupStatus(): Promise<ConnectResult>;
 	listBackups(): Promise<ConnectResult>;
 	createRecoveryKey(options?: { discardExisting?: boolean }): Promise<ConnectResult>;
 	importRecoveryKey(recoveryKey: string, options?: { replaceExisting?: boolean }): Promise<ConnectResult>;
-	runBackup(kind?: ConnectBackupKind): ConnectResult;
-	restoreBackup(backupId: string): ConnectResult;
+	runBackup(kind?: ConnectBackupKind): Promise<ConnectResult>;
+	restoreBackup(backupId: string): Promise<ConnectResult>;
 	setBackupSchedule(input: { enabled: boolean; intervalHours?: number; kind?: ConnectBackupKind }): Promise<ConnectResult>;
 }
 
@@ -68,6 +70,7 @@ export class ConnectService implements IConnectService {
 
 	private log: ILogger;
 	private repository: IConnectRepository;
+	private scheduler: ConnectDeps["scheduler"];
 	private encryptionService: IEncryptionService;
 	private db: IDb<Mongoose>;
 	private options: ConnectOptions;
@@ -75,16 +78,16 @@ export class ConnectService implements IConnectService {
 	private tunnel: ConnectTunnel;
 	private heartbeat: ConnectHeartbeat;
 	private backups: ConnectBackup;
-	private sweepTimer: NodeJS.Timeout | null = null;
 	// Until stored state has loaded, writing could overwrite the real enrollment
 	// or recovery key, so changes are refused during startup and after a failed
 	// load.
 	private stateLoaded = false;
 	private creatingRecoveryKey = false;
 
-	constructor({ repository, encryptionService, db, logger, options }: ConnectDeps) {
+	constructor({ repository, scheduler, encryptionService, db, logger, options }: ConnectDeps) {
 		this.log = logger.child({ service: SERVICE_NAME });
 		this.repository = repository;
+		this.scheduler = scheduler;
 		this.encryptionService = encryptionService;
 		this.db = db;
 		this.options = options;
@@ -101,6 +104,8 @@ export class ConnectService implements IConnectService {
 			mongodumpBin: options.mongodumpBin,
 			mongorestoreBin: options.mongorestoreBin,
 			apiBaseOverride: options.apiBaseOverride,
+			// A full restore replaces the jobs collection.
+			onRestored: () => void this.syncBackupJob(),
 			log: this.log,
 		});
 	}
@@ -125,14 +130,6 @@ export class ConnectService implements IConnectService {
 			this.stateLoaded = true;
 			this.applyState();
 			void this.backups.checkTools();
-			this.sweepTimer = setInterval(() => {
-				// Re-checked while missing so installing the tools needs no restart.
-				if (this.backups.status().missingTools.length > 0) void this.backups.checkTools();
-				this.sweepSchedule().catch((error: unknown) => {
-					this.log.error({ err: error }, "Connect backup schedule sweep failed");
-				});
-			}, SCHEDULE_SWEEP_MS);
-			this.sweepTimer.unref();
 		} catch (error) {
 			this.state = emptyConnectState();
 			this.stateLoaded = false;
@@ -146,8 +143,6 @@ export class ConnectService implements IConnectService {
 	});
 
 	stop = () => {
-		if (this.sweepTimer) clearInterval(this.sweepTimer);
-		this.sweepTimer = null;
 		this.tunnel.stop();
 		this.heartbeat.stop();
 	};
@@ -157,7 +152,6 @@ export class ConnectService implements IConnectService {
 	// other optional encrypted fields.
 
 	private encryptSecret = (value: string) => (this.encryptionService.isConfigured() ? this.encryptionService.encrypt(value) : value);
-	private decryptSecret = (value: string) => (value.startsWith(ENCRYPTED_PREFIX) ? this.encryptionService.decrypt(value) : value);
 
 	private protect = (state: ConnectState): ConnectState => ({
 		...state,
@@ -165,11 +159,7 @@ export class ConnectService implements IConnectService {
 		recoveryKey: state.recoveryKey ? this.encryptSecret(state.recoveryKey) : null,
 	});
 
-	private reveal = (state: ConnectState): ConnectState => ({
-		...state,
-		enrollment: state.enrollment ? { ...state.enrollment, token: this.decryptSecret(state.enrollment.token) } : null,
-		recoveryKey: state.recoveryKey ? this.decryptSecret(state.recoveryKey) : null,
-	});
+	private reveal = (state: ConnectState) => revealConnectState(state, this.encryptionService);
 
 	private needsEncryptionUpdate = (stored: ConnectState) => {
 		if (!this.encryptionService.isConfigured()) return false;
@@ -190,7 +180,23 @@ export class ConnectService implements IConnectService {
 
 		if (enrollment) this.heartbeat.start(enrollment);
 		else this.heartbeat.stop();
+
+		void this.syncBackupJob();
 	};
+
+	// Scheduled backups live in the jobs collection so that one node claims each
+	// run. The tunnel and heartbeat stay here: they report on this node.
+	private syncBackupJob = async () => {
+		const { schedule, enrollment, recoveryKey } = this.state;
+		try {
+			if (schedule?.enabled && enrollment && recoveryKey) await this.scheduler.setConnectBackupJob(schedule.intervalHours * HOUR_MS);
+			else await this.scheduler.removeConnectBackupJob();
+		} catch (error: unknown) {
+			this.log.error({ err: error }, "Could not update the Connect backup job");
+		}
+	};
+
+	private scheduledBackupRunning = (): ConnectResult => ({ status: 409, data: { error: "A scheduled backup is running" } });
 
 	private publicState = () => {
 		const { enrollment, remoteAccessEnabled, recoveryKey, schedule } = this.state;
@@ -237,7 +243,13 @@ export class ConnectService implements IConnectService {
 		return this.publicResult();
 	};
 
-	getBackupStatus = (): ConnectResult => ({ status: 200, data: this.backups.status() });
+	getBackupStatus = async (): Promise<ConnectResult> => {
+		this.backups.recheckMissingTools();
+		const [scheduledRunning, scheduled] = await Promise.all([this.scheduler.isConnectBackupRunning(), this.repository.loadLastScheduledBackup()]);
+		const local = this.backups.status();
+		const lastResult = !local.lastResult || (scheduled && scheduled.at > local.lastResult.at) ? scheduled : local.lastResult;
+		return { status: 200, data: { ...local, lastResult, scheduledRunning } };
+	};
 
 	listBackups = async (): Promise<ConnectResult> => {
 		if (!this.state.enrollment) return { status: 409, data: { error: "not enrolled" } };
@@ -313,21 +325,23 @@ export class ConnectService implements IConnectService {
 		}
 	};
 
-	runBackup = (kind: ConnectBackupKind = "full"): ConnectResult => {
+	runBackup = async (kind: ConnectBackupKind = "full"): Promise<ConnectResult> => {
 		if (!this.stateLoaded) return this.stateUnavailable();
 		const { enrollment, recoveryKey } = this.state;
 		if (!enrollment) return { status: 409, data: { error: "not enrolled" } };
 		if (!recoveryKey) return { status: 409, data: { error: "no recovery key set" } };
+		if (await this.scheduler.isConnectBackupRunning()) return this.scheduledBackupRunning();
 		const result = this.backups.start({ enrollment, recoveryKeyHex: recoveryKey, kind });
 		return { status: result.started ? 202 : 409, data: result };
 	};
 
 	// Destructive (mongorestore --drop); the UI confirms with the operator.
-	restoreBackup = (backupId: string): ConnectResult => {
+	restoreBackup = async (backupId: string): Promise<ConnectResult> => {
 		if (!this.stateLoaded) return this.stateUnavailable();
 		const { enrollment, recoveryKey } = this.state;
 		if (!enrollment) return { status: 409, data: { error: "not enrolled" } };
 		if (!recoveryKey) return { status: 409, data: { error: "restores need the original recovery key" } };
+		if (await this.scheduler.isConnectBackupRunning()) return this.scheduledBackupRunning();
 		const result = this.backups.startRestore({ enrollment, recoveryKeyHex: recoveryKey, backupId });
 		return { status: result.started ? 202 : 409, data: result };
 	};
@@ -343,25 +357,16 @@ export class ConnectService implements IConnectService {
 	}): Promise<ConnectResult> => {
 		if (!this.stateLoaded) return this.stateUnavailable();
 		if (enabled && !this.state.recoveryKey) return { status: 409, data: { error: "no recovery key set" } };
-		await this.commit({
-			...this.state,
-			schedule: { enabled, intervalHours, kind, lastStartedAt: this.state.schedule?.lastStartedAt ?? null },
-		});
+		const previous = this.state.schedule;
+		await this.commit({ ...this.state, schedule: { enabled, intervalHours, kind } });
+		if (!enabled) {
+			await this.scheduler.removeConnectBackupJob();
+			return this.publicResult();
+		}
+		const intervalMs = intervalHours * HOUR_MS;
+		// A row that already exists keeps its next run, so a new interval has to move it.
+		const intervalChanged = previous?.enabled && previous.intervalHours !== intervalHours;
+		await this.scheduler.setConnectBackupJob(intervalMs, intervalChanged ? Date.now() + intervalMs : undefined);
 		return this.publicResult();
-	};
-
-	// Stamped at start, not completion, so a failing backup retries on the next
-	// interval rather than in a tight loop.
-	sweepSchedule = async () => {
-		const { schedule, enrollment, recoveryKey } = this.state;
-		if (!schedule?.enabled || !enrollment || !recoveryKey) return;
-		const { running, restoring, verifying } = this.backups.status();
-		if (running || restoring || verifying) return;
-		const last = schedule.lastStartedAt ? Date.parse(schedule.lastStartedAt) : 0;
-		if (Date.now() - last < schedule.intervalHours * 3_600_000) return;
-
-		await this.commit({ ...this.state, schedule: { ...schedule, lastStartedAt: new Date().toISOString() } });
-		this.log.info({ kind: schedule.kind }, "Scheduled Connect backup starting");
-		this.backups.start({ enrollment, recoveryKeyHex: recoveryKey, kind: schedule.kind });
 	};
 }

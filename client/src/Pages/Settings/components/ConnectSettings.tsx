@@ -31,7 +31,6 @@ type ConnectStatus = {
 			enabled: boolean;
 			intervalHours: number;
 			kind: "full" | "config";
-			lastStartedAt: string | null;
 		} | null;
 	};
 	tunnel?: {
@@ -58,6 +57,7 @@ type BackupStatus = {
 	running: boolean;
 	restoring: boolean;
 	verifying?: boolean;
+	scheduledRunning?: boolean;
 	progress?: BackupProgress | null;
 	lastResult: {
 		ok: boolean;
@@ -292,7 +292,6 @@ type BackupSectionProps = {
 		enabled: boolean;
 		intervalHours: number;
 		kind: "full" | "config";
-		lastStartedAt: string | null;
 	} | null;
 	refetchStatus: () => Promise<unknown>;
 };
@@ -327,7 +326,9 @@ const BackupSection = ({
 		{},
 		{
 			refreshInterval: (latest) =>
-				importingKey || latest?.data?.progress ? BUSY_POLL_MS : IDLE_POLL_MS,
+				importingKey || latest?.data?.progress || latest?.data?.scheduledRunning
+					? BUSY_POLL_MS
+					: IDLE_POLL_MS,
 		}
 	);
 	const { data: backupList } = useGet<{ backups: BackupListEntry[] }>(
@@ -353,6 +354,7 @@ const BackupSection = ({
 		backupStatus?.running ||
 		backupStatus?.restoring ||
 		backupStatus?.verifying ||
+		backupStatus?.scheduledRunning ||
 		importingKey;
 	const toolsReady = (backupStatus?.missingTools?.length ?? 0) === 0;
 	const backupsUsable = recoveryKeySet && toolsReady;
@@ -439,8 +441,9 @@ const BackupSection = ({
 	const progressText = (() => {
 		const progress = backupStatus?.progress;
 		if (!progress) {
-			return importingKey
-				? t("pages.settings.form.connect.backup.progress.checking")
+			if (importingKey) return t("pages.settings.form.connect.backup.progress.checking");
+			return backupStatus?.scheduledRunning
+				? t("pages.settings.form.connect.backup.progress.scheduled")
 				: null;
 		}
 		const { operation, stage, percent, bytes, attempt, attempts } = progress;

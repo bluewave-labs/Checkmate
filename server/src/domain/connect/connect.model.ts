@@ -1,8 +1,9 @@
 import { Schema, model } from "mongoose";
-import { CONNECT_STATE_COLLECTION, type ConnectState } from "@/domain/connect/connect.type.js";
+import { CONNECT_STATE_COLLECTION, type ConnectBackupResult, type ConnectState } from "@/domain/connect/connect.type.js";
 
 interface ConnectStateDocument extends ConnectState {
 	singleton: boolean;
+	lastScheduledBackup: ConnectBackupResult | null;
 }
 
 const enrollmentSchema = new Schema(
@@ -20,7 +21,6 @@ const scheduleSchema = new Schema(
 		enabled: { type: Boolean, required: true },
 		intervalHours: { type: Number, required: true },
 		kind: { type: String, enum: ["full", "config"], required: true },
-		lastStartedAt: { type: String, default: null },
 	},
 	{ _id: false }
 );
@@ -34,6 +34,8 @@ const ConnectStateSchema = new Schema<ConnectStateDocument>(
 		remoteAccessEnabled: { type: Boolean, default: false },
 		recoveryKey: { type: String, default: null },
 		schedule: { type: scheduleSchema, default: null },
+		// Written by whichever worker ran the job, so the primary can report it.
+		lastScheduledBackup: { type: Schema.Types.Mixed, default: null },
 	},
 	{ timestamps: true, collection: CONNECT_STATE_COLLECTION }
 );

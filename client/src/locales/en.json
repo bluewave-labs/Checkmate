@@ -1811,6 +1811,7 @@
 						"runConfig": "Back up configuration only",
 						"progress": {
 							"checking": "Checking your key…",
+							"scheduled": "A scheduled backup is running…",
 							"backup": {
 								"dumping": "Step 1 of 3: reading and encrypting your database",
 								"uploading": "Step 2 of 3: uploading the encrypted backup",

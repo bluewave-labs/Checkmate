@@ -40,6 +40,9 @@ import { WebSocketProvider } from "@/service/networkProviders/WebSocketProvider.
 import { DNSProvider } from "@/service/networkProviders/DNSProvider.js";
 import { HeartbeatProvider } from "@/service/networkProviders/HeartbeatProvider.js";
 import { WorkerPipeline } from "@/worker/worker.pipeline.js";
+import { ConnectBackup } from "@/domain/connect/connect.backup.js";
+import { ConnectBackupJob } from "@/domain/connect/connect.backup-job.js";
+import { MongoConnectRepository } from "@/domain/connect/connect.repository.js";
 export interface WorkerServices {
 	worker: IQueueWorker;
 	networkService: IProviderRegistry;
@@ -151,6 +154,20 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		telemetryService
 	);
 
+	const connectBackupJob = new ConnectBackupJob({
+		repository: new MongoConnectRepository(),
+		encryptionService,
+		backups: new ConnectBackup({
+			mongoUrl: envSettings.dbConnectionString,
+			getDbName: async () => mongoose.connection.name,
+			mongodumpBin: envSettings.connectMongodumpBin,
+			mongorestoreBin: envSettings.connectMongorestoreBin,
+			apiBaseOverride: envSettings.connectApiUrl,
+			log: logger.child({ service: "ConnectBackup" }),
+		}),
+		log: logger.child({ service: "ConnectBackupJob" }),
+	});
+
 	const handlers: JobHandlers = {
 		check: pipeline.handleCheck,
 		evaluate: pipeline.handleEvaluate,
@@ -158,6 +175,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		"cleanup-orphaned": workerHelper.getCleanupOrphanedJob(),
 		"cleanup-retention": workerHelper.getCleanupRetentionJob(),
 		telemetry: workerHelper.getTelemetryJob(),
+		"connect-backup": connectBackupJob.handle,
 	};
 
 	const worker = await DBQueueWorker.create({

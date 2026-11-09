@@ -49,6 +49,9 @@ export interface IJobScheduler {
 	resumeJob(monitor: Monitor): Promise<void>;
 	updateJob(monitor: Monitor): Promise<void>;
 	wake(type: JobType): void;
+	setConnectBackupJob(intervalMs: number, nextRunAt?: number): Promise<void>;
+	removeConnectBackupJob(): Promise<void>;
+	isConnectBackupRunning(): Promise<boolean>;
 	getMetrics(): Promise<WorkerMetrics>;
 	getJobs(pagination: WorkerJobsPagination): Promise<WorkerJobsPage>;
 	flushQueues(): Promise<{ success: boolean }>;

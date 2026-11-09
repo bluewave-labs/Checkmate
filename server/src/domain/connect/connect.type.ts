@@ -13,8 +13,9 @@ export type ConnectBackupSchedule = {
 	enabled: boolean;
 	intervalHours: number;
 	kind: ConnectBackupKind;
-	lastStartedAt: string | null;
 };
+
+export type ConnectBackupResult = Record<string, unknown> & { ok: boolean; at: string };
 
 export type ConnectState = {
 	enrollment: ConnectEnrollment | null;

@@ -76,6 +76,8 @@ export interface IJobsRepository {
 	// Global rows (refId null) are addressed by their canonical _id, see jobId
 	deleteGlobalJob(type: JobType): Promise<boolean>;
 
+	findGlobalJob(type: JobType): Promise<Job | null>;
+
 	// Delete jobs that reference monitors that no longer exist
 	deleteByMonitorIdsNotIn(monitorIds: string[]): Promise<number>;
 

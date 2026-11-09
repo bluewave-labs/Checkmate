@@ -7,7 +7,7 @@ import { Readable, Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import type { ReadableStream as WebReadableStream } from "node:stream/web";
 import type { ILogger } from "@/utils/logger/logger.js";
-import { CONNECT_STATE_COLLECTION, type ConnectBackupKind, type ConnectEnrollment } from "@/domain/connect/connect.type.js";
+import { CONNECT_STATE_COLLECTION, type ConnectBackupKind, type ConnectBackupResult, type ConnectEnrollment } from "@/domain/connect/connect.type.js";
 
 // Encrypted cloud backup. mongodump --archive --gzip is streamed through
 // AES-256-GCM into a temp file, then uploaded via a short-lived presigned URL.
@@ -89,11 +89,12 @@ type BackupOptions = {
 	mongodumpBin: string;
 	mongorestoreBin: string;
 	apiBaseOverride: string | null;
+	onRestored?: () => void;
 	log: ILogger;
 };
 
 type BackupRun = { enrollment: ConnectEnrollment; recoveryKeyHex: string };
-type BackupResult = Record<string, unknown> & { ok: boolean; at: string };
+type BackupResult = ConnectBackupResult;
 
 export type RecoveryKeyCheck = "ok" | "wrong-key" | "no-backups" | "busy";
 
@@ -132,6 +133,7 @@ const postJson = async <T>(url: string, body: unknown, token: string): Promise<T
 };
 
 const TOOL_CHECK_TIMEOUT_MS = 10_000;
+const TOOL_RECHECK_MS = 60_000;
 
 const isRunnable = (bin: string) =>
 	new Promise<boolean>((resolve) => {
@@ -150,6 +152,7 @@ export class ConnectBackup {
 	private lastRestore: BackupResult | null = null;
 	private missingTools: string[] = [];
 	private progress: ConnectProgress | null = null;
+	private lastToolCheckAt = 0;
 
 	constructor(private options: BackupOptions) {}
 
@@ -188,6 +191,14 @@ export class ConnectBackup {
 		this.missingTools = missing;
 	};
 
+	// Called from status reads while tools are missing, so installing them needs
+	// no restart.
+	recheckMissingTools = () => {
+		if (this.missingTools.length === 0 || Date.now() - this.lastToolCheckAt < TOOL_RECHECK_MS) return;
+		this.lastToolCheckAt = Date.now();
+		void this.checkTools();
+	};
+
 	private apiBase = (enrollment: ConnectEnrollment) => {
 		if (this.options.apiBaseOverride) return this.options.apiBaseOverride;
 		if (enrollment.apiUrl) return enrollment.apiUrl;
@@ -217,21 +228,29 @@ export class ConnectBackup {
 		if (this.isBusy()) {
 			return { started: false, error: "a backup or restore is already running" };
 		}
+		void this.execute(enrollment, recoveryKeyHex, kind);
+		return { started: true };
+	};
+
+	// For the job queue, which holds its lock until the backup has finished.
+	// Returns null when another backup or restore is already running here.
+	runAndWait = async ({ enrollment, recoveryKeyHex, kind }: BackupRun & { kind: ConnectBackupKind }) =>
+		this.isBusy() ? null : this.execute(enrollment, recoveryKeyHex, kind);
+
+	private execute = async (enrollment: ConnectEnrollment, recoveryKeyHex: string, kind: ConnectBackupKind): Promise<BackupResult> => {
 		this.running = true;
 		this.beginProgress("backup", "dumping");
-		this.run(enrollment, recoveryKeyHex, kind)
-			.then((result) => {
-				this.lastResult = result;
-			})
-			.catch((error: unknown) => {
-				this.lastResult = { ok: false, at: new Date().toISOString(), kind, error: errorMessage(error) };
-				this.options.log.error({ err: error }, "Connect backup failed");
-			})
-			.finally(() => {
-				this.running = false;
-				this.progress = null;
-			});
-		return { started: true };
+		let result: BackupResult;
+		try {
+			result = await this.run(enrollment, recoveryKeyHex, kind);
+		} catch (error: unknown) {
+			result = { ok: false, at: new Date().toISOString(), kind, error: errorMessage(error) };
+			this.options.log.error({ err: error }, "Connect backup failed");
+		}
+		this.lastResult = result;
+		this.running = false;
+		this.progress = null;
+		return result;
 	};
 
 	private run = (enrollment: ConnectEnrollment, recoveryKeyHex: string, kind: ConnectBackupKind) =>
@@ -369,6 +388,7 @@ export class ConnectBackup {
 		this.restore(enrollment, recoveryKeyHex, backupId)
 			.then((result) => {
 				this.lastRestore = result;
+				this.options.onRestored?.();
 			})
 			.catch((error: unknown) => {
 				this.lastRestore = { ok: false, at: new Date().toISOString(), backupId, error: errorMessage(error) };

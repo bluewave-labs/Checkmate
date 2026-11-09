@@ -15,7 +15,13 @@ import {
 	deriveBackupKey,
 	isAllowedTransferUrl,
 } from "../../../src/domain/connect/connect.backup.ts";
-import { CONNECT_STATE_COLLECTION, emptyConnectState, type ConnectState } from "../../../src/domain/connect/connect.type.ts";
+import { ConnectBackupJob } from "../../../src/domain/connect/connect.backup-job.ts";
+import {
+	CONNECT_STATE_COLLECTION,
+	emptyConnectState,
+	type ConnectBackupResult,
+	type ConnectState,
+} from "../../../src/domain/connect/connect.type.ts";
 import type { IConnectRepository } from "../../../src/domain/connect/connect.repository.ts";
 import type { IEncryptionService } from "../../../src/service/encryption/encryptionService.ts";
 import type { IDb } from "../../../src/db/db.interface.ts";
@@ -34,14 +40,30 @@ const makeEncryption = (configured: boolean) =>
 		needsReencryption: () => false,
 	}) as unknown as IEncryptionService;
 
-const setup = (opts: { configured?: boolean; stored?: ConnectState | null; load?: () => Promise<ConnectState | null> } = {}) => {
+const setup = (
+	opts: {
+		configured?: boolean;
+		stored?: ConnectState | null;
+		lastScheduled?: ConnectBackupResult;
+		scheduledRunning?: boolean;
+		load?: () => Promise<ConnectState | null>;
+	} = {}
+) => {
 	const repository: jest.Mocked<IConnectRepository> = {
 		load: jest.fn(opts.load ?? (async () => opts.stored ?? null)),
 		save: jest.fn(async () => {}),
+		loadLastScheduledBackup: jest.fn(async () => opts.lastScheduled ?? null),
+		saveLastScheduledBackup: jest.fn(async () => {}),
+	};
+	const scheduler = {
+		setConnectBackupJob: jest.fn(async () => {}),
+		removeConnectBackupJob: jest.fn(async () => {}),
+		isConnectBackupRunning: jest.fn(async () => opts.scheduledRunning ?? false),
 	};
 	const db = { getConnection: async () => ({ connection: { readyState: 1, name: "uptime_db" } }) } as unknown as IDb<Mongoose>;
 	const service = new ConnectService({
 		repository,
+		scheduler,
 		encryptionService: makeEncryption(opts.configured ?? true),
 		db,
 		logger: createMockLogger() as unknown as ILogger,
@@ -55,7 +77,7 @@ const setup = (opts: { configured?: boolean; stored?: ConnectState | null; load?
 			mongorestoreBin: "mongorestore",
 		},
 	});
-	return { service, repository };
+	return { service, repository, scheduler };
 };
 
 describe("Connect", () => {
@@ -399,8 +421,8 @@ describe("Connect", () => {
 		it("refuses changes while state is still loading", async () => {
 			const { service, repository } = setup();
 			expect((await service.createRecoveryKey()).status).toBe(503);
-			expect(service.runBackup().status).toBe(503);
-			expect(service.restoreBackup("id").status).toBe(503);
+			expect((await service.runBackup()).status).toBe(503);
+			expect((await service.restoreBackup("id")).status).toBe(503);
 			expect(repository.save).not.toHaveBeenCalled();
 		});
 
@@ -616,6 +638,142 @@ describe("Connect", () => {
 			await service.createRecoveryKey();
 			await service.unenroll();
 			expect(service.getStatus().data).toMatchObject({ enrolled: false, backup: { recoveryKeySet: true } });
+		});
+
+		describe("scheduled backups", () => {
+			const scheduled = async (opts: Parameters<typeof setup>[0] = {}) => {
+				jest.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify({ backups: [] })));
+				const context = setup(opts);
+				services.push(context.service);
+				await context.service.start();
+				await context.service.enroll(enrollInput);
+				await context.service.createRecoveryKey();
+				context.scheduler.setConnectBackupJob.mockClear();
+				context.scheduler.removeConnectBackupJob.mockClear();
+				return context;
+			};
+
+			it("creates a job when the schedule is turned on", async () => {
+				const { service, scheduler } = await scheduled();
+				await service.setBackupSchedule({ enabled: true, intervalHours: 6 });
+				expect(scheduler.setConnectBackupJob).toHaveBeenCalledWith(6 * 3_600_000, undefined);
+			});
+
+			it("moves the next run when the interval changes", async () => {
+				const { service, scheduler } = await scheduled();
+				await service.setBackupSchedule({ enabled: true, intervalHours: 168 });
+				const before = Date.now();
+				await service.setBackupSchedule({ enabled: true, intervalHours: 6 });
+				const nextRun = scheduler.setConnectBackupJob.mock.calls[1] as unknown as [number, number];
+				expect(nextRun[1]).toBeGreaterThanOrEqual(before + 6 * 3_600_000);
+			});
+
+			it("leaves the next run alone when only the kind changes", async () => {
+				const { service, scheduler } = await scheduled();
+				await service.setBackupSchedule({ enabled: true, intervalHours: 6, kind: "full" });
+				await service.setBackupSchedule({ enabled: true, intervalHours: 6, kind: "config" });
+				expect(scheduler.setConnectBackupJob.mock.calls[1]).toEqual([6 * 3_600_000, undefined]);
+			});
+
+			it("removes the job when the schedule is turned off", async () => {
+				const { service, scheduler } = await scheduled();
+				await service.setBackupSchedule({ enabled: false });
+				expect(scheduler.removeConnectBackupJob).toHaveBeenCalled();
+			});
+
+			it("restores the job at startup without forcing a run", async () => {
+				const { service, scheduler } = setup({
+					stored: {
+						...emptyConnectState(),
+						enrollment: { connectUrl: enrollInput.connectUrl, agentId: enrollInput.agentId, token: enrollInput.token, apiUrl: null },
+						recoveryKey: "ab".repeat(32),
+						schedule: { enabled: true, intervalHours: 24, kind: "full" },
+					},
+				});
+				jest.spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}"));
+				services.push(service);
+				await service.start();
+				expect(scheduler.setConnectBackupJob).toHaveBeenCalledWith(24 * 3_600_000);
+			});
+
+			it("keeps startup alive when the job cannot be written", async () => {
+				const context = setup();
+				context.scheduler.removeConnectBackupJob.mockRejectedValue(new Error("db down"));
+				services.push(context.service);
+				await expect(context.service.start()).resolves.toBeUndefined();
+			});
+
+			it.each(["runBackup", "restoreBackup"] as const)("refuses %s while a scheduled backup runs", async (action) => {
+				const { service } = await scheduled({ scheduledRunning: true });
+				expect(await service[action]("full")).toEqual({ status: 409, data: { error: "A scheduled backup is running" } });
+			});
+
+			it("reports a result recorded by another node", async () => {
+				const at = new Date().toISOString();
+				const { service } = await scheduled({ lastScheduled: { ok: true, at, kind: "full" }, scheduledRunning: true });
+				expect((await service.getBackupStatus()).data).toMatchObject({ lastResult: { ok: true, at }, scheduledRunning: true });
+			});
+		});
+
+		describe("ConnectBackupJob", () => {
+			const KEY = "ab".repeat(32);
+			const enrolled = {
+				...emptyConnectState(),
+				enrollment: { connectUrl: "wss://relay.checkmate.so/api/tunnel", agentId: "inst-1", token: "v1.key.tok", apiUrl: null },
+				recoveryKey: `v1.key.${KEY}`,
+				schedule: { enabled: true, intervalHours: 24, kind: "config" as const },
+			};
+			const build = (stored: ConnectState | null, runAndWait: () => Promise<unknown>) => {
+				const repository = {
+					load: jest.fn(async () => stored),
+					saveLastScheduledBackup: jest.fn(async () => {}),
+				};
+				const backups = { runAndWait: jest.fn(runAndWait) };
+				const job = new ConnectBackupJob({
+					repository: repository as unknown as IConnectRepository,
+					encryptionService: makeEncryption(true),
+					backups: backups as unknown as ConstructorParameters<typeof ConnectBackupJob>[0]["backups"],
+					log: createMockLogger() as unknown as ILogger,
+				});
+				return { job, repository, backups };
+			};
+
+			it("runs with decrypted secrets and records the result", async () => {
+				const result = { ok: true, at: "2026-11-09T00:00:00.000Z" };
+				const { job, repository, backups } = build(enrolled, async () => result);
+				await job.handle();
+				expect(backups.runAndWait).toHaveBeenCalledWith({
+					enrollment: { ...enrolled.enrollment, token: "tok" },
+					recoveryKeyHex: KEY,
+					kind: "config",
+				});
+				expect(repository.saveLastScheduledBackup).toHaveBeenCalledWith(result);
+			});
+
+			it.each([
+				["the schedule is off", { ...enrolled, schedule: { ...enrolled.schedule, enabled: false } }],
+				["the server is not enrolled", { ...enrolled, enrollment: null }],
+				["no key is saved", { ...enrolled, recoveryKey: null }],
+				["no state exists", null],
+			])("does nothing when %s", async (_name, stored) => {
+				const { job, backups } = build(stored, async () => ({}));
+				await job.handle();
+				expect(backups.runAndWait).not.toHaveBeenCalled();
+			});
+
+			it("records a failure instead of throwing, so the queue waits for the next interval", async () => {
+				const { job, repository } = build(enrolled, async () => {
+					throw new Error("boom");
+				});
+				await expect(job.handle()).resolves.toBeUndefined();
+				expect(repository.saveLastScheduledBackup).toHaveBeenCalledWith(expect.objectContaining({ ok: false, error: "boom" }));
+			});
+
+			it("records nothing when a backup is already running on this node", async () => {
+				const { job, repository } = build(enrolled, async () => null);
+				await job.handle();
+				expect(repository.saveLastScheduledBackup).not.toHaveBeenCalled();
+			});
 		});
 
 		it("refuses scheduled backups without a recovery key", async () => {

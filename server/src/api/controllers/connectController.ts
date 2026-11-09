@@ -94,7 +94,7 @@ class ConnectController implements IConnectController {
 	};
 
 	getBackupStatus: Handler = async (_req, res) => {
-		respond(res, this.connectService.getBackupStatus(), "Backup status retrieved", "Backup status failed");
+		respond(res, await this.connectService.getBackupStatus(), "Backup status retrieved", "Backup status failed");
 	};
 
 	getBackupList: Handler = async (_req, res) => {
@@ -116,12 +116,12 @@ class ConnectController implements IConnectController {
 
 	runBackup: Handler = async (req, res) => {
 		const { kind } = connectBackupRunBodyValidation.parse(req.body);
-		respond(res, this.connectService.runBackup(kind), "Backup started", "Backup start failed");
+		respond(res, await this.connectService.runBackup(kind), "Backup started", "Backup start failed");
 	};
 
 	restoreBackup: Handler = async (req, res) => {
 		const { backupId } = connectBackupRestoreBodyValidation.parse(req.body);
-		respond(res, this.connectService.restoreBackup(backupId), "Restore started", "Restore start failed");
+		respond(res, await this.connectService.restoreBackup(backupId), "Restore started", "Restore start failed");
 	};
 
 	setBackupSchedule: Handler = async (req, res) => {
