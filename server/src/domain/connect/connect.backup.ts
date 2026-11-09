@@ -95,6 +95,14 @@ type BackupOptions = {
 type BackupRun = { enrollment: ConnectEnrollment; recoveryKeyHex: string };
 type BackupResult = Record<string, unknown> & { ok: boolean; at: string };
 
+export type RecoveryKeyCheck = "ok" | "wrong-key" | "no-backups" | "busy";
+
+class WrongRecoveryKeyError extends Error {
+	constructor() {
+		super("decryption failed: wrong recovery key or corrupted archive");
+	}
+}
+
 const errorMessage = (error: unknown) => (error instanceof Error ? error.message : "unknown error");
 
 const postJson = async <T>(url: string, body: unknown, token: string): Promise<T> => {
@@ -126,11 +134,14 @@ const isRunnable = (bin: string) =>
 export class ConnectBackup {
 	private running = false;
 	private restoring = false;
+	private verifying = false;
 	private lastResult: BackupResult | null = null;
 	private lastRestore: BackupResult | null = null;
 	private missingTools: string[] = [];
 
 	constructor(private options: BackupOptions) {}
+
+	private isBusy = () => this.running || this.restoring || this.verifying;
 
 	status = () => ({
 		running: this.running,
@@ -177,7 +188,7 @@ export class ConnectBackup {
 	};
 
 	start = ({ enrollment, recoveryKeyHex, kind }: BackupRun & { kind: ConnectBackupKind }) => {
-		if (this.running || this.restoring) {
+		if (this.isBusy()) {
 			return { started: false, error: "a backup or restore is already running" };
 		}
 		this.running = true;
@@ -310,7 +321,7 @@ export class ConnectBackup {
 
 	// Verifies the checksum and GCM tag before anything touches the database.
 	startRestore = ({ enrollment, recoveryKeyHex, backupId }: BackupRun & { backupId: string }) => {
-		if (this.running || this.restoring) {
+		if (this.isBusy()) {
 			return { started: false, error: "a backup or restore is already running" };
 		}
 		this.restoring = true;
@@ -328,48 +339,75 @@ export class ConnectBackup {
 		return { started: true };
 	};
 
+	// Decrypts the smallest stored backup without touching the database. A key
+	// that passes here can restore this installation's backups.
+	verifyRecoveryKey = async ({ enrollment, recoveryKeyHex }: BackupRun): Promise<RecoveryKeyCheck> => {
+		if (this.isBusy()) return "busy";
+		this.verifying = true;
+		try {
+			const { backups } = (await this.list(enrollment)) as { backups?: { id: string; sizeBytes: number }[] };
+			const smallest = [...(backups ?? [])].sort((a, b) => a.sizeBytes - b.sizeBytes)[0];
+			if (!smallest) return "no-backups";
+			await this.withWorkDir(async (dir) => {
+				const encrypted = await this.download(enrollment, smallest.id, dir);
+				await this.decryptFile(encrypted, path.join(dir, "verify.archive.gz"), recoveryKeyHex);
+			});
+			return "ok";
+		} catch (error) {
+			if (error instanceof WrongRecoveryKeyError) return "wrong-key";
+			throw error;
+		} finally {
+			this.verifying = false;
+		}
+	};
+
+	// Returns the path of the downloaded file once its size and checksum match.
+	private download = async (enrollment: ConnectEnrollment, backupId: string, dir: string) => {
+		const encrypted = path.join(dir, "restore.cmkb");
+		const ticket = await postJson<{ downloadUrl: string; sha256: string; sizeBytes: number }>(
+			`${this.apiBase(enrollment)}/api/agent/backups/${backupId}/download`,
+			{ agentId: enrollment.agentId },
+			enrollment.token
+		);
+
+		this.assertTransferUrl(ticket.downloadUrl);
+		if (!Number.isSafeInteger(ticket.sizeBytes) || ticket.sizeBytes <= 0 || ticket.sizeBytes > MAX_BACKUP_BYTES) {
+			throw new Error("control plane returned an invalid backup size");
+		}
+		const download = await fetch(ticket.downloadUrl, {
+			redirect: "error",
+			signal: AbortSignal.timeout(TRANSFER_TIMEOUT_MS),
+		});
+		if (!download.ok || !download.body) throw new Error(`blob download failed (${download.status})`);
+
+		const hash = crypto.createHash("sha256");
+		let received = 0;
+		// Stops before the disk fills if the download exceeds its recorded size.
+		const meter = new Transform({
+			transform(chunk: Buffer, _encoding, callback) {
+				received += chunk.length;
+				if (received > ticket.sizeBytes) {
+					callback(new Error(`download exceeds recorded size ${ticket.sizeBytes}`));
+					return;
+				}
+				hash.update(chunk);
+				callback(null, chunk);
+			},
+		});
+		await pipeline(Readable.fromWeb(download.body as WebReadableStream), meter, fs.createWriteStream(encrypted, { mode: 0o600 }));
+
+		if (received !== ticket.sizeBytes) throw new Error(`downloaded size ${received} != recorded ${ticket.sizeBytes}`);
+		if (hash.digest("hex") !== ticket.sha256) {
+			throw new Error("downloaded archive does not match its recorded checksum");
+		}
+		return encrypted;
+	};
+
 	private restore = (enrollment: ConnectEnrollment, recoveryKeyHex: string, backupId: string) =>
 		this.withWorkDir(async (dir, configFile): Promise<BackupResult> => {
 			const startedAt = Date.now();
-			const encrypted = path.join(dir, "restore.cmkb");
 			const archive = path.join(dir, "restore.archive.gz");
-
-			const ticket = await postJson<{ downloadUrl: string; sha256: string; sizeBytes: number }>(
-				`${this.apiBase(enrollment)}/api/agent/backups/${backupId}/download`,
-				{ agentId: enrollment.agentId },
-				enrollment.token
-			);
-
-			this.assertTransferUrl(ticket.downloadUrl);
-			if (!Number.isSafeInteger(ticket.sizeBytes) || ticket.sizeBytes <= 0 || ticket.sizeBytes > MAX_BACKUP_BYTES) {
-				throw new Error("control plane returned an invalid backup size");
-			}
-			const download = await fetch(ticket.downloadUrl, {
-				redirect: "error",
-				signal: AbortSignal.timeout(TRANSFER_TIMEOUT_MS),
-			});
-			if (!download.ok || !download.body) throw new Error(`blob download failed (${download.status})`);
-
-			const hash = crypto.createHash("sha256");
-			let received = 0;
-			// Stops before the disk fills if the download exceeds its recorded size.
-			const meter = new Transform({
-				transform(chunk: Buffer, _encoding, callback) {
-					received += chunk.length;
-					if (received > ticket.sizeBytes) {
-						callback(new Error(`download exceeds recorded size ${ticket.sizeBytes}`));
-						return;
-					}
-					hash.update(chunk);
-					callback(null, chunk);
-				},
-			});
-			await pipeline(Readable.fromWeb(download.body as WebReadableStream), meter, fs.createWriteStream(encrypted, { mode: 0o600 }));
-
-			if (received !== ticket.sizeBytes) throw new Error(`downloaded size ${received} != recorded ${ticket.sizeBytes}`);
-			if (hash.digest("hex") !== ticket.sha256) {
-				throw new Error("downloaded archive does not match its recorded checksum");
-			}
+			const encrypted = await this.download(enrollment, backupId, dir);
 
 			await this.decryptFile(encrypted, archive, recoveryKeyHex);
 			await this.mongorestore(configFile, archive, await this.options.getDbName());
@@ -401,7 +439,7 @@ export class ConnectBackup {
 				fs.createWriteStream(outFile, { mode: 0o600 })
 			);
 		} catch {
-			throw new Error("decryption failed: wrong recovery key or corrupted archive");
+			throw new WrongRecoveryKeyError();
 		}
 	};
 

@@ -3,7 +3,7 @@ import type { Mongoose } from "mongoose";
 import type { IDb } from "@/db/db.interface.js";
 import type { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import type { ILogger } from "@/utils/logger/logger.js";
-import { ConnectBackup } from "@/domain/connect/connect.backup.js";
+import { ConnectBackup, type RecoveryKeyCheck } from "@/domain/connect/connect.backup.js";
 import { ConnectHeartbeat } from "@/domain/connect/connect.heartbeat.js";
 import type { IConnectRepository } from "@/domain/connect/connect.repository.js";
 import { ConnectTunnel } from "@/domain/connect/connect.tunnel.js";
@@ -48,6 +48,7 @@ export interface IConnectService {
 	getBackupStatus(): ConnectResult;
 	listBackups(): Promise<ConnectResult>;
 	createRecoveryKey(): Promise<ConnectResult>;
+	importRecoveryKey(recoveryKey: string): Promise<ConnectResult>;
 	runBackup(kind?: ConnectBackupKind): ConnectResult;
 	restoreBackup(backupId: string): ConnectResult;
 	setBackupSchedule(input: { enabled: boolean; intervalHours?: number; kind?: ConnectBackupKind }): Promise<ConnectResult>;
@@ -259,6 +260,33 @@ export class ConnectService implements IConnectService {
 			const recoveryKey = crypto.randomBytes(32).toString("hex");
 			await this.commit({ ...this.state, recoveryKey });
 			return { status: 200, data: { recoveryKey, format: "CMKB1" } };
+		} finally {
+			this.creatingRecoveryKey = false;
+		}
+	};
+
+	// For a replacement server. The key is saved only after it decrypts a stored
+	// backup, because a saved key cannot be replaced from Settings.
+	importRecoveryKey = async (recoveryKey: string): Promise<ConnectResult> => {
+		if (!this.stateLoaded) return this.stateUnavailable();
+		const { enrollment } = this.state;
+		if (!enrollment) return { status: 409, data: { error: "not enrolled" } };
+		if (this.state.recoveryKey || this.creatingRecoveryKey) {
+			return { status: 409, data: { error: "recovery key already set" } };
+		}
+		this.creatingRecoveryKey = true;
+		try {
+			let check: RecoveryKeyCheck;
+			try {
+				check = await this.backups.verifyRecoveryKey({ enrollment, recoveryKeyHex: recoveryKey });
+			} catch (error) {
+				return { status: 502, data: { error: error instanceof Error ? error.message : "control plane unreachable" } };
+			}
+			if (check === "wrong-key") return { status: 422, data: { error: "This key does not decrypt your cloud backups" } };
+			if (check === "no-backups") return { status: 409, data: { error: "No cloud backups to check this key against" } };
+			if (check === "busy") return { status: 409, data: { error: "A backup or restore is already running" } };
+			await this.commit({ ...this.state, recoveryKey });
+			return this.publicResult();
 		} finally {
 			this.creatingRecoveryKey = false;
 		}

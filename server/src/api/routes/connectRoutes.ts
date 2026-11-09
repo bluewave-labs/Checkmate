@@ -3,6 +3,7 @@ import {
 	connectEnrollBodyValidation,
 	connectRemoteAccessBodyValidation,
 	connectBackupRunBodyValidation,
+	connectBackupImportKeyBodyValidation,
 	connectBackupRestoreBodyValidation,
 	connectBackupScheduleBodyValidation,
 } from "@/api/controllers/connectController.js";
@@ -62,6 +63,14 @@ export const connectRoutes: RouteTable<IConnectController> = {
 			path: "/backup/recovery-key",
 			handler: "createBackupRecoveryKey",
 			summary: "Generate the backup recovery key (shown once)",
+			roles: ["superadmin"],
+		},
+		{
+			method: "post",
+			path: "/backup/recovery-key/import",
+			handler: "importBackupRecoveryKey",
+			summary: "Save an existing recovery key after it decrypts a stored backup",
+			body: connectBackupImportKeyBodyValidation,
 			roles: ["superadmin"],
 		},
 		{

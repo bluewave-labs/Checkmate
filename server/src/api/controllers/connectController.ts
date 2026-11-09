@@ -22,6 +22,14 @@ export const connectBackupRunBodyValidation = z.object({
 	kind: z.enum(["full", "config"]).optional(),
 });
 
+export const connectBackupImportKeyBodyValidation = z.object({
+	recoveryKey: z
+		.string()
+		.trim()
+		.regex(/^[a-fA-F0-9]{64}$/, "Recovery key must be 64 hexadecimal characters")
+		.transform((key) => key.toLowerCase()),
+});
+
 export const connectBackupRestoreBodyValidation = z.object({
 	backupId: z.string().regex(/^[0-9a-f-]{36}$/, "Invalid backup id"),
 });
@@ -40,6 +48,7 @@ export interface IConnectController {
 	getBackupStatus: RequestHandler;
 	getBackupList: RequestHandler;
 	createBackupRecoveryKey: RequestHandler;
+	importBackupRecoveryKey: RequestHandler;
 	runBackup: RequestHandler;
 	restoreBackup: RequestHandler;
 	setBackupSchedule: RequestHandler;
@@ -87,6 +96,13 @@ class ConnectController implements IConnectController {
 	// The response contains the recovery key exactly once; it is never logged.
 	createBackupRecoveryKey: Handler = async (_req, res) => {
 		respond(res, await this.connectService.createRecoveryKey(), "Recovery key generated", "Recovery key generation failed");
+	};
+
+	// Failure messages name the reason so a wrong key is not reported as a generic error.
+	importBackupRecoveryKey: Handler = async (req, res) => {
+		const { recoveryKey } = connectBackupImportKeyBodyValidation.parse(req.body);
+		const result = await this.connectService.importRecoveryKey(recoveryKey);
+		respond(res, result, "Recovery key saved", typeof result.data.error === "string" ? result.data.error : "Recovery key import failed");
 	};
 
 	runBackup: Handler = async (req, res) => {

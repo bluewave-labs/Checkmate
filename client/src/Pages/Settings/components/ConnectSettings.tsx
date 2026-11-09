@@ -299,6 +299,9 @@ const BackupSection = ({
 	const canManage = useIsSuperAdmin();
 	const [recoveryKey, setRecoveryKey] = useState<string | null>(null);
 	const [keyCopied, setKeyCopied] = useState(false);
+	const [showKeyImport, setShowKeyImport] = useState(false);
+	const [keyInput, setKeyInput] = useState("");
+	const keyInputValid = /^[a-fA-F0-9]{64}$/.test(keyInput.trim());
 	const [confirmRestoreId, setConfirmRestoreId] = useState<string | null>(null);
 
 	const { data: backupStatus, refetch: refetchBackupStatus } = useGet<BackupStatus>(
@@ -314,6 +317,10 @@ const BackupSection = ({
 	const { post: postKey, loading: generatingKey } = usePost<
 		Record<string, never>,
 		{ recoveryKey: string }
+	>();
+	const { post: postImportKey, loading: importingKey } = usePost<
+		{ recoveryKey: string },
+		ConnectStatus
 	>();
 	const { post: postRun, loading: startingBackup } = usePost<{ kind: string }, unknown>();
 	const { post: postRestore, loading: startingRestore } = usePost<
@@ -346,6 +353,21 @@ const BackupSection = ({
 			setKeyCopied(true);
 		} catch {
 			setKeyCopied(false);
+		}
+	};
+
+	const handleCancelImport = () => {
+		setShowKeyImport(false);
+		setKeyInput("");
+	};
+
+	const handleImportKey = async () => {
+		const result = await postImportKey("/connect/backup/recovery-key/import", {
+			recoveryKey: keyInput.trim(),
+		});
+		if (result?.success) {
+			handleCancelImport();
+			await refetchStatus();
 		}
 	};
 
@@ -412,15 +434,68 @@ const BackupSection = ({
 								</Typography>
 							</>
 						)}
-						{!recoveryKeySet && !recoveryKey && canManage && toolsReady && (
-							<Button
-								variant="contained"
-								disabled={generatingKey}
-								onClick={handleGenerateKey}
-							>
-								{t("pages.settings.form.connect.backup.generateKey")}
-							</Button>
-						)}
+						{!recoveryKeySet &&
+							!recoveryKey &&
+							canManage &&
+							toolsReady &&
+							(showKeyImport ? (
+								<Stack
+									gap={theme.spacing(LAYOUT.SM)}
+									width="100%"
+								>
+									<Typography>
+										{t("pages.settings.form.connect.backup.importKeyHelp")}
+									</Typography>
+									<TextField
+										fullWidth
+										type="password"
+										autoComplete="off"
+										value={keyInput}
+										onChange={(e) => setKeyInput(e.target.value)}
+										placeholder={t(
+											"pages.settings.form.connect.backup.importKeyPlaceholder"
+										)}
+									/>
+									<Stack
+										direction="row"
+										gap={theme.spacing(LAYOUT.SM)}
+									>
+										<Button
+											variant="contained"
+											disabled={!keyInputValid || importingKey}
+											onClick={handleImportKey}
+										>
+											{t("pages.settings.form.connect.backup.importKeyConfirm")}
+										</Button>
+										<Button
+											variant="outlined"
+											disabled={importingKey}
+											onClick={handleCancelImport}
+										>
+											{t("pages.settings.form.connect.backup.importKeyCancel")}
+										</Button>
+									</Stack>
+								</Stack>
+							) : (
+								<Stack
+									direction="row"
+									gap={theme.spacing(LAYOUT.SM)}
+								>
+									<Button
+										variant="contained"
+										disabled={generatingKey}
+										onClick={handleGenerateKey}
+									>
+										{t("pages.settings.form.connect.backup.generateKey")}
+									</Button>
+									<Button
+										variant="outlined"
+										onClick={() => setShowKeyImport(true)}
+									>
+										{t("pages.settings.form.connect.backup.importKey")}
+									</Button>
+								</Stack>
+							))}
 						{backupsUsable && (
 							<>
 								<Stack

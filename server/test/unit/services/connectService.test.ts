@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
+import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -249,6 +250,66 @@ describe("Connect", () => {
 			expect(calls).not.toContain(ABANDON);
 			expect(result).toMatchObject({ ok: true });
 		});
+
+		describe("verifyRecoveryKey", () => {
+			const KEY = "ab".repeat(32);
+			const sealed = (key: string) => {
+				const salt = crypto.randomBytes(16);
+				const nonce = crypto.randomBytes(12);
+				const cipher = crypto.createCipheriv("aes-256-gcm", deriveBackupKey(key, salt), nonce);
+				const body = Buffer.concat([cipher.update("archive"), cipher.final()]);
+				return Buffer.concat([Buffer.from("CMKB1"), salt, nonce, body, cipher.getAuthTag()]);
+			};
+			const verify = async (backups: { id: string; sizeBytes: number }[], blob: Buffer, key = KEY) => {
+				const downloads: string[] = [];
+				jest.spyOn(globalThis, "fetch").mockImplementation((async (input: string) => {
+					const url = String(input);
+					if (url.includes("/api/agent/backups?agentId=")) return Response.json({ backups });
+					if (url.endsWith("/download")) {
+						downloads.push(url);
+						return Response.json({
+							downloadUrl: BLOB,
+							sizeBytes: blob.length,
+							sha256: crypto.createHash("sha256").update(blob).digest("hex"),
+						});
+					}
+					return new Response(new Uint8Array(blob));
+				}) as unknown as typeof fetch);
+				const backup = new ConnectBackup({
+					mongoUrl: "mongodb://localhost/uptime_db",
+					getDbName: async () => "uptime_db",
+					mongodumpBin: "mongodump",
+					mongorestoreBin: "mongorestore",
+					apiBaseOverride: null,
+					log: createMockLogger() as unknown as ILogger,
+				});
+				return { downloads, result: await backup.verifyRecoveryKey({ enrollment, recoveryKeyHex: key }), status: backup.status() };
+			};
+
+			it("accepts the key that sealed the smallest backup", async () => {
+				const { result, downloads } = await verify(
+					[
+						{ id: "large", sizeBytes: 900 },
+						{ id: "small", sizeBytes: 10 },
+					],
+					sealed(KEY)
+				);
+				expect(result).toBe("ok");
+				expect(downloads).toEqual([`${API}/api/agent/backups/small/download`]);
+			});
+
+			it("rejects a different key", async () => {
+				expect((await verify([{ id: "b", sizeBytes: 10 }], sealed(KEY), "cd".repeat(32))).result).toBe("wrong-key");
+			});
+
+			it("reports when there is nothing to check against", async () => {
+				expect((await verify([], sealed(KEY))).result).toBe("no-backups");
+			});
+
+			it("surfaces a corrupt file format as an error, not a wrong key", async () => {
+				await expect(verify([{ id: "b", sizeBytes: 10 }], Buffer.alloc(80))).rejects.toThrow("not a CMKB1 backup");
+			});
+		});
 	});
 
 	describe("isAllowedTransferUrl", () => {
@@ -387,6 +448,55 @@ describe("Connect", () => {
 			const first = await service.createRecoveryKey();
 			expect(first.data.recoveryKey).toMatch(/^[a-f0-9]{64}$/);
 			expect((await service.createRecoveryKey()).status).toBe(409);
+		});
+
+		describe("importRecoveryKey", () => {
+			const KEY = "ab".repeat(32);
+			const enrolledWithCheck = async (check: () => Promise<string>) => {
+				jest.spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}"));
+				const context = await ready();
+				await context.service.enroll(enrollInput);
+				const verifyRecoveryKey = jest.fn(check);
+				(context.service as unknown as { backups: { verifyRecoveryKey: unknown } }).backups.verifyRecoveryKey = verifyRecoveryKey;
+				return { ...context, verifyRecoveryKey };
+			};
+
+			it("saves a verified key and does not echo it", async () => {
+				const { service } = await enrolledWithCheck(async () => "ok");
+				const result = await service.importRecoveryKey(KEY);
+				expect(result.status).toBe(200);
+				expect(JSON.stringify(result.data)).not.toContain(KEY);
+				expect(service.getStatus().data).toMatchObject({ backup: { recoveryKeySet: true } });
+			});
+
+			it.each([
+				["wrong-key", 422],
+				["no-backups", 409],
+				["busy", 409],
+			])("does not save the key on %s", async (check, status) => {
+				const { service } = await enrolledWithCheck(async () => check);
+				expect((await service.importRecoveryKey(KEY)).status).toBe(status);
+				expect(service.getStatus().data).toMatchObject({ backup: { recoveryKeySet: false } });
+			});
+
+			it("returns 502 when the check cannot run", async () => {
+				const { service } = await enrolledWithCheck(async () => {
+					throw new Error("network down");
+				});
+				expect(await service.importRecoveryKey(KEY)).toEqual({ status: 502, data: { error: "network down" } });
+			});
+
+			it("never replaces an existing key", async () => {
+				const { service, verifyRecoveryKey } = await enrolledWithCheck(async () => "ok");
+				await service.createRecoveryKey();
+				expect((await service.importRecoveryKey(KEY)).status).toBe(409);
+				expect(verifyRecoveryKey).not.toHaveBeenCalled();
+			});
+
+			it("requires enrollment", async () => {
+				const { service } = await ready();
+				expect((await service.importRecoveryKey(KEY)).status).toBe(409);
+			});
 		});
 
 		it("keeps the recovery key after unenrolling", async () => {
