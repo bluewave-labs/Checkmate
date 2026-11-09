@@ -1806,7 +1806,7 @@
 						"keyContinue": "I have saved it",
 						"keyDone": "I have stored the key",
 						"keyShowAgain": "Show the key again",
-						"keyVerifyHelp": "Paste the key from where you saved it to confirm you have a working copy.",
+						"keyVerifyHelp": "Open the place you saved the key and paste it here to confirm you have a working copy.",
 						"keyAcknowledge": "I understand that if I lose this key, I can't restore my cloud backups.",
 						"keyMismatch": "That doesn't match your recovery key. Show the key again and save a new copy.",
 						"keyAckRequired": "Tick the box to confirm you understand.",

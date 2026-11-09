@@ -423,6 +423,28 @@ const BackupSection = ({
 		}
 	};
 
+	// Step two must be pasted from wherever the key was saved, not from the
+	// clipboard. Plain http pages have no clipboard API, so they use a copy event.
+	const overwriteClipboard = async () => {
+		try {
+			await navigator.clipboard.writeText(" ");
+		} catch {
+			const replace = (event: ClipboardEvent) => {
+				event.clipboardData?.setData("text/plain", " ");
+				event.preventDefault();
+			};
+			document.addEventListener("copy", replace);
+			document.execCommand("copy");
+			document.removeEventListener("copy", replace);
+		}
+	};
+
+	const handleKeyContinue = () => {
+		void overwriteClipboard();
+		setKeyCopied(false);
+		setKeyStep("verify");
+	};
+
 	const handleKeyBack = () => {
 		setKeyStep("show");
 		setKeyCheck("");
@@ -850,7 +872,7 @@ const BackupSection = ({
 						? t("pages.settings.form.connect.backup.keyDone")
 						: t("pages.settings.form.connect.backup.keyContinue")
 				}
-				onConfirm={keyStep === "verify" ? handleKeyStored : () => setKeyStep("verify")}
+				onConfirm={keyStep === "verify" ? handleKeyStored : handleKeyContinue}
 			>
 				<Stack gap={theme.spacing(LAYOUT.SM)}>
 					<Typography color="error">
