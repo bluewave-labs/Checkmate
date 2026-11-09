@@ -11,7 +11,7 @@ import { LAYOUT } from "@/Utils/Theme/constants";
 import type { ConnectEnrollBody, ConnectStatus } from "@/Types/Connect";
 
 const CREDENTIAL_PLACEHOLDER =
-	"CONNECT_URL=wss://...\nCONNECT_AGENT=...\nCONNECT_TOKEN=cmk_...";
+	"CONNECT_URL=wss://...\nCONNECT_AGENT=inst-...\nCONNECT_TOKEN=cmk_...";
 
 export const ConnectEnrollBox = ({
 	onEnrolled,
