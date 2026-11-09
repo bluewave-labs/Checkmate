@@ -4,6 +4,7 @@ import type { ConnectEnrollment } from "@/domain/connect/connect.type.js";
 
 const INITIAL_BACKOFF_MS = 1000;
 const MAX_BACKOFF_MS = 30_000;
+const PING_INTERVAL_MS = 15_000;
 // Slightly under the relay's 60 s proxy limit.
 const LOCAL_REQUEST_TIMEOUT_MS = 55_000;
 const ALLOWED_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"];
@@ -82,7 +83,8 @@ export class ConnectTunnel {
 
 	constructor(
 		private localTarget: string,
-		private log: ILogger
+		private log: ILogger,
+		private pingIntervalMs: number = PING_INTERVAL_MS
 	) {}
 
 	status = (): TunnelStatus => ({ ...this.state, enabled: this.desired });
@@ -133,6 +135,7 @@ export class ConnectTunnel {
 			this.state.lastConnectedAt = new Date().toISOString();
 			this.state.lastError = null;
 			this.log.info({ agentId }, "Connect tunnel connected");
+			this.watchLiveness(ws);
 		});
 
 		ws.on("message", (data) => {
@@ -157,6 +160,25 @@ export class ConnectTunnel {
 			if (this.ws === ws) this.state.lastError = error.message;
 			ws.close();
 		});
+	};
+
+	// A socket can die without a close event, for example when the host sleeps
+	// through the drop. Without this it would report connected indefinitely.
+	private watchLiveness = (ws: WebSocket) => {
+		let answered = true;
+		ws.on("pong", () => {
+			answered = true;
+		});
+		const timer = setInterval(() => {
+			if (!answered) {
+				ws.terminate();
+				return;
+			}
+			answered = false;
+			ws.ping();
+		}, this.pingIntervalMs);
+		timer.unref();
+		ws.once("close", () => clearInterval(timer));
 	};
 
 	private scheduleRetry = (why: string) => {
