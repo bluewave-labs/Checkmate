@@ -22,6 +22,10 @@ export const connectBackupRunBodyValidation = z.object({
 	kind: z.enum(["full", "config"]).optional(),
 });
 
+export const connectBackupGenerateKeyBodyValidation = z.object({
+	discardExisting: z.boolean().optional(),
+});
+
 export const connectBackupImportKeyBodyValidation = z.object({
 	recoveryKey: z
 		.string()
@@ -59,6 +63,9 @@ const respond = (res: Response<ApiEnvelope>, result: ConnectResult, successMsg: 
 	res.status(ok ? 200 : result.status).json({ success: ok, msg: ok ? successMsg : failureMsg, data: result.data });
 };
 
+// Names the reason, so a wrong key is not reported as a generic error.
+const failureReason = (result: ConnectResult, fallback: string) => (typeof result.data.error === "string" ? result.data.error : fallback);
+
 class ConnectController implements IConnectController {
 	constructor(private connectService: IConnectService) {}
 
@@ -94,15 +101,16 @@ class ConnectController implements IConnectController {
 	};
 
 	// The response contains the recovery key exactly once; it is never logged.
-	createBackupRecoveryKey: Handler = async (_req, res) => {
-		respond(res, await this.connectService.createRecoveryKey(), "Recovery key generated", "Recovery key generation failed");
+	createBackupRecoveryKey: Handler = async (req, res) => {
+		const { discardExisting } = connectBackupGenerateKeyBodyValidation.parse(req.body ?? {});
+		const result = await this.connectService.createRecoveryKey({ discardExisting });
+		respond(res, result, "Recovery key generated", failureReason(result, "Recovery key generation failed"));
 	};
 
-	// Failure messages name the reason so a wrong key is not reported as a generic error.
 	importBackupRecoveryKey: Handler = async (req, res) => {
 		const { recoveryKey } = connectBackupImportKeyBodyValidation.parse(req.body);
 		const result = await this.connectService.importRecoveryKey(recoveryKey);
-		respond(res, result, "Recovery key saved", typeof result.data.error === "string" ? result.data.error : "Recovery key import failed");
+		respond(res, result, "Recovery key saved", failureReason(result, "Recovery key import failed"));
 	};
 
 	runBackup: Handler = async (req, res) => {

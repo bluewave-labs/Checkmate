@@ -47,7 +47,7 @@ export interface IConnectService {
 	unenroll(): Promise<ConnectResult>;
 	getBackupStatus(): ConnectResult;
 	listBackups(): Promise<ConnectResult>;
-	createRecoveryKey(): Promise<ConnectResult>;
+	createRecoveryKey(options?: { discardExisting?: boolean }): Promise<ConnectResult>;
 	importRecoveryKey(recoveryKey: string): Promise<ConnectResult>;
 	runBackup(kind?: ConnectBackupKind): ConnectResult;
 	restoreBackup(backupId: string): ConnectResult;
@@ -250,13 +250,30 @@ export class ConnectService implements IConnectService {
 
 	// Generated once and returned once; without it the cloud copies cannot be
 	// decrypted, so the caller must have the operator store it safely.
-	createRecoveryKey = async (): Promise<ConnectResult> => {
+	//
+	// Refused while cloud backups exist unless the operator accepts losing them:
+	// a saved key cannot be replaced, and retention deletes the old backups once
+	// the new key's first backup is stored.
+	createRecoveryKey = async ({ discardExisting = false }: { discardExisting?: boolean } = {}): Promise<ConnectResult> => {
 		if (!this.stateLoaded) return this.stateUnavailable();
+		const { enrollment } = this.state;
+		if (!enrollment) return { status: 409, data: { error: "not enrolled" } };
 		if (this.state.recoveryKey || this.creatingRecoveryKey) {
 			return { status: 409, data: { error: "recovery key already set" } };
 		}
 		this.creatingRecoveryKey = true;
 		try {
+			if (!discardExisting) {
+				let stored: { backups?: unknown[] };
+				try {
+					stored = (await this.backups.list(enrollment)) as { backups?: unknown[] };
+				} catch (error) {
+					return { status: 502, data: { error: error instanceof Error ? error.message : "control plane unreachable" } };
+				}
+				if (stored.backups?.length) {
+					return { status: 409, data: { error: "Cloud backups already exist. Enter the recovery key from your original server" } };
+				}
+			}
 			const recoveryKey = crypto.randomBytes(32).toString("hex");
 			await this.commit({ ...this.state, recoveryKey });
 			return { status: 200, data: { recoveryKey, format: "CMKB1" } };

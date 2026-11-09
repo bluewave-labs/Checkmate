@@ -299,6 +299,7 @@ const BackupSection = ({
 	const canManage = useIsSuperAdmin();
 	const [recoveryKey, setRecoveryKey] = useState<string | null>(null);
 	const [keyCopied, setKeyCopied] = useState(false);
+	const [confirmLostKey, setConfirmLostKey] = useState(false);
 	const [showKeyImport, setShowKeyImport] = useState(false);
 	const [keyInput, setKeyInput] = useState("");
 	const keyInputValid = /^[a-fA-F0-9]{64}$/.test(keyInput.trim());
@@ -315,7 +316,7 @@ const BackupSection = ({
 		{ refreshInterval: 30000 }
 	);
 	const { post: postKey, loading: generatingKey } = usePost<
-		Record<string, never>,
+		{ discardExisting: boolean },
 		{ recoveryKey: string }
 	>();
 	const { post: postImportKey, loading: importingKey } = usePost<
@@ -336,12 +337,21 @@ const BackupSection = ({
 	const toolsReady = (backupStatus?.missingTools?.length ?? 0) === 0;
 	const backupsUsable = recoveryKeySet && toolsReady;
 
-	const handleGenerateKey = async () => {
-		const result = await postKey("/connect/backup/recovery-key", {});
+	const handleGenerateKey = async (discardExisting = false) => {
+		const result = await postKey("/connect/backup/recovery-key", { discardExisting });
 		if (result?.success && result.data?.recoveryKey) {
 			setRecoveryKey(result.data.recoveryKey);
 			await refetchStatus();
 		}
+	};
+
+	const handleLostKey = async () => {
+		if (!confirmLostKey) {
+			setConfirmLostKey(true);
+			return;
+		}
+		setConfirmLostKey(false);
+		await handleGenerateKey(true);
 	};
 
 	// The clipboard API only exists on secure pages, and self-hosted installs are
@@ -403,6 +413,7 @@ const BackupSection = ({
 	const last = backupStatus?.lastResult;
 	const lastRestore = backupStatus?.lastRestore;
 	const backups = backupList?.backups ?? [];
+	const hasCloudBackups = backups.length > 0;
 
 	return (
 		<>
@@ -477,23 +488,51 @@ const BackupSection = ({
 									</Stack>
 								</Stack>
 							) : (
-								<Stack
-									direction="row"
-									gap={theme.spacing(LAYOUT.SM)}
-								>
-									<Button
-										variant="contained"
-										disabled={generatingKey}
-										onClick={handleGenerateKey}
+								<Stack gap={theme.spacing(LAYOUT.SM)}>
+									{hasCloudBackups && (
+										<Typography>
+											{t("pages.settings.form.connect.backup.existingBackups")}
+										</Typography>
+									)}
+									<Stack
+										direction="row"
+										gap={theme.spacing(LAYOUT.SM)}
 									>
-										{t("pages.settings.form.connect.backup.generateKey")}
-									</Button>
-									<Button
-										variant="outlined"
-										onClick={() => setShowKeyImport(true)}
-									>
-										{t("pages.settings.form.connect.backup.importKey")}
-									</Button>
+										{!hasCloudBackups && (
+											<Button
+												variant="contained"
+												disabled={generatingKey}
+												onClick={() => void handleGenerateKey()}
+											>
+												{t("pages.settings.form.connect.backup.generateKey")}
+											</Button>
+										)}
+										<Button
+											variant={hasCloudBackups ? "contained" : "outlined"}
+											onClick={() => {
+												setConfirmLostKey(false);
+												setShowKeyImport(true);
+											}}
+										>
+											{t("pages.settings.form.connect.backup.importKey")}
+										</Button>
+										{hasCloudBackups && (
+											<Button
+												variant="outlined"
+												disabled={generatingKey}
+												onClick={() => void handleLostKey()}
+											>
+												{confirmLostKey
+													? t("pages.settings.form.connect.backup.lostKeyConfirm")
+													: t("pages.settings.form.connect.backup.lostKey")}
+											</Button>
+										)}
+									</Stack>
+									{confirmLostKey && (
+										<Typography color="error">
+											{t("pages.settings.form.connect.backup.lostKeyWarning")}
+										</Typography>
+									)}
 								</Stack>
 							))}
 						{backupsUsable && (

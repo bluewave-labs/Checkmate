@@ -3,6 +3,7 @@ import {
 	connectEnrollBodyValidation,
 	connectRemoteAccessBodyValidation,
 	connectBackupRunBodyValidation,
+	connectBackupGenerateKeyBodyValidation,
 	connectBackupImportKeyBodyValidation,
 	connectBackupRestoreBodyValidation,
 	connectBackupScheduleBodyValidation,
@@ -63,6 +64,7 @@ export const connectRoutes: RouteTable<IConnectController> = {
 			path: "/backup/recovery-key",
 			handler: "createBackupRecoveryKey",
 			summary: "Generate the backup recovery key (shown once)",
+			body: connectBackupGenerateKeyBodyValidation,
 			roles: ["superadmin"],
 		},
 		{

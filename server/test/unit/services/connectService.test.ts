@@ -373,7 +373,10 @@ describe("Connect", () => {
 		});
 
 		it("creates one recovery key when two requests race", async () => {
+			jest.spyOn(globalThis, "fetch").mockImplementation((async () => new Response("{}")) as unknown as typeof fetch);
 			const { service, repository } = await ready();
+			await service.enroll(enrollInput);
+			repository.save.mockClear();
 			const [first, second] = await Promise.all([service.createRecoveryKey(), service.createRecoveryKey()]);
 			expect([first.status, second.status].sort()).toEqual([200, 409]);
 			expect(repository.save).toHaveBeenCalledTimes(1);
@@ -444,10 +447,55 @@ describe("Connect", () => {
 		});
 
 		it("generates the recovery key once", async () => {
+			jest.spyOn(globalThis, "fetch").mockImplementation((async () => new Response("{}")) as unknown as typeof fetch);
 			const { service } = await ready();
+			await service.enroll(enrollInput);
 			const first = await service.createRecoveryKey();
 			expect(first.data.recoveryKey).toMatch(/^[a-f0-9]{64}$/);
 			expect((await service.createRecoveryKey()).status).toBe(409);
+		});
+
+		describe("createRecoveryKey with cloud backups", () => {
+			const enrolledWithList = async (list: () => Promise<unknown>) => {
+				jest.spyOn(globalThis, "fetch").mockImplementation((async () => new Response("{}")) as unknown as typeof fetch);
+				const context = await ready();
+				await context.service.enroll(enrollInput);
+				const listBackups = jest.fn(list);
+				(context.service as unknown as { backups: { list: unknown } }).backups.list = listBackups;
+				return { ...context, listBackups };
+			};
+			const keySet = (service: ConnectService) => (service.getStatus().data.backup as { recoveryKeySet: boolean }).recoveryKeySet;
+
+			it("refuses while backups exist", async () => {
+				const { service } = await enrolledWithList(async () => ({ backups: [{ id: "b" }] }));
+				expect((await service.createRecoveryKey()).status).toBe(409);
+				expect(keySet(service)).toBe(false);
+			});
+
+			it("generates when the account has no backups", async () => {
+				const { service } = await enrolledWithList(async () => ({ backups: [] }));
+				expect((await service.createRecoveryKey()).status).toBe(200);
+				expect(keySet(service)).toBe(true);
+			});
+
+			it("fails closed when backups cannot be listed", async () => {
+				const { service } = await enrolledWithList(async () => {
+					throw new Error("network down");
+				});
+				expect(await service.createRecoveryKey()).toEqual({ status: 502, data: { error: "network down" } });
+				expect(keySet(service)).toBe(false);
+			});
+
+			it("generates over existing backups only when told to discard them", async () => {
+				const { service, listBackups } = await enrolledWithList(async () => ({ backups: [{ id: "b" }] }));
+				expect((await service.createRecoveryKey({ discardExisting: true })).status).toBe(200);
+				expect(listBackups).not.toHaveBeenCalled();
+			});
+
+			it("requires enrollment", async () => {
+				const { service } = await ready();
+				expect((await service.createRecoveryKey()).status).toBe(409);
+			});
 		});
 
 		describe("importRecoveryKey", () => {
@@ -502,8 +550,8 @@ describe("Connect", () => {
 		it("keeps the recovery key after unenrolling", async () => {
 			jest.spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}"));
 			const { service } = await ready();
-			await service.createRecoveryKey();
 			await service.enroll(enrollInput);
+			await service.createRecoveryKey();
 			await service.unenroll();
 			expect(service.getStatus().data).toMatchObject({ enrolled: false, backup: { recoveryKeySet: true } });
 		});
