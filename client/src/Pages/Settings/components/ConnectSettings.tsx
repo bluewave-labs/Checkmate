@@ -1,14 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import Stack from "@mui/material/Stack";
 import Chip from "@mui/material/Chip";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import { ConfigBox } from "@/Components/design-elements";
 import {
 	Button,
+	Checkbox,
 	Dialog,
 	Select,
 	SwitchComponent as Switch,
@@ -316,6 +318,10 @@ const BackupSection = ({
 	const canManage = useIsSuperAdmin();
 	const [recoveryKey, setRecoveryKey] = useState<string | null>(null);
 	const [keyCopied, setKeyCopied] = useState(false);
+	const [keyStep, setKeyStep] = useState<"show" | "verify">("show");
+	const [keyCheck, setKeyCheck] = useState("");
+	const [keyAcknowledged, setKeyAcknowledged] = useState(false);
+	const [keyStoredError, setKeyStoredError] = useState<string | null>(null);
 	const [confirmLostKey, setConfirmLostKey] = useState(false);
 	const [showKeyImport, setShowKeyImport] = useState(false);
 	const [keyInput, setKeyInput] = useState("");
@@ -364,6 +370,14 @@ const BackupSection = ({
 	const toolsReady = (backupStatus?.missingTools?.length ?? 0) === 0;
 	const backupsUsable = recoveryKeySet && toolsReady;
 
+	// The server never shows this key again, so a reload here would lose it.
+	useEffect(() => {
+		if (recoveryKey === null) return;
+		const warn = (event: BeforeUnloadEvent) => event.preventDefault();
+		window.addEventListener("beforeunload", warn);
+		return () => window.removeEventListener("beforeunload", warn);
+	}, [recoveryKey]);
+
 	const handleGenerateKey = async (discardExisting = false) => {
 		const result = await postKey("/connect/backup/recovery-key", { discardExisting });
 		if (result?.success && result.data?.recoveryKey) {
@@ -409,9 +423,27 @@ const BackupSection = ({
 		}
 	};
 
+	const handleKeyBack = () => {
+		setKeyStep("show");
+		setKeyCheck("");
+		setKeyStoredError(null);
+	};
+
 	const handleKeyStored = () => {
+		if (keyCheck.trim().toLowerCase() !== recoveryKey?.toLowerCase()) {
+			setKeyStoredError(t("pages.settings.form.connect.backup.keyMismatch"));
+			return;
+		}
+		if (!keyAcknowledged) {
+			setKeyStoredError(t("pages.settings.form.connect.backup.keyAckRequired"));
+			return;
+		}
 		setRecoveryKey(null);
 		setKeyCopied(false);
+		setKeyStep("show");
+		setKeyCheck("");
+		setKeyAcknowledged(false);
+		setKeyStoredError(null);
 	};
 
 	const handleRun = async (kind: "full" | "config") => {
@@ -794,32 +826,72 @@ const BackupSection = ({
 				/>
 			)}
 			{/* Dialog passes a click event from its left button and nothing for Escape.
-			    Only the click copies, and nothing dismisses this until the key is stored. */}
+			    Only the click acts, and nothing dismisses this until the key is confirmed.
+			    The second step hides the key, so it can only be pasted back from where it was saved. */}
 			<Dialog
 				open={recoveryKey !== null}
 				title={t("pages.settings.form.connect.backup.keyTitle")}
 				maxWidth="sm"
 				fullWidth
 				cancelText={
-					keyCopied
-						? t("pages.settings.form.connect.backup.keyCopied")
-						: t("pages.settings.form.connect.backup.keyCopy")
+					keyStep === "verify"
+						? t("pages.settings.form.connect.backup.keyShowAgain")
+						: keyCopied
+							? t("pages.settings.form.connect.backup.keyCopied")
+							: t("pages.settings.form.connect.backup.keyCopy")
 				}
 				onCancel={(event) => {
-					if (event) void handleCopyKey();
+					if (!event) return;
+					if (keyStep === "verify") handleKeyBack();
+					else void handleCopyKey();
 				}}
-				confirmText={t("pages.settings.form.connect.backup.keyDone")}
-				onConfirm={handleKeyStored}
+				confirmText={
+					keyStep === "verify"
+						? t("pages.settings.form.connect.backup.keyDone")
+						: t("pages.settings.form.connect.backup.keyContinue")
+				}
+				onConfirm={keyStep === "verify" ? handleKeyStored : () => setKeyStep("verify")}
 			>
 				<Stack gap={theme.spacing(LAYOUT.SM)}>
 					<Typography color="error">
 						{t("pages.settings.form.connect.backup.keyWarning")}
 					</Typography>
-					<TextField
-						fullWidth
-						value={recoveryKey ?? ""}
-						slotProps={{ input: { readOnly: true } }}
-					/>
+					{keyStep === "show" ? (
+						<TextField
+							fullWidth
+							value={recoveryKey ?? ""}
+							slotProps={{ input: { readOnly: true } }}
+						/>
+					) : (
+						<>
+							<Typography>
+								{t("pages.settings.form.connect.backup.keyVerifyHelp")}
+							</Typography>
+							<TextField
+								fullWidth
+								autoComplete="off"
+								value={keyCheck}
+								placeholder={t("pages.settings.form.connect.backup.importKeyPlaceholder")}
+								onChange={(event) => {
+									setKeyCheck(event.target.value);
+									setKeyStoredError(null);
+								}}
+							/>
+							<FormControlLabel
+								control={
+									<Checkbox
+										checked={keyAcknowledged}
+										onChange={(event) => {
+											setKeyAcknowledged(event.target.checked);
+											setKeyStoredError(null);
+										}}
+									/>
+								}
+								label={t("pages.settings.form.connect.backup.keyAcknowledge")}
+							/>
+							{keyStoredError && <Typography color="error">{keyStoredError}</Typography>}
+						</>
+					)}
 				</Stack>
 			</Dialog>
 		</>
