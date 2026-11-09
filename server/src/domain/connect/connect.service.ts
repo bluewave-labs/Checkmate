@@ -123,7 +123,10 @@ export class ConnectService implements IConnectService {
 			if (stored && this.needsEncryptionUpdate(stored)) await this.repository.save(this.protect(this.state));
 			this.stateLoaded = true;
 			this.applyState();
+			void this.backups.checkTools();
 			this.sweepTimer = setInterval(() => {
+				// Re-checked while missing so installing the tools needs no restart.
+				if (this.backups.status().missingTools.length > 0) void this.backups.checkTools();
 				this.sweepSchedule().catch((error: unknown) => {
 					this.log.error({ err: error }, "Connect backup schedule sweep failed");
 				});

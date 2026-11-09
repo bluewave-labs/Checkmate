@@ -3,7 +3,7 @@ import type { Mongoose } from "mongoose";
 import { ConnectService, DEFAULT_CONNECT_HOSTS, isConnectHostAllowed } from "../../../src/domain/connect/connect.service.ts";
 import { ConnectHeartbeat } from "../../../src/domain/connect/connect.heartbeat.ts";
 import { validateTunnelRequest } from "../../../src/domain/connect/connect.tunnel.ts";
-import { buildDumpArgs, deriveBackupKey, isAllowedTransferUrl } from "../../../src/domain/connect/connect.backup.ts";
+import { ConnectBackup, buildDumpArgs, deriveBackupKey, isAllowedTransferUrl } from "../../../src/domain/connect/connect.backup.ts";
 import { CONNECT_STATE_COLLECTION, emptyConnectState, type ConnectState } from "../../../src/domain/connect/connect.type.ts";
 import type { IConnectRepository } from "../../../src/domain/connect/connect.repository.ts";
 import type { IEncryptionService } from "../../../src/service/encryption/encryptionService.ts";
@@ -114,6 +114,50 @@ describe("Connect", () => {
 		it("keeps the key derivation of existing CMKB1 backups", () => {
 			const key = deriveBackupKey("00".repeat(32), Buffer.alloc(16));
 			expect(key.toString("hex")).toBe("8889fac04828176b7e78fee78c1d0bd8aa6fd433913eb1b7f64e8474c55f0a36");
+		});
+	});
+
+	describe("backup tool detection", () => {
+		const makeBackup = () => {
+			const logger = createMockLogger();
+			// process.execPath is a real binary that exits 0 for --version.
+			const options = {
+				mongoUrl: "mongodb://localhost/uptime_db",
+				getDbName: async () => "uptime_db",
+				mongodumpBin: process.execPath,
+				mongorestoreBin: process.execPath,
+				apiBaseOverride: null,
+				log: logger as unknown as ILogger,
+			};
+			return { backup: new ConnectBackup(options), options, logger };
+		};
+
+		it("reports nothing missing when both tools run", async () => {
+			const { backup, logger } = makeBackup();
+			await backup.checkTools();
+			expect(backup.status().missingTools).toEqual([]);
+			expect(logger.warn).not.toHaveBeenCalled();
+		});
+
+		it("names each tool that cannot run", async () => {
+			const { backup, options } = makeBackup();
+			options.mongorestoreBin = "/nonexistent/mongorestore";
+			await backup.checkTools();
+			expect(backup.status().missingTools).toEqual(["mongorestore"]);
+			options.mongodumpBin = "";
+			await backup.checkTools();
+			expect(backup.status().missingTools).toEqual(["mongodump", "mongorestore"]);
+		});
+
+		it("warns once and clears after the tools are installed", async () => {
+			const { backup, options, logger } = makeBackup();
+			options.mongodumpBin = "/nonexistent/mongodump";
+			await backup.checkTools();
+			await backup.checkTools();
+			expect(logger.warn).toHaveBeenCalledTimes(1);
+			options.mongodumpBin = process.execPath;
+			await backup.checkTools();
+			expect(backup.status().missingTools).toEqual([]);
 		});
 	});
 

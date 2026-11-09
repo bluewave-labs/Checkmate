@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { execFile, spawn } from "node:child_process";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
@@ -86,11 +86,23 @@ const postJson = async <T>(url: string, body: unknown, token: string): Promise<T
 	return data;
 };
 
+const TOOL_CHECK_TIMEOUT_MS = 10_000;
+
+const isRunnable = (bin: string) =>
+	new Promise<boolean>((resolve) => {
+		try {
+			execFile(bin, ["--version"], { timeout: TOOL_CHECK_TIMEOUT_MS }, (error) => resolve(!error));
+		} catch {
+			resolve(false);
+		}
+	});
+
 export class ConnectBackup {
 	private running = false;
 	private restoring = false;
 	private lastResult: BackupResult | null = null;
 	private lastRestore: BackupResult | null = null;
+	private missingTools: string[] = [];
 
 	constructor(private options: BackupOptions) {}
 
@@ -99,7 +111,19 @@ export class ConnectBackup {
 		restoring: this.restoring,
 		lastResult: this.lastResult,
 		lastRestore: this.lastRestore,
+		missingTools: this.missingTools,
 	});
+
+	// The official image ships these tools but a source install may not, so the
+	// settings page needs to know before anyone clicks a backup button.
+	checkTools = async () => {
+		const [hasDump, hasRestore] = await Promise.all([isRunnable(this.options.mongodumpBin), isRunnable(this.options.mongorestoreBin)]);
+		const missing = [...(hasDump ? [] : ["mongodump"]), ...(hasRestore ? [] : ["mongorestore"])];
+		if (missing.length > 0 && missing.join() !== this.missingTools.join()) {
+			this.options.log.warn({ missing }, "Connect cloud backups are unavailable until these tools are installed");
+		}
+		this.missingTools = missing;
+	};
 
 	private apiBase = (enrollment: ConnectEnrollment) => {
 		if (this.options.apiBaseOverride) return this.options.apiBaseOverride;

@@ -2,13 +2,17 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import Stack from "@mui/material/Stack";
-import Button from "@mui/material/Button";
-import Switch from "@mui/material/Switch";
 import Chip from "@mui/material/Chip";
-import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
+import Link from "@mui/material/Link";
 import { ConfigBox } from "@/Components/design-elements";
+import {
+	Button,
+	Select,
+	SwitchComponent as Switch,
+	TextField,
+} from "@/Components/inputs";
 import { useGet, usePost } from "@/Hooks/UseApi";
 import { useFormatDate } from "@/Hooks/useFormatDate";
 import { useIsSuperAdmin } from "@/Hooks/useIsAdmin";
@@ -51,6 +55,7 @@ type BackupStatus = {
 		error?: string;
 	} | null;
 	lastRestore: { ok: boolean; at: string; backupId: string; error?: string } | null;
+	missingTools?: string[];
 };
 
 type BackupListEntry = {
@@ -324,6 +329,8 @@ const BackupSection = ({
 	>();
 
 	const busy = backupStatus?.running || backupStatus?.restoring;
+	const toolsReady = (backupStatus?.missingTools?.length ?? 0) === 0;
+	const backupsUsable = recoveryKeySet && toolsReady;
 
 	const handleGenerateKey = async () => {
 		const result = await postKey("/connect/backup/recovery-key", {});
@@ -371,7 +378,27 @@ const BackupSection = ({
 						gap={theme.spacing(LAYOUT.SM)}
 						alignItems="flex-start"
 					>
-						{!recoveryKeySet && !recoveryKey && canManage && (
+						{!toolsReady && (
+							<>
+								<Typography color="error">
+									{t("pages.settings.form.connect.backup.toolsMissing")}
+								</Typography>
+								<Typography>
+									{t("pages.settings.form.connect.backup.toolsMac")}
+								</Typography>
+								<Link
+									href="https://www.mongodb.com/try/download/database-tools"
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									{t("pages.settings.form.connect.backup.toolsLink")}
+								</Link>
+								<Typography>
+									{t("pages.settings.form.connect.backup.toolsPath")}
+								</Typography>
+							</>
+						)}
+						{!recoveryKeySet && !recoveryKey && canManage && toolsReady && (
 							<Button
 								variant="contained"
 								disabled={generatingKey}
@@ -412,7 +439,7 @@ const BackupSection = ({
 								</Stack>
 							</>
 						)}
-						{recoveryKeySet && (
+						{backupsUsable && (
 							<>
 								<Stack
 									direction="row"
@@ -475,7 +502,7 @@ const BackupSection = ({
 				}
 			/>
 
-			{recoveryKeySet && canManage && (
+			{backupsUsable && canManage && (
 				<ConfigBox
 					title={t("pages.settings.form.connect.backup.schedule.title")}
 					subtitle={t("pages.settings.form.connect.backup.schedule.description")}
@@ -500,9 +527,8 @@ const BackupSection = ({
 									direction="row"
 									gap={theme.spacing(LAYOUT.SM)}
 								>
-									<TextField
-										select
-										label={t("pages.settings.form.connect.backup.schedule.interval")}
+									<Select
+										fieldLabel={t("pages.settings.form.connect.backup.schedule.interval")}
 										value={schedule.intervalHours}
 										disabled={savingSchedule}
 										onChange={(e) =>
@@ -521,10 +547,9 @@ const BackupSection = ({
 												{h} {t("pages.settings.form.connect.backup.schedule.hours")}
 											</MenuItem>
 										))}
-									</TextField>
-									<TextField
-										select
-										label={t("pages.settings.form.connect.backup.schedule.kind")}
+									</Select>
+									<Select
+										fieldLabel={t("pages.settings.form.connect.backup.schedule.kind")}
 										value={schedule.kind}
 										disabled={savingSchedule}
 										onChange={(e) =>
@@ -541,7 +566,7 @@ const BackupSection = ({
 										<MenuItem value="config">
 											{t("pages.settings.form.connect.backup.schedule.kindConfig")}
 										</MenuItem>
-									</TextField>
+									</Select>
 								</Stack>
 							)}
 						</Stack>
@@ -549,7 +574,7 @@ const BackupSection = ({
 				/>
 			)}
 
-			{recoveryKeySet && canManage && (
+			{backupsUsable && canManage && (
 				<ConfigBox
 					title={t("pages.settings.form.connect.backup.restore.title")}
 					subtitle={t("pages.settings.form.connect.backup.restore.description")}
@@ -586,7 +611,6 @@ const BackupSection = ({
 										<Button
 											variant="outlined"
 											color="error"
-											size="small"
 											disabled={busy || startingRestore}
 											onClick={() => void handleRestore(b.id)}
 										>

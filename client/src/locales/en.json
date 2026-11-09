@@ -1730,7 +1730,10 @@
 				},
 				"importExportMonitors": {
 					"title": "Import / Export monitors",
-					"description": "Import or export your monitors data as a JSON file for backup or transfer."
+					"description": "Import or export your monitors data as a JSON file for backup or transfer.",
+					"backupNotice": "This JSON file only contains your monitors, so it isn't a full backup. To back up or restore your Checkmate data, use Checkmate Connect.",
+					"connectTabLink": "Open the Checkmate Connect tab",
+					"connectSiteLink": "Visit the Checkmate Connect website"
 				},
 				"about": {
 					"title": "About",
@@ -1787,6 +1790,10 @@
 						"keyWarning": "Store this key somewhere safe now. It is shown only once, it never leaves this server, and without it no cloud backup can be restored.",
 						"keyCopy": "Copy key",
 						"keyDone": "I have stored the key",
+						"toolsMissing": "Cloud backups need mongodump and mongorestore, which weren't found on this server.",
+						"toolsMac": "On macOS, run: brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "Download MongoDB Database Tools for Linux",
+						"toolsPath": "If they're installed elsewhere, set CONNECT_MONGODUMP_BIN and CONNECT_MONGORESTORE_BIN. This message clears within a minute of the tools being found.",
 						"runFull": "Back up now",
 						"runConfig": "Back up configuration only",
 						"running": "Backup in progress…",
