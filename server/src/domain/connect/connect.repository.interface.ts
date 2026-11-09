@@ -4,7 +4,7 @@ export interface IConnectRepository {
 	// create
 	setEnrollment(enrollment: ConnectEnrollment): Promise<void>;
 	// fetch
-	get(): Promise<ConnectState | null>;
+	get(): Promise<ConnectState>;
 	// update
 	setSecrets(secrets: { token?: string }): Promise<void>;
 	clearEnrollment(): Promise<void>;

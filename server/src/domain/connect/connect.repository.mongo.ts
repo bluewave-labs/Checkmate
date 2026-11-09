@@ -3,9 +3,9 @@ import { IConnectRepository } from "@/domain/connect/connect.repository.interfac
 import type { ConnectEnrollment, ConnectState } from "@/domain/connect/connect.type.js";
 
 export class ConnectRepositoryMongo implements IConnectRepository {
-	private toEntity = (doc: ConnectStateDocument): ConnectState => {
+	private toEntity = (doc: ConnectStateDocument | null): ConnectState => {
 		return {
-			enrollment: doc.enrollment
+			enrollment: doc?.enrollment
 				? {
 						connectUrl: doc.enrollment.connectUrl,
 						agentId: doc.enrollment.agentId,
@@ -20,9 +20,9 @@ export class ConnectRepositoryMongo implements IConnectRepository {
 		await ConnectStateModel.updateOne({ singleton: true }, { $set: { enrollment } }, { upsert: true, runValidators: true });
 	};
 
-	get = async (): Promise<ConnectState | null> => {
+	get = async (): Promise<ConnectState> => {
 		const doc = await ConnectStateModel.findOne({ singleton: true }).lean<ConnectStateDocument>();
-		return doc ? this.toEntity(doc) : null;
+		return this.toEntity(doc);
 	};
 
 	setSecrets = async (secrets: { token?: string }): Promise<void> => {
