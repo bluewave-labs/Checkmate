@@ -188,29 +188,44 @@ export class ConnectBackup {
 				enrollment.token
 			);
 
-			this.assertTransferUrl(ticket.uploadUrl);
-			const upload = await fetch(ticket.uploadUrl, {
-				method: "PUT",
-				headers: { "content-length": String(sizeBytes), "content-type": "application/octet-stream" },
-				body: Readable.toWeb(fs.createReadStream(archive)) as unknown as BodyInit,
-				duplex: "half",
-				redirect: "error",
-				signal: AbortSignal.timeout(TRANSFER_TIMEOUT_MS),
-			} as RequestInit);
-			if (!upload.ok) throw new Error(`blob upload failed (${upload.status})`);
+			try {
+				this.assertTransferUrl(ticket.uploadUrl);
+				const upload = await fetch(ticket.uploadUrl, {
+					method: "PUT",
+					headers: { "content-length": String(sizeBytes), "content-type": "application/octet-stream" },
+					body: Readable.toWeb(fs.createReadStream(archive)) as unknown as BodyInit,
+					duplex: "half",
+					redirect: "error",
+					signal: AbortSignal.timeout(TRANSFER_TIMEOUT_MS),
+				} as RequestInit);
+				if (!upload.ok) throw new Error(`blob upload failed (${upload.status})`);
 
-			const done = await postJson<{ status: string }>(`${api}/api/agent/backups/${ticket.backupId}/complete`, {}, enrollment.token);
-			this.options.log.info({ backupId: ticket.backupId, status: done.status }, "Connect backup stored");
-			return {
-				ok: true,
-				at: new Date().toISOString(),
-				kind,
-				sizeBytes,
-				sha256,
-				backupId: ticket.backupId,
-				durationMs: Date.now() - startedAt,
-			};
+				const done = await postJson<{ status: string }>(`${api}/api/agent/backups/${ticket.backupId}/complete`, {}, enrollment.token);
+				this.options.log.info({ backupId: ticket.backupId, status: done.status }, "Connect backup stored");
+				return {
+					ok: true,
+					at: new Date().toISOString(),
+					kind,
+					sizeBytes,
+					sha256,
+					backupId: ticket.backupId,
+					durationMs: Date.now() - startedAt,
+				};
+			} catch (error) {
+				await this.releaseUpload(api, ticket.backupId, enrollment.token);
+				throw error;
+			}
 		});
+
+	// Best effort: without this the slot frees itself once the service's stale
+	// sweep runs, so a failure here must not replace the original error.
+	private releaseUpload = async (api: string, backupId: string, token: string) => {
+		try {
+			await postJson(`${api}/api/agent/backups/${backupId}/abandon`, {}, token);
+		} catch (error) {
+			this.options.log.warn({ err: error, backupId }, "Connect could not release the failed upload");
+		}
+	};
 
 	private dumpEncrypted = async (archive: string, configFile: string, recoveryKeyHex: string, kind: ConnectBackupKind) => {
 		const args = buildDumpArgs(configFile, await this.options.getDbName(), kind);

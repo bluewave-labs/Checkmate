@@ -1,4 +1,7 @@
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import type { Mongoose } from "mongoose";
 import { ConnectService, DEFAULT_CONNECT_HOSTS, isConnectHostAllowed } from "../../../src/domain/connect/connect.service.ts";
 import { ConnectHeartbeat } from "../../../src/domain/connect/connect.heartbeat.ts";
@@ -158,6 +161,65 @@ describe("Connect", () => {
 			options.mongodumpBin = process.execPath;
 			await backup.checkTools();
 			expect(backup.status().missingTools).toEqual([]);
+		});
+	});
+
+	describe("failed uploads", () => {
+		const API = "https://connect.checkmate.so";
+		const enrollment = { connectUrl: "wss://relay.checkmate.so/api/tunnel", agentId: "inst-1", token: TOKEN, apiUrl: API };
+		let dir: string;
+
+		const runBackup = async (uploadUrl: string, respond: (url: string) => Response) => {
+			dir = fs.mkdtempSync(path.join(os.tmpdir(), "connect-test-"));
+			const dump = path.join(dir, "mongodump");
+			fs.writeFileSync(dump, "#!/bin/sh\necho archive\n", { mode: 0o755 });
+			const calls: string[] = [];
+			jest.spyOn(globalThis, "fetch").mockImplementation((async (input: string) => {
+				const url = String(input);
+				calls.push(url);
+				if (url.endsWith("/request-upload")) return Response.json({ uploadUrl, backupId: "backup-1" });
+				return respond(url);
+			}) as unknown as typeof fetch);
+			const backup = new ConnectBackup({
+				mongoUrl: "mongodb://localhost/uptime_db",
+				getDbName: async () => "uptime_db",
+				mongodumpBin: dump,
+				mongorestoreBin: dump,
+				apiBaseOverride: null,
+				log: createMockLogger() as unknown as ILogger,
+			});
+			backup.start({ enrollment, recoveryKeyHex: "00".repeat(32), kind: "config" });
+			while (backup.status().running) await new Promise((resolve) => setTimeout(resolve, 10));
+			fs.rmSync(dir, { recursive: true, force: true });
+			return { calls, result: backup.status().lastResult };
+		};
+		const BLOB = "https://store.private.blob.vercel-storage.com/x";
+		const ABANDON = `${API}/api/agent/backups/backup-1/abandon`;
+
+		it("releases the slot when the upload is refused", async () => {
+			const { calls, result } = await runBackup(BLOB, (url) => (url === BLOB ? new Response("", { status: 500 }) : Response.json({})));
+			expect(calls).toContain(ABANDON);
+			expect(result).toMatchObject({ ok: false, error: "blob upload failed (500)" });
+		});
+
+		it("releases the slot when the storage URL is not trusted", async () => {
+			const { calls, result } = await runBackup("https://evil.example/x", () => Response.json({}));
+			expect(calls).toEqual([`${API}/api/agent/backups/request-upload`, ABANDON]);
+			expect(result).toMatchObject({ ok: false, error: "control plane returned an unexpected storage URL" });
+		});
+
+		it("keeps the original error when the release fails", async () => {
+			const { result } = await runBackup(BLOB, (url) => {
+				if (url === ABANDON) throw new Error("network down");
+				return new Response("", { status: 503 });
+			});
+			expect(result).toMatchObject({ ok: false, error: "blob upload failed (503)" });
+		});
+
+		it("does not release a successful upload", async () => {
+			const { calls, result } = await runBackup(BLOB, (url) => (url === BLOB ? new Response("") : Response.json({ status: "verified" })));
+			expect(calls).not.toContain(ABANDON);
+			expect(result).toMatchObject({ ok: true });
 		});
 	});
 
