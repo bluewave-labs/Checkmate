@@ -70,6 +70,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		teamsRepository,
 		maintenanceWindowsRepository,
 		proxiesRepository,
+		connectRepository,
 		settingsRepository,
 	} = shared;
 
@@ -174,13 +175,13 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		telemetryEnabled: envSettings.telemetryEnabled,
 	});
 
-	const secretsRotationService = new SecretsRotationService(monitorsRepository, encryptionService, logger);
+	const secretsRotationService = new SecretsRotationService(monitorsRepository, connectRepository, encryptionService, logger);
 	const log = logger.child({ service: "WorkerServices" }); // this function's own lines; services above get the root logger
 	try {
 		const result = await secretsRotationService.run();
 		log.debug({ ...result }, "Secrets rotation run successfully");
 	} catch (error: unknown) {
-		log.warn({ err: error }, "Could not rotate Docker TLS secrets");
+		log.warn({ err: error }, "Could not rotate encrypted secrets");
 	}
 
 	return { worker, networkService: providerRegistry, bufferService, statusService, egressService };

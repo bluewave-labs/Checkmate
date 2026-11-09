@@ -2,7 +2,7 @@ import ConnectStateModel, { type ConnectStateDocument } from "@/domain/connect/c
 import { IConnectRepository } from "@/domain/connect/connect.repository.interface.js";
 import type { ConnectEnrollment, ConnectState } from "@/domain/connect/connect.type.js";
 
-export class ConnectRepositoryMongo implements IConnectRepository {
+class MongoConnectRepository implements IConnectRepository {
 	private toEntity = (doc: ConnectStateDocument | null): ConnectState => {
 		return {
 			enrollment: doc?.enrollment
@@ -34,3 +34,5 @@ export class ConnectRepositoryMongo implements IConnectRepository {
 		await ConnectStateModel.updateOne({ singleton: true }, { $set: { enrollment: null } });
 	};
 }
+
+export default MongoConnectRepository;
