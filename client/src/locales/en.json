@@ -1789,6 +1789,7 @@
 						"keyTitle": "Recovery key",
 						"keyWarning": "Store this key somewhere safe now. It is shown only once, it never leaves this server, and without it no cloud backup can be restored.",
 						"keyCopy": "Copy key",
+						"keyCopied": "Copied",
 						"keyDone": "I have stored the key",
 						"toolsMissing": "Cloud backups need mongodump and mongorestore, which weren't found on this server.",
 						"toolsMac": "On macOS, run: brew install mongodb/brew/mongodb-database-tools",

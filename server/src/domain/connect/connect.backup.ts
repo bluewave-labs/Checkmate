@@ -24,6 +24,9 @@ const CONTROL_PLANE_TIMEOUT_MS = 15_000;
 const TRANSFER_TIMEOUT_MS = 60 * 60 * 1000;
 const MAX_BACKUP_BYTES = 50 * 1024 ** 3;
 const BLOB_HOST_SUFFIX = ".blob.vercel-storage.com";
+// Vercel Blob issues presigned uploads on its API, and downloads on the store host.
+const BLOB_API_HOST = "vercel.com";
+const BLOB_API_PATH = "/api/blob";
 
 // Config backups skip high-churn operational data so frequent schedules stay
 // small; monitors, users, teams, settings and status pages are kept.
@@ -51,7 +54,9 @@ export const isAllowedTransferUrl = (raw: string, operatorOverride: boolean) => 
 	try {
 		const url = new URL(raw);
 		if (operatorOverride) return url.protocol === "https:" || url.protocol === "http:";
-		return url.protocol === "https:" && url.hostname.endsWith(BLOB_HOST_SUFFIX);
+		if (url.protocol !== "https:") return false;
+		if (url.hostname.endsWith(BLOB_HOST_SUFFIX)) return true;
+		return url.hostname === BLOB_API_HOST && (url.pathname === BLOB_API_PATH || url.pathname.startsWith(`${BLOB_API_PATH}/`));
 	} catch {
 		return false;
 	}

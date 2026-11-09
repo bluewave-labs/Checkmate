@@ -9,6 +9,7 @@ import Link from "@mui/material/Link";
 import { ConfigBox } from "@/Components/design-elements";
 import {
 	Button,
+	Dialog,
 	Select,
 	SwitchComponent as Switch,
 	TextField,
@@ -297,6 +298,7 @@ const BackupSection = ({
 	const formatDate = useFormatDate();
 	const canManage = useIsSuperAdmin();
 	const [recoveryKey, setRecoveryKey] = useState<string | null>(null);
+	const [keyCopied, setKeyCopied] = useState(false);
 	const [confirmRestoreId, setConfirmRestoreId] = useState<string | null>(null);
 
 	const { data: backupStatus, refetch: refetchBackupStatus } = useGet<BackupStatus>(
@@ -333,6 +335,23 @@ const BackupSection = ({
 			setRecoveryKey(result.data.recoveryKey);
 			await refetchStatus();
 		}
+	};
+
+	// The clipboard API only exists on secure pages, and self-hosted installs are
+	// often plain http. The key stays selectable in the field either way.
+	const handleCopyKey = async () => {
+		if (!recoveryKey || !navigator.clipboard) return;
+		try {
+			await navigator.clipboard.writeText(recoveryKey);
+			setKeyCopied(true);
+		} catch {
+			setKeyCopied(false);
+		}
+	};
+
+	const handleKeyStored = () => {
+		setRecoveryKey(null);
+		setKeyCopied(false);
 	};
 
 	const handleRun = async (kind: "full" | "config") => {
@@ -401,35 +420,6 @@ const BackupSection = ({
 							>
 								{t("pages.settings.form.connect.backup.generateKey")}
 							</Button>
-						)}
-						{recoveryKey && (
-							<>
-								<Typography color="error">
-									{t("pages.settings.form.connect.backup.keyWarning")}
-								</Typography>
-								<TextField
-									fullWidth
-									value={recoveryKey}
-									slotProps={{ input: { readOnly: true } }}
-								/>
-								<Stack
-									direction="row"
-									gap={theme.spacing(LAYOUT.SM)}
-								>
-									<Button
-										variant="outlined"
-										onClick={() => void navigator.clipboard.writeText(recoveryKey)}
-									>
-										{t("pages.settings.form.connect.backup.keyCopy")}
-									</Button>
-									<Button
-										variant="contained"
-										onClick={() => setRecoveryKey(null)}
-									>
-										{t("pages.settings.form.connect.backup.keyDone")}
-									</Button>
-								</Stack>
-							</>
 						)}
 						{backupsUsable && (
 							<>
@@ -614,6 +604,35 @@ const BackupSection = ({
 					}
 				/>
 			)}
+			{/* Dialog passes a click event from its left button and nothing for Escape.
+			    Only the click copies, and nothing dismisses this until the key is stored. */}
+			<Dialog
+				open={recoveryKey !== null}
+				title={t("pages.settings.form.connect.backup.keyTitle")}
+				maxWidth="sm"
+				fullWidth
+				cancelText={
+					keyCopied
+						? t("pages.settings.form.connect.backup.keyCopied")
+						: t("pages.settings.form.connect.backup.keyCopy")
+				}
+				onCancel={(event) => {
+					if (event) void handleCopyKey();
+				}}
+				confirmText={t("pages.settings.form.connect.backup.keyDone")}
+				onConfirm={handleKeyStored}
+			>
+				<Stack gap={theme.spacing(LAYOUT.SM)}>
+					<Typography color="error">
+						{t("pages.settings.form.connect.backup.keyWarning")}
+					</Typography>
+					<TextField
+						fullWidth
+						value={recoveryKey ?? ""}
+						slotProps={{ input: { readOnly: true } }}
+					/>
+				</Stack>
+			</Dialog>
 		</>
 	);
 };

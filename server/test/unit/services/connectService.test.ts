@@ -162,6 +162,20 @@ describe("Connect", () => {
 	});
 
 	describe("isAllowedTransferUrl", () => {
+		it("accepts Vercel Blob's presigned upload endpoint", () => {
+			expect(isAllowedTransferUrl("https://vercel.com/api/blob/?pathname=backups%2Finst-1%2Fid.cmkb", false)).toBe(true);
+		});
+
+		it.each([
+			"http://vercel.com/api/blob/?pathname=x",
+			"https://vercel.com/api/blobs/x",
+			"https://vercel.com/account",
+			"https://vercel.com.evil.example/api/blob/",
+			"https://evil.example/api/blob/",
+		])("refuses %s", (raw) => {
+			expect(isAllowedTransferUrl(raw, false)).toBe(false);
+		});
+
 		it("accepts Vercel Blob storage over HTTPS", () => {
 			expect(isAllowedTransferUrl("https://store1.private.blob.vercel-storage.com/x?sig=1", false)).toBe(true);
 		});
