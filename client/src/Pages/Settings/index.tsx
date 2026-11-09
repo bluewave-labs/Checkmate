@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import DummyChart from "@/Pages/Settings/DummyChart";
 import { HeartbeatKeyBox } from "@/Pages/Settings/components/HeartbeatKeyBox";
+import { ConnectSettings } from "@/Pages/Settings/components/Connect/ConnectSettings";
 import { useGet, usePatch, usePost, useLazyGet } from "@/Hooks/UseApi";
 import { useToast } from "@/Hooks/UseToast";
 import { useSettingsForm } from "@/Hooks/useSettingsForm";
@@ -66,6 +67,7 @@ const SETTINGS_TABS = [
 	{ key: "email", labelKey: "pages.settings.tabs.email", adminOnly: true },
 	{ key: "integrations", labelKey: "pages.settings.tabs.integrations", adminOnly: true },
 	{ key: "data", labelKey: "pages.settings.tabs.data", adminOnly: true },
+	{ key: "connect", labelKey: "pages.settings.tabs.connect", adminOnly: true },
 ] as const;
 
 type SettingsTabKey = (typeof SETTINGS_TABS)[number]["key"];
@@ -1110,6 +1112,8 @@ export const SettingsPage = () => {
 						)}
 					</Stack>
 				)}
+
+				{activeTab === "connect" && <ConnectSettings />}
 
 				{/* Clear Stats Confirmation Dialog */}
 				<Dialog

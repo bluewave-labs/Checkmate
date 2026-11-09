@@ -3,6 +3,7 @@ import { DbTypes, DeploymentTypes, LogLevels, QueueModes } from "@/domain/app-se
 import { booleanCoercion } from "@/api/validation/shared.js";
 import { ILogger } from "@/utils/logger/logger.js";
 import { DEFAULT_TELEMETRY_URL } from "@/domain/telemetry/telemetry.type.js";
+import { DEFAULT_CONNECT_HOSTS } from "@/domain/connect/connect.type.js";
 
 // Padded standard base64 of exactly 32 bytes, as produced by `openssl rand -base64 32`
 const ENCRYPTION_KEY_ENTRY = /^[A-Za-z0-9+/]{43}=$/;
@@ -67,6 +68,7 @@ const envSchema = z.object({
 
 	// Optional
 	ORIGIN: z.string().optional(),
+	CONNECT_ALLOWED_HOSTS: z.string().default(DEFAULT_CONNECT_HOSTS.join(",")),
 
 	// Feature flags
 	STATUS_PAGE_THEMES_ENABLED: booleanCoercion.default(true),

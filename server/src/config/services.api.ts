@@ -11,6 +11,7 @@ import { EgressStateService, IEgressStateService } from "@/domain/egress/egress-
 import { HeartbeatService, IHeartbeatService } from "@/domain/heartbeat/heartbeat.service.js";
 import { TeamService, ITeamService } from "@/domain/teams/team.service.js";
 import { AppVersionService, IAppVersionService } from "@/domain/app-version/app-version.service.js";
+import { ConnectService, IConnectService } from "@/domain/connect/connect.service.js";
 import { SharedServices } from "@/config/services.shared.js";
 
 // Third-party
@@ -33,6 +34,7 @@ export interface ApiServices extends SharedServices {
 	heartbeatService: IHeartbeatService;
 	teamService: ITeamService;
 	appVersionService: IAppVersionService;
+	connectService: IConnectService;
 }
 
 export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): ApiServices => {
@@ -59,6 +61,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		jobsRepository,
 		proxiesRepository,
 		queueWorkersRepository,
+		connectRepository,
 		encryptionService,
 	} = shared;
 
@@ -127,6 +130,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 	});
 	const teamService = new TeamService({ logger, teamsRepository, encryptionService });
 	const appVersionService = new AppVersionService(got, logger);
+	const connectService = new ConnectService(connectRepository, encryptionService, settingsService, logger);
 	return {
 		...shared,
 		worker: jobScheduler,
@@ -142,5 +146,6 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		heartbeatService,
 		teamService,
 		appVersionService,
+		connectService,
 	};
 };
