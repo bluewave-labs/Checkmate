@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeAll, afterAll, beforeEach } from "@jest/globals";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { ConnectRepositoryMongo } from "../../src/domain/connect/connect.repository.mongo.ts";
+import MongoConnectRepository from "../../src/domain/connect/connect.repository.mongo.ts";
 import { ConnectStateModel } from "../../src/domain/connect/connect.model.ts";
 import { CONNECT_STATE_COLLECTION, type ConnectEnrollment } from "../../src/domain/connect/connect.type.ts";
 
@@ -30,8 +30,8 @@ const enrollment = (overrides: Partial<ConnectEnrollment> = {}): ConnectEnrollme
 	...overrides,
 });
 
-describe("ConnectRepositoryMongo", () => {
-	const repo = new ConnectRepositoryMongo();
+describe("MongoConnectRepository", () => {
+	const repo = new MongoConnectRepository();
 
 	describe("get", () => {
 		it("returns the empty state when nothing has been stored", async () => {
