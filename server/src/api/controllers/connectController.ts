@@ -32,6 +32,7 @@ export const connectBackupImportKeyBodyValidation = z.object({
 		.trim()
 		.regex(/^[a-fA-F0-9]{64}$/, "Recovery key must be 64 hexadecimal characters")
 		.transform((key) => key.toLowerCase()),
+	replaceExisting: z.boolean().optional(),
 });
 
 export const connectBackupRestoreBodyValidation = z.object({
@@ -108,8 +109,8 @@ class ConnectController implements IConnectController {
 	};
 
 	importBackupRecoveryKey: Handler = async (req, res) => {
-		const { recoveryKey } = connectBackupImportKeyBodyValidation.parse(req.body);
-		const result = await this.connectService.importRecoveryKey(recoveryKey);
+		const { recoveryKey, replaceExisting } = connectBackupImportKeyBodyValidation.parse(req.body);
+		const result = await this.connectService.importRecoveryKey(recoveryKey, { replaceExisting });
 		respond(res, result, "Recovery key saved", failureReason(result, "Recovery key import failed"));
 	};
 

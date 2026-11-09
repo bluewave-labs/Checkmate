@@ -45,9 +45,20 @@ type ConnectStatus = {
 
 type EnrollBody = { connectUrl: string; agentId: string; token: string; apiUrl?: string };
 
+type BackupProgress = {
+	operation: "backup" | "restore" | "verify";
+	stage: "dumping" | "uploading" | "saving" | "downloading" | "decrypting" | "restoring";
+	percent: number | null;
+	bytes: number | null;
+	attempt: number | null;
+	attempts: number | null;
+};
+
 type BackupStatus = {
 	running: boolean;
 	restoring: boolean;
+	verifying?: boolean;
+	progress?: BackupProgress | null;
 	lastResult: {
 		ok: boolean;
 		at: string;
@@ -287,6 +298,8 @@ type BackupSectionProps = {
 };
 
 const INTERVAL_OPTIONS = [6, 12, 24, 72, 168];
+const IDLE_POLL_MS = 5000;
+const BUSY_POLL_MS = 1500;
 
 const BackupSection = ({
 	recoveryKeySet,
@@ -305,10 +318,17 @@ const BackupSection = ({
 	const keyInputValid = /^[a-fA-F0-9]{64}$/.test(keyInput.trim());
 	const [confirmRestoreId, setConfirmRestoreId] = useState<string | null>(null);
 
+	const { post: postImportKey, loading: importingKey } = usePost<
+		{ recoveryKey: string; replaceExisting: boolean },
+		ConnectStatus
+	>();
 	const { data: backupStatus, refetch: refetchBackupStatus } = useGet<BackupStatus>(
 		"/connect/backup/status",
 		{},
-		{ refreshInterval: 5000 }
+		{
+			refreshInterval: (latest) =>
+				importingKey || latest?.data?.progress ? BUSY_POLL_MS : IDLE_POLL_MS,
+		}
 	);
 	const { data: backupList } = useGet<{ backups: BackupListEntry[] }>(
 		"/connect/backup/list",
@@ -318,10 +338,6 @@ const BackupSection = ({
 	const { post: postKey, loading: generatingKey } = usePost<
 		{ discardExisting: boolean },
 		{ recoveryKey: string }
-	>();
-	const { post: postImportKey, loading: importingKey } = usePost<
-		{ recoveryKey: string },
-		ConnectStatus
 	>();
 	const { post: postRun, loading: startingBackup } = usePost<{ kind: string }, unknown>();
 	const { post: postRestore, loading: startingRestore } = usePost<
@@ -333,7 +349,11 @@ const BackupSection = ({
 		ConnectStatus
 	>();
 
-	const busy = backupStatus?.running || backupStatus?.restoring;
+	const busy =
+		backupStatus?.running ||
+		backupStatus?.restoring ||
+		backupStatus?.verifying ||
+		importingKey;
 	const toolsReady = (backupStatus?.missingTools?.length ?? 0) === 0;
 	const backupsUsable = recoveryKeySet && toolsReady;
 
@@ -374,6 +394,7 @@ const BackupSection = ({
 	const handleImportKey = async () => {
 		const result = await postImportKey("/connect/backup/recovery-key/import", {
 			recoveryKey: keyInput.trim(),
+			replaceExisting: recoveryKeySet,
 		});
 		if (result?.success) {
 			handleCancelImport();
@@ -415,6 +436,69 @@ const BackupSection = ({
 	const backups = backupList?.backups ?? [];
 	const hasCloudBackups = backups.length > 0;
 
+	const progressText = (() => {
+		const progress = backupStatus?.progress;
+		if (!progress) {
+			return importingKey
+				? t("pages.settings.form.connect.backup.progress.checking")
+				: null;
+		}
+		const { operation, stage, percent, bytes, attempt, attempts } = progress;
+		const text = t(`pages.settings.form.connect.backup.progress.${operation}.${stage}`, {
+			attempt,
+			attempts,
+		});
+		if (percent !== null) return `${text} (${percent}%)`;
+		return bytes ? `${text} (${formatMb(bytes)})` : text;
+	})();
+
+	const keyImportForm = (
+		<Stack
+			gap={theme.spacing(LAYOUT.SM)}
+			width="100%"
+		>
+			<Typography>
+				{t(
+					recoveryKeySet
+						? "pages.settings.form.connect.backup.replaceKeyHelp"
+						: "pages.settings.form.connect.backup.importKeyHelp"
+				)}
+			</Typography>
+			{recoveryKeySet && (
+				<Typography color="error">
+					{t("pages.settings.form.connect.backup.replaceKeyWarning")}
+				</Typography>
+			)}
+			<TextField
+				fullWidth
+				type="password"
+				autoComplete="off"
+				value={keyInput}
+				onChange={(e) => setKeyInput(e.target.value)}
+				placeholder={t("pages.settings.form.connect.backup.importKeyPlaceholder")}
+			/>
+			<Stack
+				direction="row"
+				gap={theme.spacing(LAYOUT.SM)}
+			>
+				<Button
+					variant="contained"
+					disabled={!keyInputValid || busy}
+					onClick={handleImportKey}
+				>
+					{t("pages.settings.form.connect.backup.importKeyConfirm")}
+				</Button>
+				<Button
+					variant="outlined"
+					disabled={importingKey}
+					onClick={handleCancelImport}
+				>
+					{t("pages.settings.form.connect.backup.importKeyCancel")}
+				</Button>
+			</Stack>
+		</Stack>
+	);
+
 	return (
 		<>
 			<ConfigBox
@@ -445,48 +529,13 @@ const BackupSection = ({
 								</Typography>
 							</>
 						)}
+						{progressText && <Typography role="status">{progressText}</Typography>}
 						{!recoveryKeySet &&
 							!recoveryKey &&
 							canManage &&
 							toolsReady &&
 							(showKeyImport ? (
-								<Stack
-									gap={theme.spacing(LAYOUT.SM)}
-									width="100%"
-								>
-									<Typography>
-										{t("pages.settings.form.connect.backup.importKeyHelp")}
-									</Typography>
-									<TextField
-										fullWidth
-										type="password"
-										autoComplete="off"
-										value={keyInput}
-										onChange={(e) => setKeyInput(e.target.value)}
-										placeholder={t(
-											"pages.settings.form.connect.backup.importKeyPlaceholder"
-										)}
-									/>
-									<Stack
-										direction="row"
-										gap={theme.spacing(LAYOUT.SM)}
-									>
-										<Button
-											variant="contained"
-											disabled={!keyInputValid || importingKey}
-											onClick={handleImportKey}
-										>
-											{t("pages.settings.form.connect.backup.importKeyConfirm")}
-										</Button>
-										<Button
-											variant="outlined"
-											disabled={importingKey}
-											onClick={handleCancelImport}
-										>
-											{t("pages.settings.form.connect.backup.importKeyCancel")}
-										</Button>
-									</Stack>
-								</Stack>
+								keyImportForm
 							) : (
 								<Stack gap={theme.spacing(LAYOUT.SM)}>
 									{hasCloudBackups && (
@@ -556,16 +605,19 @@ const BackupSection = ({
 										{t("pages.settings.form.connect.backup.runConfig")}
 									</Button>
 								</Stack>
-								{backupStatus?.running && (
-									<Typography>
-										{t("pages.settings.form.connect.backup.running")}
-									</Typography>
-								)}
-								{backupStatus?.restoring && (
-									<Typography>
-										{t("pages.settings.form.connect.backup.restoring")}
-									</Typography>
-								)}
+								{canManage &&
+									hasCloudBackups &&
+									(showKeyImport ? (
+										keyImportForm
+									) : (
+										<Button
+											variant="text"
+											disabled={busy}
+											onClick={() => setShowKeyImport(true)}
+										>
+											{t("pages.settings.form.connect.backup.replaceKey")}
+										</Button>
+									))}
 								{last && (
 									<Typography color={last.ok ? undefined : "error"}>
 										{t("pages.settings.form.connect.backup.lastBackup")} (

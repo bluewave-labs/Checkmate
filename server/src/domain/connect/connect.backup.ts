@@ -97,6 +97,17 @@ type BackupResult = Record<string, unknown> & { ok: boolean; at: string };
 
 export type RecoveryKeyCheck = "ok" | "wrong-key" | "no-backups" | "busy";
 
+export type ConnectProgress = {
+	operation: "backup" | "restore" | "verify";
+	stage: "dumping" | "uploading" | "saving" | "downloading" | "decrypting" | "restoring";
+	percent: number | null;
+	bytes: number | null;
+	attempt: number | null;
+	attempts: number | null;
+};
+
+const toPercent = (done: number, total: number) => Math.min(100, Math.floor((done / total) * 100));
+
 class WrongRecoveryKeyError extends Error {
 	constructor() {
 		super("decryption failed: wrong recovery key or corrupted archive");
@@ -138,14 +149,29 @@ export class ConnectBackup {
 	private lastResult: BackupResult | null = null;
 	private lastRestore: BackupResult | null = null;
 	private missingTools: string[] = [];
+	private progress: ConnectProgress | null = null;
 
 	constructor(private options: BackupOptions) {}
 
 	private isBusy = () => this.running || this.restoring || this.verifying;
 
+	private beginProgress = (operation: ConnectProgress["operation"], stage: ConnectProgress["stage"]) => {
+		this.progress = { operation, stage, percent: null, bytes: null, attempt: null, attempts: null };
+	};
+
+	private setStage = (stage: ConnectProgress["stage"]) => {
+		if (this.progress) this.progress = { ...this.progress, stage, percent: null, bytes: null };
+	};
+
+	private updateProgress = (update: Partial<Omit<ConnectProgress, "operation" | "stage">>) => {
+		if (this.progress) this.progress = { ...this.progress, ...update };
+	};
+
 	status = () => ({
 		running: this.running,
 		restoring: this.restoring,
+		verifying: this.verifying,
+		progress: this.progress,
 		lastResult: this.lastResult,
 		lastRestore: this.lastRestore,
 		missingTools: this.missingTools,
@@ -192,6 +218,7 @@ export class ConnectBackup {
 			return { started: false, error: "a backup or restore is already running" };
 		}
 		this.running = true;
+		this.beginProgress("backup", "dumping");
 		this.run(enrollment, recoveryKeyHex, kind)
 			.then((result) => {
 				this.lastResult = result;
@@ -202,6 +229,7 @@ export class ConnectBackup {
 			})
 			.finally(() => {
 				this.running = false;
+				this.progress = null;
 			});
 		return { started: true };
 	};
@@ -222,16 +250,18 @@ export class ConnectBackup {
 
 			try {
 				this.assertTransferUrl(ticket.uploadUrl);
+				this.setStage("uploading");
 				const upload = await fetch(ticket.uploadUrl, {
 					method: "PUT",
 					headers: { "content-length": String(sizeBytes), "content-type": "application/octet-stream" },
-					body: Readable.toWeb(fs.createReadStream(archive)) as unknown as BodyInit,
+					body: Readable.toWeb(Readable.from(this.meteredRead(archive, sizeBytes), { objectMode: false })) as unknown as BodyInit,
 					duplex: "half",
 					redirect: "error",
 					signal: AbortSignal.timeout(TRANSFER_TIMEOUT_MS),
 				} as RequestInit);
 				if (!upload.ok) throw new Error(`blob upload failed (${upload.status})`);
 
+				this.setStage("saving");
 				const done = await postJson<{ status: string }>(`${api}/api/agent/backups/${ticket.backupId}/complete`, {}, enrollment.token);
 				this.options.log.info({ backupId: ticket.backupId, status: done.status }, "Connect backup stored");
 				return {
@@ -248,6 +278,15 @@ export class ConnectBackup {
 				throw error;
 			}
 		});
+
+	private async *meteredRead(file: string, totalBytes: number) {
+		let sent = 0;
+		for await (const chunk of fs.createReadStream(file)) {
+			sent += (chunk as Buffer).length;
+			this.updateProgress({ percent: toPercent(sent, totalBytes) });
+			yield chunk as Buffer;
+		}
+	}
 
 	// Best effort: without this the slot frees itself once the service's stale
 	// sweep runs, so a failure here must not replace the original error.
@@ -284,6 +323,7 @@ export class ConnectBackup {
 			cipher.on("data", (chunk: Buffer) => {
 				hash.update(chunk);
 				sizeBytes += chunk.length;
+				this.updateProgress({ bytes: sizeBytes });
 			});
 
 			// stdout can end before the process has exited.
@@ -325,6 +365,7 @@ export class ConnectBackup {
 			return { started: false, error: "a backup or restore is already running" };
 		}
 		this.restoring = true;
+		this.beginProgress("restore", "downloading");
 		this.restore(enrollment, recoveryKeyHex, backupId)
 			.then((result) => {
 				this.lastRestore = result;
@@ -335,34 +376,46 @@ export class ConnectBackup {
 			})
 			.finally(() => {
 				this.restoring = false;
+				this.progress = null;
 			});
 		return { started: true };
 	};
 
-	// Decrypts the smallest stored backup without touching the database. A key
-	// that passes here can restore this installation's backups.
+	// Decrypts stored backups, smallest first, without touching the database. A
+	// key passes as soon as one decrypts: after "I lost my key", backups made with
+	// the old and new keys can sit side by side.
 	verifyRecoveryKey = async ({ enrollment, recoveryKeyHex }: BackupRun): Promise<RecoveryKeyCheck> => {
 		if (this.isBusy()) return "busy";
 		this.verifying = true;
+		this.beginProgress("verify", "downloading");
 		try {
 			const { backups } = (await this.list(enrollment)) as { backups?: { id: string; sizeBytes: number }[] };
-			const smallest = [...(backups ?? [])].sort((a, b) => a.sizeBytes - b.sizeBytes)[0];
-			if (!smallest) return "no-backups";
-			await this.withWorkDir(async (dir) => {
-				const encrypted = await this.download(enrollment, smallest.id, dir);
-				await this.decryptFile(encrypted, path.join(dir, "verify.archive.gz"), recoveryKeyHex);
-			});
-			return "ok";
-		} catch (error) {
-			if (error instanceof WrongRecoveryKeyError) return "wrong-key";
-			throw error;
+			const candidates = [...(backups ?? [])].sort((a, b) => a.sizeBytes - b.sizeBytes);
+			if (candidates.length === 0) return "no-backups";
+			for (const [index, candidate] of candidates.entries()) {
+				this.updateProgress({ attempt: index + 1, attempts: candidates.length });
+				try {
+					await this.withWorkDir(async (dir) => {
+						const encrypted = await this.download(enrollment, candidate.id, dir);
+						this.setStage("decrypting");
+						await this.decryptFile(encrypted, path.join(dir, "verify.archive.gz"), recoveryKeyHex);
+					});
+					return "ok";
+				} catch (error) {
+					if (!(error instanceof WrongRecoveryKeyError)) throw error;
+				}
+			}
+			return "wrong-key";
 		} finally {
 			this.verifying = false;
+			this.progress = null;
 		}
 	};
 
 	// Returns the path of the downloaded file once its size and checksum match.
 	private download = async (enrollment: ConnectEnrollment, backupId: string, dir: string) => {
+		this.setStage("downloading");
+		const reportProgress = this.updateProgress;
 		const encrypted = path.join(dir, "restore.cmkb");
 		const ticket = await postJson<{ downloadUrl: string; sha256: string; sizeBytes: number }>(
 			`${this.apiBase(enrollment)}/api/agent/backups/${backupId}/download`,
@@ -391,6 +444,7 @@ export class ConnectBackup {
 					return;
 				}
 				hash.update(chunk);
+				reportProgress({ percent: toPercent(received, ticket.sizeBytes) });
 				callback(null, chunk);
 			},
 		});
@@ -409,7 +463,9 @@ export class ConnectBackup {
 			const archive = path.join(dir, "restore.archive.gz");
 			const encrypted = await this.download(enrollment, backupId, dir);
 
+			this.setStage("decrypting");
 			await this.decryptFile(encrypted, archive, recoveryKeyHex);
+			this.setStage("restoring");
 			await this.mongorestore(configFile, archive, await this.options.getDbName());
 			this.options.log.info({ backupId }, "Connect restore completed");
 			return { ok: true, at: new Date().toISOString(), backupId, durationMs: Date.now() - startedAt };

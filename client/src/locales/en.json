@@ -1790,8 +1790,11 @@
 						"existingBackups": "This account already has cloud backups. Enter the recovery key from your original server to restore them.",
 						"lostKey": "I lost my key",
 						"lostKeyConfirm": "Click again to confirm",
-						"lostKeyWarning": "Your existing cloud backups can't be restored without the original key. A new key starts over, and your next backup replaces them.",
+						"lostKeyWarning": "Your existing cloud backups can't be restored without the original key. A new key starts over, and your next backup replaces them. If you find the original key before then, you can switch back to it.",
 						"importKeyHelp": "Paste the 64-character key from your original server. Checkmate decrypts one of your cloud backups to check the key before saving it.",
+						"replaceKey": "Use a different recovery key",
+						"replaceKeyHelp": "Paste the 64-character key you want to use instead. Checkmate decrypts your cloud backups to check the key, and keeps your current key if none of them open.",
+						"replaceKeyWarning": "Backups made with your current key can't be restored after you switch.",
 						"importKeyPlaceholder": "Recovery key",
 						"importKeyConfirm": "Use this key",
 						"importKeyCancel": "Cancel",
@@ -1806,8 +1809,23 @@
 						"toolsPath": "If they're installed elsewhere, set CONNECT_MONGODUMP_BIN and CONNECT_MONGORESTORE_BIN. This message clears within a minute of the tools being found.",
 						"runFull": "Back up now",
 						"runConfig": "Back up configuration only",
-						"running": "Backup in progress…",
-						"restoring": "Restore in progress…",
+						"progress": {
+							"checking": "Checking your key…",
+							"backup": {
+								"dumping": "Step 1 of 3: reading and encrypting your database",
+								"uploading": "Step 2 of 3: uploading the encrypted backup",
+								"saving": "Step 3 of 3: saving the backup to your account"
+							},
+							"restore": {
+								"downloading": "Step 1 of 3: downloading the backup",
+								"decrypting": "Step 2 of 3: decrypting the backup",
+								"restoring": "Step 3 of 3: restoring your database"
+							},
+							"verify": {
+								"downloading": "Checking your key: downloading backup {{attempt}} of {{attempts}}",
+								"decrypting": "Checking your key: decrypting backup {{attempt}} of {{attempts}}"
+							}
+						},
 						"lastBackup": "Last backup",
 						"lastRestore": "Last restore",
 						"failed": "failed",

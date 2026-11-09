@@ -48,7 +48,7 @@ export interface IConnectService {
 	getBackupStatus(): ConnectResult;
 	listBackups(): Promise<ConnectResult>;
 	createRecoveryKey(options?: { discardExisting?: boolean }): Promise<ConnectResult>;
-	importRecoveryKey(recoveryKey: string): Promise<ConnectResult>;
+	importRecoveryKey(recoveryKey: string, options?: { replaceExisting?: boolean }): Promise<ConnectResult>;
 	runBackup(kind?: ConnectBackupKind): ConnectResult;
 	restoreBackup(backupId: string): ConnectResult;
 	setBackupSchedule(input: { enabled: boolean; intervalHours?: number; kind?: ConnectBackupKind }): Promise<ConnectResult>;
@@ -282,14 +282,18 @@ export class ConnectService implements IConnectService {
 		}
 	};
 
-	// For a replacement server. The key is saved only after it decrypts a stored
-	// backup, because a saved key cannot be replaced from Settings.
-	importRecoveryKey = async (recoveryKey: string): Promise<ConnectResult> => {
+	// For a replacement server, or an operator who said they lost the key and
+	// then found it. The key is saved only after it decrypts a stored backup, so
+	// a typo can never replace a working key.
+	importRecoveryKey = async (recoveryKey: string, { replaceExisting = false }: { replaceExisting?: boolean } = {}): Promise<ConnectResult> => {
 		if (!this.stateLoaded) return this.stateUnavailable();
 		const { enrollment } = this.state;
 		if (!enrollment) return { status: 409, data: { error: "not enrolled" } };
-		if (this.state.recoveryKey || this.creatingRecoveryKey) {
+		if ((this.state.recoveryKey && !replaceExisting) || this.creatingRecoveryKey) {
 			return { status: 409, data: { error: "recovery key already set" } };
+		}
+		if (this.state.recoveryKey?.toLowerCase() === recoveryKey.toLowerCase()) {
+			return { status: 409, data: { error: "This is already your recovery key" } };
 		}
 		this.creatingRecoveryKey = true;
 		try {
@@ -351,8 +355,8 @@ export class ConnectService implements IConnectService {
 	sweepSchedule = async () => {
 		const { schedule, enrollment, recoveryKey } = this.state;
 		if (!schedule?.enabled || !enrollment || !recoveryKey) return;
-		const { running, restoring } = this.backups.status();
-		if (running || restoring) return;
+		const { running, restoring, verifying } = this.backups.status();
+		if (running || restoring || verifying) return;
 		const last = schedule.lastStartedAt ? Date.parse(schedule.lastStartedAt) : 0;
 		if (Date.now() - last < schedule.intervalHours * 3_600_000) return;
 
