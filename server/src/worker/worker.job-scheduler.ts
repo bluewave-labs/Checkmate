@@ -15,6 +15,7 @@ const HEARTBEAT_MS = WORKER_STALE_MS / 3; // Worker can miss two beats without b
 const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const TELEMETRY_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const TELEMETRY_FIRST_RUN_JITTER_MS = 60 * 60 * 1000;
+const CONNECT_HEARTBEAT_INTERVAL_MS = 60 * 1000;
 
 export class JobScheduler implements IJobScheduler {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -48,6 +49,7 @@ export class JobScheduler implements IJobScheduler {
 		"cleanup-orphaned": POLL_MS,
 		"cleanup-retention": POLL_MS,
 		telemetry: POLL_MS,
+		"connect-heartbeat": POLL_MS,
 	};
 
 	// Figures out when a job should first be run
@@ -89,6 +91,15 @@ export class JobScheduler implements IJobScheduler {
 		isActive: true,
 		nextScheduledAt: now + Math.floor(Math.random() * TELEMETRY_FIRST_RUN_JITTER_MS), // Avoid herd after a release
 		intervalMs: TELEMETRY_INTERVAL_MS,
+	});
+
+	protected toConnectHeartbeatJob = (now: number): JobSeed => ({
+		id: jobId("connect-heartbeat", null),
+		type: "connect-heartbeat",
+		refId: null,
+		isActive: true,
+		nextScheduledAt: now,
+		intervalMs: CONNECT_HEARTBEAT_INTERVAL_MS,
 	});
 
 	private toSummary = (job: Job): WorkerJobSummary => ({
@@ -223,6 +234,7 @@ export class JobScheduler implements IJobScheduler {
 	// Seed queue
 	protected reconcile = async () => {
 		const now = Date.now();
+		await this.jobsRepository.upsertJob(this.toConnectHeartbeatJob(now));
 		const monitors = await this.monitorsRepository.findAllForScheduling();
 		const heartbeatIds: string[] = [];
 		for (const monitor of monitors) {
