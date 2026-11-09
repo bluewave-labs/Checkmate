@@ -40,11 +40,32 @@ export const buildDumpArgs = (configFile: string, dbName: string, kind: ConnectB
 	return [`--config=${configFile}`, "--archive", "--gzip", `--db=${dbName}`, ...excluded.map((name) => `--excludeCollection=${name}`)];
 };
 
-export const buildRestoreArgs = (configFile: string, archiveFile: string) => [
+const RESTORED_NOTHING = /(^|\s)0 document\(s\) restored successfully/;
+
+// A database in the URI makes mongorestore keep only that name from the archive,
+// which restores nothing once the name differs. Credentials in such a URI
+// authenticate against that database, so the name moves to authSource.
+export const restoreConnectionUri = (mongoUrl: string) => {
+	const match = mongoUrl.match(/^(mongodb(?:\+srv)?:\/\/[^/?]*)(?:\/([^?]*))?(?:\?(.*))?$/);
+	if (!match) return mongoUrl;
+	const [, base, database, query] = match;
+	if (!base || !database) return mongoUrl;
+	const params = query ? query.split("&") : [];
+	if (base.includes("@") && !params.some((param) => param.toLowerCase().startsWith("authsource="))) {
+		params.push(`authSource=${database}`);
+	}
+	return params.length > 0 ? `${base}/?${params.join("&")}` : `${base}/`;
+};
+
+export const buildRestoreArgs = (configFile: string, archiveFile: string, dbName: string) => [
 	`--config=${configFile}`,
 	`--archive=${archiveFile}`,
 	"--gzip",
 	"--drop",
+	// A backup holds the database name it was taken from. Without this mapping
+	// mongorestore writes there, whatever database Checkmate is configured to use.
+	"--nsFrom=$db$.$coll$",
+	`--nsTo=${dbName}.$coll$`,
 ];
 
 // Transfer URLs come from the control plane, which must not be able to point
@@ -144,11 +165,11 @@ export class ConnectBackup {
 
 	// Runs in a private temp directory: the database URI goes in a config file
 	// there because command-line arguments are visible to the whole system.
-	private withWorkDir = async <T>(work: (dir: string, configFile: string) => Promise<T>) => {
+	private withWorkDir = async <T>(work: (dir: string, configFile: string) => Promise<T>, mongoUrl = this.options.mongoUrl) => {
 		const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "checkmate-connect-"));
 		try {
 			const configFile = path.join(dir, "mongo.yaml");
-			await fs.promises.writeFile(configFile, `uri: ${JSON.stringify(this.options.mongoUrl)}\n`, { mode: 0o600 });
+			await fs.promises.writeFile(configFile, `uri: ${JSON.stringify(mongoUrl)}\n`, { mode: 0o600 });
 			return await work(dir, configFile);
 		} finally {
 			await fs.promises.rm(dir, { recursive: true, force: true });
@@ -351,10 +372,10 @@ export class ConnectBackup {
 			}
 
 			await this.decryptFile(encrypted, archive, recoveryKeyHex);
-			await this.mongorestore(configFile, archive);
+			await this.mongorestore(configFile, archive, await this.options.getDbName());
 			this.options.log.info({ backupId }, "Connect restore completed");
 			return { ok: true, at: new Date().toISOString(), backupId, durationMs: Date.now() - startedAt };
-		});
+		}, restoreConnectionUri(this.options.mongoUrl));
 
 	private decryptFile = async (inFile: string, outFile: string, recoveryKeyHex: string) => {
 		const size = fs.statSync(inFile).size;
@@ -384,9 +405,9 @@ export class ConnectBackup {
 		}
 	};
 
-	private mongorestore = (configFile: string, archive: string) =>
+	private mongorestore = (configFile: string, archive: string, dbName: string) =>
 		new Promise<void>((resolve, reject) => {
-			const restore = spawn(this.options.mongorestoreBin, buildRestoreArgs(configFile, archive), {
+			const restore = spawn(this.options.mongorestoreBin, buildRestoreArgs(configFile, archive, dbName), {
 				stdio: ["ignore", "ignore", "pipe"],
 			});
 			let stderr = "";
@@ -395,8 +416,10 @@ export class ConnectBackup {
 			});
 			restore.on("error", (error) => reject(new Error(`mongorestore not available: ${error.message}`)));
 			restore.on("close", (code) => {
-				if (code === 0) resolve();
-				else reject(new Error(`mongorestore exited ${code}: ${stderr.trim()}`));
+				if (code !== 0) reject(new Error(`mongorestore exited ${code}: ${stderr.trim()}`));
+				// Exits 0 even when no namespace in the archive matched.
+				else if (RESTORED_NOTHING.test(stderr)) reject(new Error("restore wrote no data"));
+				else resolve();
 			});
 		});
 }

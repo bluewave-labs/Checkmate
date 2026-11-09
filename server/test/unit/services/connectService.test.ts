@@ -6,7 +6,7 @@ import type { Mongoose } from "mongoose";
 import { ConnectService, DEFAULT_CONNECT_HOSTS, isConnectHostAllowed } from "../../../src/domain/connect/connect.service.ts";
 import { ConnectHeartbeat } from "../../../src/domain/connect/connect.heartbeat.ts";
 import { validateTunnelRequest } from "../../../src/domain/connect/connect.tunnel.ts";
-import { ConnectBackup, buildDumpArgs, deriveBackupKey, isAllowedTransferUrl } from "../../../src/domain/connect/connect.backup.ts";
+import { ConnectBackup, buildDumpArgs, buildRestoreArgs, restoreConnectionUri, deriveBackupKey, isAllowedTransferUrl } from "../../../src/domain/connect/connect.backup.ts";
 import { CONNECT_STATE_COLLECTION, emptyConnectState, type ConnectState } from "../../../src/domain/connect/connect.type.ts";
 import type { IConnectRepository } from "../../../src/domain/connect/connect.repository.ts";
 import type { IEncryptionService } from "../../../src/service/encryption/encryptionService.ts";
@@ -112,6 +112,27 @@ describe("Connect", () => {
 		it("excludes operational data from config backups only", () => {
 			expect(buildDumpArgs("c", "d", "config")).toContain("--excludeCollection=checks");
 			expect(buildDumpArgs("c", "d", "full")).not.toContain("--excludeCollection=checks");
+		});
+
+		it("restores into the configured database, not the one in the archive", () => {
+			const args = buildRestoreArgs("/tmp/x/mongo.yaml", "/tmp/x/a.archive", "renamed_db");
+			expect(args).toContain("--nsFrom=$db$.$coll$");
+			expect(args).toContain("--nsTo=renamed_db.$coll$");
+			expect(args).toContain("--drop");
+			expect(args.join(" ")).not.toContain("mongodb://");
+		});
+
+		it.each([
+			["mongodb://localhost:27017/uptime_db", "mongodb://localhost:27017/"],
+			["mongodb://localhost:27017/uptime_db?replicaSet=rs0", "mongodb://localhost:27017/?replicaSet=rs0"],
+			["mongodb://u:p@db:27017/uptime_db", "mongodb://u:p@db:27017/?authSource=uptime_db"],
+			["mongodb://u:p@db:27017/uptime_db?authSource=admin", "mongodb://u:p@db:27017/?authSource=admin"],
+			["mongodb://u:p@a:1,b:2/uptime_db?tls=true", "mongodb://u:p@a:1,b:2/?tls=true&authSource=uptime_db"],
+			["mongodb+srv://u:p@cluster.example/uptime_db", "mongodb+srv://u:p@cluster.example/?authSource=uptime_db"],
+			["mongodb://localhost:27017", "mongodb://localhost:27017"],
+			["mongodb://localhost:27017/?replicaSet=rs0", "mongodb://localhost:27017/?replicaSet=rs0"],
+		])("removes the database from %s for restores", (input, expected) => {
+			expect(restoreConnectionUri(input)).toBe(expected);
 		});
 
 		it("keeps the key derivation of existing CMKB1 backups", () => {
