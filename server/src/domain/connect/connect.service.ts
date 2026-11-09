@@ -4,7 +4,7 @@ import type { IDb } from "@/db/db.interface.js";
 import type { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import type { ILogger } from "@/utils/logger/logger.js";
 import type { IJobScheduler } from "@/worker/worker.interface.js";
-import { ConnectBackup, type RecoveryKeyCheck } from "@/domain/connect/connect.backup.js";
+import { ConnectBackup, recoveryKeyId, type RecoveryKeyCheck } from "@/domain/connect/connect.backup.js";
 import { ConnectHeartbeat } from "@/domain/connect/connect.heartbeat.js";
 import type { IConnectRepository } from "@/domain/connect/connect.repository.js";
 import { ENCRYPTED_PREFIX, revealConnectState } from "@/domain/connect/connect.secrets.js";
@@ -254,7 +254,13 @@ export class ConnectService implements IConnectService {
 	listBackups = async (): Promise<ConnectResult> => {
 		if (!this.state.enrollment) return { status: 409, data: { error: "not enrolled" } };
 		try {
-			return { status: 200, data: await this.backups.list(this.state.enrollment) };
+			const data = await this.backups.list(this.state.enrollment);
+			const keyId = this.state.recoveryKey ? recoveryKeyId(this.state.recoveryKey) : null;
+			const backups = (data.backups as { keyId?: string | null }[] | undefined)?.map((backup) => ({
+				...backup,
+				restorable: !backup.keyId || backup.keyId === keyId,
+			}));
+			return { status: 200, data: { ...data, backups } };
 		} catch (error) {
 			return { status: 502, data: { error: error instanceof Error ? error.message : "control plane unreachable" } };
 		}
@@ -264,8 +270,8 @@ export class ConnectService implements IConnectService {
 	// decrypted, so the caller must have the operator store it safely.
 	//
 	// Refused while cloud backups exist unless the operator accepts losing them:
-	// a saved key cannot be replaced, and retention deletes the old backups once
-	// the new key's first backup is stored.
+	// the new key's first backup starts the 30 days after which the cloud deletes
+	// them, and an operator who has the original key should import it.
 	createRecoveryKey = async ({ discardExisting = false }: { discardExisting?: boolean } = {}): Promise<ConnectResult> => {
 		if (!this.stateLoaded) return this.stateUnavailable();
 		const { enrollment } = this.state;

@@ -14,6 +14,7 @@ import {
 	restoreConnectionUri,
 	deriveBackupKey,
 	isAllowedTransferUrl,
+	recoveryKeyId,
 } from "../../../src/domain/connect/connect.backup.ts";
 import { ConnectBackupJob } from "../../../src/domain/connect/connect.backup-job.ts";
 import {
@@ -349,6 +350,33 @@ describe("Connect", () => {
 				);
 				expect(result).toBe("wrong-key");
 				expect(downloads).toHaveLength(2);
+			});
+
+			it("skips backups whose fingerprint belongs to another key", async () => {
+				const { result, downloads } = await verify(
+					[
+						{ id: "other", sizeBytes: 10, keyId: recoveryKeyId("cd".repeat(32)) },
+						{ id: "mine", sizeBytes: 900, keyId: recoveryKeyId(KEY) },
+					] as { id: string; sizeBytes: number }[],
+					sealed(KEY)
+				);
+				expect(result).toBe("ok");
+				expect(downloads).toEqual([`${API}/api/agent/backups/mine/download`]);
+			});
+
+			it("refuses a key that matches no fingerprint without downloading", async () => {
+				const { result, downloads } = await verify(
+					[{ id: "other", sizeBytes: 10, keyId: recoveryKeyId("cd".repeat(32)) }] as { id: string; sizeBytes: number }[],
+					sealed(KEY)
+				);
+				expect(result).toBe("wrong-key");
+				expect(downloads).toEqual([]);
+			});
+
+			it("derives a stable fingerprint that does not reveal the key", () => {
+				expect(recoveryKeyId(KEY)).toBe(recoveryKeyId(KEY));
+				expect(recoveryKeyId(KEY)).toMatch(/^[a-f0-9]{32}$/);
+				expect(KEY).not.toContain(recoveryKeyId(KEY));
 			});
 
 			it("clears progress when the check ends", async () => {

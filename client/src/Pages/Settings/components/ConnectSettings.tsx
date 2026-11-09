@@ -76,6 +76,8 @@ type BackupListEntry = {
 	sizeBytes: number;
 	status: string;
 	createdAt: string;
+	restorable?: boolean;
+	expiresAt?: string | null;
 };
 
 const parseCredentialBlock = (raw: string): EnrollBody | null => {
@@ -164,6 +166,9 @@ const ConnectSettings = () => {
 
 	return (
 		<Stack gap={theme.spacing(LAYOUT.MD)}>
+			{!canManage && (
+				<Typography>{t("pages.settings.form.connect.superadminOnly")}</Typography>
+			)}
 			<ConfigBox
 				title={t("pages.settings.form.connect.status.title")}
 				subtitle={t("pages.settings.form.connect.status.description")}
@@ -756,10 +761,25 @@ const BackupSection = ({
 											label={b.kind}
 										/>
 										<Typography minWidth={80}>{formatMb(b.sizeBytes)}</Typography>
+										{b.restorable === false && (
+											<Chip
+												size="small"
+												label={t(
+													"pages.settings.form.connect.backup.restore.differentKey"
+												)}
+											/>
+										)}
+										{b.expiresAt && (
+											<Typography>
+												{t("pages.settings.form.connect.backup.restore.expires", {
+													date: formatDate(b.expiresAt, "dateTime"),
+												})}
+											</Typography>
+										)}
 										<Button
 											variant="outlined"
 											color="error"
-											disabled={busy || startingRestore}
+											disabled={busy || startingRestore || b.restorable === false}
 											onClick={() => void handleRestore(b.id)}
 										>
 											{confirmRestoreId === b.id

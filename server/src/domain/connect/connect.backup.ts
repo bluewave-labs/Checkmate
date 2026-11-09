@@ -32,6 +32,11 @@ const BLOB_API_PATH = "/api/blob";
 // small; monitors, users, teams, settings and status pages are kept.
 const CONFIG_EXCLUDED_COLLECTIONS = ["checks", "monitorstats", "geochecks", "dockerlogs", "dlqitems", "jobs"];
 
+// Identifies which key sealed a backup. One-way, so the cloud can tell keys
+// apart without learning anything that helps decrypt an archive.
+export const recoveryKeyId = (recoveryKeyHex: string) =>
+	Buffer.from(crypto.hkdfSync("sha256", Buffer.from(recoveryKeyHex, "hex"), Buffer.alloc(0), "checkmate-connect-key-id-v1", 16)).toString("hex");
+
 export const deriveBackupKey = (recoveryKeyHex: string, salt: Buffer) =>
 	Buffer.from(crypto.hkdfSync("sha256", Buffer.from(recoveryKeyHex, "hex"), salt, INFO, 32));
 
@@ -263,7 +268,7 @@ export class ConnectBackup {
 			const api = this.apiBase(enrollment);
 			const ticket = await postJson<{ uploadUrl: string; backupId: string }>(
 				`${api}/api/agent/backups/request-upload`,
-				{ agentId: enrollment.agentId, kind, sizeBytes, sha256 },
+				{ agentId: enrollment.agentId, kind, sizeBytes, sha256, keyId: recoveryKeyId(recoveryKeyHex) },
 				enrollment.token
 			);
 
@@ -409,9 +414,14 @@ export class ConnectBackup {
 		this.verifying = true;
 		this.beginProgress("verify", "downloading");
 		try {
-			const { backups } = (await this.list(enrollment)) as { backups?: { id: string; sizeBytes: number }[] };
-			const candidates = [...(backups ?? [])].sort((a, b) => a.sizeBytes - b.sizeBytes);
-			if (candidates.length === 0) return "no-backups";
+			const { backups } = (await this.list(enrollment)) as { backups?: { id: string; sizeBytes: number; keyId?: string | null }[] };
+			if (!backups?.length) return "no-backups";
+			// A recorded fingerprint rules a backup in or out without downloading it.
+			// Older backups have none and need a trial decryption.
+			const keyId = recoveryKeyId(recoveryKeyHex);
+			const candidates = backups
+				.filter((backup) => !backup.keyId || backup.keyId === keyId)
+				.sort((a, b) => Number(b.keyId === keyId) - Number(a.keyId === keyId) || a.sizeBytes - b.sizeBytes);
 			for (const [index, candidate] of candidates.entries()) {
 				this.updateProgress({ attempt: index + 1, attempts: candidates.length });
 				try {
