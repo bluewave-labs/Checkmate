@@ -183,22 +183,17 @@ const ConnectSettings = () => {
 						</Stack>
 						{status.enrolled && (
 							<>
-								<Typography variant="body2">
+								<Typography>
 									{t("pages.settings.form.connect.status.agentId")}: {status.agentId}
 								</Typography>
 								{status.tunnel?.lastConnectedAt && (
-									<Typography variant="body2">
+									<Typography>
 										{t("pages.settings.form.connect.status.lastConnected")}:{" "}
 										{formatDate(status.tunnel.lastConnectedAt, "dateTime")}
 									</Typography>
 								)}
 								{status.tunnel?.lastError && (
-									<Typography
-										variant="body2"
-										color="error"
-									>
-										{status.tunnel.lastError}
-									</Typography>
+									<Typography color="error">{status.tunnel.lastError}</Typography>
 								)}
 							</>
 						)}
@@ -409,10 +404,7 @@ const BackupSection = ({
 						)}
 						{recoveryKey && (
 							<>
-								<Typography
-									variant="body2"
-									color="error"
-								>
+								<Typography color="error">
 									{t("pages.settings.form.connect.backup.keyWarning")}
 								</Typography>
 								<TextField
@@ -461,20 +453,17 @@ const BackupSection = ({
 									</Button>
 								</Stack>
 								{backupStatus?.running && (
-									<Typography variant="body2">
+									<Typography>
 										{t("pages.settings.form.connect.backup.running")}
 									</Typography>
 								)}
 								{backupStatus?.restoring && (
-									<Typography variant="body2">
+									<Typography>
 										{t("pages.settings.form.connect.backup.restoring")}
 									</Typography>
 								)}
 								{last && (
-									<Typography
-										variant="body2"
-										color={last.ok ? undefined : "error"}
-									>
+									<Typography color={last.ok ? undefined : "error"}>
 										{t("pages.settings.form.connect.backup.lastBackup")} (
 										{formatDate(last.at, "dateTime")}):{" "}
 										{last.ok
@@ -485,10 +474,7 @@ const BackupSection = ({
 									</Typography>
 								)}
 								{lastRestore && (
-									<Typography
-										variant="body2"
-										color={lastRestore.ok ? undefined : "error"}
-									>
+									<Typography color={lastRestore.ok ? undefined : "error"}>
 										{t("pages.settings.form.connect.backup.lastRestore")} (
 										{formatDate(lastRestore.at, "dateTime")}):{" "}
 										{lastRestore.ok
@@ -580,7 +566,7 @@ const BackupSection = ({
 					subtitle={t("pages.settings.form.connect.backup.restore.description")}
 					rightContent={
 						backups.length === 0 ? (
-							<Typography variant="body2">
+							<Typography>
 								{t("pages.settings.form.connect.backup.restore.empty")}
 							</Typography>
 						) : (
@@ -592,22 +578,14 @@ const BackupSection = ({
 										alignItems="center"
 										gap={theme.spacing(LAYOUT.SM)}
 									>
-										<Typography
-											variant="body2"
-											minWidth={170}
-										>
+										<Typography minWidth={170}>
 											{formatDate(b.createdAt, "dateTime")}
 										</Typography>
 										<Chip
 											size="small"
 											label={b.kind}
 										/>
-										<Typography
-											variant="body2"
-											minWidth={80}
-										>
-											{formatMb(b.sizeBytes)}
-										</Typography>
+										<Typography minWidth={80}>{formatMb(b.sizeBytes)}</Typography>
 										<Button
 											variant="outlined"
 											color="error"
