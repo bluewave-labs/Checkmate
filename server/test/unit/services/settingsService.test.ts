@@ -74,6 +74,7 @@ describe("SettingsService", () => {
 				dbType: "mongodb",
 				statusPageThemesEnabled: false,
 				clientConfig: {},
+				connectAllowedHosts: null,
 			});
 		});
 
@@ -87,6 +88,12 @@ describe("SettingsService", () => {
 				apiBaseUrl: "https://api.example.com/api/v1",
 				logLevel: "warn",
 			});
+		});
+
+		it("splits CONNECT_ALLOWED_HOSTS into trimmed hosts, dropping empty entries", () => {
+			const { service } = createService({ CONNECT_ALLOWED_HOSTS: " a.example , .b.example ," });
+
+			expect(service.getSettings().connectAllowedHosts).toEqual(["a.example", ".b.example"]);
 		});
 
 		it("reflects custom env values", () => {

@@ -27,6 +27,7 @@ export type EnvConfig = {
 	telemetryEnabled: boolean;
 	telemetryUrl: string;
 	deployment: DeploymentType;
+	connectAllowedHosts: string[] | null;
 };
 
 export interface ISettingsService {
@@ -72,6 +73,10 @@ export class SettingsService implements ISettingsService {
 			telemetryEnabled: env.TELEMETRY_ENABLED,
 			telemetryUrl: env.TELEMETRY_URL,
 			deployment: env.CHECKMATE_DEPLOYMENT,
+			connectAllowedHosts:
+				env.CONNECT_ALLOWED_HOSTS?.split(",")
+					.map((host) => host.trim())
+					.filter(Boolean) ?? null,
 		};
 	}
 

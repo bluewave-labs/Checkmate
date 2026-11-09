@@ -67,6 +67,7 @@ const envSchema = z.object({
 
 	// Optional
 	ORIGIN: z.string().optional(),
+	CONNECT_ALLOWED_HOSTS: z.string().optional(),
 
 	// Feature flags
 	STATUS_PAGE_THEMES_ENABLED: booleanCoercion.default(true),
