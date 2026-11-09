@@ -1783,6 +1783,18 @@
 						"button": "Remove enrollment",
 						"confirm": "Click again to confirm"
 					},
+					"tooltips": {
+						"enroll": "Connect this server to your account",
+						"unenroll": "Disconnect this server from Connect",
+						"generateKey": "Create the key that unlocks your backups",
+						"importKey": "Use the key from your original server",
+						"lostKey": "Start again with a new key",
+						"useKey": "Check this key against your backups",
+						"runFull": "Back up the whole database now",
+						"runConfig": "Back up everything except check history",
+						"replaceKey": "Switch to another recovery key",
+						"restore": "Replace this server's data with this backup"
+					},
 					"backup": {
 						"title": "Cloud backups",
 						"description": "Encrypted backups of this installation's database, uploaded to Checkmate Connect. Data is encrypted here before upload; the cloud only ever stores ciphertext.",

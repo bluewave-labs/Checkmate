@@ -7,7 +7,8 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
-import { ConfigBox } from "@/Components/design-elements";
+import type { ComponentProps } from "react";
+import { ConfigBox, Tooltip } from "@/Components/design-elements";
 import {
 	Button,
 	Checkbox,
@@ -20,6 +21,18 @@ import { useGet, usePost } from "@/Hooks/UseApi";
 import { useFormatDate } from "@/Hooks/useFormatDate";
 import { useIsSuperAdmin } from "@/Hooks/useIsAdmin";
 import { LAYOUT } from "@/Utils/Theme/constants";
+
+// The span keeps the tooltip working while the button is disabled.
+const TipButton = ({
+	tip,
+	...props
+}: ComponentProps<typeof Button> & { tip: string }) => (
+	<Tooltip title={tip}>
+		<span style={{ display: "inline-flex" }}>
+			<Button {...props} />
+		</span>
+	</Tooltip>
+);
 
 type ConnectStatus = {
 	enrolled?: boolean;
@@ -239,13 +252,14 @@ const ConnectSettings = () => {
 									"CONNECT_URL=wss://...\nCONNECT_AGENT=inst-...\nCONNECT_TOKEN=cmk_..."
 								}
 							/>
-							<Button
+							<TipButton
+								tip={t("pages.settings.form.connect.tooltips.enroll")}
 								variant="contained"
 								disabled={!parsed || enrolling}
 								onClick={handleEnroll}
 							>
 								{t("pages.settings.form.connect.enroll.button")}
-							</Button>
+							</TipButton>
 						</Stack>
 					}
 				/>
@@ -274,7 +288,8 @@ const ConnectSettings = () => {
 							title={t("pages.settings.form.connect.unenroll.title")}
 							subtitle={t("pages.settings.form.connect.unenroll.description")}
 							rightContent={
-								<Button
+								<TipButton
+									tip={t("pages.settings.form.connect.tooltips.unenroll")}
 									variant="contained"
 									color="error"
 									disabled={unenrolling}
@@ -283,7 +298,7 @@ const ConnectSettings = () => {
 									{confirmUnenroll
 										? t("pages.settings.form.connect.unenroll.confirm")
 										: t("pages.settings.form.connect.unenroll.button")}
-								</Button>
+								</TipButton>
 							}
 						/>
 					)}
@@ -543,13 +558,14 @@ const BackupSection = ({
 				direction="row"
 				gap={theme.spacing(LAYOUT.SM)}
 			>
-				<Button
+				<TipButton
+					tip={t("pages.settings.form.connect.tooltips.useKey")}
 					variant="contained"
 					disabled={!keyInputValid || busy}
 					onClick={handleImportKey}
 				>
 					{t("pages.settings.form.connect.backup.importKeyConfirm")}
-				</Button>
+				</TipButton>
 				<Button
 					variant="outlined"
 					disabled={importingKey}
@@ -610,15 +626,17 @@ const BackupSection = ({
 										gap={theme.spacing(LAYOUT.SM)}
 									>
 										{!hasCloudBackups && (
-											<Button
+											<TipButton
+												tip={t("pages.settings.form.connect.tooltips.generateKey")}
 												variant="contained"
 												disabled={generatingKey}
 												onClick={() => void handleGenerateKey()}
 											>
 												{t("pages.settings.form.connect.backup.generateKey")}
-											</Button>
+											</TipButton>
 										)}
-										<Button
+										<TipButton
+											tip={t("pages.settings.form.connect.tooltips.importKey")}
 											variant={hasCloudBackups ? "contained" : "outlined"}
 											onClick={() => {
 												setConfirmLostKey(false);
@@ -626,9 +644,10 @@ const BackupSection = ({
 											}}
 										>
 											{t("pages.settings.form.connect.backup.importKey")}
-										</Button>
+										</TipButton>
 										{hasCloudBackups && (
-											<Button
+											<TipButton
+												tip={t("pages.settings.form.connect.tooltips.lostKey")}
 												variant="outlined"
 												disabled={generatingKey}
 												onClick={() => void handleLostKey()}
@@ -636,7 +655,7 @@ const BackupSection = ({
 												{confirmLostKey
 													? t("pages.settings.form.connect.backup.lostKeyConfirm")
 													: t("pages.settings.form.connect.backup.lostKey")}
-											</Button>
+											</TipButton>
 										)}
 									</Stack>
 									{confirmLostKey && (
@@ -652,33 +671,36 @@ const BackupSection = ({
 									direction="row"
 									gap={theme.spacing(LAYOUT.SM)}
 								>
-									<Button
+									<TipButton
+										tip={t("pages.settings.form.connect.tooltips.runFull")}
 										variant="contained"
 										disabled={!canManage || busy || startingBackup}
 										onClick={() => void handleRun("full")}
 									>
 										{t("pages.settings.form.connect.backup.runFull")}
-									</Button>
-									<Button
+									</TipButton>
+									<TipButton
+										tip={t("pages.settings.form.connect.tooltips.runConfig")}
 										variant="outlined"
 										disabled={!canManage || busy || startingBackup}
 										onClick={() => void handleRun("config")}
 									>
 										{t("pages.settings.form.connect.backup.runConfig")}
-									</Button>
+									</TipButton>
 								</Stack>
 								{canManage &&
 									hasCloudBackups &&
 									(showKeyImport ? (
 										keyImportForm
 									) : (
-										<Button
+										<TipButton
+											tip={t("pages.settings.form.connect.tooltips.replaceKey")}
 											variant="text"
 											disabled={busy}
 											onClick={() => setShowKeyImport(true)}
 										>
 											{t("pages.settings.form.connect.backup.replaceKey")}
-										</Button>
+										</TipButton>
 									))}
 								{last && (
 									<Typography color={last.ok ? undefined : "error"}>
@@ -830,7 +852,8 @@ const BackupSection = ({
 												})}
 											</Typography>
 										)}
-										<Button
+										<TipButton
+											tip={t("pages.settings.form.connect.tooltips.restore")}
 											variant="outlined"
 											color="error"
 											disabled={busy || startingRestore || b.restorable === false}
@@ -839,7 +862,7 @@ const BackupSection = ({
 											{confirmRestoreId === b.id
 												? t("pages.settings.form.connect.backup.restore.confirm")
 												: t("pages.settings.form.connect.backup.restore.button")}
-										</Button>
+										</TipButton>
 									</Stack>
 								))}
 							</Stack>
