@@ -117,7 +117,7 @@ No dubtis a preguntar o compartir les teves idees — ens encantarà tenir notí
 <a id="features"></a>
 ## Funcionalitats
 
-- Totalment de codi obert, desplegable als teus servidors o dispositius domèstics (per ex. Raspberry Pi 4 o 5)
+- Totalment de codi obert, desplegable als teus servidors o dispositius domèstics (per ex. Raspberry Pi 5)
 - Diverses opcions de monitorització: disponibilitat, Docker, ping, SSL, port, servidor de jocs
 - Monitorització de velocitat de pàgina
 - Monitorització d'infraestructura (memòria, ús de disc, rendiment de CPU, xarxa, etc.) — requereix l'agent [Capture](https://github.com/bluewave-labs/capture)

@@ -114,7 +114,7 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 <a id="features"></a>
 ## 功能
 
-- 完全开源，可部署到自己的服务器或家用设备（如 Raspberry Pi 4/5）
+- 完全开源，可部署到自己的服务器或家用设备（如 Raspberry Pi 5）
 - 多种监控选项: 可用性、Docker、Ping、SSL、端口、游戏服务器
 - 页面速度监控
 - 基础设施监控（内存、磁盘使用情况、CPU 性能、网络等） — 需要 [Capture](https://github.com/bluewave-labs/capture) 代理

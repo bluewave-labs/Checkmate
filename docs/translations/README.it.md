@@ -114,7 +114,7 @@ Non esitare a fare domande o a condividere le tue idee: ci farebbe piacere senti
 <a id="features"></a>
 ## Funzionalità
 
-- Completamente open source, distribuibile sui tuoi server o su dispositivi domestici (es. Raspberry Pi 4 o 5)
+- Completamente open source, distribuibile sui tuoi server o su dispositivi domestici (es. Raspberry Pi 5)
 - Diverse opzioni di monitoraggio: Uptime, Docker, Ping, SSL, Port, Game server
 - Monitoraggio della velocità delle pagine
 - Monitoraggio dell'infrastruttura (memoria, utilizzo del disco, prestazioni della CPU, rete, ecc.) - richiede l'agente [Capture](https://github.com/bluewave-labs/capture)

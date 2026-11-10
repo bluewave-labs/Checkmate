@@ -369,7 +369,7 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 <a id="features"></a>
 ## Features
 
-- Completely open source, deployable on your servers or home devices (e.g Raspberry Pi 4 or 5)
+- Completely open source, deployable on your servers or home devices (e.g Raspberry Pi 5)
 - Several monitoring options: HTTP (with SSL certificate expiry), Ping, Port, DNS, Docker, gRPC, WebSocket, Game server
 - Heartbeat monitors for cron jobs, backups and other scheduled tasks
 - Page speed monitoring
