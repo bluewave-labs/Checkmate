@@ -1733,18 +1733,27 @@
 					"description": "Import or export your monitors data as a JSON file for backup or transfer."
 				},
 				"connect": {
-					"superadminOnly": "Only a superadmin can enroll this server or remove its enrollment. Sign out and back in if your role changed recently.",
+					"superadminOnly": "Only a superadmin can enroll this server, change remote access or remove its enrollment. Sign out and back in if your role changed recently.",
 					"status": {
 						"title": "Status",
-						"description": "Whether this installation is enrolled with Checkmate Connect.",
+						"description": "Connection state of this installation.",
 						"enrolled": "Enrolled",
 						"notEnrolled": "Not enrolled",
-						"agentId": "Agent ID"
+						"connected": "Tunnel connected",
+						"disconnected": "Tunnel disconnected",
+						"connecting": "Tunnel connecting",
+						"remoteAccessOff": "Remote access off",
+						"agentId": "Agent ID",
+						"lastConnected": "Last connected"
 					},
 					"enroll": {
 						"title": "Enroll installation",
 						"description": "Paste the credential block from your Checkmate Connect dashboard. The credential is stored encrypted in this installation's database and only leaves it to authenticate with Checkmate Connect.",
 						"button": "Enroll"
+					},
+					"remoteAccess": {
+						"title": "Remote access",
+						"description": "Keep an outbound tunnel open so you can reach this installation from your Connect address. No inbound ports are opened."
 					},
 					"unenroll": {
 						"title": "Remove enrollment",
