@@ -13,6 +13,7 @@ import type {
 } from "@/domain/checks/check.type.js";
 import { DockerContainerInfo, DockerContainerLogs, DockerContainerSummary } from "@/domain/docker/docker.type.js";
 import type { DnsRecordType, HardwareBreaches, Monitor, MonitorMatchMethod, MonitorStatus, MonitorType } from "@/domain/monitors/monitor.type.js";
+import type { StorageBreach } from "@/domain/storage/storage-alert.js";
 
 import type { QueryResult } from "gamedig";
 
@@ -203,6 +204,14 @@ export type StatusChangeResult = {
 	statusChanged: boolean;
 	prevStatus: MonitorStatus;
 	thresholdBreaches?: HardwareBreaches;
+	// Hardware monitors, once the status window is full: the storage alerts after this check, and how they changed
+	storage?: StorageChange;
+};
+
+export type StorageChange = {
+	breaches: StorageBreach[];
+	opened: StorageBreach[];
+	cleared: boolean;
 };
 
 export type MonitorStatusResponseOverrides<T> = Partial<Omit<MonitorStatusResponse<T>, "monitorId" | "teamId" | "type">>;

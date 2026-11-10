@@ -62,19 +62,24 @@ export class IncidentService implements IIncidentService {
 
 		switch (transition) {
 			case "status_down":
-			case "threshold_breach": {
+			case "threshold_breach":
+			case "storage_breach": {
 				if (activeIncident) return activeIncident;
 				// A threshold breach has no HTTP status
-				const isBreach = transition === "threshold_breach";
+				const isBreach = transition !== "status_down";
 				return await this.incidentsRepository.create({
 					monitorId: monitor.id,
 					teamId: monitor.teamId,
 					startTime: Date.now().toString(),
 					status: true,
 					statusCode: isBreach ? 9999 : check.statusCode,
-					message: isBreach ? this.notificationMessageBuilder.buildThresholdBreachMessage(monitor, check, decision.thresholdBreaches) : undefined,
+					message: this.buildIncidentMessage(monitor, check, decision),
 				});
 			}
+			case "storage_resolved":
+				// Storage cleared while a hardware threshold keeps the monitor breached: the incident stays open
+				if (monitor.status !== "up") return activeIncident;
+			// falls through
 			case "status_up":
 			case "threshold_resolved": {
 				if (!activeIncident) return null;
@@ -83,6 +88,17 @@ export class IncidentService implements IIncidentService {
 				activeIncident.resolutionType = "automatic";
 				return await this.incidentsRepository.updateById(activeIncident.id, activeIncident.teamId, activeIncident);
 			}
+		}
+	};
+
+	private buildIncidentMessage = (monitor: Monitor, check: Check, decision: MonitorActionDecision): string | undefined => {
+		switch (decision.transition) {
+			case "threshold_breach":
+				return this.notificationMessageBuilder.buildThresholdBreachMessage(monitor, check, decision.thresholdBreaches);
+			case "storage_breach":
+				return this.notificationMessageBuilder.buildStorageBreachMessage(decision.storageBreaches);
+			default:
+				return undefined;
 		}
 	};
 

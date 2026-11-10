@@ -1529,6 +1529,40 @@
 					"dockerAlertOnUnhealthy": {
 						"type": "boolean"
 					},
+					"storageAlertOnArrayDegraded": {
+						"type": "boolean"
+					},
+					"storageAlertOnDriveFailure": {
+						"type": "boolean"
+					},
+					"storageAlertOnDriveWarning": {
+						"type": "boolean"
+					},
+					"storageBreaches": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"subject": {
+									"type": "string"
+								},
+								"reason": {
+									"type": "string",
+									"enum": ["array_degraded", "array_inactive", "drive_failed", "drive_warning"]
+								},
+								"detail": {
+									"type": "string"
+								},
+								"device": {
+									"type": "string"
+								},
+								"model": {
+									"type": "string"
+								}
+							},
+							"required": ["subject", "reason", "detail"]
+						}
+					},
 					"dockerTlsCa": {
 						"type": "string"
 					},
@@ -11380,6 +11414,15 @@
 									"dockerAlertOnUnhealthy": {
 										"type": "boolean"
 									},
+									"storageAlertOnArrayDegraded": {
+										"type": "boolean"
+									},
+									"storageAlertOnDriveFailure": {
+										"type": "boolean"
+									},
+									"storageAlertOnDriveWarning": {
+										"type": "boolean"
+									},
 									"dockerTlsCa": {
 										"anyOf": [
 											{
@@ -12058,6 +12101,18 @@
 													"type": "boolean",
 													"default": false
 												},
+												"storageAlertOnArrayDegraded": {
+													"type": "boolean",
+													"default": true
+												},
+												"storageAlertOnDriveFailure": {
+													"type": "boolean",
+													"default": true
+												},
+												"storageAlertOnDriveWarning": {
+													"type": "boolean",
+													"default": false
+												},
 												"dnsServer": {
 													"type": "string",
 													"minLength": 1
@@ -12601,6 +12656,15 @@
 										"type": "boolean"
 									},
 									"dockerAlertOnUnhealthy": {
+										"type": "boolean"
+									},
+									"storageAlertOnArrayDegraded": {
+										"type": "boolean"
+									},
+									"storageAlertOnDriveFailure": {
+										"type": "boolean"
+									},
+									"storageAlertOnDriveWarning": {
 										"type": "boolean"
 									},
 									"dockerTlsCa": {

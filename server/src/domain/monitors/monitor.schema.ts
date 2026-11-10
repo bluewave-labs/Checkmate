@@ -9,6 +9,7 @@ import {
 	ProxyModes,
 } from "@/domain/monitors/monitor.type.js";
 import { z } from "zod";
+import { storageBreachSchema } from "@/domain/storage/storage.schema.js";
 import {
 	checkSnapshotSchema,
 	dockerContainerStatsSchema,
@@ -71,6 +72,12 @@ export const monitorSchema = z.object({
 	dockerLogsEnabled: z.boolean().optional(),
 	dockerAlertOnStopped: z.boolean().optional(),
 	dockerAlertOnUnhealthy: z.boolean().optional(),
+	// Hardware monitors: storage health alerts (RAID arrays and SMART drives)
+	storageAlertOnArrayDegraded: z.boolean().optional(),
+	storageAlertOnDriveFailure: z.boolean().optional(),
+	storageAlertOnDriveWarning: z.boolean().optional(),
+	// Hardware monitors: storage alerts active after the last evaluated check
+	storageBreaches: z.array(storageBreachSchema).optional(),
 	dockerTlsCa: z.string().optional(),
 	dockerTlsCert: z.string().optional(),
 	// EncryptionService ciphertext. Never copied by toEntity; omitted from the response schema.

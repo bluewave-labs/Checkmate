@@ -41,6 +41,13 @@ export class PagerDutyProvider extends NotificationProvider {
 			return false;
 		}
 
+		// The PagerDuty alert is keyed per monitor. Storage clearing while a hardware threshold keeps the monitor breached
+		// must not resolve it, and a trigger would re-open it, so this one is not sent.
+		if (message.type === "storage_resolved" && message.monitor.status !== "up") {
+			this.logger.debug({ monitorId: message.monitor.id }, "Skipping PagerDuty storage recovery, monitor still breached");
+			return true;
+		}
+
 		try {
 			const payload = this.buildPagerDutyPayload(notification, message);
 			await got.post("https://events.pagerduty.com/v2/enqueue", {
@@ -57,8 +64,8 @@ export class PagerDutyProvider extends NotificationProvider {
 
 	private buildPagerDutyPayload(notification: Notification, message: NotificationMessage): AlertPagerDutyPayload {
 		// Map our notification type to PagerDuty event_action
-		const eventAction =
-			message.type === "monitor_up" || message.type === "threshold_resolved" || message.type === "container_resolved" ? "resolve" : "trigger";
+		const resolveTypes: NotificationMessage["type"][] = ["monitor_up", "threshold_resolved", "container_resolved", "storage_resolved"];
+		const eventAction = resolveTypes.includes(message.type) ? "resolve" : "trigger";
 
 		// Map severity to PagerDuty severity levels
 		const severityMap: Record<string, string> = {

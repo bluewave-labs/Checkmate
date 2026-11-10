@@ -983,6 +983,92 @@ describe("WorkerPipeline", () => {
 			expect(decision).toEqual({ transition: "threshold_breach" });
 		});
 
+		describe("storage", () => {
+			const breach = { subject: "/dev/md1", reason: "array_degraded" as const, detail: "degraded, 1 of 2 disks missing" };
+			const driveBreach = { subject: "SERIAL", reason: "drive_failed" as const, detail: "health FAILED", device: "/dev/sdb" };
+			const storage = (overrides?: Partial<NonNullable<StatusChangeResult["storage"]>>) => ({
+				breaches: [],
+				opened: [],
+				cleared: false,
+				...overrides,
+			});
+
+			it("reports storage_breach when a storage alert breaches the monitor", async () => {
+				const decision = await decide(
+					makeStatusChange({ status: "breached", statusChanged: true, prevStatus: "up", storage: storage({ breaches: [breach], opened: [breach] }) })
+				);
+				expect(decision).toEqual({ transition: "storage_breach", storageBreaches: [breach] });
+				expect(decision).not.toHaveProperty("thresholdBreaches");
+			});
+
+			it("prefers storage_breach over threshold_breach and keeps the threshold breaches", async () => {
+				const thresholdBreaches = { cpu: true, memory: false, disk: false, temp: false };
+				const decision = await decide(
+					makeStatusChange({
+						status: "breached",
+						statusChanged: true,
+						prevStatus: "up",
+						thresholdBreaches,
+						storage: storage({ breaches: [breach], opened: [breach] }),
+					})
+				);
+				expect(decision).toEqual({ transition: "storage_breach", storageBreaches: [breach], thresholdBreaches });
+			});
+
+			it("reports threshold_breach when a threshold breaches and storage is clear", async () => {
+				const thresholdBreaches = { cpu: true, memory: false, disk: false, temp: false };
+				const decision = await decide(
+					makeStatusChange({ status: "breached", statusChanged: true, prevStatus: "up", thresholdBreaches, storage: storage() })
+				);
+				expect(decision).toEqual({ transition: "threshold_breach", thresholdBreaches });
+			});
+
+			it("reports storage_breach with every active breach when a new one appears without a status change", async () => {
+				const decision = await decide(
+					makeStatusChange({
+						status: "breached",
+						statusChanged: false,
+						prevStatus: "breached",
+						storage: storage({ breaches: [breach, driveBreach], opened: [driveBreach] }),
+					})
+				);
+				expect(decision).toEqual({ transition: "storage_breach", storageBreaches: [breach, driveBreach] });
+			});
+
+			it("reports nothing while the same storage alerts stay active", async () => {
+				const decision = await decide(
+					makeStatusChange({ status: "breached", statusChanged: false, prevStatus: "breached", storage: storage({ breaches: [breach] }) })
+				);
+				expect(decision).toEqual({ transition: null });
+			});
+
+			it("reports storage_resolved when storage clears and the monitor recovers", async () => {
+				const decision = await decide(
+					makeStatusChange({ status: "up", statusChanged: true, prevStatus: "breached", storage: storage({ cleared: true }) })
+				);
+				expect(decision).toEqual({ transition: "storage_resolved" });
+			});
+
+			it("reports storage_resolved when storage clears while a threshold keeps the monitor breached", async () => {
+				const decision = await decide(
+					makeStatusChange({ status: "breached", statusChanged: false, prevStatus: "breached", storage: storage({ cleared: true }) })
+				);
+				expect(decision).toEqual({ transition: "storage_resolved" });
+			});
+
+			it("reports threshold_resolved when thresholds recover and storage was never involved", async () => {
+				const decision = await decide(makeStatusChange({ status: "up", statusChanged: true, prevStatus: "breached", storage: storage() }));
+				expect(decision).toEqual({ transition: "threshold_resolved" });
+			});
+
+			it("reports nothing for storage while the monitor is down", async () => {
+				const decision = await decide(
+					makeStatusChange({ status: "down", statusChanged: false, prevStatus: "down", storage: storage({ breaches: [breach], opened: [breach] }) })
+				);
+				expect(decision).toEqual({ transition: null });
+			});
+		});
+
 		// A transition must not leak into the next decision the same pipeline makes, whether that is a no-op
 		// evaluation or a degraded-egress short-circuit.
 		it("starts every decision clean after a transition on the same pipeline", async () => {

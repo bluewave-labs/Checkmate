@@ -398,6 +398,84 @@ describe("NotificationMessageBuilder", () => {
 			});
 		});
 
+		describe("storage_breach", () => {
+			const arrayBreach = { subject: "/dev/md1", reason: "array_degraded" as const, detail: "degraded, 1 of 2 disks missing" };
+			const driveBreach = {
+				subject: "WD-WCC7K1PL4R2X",
+				reason: "drive_failed" as const,
+				detail: "health FAILED",
+				device: "/dev/sdb",
+				model: "WDC WD40EFRX-68N32N0",
+			};
+			const hardwareMonitor = () => makeMonitor({ type: "hardware", status: "breached", url: "http://host:59232/api/v1/metrics" });
+
+			it("returns storage_breach with warning severity and one line per breach", () => {
+				const decision = makeDecision({ transition: "storage_breach", storageBreaches: [arrayBreach, driveBreach] });
+
+				const msg = builder.buildMessage(hardwareMonitor(), makeCheck({ status: true }), decision, "");
+
+				expect(msg.type).toBe("storage_breach");
+				expect(msg.severity).toBe("warning");
+				expect(msg.content.title).toBe("Storage Alert: Test Monitor");
+				expect(msg.content.summary).toBe('2 storage issue(s) on "Test Monitor" need attention.');
+				expect(msg.content.details).toEqual([
+					"URL: http://host:59232/api/v1/metrics",
+					"Type: hardware",
+					"/dev/md1: degraded, 1 of 2 disks missing",
+					"WDC WD40EFRX-68N32N0 (WD-WCC7K1PL4R2X): health FAILED",
+				]);
+				expect(msg.content.thresholds).toBeUndefined();
+			});
+
+			it("keeps hardware thresholds breached at the same time", () => {
+				const decision = makeDecision({
+					transition: "storage_breach",
+					storageBreaches: [arrayBreach],
+					thresholdBreaches: { cpu: true, memory: false, disk: false, temp: false },
+				});
+				const check = makeCheck({ status: true, cpu: { usage_percent: 0.95 } } as Partial<Check>);
+
+				const msg = builder.buildMessage(hardwareMonitor(), check, decision, "");
+
+				expect(msg.content.thresholds?.map((t) => t.metric)).toEqual(["cpu"]);
+			});
+
+			it("builds the incident message from the breaches", () => {
+				expect(builder.buildStorageBreachMessage([arrayBreach, driveBreach])).toBe(
+					"/dev/md1: degraded, 1 of 2 disks missing, WDC WD40EFRX-68N32N0 (WD-WCC7K1PL4R2X): health FAILED"
+				);
+				expect(builder.buildStorageBreachMessage(undefined)).toBe("Storage alert");
+			});
+		});
+
+		describe("storage_resolved", () => {
+			it("returns storage_resolved with success severity", () => {
+				const msg = builder.buildMessage(
+					makeMonitor({ type: "hardware", status: "up" }),
+					makeCheck(),
+					makeDecision({ transition: "storage_resolved" }),
+					""
+				);
+
+				expect(msg.type).toBe("storage_resolved");
+				expect(msg.severity).toBe("success");
+				expect(msg.content.title).toBe("Storage Recovered: Test Monitor");
+				expect(msg.content.summary).toBe('All RAID arrays and drives on "Test Monitor" are back to normal.');
+				expect(msg.content.details).toContain("Status: Up");
+			});
+
+			it("says a threshold is still exceeded when the monitor stays breached", () => {
+				const msg = builder.buildMessage(
+					makeMonitor({ type: "hardware", status: "breached" }),
+					makeCheck(),
+					makeDecision({ transition: "storage_resolved" }),
+					""
+				);
+
+				expect(msg.content.details).toContain("Status: Threshold exceeded");
+			});
+		});
+
 		describe("default content", () => {
 			it("builds monitor_up content on a status_up transition", () => {
 				const monitor = makeMonitor({ status: "up", type: "http" });

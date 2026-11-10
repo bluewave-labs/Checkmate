@@ -296,12 +296,27 @@ export class WorkerPipeline implements IWorkerPipeline {
 	};
 
 	private decide = (statusChange: StatusChangeResult): MonitorActionDecision => {
-		const { monitor, statusChanged, prevStatus, thresholdBreaches } = statusChange;
-		if (!statusChanged) return { transition: null };
+		const { monitor, statusChanged, prevStatus, thresholdBreaches, storage } = statusChange;
+		const storageBreach = (): MonitorActionDecision => ({
+			transition: "storage_breach",
+			storageBreaches: storage?.breaches ?? [],
+			...(thresholdBreaches && { thresholdBreaches }),
+		});
+
+		if (!statusChanged) {
+			// Storage alerts are reported per subject: a new one while already breached, or all clear while a hardware
+			// threshold keeps the monitor breached. Nothing is reported while the monitor is down.
+			if (!storage || monitor.status === "down") return { transition: null };
+			if (storage.opened.length > 0) return storageBreach();
+			if (storage.cleared) return { transition: "storage_resolved" };
+			return { transition: null };
+		}
 
 		if (monitor.status === "down") return { transition: "status_down" };
 
 		if (monitor.status === "breached") {
+			// Storage alerts take precedence: a failing drive matters more than a busy CPU
+			if (storage && storage.breaches.length > 0) return storageBreach();
 			return thresholdBreaches
 				? // Hardware
 					{ transition: "threshold_breach", thresholdBreaches }
@@ -309,7 +324,9 @@ export class WorkerPipeline implements IWorkerPipeline {
 					{ transition: "threshold_breach" };
 		}
 
-		if (monitor.status === "up" && prevStatus === "breached") return { transition: "threshold_resolved" };
+		if (monitor.status === "up" && prevStatus === "breached") {
+			return storage?.cleared ? { transition: "storage_resolved" } : { transition: "threshold_resolved" };
+		}
 		if (monitor.status === "up" && prevStatus === "down") return { transition: "status_up" };
 		return { transition: null };
 	};
