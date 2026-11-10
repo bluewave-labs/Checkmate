@@ -8,6 +8,7 @@ const SERVICE_NAME = "ConnectTunnel";
 const INITIAL_BACKOFF_MS = 1_000;
 const MAX_BACKOFF_MS = 30_000;
 const LOCAL_REQUEST_TIMEOUT_MS = 55_000;
+const PING_INTERVAL_MS = 15_000;
 const ALLOWED_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"] as const;
 const DROPPED_REQUEST_HEADERS = [
 	"host",
@@ -48,6 +49,27 @@ export class ConnectTunnel implements IConnectTunnel {
 		this.logger = logger.child({ service: SERVICE_NAME });
 	}
 
+	private watchLiveness = (socket: WebSocket) => {
+		let answered = true;
+		socket.on("pong", () => {
+			answered = true;
+		});
+		const timer = setInterval(() => {
+			if (!answered) {
+				if (this.socket === socket) {
+					this.state = { ...this.state, lastError: "relay stopped responding" };
+					this.logger.warn("Connect tunnel stopped responding; reconnecting");
+				}
+				socket.terminate();
+				return;
+			}
+			answered = false;
+			socket.ping();
+		}, PING_INTERVAL_MS);
+		timer.unref();
+		socket.once("close", () => clearInterval(timer));
+	};
+
 	private scheduleRetry = () => {
 		this.state = { ...this.state, connected: false };
 		if (!this.running) return;
@@ -86,6 +108,7 @@ export class ConnectTunnel implements IConnectTunnel {
 			if (this.socket !== socket) return;
 			this.backoffMs = INITIAL_BACKOFF_MS;
 			this.state = { ...this.state, connected: true, lastConnectedAt: new Date().toISOString(), lastError: null };
+			this.watchLiveness(socket);
 			this.logger.info({ agentId }, "Connect tunnel connected");
 		});
 
