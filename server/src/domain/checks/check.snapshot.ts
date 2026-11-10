@@ -53,6 +53,7 @@ const mapDisk = (disk?: CheckDiskInfo[]): SnapshotDiskInfo[] | undefined =>
 		?.filter((entry) => entry != null)
 		.map((entry) => ({
 			device: entry.device,
+			mountpoint: entry.mountpoint,
 			total_bytes: entry.total_bytes,
 			used_bytes: entry.used_bytes,
 			usage_percent: entry.usage_percent,

@@ -60,6 +60,7 @@ const snapshotMemorySchema = new Schema<SnapshotMemoryInfo>(
 const snapshotDiskSchema = new Schema<SnapshotDiskInfo>(
 	{
 		device: { type: String },
+		mountpoint: { type: String },
 		total_bytes: { type: Number },
 		used_bytes: { type: Number },
 		usage_percent: { type: Number },

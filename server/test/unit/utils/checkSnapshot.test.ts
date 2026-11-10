@@ -38,3 +38,15 @@ describe("toCheckSnapshot raid", () => {
 		expect(toCheckSnapshot(makeSource()).raid).toBeUndefined();
 	});
 });
+
+describe("toCheckSnapshot disk", () => {
+	it("keeps the mount point so RAID cards can show where an array is mounted", () => {
+		const snapshot = toCheckSnapshot(
+			makeSource({
+				disk: [{ device: "/dev/md1", mountpoint: "/srv/media", total_bytes: 100, used_bytes: 40, usage_percent: 0.4, read_bytes: 7 }],
+			})
+		);
+
+		expect(snapshot.disk).toEqual([{ device: "/dev/md1", mountpoint: "/srv/media", total_bytes: 100, used_bytes: 40, usage_percent: 0.4 }]);
+	});
+});

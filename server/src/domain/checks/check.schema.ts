@@ -225,7 +225,7 @@ export const checkSnapshotSchema = checkSchema
 			.pick({ physical_core: true, logical_core: true, frequency: true, current_frequency: true, temperature: true, usage_percent: true })
 			.optional(),
 		memory: checkMemoryInfoSchema.pick({ total_bytes: true, used_bytes: true, usage_percent: true }).optional(),
-		disk: z.array(checkDiskInfoSchema.pick({ device: true, total_bytes: true, used_bytes: true, usage_percent: true })).optional(),
+		disk: z.array(checkDiskInfoSchema.pick({ device: true, mountpoint: true, total_bytes: true, used_bytes: true, usage_percent: true })).optional(),
 		host: checkHostInfoSchema.pick({ os: true, platform: true, pretty_name: true }).optional(),
 		raid: z.array(checkRaidArraySchema.pick({ device: true, state: true, degraded_disks: true, sync_action: true, sync_progress: true })).optional(),
 		// docker only
