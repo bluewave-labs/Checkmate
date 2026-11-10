@@ -8,6 +8,7 @@ import type {
 	SnapshotDiskInfo,
 	SnapshotHostInfo,
 	SnapshotMemoryInfo,
+	SnapshotRaidArray,
 } from "@/domain/checks/check.type.js";
 import { containerSummarySchema } from "@/domain/checks/check.model.js";
 
@@ -75,6 +76,17 @@ const snapshotHostSchema = new Schema<SnapshotHostInfo>(
 	{ _id: false }
 );
 
+const snapshotRaidArraySchema = new Schema<SnapshotRaidArray>(
+	{
+		device: { type: String },
+		state: { type: String },
+		degraded_disks: { type: Number },
+		sync_action: { type: String },
+		sync_progress: { type: Number },
+	},
+	{ _id: false }
+);
+
 const snapshotLighthouseAuditSchema = new Schema<ILighthouseAudit>(
 	{
 		id: { type: String },
@@ -109,6 +121,7 @@ const checkSnapshotSchema = new Schema<CheckSnapshotDocument>(
 		memory: { type: snapshotMemorySchema },
 		disk: { type: [snapshotDiskSchema] },
 		host: { type: snapshotHostSchema },
+		raid: { type: [snapshotRaidArraySchema], default: undefined },
 		accessibility: { type: Number },
 		bestPractices: { type: Number },
 		seo: { type: Number },
@@ -351,6 +364,9 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		lastEvaluatedAt: {
 			type: Number,
 			default: 0,
+		},
+		smartCheckedAt: {
+			type: Number,
 		},
 	},
 	{
