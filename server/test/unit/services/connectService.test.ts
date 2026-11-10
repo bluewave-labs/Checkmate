@@ -15,6 +15,7 @@ import {
 	deriveBackupKey,
 	isAllowedTransferUrl,
 	recoveryKeyId,
+	stallGuard,
 } from "../../../src/domain/connect/connect.backup.ts";
 import { ConnectBackupJob } from "../../../src/domain/connect/connect.backup-job.ts";
 import {
@@ -844,6 +845,43 @@ describe("Connect", () => {
 			heartbeat.start(enrollment);
 			await expect(heartbeat.beat()).resolves.toBeUndefined();
 			heartbeat.stop();
+		});
+	});
+
+	describe("stallGuard", () => {
+		afterEach(() => {
+			jest.useRealTimers();
+		});
+
+		it("never aborts a slow transfer that keeps moving, however long it runs", () => {
+			jest.useFakeTimers();
+			const guard = stallGuard(1000);
+			for (let i = 0; i < 100; i++) {
+				jest.advanceTimersByTime(900);
+				guard.progress();
+			}
+			expect(guard.signal.aborted).toBe(false);
+			guard.stop();
+		});
+
+		it("aborts once no data has moved for the stall window", () => {
+			jest.useFakeTimers();
+			const guard = stallGuard(1000);
+			jest.advanceTimersByTime(900);
+			guard.progress();
+			jest.advanceTimersByTime(999);
+			expect(guard.signal.aborted).toBe(false);
+			jest.advanceTimersByTime(1);
+			expect(guard.signal.aborted).toBe(true);
+			expect(String(guard.signal.reason)).toContain("transfer stalled");
+		});
+
+		it("does not abort after stop", () => {
+			jest.useFakeTimers();
+			const guard = stallGuard(1000);
+			guard.stop();
+			jest.advanceTimersByTime(5000);
+			expect(guard.signal.aborted).toBe(false);
 		});
 	});
 });

@@ -21,7 +21,11 @@ const INFO = "checkmate-connect-backup-v1";
 const HEADER_LEN = 5 + 16 + 12;
 const TAG_LEN = 16;
 const CONTROL_PLANE_TIMEOUT_MS = 15_000;
-const TRANSFER_TIMEOUT_MS = 60 * 60 * 1000;
+// Transfers have no total time limit: a slow line can need hours for a large
+// backup, and the cloud sizes each transfer URL's lifetime to the file. They
+// are cancelled only when no bytes move for this long, which also catches a
+// connection left dead by a network change.
+export const TRANSFER_STALL_MS = 5 * 60 * 1000;
 const MAX_BACKUP_BYTES = 50 * 1024 ** 3;
 const BLOB_HOST_SUFFIX = ".blob.vercel-storage.com";
 // Vercel Blob issues presigned uploads on its API, and downloads on the store host.
@@ -86,6 +90,19 @@ export const isAllowedTransferUrl = (raw: string, operatorOverride: boolean) => 
 	} catch {
 		return false;
 	}
+};
+
+// Aborts its signal once progress() has not been called for stallMs.
+export const stallGuard = (stallMs = TRANSFER_STALL_MS) => {
+	const controller = new AbortController();
+	let timer: NodeJS.Timeout | undefined;
+	const progress = () => {
+		clearTimeout(timer);
+		timer = setTimeout(() => controller.abort(new Error(`transfer stalled: no data moved for ${Math.round(stallMs / 1000)} s`)), stallMs);
+		timer.unref();
+	};
+	progress();
+	return { signal: controller.signal, progress, stop: () => clearTimeout(timer) };
 };
 
 type BackupOptions = {
@@ -275,14 +292,20 @@ export class ConnectBackup {
 			try {
 				this.assertTransferUrl(ticket.uploadUrl);
 				this.setStage("uploading");
-				const upload = await fetch(ticket.uploadUrl, {
-					method: "PUT",
-					headers: { "content-length": String(sizeBytes), "content-type": "application/octet-stream" },
-					body: Readable.toWeb(Readable.from(this.meteredRead(archive, sizeBytes), { objectMode: false })) as unknown as BodyInit,
-					duplex: "half",
-					redirect: "error",
-					signal: AbortSignal.timeout(TRANSFER_TIMEOUT_MS),
-				} as RequestInit);
+				const guard = stallGuard();
+				let upload: Response;
+				try {
+					upload = await fetch(ticket.uploadUrl, {
+						method: "PUT",
+						headers: { "content-length": String(sizeBytes), "content-type": "application/octet-stream" },
+						body: Readable.toWeb(Readable.from(this.meteredRead(archive, sizeBytes, guard.progress), { objectMode: false })) as unknown as BodyInit,
+						duplex: "half",
+						redirect: "error",
+						signal: guard.signal,
+					} as RequestInit);
+				} finally {
+					guard.stop();
+				}
 				if (!upload.ok) throw new Error(`blob upload failed (${upload.status})`);
 
 				this.setStage("saving");
@@ -303,10 +326,12 @@ export class ConnectBackup {
 			}
 		});
 
-	private async *meteredRead(file: string, totalBytes: number) {
+	// Chunks are pulled only as the connection drains, so onChunk marks progress.
+	private async *meteredRead(file: string, totalBytes: number, onChunk: () => void) {
 		let sent = 0;
 		for await (const chunk of fs.createReadStream(file)) {
 			sent += (chunk as Buffer).length;
+			onChunk();
 			this.updateProgress({ percent: toPercent(sent, totalBytes) });
 			yield chunk as Buffer;
 		}
@@ -445,7 +470,6 @@ export class ConnectBackup {
 	// Returns the path of the downloaded file once its size and checksum match.
 	private download = async (enrollment: ConnectEnrollment, backupId: string, dir: string) => {
 		this.setStage("downloading");
-		const reportProgress = this.updateProgress;
 		const encrypted = path.join(dir, "restore.cmkb");
 		const ticket = await postJson<{ downloadUrl: string; sha256: string; sizeBytes: number }>(
 			`${this.apiBase(enrollment)}/api/agent/backups/${backupId}/download`,
@@ -457,10 +481,21 @@ export class ConnectBackup {
 		if (!Number.isSafeInteger(ticket.sizeBytes) || ticket.sizeBytes <= 0 || ticket.sizeBytes > MAX_BACKUP_BYTES) {
 			throw new Error("control plane returned an invalid backup size");
 		}
-		const download = await fetch(ticket.downloadUrl, {
-			redirect: "error",
-			signal: AbortSignal.timeout(TRANSFER_TIMEOUT_MS),
-		});
+		const guard = stallGuard();
+		try {
+			return await this.receive(ticket, encrypted, guard);
+		} finally {
+			guard.stop();
+		}
+	};
+
+	private receive = async (
+		ticket: { downloadUrl: string; sha256: string; sizeBytes: number },
+		encrypted: string,
+		guard: ReturnType<typeof stallGuard>
+	) => {
+		const reportProgress = this.updateProgress;
+		const download = await fetch(ticket.downloadUrl, { redirect: "error", signal: guard.signal });
 		if (!download.ok || !download.body) throw new Error(`blob download failed (${download.status})`);
 
 		const hash = crypto.createHash("sha256");
@@ -468,6 +503,7 @@ export class ConnectBackup {
 		// Stops before the disk fills if the download exceeds its recorded size.
 		const meter = new Transform({
 			transform(chunk: Buffer, _encoding, callback) {
+				guard.progress();
 				received += chunk.length;
 				if (received > ticket.sizeBytes) {
 					callback(new Error(`download exceeds recorded size ${ticket.sizeBytes}`));
