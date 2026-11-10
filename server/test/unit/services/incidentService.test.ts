@@ -255,6 +255,21 @@ describe("IncidentService", () => {
 			expect(incidentsRepository.updateById).not.toHaveBeenCalled();
 		});
 
+		it("keeps the incident open on threshold_resolved while a storage alert keeps the monitor breached", async () => {
+			const active = makeIncident();
+			const { service, incidentsRepository } = createService();
+			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(active);
+
+			const result = await service.handleIncident(
+				makeMonitor({ status: "breached" }),
+				makeDecision({ transition: "threshold_resolved" }),
+				makeCheck()
+			);
+
+			expect(result).toBe(active);
+			expect(incidentsRepository.updateById).not.toHaveBeenCalled();
+		});
+
 		it("returns null on an up transition when no incident is open", async () => {
 			const { service, incidentsRepository } = createService();
 			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(null);

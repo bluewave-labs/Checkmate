@@ -167,7 +167,7 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 	private buildThresholdResolvedContent(monitor: Monitor): NotificationContent {
 		const title = `Thresholds Resolved: ${monitor.name}`;
 		const summary = `Monitor "${monitor.name}" thresholds have returned to normal.`;
-		const details = [`URL: ${monitor.url}`, `Status: Up`, `Type: ${monitor.type}`];
+		const details = [`URL: ${monitor.url}`, `Status: ${this.describeRecoveredStatus(monitor)}`, `Type: ${monitor.type}`];
 
 		return {
 			title,
@@ -205,10 +205,13 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 	private buildStorageRecoveredContent(monitor: Monitor): NotificationContent {
 		const title = `Storage Recovered: ${monitor.name}`;
 		const summary = `All RAID arrays and drives on "${monitor.name}" are back to normal.`;
-		// A hardware threshold can still keep the monitor breached after storage clears
-		const status = monitor.status === "up" ? "Up" : "Threshold exceeded";
-		const details = [`URL: ${monitor.url}`, `Status: ${status}`, `Type: ${monitor.type}`];
+		const details = [`URL: ${monitor.url}`, `Status: ${this.describeRecoveredStatus(monitor)}`, `Type: ${monitor.type}`];
 		return { title, summary, details, timestamp: new Date() };
+	}
+
+	// On a hardware monitor, thresholds and storage alerts clear independently, so the other can keep it breached
+	private describeRecoveredStatus(monitor: Monitor): string {
+		return monitor.status === "breached" ? "Still breached" : "Up";
 	}
 
 	private buildDefaultContent(monitor: Monitor): NotificationContent {

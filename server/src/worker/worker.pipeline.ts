@@ -296,7 +296,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 	};
 
 	private decide = (statusChange: StatusChangeResult): MonitorActionDecision => {
-		const { monitor, statusChanged, prevStatus, thresholdBreaches, storage } = statusChange;
+		const { monitor, statusChanged, prevStatus, thresholdBreaches, storage, threshold } = statusChange;
 		const storageBreach = (): MonitorActionDecision => ({
 			transition: "storage_breach",
 			storageBreaches: storage?.breaches ?? [],
@@ -304,11 +304,13 @@ export class WorkerPipeline implements IWorkerPipeline {
 		});
 
 		if (!statusChanged) {
-			// Storage alerts are reported per subject: a new one while already breached, or all clear while a hardware
-			// threshold keeps the monitor breached. Nothing is reported while the monitor is down.
-			if (!storage || monitor.status === "down") return { transition: null };
-			if (storage.opened.length > 0) return storageBreach();
-			if (storage.cleared) return { transition: "storage_resolved" };
+			// Hardware: storage alerts and thresholds are reported on their own changes, since either can keep the
+			// monitor breached while the other opens or clears. New problems before recoveries; nothing while down.
+			if (monitor.status === "down") return { transition: null };
+			if (storage && storage.opened.length > 0) return storageBreach();
+			if (threshold?.opened) return { transition: "threshold_breach", ...(thresholdBreaches && { thresholdBreaches }) };
+			if (storage?.cleared) return { transition: "storage_resolved" };
+			if (threshold?.cleared) return { transition: "threshold_resolved" };
 			return { transition: null };
 		}
 

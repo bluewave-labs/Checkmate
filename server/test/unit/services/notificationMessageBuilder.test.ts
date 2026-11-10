@@ -464,7 +464,7 @@ describe("NotificationMessageBuilder", () => {
 				expect(msg.content.details).toContain("Status: Up");
 			});
 
-			it("says a threshold is still exceeded when the monitor stays breached", () => {
+			it("says the monitor is still breached when a threshold keeps it breached", () => {
 				const msg = builder.buildMessage(
 					makeMonitor({ type: "hardware", status: "breached" }),
 					makeCheck(),
@@ -472,7 +472,7 @@ describe("NotificationMessageBuilder", () => {
 					""
 				);
 
-				expect(msg.content.details).toContain("Status: Threshold exceeded");
+				expect(msg.content.details).toContain("Status: Still breached");
 			});
 		});
 

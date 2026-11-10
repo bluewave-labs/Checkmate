@@ -1061,6 +1061,47 @@ describe("WorkerPipeline", () => {
 				expect(decision).toEqual({ transition: "threshold_resolved" });
 			});
 
+			it("reports threshold_breach when a threshold trips while storage keeps the monitor breached", async () => {
+				const thresholdBreaches = { cpu: true, memory: false, disk: false, temp: false };
+				const decision = await decide(
+					makeStatusChange({
+						status: "breached",
+						statusChanged: false,
+						prevStatus: "breached",
+						thresholdBreaches,
+						storage: storage({ breaches: [driveBreach] }),
+						threshold: { opened: true, cleared: false },
+					})
+				);
+				expect(decision).toEqual({ transition: "threshold_breach", thresholdBreaches });
+			});
+
+			it("reports threshold_resolved when thresholds clear while storage keeps the monitor breached", async () => {
+				const decision = await decide(
+					makeStatusChange({
+						status: "breached",
+						statusChanged: false,
+						prevStatus: "breached",
+						storage: storage({ breaches: [driveBreach] }),
+						threshold: { opened: false, cleared: true },
+					})
+				);
+				expect(decision).toEqual({ transition: "threshold_resolved" });
+			});
+
+			it("reports a new storage alert before a threshold tripping on the same check", async () => {
+				const decision = await decide(
+					makeStatusChange({
+						status: "breached",
+						statusChanged: false,
+						prevStatus: "breached",
+						storage: storage({ breaches: [breach], opened: [breach] }),
+						threshold: { opened: true, cleared: false },
+					})
+				);
+				expect(decision.transition).toBe("storage_breach");
+			});
+
 			it("reports nothing for storage while the monitor is down", async () => {
 				const decision = await decide(
 					makeStatusChange({ status: "down", statusChanged: false, prevStatus: "down", storage: storage({ breaches: [breach], opened: [breach] }) })

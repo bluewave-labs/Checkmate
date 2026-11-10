@@ -1310,13 +1310,50 @@ describe("StatusService", () => {
 		});
 
 		it("stays breached when storage clears but a hardware threshold is still breached", async () => {
-			const monitor = makeStorageMonitor({ status: "breached", storageBreaches: [degradedBreach], cpuAlertCounter: 0 });
+			const monitor = makeStorageMonitor({ status: "breached", storageBreaches: [degradedBreach], cpuAlertCounter: 0, thresholdBreached: true });
 			const check = makeStorageCheck({ raid: [healthy], cpu: { usage_percent: 0.95, temperature: [30] } } as Partial<Check>);
 			const { result } = await run(monitor, check);
 
 			expect(result.statusChanged).toBe(false);
 			expect(result.monitor.status).toBe("breached");
 			expect(result.storage?.cleared).toBe(true);
+		});
+
+		it("reports a threshold tripping while a storage breach keeps the monitor breached", async () => {
+			const monitor = makeStorageMonitor({ status: "breached", storageBreaches: [driveBreach], thresholdBreached: false, cpuAlertCounter: 1 });
+			const check = makeStorageCheck({ cpu: { usage_percent: 0.95, temperature: [30] } } as Partial<Check>);
+			const { result, patch } = await run(monitor, check);
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.threshold).toEqual({ opened: true, cleared: false });
+			expect(patch.thresholdBreached).toBe(true);
+		});
+
+		it("reports thresholds clearing while a storage breach keeps the monitor breached", async () => {
+			const monitor = makeStorageMonitor({ status: "breached", storageBreaches: [driveBreach], thresholdBreached: true, cpuAlertCounter: 0 });
+			const { result, patch } = await run(monitor, makeStorageCheck());
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.monitor.status).toBe("breached");
+			expect(result.threshold).toEqual({ opened: false, cleared: true });
+			expect(patch.thresholdBreached).toBe(false);
+		});
+
+		it("keeps a threshold breached while any metric still breaches, even after its counter reset", async () => {
+			const monitor = makeStorageMonitor({ status: "breached", thresholdBreached: true, cpuAlertCounter: 0, memoryAlertCounter: 5 });
+			const check = makeStorageCheck({ memory: { usage_percent: 0.95 } } as Partial<Check>);
+			const { result } = await run(monitor, check);
+
+			expect(result.threshold).toEqual({ opened: false, cleared: false });
+			expect(result.monitor.status).toBe("breached");
+		});
+
+		it("treats a breached monitor from before the flag existed as threshold-breached, so it does not re-alert", async () => {
+			const monitor = makeStorageMonitor({ status: "breached", thresholdBreached: undefined, cpuAlertCounter: 0 });
+			const check = makeStorageCheck({ cpu: { usage_percent: 0.95, temperature: [30] } } as Partial<Check>);
+			const { result } = await run(monitor, check);
+
+			expect(result.threshold).toEqual({ opened: false, cleared: false });
 		});
 
 		it("does not let thresholds returning to normal recover a monitor with an active storage breach", async () => {
@@ -1429,6 +1466,7 @@ describe("StatusService", () => {
 			metrics: any;
 			thresholds: { cpu: number; memory: number; disk: number; temp: number };
 			counters: { cpu: number; memory: number; disk: number; temp: number };
+			thresholdBreached?: boolean;
 			storageBreaching: boolean;
 		};
 
@@ -1450,7 +1488,9 @@ describe("StatusService", () => {
 
 		const compute = (overrides: Partial<Params> = {}) => {
 			const { service } = createService();
-			return (service as any).computeHardwareStatus({ ...defaults(), ...overrides });
+			const params = { ...defaults(), ...overrides };
+			// Unless a test says otherwise, a breached monitor is breached by its thresholds
+			return (service as any).computeHardwareStatus({ thresholdBreached: params.currentStatus === "breached", ...params });
 		};
 
 		// ── Storage ──
@@ -1467,6 +1507,13 @@ describe("StatusService", () => {
 		it("does not enter breached on storage while unreachable", () => {
 			const r = compute({ reachabilityDown: true, storageBreaching: true });
 			expect(r.transitioned).toBe(false);
+		});
+
+		it("reports the threshold state apart from storage", () => {
+			const cpuHigh = { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } };
+			expect(compute({ metrics: cpuHigh, counters: { cpu: 1, memory: 5, disk: 5, temp: 5 }, storageBreaching: true }).thresholdBreached).toBe(true);
+			expect(compute({ currentStatus: "breached", thresholdBreached: false, storageBreaching: true }).thresholdBreached).toBe(false);
+			expect(compute({ currentStatus: "breached", thresholdBreached: true, storageBreaching: true }).thresholdBreached).toBe(false);
 		});
 
 		// ── Breach detection ──

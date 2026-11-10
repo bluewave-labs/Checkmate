@@ -1563,6 +1563,9 @@
 							"required": ["subject", "reason", "detail"]
 						}
 					},
+					"thresholdBreached": {
+						"type": "boolean"
+					},
 					"dockerTlsCa": {
 						"type": "string"
 					},

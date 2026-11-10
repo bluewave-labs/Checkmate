@@ -77,11 +77,11 @@ export class IncidentService implements IIncidentService {
 				});
 			}
 			case "storage_resolved":
-				// Storage cleared while a hardware threshold keeps the monitor breached: the incident stays open
-				if (monitor.status !== "up") return activeIncident;
+			case "threshold_resolved":
+				// One kind of hardware problem cleared while the other keeps the monitor breached: the incident stays open
+				if (monitor.status === "breached") return activeIncident;
 			// falls through
-			case "status_up":
-			case "threshold_resolved": {
+			case "status_up": {
 				if (!activeIncident) return null;
 				activeIncident.status = false;
 				activeIncident.endTime = Date.now().toString();

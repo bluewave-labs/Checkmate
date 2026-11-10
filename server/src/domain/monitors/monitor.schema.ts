@@ -78,6 +78,8 @@ export const monitorSchema = z.object({
 	storageAlertOnDriveWarning: z.boolean().optional(),
 	// Hardware monitors: storage alerts active after the last evaluated check
 	storageBreaches: z.array(storageBreachSchema).optional(),
+	// Hardware monitors: a CPU/memory/disk/temperature threshold is breached, tracked apart from storage alerts
+	thresholdBreached: z.boolean().optional(),
 	dockerTlsCa: z.string().optional(),
 	dockerTlsCert: z.string().optional(),
 	// EncryptionService ciphertext. Never copied by toEntity; omitted from the response schema.

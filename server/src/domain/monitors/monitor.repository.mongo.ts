@@ -614,6 +614,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 				device: breach.device ?? undefined,
 				model: breach.model ?? undefined,
 			})),
+			thresholdBreached: doc.thresholdBreached ?? undefined,
 			dockerTlsCa: doc.dockerTlsCa ?? undefined,
 			dockerTlsCert: doc.dockerTlsCert ?? undefined,
 			dockerTlsKeySet: doc.dockerTlsKeySet ?? false,

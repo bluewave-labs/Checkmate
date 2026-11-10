@@ -122,6 +122,14 @@ describe("PagerDutyProvider", () => {
 			expect(mockGotPost).not.toHaveBeenCalled();
 		});
 
+		it("does not send threshold_resolved while a storage alert keeps the monitor breached", async () => {
+			const { provider } = createProvider();
+			const base = makeMessage({ type: "threshold_resolved" });
+			const result = await provider.sendMessage(makeNotification() as any, { ...base, monitor: { ...base.monitor, status: "breached" } });
+			expect(result).toBe(true);
+			expect(mockGotPost).not.toHaveBeenCalled();
+		});
+
 		it("includes threshold info in summary and custom_details", async () => {
 			const { provider } = createProvider();
 			await provider.sendMessage(makeNotification() as any, makeMessageWithThresholds());

@@ -206,6 +206,14 @@ export type StatusChangeResult = {
 	thresholdBreaches?: HardwareBreaches;
 	// Hardware monitors, once the status window is full: the storage alerts after this check, and how they changed
 	storage?: StorageChange;
+	// Hardware monitors, once the status window is full: whether the CPU/memory/disk/temperature thresholds tripped
+	// or cleared on this check, independent of the overall status (storage alerts can keep the monitor breached)
+	threshold?: ThresholdChange;
+};
+
+export type ThresholdChange = {
+	opened: boolean;
+	cleared: boolean;
 };
 
 export type StorageChange = {

@@ -365,6 +365,10 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: [storageBreachSubSchema],
 			default: [],
 		},
+		// No default: unset on monitors from before this field, which StatusService reads from the status
+		thresholdBreached: {
+			type: Boolean,
+		},
 		dockerTlsCa: {
 			type: String,
 		},
