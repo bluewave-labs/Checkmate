@@ -138,6 +138,19 @@ describe("JobScheduler", () => {
 			expect(mocks.jobsRepository.deleteGlobalJob).toHaveBeenCalledWith("telemetry");
 		});
 
+		it.each([true, false])("primary mode always seeds the Connect heartbeat row (telemetry %s)", async (telemetryEnabled) => {
+			const before = Date.now();
+			const { scheduler, mocks } = createScheduler({ queueMode: "primary", telemetryEnabled });
+			await scheduler.init();
+
+			const heartbeatCall = mocks.jobsRepository.upsertJob.mock.calls.find((c: any[]) => c[0].type === "connect-heartbeat");
+			expect(heartbeatCall).toBeDefined();
+			const seed = heartbeatCall![0] as any;
+			expect(seed).toMatchObject({ id: "connect-heartbeat", refId: null, isActive: true, intervalMs: 60 * 1000 });
+			expect(seed.nextScheduledAt).toBeGreaterThanOrEqual(before);
+			expect(seed.nextScheduledAt).toBeLessThanOrEqual(Date.now());
+		});
+
 		it("worker mode never touches the telemetry row", async () => {
 			const { scheduler, mocks } = createScheduler({ queueMode: "worker", telemetryEnabled: true });
 			await scheduler.init();

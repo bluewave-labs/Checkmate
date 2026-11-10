@@ -234,7 +234,6 @@ export class JobScheduler implements IJobScheduler {
 	// Seed queue
 	protected reconcile = async () => {
 		const now = Date.now();
-		await this.jobsRepository.upsertJob(this.toConnectHeartbeatJob(now));
 		const monitors = await this.monitorsRepository.findAllForScheduling();
 		const heartbeatIds: string[] = [];
 		for (const monitor of monitors) {
@@ -257,6 +256,7 @@ export class JobScheduler implements IJobScheduler {
 		} else {
 			await this.jobsRepository.deleteGlobalJob("telemetry");
 		}
+		await this.jobsRepository.upsertJob(this.toConnectHeartbeatJob(now));
 	};
 
 	// Register worker

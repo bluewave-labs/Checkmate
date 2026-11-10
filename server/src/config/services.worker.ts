@@ -17,6 +17,7 @@ import { IBufferService, BufferService } from "@/service/bufferService.js";
 import { IStatusService, StatusService } from "@/service/statusService.js";
 import { SecretsRotationService } from "@/service/encryption/secretsRotationService.js";
 import { TelemetryService } from "@/domain/telemetry/telemetry.service.js";
+import { ConnectHeartbeatService } from "@/domain/connect/connect-heartbeat.service.js";
 import { IQueueWorker, JobHandlers } from "@/worker/worker.interface.js";
 import { WorkerHelper } from "@/worker/worker.helper.js";
 import { GeoChecksPipeline } from "@/worker/worker.geo-pipeline.js";
@@ -110,6 +111,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	const statusService = new StatusService(logger, monitorsRepository, monitorStatsRepository);
 	const egressService = new EgressService(settingsService, workerId, queueWorkersRepository, providerRegistry, proxyResolver, logger);
 	const telemetryService = new TelemetryService(got, settingsService, settingsRepository, monitorsRepository, logger);
+	const connectHeartbeatService = new ConnectHeartbeatService(got, connectRepository, encryptionService, logger);
 
 	const notificationReactor = new NotificationReactor(notificationsService);
 	const incidentReactor = new IncidentReactor(incidentService);
@@ -149,7 +151,8 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		incidentsRepository,
 		geoChecksRepository,
 		dockerLogsRepository,
-		telemetryService
+		telemetryService,
+		connectHeartbeatService
 	);
 
 	const handlers: JobHandlers = {
@@ -159,6 +162,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		"cleanup-orphaned": workerHelper.getCleanupOrphanedJob(),
 		"cleanup-retention": workerHelper.getCleanupRetentionJob(),
 		telemetry: workerHelper.getTelemetryJob(),
+		"connect-heartbeat": workerHelper.getConnectHeartbeatJob(),
 	};
 
 	const worker = await DBQueueWorker.create({

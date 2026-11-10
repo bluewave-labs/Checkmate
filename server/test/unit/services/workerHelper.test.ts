@@ -44,6 +44,9 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 	const telemetryService = {
 		handleJob: jest.fn().mockResolvedValue(undefined),
 	};
+	const connectHeartbeatService = {
+		handleJob: jest.fn().mockResolvedValue(undefined),
+	};
 
 	const defaults = {
 		logger: createMockLogger(),
@@ -58,6 +61,7 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		geoChecksRepository,
 		dockerLogsRepository,
 		telemetryService,
+		connectHeartbeatService,
 		...overrides,
 	};
 
@@ -73,7 +77,8 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		defaults.incidentsRepository as any,
 		defaults.geoChecksRepository as any,
 		defaults.dockerLogsRepository as any,
-		defaults.telemetryService as any
+		defaults.telemetryService as any,
+		defaults.connectHeartbeatService as any
 	);
 	return { helper, defaults };
 };
@@ -199,6 +204,16 @@ describe("WorkerHelper", () => {
 			await helper.getTelemetryJob()();
 
 			expect(defaults.telemetryService.handleJob).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	describe("getConnectHeartbeatJob", () => {
+		it("returns a function that runs the Connect heartbeat", async () => {
+			const { helper, defaults } = createHelper();
+
+			await helper.getConnectHeartbeatJob()();
+
+			expect(defaults.connectHeartbeatService.handleJob).toHaveBeenCalledTimes(1);
 		});
 	});
 });
