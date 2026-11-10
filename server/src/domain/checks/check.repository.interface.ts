@@ -53,4 +53,7 @@ export interface IChecksRepository {
 	deleteByTeamId(teamId: string): Promise<number>;
 	deleteByMonitorIdsNotIn(monitorIds: string[]): Promise<number>;
 	deleteOlderThan(date: Date): Promise<number>;
+	// Sets the checks collection's native TTL; null disables it. Returns the previous value
+	// and whether a change was made (no-op when it already matches).
+	setExpireAfterSeconds(seconds: number | null): Promise<{ previous: number | null; changed: boolean }>;
 }

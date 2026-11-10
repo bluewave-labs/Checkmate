@@ -31,6 +31,14 @@ import type {
 } from "@/domain/checks/check.schema.js";
 
 export const CHECK_TTL_SENTINEL = 366;
+
+// How check retention was enforced on a run of the retention job. "ttl" means the checks
+// collection's native expireAfterSeconds was (re)applied and MongoDB deletes expired buckets
+// itself; "delete" means setting the TTL failed (e.g. no collMod privilege) and expired checks
+// were deleted directly instead. expireAfterSeconds is null when retention is unlimited.
+export type CheckRetentionResult =
+	| { method: "ttl"; expireAfterSeconds: number | null; previousExpireAfterSeconds: number | null; changed: boolean }
+	| { method: "delete"; expireAfterSeconds: number; deletedCount: number };
 export type CheckTimings = z.infer<typeof checkTimingsSchema>;
 export type CheckMetadata = z.infer<typeof checkMetadataSchema>;
 export type CheckCpuInfo = z.infer<typeof checkCpuInfoSchema>;

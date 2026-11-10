@@ -21,6 +21,7 @@ const createChecksRepo = () =>
 		deleteByMonitorId: jest.fn().mockResolvedValue(5),
 		deleteByTeamId: jest.fn().mockResolvedValue(10),
 		deleteOlderThan: jest.fn().mockResolvedValue(3),
+		setExpireAfterSeconds: jest.fn().mockResolvedValue({ previous: null, changed: true }),
 	}) as unknown as jest.Mocked<IChecksRepository>;
 
 const createService = () => {
@@ -428,15 +429,55 @@ describe("CheckService", () => {
 		});
 	});
 
-	describe("deleteOlderThan", () => {
-		it("delegates to repository", async () => {
-			const date = new Date();
+	describe("applyRetention", () => {
+		it("sets the checks collection TTL from checkTTL days", async () => {
 			const { service, checksRepository } = createService();
 
-			const result = await service.deleteOlderThan(date);
+			const result = await service.applyRetention(30);
 
-			expect(checksRepository.deleteOlderThan).toHaveBeenCalledWith(date);
-			expect(result).toBe(3);
+			expect(checksRepository.setExpireAfterSeconds).toHaveBeenCalledWith(30 * 86400);
+			expect(checksRepository.deleteOlderThan).not.toHaveBeenCalled();
+			expect(result).toEqual({ method: "ttl", expireAfterSeconds: 2592000, previousExpireAfterSeconds: null, changed: true });
+		});
+
+		it("turns TTL off when checkTTL is the unlimited sentinel (366)", async () => {
+			const { service, checksRepository } = createService();
+			checksRepository.setExpireAfterSeconds.mockResolvedValue({ previous: 2592000, changed: true });
+
+			const result = await service.applyRetention(366);
+
+			expect(checksRepository.setExpireAfterSeconds).toHaveBeenCalledWith(null);
+			expect(result).toEqual({ method: "ttl", expireAfterSeconds: null, previousExpireAfterSeconds: 2592000, changed: true });
+		});
+
+		it("falls back to deleting expired checks when setting TTL fails", async () => {
+			const { service, checksRepository, logger } = createService();
+			checksRepository.setExpireAfterSeconds.mockRejectedValue(new Error("not authorized to execute collMod"));
+			const before = Date.now();
+
+			const result = await service.applyRetention(30);
+
+			const cutoff = checksRepository.deleteOlderThan.mock.calls[0][0] as Date;
+			expect(cutoff.getTime()).toBeGreaterThanOrEqual(before - 30 * 86400 * 1000);
+			expect(cutoff.getTime()).toBeLessThanOrEqual(Date.now() - 30 * 86400 * 1000);
+			expect(logger.warn).toHaveBeenCalled();
+			expect(result).toEqual({ method: "delete", expireAfterSeconds: 2592000, deletedCount: 3 });
+		});
+
+		it("rethrows when the fallback delete also fails", async () => {
+			const { service, checksRepository } = createService();
+			checksRepository.setExpireAfterSeconds.mockRejectedValue(new Error("not authorized"));
+			checksRepository.deleteOlderThan.mockRejectedValue(new Error("cannot delete on non-metaField"));
+
+			await expect(service.applyRetention(30)).rejects.toThrow("cannot delete on non-metaField");
+		});
+
+		it("rethrows without falling back when retention is unlimited", async () => {
+			const { service, checksRepository } = createService();
+			checksRepository.setExpireAfterSeconds.mockRejectedValue(new Error("not authorized"));
+
+			await expect(service.applyRetention(366)).rejects.toThrow("not authorized");
+			expect(checksRepository.deleteOlderThan).not.toHaveBeenCalled();
 		});
 	});
 });
