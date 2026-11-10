@@ -114,7 +114,7 @@ N'hésitez pas à poser vos questions ou partager vos idées — nous adorerions
 <a id="features"></a>
 ## Fonctionnalités
 
-- Entièrement open source, déployable sur vos serveurs ou appareils personnels (par ex. Raspberry Pi 4 ou 5)
+- Entièrement open source, déployable sur vos serveurs ou appareils personnels (par ex. Raspberry Pi 5)
 - Plusieurs options de surveillance : disponibilité, Docker, ping, SSL, port, serveur de jeu
 - Surveillance de la vitesse des pages
 - Surveillance de l'infrastructure (mémoire, utilisation du disque, performance CPU, réseau, etc.) — nécessite l'agent [Capture](https://github.com/bluewave-labs/capture)

@@ -117,7 +117,7 @@ Kysy rohkeasti tai jaa ideoitasi — kuulemme sinusta mielellämme!
 <a id="features"></a>
 ## Ominaisuudet
 
-- Täysin avoimen lähdekoodin, asennettavissa omille palvelimille tai kotilaitteille (esim. Raspberry Pi 4 tai 5)
+- Täysin avoimen lähdekoodin, asennettavissa omille palvelimille tai kotilaitteille (esim. Raspberry Pi 5)
 - Useita valvontavaihtoehtoja: saatavuus, Docker, ping, SSL, portti, pelipalvelin
 - Sivunopeuden valvonta
 - Infrastruktuurin valvonta (muisti, levyn käyttö, CPU:n suorituskyky, verkko jne.) — vaatii [Capture](https://github.com/bluewave-labs/capture)-agentin

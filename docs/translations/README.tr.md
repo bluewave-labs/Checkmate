@@ -114,7 +114,7 @@ Soru sormaktan ya da fikirlerinizi paylaşmaktan çekinmeyin — sizi dinlemekte
 <a id="features"></a>
 ## Özellikler
 
-- Tamamen açık kaynak; kendi sunucularınızda ya da ev cihazlarınızda (örn. Raspberry Pi 4 veya 5) çalıştırılabilir
+- Tamamen açık kaynak; kendi sunucularınızda ya da ev cihazlarınızda (örn. Raspberry Pi 5) çalıştırılabilir
 - Birden fazla izleme seçeneği: çalışma süresi, Docker, ping, SSL, port, oyun sunucusu
 - Sayfa hızı izleme
 - Altyapı izleme (bellek, disk kullanımı, CPU performansı, ağ vb.) — [Capture](https://github.com/bluewave-labs/capture) ajanı gerekir

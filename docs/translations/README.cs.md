@@ -117,7 +117,7 @@ Neváhejte se ptát nebo sdílet své nápady — moc rádi vás slyšíme!
 <a id="features"></a>
 ## Funkce
 
-- Plně open source, nasaditelné na vlastních serverech nebo domácích zařízeních (např. Raspberry Pi 4 nebo 5)
+- Plně open source, nasaditelné na vlastních serverech nebo domácích zařízeních (např. Raspberry Pi 5)
 - Několik způsobů monitorování: dostupnost, Docker, ping, SSL, port, herní server
 - Monitorování rychlosti stránek
 - Monitorování infrastruktury (paměť, využití disku, výkon CPU, síť atd.) — vyžaduje agenta [Capture](https://github.com/bluewave-labs/capture)
