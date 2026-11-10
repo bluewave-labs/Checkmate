@@ -9,6 +9,11 @@ export type ConnectEnrollment = {
 	apiUrl: string | null;
 };
 
+// Scheduled backups run at most daily. Older installs may have saved a shorter
+// interval; it is raised to this when the state loads.
+export const MIN_BACKUP_INTERVAL_HOURS = 24;
+export const MAX_BACKUP_INTERVAL_HOURS = 168;
+
 export type ConnectBackupSchedule = {
 	enabled: boolean;
 	intervalHours: number;

@@ -9,7 +9,7 @@ import { ConnectHeartbeat } from "@/domain/connect/connect.heartbeat.js";
 import type { IConnectRepository } from "@/domain/connect/connect.repository.js";
 import { ENCRYPTED_PREFIX, revealConnectState } from "@/domain/connect/connect.secrets.js";
 import { ConnectTunnel } from "@/domain/connect/connect.tunnel.js";
-import { emptyConnectState, type ConnectBackupKind, type ConnectState } from "@/domain/connect/connect.type.js";
+import { emptyConnectState, MIN_BACKUP_INTERVAL_HOURS, type ConnectBackupKind, type ConnectState } from "@/domain/connect/connect.type.js";
 
 const SERVICE_NAME = "ConnectService";
 const HOUR_MS = 3_600_000;
@@ -120,12 +120,17 @@ export class ConnectService implements IConnectService {
 
 	private getDbName = async () => (await this.db.getConnection()).connection.name;
 
+	private withMinimumInterval = (state: ConnectState): ConnectState =>
+		state.schedule && state.schedule.intervalHours < MIN_BACKUP_INTERVAL_HOURS
+			? { ...state, schedule: { ...state.schedule, intervalHours: MIN_BACKUP_INTERVAL_HOURS } }
+			: state;
+
 	// A failure here must never stop Checkmate from starting: Connect simply
 	// stays inactive and the error is logged.
 	start = async () => {
 		try {
 			const stored = await this.repository.load();
-			if (stored) this.state = this.reveal(stored);
+			if (stored) this.state = this.withMinimumInterval(this.reveal(stored));
 			if (stored && this.needsEncryptionUpdate(stored)) await this.repository.save(this.protect(this.state));
 			this.stateLoaded = true;
 			this.applyState();
@@ -354,7 +359,7 @@ export class ConnectService implements IConnectService {
 
 	setBackupSchedule = async ({
 		enabled,
-		intervalHours = 24,
+		intervalHours = MIN_BACKUP_INTERVAL_HOURS,
 		kind = "full",
 	}: {
 		enabled: boolean;

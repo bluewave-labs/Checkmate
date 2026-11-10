@@ -2,6 +2,7 @@ import { RequestHandler, Response } from "express";
 import { z } from "zod";
 import { ApiEnvelope, Handler } from "./controllerUtils.js";
 import type { ConnectResult, IConnectService } from "@/domain/connect/connect.service.js";
+import { MAX_BACKUP_INTERVAL_HOURS, MIN_BACKUP_INTERVAL_HOURS } from "@/domain/connect/connect.type.js";
 
 export const connectEnrollBodyValidation = z.object({
 	connectUrl: z.string().regex(/^wss:\/\/[a-z0-9.-]+\/api\/tunnel$/, "Invalid Connect tunnel URL"),
@@ -41,7 +42,7 @@ export const connectBackupRestoreBodyValidation = z.object({
 
 export const connectBackupScheduleBodyValidation = z.object({
 	enabled: z.boolean(),
-	intervalHours: z.number().int().min(1).max(168).optional(),
+	intervalHours: z.number().int().min(MIN_BACKUP_INTERVAL_HOURS).max(MAX_BACKUP_INTERVAL_HOURS).optional(),
 	kind: z.enum(["full", "config"]).optional(),
 });
 

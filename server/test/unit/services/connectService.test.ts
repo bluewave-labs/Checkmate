@@ -18,6 +18,7 @@ import {
 	stallGuard,
 } from "../../../src/domain/connect/connect.backup.ts";
 import { ConnectBackupJob } from "../../../src/domain/connect/connect.backup-job.ts";
+import { connectBackupScheduleBodyValidation } from "../../../src/api/controllers/connectController.ts";
 import {
 	CONNECT_STATE_COLLECTION,
 	emptyConnectState,
@@ -687,24 +688,51 @@ describe("Connect", () => {
 
 			it("creates a job when the schedule is turned on", async () => {
 				const { service, scheduler } = await scheduled();
-				await service.setBackupSchedule({ enabled: true, intervalHours: 6 });
-				expect(scheduler.setConnectBackupJob).toHaveBeenCalledWith(6 * 3_600_000, undefined);
+				await service.setBackupSchedule({ enabled: true, intervalHours: 72 });
+				expect(scheduler.setConnectBackupJob).toHaveBeenCalledWith(72 * 3_600_000, undefined);
+			});
+
+			it("defaults to a daily schedule", async () => {
+				const { service, scheduler } = await scheduled();
+				await service.setBackupSchedule({ enabled: true });
+				expect(scheduler.setConnectBackupJob).toHaveBeenCalledWith(24 * 3_600_000, undefined);
 			});
 
 			it("moves the next run when the interval changes", async () => {
 				const { service, scheduler } = await scheduled();
 				await service.setBackupSchedule({ enabled: true, intervalHours: 168 });
 				const before = Date.now();
-				await service.setBackupSchedule({ enabled: true, intervalHours: 6 });
+				await service.setBackupSchedule({ enabled: true, intervalHours: 24 });
 				const nextRun = scheduler.setConnectBackupJob.mock.calls[1] as unknown as [number, number];
-				expect(nextRun[1]).toBeGreaterThanOrEqual(before + 6 * 3_600_000);
+				expect(nextRun[1]).toBeGreaterThanOrEqual(before + 24 * 3_600_000);
 			});
 
 			it("leaves the next run alone when only the kind changes", async () => {
 				const { service, scheduler } = await scheduled();
-				await service.setBackupSchedule({ enabled: true, intervalHours: 6, kind: "full" });
-				await service.setBackupSchedule({ enabled: true, intervalHours: 6, kind: "config" });
-				expect(scheduler.setConnectBackupJob.mock.calls[1]).toEqual([6 * 3_600_000, undefined]);
+				await service.setBackupSchedule({ enabled: true, intervalHours: 24, kind: "full" });
+				await service.setBackupSchedule({ enabled: true, intervalHours: 24, kind: "config" });
+				expect(scheduler.setConnectBackupJob.mock.calls[1]).toEqual([24 * 3_600_000, undefined]);
+			});
+
+			it("raises a saved interval below a day to daily at startup", async () => {
+				const { service, scheduler } = setup({
+					stored: {
+						...emptyConnectState(),
+						enrollment: { connectUrl: enrollInput.connectUrl, agentId: enrollInput.agentId, token: enrollInput.token, apiUrl: null },
+						recoveryKey: "ab".repeat(32),
+						schedule: { enabled: true, intervalHours: 6, kind: "full" },
+					},
+				});
+				jest.spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}"));
+				services.push(service);
+				await service.start();
+				expect(scheduler.setConnectBackupJob).toHaveBeenCalledWith(24 * 3_600_000);
+			});
+
+			it("rejects intervals shorter than a day", () => {
+				expect(connectBackupScheduleBodyValidation.safeParse({ enabled: true, intervalHours: 6 }).success).toBe(false);
+				expect(connectBackupScheduleBodyValidation.safeParse({ enabled: true, intervalHours: 24 }).success).toBe(true);
+				expect(connectBackupScheduleBodyValidation.safeParse({ enabled: true, intervalHours: 169 }).success).toBe(false);
 			});
 
 			it("removes the job when the schedule is turned off", async () => {

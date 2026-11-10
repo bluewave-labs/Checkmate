@@ -318,7 +318,7 @@ type BackupSectionProps = {
 	refetchStatus: () => Promise<unknown>;
 };
 
-const INTERVAL_OPTIONS = [6, 12, 24, 72, 168];
+const INTERVAL_OPTIONS = [24, 72, 168];
 const IDLE_POLL_MS = 5000;
 const BUSY_POLL_MS = 1500;
 
