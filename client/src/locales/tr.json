@@ -52,6 +52,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Ortalama yanıt süresi",
+				"checkCount": "Kontroller",
 				"downtime": "Kesinti süresi",
 				"high": "yüksek",
 				"low": "düşük",

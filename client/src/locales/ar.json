@@ -52,6 +52,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "متوسط وقت الاستجابة",
+				"checkCount": "الفحوصات",
 				"downtime": "وقت التوقف",
 				"high": "مرتفع",
 				"low": "منخفض",

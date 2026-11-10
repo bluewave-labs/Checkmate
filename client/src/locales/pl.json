@@ -58,6 +58,7 @@
 			},
 			"labels": {
 				"averageResponseTime": "Średni czas odpowiedzi",
+				"checkCount": "Kontrole",
 				"downtime": "Czas przestoju",
 				"high": "Wysoki",
 				"low": "Niski",

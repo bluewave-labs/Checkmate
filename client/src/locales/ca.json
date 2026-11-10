@@ -52,6 +52,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Temps de resposta mitjà",
+				"checkCount": "Comprovacions",
 				"downtime": "Temps d'inactivitat",
 				"high": "Alt",
 				"low": "Baix",

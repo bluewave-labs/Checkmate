@@ -52,6 +52,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Durchschnittliche Antwortzeit",
+				"checkCount": "Checks",
 				"downtime": "Ausfallzeit",
 				"high": "hoch",
 				"low": "niedrig",

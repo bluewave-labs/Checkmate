@@ -223,12 +223,16 @@ const UptimeDetailsPage = () => {
 					icon={<TrendingUp />}
 					checks={monitorData?.groupedUpChecks ?? []}
 					range={dateRange}
+					metric={isHeartbeat ? "checkCount" : "responseTime"}
+					countColor="success"
 				/>
 				<HistogramStatus
 					title={t("common.charts.labels.downtime")}
 					icon={<AlertTriangle />}
 					checks={monitorData?.groupedDownChecks ?? []}
 					range={dateRange}
+					metric={isHeartbeat ? "checkCount" : "responseTime"}
+					countColor="error"
 				/>
 				{!isHeartbeat && (
 					<RadialAvgResponse

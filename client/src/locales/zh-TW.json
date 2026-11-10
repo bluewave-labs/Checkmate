@@ -52,6 +52,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "平均回應時間",
+				"checkCount": "檢查次數",
 				"downtime": "停機時間",
 				"high": "高",
 				"low": "低",

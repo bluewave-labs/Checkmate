@@ -52,6 +52,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "平均响应时间",
+				"checkCount": "检查次数",
 				"downtime": "停机时间",
 				"high": "高的",
 				"low": "低的",
