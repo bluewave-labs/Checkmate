@@ -7,6 +7,7 @@ export interface IConnectRepository {
 	get(): Promise<ConnectState>;
 	// update
 	setSecrets(secrets: { token?: string }): Promise<void>;
+	setRemoteAccess(enabled: boolean): Promise<void>;
 	clearEnrollment(): Promise<void>;
 	// delete
 }

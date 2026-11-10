@@ -13,6 +13,7 @@ class MongoConnectRepository implements IConnectRepository {
 						apiUrl: doc.enrollment.apiUrl ?? null,
 					}
 				: null,
+			remoteAccessEnabled: doc?.remoteAccessEnabled ?? false,
 		};
 	};
 
@@ -30,8 +31,12 @@ class MongoConnectRepository implements IConnectRepository {
 		await ConnectStateModel.updateOne({ singleton: true, enrollment: { $ne: null } }, { $set: { "enrollment.token": secrets.token } });
 	};
 
+	setRemoteAccess = async (enabled: boolean): Promise<void> => {
+		await ConnectStateModel.updateOne({ singleton: true }, { $set: { remoteAccessEnabled: enabled } });
+	};
+
 	clearEnrollment = async (): Promise<void> => {
-		await ConnectStateModel.updateOne({ singleton: true }, { $set: { enrollment: null } });
+		await ConnectStateModel.updateOne({ singleton: true }, { $set: { enrollment: null, remoteAccessEnabled: false } });
 	};
 }
 

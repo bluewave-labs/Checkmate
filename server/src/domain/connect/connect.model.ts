@@ -22,6 +22,7 @@ const ConnectStateSchema = new Schema<ConnectStateDocument>(
 	{
 		singleton: { type: Boolean, required: true, unique: true, default: true },
 		enrollment: { type: enrollmentSchema, default: null },
+		remoteAccessEnabled: { type: Boolean, default: false },
 	},
 	{ timestamps: true, collection: CONNECT_STATE_COLLECTION }
 );

@@ -13,6 +13,7 @@ export type ConnectEnrollment = {
 };
 export type ConnectState = {
 	enrollment: ConnectEnrollment | null;
+	remoteAccessEnabled: boolean;
 };
 
 export type ConnectStatus = z.infer<typeof connectStatusSchema>;
