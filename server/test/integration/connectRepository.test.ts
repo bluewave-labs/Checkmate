@@ -35,13 +35,13 @@ describe("MongoConnectRepository", () => {
 
 	describe("get", () => {
 		it("returns the empty state when nothing has been stored", async () => {
-			await expect(repo.get()).resolves.toEqual({ enrollment: null });
+			await expect(repo.get()).resolves.toEqual({ enrollment: null, remoteAccessEnabled: false });
 		});
 
 		it("returns only the state fields", async () => {
 			await repo.setEnrollment(enrollment());
 
-			await expect(repo.get()).resolves.toEqual({ enrollment: enrollment() });
+			await expect(repo.get()).resolves.toEqual({ enrollment: enrollment(), remoteAccessEnabled: false });
 		});
 
 		it("reads a stored enrollment without an API URL as null", async () => {
@@ -90,7 +90,7 @@ describe("MongoConnectRepository", () => {
 
 			await repo.setSecrets({ token: "v1.reencrypted-token" });
 
-			await expect(repo.get()).resolves.toEqual({ enrollment: enrollment({ token: "v1.reencrypted-token" }) });
+			await expect(repo.get()).resolves.toEqual({ enrollment: enrollment({ token: "v1.reencrypted-token" }), remoteAccessEnabled: false });
 		});
 
 		it("does nothing when not enrolled", async () => {
@@ -98,7 +98,7 @@ describe("MongoConnectRepository", () => {
 			await repo.clearEnrollment();
 
 			await expect(repo.setSecrets({ token: "v1.reencrypted-token" })).resolves.toBeUndefined();
-			await expect(repo.get()).resolves.toEqual({ enrollment: null });
+			await expect(repo.get()).resolves.toEqual({ enrollment: null, remoteAccessEnabled: false });
 		});
 
 		it("does nothing when no document exists", async () => {
@@ -116,13 +116,47 @@ describe("MongoConnectRepository", () => {
 		});
 	});
 
+	describe("setRemoteAccess", () => {
+		it("persists the flag and leaves the enrollment alone", async () => {
+			await repo.setEnrollment(enrollment());
+
+			await repo.setRemoteAccess(true);
+			await expect(repo.get()).resolves.toEqual({ enrollment: enrollment(), remoteAccessEnabled: true });
+
+			await repo.setRemoteAccess(false);
+			await expect(repo.get()).resolves.toEqual({ enrollment: enrollment(), remoteAccessEnabled: false });
+		});
+
+		it("does not create a document when nothing is stored", async () => {
+			await repo.setRemoteAccess(true);
+
+			expect(await ConnectStateModel.countDocuments({})).toBe(0);
+			expect((await repo.get()).remoteAccessEnabled).toBe(false);
+		});
+
+		it("reads a document stored before the field existed as off", async () => {
+			await mongoose.connection.collection(CONNECT_STATE_COLLECTION).insertOne({ singleton: true, enrollment: null });
+
+			expect((await repo.get()).remoteAccessEnabled).toBe(false);
+		});
+	});
+
 	describe("clearEnrollment", () => {
+		it("turns remote access off", async () => {
+			await repo.setEnrollment(enrollment());
+			await repo.setRemoteAccess(true);
+
+			await repo.clearEnrollment();
+
+			expect((await repo.get()).remoteAccessEnabled).toBe(false);
+		});
+
 		it("clears the enrollment and keeps the document", async () => {
 			await repo.setEnrollment(enrollment());
 
 			await repo.clearEnrollment();
 
-			await expect(repo.get()).resolves.toEqual({ enrollment: null });
+			await expect(repo.get()).resolves.toEqual({ enrollment: null, remoteAccessEnabled: false });
 			expect(await ConnectStateModel.countDocuments({})).toBe(1);
 		});
 

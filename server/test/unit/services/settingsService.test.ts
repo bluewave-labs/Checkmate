@@ -19,6 +19,7 @@ const makeEnv = (overrides?: Partial<ValidatedEnv>): ValidatedEnv =>
 		STATUS_PAGE_THEMES_ENABLED: false,
 		ENCRYPTION_KEY: [],
 		CONNECT_ALLOWED_HOSTS: DEFAULT_CONNECT_HOSTS.join(","),
+		PORT: "52345",
 		...overrides,
 	}) as ValidatedEnv;
 
@@ -77,6 +78,7 @@ describe("SettingsService", () => {
 				statusPageThemesEnabled: false,
 				clientConfig: {},
 				connectAllowedHosts: [...DEFAULT_CONNECT_HOSTS],
+				port: "52345",
 			});
 		});
 

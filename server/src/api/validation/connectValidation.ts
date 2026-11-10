@@ -10,3 +10,7 @@ export const connectEnrollBodyValidation = z.object({
 		.nullable()
 		.default(null),
 });
+
+export const connectRemoteAccessBodyValidation = z.object({
+	enabled: z.boolean(),
+});

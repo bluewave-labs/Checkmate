@@ -1,9 +1,10 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it, jest } from "@jest/globals";
 import * as nodeCrypto from "node:crypto";
 import { ConnectService, isConnectHostAllowed } from "../../../src/domain/connect/connect.service.ts";
 import { connectErrors } from "../../../src/domain/connect/connect.errors.ts";
 import { DEFAULT_CONNECT_HOSTS, type ConnectEnrollment } from "../../../src/domain/connect/connect.type.ts";
 import type { ISettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
+import type { IConnectTunnel } from "../../../src/domain/connect/connect-tunnel.ts";
 import { APP_VERSION } from "../../../src/utils/appVersion.ts";
 import { EncryptionService } from "../../../src/service/encryption/encryptionService.ts";
 import { AppError } from "../../../src/utils/AppError.ts";
@@ -19,16 +20,25 @@ const enrollment = (overrides: Partial<ConnectEnrollment> = {}): ConnectEnrollme
 	...overrides,
 });
 
+const TUNNEL_STATUS = { connected: false, lastConnectedAt: null, lastError: null, closeCode: null };
+
 const setup = (opts: { encryptionKey?: boolean; allowedHosts?: readonly string[] } = {}) => {
-	const logger = createMockLogger() as unknown as ILogger;
+	const logger = createMockLogger();
 	const keys = opts.encryptionKey === false ? [] : [nodeCrypto.randomBytes(32)];
-	const encryptionService = new EncryptionService(keys, logger, nodeCrypto);
+	const encryptionService = new EncryptionService(keys, logger as unknown as ILogger, nodeCrypto);
 	const repository = new InMemoryConnectRepository();
 	const settingsService = {
 		getSettings: () => ({ connectAllowedHosts: [...(opts.allowedHosts ?? DEFAULT_CONNECT_HOSTS)] }),
 	} as unknown as ISettingsService;
-	const service = new ConnectService(repository, encryptionService, settingsService, logger);
-	return { service, repository, encryptionService };
+	const tunnel = { start: jest.fn(), stop: jest.fn(), status: jest.fn(() => ({ ...TUNNEL_STATUS })) };
+	const service = new ConnectService(
+		repository,
+		encryptionService,
+		settingsService,
+		tunnel as unknown as IConnectTunnel,
+		logger as unknown as ILogger
+	);
+	return { service, repository, encryptionService, tunnel, logger };
 };
 
 const expectAppError = async (promise: Promise<unknown>, definition: { status: number; description: string }) => {
@@ -71,7 +81,17 @@ describe("ConnectService.getStatus", () => {
 			connectUrl: null,
 			apiUrl: null,
 			agentVersion: APP_VERSION,
+			remoteAccess: { enabled: false },
+			tunnel: TUNNEL_STATUS,
 		});
+	});
+
+	it("includes the tunnel's own status", async () => {
+		const { service, tunnel } = setup();
+		const live = { connected: true, lastConnectedAt: "2026-11-10T16:00:00.000Z", lastError: null, closeCode: null };
+		tunnel.status.mockReturnValue(live);
+
+		await expect(service.getStatus()).resolves.toMatchObject({ tunnel: live });
 	});
 });
 
@@ -88,6 +108,8 @@ describe("ConnectService.enroll", () => {
 			connectUrl: input.connectUrl,
 			apiUrl: input.apiUrl,
 			agentVersion: APP_VERSION,
+			remoteAccess: { enabled: false },
+			tunnel: TUNNEL_STATUS,
 		});
 		expect(JSON.stringify(status)).not.toContain(input.token);
 		const stored = (await repository.get()).enrollment;
@@ -141,6 +163,28 @@ describe("ConnectService.enroll", () => {
 
 		expect(status.agentId).toBe("agent-2");
 	});
+
+	it("leaves the tunnel stopped when remote access is off", async () => {
+		const { service, tunnel } = setup();
+
+		await service.enroll(enrollment());
+
+		expect(tunnel.start).not.toHaveBeenCalled();
+		expect(tunnel.stop).toHaveBeenCalled();
+	});
+
+	it("restarts the tunnel with the new credential when remote access is on", async () => {
+		const { service, tunnel } = setup();
+		await service.enroll(enrollment());
+		await service.setRemoteAccess(true);
+		tunnel.start.mockClear();
+		const newToken = `cmk_${"b".repeat(48)}`;
+
+		await service.enroll(enrollment({ agentId: "agent-2", token: newToken }));
+
+		expect(tunnel.start).toHaveBeenCalledTimes(1);
+		expect(tunnel.start).toHaveBeenCalledWith(expect.objectContaining({ agentId: "agent-2", token: newToken }));
+	});
 });
 
 describe("ConnectService.unenroll", () => {
@@ -166,5 +210,133 @@ describe("ConnectService.unenroll", () => {
 
 		await expect(service.getStatus()).resolves.toMatchObject({ enrolled: true });
 		await expect(service.unenroll()).resolves.toMatchObject({ enrolled: false });
+	});
+
+	it("stops the tunnel and turns remote access off", async () => {
+		const { service, repository, tunnel } = setup();
+		await service.enroll(enrollment());
+		await service.setRemoteAccess(true);
+		tunnel.stop.mockClear();
+
+		const status = await service.unenroll();
+
+		expect(tunnel.stop).toHaveBeenCalledTimes(1);
+		expect(status.remoteAccess.enabled).toBe(false);
+		expect((await repository.get()).remoteAccessEnabled).toBe(false);
+	});
+});
+
+describe("ConnectService.setRemoteAccess", () => {
+	it("turns remote access on and starts the tunnel with the decrypted token", async () => {
+		const { service, repository, tunnel } = setup();
+		const input = enrollment();
+		await service.enroll(input);
+
+		const status = await service.setRemoteAccess(true);
+
+		expect(status.remoteAccess.enabled).toBe(true);
+		expect((await repository.get()).remoteAccessEnabled).toBe(true);
+		expect(tunnel.start).toHaveBeenCalledWith({ ...input });
+	});
+
+	it("turns remote access off and stops the tunnel", async () => {
+		const { service, repository, tunnel } = setup();
+		await service.enroll(enrollment());
+		await service.setRemoteAccess(true);
+		tunnel.stop.mockClear();
+
+		const status = await service.setRemoteAccess(false);
+
+		expect(status.remoteAccess.enabled).toBe(false);
+		expect((await repository.get()).remoteAccessEnabled).toBe(false);
+		expect(tunnel.stop).toHaveBeenCalledTimes(1);
+	});
+
+	it("refuses to turn it on when not enrolled, without saving or starting", async () => {
+		const { service, repository, tunnel } = setup();
+
+		await expectAppError(service.setRemoteAccess(true), connectErrors.notEnrolled);
+
+		expect((await repository.get()).remoteAccessEnabled).toBe(false);
+		expect(tunnel.start).not.toHaveBeenCalled();
+	});
+
+	it("refuses to turn it on when the stored token can't be decrypted, without saving", async () => {
+		const { service, repository, tunnel } = setup();
+		await repository.setEnrollment({ ...enrollment(), token: "v1.not.a.valid.ciphertext" });
+
+		await expectAppError(service.setRemoteAccess(true), connectErrors.stateUnavailable);
+
+		expect((await repository.get()).remoteAccessEnabled).toBe(false);
+		expect(tunnel.start).not.toHaveBeenCalled();
+	});
+
+	it("turns it off when not enrolled without error", async () => {
+		const { service, tunnel } = setup();
+
+		await expect(service.setRemoteAccess(false)).resolves.toMatchObject({ remoteAccess: { enabled: false } });
+		expect(tunnel.stop).toHaveBeenCalled();
+	});
+});
+
+describe("ConnectService.start", () => {
+	it("starts the tunnel with the decrypted token when enrolled with remote access on", async () => {
+		const { service, repository, encryptionService, tunnel } = setup();
+		const input = enrollment();
+		await repository.setEnrollment({ ...input, token: encryptionService.encrypt(input.token) });
+		await repository.setRemoteAccess(true);
+
+		await service.start();
+
+		expect(tunnel.start).toHaveBeenCalledTimes(1);
+		expect(tunnel.start).toHaveBeenCalledWith({ ...input });
+	});
+
+	it("doesn't start the tunnel when remote access is off", async () => {
+		const { service, repository, encryptionService, tunnel } = setup();
+		await repository.setEnrollment({ ...enrollment(), token: encryptionService.encrypt(enrollment().token) });
+
+		await service.start();
+
+		expect(tunnel.start).not.toHaveBeenCalled();
+	});
+
+	it("doesn't start the tunnel when not enrolled", async () => {
+		const { service, tunnel } = setup();
+
+		await service.start();
+
+		expect(tunnel.start).not.toHaveBeenCalled();
+	});
+
+	it("logs and doesn't throw when the stored token can't be decrypted", async () => {
+		const { service, repository, tunnel, logger } = setup();
+		await repository.setEnrollment({ ...enrollment(), token: "v1.not.a.valid.ciphertext" });
+		await repository.setRemoteAccess(true);
+
+		await expect(service.start()).resolves.toBeUndefined();
+
+		expect(tunnel.start).not.toHaveBeenCalled();
+		expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ err: expect.any(AppError) }), "Connect could not start remote access");
+	});
+
+	it("logs and doesn't throw when the state can't be read", async () => {
+		const { service, repository, logger } = setup();
+		const failure = new Error("connection refused");
+		jest.spyOn(repository, "get").mockRejectedValue(failure);
+
+		await expect(service.start()).resolves.toBeUndefined();
+
+		expect(logger.error).toHaveBeenCalledWith({ err: failure }, "Connect could not start remote access");
+	});
+});
+
+describe("ConnectService.stop", () => {
+	it("stops the tunnel", () => {
+		const { service, tunnel } = setup();
+
+		service.stop();
+
+		expect(tunnel.stop).toHaveBeenCalledTimes(1);
 	});
 });

@@ -6,6 +6,7 @@ import { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import { AppError } from "@/utils/AppError.js";
 import { APP_VERSION } from "@/utils/appVersion.js";
 import { ILogger } from "@/utils/logger/logger.js";
+import { IConnectTunnel } from "@/domain/connect/connect-tunnel.js";
 
 const SERVICE_NAME = "ConnectService";
 
@@ -19,20 +20,27 @@ export const isConnectHostAllowed = (url: string, allowedHosts: readonly string[
 };
 
 export interface IConnectService {
+	start(): Promise<void>;
+	stop(): void;
 	getStatus(): Promise<ConnectStatus>;
 	enroll(input: ConnectEnrollment): Promise<ConnectStatus>;
 	unenroll(): Promise<ConnectStatus>;
+	setRemoteAccess(enabled: boolean): Promise<ConnectStatus>;
 }
 
 export class ConnectService implements IConnectService {
 	static SERVICE_NAME = SERVICE_NAME;
+	private logger: ILogger;
 
 	constructor(
 		private connectRepository: IConnectRepository,
 		private encryptionService: IEncryptionService,
 		private settingsService: ISettingsService,
-		private logger: ILogger
-	) {}
+		private tunnel: IConnectTunnel,
+		logger: ILogger
+	) {
+		this.logger = logger.child({ service: SERVICE_NAME });
+	}
 
 	private toStatus = (state: ConnectState): ConnectStatus => {
 		return {
@@ -41,7 +49,31 @@ export class ConnectService implements IConnectService {
 			connectUrl: state.enrollment?.connectUrl ?? null,
 			apiUrl: state.enrollment?.apiUrl ?? null,
 			agentVersion: APP_VERSION,
+			remoteAccess: { enabled: state.remoteAccessEnabled },
+			tunnel: this.tunnel.status(),
 		};
+	};
+
+	private decrypt = (value: string): string => {
+		try {
+			return this.encryptionService.decrypt(value);
+		} catch {
+			throw new AppError(connectErrors.stateUnavailable, { service: SERVICE_NAME });
+		}
+	};
+
+	start = async (): Promise<void> => {
+		try {
+			const { enrollment, remoteAccessEnabled } = await this.connectRepository.get();
+			if (!enrollment || !remoteAccessEnabled) return;
+			this.tunnel.start({ ...enrollment, token: this.decrypt(enrollment.token) });
+		} catch (error: unknown) {
+			this.logger.error({ err: error }, "Connect could not start remote access");
+		}
+	};
+
+	stop = () => {
+		this.tunnel.stop();
 	};
 
 	getStatus = async (): Promise<ConnectStatus> => {
@@ -62,12 +94,33 @@ export class ConnectService implements IConnectService {
 		}
 		await this.connectRepository.setEnrollment({ ...input, token: this.encryptionService.encrypt(input.token) });
 		const state = await this.connectRepository.get();
+		if (!state.remoteAccessEnabled) {
+			this.tunnel.stop();
+			return this.toStatus(state);
+		}
+		this.tunnel.start(input);
 		return this.toStatus(state);
 	};
 
 	unenroll = async (): Promise<ConnectStatus> => {
 		await this.connectRepository.clearEnrollment();
 		const state = await this.connectRepository.get();
+		this.tunnel.stop();
 		return this.toStatus(state);
+	};
+
+	setRemoteAccess = async (enabled: boolean): Promise<ConnectStatus> => {
+		const current = await this.connectRepository.get();
+		if (!enabled) {
+			await this.connectRepository.setRemoteAccess(false);
+			this.tunnel.stop();
+			return this.toStatus({ ...current, remoteAccessEnabled: false });
+		}
+
+		if (!current.enrollment) throw new AppError(connectErrors.notEnrolled, { service: SERVICE_NAME });
+		const token = this.decrypt(current.enrollment.token);
+		await this.connectRepository.setRemoteAccess(true);
+		this.tunnel.start({ ...current.enrollment, token });
+		return this.toStatus({ ...current, remoteAccessEnabled: true });
 	};
 }

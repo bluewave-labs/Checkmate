@@ -78,7 +78,7 @@ export function getOpenApiSpec(): JsonObject {
 			{ name: "tags", description: "Labels for grouping and filtering monitors, team-scoped." },
 			{ name: "egress", description: "The instance's outbound connectivity self-check state." },
 			{ name: "heartbeat", description: "Unauthenticated ping endpoints for heartbeat (dead man's switch) monitors, addressed by token." },
-			{ name: "connect", description: "Checkmate Connect enrollment for this installation (admin to view, superadmin to change)." },
+			{ name: "connect", description: "Checkmate Connect enrollment and remote access for this installation (admin to view, superadmin to change)." },
 		],
 	});
 
