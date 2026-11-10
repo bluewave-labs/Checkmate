@@ -3,11 +3,9 @@ import { CaptureSmartPayload, CheckContext, HardwareSmartResult, HardwareStatusP
 import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { HttpProvider } from "@/service/networkProviders/HttpProvider.js";
 import { AppError, internalError } from "@/utils/AppError.js";
+import { smartTimeoutMs } from "@/domain/storage/smart-schedule.js";
 
 const SERVICE_NAME = "HardwareProvider";
-// Capture runs smartctl once per drive (up to 20 s on a hung drive, 4 in parallel), so SMART gets far longer than the
-// metrics request. No retry: a SMART request that times out is tried again at the next SMART interval.
-const SMART_TIMEOUT_MS = 60_000;
 const SMART_ERROR_METRIC = "smart";
 
 const smartFailure = (reason: string): HardwareSmartResult => ({
@@ -26,8 +24,8 @@ export class HardwareProvider implements IStatusProvider<HardwareStatusPayload> 
 		const { url } = monitor;
 		try {
 			if (!url) throw new Error("URL is required for Hardware monitor");
-			// The pipeline sets ctx.smartUrl when a SMART fetch is due. It runs alongside the metrics request so its
-			// slower response does not add to the check's duration.
+			// The pipeline sets ctx.smartUrl when a SMART fetch is due. Both requests run at once, but the check waits for
+			// both, so the SMART timeout is capped well under the check interval (see smartTimeoutMs).
 			const [status, smart] = await Promise.all([
 				this.httpProvider.handle<HardwareStatusPayload>(monitor, ctx),
 				ctx?.smartUrl ? this.fetchSmart(monitor, ctx.smartUrl, ctx) : Promise.resolve(undefined),
@@ -51,8 +49,9 @@ export class HardwareProvider implements IStatusProvider<HardwareStatusPayload> 
 		// The monitor's match rules and custom up codes describe the metrics endpoint, not this one
 		const smartMonitor: Monitor = { ...monitor, url: smartUrl, method: "GET", useAdvancedMatching: false, jsonPath: undefined, customUpCodes: [] };
 		try {
+			// No retry: a SMART request that times out is tried again at the next SMART interval
 			const response = await this.httpProvider.handle<CaptureSmartPayload>(smartMonitor, ctx, {
-				timeoutMs: SMART_TIMEOUT_MS,
+				timeoutMs: smartTimeoutMs(monitor.interval),
 				retryLimit: 0,
 			});
 			if (!response.status) return smartFailure(response.message);

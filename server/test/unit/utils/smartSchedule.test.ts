@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { deriveSmartUrl, isSmartDue, SMART_INTERVAL_MS } from "../../../src/domain/storage/smart-schedule.ts";
+import { deriveSmartUrl, isSmartDue, SMART_INTERVAL_MS, SMART_MAX_TIMEOUT_MS, smartTimeoutMs } from "../../../src/domain/storage/smart-schedule.ts";
 
 describe("deriveSmartUrl", () => {
 	it("appends /smart to a metrics URL", () => {
@@ -53,5 +53,22 @@ describe("isSmartDue", () => {
 
 	it("uses a ten minute interval", () => {
 		expect(SMART_INTERVAL_MS).toBe(10 * 60 * 1000);
+	});
+});
+
+describe("smartTimeoutMs", () => {
+	it("is half the check interval", () => {
+		expect(smartTimeoutMs(10_000)).toBe(5_000);
+		expect(smartTimeoutMs(60_000)).toBe(30_000);
+	});
+
+	it("never exceeds the maximum for long intervals", () => {
+		expect(smartTimeoutMs(5 * 60_000)).toBe(SMART_MAX_TIMEOUT_MS);
+	});
+
+	it("falls back to the maximum when the interval is missing or invalid", () => {
+		expect(smartTimeoutMs(undefined)).toBe(SMART_MAX_TIMEOUT_MS);
+		expect(smartTimeoutMs(0)).toBe(SMART_MAX_TIMEOUT_MS);
+		expect(smartTimeoutMs(-1)).toBe(SMART_MAX_TIMEOUT_MS);
 	});
 });

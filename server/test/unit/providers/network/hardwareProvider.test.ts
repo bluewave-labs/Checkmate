@@ -146,7 +146,7 @@ describe("HardwareProvider", () => {
 			expect((result.payload as HardwareStatusPayload).smart).toBeUndefined();
 		});
 
-		it("fetches SMART with a plain GET, its own timeout and no retry", async () => {
+		it("fetches SMART with a plain GET, the maximum timeout when no interval is set, and no retry", async () => {
 			const { provider, httpProvider, monitor } = setup(async () => smartResponse());
 			const ctx = { smartUrl: SMART_URL };
 
@@ -158,6 +158,15 @@ describe("HardwareProvider", () => {
 			);
 			expect(smartCall[1]).toBe(ctx);
 			expect(smartCall[2]).toEqual({ timeoutMs: 60_000, retryLimit: 0 });
+		});
+
+		it("caps the SMART timeout at half the check interval", async () => {
+			const { provider, httpProvider, monitor } = setup(async () => smartResponse());
+
+			await provider.handle({ ...monitor, interval: 15_000 }, { smartUrl: SMART_URL });
+
+			const smartCall = (httpProvider.handle as jest.Mock).mock.calls.find(([m]) => (m as Monitor).url === SMART_URL)!;
+			expect(smartCall[2]).toEqual({ timeoutMs: 7_500, retryLimit: 0 });
 		});
 
 		it("attaches the drives and SMART errors to the hardware payload", async () => {

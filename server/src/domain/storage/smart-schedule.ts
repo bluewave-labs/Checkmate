@@ -2,6 +2,15 @@
 // one process per drive and can take ~20 s on a hung drive.
 export const SMART_INTERVAL_MS = 10 * 60 * 1000;
 
+// The check is built only once both the metrics and the SMART request finish, so a slow SMART read delays that check.
+// The SMART timeout is kept well under the check interval: half of it, and never more than SMART_MAX_TIMEOUT_MS.
+// A drive that hangs longer (Capture allows ~20 s per hung drive) is recorded as a SMART error for that fetch.
+export const SMART_MAX_TIMEOUT_MS = 60_000;
+const SMART_TIMEOUT_INTERVAL_FRACTION = 0.5;
+
+export const smartTimeoutMs = (intervalMs: number | undefined): number =>
+	intervalMs && intervalMs > 0 ? Math.min(SMART_MAX_TIMEOUT_MS, Math.floor(intervalMs * SMART_TIMEOUT_INTERVAL_FRACTION)) : SMART_MAX_TIMEOUT_MS;
+
 const METRICS_PATH = "/api/v1/metrics";
 const SMART_PATH = `${METRICS_PATH}/smart`;
 
