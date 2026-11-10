@@ -343,6 +343,29 @@ curl -fsS -m 10 --retry 3 "https://<checkmate-host>/api/v1/heartbeat/<pingKey>/n
 curl -fsS "https://<checkmate-host>/api/v1/heartbeat/<pingKey>/nightly-backup?create=true&interval=3600000"
 ```
 
+### Checkmate Connect remote access
+
+Remote access keeps an outbound tunnel open from this server to Checkmate Connect, so you can reach the installation from its Connect address without opening inbound ports. A superadmin turns it on in **Settings → Checkmate Connect** after enrolling.
+
+The tunnel forwards every request to this server's own `PORT`. The web UI loads over the Connect address only when this server serves it, which the default Docker image does. If you serve the client separately, for example from its own nginx or origin, only the API is reachable through Connect.
+
+**Development.** `npm run dev` serves the client from Vite, so the API server has no UI to return and the Connect address answers `404`. To test remote access with the UI, have the server serve a production build of the client. From the repository root:
+
+```bash
+ln -s ../client/dist server/public
+cd client && npx vite build --watch
+```
+
+`vite build --watch` rebuilds `client/dist` on every save; reload the Connect address to pick up changes. Both `server/public` and `client/dist` are gitignored.
+
+To go back to the normal dev setup, stop `vite build --watch` and remove the link from the repository root:
+
+```bash
+rm server/public
+```
+
+This deletes only the link, not `client/dist`. Leave off the trailing slash: `rm server/public/` would target the linked directory instead of the link.
+
 For more documentation, see the [docs directory](./docs/).
 
 <a id="performance"></a>
