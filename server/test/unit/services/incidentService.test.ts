@@ -22,6 +22,8 @@ const createIncidentsRepo = () =>
 		findByTeamId: jest.fn(),
 		countByTeamId: jest.fn(),
 		findSummaryByTeamId: jest.fn(),
+		appendStorageEvents: jest.fn(),
+		findStorageEvents: jest.fn(),
 	}) as unknown as jest.Mocked<IIncidentsRepository>;
 
 const createMonitorsRepo = () =>
@@ -219,7 +221,38 @@ describe("IncidentService", () => {
 			);
 		});
 
-		it("keeps the open incident on storage_breach when one is already active", async () => {
+		it("logs every storage alert as an event on a new storage incident", async () => {
+			const { service, incidentsRepository } = createService();
+			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(null);
+			(incidentsRepository.create as jest.Mock).mockResolvedValue(makeIncident());
+
+			const storageBreaches = [
+				{ subject: "/dev/md1", reason: "array_degraded" as const, detail: "degraded, 1 of 2 disks missing" },
+				{ subject: "WD-1", reason: "drive_failed" as const, detail: "health FAILED", device: "/dev/sdb", model: "WDC" },
+			];
+			await service.handleIncident(
+				makeMonitor({ type: "hardware", status: "breached" }),
+				makeDecision({ transition: "storage_breach", storageBreaches, openedStorageBreaches: storageBreaches }),
+				makeCheck()
+			);
+
+			const created = (incidentsRepository.create as jest.Mock).mock.calls[0][0] as Partial<Incident>;
+			expect(created.storageEvents).toHaveLength(2);
+			expect(created.storageEvents?.[1]).toEqual(expect.objectContaining({ subject: "WD-1", reason: "drive_failed", device: "/dev/sdb" }));
+			expect(Number.isNaN(Date.parse(created.storageEvents?.[0].at ?? ""))).toBe(false);
+		});
+
+		it("logs no storage events on down or threshold incidents", async () => {
+			const { service, incidentsRepository } = createService();
+			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(null);
+			(incidentsRepository.create as jest.Mock).mockResolvedValue(makeIncident());
+
+			await service.handleIncident(makeMonitor(), makeDecision({ transition: "status_down" }), makeCheck());
+
+			expect(incidentsRepository.create).toHaveBeenCalledWith(expect.objectContaining({ storageEvents: [] }));
+		});
+
+		it("keeps the open incident on storage_breach when one is already active and nothing new opened", async () => {
 			const existing = makeIncident();
 			const { service, incidentsRepository } = createService();
 			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(existing);
@@ -228,6 +261,27 @@ describe("IncidentService", () => {
 
 			expect(result).toBe(existing);
 			expect(incidentsRepository.create).not.toHaveBeenCalled();
+			expect(incidentsRepository.appendStorageEvents).not.toHaveBeenCalled();
+		});
+
+		it("logs only the newly opened storage alerts on an incident that is already open", async () => {
+			const existing = makeIncident({ cause: "threshold" });
+			const updated = makeIncident({ cause: "threshold" });
+			const { service, incidentsRepository } = createService();
+			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(existing);
+			(incidentsRepository.appendStorageEvents as jest.Mock).mockResolvedValue(updated);
+
+			const failed = { subject: "WD-1", reason: "drive_failed" as const, detail: "health FAILED" };
+			const degraded = { subject: "/dev/md1", reason: "array_degraded" as const, detail: "degraded, 1 of 2 disks missing" };
+			const result = await service.handleIncident(
+				makeMonitor({ status: "breached" }),
+				makeDecision({ transition: "storage_breach", storageBreaches: [degraded, failed], openedStorageBreaches: [failed] }),
+				makeCheck()
+			);
+
+			expect(result).toBe(updated);
+			expect(incidentsRepository.create).not.toHaveBeenCalled();
+			expect(incidentsRepository.appendStorageEvents).toHaveBeenCalledWith("inc-1", "team-1", [expect.objectContaining({ subject: "WD-1" })]);
 		});
 
 		it("resolves the active incident on storage_resolved when the monitor is back up", async () => {
@@ -499,6 +553,36 @@ describe("IncidentService", () => {
 
 			await expect(service.getIncidentById("inc-1", "team-1")).rejects.toBeNull();
 			expect(logger.error).toHaveBeenCalledWith({ err: null, incidentId: "inc-1" }, "Failed to get incident");
+		});
+	});
+
+	describe("getStorageEvents", () => {
+		it("asks the repository for the monitor's events about the given subjects, capped", async () => {
+			const { service, incidentsRepository } = createService();
+			const events = [
+				{
+					subject: "WD-1",
+					reason: "drive_failed",
+					detail: "health FAILED",
+					at: "2026-11-09T21:14:00.000Z",
+					incidentId: "inc-1",
+					incidentActive: true,
+					incidentEndTime: null,
+				},
+			];
+			(incidentsRepository.findStorageEvents as jest.Mock).mockResolvedValue(events);
+
+			const result = await service.getStorageEvents("team-1", "mon-1", ["WD-1", "/dev/md1"]);
+
+			expect(result).toBe(events);
+			expect(incidentsRepository.findStorageEvents).toHaveBeenCalledWith("mon-1", "team-1", ["WD-1", "/dev/md1"], 50);
+		});
+
+		it("rethrows repository errors", async () => {
+			const { service, incidentsRepository } = createService();
+			(incidentsRepository.findStorageEvents as jest.Mock).mockRejectedValue(new Error("db down"));
+
+			await expect(service.getStorageEvents("team-1", "mon-1", ["WD-1"])).rejects.toThrow("db down");
 		});
 	});
 });

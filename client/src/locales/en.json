@@ -1321,6 +1321,18 @@
 						"error_log_has_errors": "The drive's error log has entries. A few old entries are common; a growing log points to a failing drive or cable.",
 						"self_test_log_has_errors": "A self-test recorded an error. Run another self-test to see whether it repeats."
 					}
+				},
+				"incidents": {
+					"title": "Incidents",
+					"openAll": "Open in incidents",
+					"none": "No storage alerts for this drive or its arrays.",
+					"error": "Could not load this drive's incidents.",
+					"events": {
+						"drive_failed": "Drive failed: {{detail}}",
+						"drive_warning": "Drive warning: {{detail}}",
+						"array_degraded": "Array {{subject}}: {{detail}}",
+						"array_inactive": "Array {{subject}}: {{detail}}"
+					}
 				}
 			}
 		},

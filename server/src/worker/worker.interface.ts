@@ -26,6 +26,8 @@ export interface MonitorActionDecision {
 	thresholdBreaches?: HardwareBreaches;
 	// storage_breach only: every active storage alert, new ones included
 	storageBreaches?: StorageBreach[];
+	// storage_breach only: the alerts that opened on this check
+	openedStorageBreaches?: StorageBreach[];
 }
 
 export type MonitorEvaluation = {

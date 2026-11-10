@@ -6,12 +6,17 @@ import { useTheme } from "@mui/material/styles";
 import { useId } from "react";
 import { LAYOUT } from "@/Utils/Theme/constants";
 
-// A titled block of the Storage tab: heading on the left, a short note on the right
+// A titled block of the Storage tab: heading on the left, a short note or an action on the right
 export const StorageSection = ({
 	title,
 	subtitle,
+	action,
 	children,
-}: React.PropsWithChildren<{ title: string; subtitle?: string }>) => {
+}: React.PropsWithChildren<{
+	title: string;
+	subtitle?: string;
+	action?: React.ReactNode;
+}>) => {
 	const theme = useTheme();
 	const headingId = useId();
 
@@ -38,6 +43,7 @@ export const StorageSection = ({
 				{subtitle && (
 					<Typography color={theme.palette.text.secondary}>{subtitle}</Typography>
 				)}
+				{action}
 			</Stack>
 			{children}
 		</Stack>

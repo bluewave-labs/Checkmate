@@ -1,5 +1,5 @@
 import type { Incident } from "@/domain/incidents/incident.type.js";
-import type { IncidentSummary } from "@/domain/incidents/incident.type.js";
+import type { IncidentStorageEvent, IncidentSummary, StorageIncidentEvent } from "@/domain/incidents/incident.type.js";
 export interface IIncidentsRepository {
 	// create
 	create(incident: Partial<Incident>): Promise<Incident>;
@@ -19,10 +19,13 @@ export interface IIncidentsRepository {
 	): Promise<Incident[]>;
 	findByMonitorIdAndDate(monitorId: string, teamId: string, dateStart: Date, dateEnd: Date): Promise<Incident[]>;
 	findSummaryByTeamId(teamId: string, limit?: number): Promise<IncidentSummary>;
+	// Storage events for the given subjects (drive serials, array devices) across the monitor's incidents, newest first
+	findStorageEvents(monitorId: string, teamId: string, subjects: string[], limit: number): Promise<StorageIncidentEvent[]>;
 	countByTeamId(teamId: string, startDate: Date | undefined, status?: boolean, monitorId?: string, resolutionType?: string): Promise<number>;
 
 	// update
 	updateById(incidentId: string, teamId: string, updateData: Partial<Incident>): Promise<Incident>;
+	appendStorageEvents(incidentId: string, teamId: string, events: IncidentStorageEvent[]): Promise<Incident>;
 	// delete
 	deleteByMonitorId(monitorId: string, teamId: string): Promise<number>;
 	deleteByMonitorIdsNotIn(monitorIds: string[]): Promise<number>;

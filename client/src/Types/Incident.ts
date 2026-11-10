@@ -48,3 +48,24 @@ export interface IncidentSummary {
 	topMonitor: IncidentSummaryTopMonitor | null;
 	latestIncidents: IncidentSummaryItem[];
 }
+
+export const StorageAlertReasons = [
+	"array_degraded",
+	"array_inactive",
+	"drive_failed",
+	"drive_warning",
+] as const;
+export type StorageAlertReason = (typeof StorageAlertReasons)[number];
+
+// A storage alert logged on one of a hardware monitor's incidents, for a drive's incident list
+export interface StorageIncidentEvent {
+	subject: string;
+	reason: StorageAlertReason;
+	detail: string;
+	device?: string;
+	model?: string;
+	at: string;
+	incidentId: string;
+	incidentActive: boolean;
+	incidentEndTime: string | null;
+}

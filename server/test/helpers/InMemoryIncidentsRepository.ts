@@ -1,5 +1,5 @@
 import type { IIncidentsRepository } from "../../src/domain/incidents/incident.repository.interface.ts";
-import type { Incident, IncidentSummary } from "../../src/domain/incidents/incident.type.ts";
+import type { Incident, IncidentStorageEvent, IncidentSummary, StorageIncidentEvent } from "../../src/domain/incidents/incident.type.ts";
 import { randomUUID } from "crypto";
 
 export class InMemoryIncidentsRepository implements IIncidentsRepository {
@@ -16,6 +16,8 @@ export class InMemoryIncidentsRepository implements IIncidentsRepository {
 			status: incident.status ?? true,
 			message: incident.message ?? null,
 			statusCode: incident.statusCode ?? null,
+			cause: incident.cause ?? null,
+			storageEvents: incident.storageEvents ?? [],
 			resolutionType: incident.resolutionType ?? null,
 			resolvedBy: incident.resolvedBy ?? null,
 			resolvedByEmail: incident.resolvedByEmail ?? null,
@@ -112,6 +114,26 @@ export class InMemoryIncidentsRepository implements IIncidentsRepository {
 		};
 		this.incidents[index] = updated;
 		return { ...updated };
+	}
+
+	async appendStorageEvents(incidentId: string, teamId: string, events: IncidentStorageEvent[]): Promise<Incident> {
+		const incident = this.incidents.find((i) => i.id === incidentId && i.teamId === teamId);
+		if (!incident) {
+			throw new Error(`Incident ${incidentId} not found`);
+		}
+		return this.updateById(incidentId, teamId, { storageEvents: [...incident.storageEvents, ...events] });
+	}
+
+	async findStorageEvents(monitorId: string, teamId: string, subjects: string[], limit: number): Promise<StorageIncidentEvent[]> {
+		return this.incidents
+			.filter((i) => i.monitorId === monitorId && i.teamId === teamId)
+			.flatMap((i) =>
+				i.storageEvents
+					.filter((event) => subjects.includes(event.subject))
+					.map((event) => ({ ...event, incidentId: i.id, incidentActive: i.status, incidentEndTime: i.endTime }))
+			)
+			.sort((a, b) => b.at.localeCompare(a.at))
+			.slice(0, limit);
 	}
 
 	async deleteByMonitorId(monitorId: string, teamId: string): Promise<number> {

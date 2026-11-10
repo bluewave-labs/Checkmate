@@ -300,6 +300,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 		const storageBreach = (): MonitorActionDecision => ({
 			transition: "storage_breach",
 			storageBreaches: storage?.breaches ?? [],
+			openedStorageBreaches: storage?.opened ?? [],
 			...(thresholdBreaches && { thresholdBreaches }),
 		});
 

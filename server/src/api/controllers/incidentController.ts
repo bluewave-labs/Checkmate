@@ -4,6 +4,7 @@ import { IIncidentService } from "@/domain/incidents/incident.service.js";
 import {
 	getIncidentsByTeamQueryValidation,
 	getIncidentSummaryQueryValidation,
+	getStorageIncidentEventsQueryValidation,
 	incidentIdParamValidation,
 	resolveIncidentBodyValidation,
 } from "@/api/validation/incidentValidation.js";
@@ -12,6 +13,7 @@ export interface IIncidentController {
 	getIncidentsByTeam: RequestHandler;
 	getIncidentSummary: RequestHandler;
 	getIncidentById: RequestHandler;
+	getStorageIncidentEvents: RequestHandler;
 	resolveIncidentManually: RequestHandler;
 }
 class IncidentController implements IIncidentController {
@@ -44,6 +46,13 @@ class IncidentController implements IIncidentController {
 
 		const data = await this.incidentService.getIncidentSummary(teamId, validatedQuery.limit);
 		res.json({ success: true, msg: "Incident summary retrieved successfully", data });
+	};
+
+	getStorageIncidentEvents: Handler = async (req, res) => {
+		const teamId = requireTeamId(req.user?.teamId);
+		const { monitorId, subjects } = getStorageIncidentEventsQueryValidation.parse(req.query);
+		const data = await this.incidentService.getStorageEvents(teamId, monitorId, subjects);
+		res.json({ success: true, msg: "Storage incident events retrieved successfully", data });
 	};
 
 	getIncidentById: Handler = async (req, res) => {

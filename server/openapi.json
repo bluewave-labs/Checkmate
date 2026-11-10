@@ -1202,6 +1202,13 @@
 						"example": "down",
 						"description": "What opened the incident: the monitor going down, a hardware threshold, or a storage alert. Null on older incidents"
 					},
+					"storageEvents": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/IncidentStorageEvent"
+						},
+						"description": "Storage alerts (array or drive) that opened during the incident, oldest first. Empty for other incidents"
+					},
 					"resolutionType": {
 						"type": "string",
 						"nullable": true,
@@ -1239,6 +1246,7 @@
 					"message",
 					"statusCode",
 					"cause",
+					"storageEvents",
 					"resolutionType",
 					"resolvedBy",
 					"resolvedByEmail",
@@ -1246,6 +1254,32 @@
 					"createdAt",
 					"updatedAt"
 				]
+			},
+			"IncidentStorageEvent": {
+				"type": "object",
+				"properties": {
+					"subject": {
+						"type": "string"
+					},
+					"reason": {
+						"type": "string",
+						"enum": ["array_degraded", "array_inactive", "drive_failed", "drive_warning"]
+					},
+					"detail": {
+						"type": "string"
+					},
+					"device": {
+						"type": "string"
+					},
+					"model": {
+						"type": "string"
+					},
+					"at": {
+						"type": "string",
+						"example": "2026-11-09T21:14:00.000Z"
+					}
+				},
+				"required": ["subject", "reason", "detail", "at"]
 			},
 			"IncidentSummary": {
 				"type": "object",
@@ -1358,6 +1392,45 @@
 					}
 				},
 				"required": ["id", "monitorId", "monitorName", "status", "startTime", "endTime", "resolutionType", "message", "statusCode", "createdAt"]
+			},
+			"StorageIncidentEvent": {
+				"type": "object",
+				"properties": {
+					"subject": {
+						"type": "string"
+					},
+					"reason": {
+						"type": "string",
+						"enum": ["array_degraded", "array_inactive", "drive_failed", "drive_warning"]
+					},
+					"detail": {
+						"type": "string"
+					},
+					"device": {
+						"type": "string"
+					},
+					"model": {
+						"type": "string"
+					},
+					"at": {
+						"type": "string",
+						"example": "2026-11-09T21:14:00.000Z"
+					},
+					"incidentId": {
+						"type": "string",
+						"example": "65f1c2a4d8b9e0123456789c"
+					},
+					"incidentActive": {
+						"type": "boolean",
+						"example": true
+					},
+					"incidentEndTime": {
+						"type": "string",
+						"nullable": true,
+						"example": null
+					}
+				},
+				"required": ["subject", "reason", "detail", "at", "incidentId", "incidentActive", "incidentEndTime"]
 			},
 			"Monitor": {
 				"type": "object",
@@ -7965,6 +8038,107 @@
 										},
 										"data": {
 											"$ref": "#/components/schemas/IncidentSummary"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/incidents/team/storage": {
+			"get": {
+				"tags": ["incidents"],
+				"summary": "Storage alerts logged on a hardware monitor's incidents, for the given drives and arrays",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "monitorId",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"description": "Comma-separated drive serials and array devices",
+							"example": "WD-WCC7K1PL4R2X,/dev/md1"
+						},
+						"required": true,
+						"description": "Comma-separated drive serials and array devices",
+						"name": "subjects",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/StorageIncidentEvent"
+											}
 										}
 									},
 									"required": ["success", "msg", "data"]

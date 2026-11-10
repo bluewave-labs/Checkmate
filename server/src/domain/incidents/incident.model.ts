@@ -1,12 +1,19 @@
 import { Schema, model, type Types } from "mongoose";
-import { IncidentCauses, IncidentResolutionTypes, type Incident } from "@/domain/incidents/incident.type.js";
+import { IncidentCauses, IncidentResolutionTypes, type Incident, type IncidentStorageEvent } from "@/domain/incidents/incident.type.js";
+import { storageBreachFields } from "@/domain/storage/storage.model.js";
 
-type IncidentDocumentBase = Omit<Incident, "id" | "monitorId" | "teamId" | "resolvedBy" | "startTime" | "endTime" | "createdAt" | "updatedAt"> & {
+export type IncidentStorageEventDocument = Omit<IncidentStorageEvent, "at"> & { at: Date };
+
+type IncidentDocumentBase = Omit<
+	Incident,
+	"id" | "monitorId" | "teamId" | "resolvedBy" | "startTime" | "endTime" | "storageEvents" | "createdAt" | "updatedAt"
+> & {
 	monitorId: Types.ObjectId;
 	teamId: Types.ObjectId;
 	resolvedBy?: Types.ObjectId | null;
 	startTime: Date;
 	endTime: Date | null;
+	storageEvents: IncidentStorageEventDocument[];
 	createdAt: Date;
 	updatedAt: Date;
 };
@@ -14,6 +21,11 @@ type IncidentDocumentBase = Omit<Incident, "id" | "monitorId" | "teamId" | "reso
 export interface IncidentDocument extends IncidentDocumentBase {
 	_id: Types.ObjectId;
 }
+
+const storageEventSubSchema = new Schema<IncidentStorageEventDocument>(
+	{ ...storageBreachFields, at: { type: Date, required: true } },
+	{ _id: false }
+);
 
 const IncidentSchema = new Schema<IncidentDocument>(
 	{
@@ -59,6 +71,10 @@ const IncidentSchema = new Schema<IncidentDocument>(
 			enum: IncidentCauses,
 			default: null,
 		},
+		storageEvents: {
+			type: [storageEventSubSchema],
+			default: [],
+		},
 		resolutionType: {
 			type: String,
 			enum: IncidentResolutionTypes,
@@ -89,6 +105,7 @@ IncidentSchema.index({ resolutionType: 1, status: 1 });
 IncidentSchema.index({ resolvedBy: 1, status: 1 });
 IncidentSchema.index({ monitorId: 1, startTime: -1 });
 IncidentSchema.index({ createdAt: -1 });
+IncidentSchema.index({ monitorId: 1, "storageEvents.subject": 1 });
 
 const IncidentModel = model<IncidentDocument>("Incident", IncidentSchema);
 

@@ -8,6 +8,7 @@ import { DriveIdentity } from "@/Pages/Infrastructure/DriveDetails/Components/Dr
 import { DriveIndicators } from "@/Pages/Infrastructure/DriveDetails/Components/DriveIndicators";
 import { DriveCharts } from "@/Pages/Infrastructure/DriveDetails/Components/DriveCharts";
 import { DriveWarnings } from "@/Pages/Infrastructure/DriveDetails/Components/DriveWarnings";
+import { DriveIncidents } from "@/Pages/Infrastructure/DriveDetails/Components/DriveIncidents";
 
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -81,6 +82,7 @@ const DriveDetails = () => {
 
 	const health = getDriveHealth(drive);
 	const arrays = findDriveArrays(drive, data.raid?.arrays);
+	const arrayDevices = arrays.map((array) => array.device);
 	const readAt = drive.lastKnownAt ?? data.drives?.checkedAt;
 
 	return (
@@ -132,6 +134,11 @@ const DriveDetails = () => {
 				dateRange={dateRange}
 			/>
 			<DriveWarnings warnings={drive.warnings} />
+			<DriveIncidents
+				monitorId={monitorId}
+				serial={drive.serial_number}
+				arrayDevices={arrayDevices}
+			/>
 		</BasePage>
 	);
 };

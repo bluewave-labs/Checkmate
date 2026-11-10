@@ -997,7 +997,7 @@ describe("WorkerPipeline", () => {
 				const decision = await decide(
 					makeStatusChange({ status: "breached", statusChanged: true, prevStatus: "up", storage: storage({ breaches: [breach], opened: [breach] }) })
 				);
-				expect(decision).toEqual({ transition: "storage_breach", storageBreaches: [breach] });
+				expect(decision).toEqual({ transition: "storage_breach", storageBreaches: [breach], openedStorageBreaches: [breach] });
 				expect(decision).not.toHaveProperty("thresholdBreaches");
 			});
 
@@ -1012,7 +1012,7 @@ describe("WorkerPipeline", () => {
 						storage: storage({ breaches: [breach], opened: [breach] }),
 					})
 				);
-				expect(decision).toEqual({ transition: "storage_breach", storageBreaches: [breach], thresholdBreaches });
+				expect(decision).toEqual({ transition: "storage_breach", storageBreaches: [breach], openedStorageBreaches: [breach], thresholdBreaches });
 			});
 
 			it("reports threshold_breach when a threshold breaches and storage is clear", async () => {
@@ -1032,7 +1032,7 @@ describe("WorkerPipeline", () => {
 						storage: storage({ breaches: [breach, driveBreach], opened: [driveBreach] }),
 					})
 				);
-				expect(decision).toEqual({ transition: "storage_breach", storageBreaches: [breach, driveBreach] });
+				expect(decision).toEqual({ transition: "storage_breach", storageBreaches: [breach, driveBreach], openedStorageBreaches: [driveBreach] });
 			});
 
 			it("reports nothing while the same storage alerts stay active", async () => {
