@@ -1798,6 +1798,9 @@
 											"device": {
 												"type": "string"
 											},
+											"mountpoint": {
+												"type": "string"
+											},
 											"total_bytes": {
 												"type": "number"
 											},
@@ -4469,6 +4472,9 @@
 													"type": "object",
 													"properties": {
 														"device": {
+															"type": "string"
+														},
+														"mountpoint": {
 															"type": "string"
 														},
 														"total_bytes": {
