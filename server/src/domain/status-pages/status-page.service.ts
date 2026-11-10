@@ -87,9 +87,12 @@ export class StatusPageService implements IStatusPageService {
 	private normalizeInput = (data: Partial<StatusPage>): Partial<StatusPage> =>
 		this.settingsService.areStatusPageThemesEnabled() ? data : this.withoutThemeFields(data);
 
-	// Status pages are public: RAID array names and state describe the host's storage layout, and the public
-	// themes do not show them, so they stay on the authenticated endpoints only.
-	private toPublicSnapshot = ({ raid: _raid, ...snapshot }: CheckSnapshot): CheckSnapshot => snapshot;
+	// Status pages are public: RAID array names and state, and disk mount points, describe the host's storage
+	// layout, and the public themes do not show them, so they stay on the authenticated endpoints only.
+	private toPublicSnapshot = ({ raid: _raid, ...snapshot }: CheckSnapshot): CheckSnapshot => ({
+		...snapshot,
+		...(snapshot.disk && { disk: snapshot.disk.map(({ mountpoint: _mountpoint, ...disk }) => disk) }),
+	});
 
 	private toPublicMonitor = (monitor: Monitor, showURL: boolean) => {
 		const base = {
