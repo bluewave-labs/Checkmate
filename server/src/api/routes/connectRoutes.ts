@@ -1,6 +1,6 @@
 import type { IConnectController } from "@/api/controllers/connectController.js";
 import type { RouteTable } from "@/api/routes/defineRoutes.js";
-import { connectEnrollBodyValidation } from "@/api/validation/connectValidation.js";
+import { connectEnrollBodyValidation, connectRemoteAccessBodyValidation } from "@/api/validation/connectValidation.js";
 import { connectErrors } from "@/domain/connect/connect.errors.js";
 import { connectStatusSchema } from "@/domain/connect/connect.schema.js";
 
@@ -33,6 +33,16 @@ export const connectRoutes: RouteTable<IConnectController> = {
 			handler: "unenroll",
 			summary: "Remove this installation's Checkmate Connect enrollment (superadmin)",
 			roles: ["superadmin"],
+			response: connectStatusSchema,
+		},
+		{
+			method: "post",
+			path: "/remote-access",
+			handler: "setRemoteAccess",
+			summary: "Turn Checkmate Connect remote access on or off (superadmin)",
+			roles: ["superadmin"],
+			body: connectRemoteAccessBodyValidation,
+			errors: [connectErrors.notEnrolled, connectErrors.stateUnavailable],
 			response: connectStatusSchema,
 		},
 	],

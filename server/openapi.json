@@ -82,7 +82,7 @@
 		},
 		{
 			"name": "connect",
-			"description": "Checkmate Connect enrollment for this installation (admin to view, superadmin to change)."
+			"description": "Checkmate Connect enrollment and remote access for this installation (admin to view, superadmin to change)."
 		}
 	],
 	"components": {
@@ -4200,9 +4200,42 @@
 					},
 					"agentVersion": {
 						"type": "string"
+					},
+					"remoteAccess": {
+						"type": "object",
+						"properties": {
+							"enabled": {
+								"type": "boolean"
+							}
+						},
+						"required": ["enabled"]
+					},
+					"tunnel": {
+						"$ref": "#/components/schemas/ConnectTunnelStatus"
 					}
 				},
-				"required": ["enrolled", "agentId", "connectUrl", "apiUrl", "agentVersion"]
+				"required": ["enrolled", "agentId", "connectUrl", "apiUrl", "agentVersion", "remoteAccess", "tunnel"]
+			},
+			"ConnectTunnelStatus": {
+				"type": "object",
+				"properties": {
+					"connected": {
+						"type": "boolean"
+					},
+					"lastConnectedAt": {
+						"type": "string",
+						"nullable": true
+					},
+					"lastError": {
+						"type": "string",
+						"nullable": true
+					},
+					"closeCode": {
+						"type": "number",
+						"nullable": true
+					}
+				},
+				"required": ["connected", "lastConnectedAt", "lastError", "closeCode"]
 			}
 		},
 		"parameters": {}
@@ -17112,6 +17145,127 @@
 					},
 					"500": {
 						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/remote-access": {
+			"post": {
+				"tags": ["connect"],
+				"summary": "Turn Checkmate Connect remote access on or off (superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"enabled": {
+										"type": "boolean"
+									}
+								},
+								"required": ["enabled"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectStatus"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "This installation is not enrolled with Checkmate Connect",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Connect state is not available. If this continues, check ENCRYPTION_KEY and the server logs",
 						"content": {
 							"application/json": {
 								"schema": {
