@@ -9,3 +9,12 @@ export const connectStatusSchema = z
 		agentVersion: z.string(),
 	})
 	.meta({ id: "ConnectStatus" });
+
+export const connectTunnelStatusSchema = z
+	.object({
+		connected: z.boolean(),
+		lastConnectedAt: z.string().nullable(),
+		lastError: z.string().nullable(),
+		closeCode: z.number().nullable(),
+	})
+	.meta({ id: "ConnectTunnelStatus" });

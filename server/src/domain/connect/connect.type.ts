@@ -1,4 +1,4 @@
-import type { connectStatusSchema } from "@/domain/connect/connect.schema.js";
+import type { connectStatusSchema, connectTunnelStatusSchema } from "@/domain/connect/connect.schema.js";
 import type { z } from "zod";
 
 export const CONNECT_STATE_COLLECTION = "connect_state";
@@ -16,3 +16,22 @@ export type ConnectState = {
 };
 
 export type ConnectStatus = z.infer<typeof connectStatusSchema>;
+
+export type ConnectTunnelStatus = z.infer<typeof connectTunnelStatusSchema>;
+
+export type ConnectTunnelRequest = {
+	type: "request";
+	id: string;
+	method: string;
+	path: string;
+	headers: Record<string, string>;
+	body: string | null;
+};
+
+export type ConnectTunnelResponse = {
+	type: "response";
+	id: string;
+	status: number;
+	headers: Record<string, string>;
+	body: string | null;
+};
