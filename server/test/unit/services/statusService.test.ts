@@ -3,7 +3,7 @@ import { StatusService } from "../../../src/service/statusService.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import { MAX_RECENT_CHECKS } from "../../../src/domain/monitors/monitor.type.ts";
 import type { Monitor, MonitorStatus } from "../../../src/domain/monitors/monitor.type.ts";
-import type { Check, CheckRaidArray } from "../../../src/domain/checks/check.type.ts";
+import type { Check, CheckDrive, CheckRaidArray } from "../../../src/domain/checks/check.type.ts";
 import type { StorageBreach } from "../../../src/domain/storage/storage-alert.ts";
 import type { DockerContainerInfo } from "../../../src/domain/docker/docker.type.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
@@ -1265,6 +1265,58 @@ describe("StatusService", () => {
 			expect(result.storage).toEqual({ breaches: [degradedBreach], opened: [degradedBreach], cleared: false });
 		});
 
+		describe("while the status window fills", () => {
+			const failedDrive = {
+				device: "/dev/sdb",
+				status: "ok",
+				model_name: "WDC",
+				serial_number: "SERIAL",
+				warnings: [],
+				pending_sectors: 0,
+				offline_uncorrectable: 0,
+				smart_overall_health_self_assessment_test_result: "FAILED",
+			} as unknown as CheckDrive;
+			const failedDriveBreach: StorageBreach = {
+				subject: "SERIAL",
+				reason: "drive_failed",
+				detail: "health FAILED",
+				device: "/dev/sdb",
+				model: "WDC",
+			};
+
+			it("keeps a SMART reading taken before the window is full, without reporting it yet", async () => {
+				const monitor = makeStorageMonitor({ status: "up", statusWindow: [true] });
+				const { result, patch } = await run(monitor, makeStorageCheck({ drives: [failedDrive] }));
+
+				expect(patch.storageBreaches).toEqual([failedDriveBreach]);
+				expect(result.statusChanged).toBe(false);
+				expect(result.storage).toBeUndefined();
+			});
+
+			it("reports the kept drive alert once the window is full, on a check without SMART data", async () => {
+				const monitor = makeStorageMonitor({ status: "up", storageBreaches: [failedDriveBreach] });
+				const { result } = await run(monitor, makeStorageCheck({ raid: [healthy] }));
+
+				expect(result.statusChanged).toBe(true);
+				expect(result.monitor.status).toBe("breached");
+				expect(result.storage?.breaches).toEqual([failedDriveBreach]);
+			});
+
+			it("leaves a breached monitor's alerts alone, so one that opens during the refill is still new", async () => {
+				const monitor = makeStorageMonitor({ status: "breached", statusWindow: [true], storageBreaches: [degradedBreach] });
+				const { patch } = await run(monitor, makeStorageCheck({ raid: [degraded], drives: [failedDrive] }));
+
+				expect(patch.storageBreaches).toBeUndefined();
+			});
+
+			it("does not touch storage alerts on other monitor types", async () => {
+				const monitor = makeStorageMonitor({ type: "http", statusWindow: [true] });
+				const { patch } = await run(monitor, makeStorageCheck({ drives: [failedDrive] }));
+
+				expect(patch.storageBreaches).toBeUndefined();
+			});
+		});
+
 		it("stays up when the array option is off", async () => {
 			const { result } = await run(makeStorageMonitor({ storageAlertOnArrayDegraded: false }), makeStorageCheck({ raid: [degraded] }));
 
@@ -1373,12 +1425,12 @@ describe("StatusService", () => {
 			expect(result.storage?.opened).toEqual([]);
 		});
 
-		it("does not evaluate storage while the status window is short", async () => {
+		it("does not report storage changes while the status window is short", async () => {
 			const monitor = makeStorageMonitor({ statusWindow: [true] });
-			const { result, patch } = await run(monitor, makeStorageCheck({ raid: [degraded] }));
+			const { result } = await run(monitor, makeStorageCheck({ raid: [degraded] }));
 
 			expect(result.storage).toBeUndefined();
-			expect(patch.storageBreaches).toBeUndefined();
+			expect(result.statusChanged).toBe(false);
 		});
 
 		it("does not evaluate storage on non-hardware monitors", async () => {

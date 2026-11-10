@@ -257,6 +257,12 @@ export class StatusService implements IStatusService {
 					}
 				}
 				patch.status = newStatus;
+			} else if (monitor.type === "hardware" && monitor.status !== "breached") {
+				// Drives are read only every SMART_INTERVAL_MS, often on a check before the window is full (a new monitor's
+				// first check). Keep what that reading found so the first evaluation sees it: the monitor then turns breached,
+				// which reports every active storage alert. A breached monitor keeps its alerts as they are, so a problem
+				// that opens while its window refills is still reported as new.
+				patch.storageBreaches = nextStorageBreaches(monitor, monitor.storageBreaches ?? [], check.raid, check.drives);
 			}
 
 			// Single atomic write: push arrays + set status/counters
