@@ -38,6 +38,8 @@ export interface IStatusPageService {
 }
 const SERVICE_NAME = "StatusPageService";
 
+const PUBLIC_STORAGE_INCIDENT_MESSAGE = "Storage health alert";
+
 export class StatusPageService implements IStatusPageService {
 	static SERVICE_NAME = SERVICE_NAME;
 
@@ -118,10 +120,16 @@ export class StatusPageService implements IStatusPageService {
 		startTime: incident.startTime,
 		endTime: incident.endTime,
 		resolutionType: incident.resolutionType,
-		message: incident.message ?? null,
+		message: this.toPublicIncidentMessage(incident),
 		statusCode: incident.statusCode ?? null,
 		createdAt: incident.createdAt,
 	});
+
+	// Storage incident messages name the host's arrays and drives by model and serial; keep that off public pages
+	private toPublicIncidentMessage = (incident: Incident): string | null => {
+		if (incident.cause === "storage") return PUBLIC_STORAGE_INCIDENT_MESSAGE;
+		return incident.message ?? null;
+	};
 
 	createStatusPage = async (
 		userId: string,

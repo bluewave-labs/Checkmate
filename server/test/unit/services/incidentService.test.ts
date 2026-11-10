@@ -137,6 +137,7 @@ describe("IncidentService", () => {
 					teamId: "team-1",
 					status: true,
 					statusCode: 500,
+					cause: "down",
 				})
 			);
 			expect(notificationMessageBuilder.buildThresholdBreachMessage).not.toHaveBeenCalled();
@@ -159,6 +160,7 @@ describe("IncidentService", () => {
 			expect(incidentsRepository.create).toHaveBeenCalledWith(
 				expect.objectContaining({
 					statusCode: 9999,
+					cause: "threshold",
 					message: "CPU: 95% (threshold: 80%)",
 				})
 			);
@@ -213,7 +215,7 @@ describe("IncidentService", () => {
 
 			expect(notificationMessageBuilder.buildStorageBreachMessage).toHaveBeenCalledWith(storageBreaches);
 			expect(incidentsRepository.create).toHaveBeenCalledWith(
-				expect.objectContaining({ statusCode: 9999, message: "/dev/md1: degraded, 1 of 2 disks missing" })
+				expect.objectContaining({ statusCode: 9999, cause: "storage", message: "/dev/md1: degraded, 1 of 2 disks missing" })
 			);
 		});
 

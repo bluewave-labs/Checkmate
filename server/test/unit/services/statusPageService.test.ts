@@ -498,6 +498,35 @@ describe("StatusPageService", () => {
 			expect(results[0]).not.toHaveProperty("teamId");
 			expect(results[0]).not.toHaveProperty("resolvedBy");
 			expect(results[0]).not.toHaveProperty("updatedAt");
+			expect(results[0]).not.toHaveProperty("cause");
+			expect(results[0].message).toBe("Test incident");
+		});
+
+		it("replaces storage incident messages, which name drives by model and serial", async () => {
+			const { service, repo, incidentsRepo } = createService();
+			(repo.findByUrl as jest.Mock).mockResolvedValue(publishedPage());
+			const incident = (cause: string | null, message: string) => ({
+				id: `inc-${cause}`,
+				monitorId: "mon-1",
+				teamId: "team-1",
+				status: true,
+				startTime: "2026-08-01T10:00:00Z",
+				endTime: null,
+				statusCode: 9999,
+				cause,
+				message,
+				createdAt: "2026-08-01T10:00:00Z",
+				updatedAt: "2026-08-01T10:00:00Z",
+			});
+			(incidentsRepo.findByMonitorIdAndDate as jest.Mock).mockResolvedValue([
+				incident("storage", "WDC WD40EFRX-68N32N0 (WD-WCC7K1PL4R2X): health FAILED"),
+				incident("threshold", "CPU: 95.0% (threshold: 80%)"),
+				incident(null, "Older incident"),
+			]);
+
+			const results = await service.getPublicMonitorIncidents("my-status-page", "mon-1", "2026-08-01");
+
+			expect(results.map((r) => r.message)).toEqual(["Storage health alert", "CPU: 95.0% (threshold: 80%)", "Older incident"]);
 		});
 	});
 

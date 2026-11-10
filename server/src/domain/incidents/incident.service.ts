@@ -5,7 +5,7 @@ import { getDateForRange } from "@/utils/dataUtils.js";
 import type { IIncidentsRepository } from "@/domain/incidents/incident.repository.interface.js";
 import type { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import type { IUsersRepository } from "@/domain/users/user.repository.interface.js";
-import type { Incident, IncidentSummary } from "@/domain/incidents/incident.type.js";
+import type { Incident, IncidentCause, IncidentSummary } from "@/domain/incidents/incident.type.js";
 import type { UserResponse } from "@/domain/users/user.type.js";
 import type { MonitorActionDecision } from "@/worker/worker.interface.js";
 import type { INotificationMessageBuilder } from "@/domain/notifications/notification.message-builder.js";
@@ -30,6 +30,12 @@ export interface IIncidentService {
 	getIncidentSummary(teamId: string, limit?: number): Promise<IncidentSummary>;
 	getIncidentById(incidentId: string, teamId: string): Promise<{ incident: Incident; monitor: Monitor; user: UserResponse | null }>;
 }
+
+const INCIDENT_CAUSE_BY_TRANSITION = {
+	status_down: "down",
+	threshold_breach: "threshold",
+	storage_breach: "storage",
+} as const satisfies Record<string, IncidentCause>;
 
 export class IncidentService implements IIncidentService {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -73,6 +79,7 @@ export class IncidentService implements IIncidentService {
 					startTime: Date.now().toString(),
 					status: true,
 					statusCode: isBreach ? 9999 : check.statusCode,
+					cause: INCIDENT_CAUSE_BY_TRANSITION[transition],
 					message: this.buildIncidentMessage(monitor, check, decision),
 				});
 			}

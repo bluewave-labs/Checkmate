@@ -1195,6 +1195,13 @@
 						"nullable": true,
 						"example": 503
 					},
+					"cause": {
+						"type": "string",
+						"nullable": true,
+						"enum": ["down", "threshold", "storage", null],
+						"example": "down",
+						"description": "What opened the incident: the monitor going down, a hardware threshold, or a storage alert. Null on older incidents"
+					},
 					"resolutionType": {
 						"type": "string",
 						"nullable": true,
@@ -1231,6 +1238,7 @@
 					"status",
 					"message",
 					"statusCode",
+					"cause",
 					"resolutionType",
 					"resolvedBy",
 					"resolvedByEmail",
