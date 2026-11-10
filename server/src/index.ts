@@ -107,6 +107,7 @@ const startApp = async () => {
 	});
 	const server = app.listen(env.PORT, () => {
 		log.info({ port: env.PORT }, "Server started");
+		services.connectService.start();
 	});
 
 	initShutdownListener(server, { ...services, healthServer });

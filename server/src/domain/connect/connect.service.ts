@@ -62,19 +62,11 @@ export class ConnectService implements IConnectService {
 		}
 	};
 
-	private applyTunnel = (state: ConnectState) => {
-		const { enrollment, remoteAccessEnabled } = state;
-		if (!enrollment || !remoteAccessEnabled) {
-			this.tunnel.stop();
-			return;
-		}
-		this.tunnel.start({ ...enrollment, token: this.decrypt(enrollment.token) });
-	};
-
 	start = async (): Promise<void> => {
 		try {
-			const state = await this.connectRepository.get();
-			this.applyTunnel(state);
+			const { enrollment, remoteAccessEnabled } = await this.connectRepository.get();
+			if (!enrollment || !remoteAccessEnabled) return;
+			this.tunnel.start({ ...enrollment, token: this.decrypt(enrollment.token) });
 		} catch (error: unknown) {
 			this.logger.error({ err: error }, "Connect could not start remote access");
 		}
@@ -102,26 +94,33 @@ export class ConnectService implements IConnectService {
 		}
 		await this.connectRepository.setEnrollment({ ...input, token: this.encryptionService.encrypt(input.token) });
 		const state = await this.connectRepository.get();
-		this.applyTunnel(state);
+		if (!state.remoteAccessEnabled) {
+			this.tunnel.stop();
+			return this.toStatus(state);
+		}
+		this.tunnel.start(input);
 		return this.toStatus(state);
 	};
 
 	unenroll = async (): Promise<ConnectStatus> => {
 		await this.connectRepository.clearEnrollment();
 		const state = await this.connectRepository.get();
-		this.applyTunnel(state);
+		this.tunnel.stop();
 		return this.toStatus(state);
 	};
 
 	setRemoteAccess = async (enabled: boolean): Promise<ConnectStatus> => {
 		const current = await this.connectRepository.get();
-		if (enabled) {
-			if (!current.enrollment) throw new AppError(connectErrors.notEnrolled, { service: SERVICE_NAME });
-			this.decrypt(current.enrollment.token);
+		if (!enabled) {
+			await this.connectRepository.setRemoteAccess(false);
+			this.tunnel.stop();
+			return this.toStatus({ ...current, remoteAccessEnabled: false });
 		}
-		await this.connectRepository.setRemoteAccess(enabled);
-		const state = { ...current, remoteAccessEnabled: enabled };
-		this.applyTunnel(state);
-		return this.toStatus(state);
+
+		if (!current.enrollment) throw new AppError(connectErrors.notEnrolled, { service: SERVICE_NAME });
+		const token = this.decrypt(current.enrollment.token);
+		await this.connectRepository.setRemoteAccess(true);
+		this.tunnel.start({ ...current.enrollment, token });
+		return this.toStatus({ ...current, remoteAccessEnabled: true });
 	};
 }

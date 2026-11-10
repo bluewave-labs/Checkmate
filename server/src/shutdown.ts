@@ -4,6 +4,7 @@ import type { Server } from "http";
 import { Mongoose } from "mongoose";
 import { IJobScheduler } from "@/worker/worker.interface.js";
 import { IHealthServer } from "@/worker/worker.health-server.js";
+import { IConnectService } from "@/domain/connect/connect.service.js";
 
 const SHUTDOWN_TIMEOUT_MS = 30_000; // Must be longer than DRAIN_TIMEOUT set in worker.db.queue
 
@@ -12,6 +13,7 @@ type ShutdownTargets = {
 	db: IDb<Mongoose>;
 	logger: ILogger;
 	healthServer?: IHealthServer;
+	connectService?: IConnectService;
 };
 export const initShutdownListener = (server: Server | null, shutdownTargets: ShutdownTargets) => {
 	const SERVICE_NAME = "Server";
@@ -30,6 +32,7 @@ export const initShutdownListener = (server: Server | null, shutdownTargets: Shu
 		log.info("Attempting graceful shutdown");
 
 		try {
+			shutdownTargets.connectService?.stop();
 			server?.close();
 			await shutdownTargets.worker.drain();
 			await shutdownTargets.worker.shutdown();
