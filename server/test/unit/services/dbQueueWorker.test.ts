@@ -369,7 +369,7 @@ describe("DBQueueWorker", () => {
 			const job = makeEvaluateJob("c1");
 			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) } } });
 
-			expect(mocks.jobsRepository.recordOneShot).toHaveBeenCalledWith(job.id, expect.any(Number));
+			expect(mocks.jobsRepository.recordOneShot).toHaveBeenCalledWith(job.id, job.nextScheduledAt, expect.any(Number));
 			expect(mocks.jobsRepository.recordSuccess).not.toHaveBeenCalled();
 		});
 
