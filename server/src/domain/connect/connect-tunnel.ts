@@ -79,7 +79,7 @@ export class ConnectTunnel implements IConnectTunnel {
 		if (!this.running) return;
 		const delay = Math.min(this.backoffMs * (0.85 + Math.random() * 0.3), MAX_BACKOFF_MS);
 		this.backoffMs = Math.min(this.backoffMs * 2, MAX_BACKOFF_MS);
-		this.logger.info({ closeCode: this.state.closeCode, delayMs: Math.round(delay) }, "Connect tunnel disconnected; retrying");
+		this.logger.info({ delayMs: Math.round(delay) }, "Connect tunnel reconnecting");
 		this.retryTimer = setTimeout(this.connect, delay);
 		this.retryTimer.unref();
 	};
@@ -90,7 +90,9 @@ export class ConnectTunnel implements IConnectTunnel {
 		const socket = this.socket;
 		this.socket = null;
 		this.state = { ...this.state, connected: false };
-		socket?.close(1000, "disabled");
+		if (!socket) return;
+		this.logger.info("Connect tunnel closed");
+		socket.close(1000, "disabled");
 	};
 
 	private isTunnelRequest = (message: unknown): message is Pick<ConnectTunnelRequest, "type" | "id"> & Record<string, unknown> => {
@@ -222,9 +224,10 @@ export class ConnectTunnel implements IConnectTunnel {
 			});
 		});
 
-		socket.on("close", (code: number) => {
+		socket.on("close", (code: number, reason: Buffer) => {
 			if (this.socket !== socket) return;
 			this.socket = null;
+			this.logger.warn({ closeCode: code, reason: reason.toString() }, "Connect tunnel disconnected");
 			this.state = { ...this.state, connected: false, closeCode: code };
 			if (UNAUTHORIZED_CLOSE_CODES.includes(code)) {
 				this.state = { ...this.state, lastError: `unauthorized (${code})` };
