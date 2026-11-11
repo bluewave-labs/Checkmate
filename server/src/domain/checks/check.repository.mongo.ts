@@ -477,6 +477,24 @@ class MongoChecksRepository implements IChecksRepository {
 
 		return totalDeleted;
 	};
+
+	setExpireAfterSeconds = async (seconds: number | null): Promise<{ previous: number | null; changed: boolean }> => {
+		const db = mongoose.connection.db;
+		if (!db) {
+			throw new AppError(internalError, { message: "Database connection is not initialized", service: SERVICE_NAME });
+		}
+		const name = CheckModel.collection.collectionName;
+		const [info] = await db.listCollections({ name }).toArray();
+		// MongoDB returns expireAfterSeconds as a Long once set, and omits it when TTL is off
+		const raw: unknown = info && "options" in info ? info.options?.expireAfterSeconds : undefined;
+		const previous = raw === undefined || raw === null ? null : Number(raw);
+		if (previous === seconds) return { previous, changed: false };
+
+		// Time-series TTL via collMod works on MongoDB 5.0+, unlike deleteMany on the time field (7.0+)
+		await db.command({ collMod: name, expireAfterSeconds: seconds ?? "off" });
+		return { previous, changed: true };
+	};
+
 	private findUptimeDateRangeChecks = async (
 		monitorType: Exclude<MonitorType, "hardware" | "pagespeed" | "docker">,
 		monitorObjectId: mongoose.Types.ObjectId,

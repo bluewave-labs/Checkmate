@@ -39,7 +39,7 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		getDBSettings: jest.fn().mockResolvedValue({ checkTTL: 30 }),
 	};
 	const checkService = {
-		deleteOlderThan: jest.fn().mockResolvedValue(0),
+		applyRetention: jest.fn().mockResolvedValue({ method: "ttl", expireAfterSeconds: 2592000, previousExpireAfterSeconds: null, changed: true }),
 	};
 	const telemetryService = {
 		handleJob: jest.fn().mockResolvedValue(undefined),
@@ -152,37 +152,35 @@ describe("WorkerHelper", () => {
 	// ── getCleanupRetentionJob ───────────────────────────────────────────────
 
 	describe("getCleanupRetentionJob", () => {
-		it("deletes checks older than TTL cutoff", async () => {
+		it("applies retention using the configured checkTTL in days", async () => {
 			const { helper, defaults } = createHelper();
 			const job = helper.getCleanupRetentionJob();
 			await job();
 
-			expect(defaults.checkService.deleteOlderThan).toHaveBeenCalledWith(expect.any(Date));
+			expect(defaults.checkService.applyRetention).toHaveBeenCalledWith(30);
 			expect(defaults.logger.info).toHaveBeenCalledWith(
-				expect.objectContaining({ count: expect.any(Number), cutoff: expect.any(String) }),
-				"Deleted checks older than the retention cutoff"
+				{ method: "ttl", expireAfterSeconds: 2592000, previousExpireAfterSeconds: null, changed: true },
+				"Applied check retention"
 			);
 		});
 
-		it("skips cleanup when checkTTL is sentinel value (366)", async () => {
+		it("passes the unlimited sentinel through so the service can turn TTL off", async () => {
 			const { helper, defaults } = createHelper({
 				settingsService: { getDBSettings: jest.fn().mockResolvedValue({ checkTTL: 366 }) },
 			});
 			const job = helper.getCleanupRetentionJob();
 			await job();
 
-			expect(defaults.checkService.deleteOlderThan).not.toHaveBeenCalled();
-			expect(defaults.logger.info).toHaveBeenCalledWith("Check TTL is set to unlimited, skipping cleanup");
+			expect(defaults.checkService.applyRetention).toHaveBeenCalledWith(366);
 		});
 
-		it("logs error on failure without rethrowing", async () => {
+		it("logs error and rethrows on failure", async () => {
 			const { helper, defaults } = createHelper({
-				settingsService: { getDBSettings: jest.fn().mockRejectedValue(new Error("db error")) },
+				checkService: { applyRetention: jest.fn().mockRejectedValue(new Error("db error")) },
 			});
 			const job = helper.getCleanupRetentionJob();
 
-			await job(); // Should not throw
-
+			await expect(job()).rejects.toThrow("db error");
 			expect(defaults.logger.error).toHaveBeenCalledWith({ err: new Error("db error") }, "Retention cleanup failed");
 		});
 
@@ -191,8 +189,8 @@ describe("WorkerHelper", () => {
 				settingsService: { getDBSettings: jest.fn().mockRejectedValue("boom") },
 			});
 			const job = helper.getCleanupRetentionJob();
-			await job();
 
+			await expect(job()).rejects.toBe("boom");
 			expect(defaults.logger.error).toHaveBeenCalledWith({ err: "boom" }, "Retention cleanup failed");
 		});
 	});

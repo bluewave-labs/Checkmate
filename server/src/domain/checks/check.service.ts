@@ -1,13 +1,15 @@
 import { Types } from "mongoose";
 import { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
-import type { Check, CheckErrorInfo, ChecksQueryResult, ChecksSummary, ILighthouseAudit } from "@/domain/checks/check.type.js";
+import { CHECK_TTL_SENTINEL } from "@/domain/checks/check.type.js";
+import type { Check, CheckErrorInfo, CheckRetentionResult, ChecksQueryResult, ChecksSummary, ILighthouseAudit } from "@/domain/checks/check.type.js";
 import type { DockerStatusPayload, MonitorPayloadMap, MonitorStatusResponse } from "@/types/network.js";
 import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
 import { ILogger } from "@/utils/logger/logger.js";
 import { CheckFilter, DateRange } from "@/types/query.js";
 
 const SERVICE_NAME = "checkService";
+const SECONDS_PER_DAY = 24 * 60 * 60;
 
 export interface ICheckService {
 	createChecks(checks: Check[]): Promise<Check[]>;
@@ -33,7 +35,7 @@ export interface ICheckService {
 	getChecksSummaryByTeamId(params: { teamId: string; dateRange: DateRange; monitorId?: string }): Promise<ChecksSummary>;
 	deleteChecks(params: { monitorId: string; teamId: string }): Promise<number>;
 	deleteChecksByTeamId(params: { teamId: string }): Promise<number>;
-	deleteOlderThan(date: Date): Promise<number>;
+	applyRetention(checkTTLDays: number): Promise<CheckRetentionResult>;
 }
 
 export class CheckService implements ICheckService {
@@ -197,8 +199,21 @@ export class CheckService implements ICheckService {
 		return deletedCount;
 	};
 
-	deleteOlderThan = async (date: Date) => {
-		const deletedCount = await this.checksRepository.deleteOlderThan(date);
-		return deletedCount;
+	// checkTTLDays is in DAYS; CHECK_TTL_SENTINEL means keep checks forever.
+	applyRetention = async (checkTTLDays: number): Promise<CheckRetentionResult> => {
+		const expireAfterSeconds = checkTTLDays === CHECK_TTL_SENTINEL ? null : checkTTLDays * SECONDS_PER_DAY;
+		try {
+			const { previous, changed } = await this.checksRepository.setExpireAfterSeconds(expireAfterSeconds);
+			return { method: "ttl", expireAfterSeconds, previousExpireAfterSeconds: previous, changed };
+		} catch (error: unknown) {
+			// Nothing to fall back to when retention is unlimited
+			if (expireAfterSeconds === null) throw error;
+			// e.g. a database user without the collMod privilege. deleteMany on the time field
+			// needs MongoDB 7.0+, so on older versions this throws and the job records the failure.
+			this.logger.warn({ err: error }, "Could not set TTL on the checks collection, deleting expired checks directly");
+			const cutoff = new Date(Date.now() - expireAfterSeconds * 1000);
+			const deletedCount = await this.checksRepository.deleteOlderThan(cutoff);
+			return { method: "delete", expireAfterSeconds, deletedCount };
+		}
 	};
 }
