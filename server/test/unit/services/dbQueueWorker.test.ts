@@ -985,4 +985,31 @@ describe("DBQueueWorker", () => {
 			expect(page.jobs[0].monitorId).toBe("cleanup-orphaned");
 		});
 	});
+
+	describe("heartbeat hook", () => {
+		it("runs afterHeartbeat after each registry heartbeat", async () => {
+			const afterHeartbeat = jest.fn<any>().mockResolvedValue(undefined);
+			const { mocks } = await start({ mocks: { afterHeartbeat } });
+
+			expect(afterHeartbeat).toHaveBeenCalledTimes(1);
+			expect(mocks.queueWorkersRepository.upsert.mock.invocationCallOrder[0]).toBeLessThan(afterHeartbeat.mock.invocationCallOrder[0]);
+
+			await jest.advanceTimersByTimeAsync(60_000);
+			expect(afterHeartbeat).toHaveBeenCalledTimes(2);
+		});
+
+		it("keeps the worker running when the hook rejects", async () => {
+			const afterHeartbeat = jest.fn<any>().mockRejectedValue(new Error("boom"));
+			const { worker, mocks } = await start({ mocks: { afterHeartbeat } });
+
+			expect(mocks.logger.warn).toHaveBeenCalledWith({ err: expect.any(Error) }, "Heartbeat failed");
+			expect(worker.getHealth().initComplete).toBe(true);
+		});
+
+		it("works without a hook", async () => {
+			const { worker } = await start();
+
+			expect(worker.getHealth().initComplete).toBe(true);
+		});
+	});
 });

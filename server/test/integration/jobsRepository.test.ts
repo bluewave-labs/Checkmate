@@ -838,5 +838,24 @@ describe("MongoJobsRepository", () => {
 			expect(await readRow("cleanup-orphaned")).not.toBeNull();
 			expect(await repo.deleteGlobalJob("telemetry")).toBe(false);
 		});
+
+		it("findGlobalJob returns the global row of a type", async () => {
+			await seedJob({
+				_id: "connect-operation",
+				type: "connect-operation" as JobType,
+				refId: null,
+				intervalMs: null,
+				lockedBy: "w",
+				lockedUntil: NOW + LOCK_MS,
+			});
+
+			const job = await repo.findGlobalJob("connect-operation");
+
+			expect(job).toMatchObject({ id: "connect-operation", type: "connect-operation", refId: null, lockedUntil: NOW + LOCK_MS });
+		});
+
+		it("findGlobalJob returns null when there is no row", async () => {
+			await expect(repo.findGlobalJob("connect-operation")).resolves.toBeNull();
+		});
 	});
 });
