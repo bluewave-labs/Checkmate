@@ -999,6 +999,34 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
+				{watchedType === "hardware" && showStep(1) && (
+					<ConfigBox
+						title={t("pages.createMonitor.form.storageAlerts.title")}
+						subtitle={t("pages.createMonitor.form.storageAlerts.description")}
+						rightContent={
+							<Stack gap={theme.spacing(LAYOUT.MD)}>
+								<FormSwitchField
+									name="storageAlertOnArrayDegraded"
+									label={t(
+										"pages.createMonitor.form.storageAlerts.option.onArrayDegraded.label"
+									)}
+								/>
+								<FormSwitchField
+									name="storageAlertOnDriveFailure"
+									label={t(
+										"pages.createMonitor.form.storageAlerts.option.onDriveFailure.label"
+									)}
+								/>
+								<FormSwitchField
+									name="storageAlertOnDriveWarning"
+									label={t(
+										"pages.createMonitor.form.storageAlerts.option.onDriveWarning.label"
+									)}
+								/>
+							</Stack>
+						}
+					/>
+				)}
 				{showStep(1) && !isHeartbeat && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.incidents.title")}

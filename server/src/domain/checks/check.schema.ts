@@ -2,6 +2,7 @@ import { z } from "zod";
 import { MonitorTypes } from "@/domain/monitors/monitor.type.js";
 import { EgressStatuses } from "@/domain/egress/egress.type.js";
 import { dockerContainerInfoSchema, dockerContainerSummarySchema } from "@/domain/docker/docker.schema.js";
+import { SmartDriveStatuses, SmartWarnings } from "@/domain/checks/check.type.js";
 
 export const checkMetadataSchema = z.object({
 	monitorId: z.string(),
@@ -81,6 +82,59 @@ export const checkErrorInfoSchema = z.object({
 	err: z.string(),
 });
 
+// mdadm software RAID, sent by Capture inside /api/v1/metrics as data.raid (Linux only; [] without arrays).
+// States are raw kernel md values, so they stay open strings.
+export const checkRaidMemberSchema = z.object({
+	device: z.string(),
+	// Comma-separated md flags, e.g. "in_sync", "faulty,blocked". Match with includes, not equality.
+	state: z.string(),
+});
+
+export const checkRaidArraySchema = z.object({
+	device: z.string(),
+	level: z.string(), // empty while the array is inactive
+	state: z.string(), // md array_state: clean, active, read-auto, inactive, write-pending, ...
+	raid_disks: z.number().nullable().optional(),
+	// Missing members; 0 is healthy. Null for raid0/linear, which have no redundancy.
+	degraded_disks: z.number().nullable().optional(),
+	sync_action: z.string().nullable().optional(), // idle, resync, recover, check, repair, reshape, frozen
+	sync_progress: z.number().nullable().optional(), // 0-1 while a sync runs
+	members: z.array(checkRaidMemberSchema),
+});
+
+// One drive from Capture's /api/v1/metrics/smart. Key drives by serial_number: device paths change across reboots.
+// Null counters mean "not reported" and must never be read as 0. The string fields keep Capture's legacy format
+// ("38 Celsius", "3%", decimal strings, "" when absent).
+export const checkDriveSchema = z.object({
+	device: z.string(),
+	type: z.string(),
+	protocol: z.string(), // ATA, NVMe or SCSI; empty when the drive could not be read
+	status: z.enum(SmartDriveStatuses),
+	model_name: z.string(),
+	serial_number: z.string(), // empty for standby, unsupported and error entries
+	firmware_version: z.string(),
+	capacity_bytes: z.number().nullable().optional(),
+	warnings: z.array(z.enum(SmartWarnings)),
+	reallocated_sectors: z.number().nullable().optional(),
+	pending_sectors: z.number().nullable().optional(),
+	offline_uncorrectable: z.number().nullable().optional(),
+	media_errors: z.number().nullable().optional(), // NVMe only
+	smart_overall_health_self_assessment_test_result: z.string(),
+	temperature: z.string(),
+	power_on_hours: z.string(),
+	power_cycles: z.string(),
+	unsafe_shutdowns: z.string(),
+	percentage_used: z.string(),
+	available_spare: z.string(),
+	available_spare_threshold: z.string(),
+	critical_warning: z.string(),
+	data_units_read: z.string(),
+	data_units_written: z.string(),
+	host_read_commands: z.string(),
+	host_write_commands: z.string(),
+	controller_busy_time: z.string(),
+});
+
 export const checkNetworkInterfaceInfoSchema = z.object({
 	name: z.string(),
 	bytes_sent: z.number(),
@@ -130,6 +184,11 @@ export const checkSchema = z
 		containers: z.array(dockerContainerInfoSchema).optional(),
 		containerSummary: dockerContainerSummarySchema.optional(),
 		net: z.array(checkNetworkInterfaceInfoSchema).optional(),
+		// Absent when Capture predates RAID support or the check failed; [] when the host has no arrays.
+		raid: z.array(checkRaidArraySchema).optional(),
+		// Only on checks where SMART was fetched (at most every 10 minutes). Absent means "not fetched this time",
+		// not "no drives". SMART errors are kept in errors, under the SmartErrorMetrics metrics.
+		drives: z.array(checkDriveSchema).optional(),
 		accessibility: z.number().optional(),
 		bestPractices: z.number().optional(),
 		seo: z.number().optional(),
@@ -166,8 +225,9 @@ export const checkSnapshotSchema = checkSchema
 			.pick({ physical_core: true, logical_core: true, frequency: true, current_frequency: true, temperature: true, usage_percent: true })
 			.optional(),
 		memory: checkMemoryInfoSchema.pick({ total_bytes: true, used_bytes: true, usage_percent: true }).optional(),
-		disk: z.array(checkDiskInfoSchema.pick({ device: true, total_bytes: true, used_bytes: true, usage_percent: true })).optional(),
+		disk: z.array(checkDiskInfoSchema.pick({ device: true, mountpoint: true, total_bytes: true, used_bytes: true, usage_percent: true })).optional(),
 		host: checkHostInfoSchema.pick({ os: true, platform: true, pretty_name: true }).optional(),
+		raid: z.array(checkRaidArraySchema.pick({ device: true, state: true, degraded_disks: true, sync_action: true, sync_progress: true })).optional(),
 		// docker only
 		containerSummary: dockerContainerSummarySchema.optional(),
 	});
@@ -246,6 +306,41 @@ export const hardwareStatsSchema = z.object({
 	aggregateData: z.object({ totalChecks: z.number() }),
 	upChecks: z.object({ totalChecks: z.number() }),
 	checks: z.array(hardwareCheckStatsSchema),
+});
+
+// Storage health for the hardware details page. latestRaid is null until a check carries data.raid (older Capture);
+// latestDrives is null until a SMART fetch returned per-drive data.
+export const latestRaidSchema = z.object({
+	arrays: z.array(checkRaidArraySchema),
+	checkedAt: z.string(),
+});
+
+export const latestDriveSchema = checkDriveSchema.extend({
+	// Set on standby drives whose identity and values were filled from the last reading of the same device that
+	// had a serial. Absent when the values are from this fetch.
+	lastKnownAt: z.string().optional(),
+});
+
+export const latestDrivesSchema = z.object({
+	drives: z.array(latestDriveSchema),
+	errors: z.array(checkErrorInfoSchema), // SMART errors from the same fetch, e.g. "smartctl is not installed"
+	checkedAt: z.string(),
+});
+
+// Counters are the bucket maximum (they only grow), temperature the bucket average in Celsius. Null when no
+// reading in the bucket reported the value.
+export const driveHistoryPointSchema = z.object({
+	bucketDate: z.string(),
+	reallocated_sectors: z.number().nullable(),
+	pending_sectors: z.number().nullable(),
+	offline_uncorrectable: z.number().nullable(),
+	media_errors: z.number().nullable(),
+	temperature: z.number().nullable(),
+});
+
+export const driveHistorySchema = z.object({
+	serial_number: z.string(),
+	points: z.array(driveHistoryPointSchema),
 });
 
 export const dailyCheckBucketSchema = z.object({

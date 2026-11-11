@@ -5,7 +5,8 @@ import { getDateForRange } from "@/utils/dataUtils.js";
 import type { IIncidentsRepository } from "@/domain/incidents/incident.repository.interface.js";
 import type { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import type { IUsersRepository } from "@/domain/users/user.repository.interface.js";
-import type { Incident, IncidentSummary } from "@/domain/incidents/incident.type.js";
+import type { Incident, IncidentCause, IncidentStorageEvent, IncidentSummary, StorageIncidentEvent } from "@/domain/incidents/incident.type.js";
+import type { StorageBreach } from "@/domain/storage/storage-alert.js";
 import type { UserResponse } from "@/domain/users/user.type.js";
 import type { MonitorActionDecision } from "@/worker/worker.interface.js";
 import type { INotificationMessageBuilder } from "@/domain/notifications/notification.message-builder.js";
@@ -29,7 +30,20 @@ export interface IIncidentService {
 	): Promise<{ incidents: Incident[]; count: number }>;
 	getIncidentSummary(teamId: string, limit?: number): Promise<IncidentSummary>;
 	getIncidentById(incidentId: string, teamId: string): Promise<{ incident: Incident; monitor: Monitor; user: UserResponse | null }>;
+	getStorageEvents(teamId: string, monitorId: string, subjects: string[]): Promise<StorageIncidentEvent[]>;
 }
+
+// A drive page shows the most recent storage events only
+const STORAGE_EVENTS_LIMIT = 50;
+
+const toStorageEvents = (breaches: StorageBreach[] | undefined, at: string): IncidentStorageEvent[] =>
+	(breaches ?? []).map((breach) => ({ ...breach, at }));
+
+const INCIDENT_CAUSE_BY_TRANSITION = {
+	status_down: "down",
+	threshold_breach: "threshold",
+	storage_breach: "storage",
+} as const satisfies Record<string, IncidentCause>;
 
 export class IncidentService implements IIncidentService {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -62,27 +76,51 @@ export class IncidentService implements IIncidentService {
 
 		switch (transition) {
 			case "status_down":
-			case "threshold_breach": {
-				if (activeIncident) return activeIncident;
+			case "threshold_breach":
+			case "storage_breach": {
+				const now = new Date().toISOString();
+				if (activeIncident) {
+					// A storage alert that joins an open incident is still logged on it, so the drive's page lists it
+					const joined = transition === "storage_breach" ? toStorageEvents(decision.openedStorageBreaches, now) : [];
+					if (joined.length === 0) return activeIncident;
+					return await this.incidentsRepository.appendStorageEvents(activeIncident.id, activeIncident.teamId, joined);
+				}
 				// A threshold breach has no HTTP status
-				const isBreach = transition === "threshold_breach";
+				const isBreach = transition !== "status_down";
 				return await this.incidentsRepository.create({
 					monitorId: monitor.id,
 					teamId: monitor.teamId,
 					startTime: Date.now().toString(),
 					status: true,
 					statusCode: isBreach ? 9999 : check.statusCode,
-					message: isBreach ? this.notificationMessageBuilder.buildThresholdBreachMessage(monitor, check, decision.thresholdBreaches) : undefined,
+					cause: INCIDENT_CAUSE_BY_TRANSITION[transition],
+					message: this.buildIncidentMessage(monitor, check, decision),
+					storageEvents: transition === "storage_breach" ? toStorageEvents(decision.storageBreaches, now) : [],
 				});
 			}
-			case "status_up":
-			case "threshold_resolved": {
+			case "storage_resolved":
+			case "threshold_resolved":
+				// One kind of hardware problem cleared while the other keeps the monitor breached: the incident stays open
+				if (monitor.status === "breached") return activeIncident;
+			// falls through
+			case "status_up": {
 				if (!activeIncident) return null;
 				activeIncident.status = false;
 				activeIncident.endTime = Date.now().toString();
 				activeIncident.resolutionType = "automatic";
 				return await this.incidentsRepository.updateById(activeIncident.id, activeIncident.teamId, activeIncident);
 			}
+		}
+	};
+
+	private buildIncidentMessage = (monitor: Monitor, check: Check, decision: MonitorActionDecision): string | undefined => {
+		switch (decision.transition) {
+			case "threshold_breach":
+				return this.notificationMessageBuilder.buildThresholdBreachMessage(monitor, check, decision.thresholdBreaches);
+			case "storage_breach":
+				return this.notificationMessageBuilder.buildStorageBreachMessage(decision.storageBreaches);
+			default:
+				return undefined;
 		}
 	};
 
@@ -174,6 +212,15 @@ export class IncidentService implements IIncidentService {
 			return { incident, monitor, user };
 		} catch (error: unknown) {
 			this.logger.error({ err: error, incidentId }, "Failed to get incident");
+			throw error;
+		}
+	};
+
+	getStorageEvents = async (teamId: string, monitorId: string, subjects: string[]) => {
+		try {
+			return await this.incidentsRepository.findStorageEvents(monitorId, teamId, subjects, STORAGE_EVENTS_LIMIT);
+		} catch (error: unknown) {
+			this.logger.error({ err: error, monitorId }, "Failed to get storage incident events");
 			throw error;
 		}
 	};

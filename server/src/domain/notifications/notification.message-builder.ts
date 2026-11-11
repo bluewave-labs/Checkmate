@@ -8,11 +8,13 @@ import type {
 	NotificationContent,
 } from "@/domain/notifications/notification.type.js";
 import { describeContainerBreach, findContainerBreaches } from "@/domain/docker/docker-alert.js";
+import { describeStorageBreach, type StorageBreach } from "@/domain/storage/storage-alert.js";
 import type { Check } from "@/domain/checks/check.type.js";
 
 export interface INotificationMessageBuilder {
 	buildMessage(monitor: Monitor, check: Check, decision: MonitorActionDecision, clientHost: string): NotificationMessage;
 	buildThresholdBreachMessage(monitor: Monitor, check: Check, thresholdBreaches: HardwareBreaches | undefined): string;
+	buildStorageBreachMessage(storageBreaches: StorageBreach[] | undefined): string;
 }
 
 const SERVICE_NAME = "NotificationMessageBuilder";
@@ -52,6 +54,10 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 				return isDocker ? "container_breach" : "threshold_breach";
 			case "threshold_resolved":
 				return isDocker ? "container_resolved" : "threshold_resolved";
+			case "storage_breach":
+				return "storage_breach";
+			case "storage_resolved":
+				return "storage_resolved";
 			case "status_up":
 			case null:
 				return "monitor_up";
@@ -66,9 +72,13 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 				return "critical";
 			case "container_breach":
 				return "warning";
+			case "storage_breach":
+				return "warning";
 			case "threshold_breach":
 				return "warning";
 			case "container_resolved":
+				return "success";
+			case "storage_resolved":
 				return "success";
 			case "threshold_resolved":
 				return "success";
@@ -93,6 +103,10 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 				return this.buildContainerBreachContent(monitor, check);
 			case "container_resolved":
 				return this.buildContainersRecoveredContent(monitor);
+			case "storage_breach":
+				return this.buildStorageBreachContent(monitor, check, decision);
+			case "storage_resolved":
+				return this.buildStorageRecoveredContent(monitor);
 			default:
 				return this.buildDefaultContent(monitor);
 		}
@@ -153,7 +167,7 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 	private buildThresholdResolvedContent(monitor: Monitor): NotificationContent {
 		const title = `Thresholds Resolved: ${monitor.name}`;
 		const summary = `Monitor "${monitor.name}" thresholds have returned to normal.`;
-		const details = [`URL: ${monitor.url}`, `Status: Up`, `Type: ${monitor.type}`];
+		const details = [`URL: ${monitor.url}`, `Status: ${this.describeRecoveredStatus(monitor)}`, `Type: ${monitor.type}`];
 
 		return {
 			title,
@@ -176,6 +190,28 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		const summary = `All containers on "${monitor.name}" are back to normal.`;
 		const details = [`URL: ${monitor.url}`, `Status: Up`, `Type: ${monitor.type}`];
 		return { title, summary, details, timestamp: new Date() };
+	}
+
+	private buildStorageBreachContent(monitor: Monitor, check: Check, decision: MonitorActionDecision): NotificationContent {
+		const lines = (decision.storageBreaches ?? []).map(describeStorageBreach);
+		const title = `Storage Alert: ${monitor.name}`;
+		const summary = `${lines.length} storage issue(s) on "${monitor.name}" need attention.`;
+		const details = [`URL: ${monitor.url}`, `Type: ${monitor.type}`, ...lines];
+		// A hardware threshold can be breached at the same time; keep it in the message rather than drop it
+		const thresholds = this.extractThresholdBreaches(monitor, check, decision.thresholdBreaches);
+		return { title, summary, details, ...(thresholds.length > 0 && { thresholds }), timestamp: new Date() };
+	}
+
+	private buildStorageRecoveredContent(monitor: Monitor): NotificationContent {
+		const title = `Storage Recovered: ${monitor.name}`;
+		const summary = `All RAID arrays and drives on "${monitor.name}" are back to normal.`;
+		const details = [`URL: ${monitor.url}`, `Status: ${this.describeRecoveredStatus(monitor)}`, `Type: ${monitor.type}`];
+		return { title, summary, details, timestamp: new Date() };
+	}
+
+	// On a hardware monitor, thresholds and storage alerts clear independently, so the other can keep it breached
+	private describeRecoveredStatus(monitor: Monitor): string {
+		return monitor.status === "breached" ? "Still breached" : "Up";
 	}
 
 	private buildDefaultContent(monitor: Monitor): NotificationContent {
@@ -226,6 +262,11 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 
 	private describeContainerBreaches(monitor: Monitor, check: Check): string[] {
 		return findContainerBreaches(monitor, check.containers ?? []).map(describeContainerBreach);
+	}
+
+	public buildStorageBreachMessage(storageBreaches: StorageBreach[] | undefined): string {
+		const lines = (storageBreaches ?? []).map(describeStorageBreach);
+		return lines.length > 0 ? lines.join(", ") : "Storage alert";
 	}
 
 	public buildThresholdBreachMessage(monitor: Monitor, check: Check, thresholdBreaches: HardwareBreaches | undefined): string {

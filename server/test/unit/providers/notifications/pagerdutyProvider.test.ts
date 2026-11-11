@@ -101,6 +101,35 @@ describe("PagerDutyProvider", () => {
 			expect(mockGotPost.mock.calls[0][1].json.event_action).toBe("trigger");
 		});
 
+		it("uses 'trigger' event_action for storage_breach", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessage({ type: "storage_breach" }));
+			expect(mockGotPost.mock.calls[0][1].json.event_action).toBe("trigger");
+		});
+
+		it("uses 'resolve' event_action for storage_resolved once the monitor is up", async () => {
+			const { provider } = createProvider();
+			const base = makeMessage({ type: "storage_resolved" });
+			await provider.sendMessage(makeNotification() as any, { ...base, monitor: { ...base.monitor, status: "up" } });
+			expect(mockGotPost.mock.calls[0][1].json.event_action).toBe("resolve");
+		});
+
+		it("does not send storage_resolved while a threshold keeps the monitor breached", async () => {
+			const { provider } = createProvider();
+			const base = makeMessage({ type: "storage_resolved" });
+			const result = await provider.sendMessage(makeNotification() as any, { ...base, monitor: { ...base.monitor, status: "breached" } });
+			expect(result).toBe(true);
+			expect(mockGotPost).not.toHaveBeenCalled();
+		});
+
+		it("does not send threshold_resolved while a storage alert keeps the monitor breached", async () => {
+			const { provider } = createProvider();
+			const base = makeMessage({ type: "threshold_resolved" });
+			const result = await provider.sendMessage(makeNotification() as any, { ...base, monitor: { ...base.monitor, status: "breached" } });
+			expect(result).toBe(true);
+			expect(mockGotPost).not.toHaveBeenCalled();
+		});
+
 		it("includes threshold info in summary and custom_details", async () => {
 			const { provider } = createProvider();
 			await provider.sendMessage(makeNotification() as any, makeMessageWithThresholds());

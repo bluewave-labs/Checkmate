@@ -3,7 +3,8 @@ import { StatusService } from "../../../src/service/statusService.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import { MAX_RECENT_CHECKS } from "../../../src/domain/monitors/monitor.type.ts";
 import type { Monitor, MonitorStatus } from "../../../src/domain/monitors/monitor.type.ts";
-import type { Check } from "../../../src/domain/checks/check.type.ts";
+import type { Check, CheckDrive, CheckRaidArray } from "../../../src/domain/checks/check.type.ts";
+import type { StorageBreach } from "../../../src/domain/storage/storage-alert.ts";
 import type { DockerContainerInfo } from "../../../src/domain/docker/docker.type.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
 import type { IMonitorStatsRepository } from "../../../src/domain/monitor-stats/monitor-stats.repository.interface.ts";
@@ -1210,6 +1211,236 @@ describe("StatusService", () => {
 		});
 	});
 
+	describe("storage alerts", () => {
+		const degraded: CheckRaidArray = {
+			device: "/dev/md1",
+			level: "raid1",
+			state: "clean",
+			raid_disks: 2,
+			degraded_disks: 1,
+			sync_action: "idle",
+			sync_progress: null,
+			members: [{ device: "/dev/sda2", state: "in_sync" }],
+		};
+		const healthy: CheckRaidArray = { ...degraded, degraded_disks: 0 };
+		const degradedBreach: StorageBreach = { subject: "/dev/md1", reason: "array_degraded", detail: "degraded, 1 of 2 disks missing" };
+		const driveBreach: StorageBreach = { subject: "SERIAL", reason: "drive_failed", detail: "health FAILED", device: "/dev/sdb" };
+
+		const healthyMetrics = {
+			cpu: { usage_percent: 0.1, temperature: [30] },
+			memory: { usage_percent: 0.1 },
+			disk: [{ usage_percent: 0.1 }],
+			host: {},
+		};
+
+		const makeStorageMonitor = (overrides?: Partial<Monitor>) =>
+			makeMonitor({
+				type: "hardware",
+				statusWindow: [true, true, true, true],
+				statusWindowSize: 5,
+				status: "up",
+				storageAlertOnArrayDegraded: true,
+				storageAlertOnDriveFailure: true,
+				storageAlertOnDriveWarning: false,
+				storageBreaches: [],
+				...overrides,
+			});
+
+		const makeStorageCheck = (overrides?: Partial<Check>) => makeCheck({ status: true, ...healthyMetrics, ...overrides } as Partial<Check>);
+
+		const run = async (monitor: Monitor, check: Check) => {
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			const result = await service.updateMonitorStatus(check, monitor);
+			const patch = (monitorsRepository.updateStatusWindowAndChecks as jest.Mock).mock.calls.at(-1)?.[6] as Partial<Monitor>;
+			return { result, patch };
+		};
+
+		it("goes to breached on the first check with a degraded array and stores the breach", async () => {
+			const { result, patch } = await run(makeStorageMonitor(), makeStorageCheck({ raid: [degraded] }));
+
+			expect(result.statusChanged).toBe(true);
+			expect(result.monitor.status).toBe("breached");
+			expect(patch.storageBreaches).toEqual([degradedBreach]);
+			expect(result.storage).toEqual({ breaches: [degradedBreach], opened: [degradedBreach], cleared: false });
+		});
+
+		describe("while the status window fills", () => {
+			const failedDrive = {
+				device: "/dev/sdb",
+				status: "ok",
+				model_name: "WDC",
+				serial_number: "SERIAL",
+				warnings: [],
+				pending_sectors: 0,
+				offline_uncorrectable: 0,
+				smart_overall_health_self_assessment_test_result: "FAILED",
+			} as unknown as CheckDrive;
+			const failedDriveBreach: StorageBreach = {
+				subject: "SERIAL",
+				reason: "drive_failed",
+				detail: "health FAILED",
+				device: "/dev/sdb",
+				model: "WDC",
+			};
+
+			it("keeps a SMART reading taken before the window is full, without reporting it yet", async () => {
+				const monitor = makeStorageMonitor({ status: "up", statusWindow: [true] });
+				const { result, patch } = await run(monitor, makeStorageCheck({ drives: [failedDrive] }));
+
+				expect(patch.storageBreaches).toEqual([failedDriveBreach]);
+				expect(result.statusChanged).toBe(false);
+				expect(result.storage).toBeUndefined();
+			});
+
+			it("reports the kept drive alert once the window is full, on a check without SMART data", async () => {
+				const monitor = makeStorageMonitor({ status: "up", storageBreaches: [failedDriveBreach] });
+				const { result } = await run(monitor, makeStorageCheck({ raid: [healthy] }));
+
+				expect(result.statusChanged).toBe(true);
+				expect(result.monitor.status).toBe("breached");
+				expect(result.storage?.breaches).toEqual([failedDriveBreach]);
+			});
+
+			it("leaves a breached monitor's alerts alone, so one that opens during the refill is still new", async () => {
+				const monitor = makeStorageMonitor({ status: "breached", statusWindow: [true], storageBreaches: [degradedBreach] });
+				const { patch } = await run(monitor, makeStorageCheck({ raid: [degraded], drives: [failedDrive] }));
+
+				expect(patch.storageBreaches).toBeUndefined();
+			});
+
+			it("does not touch storage alerts on other monitor types", async () => {
+				const monitor = makeStorageMonitor({ type: "http", statusWindow: [true] });
+				const { patch } = await run(monitor, makeStorageCheck({ drives: [failedDrive] }));
+
+				expect(patch.storageBreaches).toBeUndefined();
+			});
+		});
+
+		it("stays up when the array option is off", async () => {
+			const { result } = await run(makeStorageMonitor({ storageAlertOnArrayDegraded: false }), makeStorageCheck({ raid: [degraded] }));
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.monitor.status).toBe("up");
+		});
+
+		it("stays breached, with nothing new, while the same array stays degraded", async () => {
+			const monitor = makeStorageMonitor({ status: "breached", storageBreaches: [degradedBreach] });
+			const { result } = await run(monitor, makeStorageCheck({ raid: [degraded] }));
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.storage?.opened).toEqual([]);
+			expect(result.storage?.cleared).toBe(false);
+		});
+
+		it("keeps a drive breach and stays breached on checks without SMART data", async () => {
+			const monitor = makeStorageMonitor({ status: "breached", storageBreaches: [driveBreach] });
+			const { result, patch } = await run(monitor, makeStorageCheck({ raid: [healthy] }));
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.monitor.status).toBe("breached");
+			expect(patch.storageBreaches).toEqual([driveBreach]);
+		});
+
+		it("reports a new breach while already breached by a hardware threshold", async () => {
+			const monitor = makeStorageMonitor({ status: "breached", cpuAlertCounter: 0 });
+			const check = makeStorageCheck({ raid: [degraded], cpu: { usage_percent: 0.95, temperature: [30] } } as Partial<Check>);
+			const { result } = await run(monitor, check);
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.storage?.opened).toEqual([degradedBreach]);
+		});
+
+		it("recovers to up when the last storage breach clears", async () => {
+			const monitor = makeStorageMonitor({ status: "breached", storageBreaches: [degradedBreach] });
+			const { result, patch } = await run(monitor, makeStorageCheck({ raid: [healthy] }));
+
+			expect(result.statusChanged).toBe(true);
+			expect(result.monitor.status).toBe("up");
+			expect(result.storage?.cleared).toBe(true);
+			expect(patch.storageBreaches).toEqual([]);
+		});
+
+		it("stays breached when storage clears but a hardware threshold is still breached", async () => {
+			const monitor = makeStorageMonitor({ status: "breached", storageBreaches: [degradedBreach], cpuAlertCounter: 0, thresholdBreached: true });
+			const check = makeStorageCheck({ raid: [healthy], cpu: { usage_percent: 0.95, temperature: [30] } } as Partial<Check>);
+			const { result } = await run(monitor, check);
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.monitor.status).toBe("breached");
+			expect(result.storage?.cleared).toBe(true);
+		});
+
+		it("reports a threshold tripping while a storage breach keeps the monitor breached", async () => {
+			const monitor = makeStorageMonitor({ status: "breached", storageBreaches: [driveBreach], thresholdBreached: false, cpuAlertCounter: 1 });
+			const check = makeStorageCheck({ cpu: { usage_percent: 0.95, temperature: [30] } } as Partial<Check>);
+			const { result, patch } = await run(monitor, check);
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.threshold).toEqual({ opened: true, cleared: false });
+			expect(patch.thresholdBreached).toBe(true);
+		});
+
+		it("reports thresholds clearing while a storage breach keeps the monitor breached", async () => {
+			const monitor = makeStorageMonitor({ status: "breached", storageBreaches: [driveBreach], thresholdBreached: true, cpuAlertCounter: 0 });
+			const { result, patch } = await run(monitor, makeStorageCheck());
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.monitor.status).toBe("breached");
+			expect(result.threshold).toEqual({ opened: false, cleared: true });
+			expect(patch.thresholdBreached).toBe(false);
+		});
+
+		it("keeps a threshold breached while any metric still breaches, even after its counter reset", async () => {
+			const monitor = makeStorageMonitor({ status: "breached", thresholdBreached: true, cpuAlertCounter: 0, memoryAlertCounter: 5 });
+			const check = makeStorageCheck({ memory: { usage_percent: 0.95 } } as Partial<Check>);
+			const { result } = await run(monitor, check);
+
+			expect(result.threshold).toEqual({ opened: false, cleared: false });
+			expect(result.monitor.status).toBe("breached");
+		});
+
+		it("treats a breached monitor from before the flag existed as threshold-breached, so it does not re-alert", async () => {
+			const monitor = makeStorageMonitor({ status: "breached", thresholdBreached: undefined, cpuAlertCounter: 0 });
+			const check = makeStorageCheck({ cpu: { usage_percent: 0.95, temperature: [30] } } as Partial<Check>);
+			const { result } = await run(monitor, check);
+
+			expect(result.threshold).toEqual({ opened: false, cleared: false });
+		});
+
+		it("does not let thresholds returning to normal recover a monitor with an active storage breach", async () => {
+			const monitor = makeStorageMonitor({ status: "breached", storageBreaches: [driveBreach] });
+			const { result } = await run(monitor, makeStorageCheck());
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.monitor.status).toBe("breached");
+		});
+
+		it("keeps storage breaches through an unreachable check", async () => {
+			const monitor = makeStorageMonitor({ status: "breached", storageBreaches: [degradedBreach], statusWindow: [false, false, false, false] });
+			const { result, patch } = await run(monitor, makeCheck({ status: false, statusCode: 5000 }));
+
+			expect(result.monitor.status).toBe("down");
+			expect(patch.storageBreaches).toEqual([degradedBreach]);
+			expect(result.storage?.opened).toEqual([]);
+		});
+
+		it("does not report storage changes while the status window is short", async () => {
+			const monitor = makeStorageMonitor({ statusWindow: [true] });
+			const { result } = await run(monitor, makeStorageCheck({ raid: [degraded] }));
+
+			expect(result.storage).toBeUndefined();
+			expect(result.statusChanged).toBe(false);
+		});
+
+		it("does not evaluate storage on non-hardware monitors", async () => {
+			const monitor = makeStorageMonitor({ type: "docker" });
+			const { result } = await run(monitor, makeStorageCheck({ raid: [degraded] }));
+
+			expect(result.storage).toBeUndefined();
+		});
+	});
+
 	describe("computeReachability (pure)", () => {
 		const reach = (currentStatus: MonitorStatus, window: boolean[], threshold = 80) => {
 			const { service } = createService();
@@ -1287,6 +1518,8 @@ describe("StatusService", () => {
 			metrics: any;
 			thresholds: { cpu: number; memory: number; disk: number; temp: number };
 			counters: { cpu: number; memory: number; disk: number; temp: number };
+			thresholdBreached?: boolean;
+			storageBreaching: boolean;
 		};
 
 		const healthyMetrics = () => ({
@@ -1302,12 +1535,38 @@ describe("StatusService", () => {
 			metrics: healthyMetrics(),
 			thresholds: { cpu: 80, memory: 80, disk: 80, temp: 80 },
 			counters: { cpu: 5, memory: 5, disk: 5, temp: 5 },
+			storageBreaching: false,
 		});
 
 		const compute = (overrides: Partial<Params> = {}) => {
 			const { service } = createService();
-			return (service as any).computeHardwareStatus({ ...defaults(), ...overrides });
+			const params = { ...defaults(), ...overrides };
+			// Unless a test says otherwise, a breached monitor is breached by its thresholds
+			return (service as any).computeHardwareStatus({ thresholdBreached: params.currentStatus === "breached", ...params });
 		};
+
+		// ── Storage ──
+		it("enters breached on an active storage breach without waiting for a counter", () => {
+			const r = compute({ storageBreaching: true });
+			expect(r).toMatchObject({ nextStatus: "breached", transitioned: true });
+		});
+
+		it("stays breached while storage is breaching even when every metric is normal", () => {
+			const r = compute({ currentStatus: "breached", storageBreaching: true });
+			expect(r).toMatchObject({ nextStatus: "breached", transitioned: false });
+		});
+
+		it("does not enter breached on storage while unreachable", () => {
+			const r = compute({ reachabilityDown: true, storageBreaching: true });
+			expect(r.transitioned).toBe(false);
+		});
+
+		it("reports the threshold state apart from storage", () => {
+			const cpuHigh = { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } };
+			expect(compute({ metrics: cpuHigh, counters: { cpu: 1, memory: 5, disk: 5, temp: 5 }, storageBreaching: true }).thresholdBreached).toBe(true);
+			expect(compute({ currentStatus: "breached", thresholdBreached: false, storageBreaching: true }).thresholdBreached).toBe(false);
+			expect(compute({ currentStatus: "breached", thresholdBreached: true, storageBreaching: true }).thresholdBreached).toBe(false);
+		});
 
 		// ── Breach detection ──
 		it("detects CPU breach when usage > threshold", () => {

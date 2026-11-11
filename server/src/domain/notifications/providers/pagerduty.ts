@@ -6,6 +6,8 @@ import type { NotificationMessage } from "@/domain/notifications/notification.ty
 import { getTestMessage } from "@/domain/notifications/providers/utils.js";
 import { AlertPagerDutyPayload } from "@/domain/notifications/notification.type.js";
 
+const RESOLVE_TYPES: NotificationMessage["type"][] = ["monitor_up", "threshold_resolved", "container_resolved", "storage_resolved"];
+
 export class PagerDutyProvider extends NotificationProvider {
 	protected readonly serviceName = SERVICE_NAME;
 
@@ -41,6 +43,13 @@ export class PagerDutyProvider extends NotificationProvider {
 			return false;
 		}
 
+		// The PagerDuty alert is keyed per monitor. A recovery of one hardware problem while another keeps the monitor
+		// breached must not resolve it, and a trigger would re-open it, so this one is not sent.
+		if (this.isResolve(message) && message.monitor.status === "breached") {
+			this.logger.debug({ monitorId: message.monitor.id, type: message.type }, "Skipping PagerDuty recovery, monitor still breached");
+			return true;
+		}
+
 		try {
 			const payload = this.buildPagerDutyPayload(notification, message);
 			await got.post("https://events.pagerduty.com/v2/enqueue", {
@@ -55,10 +64,13 @@ export class PagerDutyProvider extends NotificationProvider {
 		}
 	}
 
+	private isResolve(message: NotificationMessage): boolean {
+		return RESOLVE_TYPES.includes(message.type);
+	}
+
 	private buildPagerDutyPayload(notification: Notification, message: NotificationMessage): AlertPagerDutyPayload {
 		// Map our notification type to PagerDuty event_action
-		const eventAction =
-			message.type === "monitor_up" || message.type === "threshold_resolved" || message.type === "container_resolved" ? "resolve" : "trigger";
+		const eventAction = this.isResolve(message) ? "resolve" : "trigger";
 
 		// Map severity to PagerDuty severity levels
 		const severityMap: Record<string, string> = {

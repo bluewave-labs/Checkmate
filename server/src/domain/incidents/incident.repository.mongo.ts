@@ -1,6 +1,6 @@
 import { IncidentModel } from "@/domain/incidents/incident.model.js";
 import type { IncidentDocument } from "@/domain/incidents/incident.model.js";
-import type { Incident, IncidentSummary } from "@/domain/incidents/incident.type.js";
+import type { Incident, IncidentStorageEvent, IncidentSummary, StorageIncidentEvent } from "@/domain/incidents/incident.type.js";
 import type { IIncidentsRepository } from "@/domain/incidents/incident.repository.interface.js";
 import mongoose from "mongoose";
 import { AppError, internalError } from "@/utils/AppError.js";
@@ -48,6 +48,15 @@ class MongoIncidentsRepository implements IIncidentsRepository {
 			status: doc.status,
 			message: doc.message ?? null,
 			statusCode: doc.statusCode ?? null,
+			cause: doc.cause ?? null,
+			storageEvents: (doc.storageEvents ?? []).map((event) => ({
+				subject: event.subject,
+				reason: event.reason,
+				detail: event.detail,
+				...(event.device && { device: event.device }),
+				...(event.model && { model: event.model }),
+				at: toDateString(event.at),
+			})),
 			resolutionType: doc.resolutionType ?? null,
 			resolvedBy: doc.resolvedBy ? toStringId(doc.resolvedBy) : null,
 			resolvedByEmail: doc.resolvedByEmail ?? null,
@@ -134,6 +143,49 @@ class MongoIncidentsRepository implements IIncidentsRepository {
 		};
 		const incidents = await IncidentModel.find(matchStage).sort({ startTime: -1 });
 		return this.mapDocuments(incidents);
+	};
+
+	appendStorageEvents = async (incidentId: string, teamId: string, events: IncidentStorageEvent[]): Promise<Incident> => {
+		const incident = await IncidentModel.findOneAndUpdate(
+			{ _id: new mongoose.Types.ObjectId(incidentId), teamId: new mongoose.Types.ObjectId(teamId) },
+			{ $push: { storageEvents: { $each: events } } },
+			{ new: true }
+		);
+		if (!incident) {
+			throw new AppError(incidentErrors.notFound, { message: `Incident with id ${incidentId} not found`, service: SERVICE_NAME });
+		}
+		return this.toEntity(incident);
+	};
+
+	findStorageEvents = async (monitorId: string, teamId: string, subjects: string[], limit: number): Promise<StorageIncidentEvent[]> => {
+		const monitorMatch = {
+			monitorId: new mongoose.Types.ObjectId(monitorId),
+			teamId: new mongoose.Types.ObjectId(teamId),
+		};
+		const rows = await IncidentModel.aggregate<{
+			incidentId: mongoose.Types.ObjectId;
+			incidentActive: boolean;
+			incidentEndTime: Date | null;
+			event: { subject: string; reason: StorageIncidentEvent["reason"]; detail: string; device?: string; model?: string; at: Date };
+		}>([
+			{ $match: { ...monitorMatch, "storageEvents.subject": { $in: subjects } } },
+			{ $unwind: "$storageEvents" },
+			{ $match: { "storageEvents.subject": { $in: subjects } } },
+			{ $sort: { "storageEvents.at": -1 } },
+			{ $limit: limit },
+			{ $project: { _id: 0, incidentId: "$_id", incidentActive: "$status", incidentEndTime: "$endTime", event: "$storageEvents" } },
+		]);
+		return rows.map((row) => ({
+			subject: row.event.subject,
+			reason: row.event.reason,
+			detail: row.event.detail,
+			...(row.event.device && { device: row.event.device }),
+			...(row.event.model && { model: row.event.model }),
+			at: toDateString(row.event.at),
+			incidentId: toStringId(row.incidentId),
+			incidentActive: row.incidentActive,
+			incidentEndTime: row.incidentEndTime ? toDateString(row.incidentEndTime) : null,
+		}));
 	};
 
 	updateById = async (incidentId: string, teamId: string, patch: Partial<Incident>) => {
