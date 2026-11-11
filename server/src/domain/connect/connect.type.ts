@@ -1,10 +1,14 @@
+import { ConnectBackupResult, ConnectOperationRequest, ConnectProgress } from "@/domain/connect/connect-backup.type.js";
 import type { connectStatusSchema, connectTunnelStatusSchema } from "@/domain/connect/connect.schema.js";
 import type { z } from "zod";
 
 export const CONNECT_STATE_COLLECTION = "connect_state";
 export const DEFAULT_CONNECT_HOSTS = ["connect.checkmate.so", "relay.checkmate.so"] as const;
 
-// Internal (never returned by the API)
+// **********************
+// Connect enrollment
+// **********************
+
 export type ConnectEnrollment = {
 	connectUrl: string;
 	agentId: string;
@@ -14,9 +18,17 @@ export type ConnectEnrollment = {
 export type ConnectState = {
 	enrollment: ConnectEnrollment | null;
 	remoteAccessEnabled: boolean;
+	recoveryKey: string | null;
+	operation: ConnectOperationRequest | null;
+	progress: ConnectProgress | null;
+	lastBackup: ConnectBackupResult | null;
 };
 
 export type ConnectStatus = z.infer<typeof connectStatusSchema>;
+
+// **********************
+// Connect tunnel
+// **********************
 
 export type ConnectTunnelStatus = z.infer<typeof connectTunnelStatusSchema>;
 
