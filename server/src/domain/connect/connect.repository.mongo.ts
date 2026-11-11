@@ -1,5 +1,5 @@
 import type { ConnectBackupResult, ConnectOperationRequest, ConnectProgress, ConnectVerifyResult } from "@/domain/connect/connect-backup.type.js";
-import ConnectStateModel, { type ConnectStateDocument } from "@/domain/connect/connect.model.js";
+import ConnectStateModel, { type ConnectOperationDocument, type ConnectStateDocument } from "@/domain/connect/connect.model.js";
 import { IConnectRepository } from "@/domain/connect/connect.repository.interface.js";
 import type { ConnectEnrollment, ConnectState } from "@/domain/connect/connect.type.js";
 

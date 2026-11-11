@@ -1,15 +1,15 @@
 import { Schema, model, type Types } from "mongoose";
 import { CONNECT_STATE_COLLECTION, type ConnectEnrollment, type ConnectState } from "@/domain/connect/connect.type.js";
 import {
-	ConnectBackupKind,
+	type ConnectBackupKind,
 	ConnectBackupKinds,
 	type ConnectBackupResult,
-	ConnectOperation,
-	type ConnectOperationRequest,
+	type ConnectOperation,
 	ConnectOperations,
 	type ConnectProgress,
 	ConnectProgressStages,
 	ConnectVerifyOutcomes,
+	type ConnectVerifyResult,
 } from "@/domain/connect/connect-backup.type.js";
 
 interface ConnectOperationDocument {
@@ -52,6 +52,7 @@ const operationSchema = new Schema<ConnectOperationDocument>(
 	},
 	{ _id: false }
 );
+
 const progressSchema = new Schema<ConnectProgress>(
 	{
 		operation: { type: String, enum: ConnectOperations, required: true },
