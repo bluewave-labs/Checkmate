@@ -111,7 +111,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 			await this.handlers[job.type](job);
 			if (job.intervalMs === null) {
 				// One-shot job
-				await this.jobsRepository.recordOneShot(job.id, Date.now());
+				await this.jobsRepository.recordOneShot(job.id, job.nextScheduledAt, Date.now());
 			} else {
 				await this.jobsRepository.recordSuccess(job.id, job.nextScheduledAt, job.intervalMs, Date.now());
 			}
