@@ -10,4 +10,6 @@ export const connectErrors = {
 	cloudBackupsExist: { status: 409, description: "Cloud backups already exist. Enter the recovery key from your original server" },
 	noRecoveryKey: { status: 409, description: "No recovery key set" },
 	busy: { status: 409, description: "A backup or restore is already running" },
+	restoreNeedsRecoveryKey: { status: 409, description: "Restores need the original recovery key" },
+	sameRecoveryKey: { status: 409, description: "This is already your recovery key" },
 } satisfies Record<string, ErrorDefinition>;
