@@ -875,6 +875,21 @@
 						}
 					}
 				},
+				"storageAlerts": {
+					"title": "Storage alerts",
+					"description": "Mark this host as breached while a RAID array or drive needs attention, and notify when a new problem appears or all storage is back to normal. Drive checks need a Capture version with S.M.A.R.T. support and smartctl on the host.",
+					"option": {
+						"onArrayDegraded": {
+							"label": "Alert when a RAID array is degraded or inactive"
+						},
+						"onDriveFailure": {
+							"label": "Alert when a drive fails its health check"
+						},
+						"onDriveWarning": {
+							"label": "Alert on early drive warnings (pending or uncorrectable sectors)"
+						}
+					}
+				},
 				"stats": {
 					"title": "Monitor history",
 					"description": "Clear all monitoring history and statistics for your team. This action is irreversible.",

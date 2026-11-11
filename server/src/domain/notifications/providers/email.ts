@@ -78,6 +78,10 @@ export class EmailProvider extends NotificationProvider {
 				return `Monitor ${message.monitor.name} container alert`;
 			case "container_resolved":
 				return `Monitor ${message.monitor.name} containers recovered`;
+			case "storage_breach":
+				return `Monitor ${message.monitor.name} storage alert`;
+			case "storage_resolved":
+				return `Monitor ${message.monitor.name} storage recovered`;
 			default:
 				return `Alert: ${message.monitor.name}`;
 		}

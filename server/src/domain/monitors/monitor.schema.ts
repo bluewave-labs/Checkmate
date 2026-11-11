@@ -9,13 +9,17 @@ import {
 	ProxyModes,
 } from "@/domain/monitors/monitor.type.js";
 import { z } from "zod";
+import { storageBreachSchema } from "@/domain/storage/storage.schema.js";
 import {
 	checkSnapshotSchema,
 	dockerContainerStatsSchema,
 	dockerStatsSchema,
+	driveHistorySchema,
 	groupedCheckSchema,
 	groupedUptimeCheckSchema,
 	hardwareStatsSchema,
+	latestDrivesSchema,
+	latestRaidSchema,
 	pageSpeedGroupedCheckSchema,
 } from "@/domain/checks/check.schema.js";
 import { monitorStatsSchema } from "@/domain/monitor-stats/monitor-stats.schema.js";
@@ -68,6 +72,14 @@ export const monitorSchema = z.object({
 	dockerLogsEnabled: z.boolean().optional(),
 	dockerAlertOnStopped: z.boolean().optional(),
 	dockerAlertOnUnhealthy: z.boolean().optional(),
+	// Hardware monitors: storage health alerts (RAID arrays and SMART drives)
+	storageAlertOnArrayDegraded: z.boolean().optional(),
+	storageAlertOnDriveFailure: z.boolean().optional(),
+	storageAlertOnDriveWarning: z.boolean().optional(),
+	// Hardware monitors: storage alerts active after the last evaluated check
+	storageBreaches: z.array(storageBreachSchema).optional(),
+	// Hardware monitors: a CPU/memory/disk/temperature threshold is breached, tracked apart from storage alerts
+	thresholdBreached: z.boolean().optional(),
 	dockerTlsCa: z.string().optional(),
 	dockerTlsCert: z.string().optional(),
 	// EncryptionService ciphertext. Never copied by toEntity; omitted from the response schema.
@@ -79,6 +91,8 @@ export const monitorSchema = z.object({
 	createdAt: z.string(),
 	updatedAt: z.string(),
 	lastEvaluatedAt: z.number(), // epoch ms
+	// Hardware monitors: epoch ms of the last SMART fetch attempt, which runs at most every SMART_INTERVAL_MS
+	smartCheckedAt: z.number().optional(),
 });
 
 const monitorExample = {
@@ -179,6 +193,10 @@ export const hardwareDetailsResultSchema = z
 		monitor: monitorResponseSchema,
 		stats: hardwareStatsSchema,
 		monitorStats: monitorStatsSchema.or(z.null()),
+		// Storage health. raid and drives are null when no recent check carries them (Capture without support).
+		raid: latestRaidSchema.nullable(),
+		drives: latestDrivesSchema.nullable(),
+		driveHistory: z.array(driveHistorySchema),
 	})
 	.meta({ id: "HardwareDetails" });
 

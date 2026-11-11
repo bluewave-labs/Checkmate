@@ -37,6 +37,7 @@ const createUsersRepo = () =>
 const createMessageBuilder = () =>
 	({
 		buildThresholdBreachMessage: jest.fn(),
+		buildStorageBreachMessage: jest.fn(),
 	}) as unknown as jest.Mocked<INotificationMessageBuilder>;
 
 const createService = (overrides?: {
@@ -136,6 +137,7 @@ describe("IncidentService", () => {
 					teamId: "team-1",
 					status: true,
 					statusCode: 500,
+					cause: "down",
 				})
 			);
 			expect(notificationMessageBuilder.buildThresholdBreachMessage).not.toHaveBeenCalled();
@@ -158,6 +160,7 @@ describe("IncidentService", () => {
 			expect(incidentsRepository.create).toHaveBeenCalledWith(
 				expect.objectContaining({
 					statusCode: 9999,
+					cause: "threshold",
 					message: "CPU: 95% (threshold: 80%)",
 				})
 			);
@@ -195,6 +198,78 @@ describe("IncidentService", () => {
 				"team-1",
 				expect.objectContaining({ status: false, resolutionType: "automatic" })
 			);
+		});
+
+		it("uses status code 9999 and builds a storage message for storage_breach incidents", async () => {
+			const { service, incidentsRepository, notificationMessageBuilder } = createService();
+			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(null);
+			(incidentsRepository.create as jest.Mock).mockResolvedValue(makeIncident());
+			(notificationMessageBuilder.buildStorageBreachMessage as jest.Mock).mockReturnValue("/dev/md1: degraded, 1 of 2 disks missing");
+
+			const storageBreaches = [{ subject: "/dev/md1", reason: "array_degraded" as const, detail: "degraded, 1 of 2 disks missing" }];
+			await service.handleIncident(
+				makeMonitor({ type: "hardware", status: "breached" }),
+				makeDecision({ transition: "storage_breach", storageBreaches }),
+				makeCheck()
+			);
+
+			expect(notificationMessageBuilder.buildStorageBreachMessage).toHaveBeenCalledWith(storageBreaches);
+			expect(incidentsRepository.create).toHaveBeenCalledWith(
+				expect.objectContaining({ statusCode: 9999, cause: "storage", message: "/dev/md1: degraded, 1 of 2 disks missing" })
+			);
+		});
+
+		it("keeps the open incident on storage_breach when one is already active", async () => {
+			const existing = makeIncident();
+			const { service, incidentsRepository } = createService();
+			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(existing);
+
+			const result = await service.handleIncident(makeMonitor({ status: "breached" }), makeDecision({ transition: "storage_breach" }), makeCheck());
+
+			expect(result).toBe(existing);
+			expect(incidentsRepository.create).not.toHaveBeenCalled();
+		});
+
+		it("resolves the active incident on storage_resolved when the monitor is back up", async () => {
+			const resolved = makeIncident({ status: false });
+			const { service, incidentsRepository } = createService();
+			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(makeIncident());
+			(incidentsRepository.updateById as jest.Mock).mockResolvedValue(resolved);
+
+			const result = await service.handleIncident(makeMonitor({ status: "up" }), makeDecision({ transition: "storage_resolved" }), makeCheck());
+
+			expect(result).toBe(resolved);
+			expect(incidentsRepository.updateById).toHaveBeenCalledWith(
+				"inc-1",
+				"team-1",
+				expect.objectContaining({ status: false, resolutionType: "automatic" })
+			);
+		});
+
+		it("keeps the incident open on storage_resolved while a threshold keeps the monitor breached", async () => {
+			const active = makeIncident();
+			const { service, incidentsRepository } = createService();
+			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(active);
+
+			const result = await service.handleIncident(makeMonitor({ status: "breached" }), makeDecision({ transition: "storage_resolved" }), makeCheck());
+
+			expect(result).toBe(active);
+			expect(incidentsRepository.updateById).not.toHaveBeenCalled();
+		});
+
+		it("keeps the incident open on threshold_resolved while a storage alert keeps the monitor breached", async () => {
+			const active = makeIncident();
+			const { service, incidentsRepository } = createService();
+			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(active);
+
+			const result = await service.handleIncident(
+				makeMonitor({ status: "breached" }),
+				makeDecision({ transition: "threshold_resolved" }),
+				makeCheck()
+			);
+
+			expect(result).toBe(active);
+			expect(incidentsRepository.updateById).not.toHaveBeenCalled();
 		});
 
 		it("returns null on an up transition when no incident is open", async () => {

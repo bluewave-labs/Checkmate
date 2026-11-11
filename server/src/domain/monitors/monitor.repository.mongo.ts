@@ -604,6 +604,17 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			dockerLogsEnabled: doc.dockerLogsEnabled ?? false,
 			dockerAlertOnStopped: doc.dockerAlertOnStopped ?? false,
 			dockerAlertOnUnhealthy: doc.dockerAlertOnUnhealthy ?? false,
+			storageAlertOnArrayDegraded: doc.storageAlertOnArrayDegraded ?? true,
+			storageAlertOnDriveFailure: doc.storageAlertOnDriveFailure ?? true,
+			storageAlertOnDriveWarning: doc.storageAlertOnDriveWarning ?? false,
+			storageBreaches: (doc.storageBreaches ?? []).map((breach) => ({
+				subject: breach.subject,
+				reason: breach.reason,
+				detail: breach.detail,
+				device: breach.device ?? undefined,
+				model: breach.model ?? undefined,
+			})),
+			thresholdBreached: doc.thresholdBreached ?? undefined,
 			dockerTlsCa: doc.dockerTlsCa ?? undefined,
 			dockerTlsCert: doc.dockerTlsCert ?? undefined,
 			dockerTlsKeySet: doc.dockerTlsKeySet ?? false,
@@ -612,6 +623,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 			lastEvaluatedAt: doc.lastEvaluatedAt,
+			smartCheckedAt: doc.smartCheckedAt ?? undefined,
 		};
 	};
 
