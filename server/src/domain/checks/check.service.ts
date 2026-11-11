@@ -1,13 +1,25 @@
 import { Types } from "mongoose";
 import { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
-import type { Check, CheckErrorInfo, ChecksQueryResult, ChecksSummary, ILighthouseAudit } from "@/domain/checks/check.type.js";
+import type { Check, CheckDrive, CheckErrorInfo, ChecksQueryResult, ChecksSummary, ILighthouseAudit } from "@/domain/checks/check.type.js";
+import { SmartDriveStatuses, SmartWarnings, type SmartDriveStatus, type SmartWarning } from "@/domain/checks/check.type.js";
 import type { DockerStatusPayload, MonitorPayloadMap, MonitorStatusResponse } from "@/types/network.js";
 import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
 import { ILogger } from "@/utils/logger/logger.js";
 import { CheckFilter, DateRange } from "@/types/query.js";
 
 const SERVICE_NAME = "checkService";
+
+const isSmartDriveStatus = (value: unknown): value is SmartDriveStatus => SmartDriveStatuses.includes(value as SmartDriveStatus);
+const isSmartWarning = (value: unknown): value is SmartWarning => SmartWarnings.includes(value as SmartWarning);
+
+// The model enforces the closed status and warning sets, so a value from a newer Capture must not fail the whole
+// check insert: an unknown status reads as "could not read" and unknown warnings are dropped.
+const normalizeDrive = (drive: CheckDrive): CheckDrive => ({
+	...drive,
+	status: isSmartDriveStatus(drive.status) ? drive.status : "error",
+	warnings: Array.isArray(drive.warnings) ? drive.warnings.filter(isSmartWarning) : [],
+});
 
 export interface ICheckService {
 	createChecks(checks: Check[]): Promise<Check[]>;
@@ -108,17 +120,20 @@ export class CheckService implements ICheckService {
 
 		if (type === "hardware") {
 			const hardwarePayload = payload as HardwareStatusPayload | undefined;
-			const { cpu, memory, disk, host, net } = hardwarePayload?.data ?? {};
+			const { cpu, memory, disk, host, net, raid } = hardwarePayload?.data ?? {};
 			const errorsSource = Array.isArray(hardwarePayload?.errors)
 				? hardwarePayload.errors
 				: (hardwarePayload?.errors as { errors?: CheckErrorInfo[] } | undefined)?.errors;
+			const smart = hardwarePayload?.smart;
 			check.cpu = cpu;
 			check.memory = memory;
 			check.disk = disk;
 			check.host = host;
-			check.errors = errorsSource;
+			check.errors = smart?.errors.length ? [...(errorsSource ?? []), ...smart.errors] : errorsSource;
 			check.capture = hardwarePayload?.capture;
 			check.net = net;
+			check.raid = Array.isArray(raid) ? raid : undefined;
+			check.drives = smart?.drives?.map(normalizeDrive);
 		}
 
 		if (type === "docker") {

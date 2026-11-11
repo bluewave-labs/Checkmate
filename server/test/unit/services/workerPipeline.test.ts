@@ -282,6 +282,76 @@ describe("WorkerPipeline", () => {
 			expect(result).toEqual({ status: expect.objectContaining({ monitorId: "m1" }), check: { id: "check-1" } });
 		});
 
+		// ── SMART cadence (hardware) ──────────────────────────────────────────
+
+		const METRICS_URL = "http://nas:59232/api/v1/metrics";
+		const smartUrlOf = (deps: ReturnType<typeof createPipeline>["deps"]) =>
+			((deps.providerRegistry.probe as jest.Mock).mock.calls[0][1] as { smartUrl?: string }).smartUrl;
+
+		it("asks for SMART and records the attempt when a hardware monitor has never fetched it", async () => {
+			const { pipeline, deps } = createPipeline();
+			const before = Date.now();
+
+			await pipeline.produce(makeMonitor({ type: "hardware", url: METRICS_URL }));
+
+			expect(smartUrlOf(deps)).toBe("http://nas:59232/api/v1/metrics/smart");
+			const [id, teamId, patch] = (deps.monitorsRepository.updateById as jest.Mock).mock.calls[0] as [string, string, { smartCheckedAt: number }];
+			expect([id, teamId]).toEqual(["m1", "team"]);
+			expect(patch.smartCheckedAt).toBeGreaterThanOrEqual(before);
+			expect(patch.smartCheckedAt).toBeLessThanOrEqual(Date.now());
+		});
+
+		it("does not ask for SMART within ten minutes of the last attempt", async () => {
+			const { pipeline, deps } = createPipeline();
+
+			await pipeline.produce(makeMonitor({ type: "hardware", url: METRICS_URL, smartCheckedAt: Date.now() - 9 * 60 * 1000 }));
+
+			expect(smartUrlOf(deps)).toBeUndefined();
+			expect(deps.monitorsRepository.updateById).not.toHaveBeenCalled();
+		});
+
+		it("asks for SMART again once ten minutes have passed", async () => {
+			const { pipeline, deps } = createPipeline();
+
+			await pipeline.produce(makeMonitor({ type: "hardware", url: METRICS_URL, smartCheckedAt: Date.now() - 10 * 60 * 1000 }));
+
+			expect(smartUrlOf(deps)).toBe("http://nas:59232/api/v1/metrics/smart");
+		});
+
+		it("skips SMART for a hardware URL that is not the metrics endpoint", async () => {
+			const { pipeline, deps } = createPipeline();
+
+			await pipeline.produce(makeMonitor({ type: "hardware", url: "http://nas:8080/custom" }));
+
+			expect(smartUrlOf(deps)).toBeUndefined();
+			expect(deps.monitorsRepository.updateById).not.toHaveBeenCalled();
+			expect(deps.providerRegistry.probe).toHaveBeenCalled();
+		});
+
+		it("never asks for SMART for other monitor types", async () => {
+			const { pipeline, deps } = createPipeline();
+
+			await pipeline.produce(makeMonitor({ type: "http", url: METRICS_URL }));
+
+			expect(smartUrlOf(deps)).toBeUndefined();
+		});
+
+		it("runs the check without SMART when recording the attempt fails", async () => {
+			const { pipeline, deps } = createPipeline({
+				monitorsRepository: {
+					updateById: jest.fn<any>().mockRejectedValue(new Error("write conflict")),
+					findDockerTlsKeyById: jest.fn<any>(),
+				},
+			});
+
+			const result = await pipeline.produce(makeMonitor({ type: "hardware", url: METRICS_URL }));
+
+			expect(smartUrlOf(deps)).toBeUndefined();
+			expect(deps.bufferService.addToBuffer).toHaveBeenCalled();
+			expect(result).not.toBeNull();
+			expect(deps.logger.warn).toHaveBeenCalled();
+		});
+
 		// ── docker tls key resolution ─────────────────────────────────────────
 
 		it("fetches the stored key for a docker monitor with a key set and passes it in the context", async () => {
