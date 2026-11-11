@@ -1,6 +1,8 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { EventEmitter } from "node:events";
 import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { PassThrough } from "node:stream";
 import type { execFile, spawn } from "node:child_process";
 import { ConnectBackupTools } from "../../../src/domain/connect/connect.backup-tools.ts";
@@ -149,6 +151,67 @@ describe("ConnectBackupTools.withWorkDir", () => {
 		const { tools } = setup();
 
 		await expect(tools.withWorkDir(async () => 42)).resolves.toBe(42);
+	});
+});
+
+describe("ConnectBackupTools.withWorkDir stale directories", () => {
+	const DAY_MS = 24 * 60 * 60 * 1000;
+
+	const makeDir = async (name: string, ageMs: number) => {
+		const dir = path.join(os.tmpdir(), name);
+		await fs.promises.mkdir(dir, { recursive: true });
+		await fs.promises.writeFile(path.join(dir, "mongo.yaml"), "uri: x\n");
+		const when = new Date(Date.now() - ageMs);
+		await fs.promises.utimes(dir, when, when);
+		return dir;
+	};
+
+	it("removes work directories older than a day before starting", async () => {
+		const { tools, logger } = setup();
+		const stale = await makeDir(`checkmate-connect-test-stale-${process.pid}`, DAY_MS + 60_000);
+
+		await tools.withWorkDir(async () => undefined);
+
+		expect(fs.existsSync(stale)).toBe(false);
+		expect(logger.info).toHaveBeenCalledWith({ dir: stale }, "Removed a Connect work directory left by an interrupted backup");
+	});
+
+	it("keeps recent work directories, which may belong to a backup still running", async () => {
+		const { tools } = setup();
+		const recent = await makeDir(`checkmate-connect-test-recent-${process.pid}`, 60 * 60 * 1000);
+
+		try {
+			await tools.withWorkDir(async () => undefined);
+
+			expect(fs.existsSync(recent)).toBe(true);
+		} finally {
+			await fs.promises.rm(recent, { recursive: true, force: true });
+		}
+	});
+
+	it("leaves directories that aren't Connect work directories alone", async () => {
+		const { tools } = setup();
+		const other = await makeDir(`not-checkmate-${process.pid}`, DAY_MS * 2);
+
+		try {
+			await tools.withWorkDir(async () => undefined);
+
+			expect(fs.existsSync(other)).toBe(true);
+		} finally {
+			await fs.promises.rm(other, { recursive: true, force: true });
+		}
+	});
+
+	it("still runs the work when the sweep fails", async () => {
+		const { tools, logger } = setup();
+		const readdir = jest.spyOn(fs.promises, "readdir").mockRejectedValueOnce(new Error("EACCES"));
+
+		try {
+			await expect(tools.withWorkDir(async () => 42)).resolves.toBe(42);
+			expect(logger.warn).toHaveBeenCalledWith({ err: expect.any(Error) }, "Could not remove stale Connect work directories");
+		} finally {
+			readdir.mockRestore();
+		}
 	});
 });
 

@@ -16,6 +16,7 @@ const SERVICE_NAME = "ConnectBackupTools";
 const TOOL_CHECK_TIMEOUT_MS = 10_000;
 const STDERR_TAIL_CHARS = 2_000;
 const WORK_DIR_PREFIX = "checkmate-connect-";
+const STALE_WORK_DIR_MS = 24 * 60 * 60 * 1000;
 const CONFIG_EXCLUDED_COLLECTIONS = ["checks", "monitorstats", "geochecks", "dockerlogs", "dlqitems", "jobs"] as const;
 
 export interface IConnectBackupTools {
@@ -72,7 +73,25 @@ export class ConnectBackupTools implements IConnectBackupTools {
 		return missing;
 	};
 
+	private removeStaleWorkDirs = async (): Promise<void> => {
+		try {
+			const cutoff = Date.now() - STALE_WORK_DIR_MS;
+			const entries = await fs.promises.readdir(os.tmpdir(), { withFileTypes: true });
+			for (const entry of entries) {
+				if (!entry.isDirectory() || !entry.name.startsWith(WORK_DIR_PREFIX)) continue;
+				const dir = path.join(os.tmpdir(), entry.name);
+				const { mtimeMs } = await fs.promises.stat(dir);
+				if (mtimeMs > cutoff) continue;
+				await fs.promises.rm(dir, { recursive: true, force: true });
+				this.logger.info({ dir }, "Removed a Connect work directory left by an interrupted backup");
+			}
+		} catch (error: unknown) {
+			this.logger.warn({ err: error }, "Could not remove stale Connect work directories");
+		}
+	};
+
 	withWorkDir = async <T>(work: (dir: string, configFile: string) => Promise<T>): Promise<T> => {
+		await this.removeStaleWorkDirs();
 		const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), WORK_DIR_PREFIX));
 		try {
 			const configFile = path.join(dir, "mongo.yaml");
