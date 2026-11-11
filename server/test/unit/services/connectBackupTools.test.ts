@@ -17,7 +17,7 @@ const fakeChild = () =>
 		stderr: new PassThrough(),
 	});
 
-const setup = (opts: { missing?: string[] } = {}) => {
+const setup = (opts: { missing?: string[]; dbUri?: string } = {}) => {
 	const logger = createMockLogger();
 	const child = fakeChild();
 	const spawnProcess = jest.fn(() => child);
@@ -27,7 +27,7 @@ const setup = (opts: { missing?: string[] } = {}) => {
 	const settings = {
 		connectMongodumpBin: "mongodump",
 		connectMongorestoreBin: "mongorestore",
-		dbConnectionString: DB_URI,
+		dbConnectionString: opts.dbUri ?? DB_URI,
 	};
 	const settingsService = {
 		getSettings: () => settings,
@@ -253,5 +253,86 @@ describe("ConnectBackupTools.checkTools", () => {
 		});
 
 		await expect(tools.checkTools()).resolves.toEqual(["mongodump", "mongorestore"]);
+	});
+});
+
+describe("ConnectBackupTools.restore", () => {
+	it("runs mongorestore into the configured database, never the URI on the command line", async () => {
+		const { tools, spawnProcess, child } = setup();
+
+		const restored = tools.restore("/tmp/x/mongo.yaml", "/tmp/x/restore.archive.gz", "renamed_db");
+		child.emit("close", 0);
+		await restored;
+
+		const [bin, args, options] = spawnProcess.mock.calls[0] as unknown as [string, string[], { stdio: string[] }];
+		expect(bin).toBe("mongorestore");
+		expect(args).toEqual([
+			"--config=/tmp/x/mongo.yaml",
+			"--archive=/tmp/x/restore.archive.gz",
+			"--gzip",
+			"--drop",
+			"--nsFrom=$db$.$coll$",
+			"--nsTo=renamed_db.$coll$",
+		]);
+		expect(args.join(" ")).not.toContain("mongodb://");
+		expect(options.stdio).toEqual(["ignore", "ignore", "pipe"]);
+	});
+
+	it("rejects with the end of stderr on a non-zero exit", async () => {
+		const { tools, child } = setup();
+
+		const restored = tools.restore("c", "a", "d");
+		child.stderr.write("authentication failed");
+		await new Promise((resolve) => setImmediate(resolve));
+		child.emit("close", 1);
+
+		await expect(restored).rejects.toThrow("mongorestore exited 1: authentication failed");
+	});
+
+	it("fails a restore that wrote no documents", async () => {
+		const { tools, child } = setup();
+
+		const restored = tools.restore("c", "a", "d");
+		child.stderr.write("2026-11-12T10:00:00.000+0000\t0 document(s) restored successfully. 0 document(s) failed to restore.\n");
+		await new Promise((resolve) => setImmediate(resolve));
+		child.emit("close", 0);
+
+		await expect(restored).rejects.toThrow("restore wrote no data");
+	});
+
+	it("rejects when mongorestore can't be started", async () => {
+		const { tools, child } = setup();
+
+		const restored = tools.restore("c", "a", "d");
+		child.emit("error", new Error("spawn mongorestore ENOENT"));
+
+		await expect(restored).rejects.toThrow("mongorestore not available: spawn mongorestore ENOENT");
+	});
+});
+
+describe("ConnectBackupTools.withRestoreWorkDir", () => {
+	it.each([
+		["mongodb://localhost:27017/uptime_db", "mongodb://localhost:27017/"],
+		["mongodb://localhost:27017/uptime_db?replicaSet=rs0", "mongodb://localhost:27017/?replicaSet=rs0"],
+		["mongodb://u:p@db:27017/uptime_db", "mongodb://u:p@db:27017/?authSource=uptime_db"],
+		["mongodb://u:p@db:27017/uptime_db?authSource=admin", "mongodb://u:p@db:27017/?authSource=admin"],
+		["mongodb://u:p@a:1,b:2/uptime_db?tls=true", "mongodb://u:p@a:1,b:2/?tls=true&authSource=uptime_db"],
+		["mongodb+srv://u:p@cluster.example/uptime_db", "mongodb+srv://u:p@cluster.example/?authSource=uptime_db"],
+		["mongodb://localhost:27017", "mongodb://localhost:27017"],
+		["mongodb://localhost:27017/?replicaSet=rs0", "mongodb://localhost:27017/?replicaSet=rs0"],
+	])("writes %s as %s for restores", async (input, expected) => {
+		const { tools } = setup({ dbUri: input });
+
+		await tools.withRestoreWorkDir(async (_dir, configFile) => {
+			expect(await fs.promises.readFile(configFile, "utf8")).toBe(`uri: ${JSON.stringify(expected)}\n`);
+		});
+	});
+
+	it("keeps the full URI for backups", async () => {
+		const { tools } = setup({ dbUri: "mongodb://u:p@db:27017/uptime_db" });
+
+		await tools.withWorkDir(async (_dir, configFile) => {
+			expect(await fs.promises.readFile(configFile, "utf8")).toBe(`uri: ${JSON.stringify("mongodb://u:p@db:27017/uptime_db")}\n`);
+		});
 	});
 });

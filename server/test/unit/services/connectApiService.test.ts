@@ -1,7 +1,9 @@
 import { describe, expect, it, jest } from "@jest/globals";
+import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { PassThrough } from "node:stream";
 import { ConnectApiService } from "../../../src/domain/connect/connect-api.service.ts";
 import type { ISettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
 import type { ConnectEnrollment } from "../../../src/domain/connect/connect.type.ts";
@@ -36,6 +38,7 @@ const setup = (
 		post?: jest.Mock<any>;
 		get?: jest.Mock<any>;
 		put?: jest.Mock<any>;
+		stream?: jest.Mock<any>;
 	} = {}
 ) => {
 	const logger = createMockLogger();
@@ -48,6 +51,7 @@ const setup = (
 				await drain(options.body);
 				return { statusCode: 200, body: "" };
 			}),
+		stream: opts.stream ?? jest.fn<any>(),
 	};
 	const settingsService = {
 		getSettings: () => ({ connectApiUrl: opts.connectApiUrl ?? null }),
@@ -309,6 +313,168 @@ describe("ConnectApiService.upload", () => {
 			});
 
 			await expect(connectApiService.upload(BLOB, file, 10, () => undefined)).rejects.toThrow("socket hang up");
+		});
+	});
+});
+
+const downloadStream = (body: Buffer, statusCode = 200) =>
+	jest.fn<any>(() => {
+		const stream = new PassThrough();
+		setImmediate(() => {
+			stream.emit("response", { statusCode });
+			stream.end(body);
+		});
+		return stream;
+	});
+
+const ticketFor = (body: Buffer, overrides: Record<string, unknown> = {}) =>
+	json(200, {
+		downloadUrl: BLOB,
+		sha256: crypto.createHash("sha256").update(body).digest("hex"),
+		sizeBytes: body.length,
+		...overrides,
+	});
+
+describe("ConnectApiService.download", () => {
+	const withTarget = async (work: (file: string) => Promise<void>) => {
+		const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "connect-download-"));
+		try {
+			await work(path.join(dir, "restore.cmkb"));
+		} finally {
+			await fs.promises.rm(dir, { recursive: true, force: true });
+		}
+	};
+
+	it("asks for a download ticket, then writes the checked file and reports progress", async () => {
+		const body = crypto.randomBytes(100_000);
+		const post = jest.fn<any>().mockResolvedValue(ticketFor(body));
+		const stream = downloadStream(body);
+		const { connectApiService } = setup({ post, stream });
+		const percents: number[] = [];
+
+		await withTarget(async (file) => {
+			await connectApiService.download(enrollment(), "b-1", file, (percent) => percents.push(percent));
+
+			expect((await fs.promises.readFile(file)).equals(body)).toBe(true);
+			expect((await fs.promises.stat(file)).mode & 0o777).toBe(0o600);
+		});
+		const [url, options] = post.mock.calls[0] as [string, any];
+		expect(url).toBe(`${API}/api/agent/backups/b-1/download`);
+		expect(options.json).toEqual({ agentId: "inst-1" });
+		const [streamUrl, streamOptions] = stream.mock.calls[0] as [string, any];
+		expect(streamUrl).toBe(BLOB);
+		expect(streamOptions).toMatchObject({
+			followRedirect: false,
+			throwHttpErrors: false,
+			timeout: { socket: 300_000 },
+		});
+		expect(percents.at(-1)).toBe(100);
+	});
+
+	it("refuses an untrusted storage URL without downloading", async () => {
+		const body = Buffer.from("x");
+		const stream = downloadStream(body);
+		const { connectApiService } = setup({
+			post: jest.fn<any>().mockResolvedValue(ticketFor(body, { downloadUrl: "https://evil.example/x" })),
+			stream,
+		});
+
+		await withTarget(async (file) => {
+			await expect(connectApiService.download(enrollment(), "b-1", file, () => undefined)).rejects.toThrow(
+				"Checkmate Connect returned an unexpected storage URL"
+			);
+		});
+		expect(stream).not.toHaveBeenCalled();
+	});
+
+	it.each([0, -1, 1.5, 50 * 1024 ** 3 + 1, Number.MAX_SAFE_INTEGER + 1])("refuses a recorded size of %s", async (sizeBytes) => {
+		const body = Buffer.from("x");
+		const stream = downloadStream(body);
+		const { connectApiService } = setup({
+			post: jest.fn<any>().mockResolvedValue(ticketFor(body, { sizeBytes })),
+			stream,
+		});
+
+		await withTarget(async (file) => {
+			await expect(connectApiService.download(enrollment(), "b-1", file, () => undefined)).rejects.toThrow(
+				"Checkmate Connect returned an invalid backup size"
+			);
+		});
+		expect(stream).not.toHaveBeenCalled();
+	});
+
+	it("stops a download that grows past its recorded size", async () => {
+		const body = crypto.randomBytes(1_000);
+		const { connectApiService } = setup({
+			post: jest.fn<any>().mockResolvedValue(ticketFor(body, { sizeBytes: 500 })),
+			stream: downloadStream(body),
+		});
+
+		await withTarget(async (file) => {
+			await expect(connectApiService.download(enrollment(), "b-1", file, () => undefined)).rejects.toThrow("download exceeds recorded size 500");
+		});
+	});
+
+	it("fails a download shorter than its recorded size", async () => {
+		const body = crypto.randomBytes(500);
+		const { connectApiService } = setup({
+			post: jest.fn<any>().mockResolvedValue(ticketFor(body, { sizeBytes: 1_000 })),
+			stream: downloadStream(body),
+		});
+
+		await withTarget(async (file) => {
+			await expect(connectApiService.download(enrollment(), "b-1", file, () => undefined)).rejects.toThrow("downloaded size 500 != recorded 1000");
+		});
+	});
+
+	it("fails a download whose checksum doesn't match", async () => {
+		const body = crypto.randomBytes(500);
+		const { connectApiService } = setup({
+			post: jest.fn<any>().mockResolvedValue(ticketFor(body, { sha256: "00".repeat(32) })),
+			stream: downloadStream(body),
+		});
+
+		await withTarget(async (file) => {
+			await expect(connectApiService.download(enrollment(), "b-1", file, () => undefined)).rejects.toThrow(
+				"downloaded archive does not match its recorded checksum"
+			);
+		});
+	});
+
+	it("fails on a refused download", async () => {
+		const body = Buffer.from("x");
+		const { connectApiService } = setup({
+			post: jest.fn<any>().mockResolvedValue(ticketFor(body)),
+			stream: downloadStream(Buffer.alloc(0), 403),
+		});
+
+		await withTarget(async (file) => {
+			await expect(connectApiService.download(enrollment(), "b-1", file, () => undefined)).rejects.toThrow("blob download failed (403)");
+		});
+	});
+
+	it("reports a stalled download in words", async () => {
+		const body = Buffer.from("x");
+		const stream = jest.fn<any>(() => {
+			const source = new PassThrough();
+			setImmediate(() =>
+				source.destroy(
+					Object.assign(new Error("Timeout awaiting 'socket' for 300000ms"), {
+						code: "ETIMEDOUT",
+					})
+				)
+			);
+			return source;
+		});
+		const { connectApiService } = setup({
+			post: jest.fn<any>().mockResolvedValue(ticketFor(body)),
+			stream,
+		});
+
+		await withTarget(async (file) => {
+			await expect(connectApiService.download(enrollment(), "b-1", file, () => undefined)).rejects.toThrow(
+				"transfer stalled: no data moved for 300 s"
+			);
 		});
 	});
 });
