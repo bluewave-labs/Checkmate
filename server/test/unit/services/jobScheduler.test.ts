@@ -31,13 +31,14 @@ const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 const createScheduler = (overrides?: { queueMode?: QueueMode; telemetryEnabled?: boolean; mocks?: Record<string, any> }) => {
 	const jobsRepository = {
 		upsertJob: jest.fn<any>().mockResolvedValue(true),
-		upsertCleanupJob: jest.fn<any>().mockResolvedValue(true),
+		upsertJobAndSchedule: jest.fn<any>().mockResolvedValue(true),
 		rescheduleOverdueChecks: jest.fn<any>().mockResolvedValue(0),
 		deleteGlobalJob: jest.fn<any>().mockResolvedValue(true),
 		setActiveById: jest.fn<any>().mockResolvedValue(true),
 		updateScheduleById: jest.fn<any>().mockResolvedValue(true),
 		updateHeartbeatScheduleById: jest.fn<any>().mockResolvedValue(true),
 		deleteByIdAndType: jest.fn<any>().mockResolvedValue(true),
+		findGlobalJob: jest.fn<any>().mockResolvedValue(null),
 	};
 	const queueWorkersRepository = {
 		upsert: jest.fn<any>().mockResolvedValue(undefined),
@@ -86,7 +87,7 @@ describe("JobScheduler", () => {
 
 			const seededTypes = mocks.jobsRepository.upsertJob.mock.calls.map((c: any[]) => c[0].type);
 			expect(seededTypes).toContain("check");
-			const cleanupTypes = mocks.jobsRepository.upsertCleanupJob.mock.calls.map((c: any[]) => c[0].type);
+			const cleanupTypes = mocks.jobsRepository.upsertJobAndSchedule.mock.calls.map((c: any[]) => c[0].type);
 			expect(cleanupTypes).toContain("cleanup-orphaned");
 			expect(cleanupTypes).toContain("cleanup-retention");
 		});
@@ -112,7 +113,7 @@ describe("JobScheduler", () => {
 			expect(mocks.queueWorkersRepository.upsert).toHaveBeenCalledWith("worker-1", "worker", false);
 			expect(mocks.monitorsRepository.findAllForScheduling).not.toHaveBeenCalled();
 			expect(mocks.jobsRepository.upsertJob).not.toHaveBeenCalled();
-			expect(mocks.jobsRepository.upsertCleanupJob).not.toHaveBeenCalled();
+			expect(mocks.jobsRepository.upsertJobAndSchedule).not.toHaveBeenCalled();
 		});
 
 		it("primary mode seeds the telemetry row when telemetry is enabled", async () => {
@@ -343,6 +344,47 @@ describe("JobScheduler", () => {
 			await (scheduler as any).heartbeat();
 
 			expect(mocks.queueWorkersRepository.upsert).not.toHaveBeenCalled();
+		});
+	});
+
+	describe("global one-shot jobs", () => {
+		it("addGlobalJob arms a one-shot global row due now and overwrites its schedule", async () => {
+			const { scheduler, mocks } = createScheduler();
+			const before = Date.now();
+
+			await scheduler.addGlobalJob("connect-operation");
+
+			expect(mocks.jobsRepository.upsertJobAndSchedule).toHaveBeenCalledTimes(1);
+			const [seed] = mocks.jobsRepository.upsertJobAndSchedule.mock.calls[0] as [any];
+			expect(seed).toMatchObject({ id: "connect-operation", type: "connect-operation", refId: null, isActive: true, intervalMs: null });
+			expect(seed.nextScheduledAt).toBeGreaterThanOrEqual(before);
+			expect(seed.nextScheduledAt).toBeLessThanOrEqual(Date.now());
+			expect(mocks.jobsRepository.upsertJob).not.toHaveBeenCalled();
+		});
+
+		it.each([
+			["the row is missing", null, false],
+			["the row is unlocked", { lockedUntil: null }, false],
+			["the lock has expired", { lockedUntil: Date.now() - 1_000 }, false],
+			["the lock is live", { lockedUntil: Date.now() + 60_000 }, true],
+		])("isGlobalJobRunning is right when %s", async (_label, row, expected) => {
+			const findGlobalJob = jest.fn<any>().mockResolvedValue(row);
+			const { scheduler, mocks } = createScheduler({ mocks: { jobsRepository: { ...createScheduler().mocks.jobsRepository, findGlobalJob } } });
+
+			await expect(scheduler.isGlobalJobRunning("connect-operation")).resolves.toBe(expected);
+			expect(mocks.jobsRepository.findGlobalJob).toHaveBeenCalledWith("connect-operation");
+		});
+
+		it("reconcile does not seed a connect operation row", async () => {
+			const { scheduler, mocks } = createScheduler({ queueMode: "primary" });
+
+			await scheduler.init();
+			await scheduler.shutdown();
+
+			const seeded = [...mocks.jobsRepository.upsertJob.mock.calls, ...mocks.jobsRepository.upsertJobAndSchedule.mock.calls].map(
+				([seed]: any[]) => seed.id
+			);
+			expect(seeded).not.toContain("connect-operation");
 		});
 	});
 });

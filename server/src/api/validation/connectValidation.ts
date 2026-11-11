@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ConnectBackupKinds } from "@/domain/connect/connect-backup.type.js";
 
 export const connectEnrollBodyValidation = z.object({
 	connectUrl: z.string().regex(/^wss:\/\/[a-z0-9.-]+\/api\/tunnel$/, "Invalid Connect tunnel URL"),
@@ -13,4 +14,12 @@ export const connectEnrollBodyValidation = z.object({
 
 export const connectRemoteAccessBodyValidation = z.object({
 	enabled: z.boolean(),
+});
+
+export const connectGenerateKeyBodyValidation = z.object({
+	discardExisting: z.boolean().default(false),
+});
+
+export const connectRunBackupBodyValidation = z.object({
+	kind: z.enum(ConnectBackupKinds).default("full"),
 });

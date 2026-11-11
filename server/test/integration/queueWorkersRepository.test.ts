@@ -97,4 +97,52 @@ describe("MongoQueueWorkersRepository", () => {
 			await expect(repo.setEgress("worker-1", makeEgress({ status: "bogus" as WorkerEgress["status"] }))).rejects.toThrow();
 		});
 	});
+
+	describe("setConnectTools", () => {
+		const tools = { missing: ["mongorestore" as const], checkedAt: 1_760_000_000_000 };
+
+		it("stores the result on an existing record and reads it back", async () => {
+			const repo = new MongoQueueWorkersRepository();
+			await repo.upsert("w1", "worker", true);
+
+			await repo.setConnectTools("w1", tools);
+
+			const [worker] = await repo.findRecent(RECENT_MS);
+			expect(worker.connectTools).toEqual(tools);
+		});
+
+		it("never creates a record", async () => {
+			const repo = new MongoQueueWorkersRepository();
+
+			await repo.setConnectTools("w1", tools);
+
+			expect(await QueueWorkerModel.countDocuments({})).toBe(0);
+		});
+
+		it("survives later heartbeats", async () => {
+			const repo = new MongoQueueWorkersRepository();
+			await repo.upsert("w1", "worker", true);
+			await repo.setConnectTools("w1", tools);
+
+			await repo.upsert("w1", "worker", true);
+
+			const [worker] = await repo.findRecent(RECENT_MS);
+			expect(worker.connectTools).toEqual(tools);
+		});
+
+		it("rejects an unknown tool name", async () => {
+			const repo = new MongoQueueWorkersRepository();
+			await repo.upsert("w1", "worker", true);
+
+			await expect(repo.setConnectTools("w1", { missing: ["mongoexport" as unknown as "mongodump"], checkedAt: 1 })).rejects.toThrow();
+		});
+
+		it("omits connectTools from a record that never reported", async () => {
+			const repo = new MongoQueueWorkersRepository();
+			await repo.upsert("w1", "worker", true);
+
+			const [worker] = await repo.findRecent(RECENT_MS);
+			expect(worker).not.toHaveProperty("connectTools");
+		});
+	});
 });

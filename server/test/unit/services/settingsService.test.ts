@@ -20,6 +20,8 @@ const makeEnv = (overrides?: Partial<ValidatedEnv>): ValidatedEnv =>
 		ENCRYPTION_KEY: [],
 		CONNECT_ALLOWED_HOSTS: DEFAULT_CONNECT_HOSTS.join(","),
 		PORT: "52345",
+		CONNECT_MONGODUMP_BIN: "mongodump",
+		CONNECT_MONGORESTORE_BIN: "mongorestore",
 		...overrides,
 	}) as ValidatedEnv;
 
@@ -79,6 +81,9 @@ describe("SettingsService", () => {
 				clientConfig: {},
 				connectAllowedHosts: [...DEFAULT_CONNECT_HOSTS],
 				port: "52345",
+				connectApiUrl: null,
+				connectMongodumpBin: "mongodump",
+				connectMongorestoreBin: "mongorestore",
 			});
 		});
 
@@ -98,6 +103,19 @@ describe("SettingsService", () => {
 			const { service } = createService({ CONNECT_ALLOWED_HOSTS: " a.example , .b.example ," });
 
 			expect(service.getSettings().connectAllowedHosts).toEqual(["a.example", ".b.example"]);
+		});
+
+		it("reads CONNECT_API_URL when set", () => {
+			const { service } = createService({ CONNECT_API_URL: "https://connect.example.com" });
+
+			expect(service.getSettings().connectApiUrl).toBe("https://connect.example.com");
+		});
+
+		it("reads custom tool paths", () => {
+			const { service } = createService({ CONNECT_MONGODUMP_BIN: "/opt/tools/mongodump", CONNECT_MONGORESTORE_BIN: "/opt/tools/mongorestore" });
+
+			expect(service.getSettings().connectMongodumpBin).toBe("/opt/tools/mongodump");
+			expect(service.getSettings().connectMongorestoreBin).toBe("/opt/tools/mongorestore");
 		});
 
 		it("reflects custom env values", () => {

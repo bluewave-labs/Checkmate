@@ -568,7 +568,7 @@ describe("MongoJobsRepository", () => {
 			expect(row?.runCount).toBe(7);
 		});
 
-		it("upsertCleanupJob resets nextScheduledAt on an existing row so it is due again on restart", async () => {
+		it("upsertJobAndSchedule resets nextScheduledAt on an existing row so it is due again on restart", async () => {
 			const job: Job = {
 				id: "cleanup-orphaned",
 				type: "cleanup-orphaned",
@@ -584,13 +584,13 @@ describe("MongoJobsRepository", () => {
 				lastFinishedAt: null,
 				lastFailReason: null,
 			};
-			await repo.upsertCleanupJob(job);
+			await repo.upsertJobAndSchedule(job);
 
 			// row has already advanced a day into the future after a previous run
 			await JobModel.updateOne({ _id: "cleanup-orphaned" }, { $set: { nextScheduledAt: NOW + 86_400_000, runCount: 3 } });
 
 			// a restart reconcile re-upserts and pulls it due now
-			await repo.upsertCleanupJob({ ...job, nextScheduledAt: NOW + 1_000 });
+			await repo.upsertJobAndSchedule({ ...job, nextScheduledAt: NOW + 1_000 });
 
 			const row = await readRow("cleanup-orphaned");
 			expect(row?.nextScheduledAt).toBe(NOW + 1_000); // schedule reset ($set)
@@ -837,6 +837,25 @@ describe("MongoJobsRepository", () => {
 			expect(await readRow("telemetry")).toBeNull();
 			expect(await readRow("cleanup-orphaned")).not.toBeNull();
 			expect(await repo.deleteGlobalJob("telemetry")).toBe(false);
+		});
+
+		it("findGlobalJob returns the global row of a type", async () => {
+			await seedJob({
+				_id: "connect-operation",
+				type: "connect-operation" as JobType,
+				refId: null,
+				intervalMs: null,
+				lockedBy: "w",
+				lockedUntil: NOW + LOCK_MS,
+			});
+
+			const job = await repo.findGlobalJob("connect-operation");
+
+			expect(job).toMatchObject({ id: "connect-operation", type: "connect-operation", refId: null, lockedUntil: NOW + LOCK_MS });
+		});
+
+		it("findGlobalJob returns null when there is no row", async () => {
+			await expect(repo.findGlobalJob("connect-operation")).resolves.toBeNull();
 		});
 	});
 });

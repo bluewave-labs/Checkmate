@@ -1730,10 +1730,13 @@
 				},
 				"importExportMonitors": {
 					"title": "Import / Export monitors",
-					"description": "Import or export your monitors data as a JSON file for backup or transfer."
+					"description": "Import or export your monitors data as a JSON file for backup or transfer.",
+					"backupNotice": "This JSON file only contains your monitors, so it isn't a full backup. To back up or restore your Checkmate data, use Checkmate Connect.",
+					"connectTabLink": "Open the Checkmate Connect tab",
+					"connectSiteLink": "Visit the Checkmate Connect website"
 				},
 				"connect": {
-					"superadminOnly": "Only a superadmin can enroll this server, change remote access or remove its enrollment. Sign out and back in if your role changed recently.",
+					"superadminOnly": "Only a superadmin can enroll this server, change remote access, run backups or remove its enrollment. Sign out and back in if your role changed recently.",
 					"status": {
 						"title": "Status",
 						"description": "Connection state of this installation.",
@@ -1754,6 +1757,52 @@
 					"remoteAccess": {
 						"title": "Remote access",
 						"description": "Keep an outbound tunnel open so you can reach this installation from your Connect address. No inbound ports are opened."
+					},
+					"tooltips": {
+						"generateKey": "Create the key that unlocks your backups",
+						"lostKey": "Start again with a new key",
+						"runFull": "Back up the whole database now",
+						"runConfig": "Back up everything except check history"
+					},
+					"backup": {
+						"title": "Cloud backups",
+						"description": "Encrypted backups of this installation's database, uploaded to Checkmate Connect. Data is encrypted here before upload; the cloud only ever stores ciphertext.",
+						"generateKey": "Generate recovery key",
+						"existingBackups": "This account already has cloud backups. Enter the recovery key from your original server to restore them.",
+						"lostKey": "I lost my key",
+						"lostKeyConfirm": "Click again to confirm",
+						"lostKeyWarning": "Your existing cloud backups can't be restored without the original key. They're kept for 30 days after your first backup with a new key, so you can switch back if you find the original.",
+						"keyTitle": "Recovery key",
+						"keyWarning": "Store this key somewhere safe, away from this server. It is shown only once. If you lose it, your cloud backups can't be restored and nobody can recover it for you.",
+						"keyCopy": "Copy key",
+						"keyLabel": "Your recovery key",
+						"keyContinue": "I have saved it",
+						"keyDone": "I have stored the key",
+						"keyShowAgain": "Show the key again",
+						"keyVerifyHelp": "Open the place you saved the key and paste it here to confirm you have a working copy.",
+						"keyPlaceholder": "Recovery key",
+						"keyAcknowledge": "I understand that if I lose this key, I can't restore my cloud backups.",
+						"keyMismatch": "That doesn't match your recovery key. Show the key again and save a new copy.",
+						"keyAckRequired": "Tick the box to confirm you understand.",
+						"toolsMissing": "Cloud backups need mongodump and mongorestore, which weren't found on this server.",
+						"toolsMac": "On macOS, run: brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "Download MongoDB Database Tools for Linux",
+						"toolsPath": "If they're installed elsewhere, set CONNECT_MONGODUMP_BIN and CONNECT_MONGORESTORE_BIN. This message clears within a minute of the tools being found.",
+						"runFull": "Back up now",
+						"runConfig": "Back up configuration only",
+						"progress": {
+							"queued": "Waiting for the job queue to start it…",
+							"backup": {
+								"dumping": "Step 1 of 3: reading and encrypting your database",
+								"uploading": "Step 2 of 3: uploading the encrypted backup",
+								"saving": "Step 3 of 3: saving the backup to your account"
+							}
+						},
+						"progressWithPercent": "{{step}} ({{percent}}%)",
+						"progressWithSize": "{{step}} ({{size}})",
+						"lastBackupSucceeded": "Last backup ({{date}}): succeeded",
+						"lastBackupSucceededSize": "Last backup ({{date}}): succeeded · {{size}}",
+						"lastBackupFailed": "Last backup ({{date}}): failed — {{error}}"
 					},
 					"unenroll": {
 						"title": "Remove enrollment",

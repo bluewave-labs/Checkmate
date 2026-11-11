@@ -155,6 +155,9 @@ The image is configured entirely through environment variables on the server con
 | `TELEMETRY_ENABLED` | No | `true` (default) or `false`. Set `false` to stop sending the daily anonymous usage heartbeat; see [Telemetry](#telemetry) |
 | `TELEMETRY_URL` | No | Where the heartbeat is sent. Only needed to point it at your own collector |
 | `CONNECT_ALLOWED_HOSTS` | No | Comma-separated hostnames this server may enroll with Checkmate Connect against; an entry starting with `.` matches its subdomains (`.example.com` matches `connect.example.com`). Defaults to the official Checkmate Connect hosts; only needed if you run your own Connect service |
+| `CONNECT_API_URL` | No | Overrides the Checkmate Connect API base URL used for cloud backups. When set, Checkmate also accepts any `http(s)` storage URL the Connect API returns. Only needed if you run your own Connect service |
+| `CONNECT_MONGODUMP_BIN` | No | Path to `mongodump`, used for Checkmate Connect cloud backups. Defaults to `mongodump` on `PATH`; the Docker image includes it |
+| `CONNECT_MONGORESTORE_BIN` | No | Path to `mongorestore`, used for Checkmate Connect cloud backups. Defaults to `mongorestore` on `PATH`; the Docker image includes it |
 
 The web client needs no configuration by default: it calls the API on the same origin it was served from (`/api/v1`). For setups where the defaults don't apply — for example, the API is reached through a different origin than the page — the server renders overrides into the client at runtime via these optional variables:
 
@@ -365,6 +368,15 @@ rm server/public
 ```
 
 This deletes only the link, not `client/dist`. Leave off the trailing slash: `rm server/public/` would target the linked directory instead of the link.
+
+### Checkmate Connect backups
+
+Cloud backups copy this installation's database to Checkmate Connect. Each backup is encrypted on this server before upload, so Connect only stores ciphertext.
+
+- **Recovery key.** A superadmin generates it once in **Settings → Checkmate Connect**. It is shown only once and stored on this server encrypted with `ENCRYPTION_KEY`. No backup can be restored without it, so keep a copy somewhere other than this server.
+- **Full or configuration only.** A full backup copies every collection except Connect's own state. A configuration backup also leaves out check history and other operational data (`checks`, `monitorstats`, `geochecks`, `dockerlogs`, `dlqitems`, `jobs`).
+- **Runs on the job queue.** "Back up now" queues the backup and whichever process runs jobs picks it up. With `QUEUE_PRIMARY_PROCESSES=false` and no worker running, it waits until a worker starts.
+- **Tools.** Backups need `mongodump` and `mongorestore` from the MongoDB Database Tools on the processes that run jobs. The Docker image includes them. On a source install, install them and, if they aren't on `PATH`, set `CONNECT_MONGODUMP_BIN` and `CONNECT_MONGORESTORE_BIN`. The settings page shows the install steps until at least one job-processing process finds them.
 
 For more documentation, see the [docs directory](./docs/).
 

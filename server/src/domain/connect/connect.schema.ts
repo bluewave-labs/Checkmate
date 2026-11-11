@@ -18,5 +18,6 @@ export const connectStatusSchema = z
 		agentVersion: z.string(),
 		remoteAccess: z.object({ enabled: z.boolean() }),
 		tunnel: connectTunnelStatusSchema,
+		backup: z.object({ recoveryKeySet: z.boolean() }),
 	})
 	.meta({ id: "ConnectStatus" });
