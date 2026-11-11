@@ -4,11 +4,12 @@ import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { ConfigBox } from "@/Components/design-elements";
-import { Button, TextField } from "@/Components/inputs";
+import { TextField } from "@/Components/inputs";
 import { usePost } from "@/Hooks/UseApi";
 import { parseCredentialBlock } from "@/Utils/connectCredentials";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import type { ConnectEnrollBody, ConnectStatus } from "@/Types/Connect";
+import { TipButton } from "./TipButton";
 
 const CREDENTIAL_PLACEHOLDER =
 	"CONNECT_URL=wss://...\nCONNECT_AGENT=inst-...\nCONNECT_TOKEN=cmk_...";
@@ -47,14 +48,15 @@ export const ConnectEnrollBox = ({
 						placeholder={CREDENTIAL_PLACEHOLDER}
 					/>
 					<Box>
-						<Button
+						<TipButton
+							tip={t("pages.settings.form.connect.tooltips.enroll")}
 							variant="contained"
 							disabled={!parsed}
 							loading={loading}
 							onClick={handleEnroll}
 						>
 							{t("pages.settings.form.connect.enroll.button")}
-						</Button>
+						</TipButton>
 					</Box>
 				</Stack>
 			}

@@ -357,7 +357,16 @@ describe("ConnectTunnel", () => {
 			);
 
 			const [, options] = got.mock.calls[0] as [URL, any];
-			expect(options.headers).toEqual({ authorization: "Bearer jwt" });
+			expect(options.headers).toEqual({ authorization: "Bearer jwt", "x-checkmate-connect-tunnel": "1" });
+		});
+
+		it("marks every forwarded request as tunneled, overwriting a value from the relay", async () => {
+			const { socket, got } = connected();
+
+			await deliver(socket, request({ headers: { "X-Checkmate-Connect-Tunnel": "0" } }));
+
+			const [, options] = got.mock.calls[0] as [URL, any];
+			expect(options.headers).toEqual({ "x-checkmate-connect-tunnel": "1" });
 		});
 
 		it("replies with the local response under the same id", async () => {
@@ -423,7 +432,7 @@ describe("ConnectTunnel", () => {
 			await deliver(socket, request({ headers: null }));
 
 			const [, options] = got.mock.calls[0] as [URL, any];
-			expect(options.headers).toEqual({});
+			expect(options.headers).toEqual({ "x-checkmate-connect-tunnel": "1" });
 		});
 
 		it("replies 502 and logs only the pathname when the local API can't be reached", async () => {

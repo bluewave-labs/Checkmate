@@ -4,6 +4,7 @@ import type { z } from "zod";
 
 export const CONNECT_STATE_COLLECTION = "connect_state";
 export const DEFAULT_CONNECT_HOSTS = ["connect.checkmate.so", "relay.checkmate.so"] as const;
+export const CONNECT_TUNNEL_HEADER = "x-checkmate-connect-tunnel";
 
 // **********************
 // Connect enrollment
