@@ -31,7 +31,7 @@ const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 const createScheduler = (overrides?: { queueMode?: QueueMode; telemetryEnabled?: boolean; mocks?: Record<string, any> }) => {
 	const jobsRepository = {
 		upsertJob: jest.fn<any>().mockResolvedValue(true),
-		upsertCleanupJob: jest.fn<any>().mockResolvedValue(true),
+		upsertJobAndSchedule: jest.fn<any>().mockResolvedValue(true),
 		rescheduleOverdueChecks: jest.fn<any>().mockResolvedValue(0),
 		deleteGlobalJob: jest.fn<any>().mockResolvedValue(true),
 		setActiveById: jest.fn<any>().mockResolvedValue(true),
@@ -86,7 +86,7 @@ describe("JobScheduler", () => {
 
 			const seededTypes = mocks.jobsRepository.upsertJob.mock.calls.map((c: any[]) => c[0].type);
 			expect(seededTypes).toContain("check");
-			const cleanupTypes = mocks.jobsRepository.upsertCleanupJob.mock.calls.map((c: any[]) => c[0].type);
+			const cleanupTypes = mocks.jobsRepository.upsertJobAndSchedule.mock.calls.map((c: any[]) => c[0].type);
 			expect(cleanupTypes).toContain("cleanup-orphaned");
 			expect(cleanupTypes).toContain("cleanup-retention");
 		});
@@ -112,7 +112,7 @@ describe("JobScheduler", () => {
 			expect(mocks.queueWorkersRepository.upsert).toHaveBeenCalledWith("worker-1", "worker", false);
 			expect(mocks.monitorsRepository.findAllForScheduling).not.toHaveBeenCalled();
 			expect(mocks.jobsRepository.upsertJob).not.toHaveBeenCalled();
-			expect(mocks.jobsRepository.upsertCleanupJob).not.toHaveBeenCalled();
+			expect(mocks.jobsRepository.upsertJobAndSchedule).not.toHaveBeenCalled();
 		});
 
 		it("primary mode seeds the telemetry row when telemetry is enabled", async () => {

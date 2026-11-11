@@ -1,7 +1,12 @@
 import type { QueueMode } from "@/domain/app-settings/app-settings.type.js";
 import type { IQueueWorkersRepository } from "./queue-worker.repository.interface.js";
-import type { QueueWorker, WorkerEgress } from "@/domain/queue-workers/queue-worker.type.js";
-import { QueueWorkerModel, type QueueWorkerDocument, type WorkerEgressDocument } from "@/domain/queue-workers/queue-worker.model.js";
+import type { QueueWorker, WorkerConnectTools, WorkerEgress } from "@/domain/queue-workers/queue-worker.type.js";
+import {
+	QueueWorkerModel,
+	type WorkerConnectToolsDocument,
+	type QueueWorkerDocument,
+	type WorkerEgressDocument,
+} from "@/domain/queue-workers/queue-worker.model.js";
 const SERVICE_NAME = "MongoQueueWorkersRepository";
 
 class MongoQueueWorkersRepository implements IQueueWorkersRepository {
@@ -21,6 +26,13 @@ class MongoQueueWorkersRepository implements IQueueWorkersRepository {
 		};
 	};
 
+	private toConnectToolsEntity = (connectTools: WorkerConnectToolsDocument): WorkerConnectTools => {
+		return {
+			missing: [...connectTools.missing],
+			checkedAt: connectTools.checkedAt.getTime(),
+		};
+	};
+
 	private toEntity = (doc: QueueWorkerDocument): QueueWorker => {
 		return {
 			workerId: doc._id,
@@ -28,6 +40,7 @@ class MongoQueueWorkersRepository implements IQueueWorkersRepository {
 			processesJobs: doc.processesJobs,
 			lastSeenAt: doc.lastSeenAt.getTime(),
 			...(doc.egress && { egress: this.toEgressEntity(doc.egress) }),
+			...(doc.connectTools && { connectTools: this.toConnectToolsEntity(doc.connectTools) }),
 		};
 	};
 
@@ -47,6 +60,16 @@ class MongoQueueWorkersRepository implements IQueueWorkersRepository {
 
 	setEgress = async (workerId: string, egress: WorkerEgress) => {
 		await QueueWorkerModel.updateOne({ _id: workerId }, { $set: { egress } }, { runValidators: true });
+	};
+
+	setConnectTools = async (workerId: string, connectTools: WorkerConnectTools): Promise<void> => {
+		await QueueWorkerModel.updateOne(
+			{
+				_id: workerId,
+			},
+			{ $set: { connectTools } },
+			{ runValidators: true }
+		);
 	};
 }
 

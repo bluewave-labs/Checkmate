@@ -40,6 +40,7 @@ export class JobScheduler implements IJobScheduler {
 	protected ticking: Partial<Record<JobType, boolean>> = {}; // Whether a loop is mid tick
 	protected tickFns = new Map<JobType, () => void>(); // Store tick fns so we can run them immediately on wake
 	protected timers = new Map<JobType | "heartbeat", NodeJS.Timeout>();
+	protected afterHeartbeat: (() => Promise<void>) | null = null;
 
 	// Per job type poll intervals.  These back off on idle and reset on work or wake()
 	protected pollMs: Record<JobType, number> = {
@@ -50,6 +51,7 @@ export class JobScheduler implements IJobScheduler {
 		"cleanup-retention": POLL_MS,
 		telemetry: POLL_MS,
 		"connect-heartbeat": POLL_MS,
+		"connect-operation": POLL_MS,
 	};
 
 	// Figures out when a job should first be run
@@ -102,6 +104,15 @@ export class JobScheduler implements IJobScheduler {
 		intervalMs: CONNECT_HEARTBEAT_INTERVAL_MS,
 	});
 
+	protected toGlobalOneShotJob = (type: JobType, now: number): JobSeed => ({
+		id: jobId(type, null),
+		type,
+		refId: null,
+		isActive: true,
+		nextScheduledAt: now,
+		intervalMs: null,
+	});
+
 	private toSummary = (job: Job): WorkerJobSummary => ({
 		monitorId: job.refId ?? job.id,
 		monitorType: job.type,
@@ -135,6 +146,11 @@ export class JobScheduler implements IJobScheduler {
 		}
 	};
 
+	addGlobalJob = async (type: JobType): Promise<void> => {
+		await this.jobsRepository.upsertJobAndSchedule(this.toGlobalOneShotJob(type, Date.now()));
+		this.wake(type);
+	};
+
 	deleteJob = async (monitor: Monitor) => {
 		await this.jobsRepository.deleteById(monitor.id);
 	};
@@ -166,6 +182,11 @@ export class JobScheduler implements IJobScheduler {
 		} else {
 			await this.jobsRepository.deleteByIdAndType(monitor.id, "geo-check");
 		}
+	};
+
+	isGlobalJobRunning = async (type: JobType): Promise<boolean> => {
+		const job = await this.jobsRepository.findGlobalJob(type);
+		return job !== null && job.lockedUntil !== null && job.lockedUntil > Date.now();
 	};
 
 	getMetrics = async (): Promise<WorkerMetrics> => {
@@ -247,8 +268,8 @@ export class JobScheduler implements IJobScheduler {
 		await this.jobsRepository.rescheduleOverdueChecks(heartbeatIds, now);
 
 		// Both cleanup jobs run immediately on every startup, then once a day
-		await this.jobsRepository.upsertCleanupJob(this.toCleanupJob("cleanup-orphaned", now));
-		await this.jobsRepository.upsertCleanupJob(this.toCleanupJob("cleanup-retention", now));
+		await this.jobsRepository.upsertJobAndSchedule(this.toCleanupJob("cleanup-orphaned", now));
+		await this.jobsRepository.upsertJobAndSchedule(this.toCleanupJob("cleanup-retention", now));
 
 		if (this.telemetryEnabled) {
 			await this.jobsRepository.upsertJob(this.toTelemetryJob(now));
@@ -267,6 +288,7 @@ export class JobScheduler implements IJobScheduler {
 				this.logger.warn({ err: error }, "Heartbeat failed");
 			});
 			await this.heartbeatInFlight;
+			if (this.afterHeartbeat) await this.afterHeartbeat();
 		} catch (error: unknown) {
 			this.logger.warn({ err: error }, "Heartbeat failed");
 		}

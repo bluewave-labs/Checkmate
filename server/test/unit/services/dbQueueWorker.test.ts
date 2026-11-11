@@ -90,7 +90,7 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 	const jobsRepository = {
 		claimDueBatch: jest.fn<any>().mockResolvedValue([]),
 		upsertJob: jest.fn<any>().mockResolvedValue(true),
-		upsertCleanupJob: jest.fn<any>().mockResolvedValue(true),
+		upsertJobAndSchedule: jest.fn<any>().mockResolvedValue(true),
 		rescheduleOverdueChecks: jest.fn<any>().mockResolvedValue(0),
 		deleteGlobalJob: jest.fn<any>().mockResolvedValue(true),
 		upsertEvaluate: jest.fn<any>().mockResolvedValue(true),
@@ -196,7 +196,7 @@ describe("DBQueueWorker", () => {
 
 			const seededTypes = mocks.jobsRepository.upsertJob.mock.calls.map((c: any[]) => c[0].type);
 			expect(seededTypes).toContain("check");
-			const cleanupTypes = mocks.jobsRepository.upsertCleanupJob.mock.calls.map((c: any[]) => c[0].type);
+			const cleanupTypes = mocks.jobsRepository.upsertJobAndSchedule.mock.calls.map((c: any[]) => c[0].type);
 			expect(cleanupTypes).toContain("cleanup-orphaned");
 			expect(cleanupTypes).toContain("cleanup-retention");
 		});
@@ -222,7 +222,7 @@ describe("DBQueueWorker", () => {
 		it("worker mode does not reconcile (never seeds jobs)", async () => {
 			const { mocks } = await start({ queueMode: "worker" });
 			expect(mocks.jobsRepository.upsertJob).not.toHaveBeenCalled();
-			expect(mocks.jobsRepository.upsertCleanupJob).not.toHaveBeenCalled();
+			expect(mocks.jobsRepository.upsertJobAndSchedule).not.toHaveBeenCalled();
 		});
 
 		it("starts a polling loop per job type, each claiming up to its concurrency cap", async () => {

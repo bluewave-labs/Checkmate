@@ -46,8 +46,8 @@ export interface IJobsRepository {
 	// Create jobs. Takes a JobSeed
 	upsertJob(job: JobSeed): Promise<boolean>;
 
-	// Creates cleanup jobs, these are executed immediately so need their own method
-	upsertCleanupJob(job: JobSeed): Promise<boolean>;
+	// Create or update a job and overwrite its schedule, so an existing row is due again at nextScheduledAt
+	upsertJobAndSchedule(job: JobSeed): Promise<boolean>;
 
 	// Pause/Resume
 	setActiveById(refId: string, isActive: boolean): Promise<boolean>;
@@ -75,6 +75,8 @@ export interface IJobsRepository {
 
 	// Global rows (refId null) are addressed by their canonical _id, see jobId
 	deleteGlobalJob(type: JobType): Promise<boolean>;
+
+	findGlobalJob(type: JobType): Promise<Job | null>;
 
 	// Delete jobs that reference monitors that no longer exist
 	deleteByMonitorIdsNotIn(monitorIds: string[]): Promise<number>;

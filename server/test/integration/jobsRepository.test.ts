@@ -568,7 +568,7 @@ describe("MongoJobsRepository", () => {
 			expect(row?.runCount).toBe(7);
 		});
 
-		it("upsertCleanupJob resets nextScheduledAt on an existing row so it is due again on restart", async () => {
+		it("upsertJobAndSchedule resets nextScheduledAt on an existing row so it is due again on restart", async () => {
 			const job: Job = {
 				id: "cleanup-orphaned",
 				type: "cleanup-orphaned",
@@ -584,13 +584,13 @@ describe("MongoJobsRepository", () => {
 				lastFinishedAt: null,
 				lastFailReason: null,
 			};
-			await repo.upsertCleanupJob(job);
+			await repo.upsertJobAndSchedule(job);
 
 			// row has already advanced a day into the future after a previous run
 			await JobModel.updateOne({ _id: "cleanup-orphaned" }, { $set: { nextScheduledAt: NOW + 86_400_000, runCount: 3 } });
 
 			// a restart reconcile re-upserts and pulls it due now
-			await repo.upsertCleanupJob({ ...job, nextScheduledAt: NOW + 1_000 });
+			await repo.upsertJobAndSchedule({ ...job, nextScheduledAt: NOW + 1_000 });
 
 			const row = await readRow("cleanup-orphaned");
 			expect(row?.nextScheduledAt).toBe(NOW + 1_000); // schedule reset ($set)

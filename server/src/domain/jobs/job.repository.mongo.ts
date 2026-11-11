@@ -253,7 +253,7 @@ class MongoJobsRepository implements IJobsRepository {
 		return res.acknowledged;
 	};
 
-	upsertCleanupJob = async (job: JobSeed) => {
+	upsertJobAndSchedule = async (job: JobSeed) => {
 		const res = await JobModel.updateOne(
 			{ _id: job.id },
 			{
@@ -384,6 +384,13 @@ class MongoJobsRepository implements IJobsRepository {
 	findAll = async () => {
 		const docs = await JobModel.find().lean<JobDocument[]>();
 		return docs.map(this.toEntity);
+	};
+
+	findGlobalJob = async (type: JobType) => {
+		const doc = await JobModel.findOne({
+			_id: jobId(type, null),
+		}).lean<JobDocument>();
+		return doc ? this.toEntity(doc) : null;
 	};
 
 	countDueBacklog = async (now: number) => {
