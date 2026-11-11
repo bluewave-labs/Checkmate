@@ -13,6 +13,7 @@ import { TeamService, ITeamService } from "@/domain/teams/team.service.js";
 import { AppVersionService, IAppVersionService } from "@/domain/app-version/app-version.service.js";
 import { ConnectService, IConnectService } from "@/domain/connect/connect.service.js";
 import { ConnectTunnel } from "@/domain/connect/connect-tunnel.js";
+import { ConnectApiService } from "@/domain/connect/connect-api.service.js";
 import { SharedServices } from "@/config/services.shared.js";
 
 // Third-party
@@ -133,7 +134,17 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 	const teamService = new TeamService({ logger, teamsRepository, encryptionService });
 	const appVersionService = new AppVersionService(got, logger);
 	const connectTunnel = new ConnectTunnel(WebSocket, got, settingsService, logger);
-	const connectService = new ConnectService(connectRepository, encryptionService, settingsService, connectTunnel, logger);
+	const connectApiService = new ConnectApiService(got, settingsService, logger);
+	const connectService = new ConnectService(
+		connectRepository,
+		encryptionService,
+		settingsService,
+		connectTunnel,
+		connectApiService,
+		queueWorkersRepository,
+		jobScheduler,
+		logger
+	);
 	return {
 		...shared,
 		worker: jobScheduler,

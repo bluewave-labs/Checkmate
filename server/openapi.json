@@ -82,7 +82,7 @@
 		},
 		{
 			"name": "connect",
-			"description": "Checkmate Connect enrollment and remote access for this installation (admin to view, superadmin to change)."
+			"description": "Checkmate Connect enrollment, remote access and cloud backups for this installation (admin to view, superadmin to change)."
 		}
 	],
 	"components": {
@@ -3437,6 +3437,23 @@
 							}
 						},
 						"required": ["status", "checkedAt", "degradedSince", "lastProbeResults"]
+					},
+					"connectTools": {
+						"type": "object",
+						"properties": {
+							"missing": {
+								"type": "array",
+								"items": {
+									"type": "string",
+									"enum": ["mongodump", "mongorestore"]
+								}
+							},
+							"checkedAt": {
+								"type": "number",
+								"description": "Epoch ms of the check behind this result"
+							}
+						},
+						"required": ["missing", "checkedAt"]
 					}
 				},
 				"required": ["workerId", "mode", "processesJobs", "lastSeenAt"]
@@ -4212,9 +4229,18 @@
 					},
 					"tunnel": {
 						"$ref": "#/components/schemas/ConnectTunnelStatus"
+					},
+					"backup": {
+						"type": "object",
+						"properties": {
+							"recoveryKeySet": {
+								"type": "boolean"
+							}
+						},
+						"required": ["recoveryKeySet"]
 					}
 				},
-				"required": ["enrolled", "agentId", "connectUrl", "apiUrl", "agentVersion", "remoteAccess", "tunnel"]
+				"required": ["enrolled", "agentId", "connectUrl", "apiUrl", "agentVersion", "remoteAccess", "tunnel", "backup"]
 			},
 			"ConnectTunnelStatus": {
 				"type": "object",
@@ -4236,6 +4262,161 @@
 					}
 				},
 				"required": ["connected", "lastConnectedAt", "lastError", "closeCode"]
+			},
+			"ConnectBackupStatus": {
+				"type": "object",
+				"properties": {
+					"operation": {
+						"type": "object",
+						"nullable": true,
+						"properties": {
+							"type": {
+								"type": "string",
+								"enum": ["backup"]
+							},
+							"state": {
+								"type": "string",
+								"enum": ["queued", "running"]
+							},
+							"requestedAt": {
+								"type": "string"
+							}
+						},
+						"required": ["type", "state", "requestedAt"]
+					},
+					"progress": {
+						"type": "object",
+						"nullable": true,
+						"properties": {
+							"operation": {
+								"type": "string",
+								"enum": ["backup"]
+							},
+							"stage": {
+								"type": "string",
+								"enum": ["dumping", "uploading", "saving"]
+							},
+							"percent": {
+								"type": "number",
+								"nullable": true
+							},
+							"bytes": {
+								"type": "number",
+								"nullable": true
+							}
+						},
+						"required": ["operation", "stage", "percent", "bytes"]
+					},
+					"lastBackup": {
+						"type": "object",
+						"nullable": true,
+						"properties": {
+							"ok": {
+								"type": "boolean"
+							},
+							"at": {
+								"type": "string"
+							},
+							"kind": {
+								"type": "string",
+								"enum": ["full", "config"]
+							},
+							"sizeBytes": {
+								"type": "number",
+								"nullable": true
+							},
+							"sha256": {
+								"type": "string",
+								"nullable": true
+							},
+							"backupId": {
+								"type": "string",
+								"nullable": true
+							},
+							"durationMs": {
+								"type": "number",
+								"nullable": true
+							},
+							"error": {
+								"type": "string",
+								"nullable": true
+							}
+						},
+						"required": ["ok", "at", "kind", "sizeBytes", "sha256", "backupId", "durationMs", "error"]
+					},
+					"missingTools": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"enum": ["mongodump", "mongorestore"]
+						}
+					}
+				},
+				"required": ["operation", "progress", "lastBackup", "missingTools"]
+			},
+			"ConnectBackupList": {
+				"type": "object",
+				"properties": {
+					"backups": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"id": {
+									"type": "string"
+								},
+								"kind": {
+									"type": "string"
+								},
+								"sizeBytes": {
+									"type": "number"
+								},
+								"status": {
+									"type": "string"
+								},
+								"createdAt": {
+									"type": "string"
+								},
+								"keyId": {
+									"type": "string",
+									"nullable": true
+								},
+								"expiresAt": {
+									"type": "string",
+									"nullable": true
+								},
+								"restorable": {
+									"type": "boolean"
+								}
+							},
+							"required": ["id", "kind", "sizeBytes", "status", "createdAt", "keyId", "expiresAt", "restorable"]
+						}
+					}
+				},
+				"required": ["backups"]
+			},
+			"ConnectRecoveryKey": {
+				"type": "object",
+				"properties": {
+					"recoveryKey": {
+						"type": "string"
+					},
+					"format": {
+						"type": "string",
+						"enum": ["CMKB1"]
+					}
+				},
+				"required": ["recoveryKey", "format"]
+			},
+			"ConnectQueued": {
+				"type": "object",
+				"properties": {
+					"queued": {
+						"type": "boolean",
+						"enum": [true]
+					}
+				},
+				"required": ["queued"]
 			}
 		},
 		"parameters": {}
@@ -17266,6 +17447,441 @@
 					},
 					"503": {
 						"description": "Connect state is not available. If this continues, check ENCRYPTION_KEY and the server logs",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/backup/status": {
+			"get": {
+				"tags": ["connect"],
+				"summary": "Get the state of this installation's Checkmate Connect cloud backups (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectBackupStatus"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/backup/list": {
+			"get": {
+				"tags": ["connect"],
+				"summary": "List this installation's Checkmate Connect cloud backups (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectBackupList"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "This installation is not enrolled with Checkmate Connect",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"502": {
+						"description": "Checkmate Connect could not be reached",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Connect state is not available. If this continues, check ENCRYPTION_KEY and the server logs",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/backup/recovery-key": {
+			"post": {
+				"tags": ["connect"],
+				"summary": "Generate the recovery key that encrypts cloud backups; it is returned only once (superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"discardExisting": {
+										"type": "boolean",
+										"default": false
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectRecoveryKey"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "This installation is not enrolled with Checkmate Connect, or recovery key already set, or cloud backups already exist. Enter the recovery key from your original server",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Checkmate Connect needs ENCRYPTION_KEY set on the server",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"502": {
+						"description": "Checkmate Connect could not be reached",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Connect state is not available. If this continues, check ENCRYPTION_KEY and the server logs",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/backup/run": {
+			"post": {
+				"tags": ["connect"],
+				"summary": "Queue an encrypted Checkmate Connect cloud backup (superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"kind": {
+										"type": "string",
+										"enum": ["full", "config"],
+										"default": "full"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectQueued"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "This installation is not enrolled with Checkmate Connect, or no recovery key set, or a backup or restore is already running",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
 						"content": {
 							"application/json": {
 								"schema": {
