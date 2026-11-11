@@ -1,9 +1,33 @@
-import type { ConnectBackupResult, ConnectOperationRequest, ConnectProgress } from "@/domain/connect/connect-backup.type.js";
+import type { ConnectBackupResult, ConnectOperationRequest, ConnectProgress, ConnectVerifyResult } from "@/domain/connect/connect-backup.type.js";
 import ConnectStateModel, { type ConnectStateDocument } from "@/domain/connect/connect.model.js";
 import { IConnectRepository } from "@/domain/connect/connect.repository.interface.js";
 import type { ConnectEnrollment, ConnectState } from "@/domain/connect/connect.type.js";
 
 class MongoConnectRepository implements IConnectRepository {
+	private toOperation = (operation: ConnectOperationDocument): ConnectOperationRequest | null => {
+		const requestedAt = operation.requestedAt;
+		const startedAt = operation.startedAt ?? null;
+		if (operation.type === "backup" && operation.kind) return { type: "backup", kind: operation.kind, requestedAt, startedAt };
+		if (operation.type === "restore" && operation.backupId) return { type: "restore", backupId: operation.backupId, requestedAt, startedAt };
+		if (operation.type === "verify" && operation.recoveryKey) {
+			return { type: "verify", recoveryKey: operation.recoveryKey, replaceExisting: operation.replaceExisting ?? false, requestedAt, startedAt };
+		}
+		return null;
+	};
+
+	private toResult = (result: ConnectBackupResult): ConnectBackupResult => {
+		return {
+			ok: result.ok,
+			at: result.at,
+			kind: result.kind ?? null,
+			sizeBytes: result.sizeBytes ?? null,
+			sha256: result.sha256 ?? null,
+			backupId: result.backupId ?? null,
+			durationMs: result.durationMs ?? null,
+			error: result.error ?? null,
+		};
+	};
+
 	private toEntity = (doc: ConnectStateDocument | null): ConnectState => {
 		return {
 			enrollment: doc?.enrollment
@@ -16,34 +40,20 @@ class MongoConnectRepository implements IConnectRepository {
 				: null,
 			remoteAccessEnabled: doc?.remoteAccessEnabled ?? false,
 			recoveryKey: doc?.recoveryKey ?? null,
-			operation: doc?.operation
-				? {
-						type: doc.operation.type,
-						kind: doc.operation.kind,
-						requestedAt: doc.operation.requestedAt,
-						startedAt: doc.operation.startedAt ?? null,
-					}
-				: null,
+			operation: doc?.operation ? this.toOperation(doc.operation) : null,
 			progress: doc?.progress
 				? {
 						operation: doc.progress.operation,
 						stage: doc.progress.stage,
 						percent: doc.progress.percent ?? null,
 						bytes: doc.progress.bytes ?? null,
+						attempt: doc.progress.attempt ?? null,
+						attempts: doc.progress.attempts ?? null,
 					}
 				: null,
-			lastBackup: doc?.lastBackup
-				? {
-						ok: doc.lastBackup.ok,
-						at: doc.lastBackup.at,
-						kind: doc.lastBackup.kind,
-						sizeBytes: doc.lastBackup.sizeBytes ?? null,
-						sha256: doc.lastBackup.sha256 ?? null,
-						backupId: doc.lastBackup.backupId ?? null,
-						durationMs: doc.lastBackup.durationMs ?? null,
-						error: doc.lastBackup.error ?? null,
-					}
-				: null,
+			lastBackup: doc?.lastBackup ? this.toResult(doc.lastBackup) : null,
+			lastRestore: doc?.lastRestore ? this.toResult(doc.lastRestore) : null,
+			lastVerify: doc?.lastVerify ? { outcome: doc.lastVerify.outcome, at: doc.lastVerify.at, error: doc.lastVerify.error ?? null } : null,
 		};
 	};
 
@@ -97,6 +107,18 @@ class MongoConnectRepository implements IConnectRepository {
 
 	setLastBackup = async (result: ConnectBackupResult): Promise<void> => {
 		await ConnectStateModel.updateOne({ singleton: true }, { $set: { lastBackup: result } }, { runValidators: true });
+	};
+
+	setLastRestore = async (result: ConnectBackupResult): Promise<void> => {
+		await ConnectStateModel.updateOne({ singleton: true }, { $set: { lastRestore: result } }, { runValidators: true });
+	};
+
+	setLastVerify = async (result: ConnectVerifyResult): Promise<void> => {
+		await ConnectStateModel.updateOne({ singleton: true }, { $set: { lastVerify: result } }, { runValidators: true });
+	};
+
+	replaceRecoveryKey = async (recoveryKey: string): Promise<void> => {
+		await ConnectStateModel.updateOne({ singleton: true }, { $set: { recoveryKey } });
 	};
 
 	clearOperation = async (): Promise<void> => {
