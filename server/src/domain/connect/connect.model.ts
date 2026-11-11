@@ -2,10 +2,10 @@ import { Schema, model, type Types } from "mongoose";
 import { CONNECT_STATE_COLLECTION, type ConnectEnrollment, type ConnectState } from "@/domain/connect/connect.type.js";
 import {
 	ConnectBackupKinds,
-	ConnectBackupResult,
-	ConnectOperationRequest,
+	type ConnectBackupResult,
+	type ConnectOperationRequest,
 	ConnectOperations,
-	ConnectProgress,
+	type ConnectProgress,
 	ConnectProgressStages,
 } from "@/domain/connect/connect-backup.type.js";
 

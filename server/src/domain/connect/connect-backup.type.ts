@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import {
+import type {
 	connectBackupListSchema,
 	connectBackupStatusSchema,
 	connectQueuedSchema,

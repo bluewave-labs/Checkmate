@@ -1,4 +1,4 @@
-import { ConnectBackupResult, ConnectOperationRequest, ConnectProgress } from "@/domain/connect/connect-backup.type.js";
+import type { ConnectBackupResult, ConnectOperationRequest, ConnectProgress } from "@/domain/connect/connect-backup.type.js";
 import type { connectStatusSchema, connectTunnelStatusSchema } from "@/domain/connect/connect.schema.js";
 import type { z } from "zod";
 
