@@ -1,28 +1,28 @@
 import crypto from "node:crypto";
 import { connectErrors } from "@/domain/connect/connect.errors.js";
-import { IConnectRepository } from "@/domain/connect/connect.repository.interface.js";
+import type { IConnectRepository } from "@/domain/connect/connect.repository.interface.js";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import type { ConnectEnrollment, ConnectState, ConnectStatus } from "@/domain/connect/connect.type.js";
-import { IEncryptionService } from "@/service/encryption/encryptionService.js";
+import type { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import { AppError } from "@/utils/AppError.js";
 import { APP_VERSION } from "@/utils/appVersion.js";
-import { ILogger } from "@/utils/logger/logger.js";
-import { IConnectTunnel } from "@/domain/connect/connect-tunnel.js";
+import type { ILogger } from "@/utils/logger/logger.js";
+import type { IConnectTunnel } from "@/domain/connect/connect-tunnel.js";
 import {
 	CONNECT_RECOVERY_KEY_FORMAT,
-	ConnectBackupKind,
-	ConnectBackupList,
-	ConnectBackupResult,
-	ConnectBackupStatus,
-	ConnectBackupToolName,
 	ConnectBackupToolNames,
-	ConnectQueued,
-	ConnectRecoveryKey,
-	ConnectApiBackup,
+	type ConnectApiBackup,
+	type ConnectBackupKind,
+	type ConnectBackupList,
+	type ConnectBackupResult,
+	type ConnectBackupStatus,
+	type ConnectBackupToolName,
+	type ConnectQueued,
+	type ConnectRecoveryKey,
 } from "@/domain/connect/connect-backup.type.js";
-import { IConnectApiService } from "@/domain/connect/connect-api.service.js";
-import { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.repository.interface.js";
-import { IJobScheduler } from "@/worker/worker.interface.js";
+import type { IConnectApiService } from "@/domain/connect/connect-api.service.js";
+import type { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.repository.interface.js";
+import type { IJobScheduler } from "@/worker/worker.interface.js";
 import { WORKER_STALE_MS } from "@/domain/queue-workers/queue-worker.model.js";
 import { recoveryKeyId } from "@/domain/connect/connect.backup-format.js";
 
