@@ -3,14 +3,22 @@ import { pipeline, Transform } from "node:stream";
 import type { Got } from "got";
 import type { z } from "zod";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
-import { connectApiBackupListSchema, connectApiErrorSchema, connectApiUploadTicketSchema } from "@/domain/connect/connect-backup.schema.js";
+import {
+	connectApiBackupListSchema,
+	connectApiDownloadTicketSchema,
+	connectApiErrorSchema,
+	connectApiUploadTicketSchema,
+} from "@/domain/connect/connect-backup.schema.js";
 import type { ConnectBackupUpload, ConnectApiBackup, ConnectApiUploadTicket } from "@/domain/connect/connect-backup.type.js";
 import type { ConnectEnrollment } from "@/domain/connect/connect.type.js";
 import type { ILogger } from "@/utils/logger/logger.js";
+import { createHash } from "node:crypto";
+import { pipeline as pipeStreams } from "node:stream/promises";
 
 const SERVICE_NAME = "ConnectApiService";
 const TIMEOUT_MS = 15_000;
 const TRANSFER_STALL_MS = 5 * 60 * 1000;
+const MAX_BACKUP_BYTES = 50 * 1024 ** 3;
 const BLOB_HOST_SUFFIX = ".blob.vercel-storage.com";
 const BLOB_API_HOST = "vercel.com";
 const BLOB_API_PATH = "/api/blob";
@@ -18,6 +26,7 @@ const BLOB_API_PATH = "/api/blob";
 export interface IConnectApiService {
 	requestUpload(enrollment: ConnectEnrollment, upload: ConnectBackupUpload): Promise<ConnectApiUploadTicket>;
 	upload(uploadUrl: string, file: string, sizeBytes: number, onPercent: (percent: number) => void): Promise<void>;
+	download(enrollment: ConnectEnrollment, backupId: string, file: string, onPercent: (percent: number) => void): Promise<void>;
 	complete(enrollment: ConnectEnrollment, backupId: string): Promise<void>;
 	abandon(enrollment: ConnectEnrollment, backupId: string): Promise<void>;
 	list(enrollment: ConnectEnrollment): Promise<ConnectApiBackup[]>;
@@ -135,6 +144,52 @@ export class ConnectApiService implements IConnectApiService {
 			throw this.transferError(error);
 		}
 		if (statusCode < 200 || statusCode >= 300) throw new Error(`blob upload failed (${statusCode})`);
+	};
+
+	download = async (enrollment: ConnectEnrollment, backupId: string, file: string, onPercent: (percent: number) => void): Promise<void> => {
+		const data = await this.post(
+			`${this.apiBase(enrollment)}/api/agent/backups/${backupId}/download`,
+			{ agentId: enrollment.agentId },
+			enrollment.token
+		);
+		const ticket = this.parse(connectApiDownloadTicketSchema, data);
+		if (!this.isAllowedTransferUrl(ticket.downloadUrl)) throw new Error("Checkmate Connect returned an unexpected storage URL");
+		if (!Number.isSafeInteger(ticket.sizeBytes) || ticket.sizeBytes <= 0 || ticket.sizeBytes > MAX_BACKUP_BYTES) {
+			throw new Error("Checkmate Connect returned an invalid backup size");
+		}
+
+		const hash = createHash("sha256");
+		let received = 0;
+		const meter = new Transform({
+			transform(chunk: Buffer, _encoding, callback) {
+				received += chunk.length;
+				if (received > ticket.sizeBytes) {
+					callback(new Error(`download exceeds recorded size ${ticket.sizeBytes}`));
+					return;
+				}
+				hash.update(chunk);
+				onPercent(Math.min(100, Math.floor((received / ticket.sizeBytes) * 100)));
+				callback(null, chunk);
+			},
+		});
+		const source = this.got.stream(ticket.downloadUrl, {
+			followRedirect: false,
+			throwHttpErrors: false,
+			retry: { limit: 0 },
+			timeout: { socket: TRANSFER_STALL_MS },
+		});
+		source.once("response", (response: { statusCode: number }) => {
+			if (response.statusCode >= 200 && response.statusCode < 300) return;
+			source.destroy(new Error(`blob download failed (${response.statusCode})`));
+		});
+
+		try {
+			await pipeStreams(source, meter, fs.createWriteStream(file, { mode: 0o600 }));
+		} catch (error: unknown) {
+			throw this.transferError(error);
+		}
+		if (received !== ticket.sizeBytes) throw new Error(`downloaded size ${received} != recorded ${ticket.sizeBytes}`);
+		if (hash.digest("hex") !== ticket.sha256) throw new Error("downloaded archive does not match its recorded checksum");
 	};
 
 	complete = async (enrollment: ConnectEnrollment, backupId: string): Promise<void> => {
