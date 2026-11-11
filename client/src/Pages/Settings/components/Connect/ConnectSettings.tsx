@@ -6,6 +6,7 @@ import { useGet } from "@/Hooks/UseApi";
 import { useIsSuperAdmin } from "@/Hooks/useIsAdmin";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import type { ConnectStatus } from "@/Types/Connect";
+import { ConnectBackupBox } from "./ConnectBackupBox";
 import { ConnectEnrollBox } from "./ConnectEnrollBox";
 import { ConnectRemoteAccessBox } from "./ConnectRemoteAccessBox";
 import { ConnectStatusBox } from "./ConnectStatusBox";
@@ -30,6 +31,12 @@ export const ConnectSettings = () => {
 			)}
 			<ConnectStatusBox status={status} />
 			{isSuperAdmin && !status.enrolled && <ConnectEnrollBox onEnrolled={refetch} />}
+			{status.enrolled && (
+				<ConnectBackupBox
+					recoveryKeySet={status.backup.recoveryKeySet}
+					onKeyCreated={refetch}
+				/>
+			)}
 			{isSuperAdmin && status.enrolled && (
 				<ConnectRemoteAccessBox
 					enabled={status.remoteAccess.enabled}
