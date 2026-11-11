@@ -29,7 +29,7 @@ export interface IJobsRepository {
 	// Record failure, release lease, bump fail count, record reason, reset nextScheduledAt for retry
 	recordFailure(id: string, error: unknown, now: number): Promise<boolean>;
 
-	recordOneShot(id: string, now: number): Promise<boolean>;
+	recordOneShot(id: string, scheduledRunAt: number, now: number): Promise<boolean>;
 
 	// ********************
 	// Hand off to evaluator // This is accomplished pushing newly inserted Check IDs onto the evaluation row

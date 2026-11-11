@@ -231,7 +231,7 @@ describe("MongoJobsRepository", () => {
 				lastFailReason: "connection refused",
 			});
 
-			const ok = await repo.recordOneShot("check:mon-1", NOW + 1_000);
+			const ok = await repo.recordOneShot("check:mon-1", NOW, NOW + 1_000);
 
 			expect(ok).toBe(true);
 			const row = await readRow("check:mon-1");
@@ -247,7 +247,7 @@ describe("MongoJobsRepository", () => {
 		it("does not touch a lock owned by another worker (fenced no-op)", async () => {
 			await seedJob({ intervalMs: null, lockedBy: "other-worker", lockedUntil: NOW + LOCK_MS, failCount: 2, lastFailReason: "timeout" });
 
-			expect(await repo.recordOneShot("check:mon-1", NOW + 1_000)).toBe(false);
+			expect(await repo.recordOneShot("check:mon-1", NOW, NOW + 1_000)).toBe(false);
 			const row = await readRow("check:mon-1");
 			expect(row?.nextScheduledAt).toBe(NOW); // not parked
 			expect(row?.lockedBy).toBe("other-worker");
@@ -265,11 +265,38 @@ describe("MongoJobsRepository", () => {
 				pendingChecks: pending("c-late"), // arrived mid-run, not yet pulled
 			});
 
-			expect(await repo.recordOneShot("evaluate:mon-1", NOW + 1_000)).toBe(true);
+			expect(await repo.recordOneShot("evaluate:mon-1", NOW, NOW + 1_000)).toBe(true);
 			const row = await readRow("evaluate:mon-1");
 			expect(row?.nextScheduledAt).toBe(NOW + 1_000); // due now, not PARKED
 			expect(row?.lockedBy).toBeNull();
 			expect(row?.runCount).toBe(1);
+		});
+
+		it("keeps a row that was re-armed while the run held the lease", async () => {
+			await seedJob({ intervalMs: null, nextScheduledAt: NOW + 5_000, lockedBy: ownedBy(repo), lockedUntil: NOW + LOCK_MS });
+
+			expect(await repo.recordOneShot("check:mon-1", NOW, NOW + 1_000)).toBe(true);
+			const row = await readRow("check:mon-1");
+			expect(row?.nextScheduledAt).toBe(NOW + 5_000);
+			expect(row?.lockedBy).toBeNull();
+			expect(row?.lockedUntil).toBeNull();
+			expect(row?.runCount).toBe(1);
+		});
+
+		it("re-arms for pending checks even when the row was also re-armed", async () => {
+			await seedJob({
+				_id: "evaluate:mon-1",
+				type: "evaluate",
+				intervalMs: null,
+				nextScheduledAt: NOW + 5_000,
+				lockedBy: ownedBy(repo),
+				lockedUntil: NOW + LOCK_MS,
+				pendingChecks: pending("c-late"),
+			});
+
+			await repo.recordOneShot("evaluate:mon-1", NOW, NOW + 1_000);
+
+			expect((await readRow("evaluate:mon-1"))?.nextScheduledAt).toBe(NOW + 1_000);
 		});
 	});
 
