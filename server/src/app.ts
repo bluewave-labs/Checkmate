@@ -14,6 +14,7 @@ import { EnvConfig } from "@/domain/app-settings/app-settings.service.js";
 import { createStatusPageCorsOrigin } from "@/api/middleware/statusPageCorsOrigin.js";
 import { isPublicStatusPageApiPath } from "@/api/middleware/statusPagePublicApiPath.js";
 import { createStatusPageDocumentCsp } from "@/api/middleware/statusPageDocumentCsp.js";
+import { createClientConfigScript } from "@/api/middleware/clientConfigScript.js";
 import { ApiServices } from "@/config/services.api.js";
 import { logContext } from "./utils/logger/logContext.js";
 
@@ -57,10 +58,7 @@ export const createApp = ({
 
 	// Client runtime config; registered before express.static so it shadows the
 	// fallback config.js in the client build output
-	const clientConfigScript = `window.__CHECKMATE_CONFIG__ = ${JSON.stringify(envSettings.clientConfig).replace(/</g, "\\u003c")};`;
-	app.get("/config.js", (req, res) => {
-		res.set("Cache-Control", "no-cache").type("application/javascript").send(clientConfigScript);
-	});
+	app.get("/config.js", createClientConfigScript(envSettings.clientConfig));
 
 	app.use(express.static(frontendPath));
 

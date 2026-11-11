@@ -2,9 +2,9 @@ import { useState } from "react";
 import Box from "@mui/material/Box";
 import { useTranslation } from "react-i18next";
 import { ConfigBox } from "@/Components/design-elements";
-import { Button } from "@/Components/inputs";
 import { usePost } from "@/Hooks/UseApi";
 import type { ConnectStatus } from "@/Types/Connect";
+import { TipButton } from "./TipButton";
 
 export const ConnectUnenrollBox = ({
 	onUnenrolled,
@@ -31,7 +31,8 @@ export const ConnectUnenrollBox = ({
 			subtitle={t("pages.settings.form.connect.unenroll.description")}
 			rightContent={
 				<Box>
-					<Button
+					<TipButton
+						tip={t("pages.settings.form.connect.tooltips.unenroll")}
 						variant="contained"
 						color="error"
 						loading={loading}
@@ -42,7 +43,7 @@ export const ConnectUnenrollBox = ({
 								? "pages.settings.form.connect.unenroll.confirm"
 								: "pages.settings.form.connect.unenroll.button"
 						)}
-					</Button>
+					</TipButton>
 				</Box>
 			}
 		/>

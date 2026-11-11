@@ -1,5 +1,11 @@
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
-import type { ConnectEnrollment, ConnectTunnelRequest, ConnectTunnelResponse, ConnectTunnelStatus } from "@/domain/connect/connect.type.js";
+import {
+	CONNECT_TUNNEL_HEADER,
+	type ConnectEnrollment,
+	type ConnectTunnelRequest,
+	type ConnectTunnelResponse,
+	type ConnectTunnelStatus,
+} from "@/domain/connect/connect.type.js";
 import type { ILogger } from "@/utils/logger/logger.js";
 import type { Got } from "got";
 import type WebSocket from "ws";
@@ -122,6 +128,7 @@ export class ConnectTunnel implements IConnectTunnel {
 				headers[key] = value;
 			}
 		}
+		headers[CONNECT_TUNNEL_HEADER] = "1";
 		return {
 			id: message.id,
 			url,

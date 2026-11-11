@@ -1759,6 +1759,8 @@
 						"description": "Keep an outbound tunnel open so you can reach this installation from your Connect address. No inbound ports are opened."
 					},
 					"tooltips": {
+						"enroll": "Connect this server to your account",
+						"unenroll": "Disconnect this server from Connect",
 						"generateKey": "Create the key that unlocks your backups",
 						"lostKey": "Start again with a new key",
 						"runFull": "Back up the whole database now",
