@@ -22,7 +22,7 @@ const tamperData = (ciphertext: string) => {
 	return parts.join(".");
 };
 
-const setup = async (keys: Buffer[], rows: Row[], connectToken?: string) => {
+const setup = async (keys: Buffer[], rows: Row[], connectToken?: string, recoveryKey?: string) => {
 	const encryptionService = encryptionServiceFor(keys);
 	const repository = {
 		findAllDockerTlsKeys: jest.fn(async () => rows),
@@ -37,6 +37,7 @@ const setup = async (keys: Buffer[], rows: Row[], connectToken?: string) => {
 			apiUrl: null,
 		});
 	}
+	if (recoveryKey !== undefined) await connectRepository.setRecoveryKeyIfUnset(recoveryKey);
 	const logger = createMockLogger();
 	const service = new SecretsRotationService(repository as unknown as IMonitorsRepository, connectRepository, encryptionService, logger);
 	return { service, encryptionService, repository, connectRepository, logger };
@@ -239,7 +240,7 @@ describe("SecretsRotationService", () => {
 			expect(await storedConnectToken(connectRepository)).toBe(token);
 			expect(logger.warn).toHaveBeenCalledTimes(1);
 			expect(logger.warn).toHaveBeenCalledWith(
-				"Checkmate Connect is enrolled but ENCRYPTION_KEY is not set; Connect can't use its credential until it is"
+				"Checkmate Connect has stored secrets but ENCRYPTION_KEY is not set; Connect can't use them until it is"
 			);
 		});
 
@@ -254,6 +255,95 @@ describe("SecretsRotationService", () => {
 
 			expect(result).toEqual({ scanned: 2, reencrypted: 2, skipped: 0 });
 			expect(logger.info).toHaveBeenCalledWith({ reencrypted: 1, skipped: 0, scanned: 1 }, "Docker TLS key rotation complete");
+		});
+	});
+
+	describe("Checkmate Connect recovery key", () => {
+		const RECOVERY_KEY = "ab".repeat(32);
+
+		it("re-encrypts a recovery key sealed with an old key", async () => {
+			const current = newKey();
+			const previous = newKey();
+			const stale = encryptionServiceFor([previous]);
+			const { service, encryptionService, connectRepository, logger } = await setup(
+				[current, previous],
+				[],
+				stale.encrypt(CONNECT_TOKEN),
+				stale.encrypt(RECOVERY_KEY)
+			);
+
+			const result = await service.run();
+
+			const stored = (await connectRepository.get()).recoveryKey ?? "";
+			expect(encryptionService.needsReencryption(stored)).toBe(false);
+			expect(encryptionService.decrypt(stored)).toBe(RECOVERY_KEY);
+			expect(result).toEqual({ scanned: 2, reencrypted: 2, skipped: 0 });
+			expect(logger.info).toHaveBeenCalledWith("Checkmate Connect recovery key re-encrypted");
+		});
+
+		it("rotates a recovery key that outlived the enrollment", async () => {
+			const current = newKey();
+			const previous = newKey();
+			const stale = encryptionServiceFor([previous]);
+			const { service, encryptionService, connectRepository } = await setup(
+				[current, previous],
+				[],
+				stale.encrypt(CONNECT_TOKEN),
+				stale.encrypt(RECOVERY_KEY)
+			);
+			await connectRepository.clearEnrollment();
+
+			const result = await service.run();
+
+			expect(result).toEqual({ scanned: 1, reencrypted: 1, skipped: 0 });
+			expect(encryptionService.decrypt((await connectRepository.get()).recoveryKey ?? "")).toBe(RECOVERY_KEY);
+		});
+
+		it("leaves a current recovery key alone", async () => {
+			const current = newKey();
+			const encryption = encryptionServiceFor([current]);
+			const sealed = encryption.encrypt(RECOVERY_KEY);
+			const { service, connectRepository } = await setup([current], [], encryption.encrypt(CONNECT_TOKEN), sealed);
+
+			const result = await service.run();
+
+			expect((await connectRepository.get()).recoveryKey).toBe(sealed);
+			expect(result).toEqual({ scanned: 2, reencrypted: 0, skipped: 0 });
+		});
+
+		it("skips and warns on a recovery key that can't be decrypted, keeping it as stored", async () => {
+			const current = newKey();
+			const previous = newKey();
+			const broken = tamperData(encryptionServiceFor([previous]).encrypt(RECOVERY_KEY));
+			const { service, connectRepository, logger } = await setup(
+				[current, previous],
+				[],
+				encryptionServiceFor([current]).encrypt(CONNECT_TOKEN),
+				broken
+			);
+
+			const result = await service.run();
+
+			expect(result).toEqual({ scanned: 2, reencrypted: 0, skipped: 1 });
+			expect((await connectRepository.get()).recoveryKey).toBe(broken);
+			expect(logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({
+					err: expect.objectContaining({
+						message: "Ciphertext failed authentication",
+					}),
+				}),
+				"Could not re-encrypt the Checkmate Connect recovery key"
+			);
+		});
+
+		it("counts both secrets as skipped without ENCRYPTION_KEY", async () => {
+			const { service } = await setup([], [], "v1.token", "v1.key");
+
+			await expect(service.run()).resolves.toEqual({
+				scanned: 2,
+				reencrypted: 0,
+				skipped: 2,
+			});
 		});
 	});
 });
