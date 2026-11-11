@@ -3,8 +3,8 @@ import { pipeline, Transform } from "node:stream";
 import type { Got } from "got";
 import type { z } from "zod";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
-import { controlPlaneBackupListSchema, controlPlaneErrorSchema, controlPlaneUploadTicketSchema } from "@/domain/connect/connect-backup.schema.js";
-import type { ConnectBackupUpload, ControlPlaneBackup, ControlPlaneUploadTicket } from "@/domain/connect/connect-backup.type.js";
+import { connectApiBackupListSchema, connectApiErrorSchema, connectApiUploadTicketSchema } from "@/domain/connect/connect-backup.schema.js";
+import type { ConnectBackupUpload, ConnectApiBackup, ConnectApiUploadTicket } from "@/domain/connect/connect-backup.type.js";
 import type { ConnectEnrollment } from "@/domain/connect/connect.type.js";
 import type { ILogger } from "@/utils/logger/logger.js";
 
@@ -16,11 +16,11 @@ const BLOB_API_HOST = "vercel.com";
 const BLOB_API_PATH = "/api/blob";
 
 export interface IConnectApiService {
-	requestUpload(enrollment: ConnectEnrollment, upload: ConnectBackupUpload): Promise<ControlPlaneUploadTicket>;
+	requestUpload(enrollment: ConnectEnrollment, upload: ConnectBackupUpload): Promise<ConnectApiUploadTicket>;
 	upload(uploadUrl: string, file: string, sizeBytes: number, onPercent: (percent: number) => void): Promise<void>;
 	complete(enrollment: ConnectEnrollment, backupId: string): Promise<void>;
 	abandon(enrollment: ConnectEnrollment, backupId: string): Promise<void>;
-	list(enrollment: ConnectEnrollment): Promise<ControlPlaneBackup[]>;
+	list(enrollment: ConnectEnrollment): Promise<ConnectApiBackup[]>;
 }
 
 export class ConnectApiService implements IConnectApiService {
@@ -66,13 +66,13 @@ export class ConnectApiService implements IConnectApiService {
 	private readBody = (statusCode: number, body: string): unknown => {
 		const data = this.parseJson(body);
 		if (statusCode >= 200 && statusCode < 300) return data;
-		const failure = controlPlaneErrorSchema.safeParse(data);
-		throw new Error(failure.success ? failure.data.error : `control plane responded ${statusCode}`);
+		const failure = connectApiErrorSchema.safeParse(data);
+		throw new Error(failure.success ? failure.data.error : `Checkmate Connect responded ${statusCode}`);
 	};
 
 	private parse = <T>(schema: z.ZodType<T>, data: unknown): T => {
 		const parsed = schema.safeParse(data);
-		if (!parsed.success) throw new Error("control plane returned an unexpected response");
+		if (!parsed.success) throw new Error("Checkmate Connect returned an unexpected response");
 		return parsed.data;
 	};
 
@@ -96,17 +96,17 @@ export class ConnectApiService implements IConnectApiService {
 		return error;
 	};
 
-	requestUpload = async (enrollment: ConnectEnrollment, upload: ConnectBackupUpload): Promise<ControlPlaneUploadTicket> => {
+	requestUpload = async (enrollment: ConnectEnrollment, upload: ConnectBackupUpload): Promise<ConnectApiUploadTicket> => {
 		const data = await this.post(
 			`${this.apiBase(enrollment)}/api/agent/backups/request-upload`,
 			{ agentId: enrollment.agentId, ...upload },
 			enrollment.token
 		);
-		return this.parse(controlPlaneUploadTicketSchema, data);
+		return this.parse(connectApiUploadTicketSchema, data);
 	};
 
 	upload = async (uploadUrl: string, file: string, sizeBytes: number, onPercent: (percent: number) => void): Promise<void> => {
-		if (!this.isAllowedTransferUrl(uploadUrl)) throw new Error("control plane returned an unexpected storage URL");
+		if (!this.isAllowedTransferUrl(uploadUrl)) throw new Error("Checkmate Connect returned an unexpected storage URL");
 		let sent = 0;
 		const meter = new Transform({
 			transform(chunk: Buffer, _encoding, callback) {
@@ -149,7 +149,7 @@ export class ConnectApiService implements IConnectApiService {
 		}
 	};
 
-	list = async (enrollment: ConnectEnrollment): Promise<ControlPlaneBackup[]> => {
+	list = async (enrollment: ConnectEnrollment): Promise<ConnectApiBackup[]> => {
 		const response = await this.got.get(`${this.apiBase(enrollment)}/api/agent/backups`, {
 			searchParams: { agentId: enrollment.agentId },
 			headers: { authorization: `Bearer ${enrollment.token}` },
@@ -159,6 +159,6 @@ export class ConnectApiService implements IConnectApiService {
 			retry: { limit: 0 },
 			timeout: { request: TIMEOUT_MS },
 		});
-		return this.parse(controlPlaneBackupListSchema, this.readBody(response.statusCode, response.body)).backups;
+		return this.parse(connectApiBackupListSchema, this.readBody(response.statusCode, response.body)).backups;
 	};
 }

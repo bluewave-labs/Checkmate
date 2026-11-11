@@ -65,13 +65,15 @@ export class ConnectBackupService implements IConnectBackupService {
 		recoveryKey: string
 	): Promise<ConnectSealedArchive> => {
 		const dump = this.tools.dump(configFile, dbName, kind);
-		const [sealed] = await Promise.all([
+		const [sealed, exited] = await Promise.allSettled([
 			encryptToFile(dump.stdout, archive, recoveryKey, (bytes) =>
 				this.reportProgress({ operation: "backup", stage: "dumping", percent: null, bytes }, false)
 			),
 			dump.exited,
 		]);
-		return sealed;
+		if (exited.status === "rejected") throw exited.reason;
+		if (sealed.status === "rejected") throw sealed.reason;
+		return sealed.value;
 	};
 
 	private store = async (

@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import { connectErrors } from "@/domain/connect/connect.errors.js";
 import { IConnectRepository } from "@/domain/connect/connect.repository.interface.js";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
@@ -7,8 +8,26 @@ import { AppError } from "@/utils/AppError.js";
 import { APP_VERSION } from "@/utils/appVersion.js";
 import { ILogger } from "@/utils/logger/logger.js";
 import { IConnectTunnel } from "@/domain/connect/connect-tunnel.js";
+import {
+	CONNECT_RECOVERY_KEY_FORMAT,
+	ConnectBackupKind,
+	ConnectBackupList,
+	ConnectBackupResult,
+	ConnectBackupStatus,
+	ConnectBackupToolName,
+	ConnectBackupToolNames,
+	ConnectQueued,
+	ConnectRecoveryKey,
+	ConnectApiBackup,
+} from "@/domain/connect/connect-backup.type.js";
+import { IConnectApiService } from "@/domain/connect/connect-api.service.js";
+import { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.repository.interface.js";
+import { IJobScheduler } from "@/worker/worker.interface.js";
+import { WORKER_STALE_MS } from "@/domain/queue-workers/queue-worker.model.js";
+import { recoveryKeyId } from "@/domain/connect/connect.backup-format.js";
 
 const SERVICE_NAME = "ConnectService";
+const RECOVERY_KEY_BYTES = 32;
 
 export const isConnectHostAllowed = (url: string, allowedHosts: readonly string[]): boolean => {
 	try {
@@ -26,6 +45,10 @@ export interface IConnectService {
 	enroll(input: ConnectEnrollment): Promise<ConnectStatus>;
 	unenroll(): Promise<ConnectStatus>;
 	setRemoteAccess(enabled: boolean): Promise<ConnectStatus>;
+	getBackupStatus(): Promise<ConnectBackupStatus>;
+	listBackups(): Promise<ConnectBackupList>;
+	createRecoveryKey(discardExisting: boolean): Promise<ConnectRecoveryKey>;
+	runBackup(kind: ConnectBackupKind): Promise<ConnectQueued>;
 }
 
 export class ConnectService implements IConnectService {
@@ -37,6 +60,9 @@ export class ConnectService implements IConnectService {
 		private encryptionService: IEncryptionService,
 		private settingsService: ISettingsService,
 		private tunnel: IConnectTunnel,
+		private connectApiService: IConnectApiService,
+		private queueWorkersRepository: IQueueWorkersRepository,
+		private scheduler: IJobScheduler,
 		logger: ILogger
 	) {
 		this.logger = logger.child({ service: SERVICE_NAME });
@@ -51,6 +77,7 @@ export class ConnectService implements IConnectService {
 			agentVersion: APP_VERSION,
 			remoteAccess: { enabled: state.remoteAccessEnabled },
 			tunnel: this.tunnel.status(),
+			backup: { recoveryKeySet: state.recoveryKey !== null },
 		};
 	};
 
@@ -62,9 +89,57 @@ export class ConnectService implements IConnectService {
 		}
 	};
 
+	private toResultStatus = (result: ConnectBackupResult): NonNullable<ConnectBackupStatus["lastBackup"]> => {
+		return { ...result, at: result.at.toISOString() };
+	};
+
+	private requireEnrollment = (state: ConnectState): ConnectEnrollment => {
+		if (!state.enrollment) throw new AppError(connectErrors.notEnrolled, { service: SERVICE_NAME });
+		return state.enrollment;
+	};
+
+	private requireEncryption = (): void => {
+		if (!this.encryptionService.isConfigured()) throw new AppError(connectErrors.encryptionKeyMissing, { service: SERVICE_NAME });
+	};
+
+	private fetchCloudBackups = async (enrollment: ConnectEnrollment): Promise<ConnectApiBackup[]> => {
+		const token = this.decrypt(enrollment.token);
+		try {
+			return await this.connectApiService.list({ ...enrollment, token });
+		} catch (error: unknown) {
+			throw new AppError(connectErrors.connectUnreachable, {
+				service: SERVICE_NAME,
+				...(error instanceof Error && { message: error.message }),
+			});
+		}
+	};
+
+	private assertNoCloudBackups = async (enrollment: ConnectEnrollment): Promise<void> => {
+		const backups = await this.fetchCloudBackups(enrollment);
+		if (backups.length > 0) throw new AppError(connectErrors.cloudBackupsExist, { service: SERVICE_NAME });
+	};
+
+	private missingTools = async (): Promise<ConnectBackupToolName[]> => {
+		const workers = await this.queueWorkersRepository.findRecent(WORKER_STALE_MS);
+		const reports = workers.flatMap((worker) => (worker.processesJobs && worker.connectTools ? [worker.connectTools.missing] : []));
+		if (reports.length === 0) return [];
+		return ConnectBackupToolNames.filter((tool) => reports.every((missing) => missing.includes(tool)));
+	};
+
+	private resumeOperation = async (state: ConnectState): Promise<void> => {
+		if (!state.operation) return;
+		try {
+			await this.scheduler.addGlobalJob("connect-operation");
+		} catch (error: unknown) {
+			this.logger.error({ err: error }, "Connect could not re-queue its pending operation");
+		}
+	};
+
 	start = async (): Promise<void> => {
 		try {
-			const { enrollment, remoteAccessEnabled } = await this.connectRepository.get();
+			const state = await this.connectRepository.get();
+			await this.resumeOperation(state);
+			const { enrollment, remoteAccessEnabled } = state;
 			if (!enrollment || !remoteAccessEnabled) return;
 			this.tunnel.start({ ...enrollment, token: this.decrypt(enrollment.token) });
 		} catch (error: unknown) {
@@ -89,9 +164,7 @@ export class ConnectService implements IConnectService {
 		) {
 			throw new AppError(connectErrors.hostNotAllowed, { service: SERVICE_NAME });
 		}
-		if (!this.encryptionService.isConfigured()) {
-			throw new AppError(connectErrors.encryptionKeyMissing, { service: SERVICE_NAME });
-		}
+		this.requireEncryption();
 		await this.connectRepository.setEnrollment({ ...input, token: this.encryptionService.encrypt(input.token) });
 		const state = await this.connectRepository.get();
 		if (!state.remoteAccessEnabled) {
@@ -117,10 +190,84 @@ export class ConnectService implements IConnectService {
 			return this.toStatus({ ...current, remoteAccessEnabled: false });
 		}
 
-		if (!current.enrollment) throw new AppError(connectErrors.notEnrolled, { service: SERVICE_NAME });
-		const token = this.decrypt(current.enrollment.token);
+		const enrollment = this.requireEnrollment(current);
+		const token = this.decrypt(enrollment.token);
 		await this.connectRepository.setRemoteAccess(true);
-		this.tunnel.start({ ...current.enrollment, token });
+		this.tunnel.start({ ...enrollment, token });
 		return this.toStatus({ ...current, remoteAccessEnabled: true });
+	};
+
+	getBackupStatus = async (): Promise<ConnectBackupStatus> => {
+		const [state, running, missingTools] = await Promise.all([
+			this.connectRepository.get(),
+			this.scheduler.isGlobalJobRunning("connect-operation"),
+			this.missingTools(),
+		]);
+		const { operation, progress, lastBackup } = state;
+		return {
+			operation: operation
+				? {
+						type: operation.type,
+						state: operation.startedAt && running ? "running" : "queued",
+						requestedAt: operation.requestedAt.toISOString(),
+					}
+				: null,
+			progress: running ? progress : null,
+			lastBackup: lastBackup ? this.toResultStatus(lastBackup) : null,
+			missingTools,
+		};
+	};
+
+	listBackups = async (): Promise<ConnectBackupList> => {
+		const state = await this.connectRepository.get();
+		const enrollment = this.requireEnrollment(state);
+		const backups = await this.fetchCloudBackups(enrollment);
+		const keyId = state.recoveryKey ? recoveryKeyId(this.decrypt(state.recoveryKey)) : null;
+		return {
+			backups: backups.map((backup) => ({
+				id: backup.id,
+				kind: backup.kind,
+				sizeBytes: backup.sizeBytes,
+				status: backup.status,
+				createdAt: backup.createdAt,
+				keyId: backup.keyId ?? null,
+				expiresAt: backup.expiresAt ?? null,
+				restorable: !backup.keyId || backup.keyId === keyId,
+			})),
+		};
+	};
+
+	createRecoveryKey = async (discardExisting: boolean): Promise<ConnectRecoveryKey> => {
+		const state = await this.connectRepository.get();
+		const enrollment = this.requireEnrollment(state);
+		if (state.recoveryKey)
+			throw new AppError(connectErrors.recoveryKeyAlreadySet, {
+				service: SERVICE_NAME,
+			});
+		this.requireEncryption();
+		if (!discardExisting) await this.assertNoCloudBackups(enrollment);
+
+		const recoveryKey = crypto.randomBytes(RECOVERY_KEY_BYTES).toString("hex");
+		const saved = await this.connectRepository.setRecoveryKeyIfUnset(this.encryptionService.encrypt(recoveryKey));
+		if (!saved)
+			throw new AppError(connectErrors.recoveryKeyAlreadySet, {
+				service: SERVICE_NAME,
+			});
+		return { recoveryKey, format: CONNECT_RECOVERY_KEY_FORMAT };
+	};
+
+	runBackup = async (kind: ConnectBackupKind): Promise<ConnectQueued> => {
+		const state = await this.connectRepository.get();
+		this.requireEnrollment(state);
+		if (!state.recoveryKey) throw new AppError(connectErrors.noRecoveryKey, { service: SERVICE_NAME });
+		const requested = await this.connectRepository.requestOperation({
+			type: "backup",
+			kind,
+			requestedAt: new Date(),
+			startedAt: null,
+		});
+		if (!requested) throw new AppError(connectErrors.busy, { service: SERVICE_NAME });
+		await this.scheduler.addGlobalJob("connect-operation");
+		return { queued: true };
 	};
 }

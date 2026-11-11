@@ -84,18 +84,18 @@ export const connectQueuedSchema = z
 // ************************
 
 // Error body returned by the Connect API
-export const controlPlaneErrorSchema = z.object({
+export const connectApiErrorSchema = z.object({
 	error: z.string(),
 });
 
 // Connect API reply to a request to upload a backup
-export const controlPlaneUploadTicketSchema = z.object({
+export const connectApiUploadTicketSchema = z.object({
 	uploadUrl: z.string(),
 	backupId: z.string(),
 });
 
 // Connect API reply listing backups for this installation
-export const controlPlaneBackupListSchema = z.object({
+export const connectApiBackupListSchema = z.object({
 	backups: z
 		.array(
 			z.object({

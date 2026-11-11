@@ -4,8 +4,8 @@ import type {
 	connectBackupStatusSchema,
 	connectQueuedSchema,
 	connectRecoveryKeySchema,
-	controlPlaneBackupListSchema,
-	controlPlaneUploadTicketSchema,
+	connectApiBackupListSchema,
+	connectApiUploadTicketSchema,
 } from "@/domain/connect/connect-backup.schema.js";
 import type { Readable } from "node:stream";
 
@@ -64,5 +64,5 @@ export type ConnectProgress = NonNullable<ConnectBackupStatus["progress"]>;
 export type ConnectBackupList = z.infer<typeof connectBackupListSchema>;
 export type ConnectRecoveryKey = z.infer<typeof connectRecoveryKeySchema>;
 export type ConnectQueued = z.infer<typeof connectQueuedSchema>;
-export type ControlPlaneUploadTicket = z.infer<typeof controlPlaneUploadTicketSchema>;
-export type ControlPlaneBackup = z.infer<typeof controlPlaneBackupListSchema>["backups"][number];
+export type ConnectApiUploadTicket = z.infer<typeof connectApiUploadTicketSchema>;
+export type ConnectApiBackup = z.infer<typeof connectApiBackupListSchema>["backups"][number];
