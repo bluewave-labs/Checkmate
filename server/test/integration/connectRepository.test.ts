@@ -4,7 +4,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import MongoConnectRepository from "../../src/domain/connect/connect.repository.mongo.ts";
 import { ConnectStateModel } from "../../src/domain/connect/connect.model.ts";
 import { CONNECT_STATE_COLLECTION, type ConnectEnrollment } from "../../src/domain/connect/connect.type.ts";
-import type { ConnectBackupResult, ConnectOperationRequest } from "../../src/domain/connect/connect-backup.type.ts";
+import type { ConnectBackupResult, ConnectOperationRequest, ConnectVerifyResult } from "../../src/domain/connect/connect-backup.type.ts";
 
 let mongod: MongoMemoryServer;
 
@@ -31,7 +31,7 @@ const enrollment = (overrides: Partial<ConnectEnrollment> = {}): ConnectEnrollme
 	...overrides,
 });
 
-const emptyBackupState = { recoveryKey: null, operation: null, progress: null, lastBackup: null };
+const emptyBackupState = { recoveryKey: null, operation: null, progress: null, lastBackup: null, lastRestore: null, lastVerify: null };
 
 describe("MongoConnectRepository", () => {
 	const repo = new MongoConnectRepository();
@@ -304,7 +304,7 @@ describe("MongoConnectRepository", () => {
 
 		it("records progress only while an operation is recorded", async () => {
 			await repo.setEnrollment(enrollment());
-			const progress = { operation: "backup" as const, stage: "uploading" as const, percent: 40, bytes: null };
+			const progress = { operation: "backup" as const, stage: "uploading" as const, percent: 40, bytes: null, attempt: null, attempts: null };
 
 			await repo.setProgress(progress);
 			expect((await repo.get()).progress).toBeNull();
@@ -317,7 +317,7 @@ describe("MongoConnectRepository", () => {
 		it("clears the operation and its progress", async () => {
 			await repo.setEnrollment(enrollment());
 			await repo.requestOperation(operation());
-			await repo.setProgress({ operation: "backup", stage: "dumping", percent: null, bytes: 10 });
+			await repo.setProgress({ operation: "backup", stage: "dumping", percent: null, bytes: 10, attempt: null, attempts: null });
 
 			await repo.clearOperation();
 
@@ -329,7 +329,7 @@ describe("MongoConnectRepository", () => {
 		it("clears stale progress when a new operation is requested", async () => {
 			await repo.setEnrollment(enrollment());
 			await repo.requestOperation(operation());
-			await repo.setProgress({ operation: "backup", stage: "saving", percent: null, bytes: null });
+			await repo.setProgress({ operation: "backup", stage: "saving", percent: null, bytes: null, attempt: null, attempts: null });
 			await ConnectStateModel.updateOne({ singleton: true }, { $set: { operation: null } });
 
 			await repo.requestOperation(operation());
@@ -347,6 +347,198 @@ describe("MongoConnectRepository", () => {
 			await repo.setLastBackup(failed);
 
 			expect((await repo.get()).lastBackup).toEqual(failed);
+		});
+	});
+
+	describe("operations (restore and verify)", () => {
+		it("round-trips a restore operation", async () => {
+			const restore: ConnectOperationRequest = {
+				type: "restore",
+				backupId: "11111111-1111-1111-1111-111111111111",
+				requestedAt: new Date("2026-11-12T10:00:00.000Z"),
+				startedAt: null,
+			};
+			await repo.setEnrollment(enrollment());
+
+			await repo.requestOperation(restore);
+
+			expect((await repo.get()).operation).toEqual(restore);
+		});
+
+		it("round-trips a verify operation with its candidate key", async () => {
+			const verify: ConnectOperationRequest = {
+				type: "verify",
+				recoveryKey: "v1.candidate",
+				replaceExisting: true,
+				requestedAt: new Date("2026-11-12T10:00:00.000Z"),
+				startedAt: null,
+			};
+			await repo.setEnrollment(enrollment());
+
+			await repo.requestOperation(verify);
+
+			expect((await repo.get()).operation).toEqual(verify);
+		});
+
+		it("keeps only a backup operation's own fields", async () => {
+			await repo.setEnrollment(enrollment());
+
+			await repo.requestOperation(operation());
+
+			const stored = await mongoose.connection.collection(CONNECT_STATE_COLLECTION).findOne({ singleton: true });
+			expect(stored?.operation).toMatchObject({ type: "backup", kind: "full", backupId: null, recoveryKey: null, replaceExisting: false });
+			expect((await repo.get()).operation).toEqual(operation());
+		});
+
+		it("reads a backup operation stored before restores existed unchanged", async () => {
+			const at = new Date("2026-11-12T10:00:00.000Z");
+			await mongoose.connection.collection(CONNECT_STATE_COLLECTION).insertOne({
+				singleton: true,
+				enrollment: null,
+				operation: { type: "backup", kind: "config", requestedAt: at, startedAt: null },
+			});
+
+			expect((await repo.get()).operation).toEqual({ type: "backup", kind: "config", requestedAt: at, startedAt: null });
+		});
+
+		it("reads an operation missing the field its type needs as no operation", async () => {
+			await mongoose.connection.collection(CONNECT_STATE_COLLECTION).insertOne({
+				singleton: true,
+				enrollment: null,
+				operation: { type: "restore", requestedAt: new Date(), startedAt: null },
+			});
+
+			expect((await repo.get()).operation).toBeNull();
+		});
+
+		it("marks a restore operation started", async () => {
+			const at = new Date("2026-11-12T10:01:00.000Z");
+			await repo.setEnrollment(enrollment());
+			await repo.requestOperation({ type: "restore", backupId: "b-9", requestedAt: new Date(), startedAt: null });
+
+			await repo.markOperationStarted(at);
+
+			expect((await repo.get()).operation).toMatchObject({ type: "restore", backupId: "b-9", startedAt: at });
+		});
+	});
+
+	describe("progress with attempts", () => {
+		it("stores which backup a key check is on", async () => {
+			const progress = { operation: "verify" as const, stage: "decrypting" as const, percent: null, bytes: null, attempt: 2, attempts: 3 };
+			await repo.setEnrollment(enrollment());
+			await repo.requestOperation({ type: "verify", recoveryKey: "v1.candidate", replaceExisting: false, requestedAt: new Date(), startedAt: null });
+
+			await repo.setProgress(progress);
+
+			expect((await repo.get()).progress).toEqual(progress);
+		});
+
+		it("reads progress stored without attempts as null attempts", async () => {
+			await mongoose.connection.collection(CONNECT_STATE_COLLECTION).insertOne({
+				singleton: true,
+				enrollment: null,
+				progress: { operation: "backup", stage: "uploading", percent: 10, bytes: null },
+			});
+
+			expect((await repo.get()).progress).toEqual({
+				operation: "backup",
+				stage: "uploading",
+				percent: 10,
+				bytes: null,
+				attempt: null,
+				attempts: null,
+			});
+		});
+	});
+
+	describe("restore and verify results", () => {
+		it("stores the last restore with no kind", async () => {
+			const restored = result({ kind: null, sizeBytes: null, sha256: null });
+			await repo.setEnrollment(enrollment());
+
+			await repo.setLastRestore(restored);
+
+			expect((await repo.get()).lastRestore).toEqual(restored);
+		});
+
+		it("keeps the last restore apart from the last backup", async () => {
+			await repo.setEnrollment(enrollment());
+			await repo.setLastBackup(result());
+
+			await repo.setLastRestore(result({ kind: null, backupId: "b-9" }));
+
+			const state = await repo.get();
+			expect(state.lastBackup).toEqual(result());
+			expect(state.lastRestore).toEqual(result({ kind: null, backupId: "b-9" }));
+		});
+
+		it("stores the last key check", async () => {
+			const verified: ConnectVerifyResult = { outcome: "wrong-key", at: new Date("2026-11-12T10:05:00.000Z"), error: null };
+			await repo.setEnrollment(enrollment());
+
+			await repo.setLastVerify(verified);
+
+			expect((await repo.get()).lastVerify).toEqual(verified);
+		});
+
+		it("stores a failed key check with its reason", async () => {
+			const failed: ConnectVerifyResult = { outcome: "failed", at: new Date("2026-11-12T10:05:00.000Z"), error: "blob download failed (500)" };
+			await repo.setEnrollment(enrollment());
+
+			await repo.setLastVerify(failed);
+
+			expect((await repo.get()).lastVerify).toEqual(failed);
+		});
+
+		it("rejects an unknown key check outcome", async () => {
+			await repo.setEnrollment(enrollment());
+
+			await expect(repo.setLastVerify({ outcome: "maybe" as unknown as "ok", at: new Date(), error: null })).rejects.toThrow();
+		});
+
+		it("reads a backup result stored before kinds could be empty unchanged", async () => {
+			const at = new Date("2026-11-12T10:05:00.000Z");
+			await mongoose.connection.collection(CONNECT_STATE_COLLECTION).insertOne({
+				singleton: true,
+				enrollment: null,
+				lastBackup: { ok: true, at, kind: "full", sizeBytes: 10, sha256: "ab", backupId: "b-1", durationMs: 5, error: null },
+			});
+
+			expect((await repo.get()).lastBackup).toEqual({
+				ok: true,
+				at,
+				kind: "full",
+				sizeBytes: 10,
+				sha256: "ab",
+				backupId: "b-1",
+				durationMs: 5,
+				error: null,
+			});
+		});
+	});
+
+	describe("replaceRecoveryKey", () => {
+		it("replaces the saved key", async () => {
+			await repo.setEnrollment(enrollment());
+			await repo.setRecoveryKeyIfUnset("v1.old");
+
+			await repo.replaceRecoveryKey("v1.new");
+
+			expect((await repo.get()).recoveryKey).toBe("v1.new");
+		});
+
+		it("sets a key when none was saved", async () => {
+			await repo.setEnrollment(enrollment());
+
+			await repo.replaceRecoveryKey("v1.new");
+
+			expect((await repo.get()).recoveryKey).toBe("v1.new");
+		});
+
+		it("does not create a document when nothing is stored", async () => {
+			await repo.replaceRecoveryKey("v1.new");
+
+			expect(await ConnectStateModel.countDocuments({})).toBe(0);
 		});
 	});
 });

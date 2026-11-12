@@ -12,6 +12,7 @@ import {
 	CONNECT_RECOVERY_KEY_FORMAT,
 	ConnectBackupToolNames,
 	type ConnectApiBackup,
+	type ConnectOperationRequest,
 	type ConnectBackupKind,
 	type ConnectBackupList,
 	type ConnectBackupResult,
@@ -49,6 +50,8 @@ export interface IConnectService {
 	listBackups(): Promise<ConnectBackupList>;
 	createRecoveryKey(discardExisting: boolean): Promise<ConnectRecoveryKey>;
 	runBackup(kind: ConnectBackupKind): Promise<ConnectQueued>;
+	importRecoveryKey(recoveryKey: string, replaceExisting: boolean): Promise<ConnectQueued>;
+	restoreBackup(backupId: string): Promise<ConnectQueued>;
 }
 
 export class ConnectService implements IConnectService {
@@ -135,6 +138,13 @@ export class ConnectService implements IConnectService {
 		}
 	};
 
+	private queueOperation = async (operation: ConnectOperationRequest): Promise<ConnectQueued> => {
+		const requested = await this.connectRepository.requestOperation(operation);
+		if (!requested) throw new AppError(connectErrors.busy, { service: SERVICE_NAME });
+		await this.scheduler.addGlobalJob("connect-operation");
+		return { queued: true };
+	};
+
 	start = async (): Promise<void> => {
 		try {
 			const state = await this.connectRepository.get();
@@ -203,7 +213,7 @@ export class ConnectService implements IConnectService {
 			this.scheduler.isGlobalJobRunning("connect-operation"),
 			this.missingTools(),
 		]);
-		const { operation, progress, lastBackup } = state;
+		const { operation, progress, lastBackup, lastRestore, lastVerify } = state;
 		return {
 			operation: operation
 				? {
@@ -214,6 +224,8 @@ export class ConnectService implements IConnectService {
 				: null,
 			progress: running ? progress : null,
 			lastBackup: lastBackup ? this.toResultStatus(lastBackup) : null,
+			lastRestore: lastRestore ? this.toResultStatus(lastRestore) : null,
+			lastVerify: lastVerify ? { ...lastVerify, at: lastVerify.at.toISOString() } : null,
 			missingTools,
 		};
 	};
@@ -260,14 +272,47 @@ export class ConnectService implements IConnectService {
 		const state = await this.connectRepository.get();
 		this.requireEnrollment(state);
 		if (!state.recoveryKey) throw new AppError(connectErrors.noRecoveryKey, { service: SERVICE_NAME });
-		const requested = await this.connectRepository.requestOperation({
+		return this.queueOperation({
 			type: "backup",
 			kind,
 			requestedAt: new Date(),
 			startedAt: null,
 		});
-		if (!requested) throw new AppError(connectErrors.busy, { service: SERVICE_NAME });
-		await this.scheduler.addGlobalJob("connect-operation");
-		return { queued: true };
+	};
+
+	importRecoveryKey = async (recoveryKey: string, replaceExisting: boolean): Promise<ConnectQueued> => {
+		const state = await this.connectRepository.get();
+		this.requireEnrollment(state);
+		if (state.recoveryKey && !replaceExisting)
+			throw new AppError(connectErrors.recoveryKeyAlreadySet, {
+				service: SERVICE_NAME,
+			});
+		if (state.recoveryKey && this.decrypt(state.recoveryKey) === recoveryKey)
+			throw new AppError(connectErrors.sameRecoveryKey, {
+				service: SERVICE_NAME,
+			});
+		this.requireEncryption();
+		return this.queueOperation({
+			type: "verify",
+			recoveryKey: this.encryptionService.encrypt(recoveryKey),
+			replaceExisting,
+			requestedAt: new Date(),
+			startedAt: null,
+		});
+	};
+
+	restoreBackup = async (backupId: string): Promise<ConnectQueued> => {
+		const state = await this.connectRepository.get();
+		this.requireEnrollment(state);
+		if (!state.recoveryKey)
+			throw new AppError(connectErrors.restoreNeedsRecoveryKey, {
+				service: SERVICE_NAME,
+			});
+		return this.queueOperation({
+			type: "restore",
+			backupId,
+			requestedAt: new Date(),
+			startedAt: null,
+		});
 	};
 }

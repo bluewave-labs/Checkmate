@@ -1,7 +1,14 @@
 export type ConnectBackupKind = "full" | "config";
-export type ConnectOperation = "backup";
 export type ConnectOperationState = "queued" | "running";
-export type ConnectProgressStage = "dumping" | "uploading" | "saving";
+export type ConnectOperation = "backup" | "restore" | "verify";
+export type ConnectProgressStage =
+	| "dumping"
+	| "uploading"
+	| "saving"
+	| "downloading"
+	| "decrypting"
+	| "restoring";
+export type ConnectVerifyOutcome = "ok" | "wrong-key" | "no-backups" | "failed";
 export type ConnectBackupToolName = "mongodump" | "mongorestore";
 
 export interface ConnectTunnelStatus {
@@ -36,11 +43,17 @@ export interface ConnectRemoteAccessBody {
 export interface ConnectBackupResult {
 	ok: boolean;
 	at: string;
-	kind: ConnectBackupKind;
+	kind: ConnectBackupKind | null;
 	sizeBytes: number | null;
 	sha256: string | null;
 	backupId: string | null;
 	durationMs: number | null;
+	error: string | null;
+}
+
+export interface ConnectVerifyResult {
+	outcome: ConnectVerifyOutcome;
+	at: string;
 	error: string | null;
 }
 
@@ -49,6 +62,8 @@ export interface ConnectProgress {
 	stage: ConnectProgressStage;
 	percent: number | null;
 	bytes: number | null;
+	attempt: number | null;
+	attempts: number | null;
 }
 
 export interface ConnectOperationStatus {
@@ -61,6 +76,8 @@ export interface ConnectBackupStatus {
 	operation: ConnectOperationStatus | null;
 	progress: ConnectProgress | null;
 	lastBackup: ConnectBackupResult | null;
+	lastRestore: ConnectBackupResult | null;
+	lastVerify: ConnectVerifyResult | null;
 	missingTools: ConnectBackupToolName[];
 }
 
@@ -94,4 +111,13 @@ export interface ConnectGenerateKeyBody {
 
 export interface ConnectRunBackupBody {
 	kind: ConnectBackupKind;
+}
+
+export interface ConnectImportKeyBody {
+	recoveryKey: string;
+	replaceExisting: boolean;
+}
+
+export interface ConnectRestoreBody {
+	backupId: string;
 }

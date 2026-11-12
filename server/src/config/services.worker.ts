@@ -123,13 +123,6 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	const connectToolsService = new ConnectToolsService(connectBackupTools, queueWorkersRepository, workerId, logger);
 	const connectApiService = new ConnectApiService(got, settingsService, logger);
 	const connectBackupService = new ConnectBackupService(connectBackupTools, connectApiService, connectRepository, db, logger);
-	const connectOperationService = new ConnectOperationService(
-		connectRepository,
-		encryptionService,
-		connectBackupService,
-		connectToolsService,
-		logger
-	);
 
 	const notificationReactor = new NotificationReactor(notificationsService);
 	const incidentReactor = new IncidentReactor(incidentService);
@@ -181,10 +174,10 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		"cleanup-retention": workerHelper.getCleanupRetentionJob(),
 		telemetry: workerHelper.getTelemetryJob(),
 		"connect-heartbeat": workerHelper.getConnectHeartbeatJob(),
-		"connect-operation": connectOperationService.handleJob,
+		"connect-operation": () => connectOperationService.handleJob(),
 	};
 
-	const worker = await DBQueueWorker.create({
+	const worker = new DBQueueWorker({
 		logger,
 		isDbConnected: () => mongoose.connection.readyState === 1,
 		jobsRepository,
@@ -198,6 +191,17 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		telemetryEnabled: envSettings.telemetryEnabled,
 		afterHeartbeat: connectToolsService.report,
 	});
+
+	const connectOperationService = new ConnectOperationService(
+		connectRepository,
+		encryptionService,
+		connectBackupService,
+		connectToolsService,
+		worker,
+		logger
+	);
+
+	await worker.init();
 
 	const secretsRotationService = new SecretsRotationService(monitorsRepository, connectRepository, encryptionService, logger);
 	const log = logger.child({ service: "WorkerServices" }); // this function's own lines; services above get the root logger

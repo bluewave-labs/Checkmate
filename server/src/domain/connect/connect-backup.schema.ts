@@ -6,11 +6,24 @@ import {
 	ConnectOperationStates,
 	ConnectOperations,
 	ConnectProgressStages,
+	ConnectVerifyOutcomes,
 } from "@/domain/connect/connect-backup.type.js";
 
 // ************************
 // Checkmate schemas
 // ************************
+
+// Result of the last backup or restore, shared by the status response
+const connectResultSchema = z.object({
+	ok: z.boolean(),
+	at: z.string(),
+	kind: z.enum(ConnectBackupKinds).nullable(),
+	sizeBytes: z.number().nullable(),
+	sha256: z.string().nullable(),
+	backupId: z.string().nullable(),
+	durationMs: z.number().nullable(),
+	error: z.string().nullable(),
+});
 
 // Response for GET /connect/backup/status
 export const connectBackupStatusSchema = z
@@ -28,17 +41,16 @@ export const connectBackupStatusSchema = z
 				stage: z.enum(ConnectProgressStages),
 				percent: z.number().nullable(),
 				bytes: z.number().nullable(),
+				attempt: z.number().nullable(),
+				attempts: z.number().nullable(),
 			})
 			.nullable(),
-		lastBackup: z
+		lastBackup: connectResultSchema.nullable(),
+		lastRestore: connectResultSchema.nullable(),
+		lastVerify: z
 			.object({
-				ok: z.boolean(),
+				outcome: z.enum(ConnectVerifyOutcomes),
 				at: z.string(),
-				kind: z.enum(ConnectBackupKinds),
-				sizeBytes: z.number().nullable(),
-				sha256: z.string().nullable(),
-				backupId: z.string().nullable(),
-				durationMs: z.number().nullable(),
 				error: z.string().nullable(),
 			})
 			.nullable(),
@@ -72,7 +84,7 @@ export const connectRecoveryKeySchema = z
 	})
 	.meta({ id: "ConnectRecoveryKey" });
 
-// Response for POST /connect/backup/run
+// Response for POST /connect/backup/run, /connect/backup/restore and /connect/backup/recovery-key/import
 export const connectQueuedSchema = z
 	.object({
 		queued: z.literal(true),
@@ -92,6 +104,13 @@ export const connectApiErrorSchema = z.object({
 export const connectApiUploadTicketSchema = z.object({
 	uploadUrl: z.string(),
 	backupId: z.string(),
+});
+
+// Connect API reply to a request to download a backup
+export const connectApiDownloadTicketSchema = z.object({
+	downloadUrl: z.string(),
+	sha256: z.string(),
+	sizeBytes: z.number(),
 });
 
 // Connect API reply listing backups for this installation

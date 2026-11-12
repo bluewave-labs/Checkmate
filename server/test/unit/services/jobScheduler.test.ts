@@ -116,6 +116,21 @@ describe("JobScheduler", () => {
 			expect(mocks.jobsRepository.upsertJobAndSchedule).not.toHaveBeenCalled();
 		});
 
+		it("reconcile can be called directly on a worker, and seeds the rows", async () => {
+			const { scheduler, mocks } = createScheduler({
+				queueMode: "worker",
+				mocks: { monitorsRepository: { findAllForScheduling: jest.fn<any>().mockResolvedValue([makeMonitor()]) } },
+			});
+
+			await scheduler.reconcile();
+
+			const seededTypes = mocks.jobsRepository.upsertJob.mock.calls.map((c: any[]) => c[0].type);
+			expect(seededTypes).toContain("check");
+			const cleanupTypes = mocks.jobsRepository.upsertJobAndSchedule.mock.calls.map((c: any[]) => c[0].type);
+			expect(cleanupTypes).toContain("cleanup-orphaned");
+			expect(cleanupTypes).toContain("cleanup-retention");
+		});
+
 		it("primary mode seeds the telemetry row when telemetry is enabled", async () => {
 			const now = Date.now();
 			const { scheduler, mocks } = createScheduler({ queueMode: "primary", telemetryEnabled: true });

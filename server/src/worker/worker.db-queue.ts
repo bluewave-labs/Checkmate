@@ -83,12 +83,6 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		this.afterHeartbeat = dependencies.afterHeartbeat ?? null;
 	}
 
-	static async create(dependencies: DBQueueWorkerDependencies): Promise<DBQueueWorker> {
-		const instance = new DBQueueWorker(dependencies);
-		await instance.init();
-		return instance;
-	}
-
 	private getInFlightCount = () => Object.values(this.inFlight).reduce((sum, n) => sum + n, 0);
 
 	// Extend the lock while a job runs so a slow-but-alive job is never reclaimed.

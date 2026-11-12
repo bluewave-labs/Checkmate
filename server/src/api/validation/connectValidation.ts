@@ -23,3 +23,16 @@ export const connectGenerateKeyBodyValidation = z.object({
 export const connectRunBackupBodyValidation = z.object({
 	kind: z.enum(ConnectBackupKinds).default("full"),
 });
+
+export const connectImportKeyBodyValidation = z.object({
+	recoveryKey: z
+		.string()
+		.trim()
+		.regex(/^[a-fA-F0-9]{64}$/, "Recovery key must be 64 hexadecimal characters")
+		.transform((key) => key.toLowerCase()),
+	replaceExisting: z.boolean().default(false),
+});
+
+export const connectRestoreBodyValidation = z.object({
+	backupId: z.string().regex(/^[0-9a-f-]{36}$/, "Invalid backup id"),
+});

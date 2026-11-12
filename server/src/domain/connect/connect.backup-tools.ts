@@ -3,9 +3,11 @@ import os from "node:os";
 import path from "node:path";
 import type { execFile, spawn } from "node:child_process";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
-import { CONNECT_STATE_COLLECTION } from "@/domain/connect/connect.type.js";
 import {
+	ConnectBackupCollections,
 	ConnectBackupToolNames,
+	ConnectConfigExcludedCollections,
+	ConnectRuntimeCollections,
 	type ConnectBackupKind,
 	type ConnectBackupToolName,
 	type ConnectDump,
@@ -17,12 +19,14 @@ const TOOL_CHECK_TIMEOUT_MS = 10_000;
 const STDERR_TAIL_CHARS = 2_000;
 const WORK_DIR_PREFIX = "checkmate-connect-";
 const STALE_WORK_DIR_MS = 24 * 60 * 60 * 1000;
-const CONFIG_EXCLUDED_COLLECTIONS = ["checks", "monitorstats", "geochecks", "dockerlogs", "dlqitems", "jobs"] as const;
+const RESTORED_NOTHING = /(^|\s)0 document\(s\) restored successfully/;
 
 export interface IConnectBackupTools {
 	checkTools(): Promise<ConnectBackupToolName[]>;
 	withWorkDir<T>(work: (dir: string, configFile: string) => Promise<T>): Promise<T>;
 	dump(configFile: string, dbName: string, kind: ConnectBackupKind): ConnectDump;
+	withRestoreWorkDir<T>(work: (dir: string, configFile: string) => Promise<T>): Promise<T>;
+	restore(configFile: string, archive: string, dbName: string): Promise<void>;
 }
 
 export class ConnectBackupTools implements IConnectBackupTools {
@@ -54,8 +58,31 @@ export class ConnectBackupTools implements IConnectBackupTools {
 		});
 
 	private dumpArgs = (configFile: string, dbName: string, kind: ConnectBackupKind): string[] => {
-		const excluded = [CONNECT_STATE_COLLECTION, ...(kind === "config" ? CONFIG_EXCLUDED_COLLECTIONS : [])];
+		const excluded = [...ConnectRuntimeCollections, ...(kind === "config" ? ConnectConfigExcludedCollections : [])];
 		return [`--config=${configFile}`, "--archive", "--gzip", `--db=${dbName}`, ...excluded.map((name) => `--excludeCollection=${name}`)];
+	};
+
+	private restoreArgs = (configFile: string, archive: string, dbName: string): string[] => {
+		return [
+			`--config=${configFile}`,
+			`--archive=${archive}`,
+			"--gzip",
+			"--drop",
+			...ConnectBackupCollections.map((name) => `--nsInclude=*.${name}`),
+			"--nsFrom=$db$.$coll$",
+			`--nsTo=${dbName}.$coll$`,
+		];
+	};
+
+	private restoreConnectionUri = (mongoUrl: string): string => {
+		const match = mongoUrl.match(/^(mongodb(?:\+srv)?:\/\/[^/?]*)(?:\/([^?]*))?(?:\?(.*))?$/);
+		if (!match) return mongoUrl;
+		const [, base, database, query] = match;
+		if (!base || !database) return mongoUrl;
+		const params = query ? query.split("&") : [];
+		const hasAuthSource = params.some((param) => param.toLowerCase().startsWith("authsource="));
+		if (base.includes("@") && !hasAuthSource) params.push(`authSource=${database}`);
+		return params.length > 0 ? `${base}/?${params.join("&")}` : `${base}/`;
 	};
 
 	checkTools = async (): Promise<ConnectBackupToolName[]> => {
@@ -90,17 +117,24 @@ export class ConnectBackupTools implements IConnectBackupTools {
 		}
 	};
 
-	withWorkDir = async <T>(work: (dir: string, configFile: string) => Promise<T>): Promise<T> => {
+	private createWorkDir = async <T>(uri: string, work: (dir: string, configFile: string) => Promise<T>): Promise<T> => {
 		await this.removeStaleWorkDirs();
 		const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), WORK_DIR_PREFIX));
 		try {
 			const configFile = path.join(dir, "mongo.yaml");
-			const { dbConnectionString } = this.settingsService.getSettings();
-			await fs.promises.writeFile(configFile, `uri: ${JSON.stringify(dbConnectionString)}\n`, { mode: 0o600 });
+			await fs.promises.writeFile(configFile, `uri: ${JSON.stringify(uri)}\n`, { mode: 0o600 });
 			return await work(dir, configFile);
 		} finally {
 			await fs.promises.rm(dir, { recursive: true, force: true });
 		}
+	};
+
+	withWorkDir = async <T>(work: (dir: string, configFile: string) => Promise<T>): Promise<T> => {
+		return this.createWorkDir(this.settingsService.getSettings().dbConnectionString, work);
+	};
+
+	withRestoreWorkDir = async <T>(work: (dir: string, configFile: string) => Promise<T>): Promise<T> => {
+		return this.createWorkDir(this.restoreConnectionUri(this.settingsService.getSettings().dbConnectionString), work);
 	};
 
 	dump = (configFile: string, dbName: string, kind: ConnectBackupKind): ConnectDump => {
@@ -120,5 +154,29 @@ export class ConnectBackupTools implements IConnectBackupTools {
 			});
 		});
 		return { stdout: child.stdout, exited };
+	};
+
+	restore = (configFile: string, archive: string, dbName: string): Promise<void> => {
+		return new Promise((resolve, reject) => {
+			const child = this.spawnProcess(this.toolBin("mongorestore"), this.restoreArgs(configFile, archive, dbName), {
+				stdio: ["ignore", "ignore", "pipe"],
+			});
+			let stderr = "";
+			child.stderr.on("data", (chunk: Buffer) => {
+				stderr = (stderr + chunk.toString()).slice(-STDERR_TAIL_CHARS);
+			});
+			child.on("error", (error) => reject(new Error(`mongorestore not available: ${error.message}`)));
+			child.on("close", (code) => {
+				if (code !== 0) {
+					reject(new Error(`mongorestore exited ${code}: ${stderr.trim()}`));
+					return;
+				}
+				if (RESTORED_NOTHING.test(stderr)) {
+					reject(new Error("restore wrote no data"));
+					return;
+				}
+				resolve();
+			});
+		});
 	};
 }

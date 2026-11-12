@@ -3,10 +3,11 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { PassThrough } from "node:stream";
+import { PassThrough, Readable } from "node:stream";
 import { ConnectBackupService } from "../../../src/domain/connect/connect-backup.service.ts";
-import { recoveryKeyId } from "../../../src/domain/connect/connect.backup-format.ts";
+import { encryptToFile, recoveryKeyId } from "../../../src/domain/connect/connect.backup-format.ts";
 import type { IConnectBackupTools } from "../../../src/domain/connect/connect.backup-tools.ts";
+import type { ConnectApiBackup } from "../../../src/domain/connect/connect-backup.type.ts";
 import type { ConnectEnrollment } from "../../../src/domain/connect/connect.type.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import { InMemoryConnectRepository } from "../../helpers/InMemoryConnectRepository.ts";
@@ -39,17 +40,21 @@ const setup = async (
 	const setProgress = jest.spyOn(repository, "setProgress");
 	const dirs: string[] = [];
 
+	const withDir = async <T>(work: (dir: string, configFile: string) => Promise<T>): Promise<T> => {
+		const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "connect-backup-"));
+		dirs.push(dir);
+		try {
+			return await work(dir, path.join(dir, "mongo.yaml"));
+		} finally {
+			await fs.promises.rm(dir, { recursive: true, force: true });
+		}
+	};
+
 	const tools: IConnectBackupTools = {
 		checkTools: async () => [],
-		withWorkDir: async (work) => {
-			const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "connect-backup-"));
-			dirs.push(dir);
-			try {
-				return await work(dir, path.join(dir, "mongo.yaml"));
-			} finally {
-				await fs.promises.rm(dir, { recursive: true, force: true });
-			}
-		},
+		withWorkDir: withDir,
+		withRestoreWorkDir: withDir,
+		restore: jest.fn<any>().mockResolvedValue(undefined),
 		dump: jest.fn(() => {
 			const stdout = new PassThrough();
 			for (const chunk of opts.dumpChunks ?? [crypto.randomBytes(1_000)]) stdout.write(chunk);
@@ -76,6 +81,7 @@ const setup = async (
 		}),
 		abandon: jest.fn<any>().mockResolvedValue(undefined),
 		list: jest.fn<any>(),
+		download: jest.fn<any>(),
 	};
 	const db = {
 		getConnection: async () => ({ connection: { name: "uptime_db" } }),
@@ -91,6 +97,19 @@ const setup = async (
 		dirs,
 	};
 };
+
+const sealTo = async (file: string, key: string) => {
+	await encryptToFile(Readable.from([Buffer.from("archive")]), file, key, () => undefined);
+};
+
+const cloudBackup = (id: string, sizeBytes: number, keyId?: string): ConnectApiBackup => ({
+	id,
+	kind: "full",
+	sizeBytes,
+	status: "verified",
+	createdAt: "2026-11-12T10:00:00.000Z",
+	keyId,
+});
 
 afterEach(() => {
 	jest.restoreAllMocks();
@@ -171,6 +190,8 @@ describe("ConnectBackupService.backup", () => {
 			stage: "uploading",
 			percent: 100,
 			bytes: null,
+			attempt: null,
+			attempts: null,
 		});
 	});
 
@@ -261,5 +282,197 @@ describe("ConnectBackupService.backup", () => {
 			})
 		).resolves.toMatchObject({ ok: true });
 		expect(logger.warn).toHaveBeenCalledWith({ err: expect.any(Error) }, "Could not record Connect backup progress");
+	});
+});
+
+describe("ConnectBackupService.restore", () => {
+	it("downloads, decrypts and restores into the configured database", async () => {
+		const { connectBackupService, connectApiService, tools, dirs, setProgress } = await setup();
+		connectApiService.download.mockImplementation(async (_enrollment: unknown, _id: string, file: string) => sealTo(file, KEY));
+
+		const result = await connectBackupService.restore({
+			enrollment: ENROLLMENT,
+			recoveryKey: KEY,
+			backupId: "b-9",
+		});
+
+		expect(connectApiService.download).toHaveBeenCalledWith(ENROLLMENT, "b-9", path.join(dirs[0], "restore.cmkb"), expect.any(Function));
+		expect(tools.restore).toHaveBeenCalledWith(path.join(dirs[0], "mongo.yaml"), path.join(dirs[0], "restore.archive.gz"), "uptime_db");
+		expect(result).toEqual({
+			ok: true,
+			at: expect.any(Date),
+			kind: null,
+			sizeBytes: null,
+			sha256: null,
+			backupId: "b-9",
+			durationMs: expect.any(Number),
+			error: null,
+		});
+		expect(setProgress.mock.calls.map(([progress]) => [progress.operation, progress.stage])).toEqual([
+			["restore", "downloading"],
+			["restore", "decrypting"],
+			["restore", "restoring"],
+		]);
+		expect(fs.existsSync(dirs[0])).toBe(false);
+	});
+
+	it("refuses to restore an archive the key doesn't open", async () => {
+		const { connectBackupService, connectApiService, tools } = await setup();
+		connectApiService.download.mockImplementation(async (_enrollment: unknown, _id: string, file: string) => sealTo(file, "cd".repeat(32)));
+
+		const result = await connectBackupService.restore({
+			enrollment: ENROLLMENT,
+			recoveryKey: KEY,
+			backupId: "b-9",
+		});
+
+		expect(tools.restore).not.toHaveBeenCalled();
+		expect(result).toMatchObject({
+			ok: false,
+			kind: null,
+			backupId: "b-9",
+			error: "decryption failed: wrong recovery key or corrupted archive",
+		});
+	});
+
+	it("records a failed download without restoring", async () => {
+		const { connectBackupService, connectApiService, tools, logger } = await setup();
+		connectApiService.download.mockRejectedValue(new Error("downloaded archive does not match its recorded checksum"));
+
+		const result = await connectBackupService.restore({
+			enrollment: ENROLLMENT,
+			recoveryKey: KEY,
+			backupId: "b-9",
+		});
+
+		expect(tools.restore).not.toHaveBeenCalled();
+		expect(result).toMatchObject({
+			ok: false,
+			error: "downloaded archive does not match its recorded checksum",
+		});
+		expect(logger.error).toHaveBeenCalledWith({ err: expect.any(Error), backupId: "b-9" }, "Connect restore failed");
+	});
+
+	it("records a failed mongorestore", async () => {
+		const { connectBackupService, connectApiService, tools } = await setup();
+		connectApiService.download.mockImplementation(async (_enrollment: unknown, _id: string, file: string) => sealTo(file, KEY));
+		tools.restore = jest.fn<any>().mockRejectedValue(new Error("restore wrote no data"));
+
+		const result = await connectBackupService.restore({
+			enrollment: ENROLLMENT,
+			recoveryKey: KEY,
+			backupId: "b-9",
+		});
+
+		expect(result).toMatchObject({ ok: false, error: "restore wrote no data" });
+	});
+});
+
+describe("ConnectBackupService.verify", () => {
+	const OTHER = "cd".repeat(32);
+
+	const withBlobs = (connectApiService: any, keys: Record<string, string>) => {
+		connectApiService.download.mockImplementation(async (_enrollment: unknown, id: string, file: string) => sealTo(file, keys[id]));
+	};
+
+	it("reports when there is nothing to check against", async () => {
+		const { connectBackupService, connectApiService } = await setup();
+		connectApiService.list.mockResolvedValue([]);
+
+		await expect(connectBackupService.verify({ enrollment: ENROLLMENT, recoveryKey: KEY })).resolves.toBe("no-backups");
+		expect(connectApiService.download).not.toHaveBeenCalled();
+	});
+
+	it("accepts the key that sealed the smallest backup, downloading only that one", async () => {
+		const { connectBackupService, connectApiService } = await setup();
+		connectApiService.list.mockResolvedValue([cloudBackup("big", 900), cloudBackup("small", 100)]);
+		withBlobs(connectApiService, { big: KEY, small: KEY });
+
+		await expect(connectBackupService.verify({ enrollment: ENROLLMENT, recoveryKey: KEY })).resolves.toBe("ok");
+		expect(connectApiService.download.mock.calls.map(([, id]: any[]) => id)).toEqual(["small"]);
+	});
+
+	it("accepts a key that only opens a larger backup", async () => {
+		const { connectBackupService, connectApiService } = await setup();
+		connectApiService.list.mockResolvedValue([cloudBackup("small", 100), cloudBackup("big", 900)]);
+		withBlobs(connectApiService, { small: OTHER, big: KEY });
+
+		await expect(connectBackupService.verify({ enrollment: ENROLLMENT, recoveryKey: KEY })).resolves.toBe("ok");
+		expect(connectApiService.download).toHaveBeenCalledTimes(2);
+	});
+
+	it("rejects a key that opens none of the backups", async () => {
+		const { connectBackupService, connectApiService } = await setup();
+		connectApiService.list.mockResolvedValue([cloudBackup("a", 100), cloudBackup("b", 200)]);
+		withBlobs(connectApiService, { a: OTHER, b: OTHER });
+
+		await expect(connectBackupService.verify({ enrollment: ENROLLMENT, recoveryKey: KEY })).resolves.toBe("wrong-key");
+	});
+
+	it("tries backups with a matching fingerprint first and skips other keys' backups", async () => {
+		const { connectBackupService, connectApiService } = await setup();
+		connectApiService.list.mockResolvedValue([
+			cloudBackup("old", 50),
+			cloudBackup("theirs", 10, recoveryKeyId(OTHER)),
+			cloudBackup("mine", 900, recoveryKeyId(KEY)),
+		]);
+		withBlobs(connectApiService, { old: OTHER, theirs: OTHER, mine: KEY });
+
+		await expect(connectBackupService.verify({ enrollment: ENROLLMENT, recoveryKey: KEY })).resolves.toBe("ok");
+		expect(connectApiService.download.mock.calls.map(([, id]: any[]) => id)).toEqual(["mine"]);
+	});
+
+	it("refuses a key that matches no fingerprint without downloading", async () => {
+		const { connectBackupService, connectApiService } = await setup();
+		connectApiService.list.mockResolvedValue([cloudBackup("theirs", 10, recoveryKeyId(OTHER))]);
+
+		await expect(connectBackupService.verify({ enrollment: ENROLLMENT, recoveryKey: KEY })).resolves.toBe("wrong-key");
+		expect(connectApiService.download).not.toHaveBeenCalled();
+	});
+
+	it("surfaces a broken download as an error, not a wrong key", async () => {
+		const { connectBackupService, connectApiService } = await setup();
+		connectApiService.list.mockResolvedValue([cloudBackup("a", 100)]);
+		connectApiService.download.mockRejectedValue(new Error("blob download failed (500)"));
+
+		await expect(connectBackupService.verify({ enrollment: ENROLLMENT, recoveryKey: KEY })).rejects.toThrow("blob download failed (500)");
+	});
+
+	it("surfaces a file that isn't a backup as an error", async () => {
+		const { connectBackupService, connectApiService } = await setup();
+		connectApiService.list.mockResolvedValue([cloudBackup("a", 100)]);
+		connectApiService.download.mockImplementation(async (_enrollment: unknown, _id: string, file: string) =>
+			fs.promises.writeFile(file, Buffer.alloc(100))
+		);
+
+		await expect(connectBackupService.verify({ enrollment: ENROLLMENT, recoveryKey: KEY })).rejects.toThrow("not a CMKB1 backup");
+	});
+
+	it("reports which backup it is checking", async () => {
+		jest.spyOn(Date, "now").mockReturnValue(1_000_000);
+		const { connectBackupService, connectApiService, setProgress } = await setup();
+		connectApiService.list.mockResolvedValue([cloudBackup("a", 100), cloudBackup("b", 200)]);
+		withBlobs(connectApiService, { a: OTHER, b: KEY });
+
+		await connectBackupService.verify({ enrollment: ENROLLMENT, recoveryKey: KEY });
+
+		expect(setProgress.mock.calls.map(([progress]) => [progress.operation, progress.stage, progress.attempt, progress.attempts])).toEqual([
+			["verify", "downloading", null, null],
+			["verify", "downloading", 1, 2],
+			["verify", "decrypting", 1, 2],
+			["verify", "downloading", 2, 2],
+			["verify", "decrypting", 2, 2],
+		]);
+	});
+
+	it("removes each work directory after checking", async () => {
+		const { connectBackupService, connectApiService, dirs } = await setup();
+		connectApiService.list.mockResolvedValue([cloudBackup("a", 100), cloudBackup("b", 200)]);
+		withBlobs(connectApiService, { a: OTHER, b: OTHER });
+
+		await connectBackupService.verify({ enrollment: ENROLLMENT, recoveryKey: KEY });
+
+		expect(dirs).toHaveLength(2);
+		expect(dirs.some((dir) => fs.existsSync(dir))).toBe(false);
 	});
 });

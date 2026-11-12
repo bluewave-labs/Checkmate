@@ -4,7 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { Readable } from "node:stream";
-import { encryptToFile, recoveryKeyId } from "../../../src/domain/connect/connect.backup-format.ts";
+import { decryptFile, encryptToFile, recoveryKeyId } from "../../../src/domain/connect/connect.backup-format.ts";
 
 const KEY = "ab".repeat(32);
 const HEADER_LEN = 33;
@@ -103,6 +103,59 @@ describe("encryptToFile", () => {
 			});
 
 			await expect(encryptToFile(input, path.join(dir, "backup.cmkb"), KEY, () => undefined)).rejects.toThrow("dump broke");
+		});
+	});
+});
+
+describe("decryptFile", () => {
+	it("decrypts what encryptToFile sealed", async () => {
+		await withDir(async (dir) => {
+			const sealed = path.join(dir, "backup.cmkb");
+			const out = path.join(dir, "backup.archive.gz");
+			const plain = crypto.randomBytes(150_000);
+			await encryptToFile(Readable.from([plain]), sealed, KEY, () => undefined);
+
+			await expect(decryptFile(sealed, out, KEY)).resolves.toBe(true);
+			expect((await fs.promises.readFile(out)).equals(plain)).toBe(true);
+		});
+	});
+
+	it("reports a different key as not decrypted", async () => {
+		await withDir(async (dir) => {
+			const sealed = path.join(dir, "backup.cmkb");
+			await encryptToFile(Readable.from([Buffer.from("archive")]), sealed, KEY, () => undefined);
+
+			await expect(decryptFile(sealed, path.join(dir, "out"), "cd".repeat(32))).resolves.toBe(false);
+		});
+	});
+
+	it("reports an altered archive as not decrypted", async () => {
+		await withDir(async (dir) => {
+			const sealed = path.join(dir, "backup.cmkb");
+			await encryptToFile(Readable.from([crypto.randomBytes(1_000)]), sealed, KEY, () => undefined);
+			const file = await fs.promises.readFile(sealed);
+			file[HEADER_LEN + 10] ^= 0xff;
+			await fs.promises.writeFile(sealed, file);
+
+			await expect(decryptFile(sealed, path.join(dir, "out"), KEY)).resolves.toBe(false);
+		});
+	});
+
+	it("throws for a file that is too short to be a backup", async () => {
+		await withDir(async (dir) => {
+			const file = path.join(dir, "short.cmkb");
+			await fs.promises.writeFile(file, Buffer.from("CMKB1"));
+
+			await expect(decryptFile(file, path.join(dir, "out"), KEY)).rejects.toThrow("backup file too short");
+		});
+	});
+
+	it("throws for a file that isn't CMKB1, instead of calling it a wrong key", async () => {
+		await withDir(async (dir) => {
+			const file = path.join(dir, "other.bin");
+			await fs.promises.writeFile(file, crypto.randomBytes(200));
+
+			await expect(decryptFile(file, path.join(dir, "out"), KEY)).rejects.toThrow("not a CMKB1 backup");
 		});
 	});
 });

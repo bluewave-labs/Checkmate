@@ -5,12 +5,22 @@ import { useTranslation } from "react-i18next";
 import { useGet } from "@/Hooks/UseApi";
 import { useIsSuperAdmin } from "@/Hooks/useIsAdmin";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import type { ConnectStatus } from "@/Types/Connect";
+import type {
+	ConnectBackupList,
+	ConnectBackupStatus,
+	ConnectStatus,
+} from "@/Types/Connect";
 import { ConnectBackupBox } from "./ConnectBackupBox";
 import { ConnectEnrollBox } from "./ConnectEnrollBox";
+import { ConnectRecoveryKeyBox } from "./ConnectRecoveryKeyBox";
 import { ConnectRemoteAccessBox } from "./ConnectRemoteAccessBox";
+import { ConnectRestoreBox } from "./ConnectRestoreBox";
 import { ConnectStatusBox } from "./ConnectStatusBox";
 import { ConnectUnenrollBox } from "./ConnectUnenrollBox";
+
+const IDLE_POLL_MS = 5000;
+const BUSY_POLL_MS = 1500;
+const LIST_POLL_MS = 30000;
 
 export const ConnectSettings = () => {
 	const theme = useTheme();
@@ -19,6 +29,20 @@ export const ConnectSettings = () => {
 	const { data: status, refetch } = useGet<ConnectStatus>("/connect/status", undefined, {
 		refreshInterval: 5000,
 	});
+
+	const enrolled = status?.enrolled ?? false;
+	const { data: backupStatus, refetch: refetchBackupStatus } =
+		useGet<ConnectBackupStatus>(enrolled ? "/connect/backup/status" : null, undefined, {
+			refreshInterval: (latest) => (latest?.data.operation ? BUSY_POLL_MS : IDLE_POLL_MS),
+		});
+	const { data: backupList } = useGet<ConnectBackupList>(
+		enrolled ? "/connect/backup/list" : null,
+		undefined,
+		{ refreshInterval: LIST_POLL_MS }
+	);
+	const backupBusy = Boolean(backupStatus?.operation);
+	const backupToolsReady = (backupStatus?.missingTools.length ?? 0) === 0;
+	const cloudBackups = backupList?.backups ?? [];
 
 	if (!status) return null;
 
@@ -34,7 +58,31 @@ export const ConnectSettings = () => {
 			{status.enrolled && (
 				<ConnectBackupBox
 					recoveryKeySet={status.backup.recoveryKeySet}
-					onKeyCreated={refetch}
+					backupStatus={backupStatus}
+					busy={backupBusy}
+					toolsReady={backupToolsReady}
+					onQueued={refetchBackupStatus}
+				/>
+			)}
+			{isSuperAdmin &&
+				status.enrolled &&
+				status.backup.recoveryKeySet &&
+				backupToolsReady && (
+					<ConnectRestoreBox
+						backups={cloudBackups}
+						backupStatus={backupStatus}
+						busy={backupBusy}
+						onQueued={refetchBackupStatus}
+					/>
+				)}
+			{isSuperAdmin && status.enrolled && backupToolsReady && (
+				<ConnectRecoveryKeyBox
+					recoveryKeySet={status.backup.recoveryKeySet}
+					backupStatus={backupStatus}
+					busy={backupBusy}
+					hasCloudBackups={cloudBackups.length > 0}
+					onKeyChanged={refetch}
+					onQueued={refetchBackupStatus}
 				/>
 			)}
 			{isSuperAdmin && status.enrolled && (

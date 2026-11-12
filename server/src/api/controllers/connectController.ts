@@ -4,7 +4,9 @@ import { IConnectService } from "@/domain/connect/connect.service.js";
 import {
 	connectEnrollBodyValidation,
 	connectGenerateKeyBodyValidation,
+	connectImportKeyBodyValidation,
 	connectRemoteAccessBodyValidation,
+	connectRestoreBodyValidation,
 	connectRunBackupBodyValidation,
 } from "@/api/validation/connectValidation.js";
 
@@ -17,6 +19,8 @@ export interface IConnectController {
 	getBackupList: RequestHandler;
 	createBackupRecoveryKey: RequestHandler;
 	runBackup: RequestHandler;
+	importBackupRecoveryKey: RequestHandler;
+	restoreBackup: RequestHandler;
 }
 
 class ConnectController implements IConnectController {
@@ -64,6 +68,18 @@ class ConnectController implements IConnectController {
 		const { kind } = connectRunBackupBodyValidation.parse(req.body ?? {});
 		const data = await this.connectService.runBackup(kind);
 		res.json({ success: true, msg: "Backup started", data });
+	};
+
+	importBackupRecoveryKey: Handler = async (req, res) => {
+		const { recoveryKey, replaceExisting } = connectImportKeyBodyValidation.parse(req.body);
+		const data = await this.connectService.importRecoveryKey(recoveryKey, replaceExisting);
+		res.json({ success: true, msg: "Checking your recovery key", data });
+	};
+
+	restoreBackup: Handler = async (req, res) => {
+		const { backupId } = connectRestoreBodyValidation.parse(req.body);
+		const data = await this.connectService.restoreBackup(backupId);
+		res.json({ success: true, msg: "Restore started", data });
 	};
 }
 

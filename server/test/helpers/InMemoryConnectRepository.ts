@@ -1,6 +1,11 @@
 import type { IConnectRepository } from "../../src/domain/connect/connect.repository.interface.ts";
 import type { ConnectEnrollment, ConnectState } from "../../src/domain/connect/connect.type.ts";
-import type { ConnectBackupResult, ConnectOperationRequest, ConnectProgress } from "../../src/domain/connect/connect-backup.type.ts";
+import type {
+	ConnectBackupResult,
+	ConnectOperationRequest,
+	ConnectProgress,
+	ConnectVerifyResult,
+} from "../../src/domain/connect/connect-backup.type.ts";
 
 export class InMemoryConnectRepository implements IConnectRepository {
 	private state: ConnectState = {
@@ -10,6 +15,8 @@ export class InMemoryConnectRepository implements IConnectRepository {
 		operation: null,
 		progress: null,
 		lastBackup: null,
+		lastRestore: null,
+		lastVerify: null,
 	};
 	private stored = false;
 
@@ -25,6 +32,8 @@ export class InMemoryConnectRepository implements IConnectRepository {
 			operation: this.state.operation ? { ...this.state.operation } : null,
 			progress: this.state.progress ? { ...this.state.progress } : null,
 			lastBackup: this.state.lastBackup ? { ...this.state.lastBackup } : null,
+			lastRestore: this.state.lastRestore ? { ...this.state.lastRestore } : null,
+			lastVerify: this.state.lastVerify ? { ...this.state.lastVerify } : null,
 		};
 	}
 
@@ -71,6 +80,21 @@ export class InMemoryConnectRepository implements IConnectRepository {
 	async setLastBackup(result: ConnectBackupResult): Promise<void> {
 		if (!this.stored) return;
 		this.state = { ...this.state, lastBackup: { ...result } };
+	}
+
+	async setLastRestore(result: ConnectBackupResult): Promise<void> {
+		if (!this.stored) return;
+		this.state = { ...this.state, lastRestore: { ...result } };
+	}
+
+	async setLastVerify(result: ConnectVerifyResult): Promise<void> {
+		if (!this.stored) return;
+		this.state = { ...this.state, lastVerify: { ...result } };
+	}
+
+	async replaceRecoveryKey(recoveryKey: string): Promise<void> {
+		if (!this.stored) return;
+		this.state = { ...this.state, recoveryKey };
 	}
 
 	async clearOperation(): Promise<void> {

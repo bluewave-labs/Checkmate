@@ -11,6 +11,7 @@ import { ConnectOperationService } from "../../src/domain/connect/connect-operat
 import type { ConnectBackupResult } from "../../src/domain/connect/connect-backup.type.ts";
 import { EncryptionService } from "../../src/service/encryption/encryptionService.ts";
 import { JobScheduler } from "../../src/worker/worker.job-scheduler.ts";
+import type { IJobScheduler } from "../../src/worker/worker.interface.ts";
 import { createMockLogger } from "../helpers/createMockLogger.ts";
 
 let mongod: MongoMemoryServer;
@@ -54,7 +55,15 @@ const makeWorker = (workerId: string, opts: { hasTool?: boolean; elsewhere?: boo
 		hasTool: jest.fn(() => opts.hasTool ?? true),
 		isAvailableOnAnotherWorker: jest.fn<any>().mockResolvedValue(opts.elsewhere ?? false),
 	};
-	const job = new ConnectOperationService(connectRepository, encryptionService, connectBackupService, connectToolsService, createMockLogger() as any);
+	const scheduler = { reconcile: jest.fn<any>() } as unknown as IJobScheduler;
+	const job = new ConnectOperationService(
+		connectRepository,
+		encryptionService,
+		connectBackupService,
+		connectToolsService,
+		scheduler,
+		createMockLogger() as any
+	);
 	const claim = async () => (await jobsRepository.claimDueBatch("connect-operation", 1, Date.now()))[0] ?? null;
 	const finish = async (claimed: Job) => {
 		try {
