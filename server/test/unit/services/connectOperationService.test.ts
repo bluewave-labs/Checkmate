@@ -5,6 +5,7 @@ import type { ConnectBackupResult, ConnectKeyCheck, ConnectOperationRequest } fr
 import { EncryptionService } from "../../../src/service/encryption/encryptionService.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import { InMemoryConnectRepository } from "../../helpers/InMemoryConnectRepository.ts";
+import type { IJobScheduler } from "../../../src/worker/worker.interface.ts";
 
 const TOKEN = `cmk_${"a".repeat(48)}`;
 const KEY = "ab".repeat(32);
@@ -46,6 +47,7 @@ const setup = async (
 		verifyError?: Error;
 		operation?: ConnectOperationRequest;
 		encryptionService?: EncryptionService;
+		reconcileError?: Error;
 	} = {}
 ) => {
 	const logger = createMockLogger();
@@ -88,8 +90,20 @@ const setup = async (
 		hasTool: jest.fn((tool: string) => (opts.missingTool === tool ? false : (opts.hasTool ?? true))),
 		isAvailableOnAnotherWorker: jest.fn<any>().mockResolvedValue(opts.elsewhere ?? false),
 	};
-	const job = new ConnectOperationService(repository, encryptionService, connectBackupService, connectToolsService, logger as any);
-	return { job, repository, connectBackupService, connectToolsService, logger };
+	const scheduler = {
+		reconcile: jest.fn(async () => {
+			if (opts.reconcileError) throw opts.reconcileError;
+		}),
+	};
+	const job = new ConnectOperationService(
+		repository,
+		encryptionService,
+		connectBackupService,
+		connectToolsService,
+		scheduler as unknown as IJobScheduler,
+		logger as any
+	);
+	return { job, repository, connectBackupService, connectToolsService, scheduler, logger };
 };
 
 describe("ConnectOperationService.handleJob", () => {
@@ -219,6 +233,14 @@ describe("ConnectOperationService.handleJob", () => {
 
 		await expect(job.handleJob()).rejects.toThrow("db down");
 	});
+
+	it("never rebuilds jobs after a backup", async () => {
+		const { job, scheduler } = await setup();
+
+		await job.handleJob();
+
+		expect(scheduler.reconcile).not.toHaveBeenCalled();
+	});
 });
 
 describe("ConnectOperationService.handleJob (restore)", () => {
@@ -341,6 +363,43 @@ describe("ConnectOperationService.handleJob (restore)", () => {
 			error: "Connect state is not available. If this continues, check ENCRYPTION_KEY and the server logs",
 		});
 	});
+
+	it("rebuilds jobs after a successful restore, before clearing the operation", async () => {
+		const { job, repository, scheduler } = await setup({ operation: restoreOp() });
+		scheduler.reconcile.mockImplementation(async () => {
+			expect((await repository.get()).operation).not.toBeNull();
+		});
+
+		await job.handleJob();
+
+		expect(scheduler.reconcile).toHaveBeenCalledTimes(1);
+		expect((await repository.get()).operation).toBeNull();
+	});
+
+	it("doesn't rebuild jobs after a failed restore", async () => {
+		const { job, scheduler } = await setup({
+			operation: restoreOp(),
+			restoreResult: { ...restored, ok: false, durationMs: null, error: "restore wrote no data" },
+		});
+
+		await job.handleJob();
+
+		expect(scheduler.reconcile).not.toHaveBeenCalled();
+	});
+
+	it("still records the restore when rebuilding jobs fails", async () => {
+		const { job, repository, logger } = await setup({ operation: restoreOp(), reconcileError: new Error("db down") });
+
+		await job.handleJob();
+
+		const state = await repository.get();
+		expect(state.lastRestore).toEqual(restored);
+		expect(state.operation).toBeNull();
+		expect(logger.error).toHaveBeenCalledWith(
+			{ err: expect.any(Error) },
+			"Could not rebuild jobs after the Connect restore; restart Checkmate to rebuild them"
+		);
+	});
 });
 
 describe("ConnectOperationService.handleJob (verify)", () => {
@@ -364,7 +423,7 @@ describe("ConnectOperationService.handleJob (verify)", () => {
 	};
 
 	it("checks the decrypted candidate and saves it as the first key", async () => {
-		const { job, repository, connectBackupService, encryptionService } = await verifySetup();
+		const { job, repository, connectBackupService, encryptionService, scheduler } = await verifySetup();
 
 		await job.handleJob();
 
@@ -376,6 +435,7 @@ describe("ConnectOperationService.handleJob (verify)", () => {
 		expect(encryptionService.decrypt(state.recoveryKey ?? "")).toBe(CANDIDATE);
 		expect(state.lastVerify).toEqual({ outcome: "ok", at: expect.any(Date), error: null });
 		expect(state.operation).toBeNull();
+		expect(scheduler.reconcile).not.toHaveBeenCalled();
 	});
 
 	it("replaces the saved key when asked", async () => {

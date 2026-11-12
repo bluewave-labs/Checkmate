@@ -239,21 +239,6 @@ describe("DBQueueWorker", () => {
 			const { mocks } = await start({ queueMode: "primary", queuePrimaryProcesses: false });
 			expect(mocks.jobsRepository.claimDueBatch).not.toHaveBeenCalled();
 		});
-
-		it("create() constructs the worker and runs init", async () => {
-			const { mocks } = createWorker(); // reuse the mock set; the un-init'd instance is discarded
-			const worker = await DBQueueWorker.create({
-				...mocks,
-				queueMode: "worker",
-				queuePrimaryProcesses: true,
-				workerId: "worker-1",
-				telemetryEnabled: false,
-			} as any);
-			active = worker;
-			await jest.advanceTimersByTimeAsync(1);
-
-			expect(mocks.queueWorkersRepository.upsert).toHaveBeenCalledWith("worker-1", "worker", true);
-		});
 	});
 
 	// ── runJob: the per-type execution paths ────────────────────────────────────

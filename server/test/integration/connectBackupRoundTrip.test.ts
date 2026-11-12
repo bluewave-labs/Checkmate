@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
-import { execFile, spawn, spawnSync } from "node:child_process";
+import { execFile, execFileSync, spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -66,10 +66,14 @@ const withSealedFile = async (work: (sealedFile: string) => Promise<void>) => {
 describeWithTools("Connect backup round trip (real mongodump and mongorestore)", () => {
 	it("restores a full backup into a database with a different name, with documents and indexes", async () => {
 		const source = mongoose.connection.useDb("source_db");
+		await source.createCollection("checks", { timeseries: { timeField: "createdAt", metaField: "metadata" } });
 		await source.collection("monitors").insertMany([{ name: "a" }, { name: "b" }, { name: "c" }]);
 		await source.collection("monitors").createIndex({ name: 1 }, { unique: true });
-		await source.collection("checks").insertMany(Array.from({ length: 20 }, (_, i) => ({ n: i })));
+		await source.collection("checks").insertMany(Array.from({ length: 20 }, (_, i) => ({ createdAt: new Date(), metadata: { n: i } })));
+		await source.collection("migrations").insertOne({ name: "0001-example" });
 		await source.collection("connect_state").insertOne({ singleton: true });
+		await source.collection("jobs").insertOne({ _id: "cleanup-orphaned" });
+		await source.collection("queueworkers").insertOne({ workerId: "old-worker" });
 
 		await withSealedFile(async (sealedFile) => {
 			await seal("source_db", "full", sealedFile);
@@ -80,6 +84,9 @@ describeWithTools("Connect backup round trip (real mongodump and mongorestore)",
 		expect(await restored.collection("monitors").countDocuments()).toBe(3);
 		expect(await restored.collection("checks").countDocuments()).toBe(20);
 		expect(await restored.collection("connect_state").countDocuments()).toBe(0);
+		expect(await restored.collection("migrations").countDocuments()).toBe(1);
+		expect(await restored.collection("jobs").countDocuments()).toBe(0);
+		expect(await restored.collection("queueworkers").countDocuments()).toBe(0);
 		const indexes = await restored.collection("monitors").indexes();
 		expect(indexes.some((index) => index.key.name === 1 && index.unique)).toBe(true);
 	}, 120_000);
@@ -108,9 +115,11 @@ describeWithTools("Connect backup round trip (real mongodump and mongorestore)",
 		expect(await target.collection("monitors").countDocuments({ name: /^stale/ })).toBe(0);
 	}, 120_000);
 
-	it("keeps the current connect_state when restoring", async () => {
+	it("keeps the target's runtime state when restoring", async () => {
 		const target = mongoose.connection.useDb("kept_state_db");
 		await target.collection("connect_state").insertOne({ singleton: true, marker: "current" });
+		await target.collection("jobs").insertOne({ _id: "connect-operation", lockedBy: "live-worker" });
+		await target.collection("queueworkers").insertOne({ workerId: "live-worker" });
 
 		await withSealedFile(async (sealedFile) => {
 			await seal("source_db", "full", sealedFile);
@@ -118,6 +127,28 @@ describeWithTools("Connect backup round trip (real mongodump and mongorestore)",
 		});
 
 		expect(await target.collection("connect_state").findOne({ singleton: true })).toMatchObject({ marker: "current" });
+		expect(await target.collection("jobs").findOne({ _id: "connect-operation" })).toMatchObject({ lockedBy: "live-worker" });
+		expect(await target.collection("queueworkers").countDocuments({ workerId: "live-worker" })).toBe(1);
 		expect(await target.collection("monitors").countDocuments()).toBe(3);
+	}, 120_000);
+
+	it("restores only user data from an archive made before runtime state was excluded", async () => {
+		const target = mongoose.connection.useDb("old_archive_db");
+		await target.collection("jobs").insertOne({ _id: "connect-operation", lockedBy: "live-worker" });
+		const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "connect-roundtrip-"));
+		const archive = path.join(dir, "old.archive.gz");
+
+		try {
+			execFileSync("mongodump", [`--uri=${mongod.getUri()}`, "--db=source_db", `--archive=${archive}`, "--gzip"], { stdio: "ignore" });
+			const tools = toolsFor("old_archive_db");
+			await tools.withRestoreWorkDir((_dir, configFile) => tools.restore(configFile, archive, "old_archive_db"));
+		} finally {
+			await fs.promises.rm(dir, { recursive: true, force: true });
+		}
+
+		expect(await target.collection("monitors").countDocuments()).toBe(3);
+		expect(await target.collection("jobs").find().toArray()).toEqual([{ _id: "connect-operation", lockedBy: "live-worker" }]);
+		expect(await target.collection("queueworkers").countDocuments()).toBe(0);
+		expect(await target.collection("connect_state").countDocuments()).toBe(0);
 	}, 120_000);
 });

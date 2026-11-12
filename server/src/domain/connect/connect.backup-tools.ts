@@ -19,7 +19,6 @@ const TOOL_CHECK_TIMEOUT_MS = 10_000;
 const STDERR_TAIL_CHARS = 2_000;
 const WORK_DIR_PREFIX = "checkmate-connect-";
 const STALE_WORK_DIR_MS = 24 * 60 * 60 * 1000;
-const CONFIG_EXCLUDED_COLLECTIONS = ["checks", "monitorstats", "geochecks", "dockerlogs", "dlqitems", "jobs"] as const;
 const RESTORED_NOTHING = /(^|\s)0 document\(s\) restored successfully/;
 
 export interface IConnectBackupTools {
@@ -62,6 +61,7 @@ export class ConnectBackupTools implements IConnectBackupTools {
 		const excluded = [...ConnectRuntimeCollections, ...(kind === "config" ? ConnectConfigExcludedCollections : [])];
 		return [`--config=${configFile}`, "--archive", "--gzip", `--db=${dbName}`, ...excluded.map((name) => `--excludeCollection=${name}`)];
 	};
+
 	private restoreArgs = (configFile: string, archive: string, dbName: string): string[] => {
 		return [
 			`--config=${configFile}`,

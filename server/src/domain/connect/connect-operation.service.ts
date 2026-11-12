@@ -15,6 +15,7 @@ import type {
 import type { ConnectEnrollment, ConnectState } from "@/domain/connect/connect.type.js";
 import type { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import type { ILogger } from "@/utils/logger/logger.js";
+import type { IJobScheduler } from "@/worker/worker.interface.js";
 
 const SERVICE_NAME = "ConnectOperationService";
 const toolsHandoffMessage = (tool: ConnectBackupToolName) => `${tool} is not installed on this worker; leaving the operation to a worker that has it`;
@@ -33,6 +34,7 @@ export class ConnectOperationService implements IConnectOperationService {
 		private encryptionService: IEncryptionService,
 		private connectBackupService: IConnectBackupService,
 		private connectToolsService: IConnectToolsService,
+		private scheduler: IJobScheduler,
 		logger: ILogger
 	) {
 		this.logger = logger.child({ service: SERVICE_NAME });
@@ -61,6 +63,15 @@ export class ConnectOperationService implements IConnectOperationService {
 	private finishRestore = async (result: ConnectBackupResult): Promise<void> => {
 		await this.connectRepository.setLastRestore(result);
 		await this.connectRepository.clearOperation();
+	};
+
+	private rebuildJobs = async (): Promise<void> => {
+		try {
+			await this.scheduler.reconcile();
+			this.logger.info("Jobs rebuilt after the Connect restore");
+		} catch (error: unknown) {
+			this.logger.error({ err: error }, "Could not rebuild jobs after the Connect restore; restart Checkmate to rebuild them");
+		}
 	};
 
 	private decryptSecrets = (enrollment: ConnectEnrollment, recoveryKey: string): { enrollment: ConnectEnrollment; recoveryKey: string } | null => {
@@ -102,6 +113,7 @@ export class ConnectOperationService implements IConnectOperationService {
 		await this.connectRepository.markOperationStarted(new Date());
 		this.logger.info({ backupId }, "Connect restore starting");
 		const result = await this.connectBackupService.restore({ ...secrets, backupId });
+		if (result.ok) await this.rebuildJobs();
 		await this.finishRestore(result);
 	};
 

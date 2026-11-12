@@ -6,6 +6,7 @@ import path from "node:path";
 import { PassThrough } from "node:stream";
 import type { execFile, spawn } from "node:child_process";
 import { ConnectBackupTools } from "../../../src/domain/connect/connect.backup-tools.ts";
+import { ConnectBackupCollections } from "../../../src/domain/connect/connect-backup.type.ts";
 import type { ISettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 
@@ -49,12 +50,22 @@ describe("ConnectBackupTools.dump", () => {
 
 		const [bin, args, options] = spawnProcess.mock.calls[0] as unknown as [string, string[], { stdio: string[] }];
 		expect(bin).toBe("mongodump");
-		expect(args).toEqual(["--config=/tmp/x/mongo.yaml", "--archive", "--gzip", "--db=uptime_db", "--excludeCollection=connect_state"]);
+		expect(args).toEqual([
+			"--config=/tmp/x/mongo.yaml",
+			"--archive",
+			"--gzip",
+			"--db=uptime_db",
+			"--excludeCollection=connect_state",
+			"--excludeCollection=jobs",
+			"--excludeCollection=queueworkers",
+			"--excludeCollection=recoverytokens",
+			"--excludeCollection=dlqitems",
+		]);
 		expect(args.join(" ")).not.toContain("mongodb://");
 		expect(options.stdio).toEqual(["ignore", "pipe", "pipe"]);
 	});
 
-	it("excludes operational data from config backups only", () => {
+	it("excludes runtime state from every backup, and check history from config backups only", () => {
 		const full = setup();
 		const config = setup();
 
@@ -63,16 +74,22 @@ describe("ConnectBackupTools.dump", () => {
 
 		const fullArgs = (full.spawnProcess.mock.calls[0] as unknown as [string, string[]])[1];
 		const configArgs = (config.spawnProcess.mock.calls[0] as unknown as [string, string[]])[1];
+		const runtime = [
+			"--excludeCollection=connect_state",
+			"--excludeCollection=jobs",
+			"--excludeCollection=queueworkers",
+			"--excludeCollection=recoverytokens",
+			"--excludeCollection=dlqitems",
+		];
+		expect(fullArgs).toEqual(expect.arrayContaining(runtime));
 		expect(fullArgs).not.toContain("--excludeCollection=checks");
 		expect(configArgs).toEqual(
 			expect.arrayContaining([
-				"--excludeCollection=connect_state",
+				...runtime,
 				"--excludeCollection=checks",
 				"--excludeCollection=monitorstats",
 				"--excludeCollection=geochecks",
 				"--excludeCollection=dockerlogs",
-				"--excludeCollection=dlqitems",
-				"--excludeCollection=jobs",
 			])
 		);
 	});
@@ -271,11 +288,27 @@ describe("ConnectBackupTools.restore", () => {
 			"--archive=/tmp/x/restore.archive.gz",
 			"--gzip",
 			"--drop",
+			...ConnectBackupCollections.map((name) => `--nsInclude=*.${name}`),
 			"--nsFrom=$db$.$coll$",
 			"--nsTo=renamed_db.$coll$",
 		]);
 		expect(args.join(" ")).not.toContain("mongodb://");
 		expect(options.stdio).toEqual(["ignore", "ignore", "pipe"]);
+	});
+
+	it("restores only user data, never runtime state", async () => {
+		const { tools, spawnProcess, child } = setup();
+
+		const restored = tools.restore("c", "a", "d");
+		child.emit("close", 0);
+		await restored;
+
+		const args = (spawnProcess.mock.calls[0] as unknown as [string, string[]])[1];
+		expect(args).toContain("--nsInclude=*.monitors");
+		expect(args).toContain("--nsInclude=*.migrations");
+		for (const runtime of ["connect_state", "jobs", "queueworkers", "recoverytokens", "dlqitems"]) {
+			expect(args).not.toContain(`--nsInclude=*.${runtime}`);
+		}
 	});
 
 	it("rejects with the end of stderr on a non-zero exit", async () => {
