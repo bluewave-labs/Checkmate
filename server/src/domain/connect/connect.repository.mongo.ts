@@ -1,4 +1,10 @@
-import type { ConnectBackupResult, ConnectOperationRequest, ConnectProgress, ConnectVerifyResult } from "@/domain/connect/connect-backup.type.js";
+import type {
+	ConnectBackupResult,
+	ConnectOperationRequest,
+	ConnectProgress,
+	ConnectSchedule,
+	ConnectVerifyResult,
+} from "@/domain/connect/connect-backup.type.js";
 import ConnectStateModel, { type ConnectOperationDocument, type ConnectStateDocument } from "@/domain/connect/connect.model.js";
 import { IConnectRepository } from "@/domain/connect/connect.repository.interface.js";
 import type { ConnectEnrollment, ConnectState } from "@/domain/connect/connect.type.js";
@@ -119,6 +125,10 @@ class MongoConnectRepository implements IConnectRepository {
 
 	replaceRecoveryKey = async (recoveryKey: string): Promise<void> => {
 		await ConnectStateModel.updateOne({ singleton: true }, { $set: { recoveryKey } });
+	};
+
+	setSchedule = async (schedule: ConnectSchedule): Promise<void> => {
+		await ConnectStateModel.updateOne({ singleton: true }, { $set: { schedule } }, { runValidators: true });
 	};
 
 	clearOperation = async (): Promise<void> => {

@@ -1,4 +1,10 @@
-import type { ConnectBackupResult, ConnectOperationRequest, ConnectProgress, ConnectVerifyResult } from "@/domain/connect/connect-backup.type.js";
+import type {
+	ConnectBackupResult,
+	ConnectOperationRequest,
+	ConnectProgress,
+	ConnectSchedule,
+	ConnectVerifyResult,
+} from "@/domain/connect/connect-backup.type.js";
 import type { ConnectEnrollment, ConnectState } from "@/domain/connect/connect.type.js";
 
 export interface IConnectRepository {
@@ -18,6 +24,7 @@ export interface IConnectRepository {
 	setLastRestore(result: ConnectBackupResult): Promise<void>;
 	setLastVerify(result: ConnectVerifyResult): Promise<void>;
 	replaceRecoveryKey(recoveryKey: string): Promise<void>;
+	setSchedule(schedule: ConnectSchedule): Promise<void>;
 	clearOperation(): Promise<void>;
 	// delete
 }
