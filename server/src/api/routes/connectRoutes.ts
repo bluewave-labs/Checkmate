@@ -3,7 +3,9 @@ import type { RouteTable } from "@/api/routes/defineRoutes.js";
 import {
 	connectEnrollBodyValidation,
 	connectGenerateKeyBodyValidation,
+	connectImportKeyBodyValidation,
 	connectRemoteAccessBodyValidation,
+	connectRestoreBodyValidation,
 	connectRunBackupBodyValidation,
 } from "@/api/validation/connectValidation.js";
 import { connectErrors } from "@/domain/connect/connect.errors.js";
@@ -98,6 +100,33 @@ export const connectRoutes: RouteTable<IConnectController> = {
 			roles: ["superadmin"],
 			body: connectRunBackupBodyValidation,
 			errors: [connectErrors.notEnrolled, connectErrors.noRecoveryKey, connectErrors.busy],
+			response: connectQueuedSchema,
+		},
+		{
+			method: "post",
+			path: "/backup/recovery-key/import",
+			handler: "importBackupRecoveryKey",
+			summary: "Check a recovery key against the cloud backups and save it if one decrypts (superadmin)",
+			roles: ["superadmin"],
+			body: connectImportKeyBodyValidation,
+			errors: [
+				connectErrors.notEnrolled,
+				connectErrors.recoveryKeyAlreadySet,
+				connectErrors.stateUnavailable,
+				connectErrors.sameRecoveryKey,
+				connectErrors.encryptionKeyMissing,
+				connectErrors.busy,
+			],
+			response: connectQueuedSchema,
+		},
+		{
+			method: "post",
+			path: "/backup/restore",
+			handler: "restoreBackup",
+			summary: "Queue a restore of a Checkmate Connect cloud backup; it replaces the current database (superadmin)",
+			roles: ["superadmin"],
+			body: connectRestoreBodyValidation,
+			errors: [connectErrors.notEnrolled, connectErrors.restoreNeedsRecoveryKey, connectErrors.busy],
 			response: connectQueuedSchema,
 		},
 	],
