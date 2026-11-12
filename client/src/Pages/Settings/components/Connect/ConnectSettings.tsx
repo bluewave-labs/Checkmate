@@ -12,7 +12,9 @@ import type {
 } from "@/Types/Connect";
 import { ConnectBackupBox } from "./ConnectBackupBox";
 import { ConnectEnrollBox } from "./ConnectEnrollBox";
+import { ConnectRecoveryKeyBox } from "./ConnectRecoveryKeyBox";
 import { ConnectRemoteAccessBox } from "./ConnectRemoteAccessBox";
+import { ConnectRestoreBox } from "./ConnectRestoreBox";
 import { ConnectStatusBox } from "./ConnectStatusBox";
 import { ConnectUnenrollBox } from "./ConnectUnenrollBox";
 
@@ -59,7 +61,26 @@ export const ConnectSettings = () => {
 					backupStatus={backupStatus}
 					busy={backupBusy}
 					toolsReady={backupToolsReady}
-					backups={cloudBackups}
+					onQueued={refetchBackupStatus}
+				/>
+			)}
+			{isSuperAdmin &&
+				status.enrolled &&
+				status.backup.recoveryKeySet &&
+				backupToolsReady && (
+					<ConnectRestoreBox
+						backups={cloudBackups}
+						backupStatus={backupStatus}
+						busy={backupBusy}
+						onQueued={refetchBackupStatus}
+					/>
+				)}
+			{isSuperAdmin && status.enrolled && backupToolsReady && (
+				<ConnectRecoveryKeyBox
+					recoveryKeySet={status.backup.recoveryKeySet}
+					backupStatus={backupStatus}
+					busy={backupBusy}
+					hasCloudBackups={cloudBackups.length > 0}
 					onKeyChanged={refetch}
 					onQueued={refetchBackupStatus}
 				/>

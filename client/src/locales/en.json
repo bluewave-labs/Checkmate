@@ -1774,6 +1774,7 @@
 					"backup": {
 						"title": "Cloud backups",
 						"description": "Encrypted backups of this installation's database, uploaded to Checkmate Connect. Data is encrypted here before upload; the cloud only ever stores ciphertext.",
+						"needsKey": "Set up a recovery key below to start backing up.",
 						"generateKey": "Generate recovery key",
 						"existingBackups": "This account already has cloud backups. Enter the recovery key from your original server to restore them.",
 						"lostKey": "I lost my key",
@@ -1809,7 +1810,25 @@
 						"runFull": "Back up now",
 						"runConfig": "Back up configuration only",
 						"progress": {
-							"queued": "Waiting for the job queue to start it…",
+							"idle": "Idle",
+							"finished": {
+								"backup": {
+									"ok": "Backup completed",
+									"failed": "Backup failed"
+								},
+								"restore": {
+									"ok": "Restore completed",
+									"failed": "Restore failed"
+								},
+								"verify": {
+									"ok": "Recovery key saved",
+									"failed": "Key check failed"
+								}
+							},
+							"queued": {
+								"backup": "Backup job enqueued",
+								"restore": "Restore job enqueued"
+							},
 							"checking": "Checking your key…",
 							"restore": {
 								"downloading": "Step 1 of 3: downloading the backup",
@@ -1847,6 +1866,11 @@
 								"config": "Configuration only"
 							}
 						}
+					},
+					"recoveryKey": {
+						"title": "Recovery key",
+						"description": "Encrypts your cloud backups on this server. It never leaves this server, and without it your backups can't be restored.",
+						"set": "A recovery key is set on this server."
 					},
 					"unenroll": {
 						"title": "Remove enrollment",
