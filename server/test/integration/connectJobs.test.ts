@@ -171,3 +171,77 @@ describe("connect-operation across workers", () => {
 		expect(a.connectBackupService.backup).toHaveBeenCalledTimes(2);
 	});
 });
+
+describe("recurring global jobs on the scheduler", () => {
+	const DAY_MS = 86_400_000;
+	const readBackupRow = () => JobModel.findById("connect-backup").lean();
+
+	it("adds a recurring row due now", async () => {
+		const before = Date.now();
+
+		await apiScheduler().addRecurringGlobalJob("connect-backup", DAY_MS);
+
+		const row = await readBackupRow();
+		expect(row).toMatchObject({ type: "connect-backup", refId: null, isActive: true, intervalMs: DAY_MS, lockedBy: null, lockedUntil: null });
+		expect(row?.nextScheduledAt).toBeGreaterThanOrEqual(before);
+		expect(row?.nextScheduledAt).toBeLessThanOrEqual(Date.now());
+	});
+
+	it("keeps an existing row's next run when added again, so a restart never triggers a run", async () => {
+		const scheduler = apiScheduler();
+		await scheduler.addRecurringGlobalJob("connect-backup", DAY_MS);
+		const nextRun = Date.now() + DAY_MS;
+		await JobModel.updateOne({ _id: "connect-backup" }, { $set: { nextScheduledAt: nextRun, runCount: 3 } });
+
+		await scheduler.addRecurringGlobalJob("connect-backup", 3 * DAY_MS);
+
+		const row = await readBackupRow();
+		expect(row?.nextScheduledAt).toBe(nextRun);
+		expect(row?.intervalMs).toBe(3 * DAY_MS);
+		expect(row?.runCount).toBe(3);
+	});
+
+	it("moves the next run when updated", async () => {
+		const scheduler = apiScheduler();
+		await scheduler.addRecurringGlobalJob("connect-backup", DAY_MS);
+		const nextRun = Date.now() + 7 * DAY_MS;
+
+		await scheduler.updateRecurringGlobalJob("connect-backup", 7 * DAY_MS, nextRun);
+
+		const row = await readBackupRow();
+		expect(row?.nextScheduledAt).toBe(nextRun);
+		expect(row?.intervalMs).toBe(7 * DAY_MS);
+	});
+
+	it("creates the row when updating one that doesn't exist", async () => {
+		const nextRun = Date.now() + DAY_MS;
+
+		await apiScheduler().updateRecurringGlobalJob("connect-backup", DAY_MS, nextRun);
+
+		expect((await readBackupRow())?.nextScheduledAt).toBe(nextRun);
+	});
+
+	it("deletes the row and leaves the other global rows alone", async () => {
+		const scheduler = apiScheduler();
+		await scheduler.addRecurringGlobalJob("connect-backup", DAY_MS);
+		await scheduler.addGlobalJob("connect-operation");
+
+		await scheduler.deleteRecurringGlobalJob("connect-backup");
+
+		expect(await readBackupRow()).toBeNull();
+		expect(await readRow()).not.toBeNull();
+	});
+
+	it("is claimed by exactly one of two workers", async () => {
+		await apiScheduler().addRecurringGlobalJob("connect-backup", DAY_MS);
+		const a = new MongoJobsRepository("worker-a");
+		const b = new MongoJobsRepository("worker-b");
+
+		const [claimedA, claimedB] = await Promise.all([
+			a.claimDueBatch("connect-backup", 1, Date.now()),
+			b.claimDueBatch("connect-backup", 1, Date.now()),
+		]);
+
+		expect(claimedA.length + claimedB.length).toBe(1);
+	});
+});

@@ -52,6 +52,7 @@ export class JobScheduler implements IJobScheduler {
 		telemetry: POLL_MS,
 		"connect-heartbeat": POLL_MS,
 		"connect-operation": POLL_MS,
+		"connect-backup": POLL_MS,
 	};
 
 	// Figures out when a job should first be run
@@ -113,6 +114,15 @@ export class JobScheduler implements IJobScheduler {
 		intervalMs: null,
 	});
 
+	protected toGlobalRecurringJob = (type: JobType, intervalMs: number, nextScheduledAt: number): JobSeed => ({
+		id: jobId(type, null),
+		type,
+		refId: null,
+		isActive: true,
+		nextScheduledAt,
+		intervalMs,
+	});
+
 	private toSummary = (job: Job): WorkerJobSummary => ({
 		monitorId: job.refId ?? job.id,
 		monitorType: job.type,
@@ -151,8 +161,17 @@ export class JobScheduler implements IJobScheduler {
 		this.wake(type);
 	};
 
+	addRecurringGlobalJob = async (type: JobType, intervalMs: number): Promise<void> => {
+		await this.jobsRepository.upsertJob(this.toGlobalRecurringJob(type, intervalMs, Date.now()));
+		this.wake(type);
+	};
+
 	deleteJob = async (monitor: Monitor) => {
 		await this.jobsRepository.deleteById(monitor.id);
+	};
+
+	deleteRecurringGlobalJob = async (type: JobType): Promise<void> => {
+		await this.jobsRepository.deleteGlobalJob(type);
 	};
 
 	pauseJob = async (monitor: Monitor) => {
@@ -182,6 +201,11 @@ export class JobScheduler implements IJobScheduler {
 		} else {
 			await this.jobsRepository.deleteByIdAndType(monitor.id, "geo-check");
 		}
+	};
+
+	updateRecurringGlobalJob = async (type: JobType, intervalMs: number, nextScheduledAt: number): Promise<void> => {
+		await this.jobsRepository.upsertJobAndSchedule(this.toGlobalRecurringJob(type, intervalMs, nextScheduledAt));
+		this.wake(type);
 	};
 
 	isGlobalJobRunning = async (type: JobType): Promise<boolean> => {

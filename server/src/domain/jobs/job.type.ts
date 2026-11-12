@@ -7,6 +7,7 @@ export const JOB_TYPES = [
 	"telemetry",
 	"connect-heartbeat",
 	"connect-operation",
+	"connect-backup",
 ] as const;
 export type JobType = (typeof JOB_TYPES)[number];
 export const LOCK_MS = 60_000;

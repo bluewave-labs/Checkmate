@@ -362,7 +362,7 @@ describe("JobScheduler", () => {
 		});
 	});
 
-	describe("global one-shot jobs", () => {
+	describe("global jobs", () => {
 		it("addGlobalJob arms a one-shot global row due now and overwrites its schedule", async () => {
 			const { scheduler, mocks } = createScheduler();
 			const before = Date.now();
@@ -375,6 +375,56 @@ describe("JobScheduler", () => {
 			expect(seed.nextScheduledAt).toBeGreaterThanOrEqual(before);
 			expect(seed.nextScheduledAt).toBeLessThanOrEqual(Date.now());
 			expect(mocks.jobsRepository.upsertJob).not.toHaveBeenCalled();
+		});
+
+		it("addRecurringGlobalJob inserts a recurring row due now without moving an existing one", async () => {
+			const { scheduler, mocks } = createScheduler();
+			const before = Date.now();
+
+			await scheduler.addRecurringGlobalJob("connect-backup", 86_400_000);
+
+			expect(mocks.jobsRepository.upsertJob).toHaveBeenCalledTimes(1);
+			const [seed] = mocks.jobsRepository.upsertJob.mock.calls[0] as [any];
+			expect(seed).toMatchObject({ id: "connect-backup", type: "connect-backup", refId: null, isActive: true, intervalMs: 86_400_000 });
+			expect(seed.nextScheduledAt).toBeGreaterThanOrEqual(before);
+			expect(seed.nextScheduledAt).toBeLessThanOrEqual(Date.now());
+			expect(mocks.jobsRepository.upsertJobAndSchedule).not.toHaveBeenCalled();
+		});
+
+		it("updateRecurringGlobalJob overwrites the interval and the next run", async () => {
+			const { scheduler, mocks } = createScheduler();
+
+			await scheduler.updateRecurringGlobalJob("connect-backup", 259_200_000, 1_000_000);
+
+			expect(mocks.jobsRepository.upsertJobAndSchedule).toHaveBeenCalledWith({
+				id: "connect-backup",
+				type: "connect-backup",
+				refId: null,
+				isActive: true,
+				nextScheduledAt: 1_000_000,
+				intervalMs: 259_200_000,
+			});
+			expect(mocks.jobsRepository.upsertJob).not.toHaveBeenCalled();
+		});
+
+		it("deleteRecurringGlobalJob deletes the row", async () => {
+			const { scheduler, mocks } = createScheduler();
+
+			await scheduler.deleteRecurringGlobalJob("connect-backup");
+
+			expect(mocks.jobsRepository.deleteGlobalJob).toHaveBeenCalledWith("connect-backup");
+		});
+
+		it.each([
+			["addRecurringGlobalJob", (scheduler: JobScheduler) => scheduler.addRecurringGlobalJob("connect-backup", 86_400_000)],
+			["updateRecurringGlobalJob", (scheduler: JobScheduler) => scheduler.updateRecurringGlobalJob("connect-backup", 86_400_000, 1_000_000)],
+		])("%s wakes the job's loop", async (_label, run) => {
+			const { scheduler } = createScheduler();
+			const wake = jest.spyOn(scheduler, "wake");
+
+			await run(scheduler);
+
+			expect(wake).toHaveBeenCalledWith("connect-backup");
 		});
 
 		it.each([

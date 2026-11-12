@@ -26,6 +26,7 @@ const CONCURRENCY: Record<JobType, number> = {
 	telemetry: 1,
 	"connect-heartbeat": 1,
 	"connect-operation": 1,
+	"connect-backup": 1,
 };
 
 export interface DBQueueWorkerDependencies {
@@ -58,6 +59,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		telemetry: 0,
 		"connect-heartbeat": 0,
 		"connect-operation": 0,
+		"connect-backup": 0,
 	};
 
 	private bufferService: IBufferService;
