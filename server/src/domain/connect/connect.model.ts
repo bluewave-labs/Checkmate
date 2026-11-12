@@ -8,6 +8,8 @@ import {
 	ConnectOperations,
 	type ConnectProgress,
 	ConnectProgressStages,
+	ConnectSchedule,
+	ConnectScheduleIntervalHours,
 	ConnectVerifyOutcomes,
 	type ConnectVerifyResult,
 } from "@/domain/connect/connect-backup.type.js";
@@ -88,6 +90,15 @@ const verifyResultSchema = new Schema<ConnectVerifyResult>(
 	{ _id: false }
 );
 
+const scheduleSchema = new Schema<ConnectSchedule>(
+	{
+		enabled: { type: Boolean, required: true },
+		intervalHours: { type: Number, enum: ConnectScheduleIntervalHours, required: true },
+		kind: { type: String, enum: ConnectBackupKinds, required: true },
+	},
+	{ _id: false }
+);
+
 const ConnectStateSchema = new Schema<ConnectStateDocument>(
 	{
 		singleton: { type: Boolean, required: true, unique: true, default: true },
@@ -99,6 +110,7 @@ const ConnectStateSchema = new Schema<ConnectStateDocument>(
 		lastBackup: { type: backupResultSchema, default: null },
 		lastRestore: { type: backupResultSchema, default: null },
 		lastVerify: { type: verifyResultSchema, default: null },
+		schedule: { type: scheduleSchema, default: null },
 	},
 	{ timestamps: true, collection: CONNECT_STATE_COLLECTION }
 );

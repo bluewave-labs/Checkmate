@@ -1,3 +1,4 @@
+import { ConnectBackupKinds, ConnectScheduleIntervalHours } from "@/domain/connect/connect-backup.type.js";
 import { z } from "zod";
 
 export const connectTunnelStatusSchema = z
@@ -18,6 +19,15 @@ export const connectStatusSchema = z
 		agentVersion: z.string(),
 		remoteAccess: z.object({ enabled: z.boolean() }),
 		tunnel: connectTunnelStatusSchema,
-		backup: z.object({ recoveryKeySet: z.boolean() }),
+		backup: z.object({
+			recoveryKeySet: z.boolean(),
+			schedule: z
+				.object({
+					enabled: z.boolean(),
+					intervalHours: z.literal(ConnectScheduleIntervalHours),
+					kind: z.enum(ConnectBackupKinds),
+				})
+				.nullable(),
+		}),
 	})
 	.meta({ id: "ConnectStatus" });

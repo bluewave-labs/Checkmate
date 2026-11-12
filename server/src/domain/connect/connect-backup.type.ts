@@ -16,6 +16,10 @@ export const CONNECT_RECOVERY_KEY_FORMAT = "CMKB1";
 export const ConnectBackupKinds = ["full", "config"] as const;
 export type ConnectBackupKind = (typeof ConnectBackupKinds)[number];
 
+export const ConnectScheduleIntervalHours = [24, 72, 168] as const;
+export type ConnectScheduleInterval = (typeof ConnectScheduleIntervalHours)[number];
+export const DEFAULT_SCHEDULE_INTERVAL_HOURS: ConnectScheduleInterval = 24;
+
 export const ConnectOperations = ["backup", "restore", "verify"] as const;
 export type ConnectOperation = (typeof ConnectOperations)[number];
 
@@ -103,6 +107,12 @@ export type ConnectBackupUpload = ConnectSealedArchive & {
 export type ConnectDump = {
 	stdout: Readable;
 	exited: Promise<void>;
+};
+
+export type ConnectSchedule = {
+	enabled: boolean;
+	intervalHours: ConnectScheduleInterval;
+	kind: ConnectBackupKind;
 };
 
 export type ConnectBackupStatus = z.infer<typeof connectBackupStatusSchema>;

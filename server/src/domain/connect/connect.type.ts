@@ -1,4 +1,10 @@
-import type { ConnectBackupResult, ConnectOperationRequest, ConnectProgress, ConnectVerifyResult } from "@/domain/connect/connect-backup.type.js";
+import type {
+	ConnectBackupResult,
+	ConnectOperationRequest,
+	ConnectProgress,
+	ConnectSchedule,
+	ConnectVerifyResult,
+} from "@/domain/connect/connect-backup.type.js";
 import type { connectStatusSchema, connectTunnelStatusSchema } from "@/domain/connect/connect.schema.js";
 import type { z } from "zod";
 
@@ -25,6 +31,7 @@ export type ConnectState = {
 	lastBackup: ConnectBackupResult | null;
 	lastRestore: ConnectBackupResult | null;
 	lastVerify: ConnectVerifyResult | null;
+	schedule: ConnectSchedule | null;
 };
 
 export type ConnectStatus = z.infer<typeof connectStatusSchema>;
