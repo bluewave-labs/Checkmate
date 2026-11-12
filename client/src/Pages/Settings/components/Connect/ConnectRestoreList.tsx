@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import prettyBytes from "pretty-bytes";
-import { ConfigBox, ValueLabel } from "@/Components/design-elements";
+import { ValueLabel } from "@/Components/design-elements";
 import { Dialog } from "@/Components/inputs";
 import { usePost } from "@/Hooks/UseApi";
 import { useFormatDate } from "@/Hooks/useFormatDate";
@@ -16,7 +16,7 @@ import type {
 } from "@/Types/Connect";
 import { TipButton } from "./TipButton";
 
-export const ConnectRestoreBox = ({
+export const ConnectRestoreList = ({
 	backups,
 	busy,
 	onQueued,
@@ -52,61 +52,61 @@ export const ConnectRestoreBox = ({
 
 	return (
 		<>
-			<ConfigBox
-				title={t("pages.settings.form.connect.backup.restore.title")}
-				subtitle={t("pages.settings.form.connect.backup.restore.description")}
-				rightContent={
-					<Stack gap={theme.spacing(LAYOUT.SM)}>
-						{backups.length === 0 && (
+			<Stack gap={theme.spacing(LAYOUT.SM)}>
+				<Typography variant="h2">
+					{t("pages.settings.form.connect.backup.restore.title")}
+				</Typography>
+				<Typography color={theme.palette.text.secondary}>
+					{t("pages.settings.form.connect.backup.restore.description")}
+				</Typography>
+				{backups.length === 0 && (
+					<Typography color={theme.palette.text.secondary}>
+						{t("pages.settings.form.connect.backup.restore.empty")}
+					</Typography>
+				)}
+				{backups.map((backup) => (
+					<Stack
+						key={backup.id}
+						direction="row"
+						alignItems="center"
+						flexWrap="wrap"
+						gap={theme.spacing(LAYOUT.SM)}
+					>
+						<Typography>{formatDate(backup.createdAt, "dateTime")}</Typography>
+						<Typography color={theme.palette.text.secondary}>
+							{kindText(backup.kind)}
+						</Typography>
+						<Typography color={theme.palette.text.secondary}>
+							{prettyBytes(backup.sizeBytes)}
+						</Typography>
+						{!backup.restorable && (
+							<ValueLabel
+								value="neutral"
+								text={t("pages.settings.form.connect.backup.restore.differentKey")}
+							/>
+						)}
+						{backup.expiresAt && (
 							<Typography color={theme.palette.text.secondary}>
-								{t("pages.settings.form.connect.backup.restore.empty")}
+								{t("pages.settings.form.connect.backup.restore.expires", {
+									date: formatDate(backup.expiresAt, "dateTime"),
+								})}
 							</Typography>
 						)}
-						{backups.map((backup) => (
-							<Stack
-								key={backup.id}
-								direction="row"
-								alignItems="center"
-								flexWrap="wrap"
-								gap={theme.spacing(LAYOUT.SM)}
-							>
-								<Typography>{formatDate(backup.createdAt, "dateTime")}</Typography>
-								<Typography color={theme.palette.text.secondary}>
-									{kindText(backup.kind)}
-								</Typography>
-								<Typography color={theme.palette.text.secondary}>
-									{prettyBytes(backup.sizeBytes)}
-								</Typography>
-								{!backup.restorable && (
-									<ValueLabel
-										value="neutral"
-										text={t("pages.settings.form.connect.backup.restore.differentKey")}
-									/>
-								)}
-								{backup.expiresAt && (
-									<Typography color={theme.palette.text.secondary}>
-										{t("pages.settings.form.connect.backup.restore.expires", {
-											date: formatDate(backup.expiresAt, "dateTime"),
-										})}
-									</Typography>
-								)}
-								<TipButton
-									tip={t("pages.settings.form.connect.tooltips.restore")}
-									variant="outlined"
-									color="error"
-									disabled={busy || loading || !backup.restorable}
-									onClick={() => {
-										setSelected(backup);
-										setConfirmOpen(true);
-									}}
-								>
-									{t("pages.settings.form.connect.backup.restore.button")}
-								</TipButton>
-							</Stack>
-						))}
+						<TipButton
+							tip={t("pages.settings.form.connect.tooltips.restore")}
+							variant="outlined"
+							color="error"
+							disabled={busy || loading || !backup.restorable}
+							onClick={() => {
+								setSelected(backup);
+								setConfirmOpen(true);
+							}}
+						>
+							{t("pages.settings.form.connect.backup.restore.button")}
+						</TipButton>
 					</Stack>
-				}
-			/>
+				))}
+			</Stack>
 			<Dialog
 				open={confirmOpen}
 				title={confirmTitle}

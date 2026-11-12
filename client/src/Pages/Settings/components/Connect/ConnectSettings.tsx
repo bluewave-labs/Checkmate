@@ -10,7 +10,6 @@ import type {
 	ConnectBackupStatus,
 	ConnectStatus,
 } from "@/Types/Connect";
-import { ConnectRestoreBox } from "./ConnectRestoreBox";
 import { ConnectBackupBox } from "./ConnectBackupBox";
 import { ConnectEnrollBox } from "./ConnectEnrollBox";
 import { ConnectRemoteAccessBox } from "./ConnectRemoteAccessBox";
@@ -60,21 +59,11 @@ export const ConnectSettings = () => {
 					backupStatus={backupStatus}
 					busy={backupBusy}
 					toolsReady={backupToolsReady}
-					hasCloudBackups={cloudBackups.length > 0}
+					backups={cloudBackups}
 					onKeyChanged={refetch}
 					onQueued={refetchBackupStatus}
 				/>
 			)}
-			{isSuperAdmin &&
-				status.enrolled &&
-				status.backup.recoveryKeySet &&
-				backupToolsReady && (
-					<ConnectRestoreBox
-						backups={cloudBackups}
-						busy={backupBusy}
-						onQueued={refetchBackupStatus}
-					/>
-				)}
 			{isSuperAdmin && status.enrolled && (
 				<ConnectRemoteAccessBox
 					enabled={status.remoteAccess.enabled}

@@ -11,6 +11,7 @@ import { useIsSuperAdmin } from "@/Hooks/useIsAdmin";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import type {
 	ConnectBackupKind,
+	ConnectBackupListEntry,
 	ConnectBackupResult,
 	ConnectBackupStatus,
 	ConnectGenerateKeyBody,
@@ -18,6 +19,7 @@ import type {
 	ConnectRecoveryKey,
 	ConnectRunBackupBody,
 } from "@/Types/Connect";
+import { ConnectRestoreList } from "./ConnectRestoreList";
 import { ConnectToolsMissing } from "./ConnectToolsMissing";
 import { RecoveryKeyDialog } from "./RecoveryKeyDialog";
 import { RecoveryKeyImportForm } from "./RecoveryKeyImportForm";
@@ -28,7 +30,7 @@ export const ConnectBackupBox = ({
 	backupStatus,
 	busy,
 	toolsReady,
-	hasCloudBackups,
+	backups,
 	onKeyChanged,
 	onQueued,
 }: {
@@ -36,7 +38,7 @@ export const ConnectBackupBox = ({
 	backupStatus: ConnectBackupStatus | null;
 	busy: boolean;
 	toolsReady: boolean;
-	hasCloudBackups: boolean;
+	backups: ConnectBackupListEntry[];
 	onKeyChanged: () => Promise<unknown>;
 	onQueued: () => Promise<unknown>;
 }) => {
@@ -57,6 +59,7 @@ export const ConnectBackupBox = ({
 		ConnectQueued
 	>();
 
+	const hasCloudBackups = backups.length > 0;
 	const lastBackup = backupStatus?.lastBackup ?? null;
 	const lastRestore = backupStatus?.lastRestore ?? null;
 	const lastVerify = backupStatus?.lastVerify ?? null;
@@ -287,6 +290,13 @@ export const ConnectBackupBox = ({
 									>
 										{lastRestoreText(lastRestore)}
 									</Typography>
+								)}
+								{isSuperAdmin && (
+									<ConnectRestoreList
+										backups={backups}
+										busy={busy}
+										onQueued={onQueued}
+									/>
 								)}
 							</>
 						)}
