@@ -40,7 +40,7 @@ export const ConnectUnenrollBox = ({
 					>
 						{t(
 							confirming
-								? "pages.settings.form.connect.unenroll.confirm"
+								? "pages.settings.form.connect.clickToConfirm"
 								: "pages.settings.form.connect.unenroll.button"
 						)}
 					</TipButton>

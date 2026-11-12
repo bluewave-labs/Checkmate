@@ -5,13 +5,12 @@ import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import prettyBytes from "pretty-bytes";
 import { ConfigBox } from "@/Components/design-elements";
-import { useGet, usePost } from "@/Hooks/UseApi";
+import { usePost } from "@/Hooks/UseApi";
 import { useFormatDate } from "@/Hooks/useFormatDate";
 import { useIsSuperAdmin } from "@/Hooks/useIsAdmin";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import type {
 	ConnectBackupKind,
-	ConnectBackupList,
 	ConnectBackupResult,
 	ConnectBackupStatus,
 	ConnectGenerateKeyBody,
@@ -21,18 +20,25 @@ import type {
 } from "@/Types/Connect";
 import { ConnectToolsMissing } from "./ConnectToolsMissing";
 import { RecoveryKeyDialog } from "./RecoveryKeyDialog";
+import { RecoveryKeyImportForm } from "./RecoveryKeyImportForm";
 import { TipButton } from "./TipButton";
-
-const IDLE_POLL_MS = 5000;
-const BUSY_POLL_MS = 1500;
-const LIST_POLL_MS = 30000;
 
 export const ConnectBackupBox = ({
 	recoveryKeySet,
-	onKeyCreated,
+	backupStatus,
+	busy,
+	toolsReady,
+	hasCloudBackups,
+	onKeyChanged,
+	onQueued,
 }: {
 	recoveryKeySet: boolean;
-	onKeyCreated: () => Promise<unknown>;
+	backupStatus: ConnectBackupStatus | null;
+	busy: boolean;
+	toolsReady: boolean;
+	hasCloudBackups: boolean;
+	onKeyChanged: () => Promise<unknown>;
+	onQueued: () => Promise<unknown>;
 }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -40,18 +46,8 @@ export const ConnectBackupBox = ({
 	const isSuperAdmin = useIsSuperAdmin();
 	const [recoveryKey, setRecoveryKey] = useState<string | null>(null);
 	const [confirmLostKey, setConfirmLostKey] = useState(false);
+	const [showKeyImport, setShowKeyImport] = useState(false);
 
-	const { data: backupStatus, refetch: refetchBackupStatus } =
-		useGet<ConnectBackupStatus>("/connect/backup/status", undefined, {
-			refreshInterval: (latest) => (latest?.data.operation ? BUSY_POLL_MS : IDLE_POLL_MS),
-		});
-	const { data: backupList } = useGet<ConnectBackupList>(
-		"/connect/backup/list",
-		undefined,
-		{
-			refreshInterval: LIST_POLL_MS,
-		}
-	);
 	const { post: postKey, loading: generatingKey } = usePost<
 		ConnectGenerateKeyBody,
 		ConnectRecoveryKey
@@ -61,16 +57,17 @@ export const ConnectBackupBox = ({
 		ConnectQueued
 	>();
 
-	const toolsReady = (backupStatus?.missingTools.length ?? 0) === 0;
-	const busy = (backupStatus?.operation ?? null) !== null;
-	const hasCloudBackups = (backupList?.backups.length ?? 0) > 0;
 	const lastBackup = backupStatus?.lastBackup ?? null;
+	const lastRestore = backupStatus?.lastRestore ?? null;
+	const lastVerify = backupStatus?.lastVerify ?? null;
+	const canSetUpKey = !recoveryKeySet && !recoveryKey && isSuperAdmin && toolsReady;
+	const canReplaceKey = isSuperAdmin && hasCloudBackups;
 
 	const generateKey = async (discardExisting: boolean) => {
 		const result = await postKey("/connect/backup/recovery-key", { discardExisting });
 		if (!result?.success) return;
 		setRecoveryKey(result.data.recoveryKey);
-		await onKeyCreated();
+		await onKeyChanged();
 	};
 
 	const handleLostKey = async () => {
@@ -85,17 +82,25 @@ export const ConnectBackupBox = ({
 	const runBackup = async (kind: ConnectBackupKind) => {
 		const result = await postRun("/connect/backup/run", { kind });
 		if (!result?.success) return;
-		await refetchBackupStatus();
+		await onQueued();
 	};
 
 	const progressText = (): string | null => {
 		const progress = backupStatus?.progress ?? null;
 		if (!progress) {
-			if (backupStatus?.operation?.state !== "queued") return null;
+			const operation = backupStatus?.operation ?? null;
+			if (operation?.state !== "queued") return null;
+			if (operation.type === "verify") {
+				return t("pages.settings.form.connect.backup.progress.checking");
+			}
 			return t("pages.settings.form.connect.backup.progress.queued");
 		}
+		if (progress.operation === "verify" && progress.attempt === null) {
+			return t("pages.settings.form.connect.backup.progress.checking");
+		}
 		const step = t(
-			`pages.settings.form.connect.backup.progress.${progress.operation}.${progress.stage}`
+			`pages.settings.form.connect.backup.progress.${progress.operation}.${progress.stage}`,
+			{ attempt: progress.attempt, attempts: progress.attempts }
 		);
 		if (progress.percent !== null) {
 			return t("pages.settings.form.connect.backup.progressWithPercent", {
@@ -129,6 +134,17 @@ export const ConnectBackupBox = ({
 		});
 	};
 
+	const lastRestoreText = (result: ConnectBackupResult): string => {
+		const date = formatDate(result.at, "dateTime");
+		if (!result.ok) {
+			return t("pages.settings.form.connect.backup.lastRestoreFailed", {
+				date,
+				error: result.error ?? "",
+			});
+		}
+		return t("pages.settings.form.connect.backup.lastRestoreSucceeded", { date });
+	};
+
 	const progress = progressText();
 
 	return (
@@ -143,7 +159,17 @@ export const ConnectBackupBox = ({
 					>
 						{!toolsReady && <ConnectToolsMissing />}
 						{progress && <Typography role="status">{progress}</Typography>}
-						{!recoveryKeySet && !recoveryKey && isSuperAdmin && toolsReady && (
+						{canSetUpKey && showKeyImport && (
+							<RecoveryKeyImportForm
+								replaceExisting={false}
+								busy={busy}
+								lastVerify={lastVerify}
+								onQueued={onQueued}
+								onKeyChanged={onKeyChanged}
+								onClose={() => setShowKeyImport(false)}
+							/>
+						)}
+						{canSetUpKey && !showKeyImport && (
 							<Stack gap={theme.spacing(LAYOUT.SM)}>
 								{hasCloudBackups && (
 									<Typography color={theme.palette.text.secondary}>
@@ -164,6 +190,17 @@ export const ConnectBackupBox = ({
 											{t("pages.settings.form.connect.backup.generateKey")}
 										</TipButton>
 									)}
+									<TipButton
+										tip={t("pages.settings.form.connect.tooltips.importKey")}
+										variant={hasCloudBackups ? "contained" : "outlined"}
+										disabled={busy}
+										onClick={() => {
+											setConfirmLostKey(false);
+											setShowKeyImport(true);
+										}}
+									>
+										{t("pages.settings.form.connect.backup.importKey")}
+									</TipButton>
 									{hasCloudBackups && (
 										<TipButton
 											tip={t("pages.settings.form.connect.tooltips.lostKey")}
@@ -173,7 +210,7 @@ export const ConnectBackupBox = ({
 										>
 											{t(
 												confirmLostKey
-													? "pages.settings.form.connect.backup.lostKeyConfirm"
+													? "pages.settings.form.connect.clickToConfirm"
 													: "pages.settings.form.connect.backup.lostKey"
 											)}
 										</TipButton>
@@ -209,6 +246,26 @@ export const ConnectBackupBox = ({
 										{t("pages.settings.form.connect.backup.runConfig")}
 									</TipButton>
 								</Stack>
+								{canReplaceKey && showKeyImport && (
+									<RecoveryKeyImportForm
+										replaceExisting
+										busy={busy}
+										lastVerify={lastVerify}
+										onQueued={onQueued}
+										onKeyChanged={onKeyChanged}
+										onClose={() => setShowKeyImport(false)}
+									/>
+								)}
+								{canReplaceKey && !showKeyImport && (
+									<TipButton
+										tip={t("pages.settings.form.connect.tooltips.replaceKey")}
+										variant="text"
+										disabled={busy}
+										onClick={() => setShowKeyImport(true)}
+									>
+										{t("pages.settings.form.connect.backup.replaceKey")}
+									</TipButton>
+								)}
 								{lastBackup && (
 									<Typography
 										color={
@@ -218,6 +275,17 @@ export const ConnectBackupBox = ({
 										}
 									>
 										{lastBackupText(lastBackup)}
+									</Typography>
+								)}
+								{lastRestore && (
+									<Typography
+										color={
+											lastRestore.ok
+												? theme.palette.text.primary
+												: theme.palette.error.main
+										}
+									>
+										{lastRestoreText(lastRestore)}
 									</Typography>
 								)}
 							</>

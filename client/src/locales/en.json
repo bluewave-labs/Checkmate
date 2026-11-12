@@ -1736,7 +1736,8 @@
 					"connectSiteLink": "Visit the Checkmate Connect website"
 				},
 				"connect": {
-					"superadminOnly": "Only a superadmin can enroll this server, change remote access, run backups or remove its enrollment. Sign out and back in if your role changed recently.",
+					"superadminOnly": "Only a superadmin can enroll this server, change remote access, run or restore backups, or remove its enrollment. Sign out and back in if your role changed recently.",
+					"clickToConfirm": "Click again to confirm",
 					"status": {
 						"title": "Status",
 						"description": "Connection state of this installation.",
@@ -1764,7 +1765,11 @@
 						"generateKey": "Create the key that unlocks your backups",
 						"lostKey": "Start again with a new key",
 						"runFull": "Back up the whole database now",
-						"runConfig": "Back up everything except check history"
+						"runConfig": "Back up everything except check history",
+						"importKey": "Use the key from your original server",
+						"useKey": "Check this key against your backups",
+						"replaceKey": "Switch to another recovery key",
+						"restore": "Replace this server's data with this backup"
 					},
 					"backup": {
 						"title": "Cloud backups",
@@ -1772,8 +1777,19 @@
 						"generateKey": "Generate recovery key",
 						"existingBackups": "This account already has cloud backups. Enter the recovery key from your original server to restore them.",
 						"lostKey": "I lost my key",
-						"lostKeyConfirm": "Click again to confirm",
 						"lostKeyWarning": "Your existing cloud backups can't be restored without the original key. They're kept for 30 days after your first backup with a new key, so you can switch back if you find the original.",
+						"importKey": "I already have a recovery key",
+						"importKeyHelp": "Paste the 64-character key from your original server. Checkmate decrypts one of your cloud backups to check the key before saving it.",
+						"replaceKey": "Use a different recovery key",
+						"replaceKeyHelp": "Paste the 64-character key you want to use instead. Checkmate decrypts your cloud backups to check the key, and keeps your current key if none of them open.",
+						"replaceKeyWarning": "Backups made with your current key can't be restored after you switch.",
+						"importKeyConfirm": "Use this key",
+						"verifyOutcome": {
+							"ok": "Recovery key saved",
+							"wrong-key": "This key does not decrypt your cloud backups",
+							"no-backups": "No cloud backups to check this key against",
+							"failed": "The key couldn't be checked: {{error}}"
+						},
 						"keyTitle": "Recovery key",
 						"keyWarning": "Store this key somewhere safe, away from this server. It is shown only once. If you lose it, your cloud backups can't be restored and nobody can recover it for you.",
 						"keyCopy": "Copy key",
@@ -1794,6 +1810,16 @@
 						"runConfig": "Back up configuration only",
 						"progress": {
 							"queued": "Waiting for the job queue to start it…",
+							"checking": "Checking your key…",
+							"restore": {
+								"downloading": "Step 1 of 3: downloading the backup",
+								"decrypting": "Step 2 of 3: decrypting the backup",
+								"restoring": "Step 3 of 3: restoring your database"
+							},
+							"verify": {
+								"downloading": "Checking your key: downloading backup {{attempt}} of {{attempts}}",
+								"decrypting": "Checking your key: decrypting backup {{attempt}} of {{attempts}}"
+							},
 							"backup": {
 								"dumping": "Step 1 of 3: reading and encrypting your database",
 								"uploading": "Step 2 of 3: uploading the encrypted backup",
@@ -1804,13 +1830,28 @@
 						"progressWithSize": "{{step}} ({{size}})",
 						"lastBackupSucceeded": "Last backup ({{date}}): succeeded",
 						"lastBackupSucceededSize": "Last backup ({{date}}): succeeded · {{size}}",
-						"lastBackupFailed": "Last backup ({{date}}): failed — {{error}}"
+						"lastBackupFailed": "Last backup ({{date}}): failed — {{error}}",
+						"lastRestoreSucceeded": "Last restore ({{date}}): succeeded",
+						"lastRestoreFailed": "Last restore ({{date}}): failed — {{error}}",
+						"restore": {
+							"title": "Restore a backup",
+							"description": "Downloads the selected backup, verifies and decrypts it on this server, then replaces the current database.",
+							"empty": "No verified cloud backups yet.",
+							"button": "Restore",
+							"confirmTitle": "Restore the backup from {{date}} ({{kind}})?",
+							"confirmBody": "This replaces the current database and cannot be undone. User accounts are replaced too, so log in with an account from the backup afterwards.",
+							"differentKey": "Different key",
+							"expires": "Removed after {{date}}",
+							"kind": {
+								"full": "Full database",
+								"config": "Configuration only"
+							}
+						}
 					},
 					"unenroll": {
 						"title": "Remove enrollment",
 						"description": "Disconnects this installation from Checkmate Connect and deletes the local credential. Local monitoring is not affected.",
-						"button": "Remove enrollment",
-						"confirm": "Click again to confirm"
+						"button": "Remove enrollment"
 					}
 				},
 				"about": {
