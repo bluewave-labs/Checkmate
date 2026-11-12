@@ -31,7 +31,15 @@ const enrollment = (overrides: Partial<ConnectEnrollment> = {}): ConnectEnrollme
 	...overrides,
 });
 
-const emptyBackupState = { recoveryKey: null, operation: null, progress: null, lastBackup: null, lastRestore: null, lastVerify: null };
+const emptyBackupState = {
+	recoveryKey: null,
+	operation: null,
+	progress: null,
+	lastBackup: null,
+	lastRestore: null,
+	lastVerify: null,
+	schedule: null,
+};
 
 describe("MongoConnectRepository", () => {
 	const repo = new MongoConnectRepository();
@@ -539,6 +547,56 @@ describe("MongoConnectRepository", () => {
 			await repo.replaceRecoveryKey("v1.new");
 
 			expect(await ConnectStateModel.countDocuments({})).toBe(0);
+		});
+	});
+
+	describe("setSchedule", () => {
+		it("stores and reads the schedule", async () => {
+			await repo.setEnrollment(enrollment());
+
+			await repo.setSchedule({ enabled: true, intervalHours: 72, kind: "config" });
+
+			expect((await repo.get()).schedule).toEqual({ enabled: true, intervalHours: 72, kind: "config" });
+		});
+
+		it("replaces the whole schedule", async () => {
+			await repo.setEnrollment(enrollment());
+			await repo.setSchedule({ enabled: true, intervalHours: 72, kind: "config" });
+
+			await repo.setSchedule({ enabled: false, intervalHours: 24, kind: "full" });
+
+			expect((await repo.get()).schedule).toEqual({ enabled: false, intervalHours: 24, kind: "full" });
+		});
+
+		it("leaves the rest of the state alone", async () => {
+			await repo.setEnrollment(enrollment());
+			await repo.setRecoveryKeyIfUnset("v1.key");
+
+			await repo.setSchedule({ enabled: true, intervalHours: 168, kind: "full" });
+
+			const state = await repo.get();
+			expect(state.enrollment).toEqual(enrollment());
+			expect(state.recoveryKey).toBe("v1.key");
+		});
+
+		it("does nothing before the installation is stored", async () => {
+			await repo.setSchedule({ enabled: true, intervalHours: 24, kind: "full" });
+
+			await expect(repo.get()).resolves.toEqual({ enrollment: null, remoteAccessEnabled: false, ...emptyBackupState });
+		});
+
+		it.each([6, 48, 169])("rejects %i hours", async (intervalHours) => {
+			await repo.setEnrollment(enrollment());
+
+			await expect(repo.setSchedule({ enabled: true, intervalHours: intervalHours as never, kind: "full" })).rejects.toThrow();
+			expect((await repo.get()).schedule).toBeNull();
+		});
+
+		it("rejects an unknown kind", async () => {
+			await repo.setEnrollment(enrollment());
+
+			await expect(repo.setSchedule({ enabled: true, intervalHours: 24, kind: "logs" as never })).rejects.toThrow();
+			expect((await repo.get()).schedule).toBeNull();
 		});
 	});
 });

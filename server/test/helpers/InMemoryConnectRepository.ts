@@ -4,6 +4,7 @@ import type {
 	ConnectBackupResult,
 	ConnectOperationRequest,
 	ConnectProgress,
+	ConnectSchedule,
 	ConnectVerifyResult,
 } from "../../src/domain/connect/connect-backup.type.ts";
 
@@ -17,6 +18,7 @@ export class InMemoryConnectRepository implements IConnectRepository {
 		lastBackup: null,
 		lastRestore: null,
 		lastVerify: null,
+		schedule: null,
 	};
 	private stored = false;
 
@@ -95,6 +97,11 @@ export class InMemoryConnectRepository implements IConnectRepository {
 	async replaceRecoveryKey(recoveryKey: string): Promise<void> {
 		if (!this.stored) return;
 		this.state = { ...this.state, recoveryKey };
+	}
+
+	async setSchedule(schedule: ConnectSchedule): Promise<void> {
+		if (!this.stored) return;
+		this.state = { ...this.state, schedule: { ...schedule } };
 	}
 
 	async clearOperation(): Promise<void> {
