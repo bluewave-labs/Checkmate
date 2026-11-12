@@ -572,6 +572,8 @@ describe("ConnectService.getBackupStatus", () => {
 			operation: null,
 			progress: null,
 			lastBackup: null,
+			lastRestore: null,
+			lastVerify: null,
 			missingTools: [],
 		});
 	});
@@ -600,6 +602,8 @@ describe("ConnectService.getBackupStatus", () => {
 			stage: "uploading",
 			percent: 40,
 			bytes: null,
+			attempt: null,
+			attempts: null,
 		});
 
 		const status = await ctx.service.getBackupStatus();
@@ -610,6 +614,8 @@ describe("ConnectService.getBackupStatus", () => {
 			stage: "uploading",
 			percent: 40,
 			bytes: null,
+			attempt: null,
+			attempts: null,
 		});
 	});
 
@@ -623,6 +629,8 @@ describe("ConnectService.getBackupStatus", () => {
 			stage: "dumping",
 			percent: null,
 			bytes: 10,
+			attempt: null,
+			attempts: null,
 		});
 
 		const status = await ctx.service.getBackupStatus();
@@ -814,5 +822,193 @@ describe("ConnectService.start (operations)", () => {
 
 		expect(ctx.logger.error).toHaveBeenCalledWith({ err: expect.any(Error) }, "Connect could not re-queue its pending operation");
 		expect(ctx.tunnel.start).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe("ConnectService.importRecoveryKey", () => {
+	const CANDIDATE = "ef".repeat(32);
+
+	it("queues a check with the candidate encrypted", async () => {
+		const ctx = setup();
+		await enrollStored(ctx);
+
+		await expect(ctx.service.importRecoveryKey(CANDIDATE, false)).resolves.toEqual({ queued: true });
+
+		const { operation } = await ctx.repository.get();
+		expect(operation).toEqual({
+			type: "verify",
+			recoveryKey: expect.any(String),
+			replaceExisting: false,
+			requestedAt: expect.any(Date),
+			startedAt: null,
+		});
+		expect(operation?.type === "verify" && operation.recoveryKey).not.toBe(CANDIDATE);
+		expect(operation?.type === "verify" && ctx.encryptionService.decrypt(operation.recoveryKey)).toBe(CANDIDATE);
+		expect(ctx.scheduler.addGlobalJob).toHaveBeenCalledWith("connect-operation");
+	});
+
+	it("queues a first key even when asked to replace", async () => {
+		const ctx = setup();
+		await enrollStored(ctx);
+
+		await ctx.service.importRecoveryKey(CANDIDATE, true);
+
+		expect((await ctx.repository.get()).operation).toMatchObject({ type: "verify", replaceExisting: true });
+	});
+
+	it("doesn't replace an existing key unless asked", async () => {
+		const ctx = setup();
+		await enrollStored(ctx, { recoveryKey: RECOVERY_KEY });
+
+		await expectAppError(ctx.service.importRecoveryKey(CANDIDATE, false), connectErrors.recoveryKeyAlreadySet);
+		expect((await ctx.repository.get()).operation).toBeNull();
+		expect(ctx.scheduler.addGlobalJob).not.toHaveBeenCalled();
+	});
+
+	it("queues a replacement when asked", async () => {
+		const ctx = setup();
+		await enrollStored(ctx, { recoveryKey: RECOVERY_KEY });
+
+		await ctx.service.importRecoveryKey(CANDIDATE, true);
+
+		expect((await ctx.repository.get()).operation).toMatchObject({ type: "verify", replaceExisting: true });
+	});
+
+	it("refuses the key that is already saved without checking backups", async () => {
+		const ctx = setup();
+		await enrollStored(ctx, { recoveryKey: RECOVERY_KEY });
+
+		await expectAppError(ctx.service.importRecoveryKey(RECOVERY_KEY, true), connectErrors.sameRecoveryKey);
+		expect((await ctx.repository.get()).operation).toBeNull();
+		expect(ctx.scheduler.addGlobalJob).not.toHaveBeenCalled();
+	});
+
+	it("reports unavailable state when the saved key can't be decrypted", async () => {
+		const ctx = setup();
+		await enrollStored(ctx);
+		await ctx.repository.setRecoveryKeyIfUnset("v1.not.a.valid.ciphertext");
+
+		await expectAppError(ctx.service.importRecoveryKey(CANDIDATE, true), connectErrors.stateUnavailable);
+	});
+
+	it("requires enrollment", async () => {
+		const ctx = setup();
+
+		await expectAppError(ctx.service.importRecoveryKey(CANDIDATE, false), connectErrors.notEnrolled);
+	});
+
+	it("requires ENCRYPTION_KEY", async () => {
+		const ctx = setup({ encryptionKey: false });
+		await ctx.repository.setEnrollment({ ...enrollment(), token: "v1.stored" });
+
+		await expectAppError(ctx.service.importRecoveryKey(CANDIDATE, false), connectErrors.encryptionKeyMissing);
+	});
+
+	it("is busy while another operation is queued", async () => {
+		const ctx = setup();
+		await enrollStored(ctx, { recoveryKey: RECOVERY_KEY });
+		await ctx.service.runBackup("full");
+
+		await expectAppError(ctx.service.importRecoveryKey(CANDIDATE, true), connectErrors.busy);
+		expect((await ctx.repository.get()).operation?.type).toBe("backup");
+	});
+
+	it("never shows the candidate key in the status", async () => {
+		const ctx = setup();
+		await enrollStored(ctx);
+		await ctx.service.importRecoveryKey(CANDIDATE, false);
+
+		const status = await ctx.service.getBackupStatus();
+
+		expect(status.operation).toEqual({ type: "verify", state: "queued", requestedAt: expect.any(String) });
+		expect(JSON.stringify(status)).not.toContain(CANDIDATE);
+	});
+});
+
+describe("ConnectService.restoreBackup", () => {
+	const BACKUP_ID = "11111111-1111-1111-1111-111111111111";
+
+	it("queues the restore", async () => {
+		const ctx = setup();
+		await enrollStored(ctx, { recoveryKey: RECOVERY_KEY });
+
+		await expect(ctx.service.restoreBackup(BACKUP_ID)).resolves.toEqual({ queued: true });
+
+		expect((await ctx.repository.get()).operation).toEqual({
+			type: "restore",
+			backupId: BACKUP_ID,
+			requestedAt: expect.any(Date),
+			startedAt: null,
+		});
+		expect(ctx.scheduler.addGlobalJob).toHaveBeenCalledWith("connect-operation");
+	});
+
+	it("requires a recovery key", async () => {
+		const ctx = setup();
+		await enrollStored(ctx);
+
+		await expectAppError(ctx.service.restoreBackup(BACKUP_ID), connectErrors.restoreNeedsRecoveryKey);
+		expect(ctx.scheduler.addGlobalJob).not.toHaveBeenCalled();
+	});
+
+	it("requires enrollment", async () => {
+		const ctx = setup();
+
+		await expectAppError(ctx.service.restoreBackup(BACKUP_ID), connectErrors.notEnrolled);
+	});
+
+	it("is busy while another operation is queued", async () => {
+		const ctx = setup();
+		await enrollStored(ctx, { recoveryKey: RECOVERY_KEY });
+		await ctx.service.runBackup("full");
+
+		await expectAppError(ctx.service.restoreBackup(BACKUP_ID), connectErrors.busy);
+		expect((await ctx.repository.get()).operation?.type).toBe("backup");
+	});
+});
+
+describe("ConnectService.getBackupStatus (restore and verify)", () => {
+	it("reports the last restore and key check with ISO dates", async () => {
+		const ctx = setup();
+		await enrollStored(ctx, { recoveryKey: RECOVERY_KEY });
+		const at = new Date("2026-11-12T10:05:00.000Z");
+		await ctx.repository.setLastRestore({
+			ok: true,
+			at,
+			kind: null,
+			sizeBytes: null,
+			sha256: null,
+			backupId: "b-9",
+			durationMs: 900,
+			error: null,
+		});
+		await ctx.repository.setLastVerify({ outcome: "wrong-key", at, error: null });
+
+		const status = await ctx.service.getBackupStatus();
+
+		expect(status.lastRestore).toEqual({
+			ok: true,
+			at: "2026-11-12T10:05:00.000Z",
+			kind: null,
+			sizeBytes: null,
+			sha256: null,
+			backupId: "b-9",
+			durationMs: 900,
+			error: null,
+		});
+		expect(status.lastVerify).toEqual({ outcome: "wrong-key", at: "2026-11-12T10:05:00.000Z", error: null });
+	});
+
+	it("shows a running restore with its progress", async () => {
+		const ctx = setup({ running: true });
+		await enrollStored(ctx, { recoveryKey: RECOVERY_KEY });
+		await ctx.service.restoreBackup("b-9");
+		await ctx.repository.markOperationStarted(new Date());
+		await ctx.repository.setProgress({ operation: "restore", stage: "restoring", percent: null, bytes: null, attempt: null, attempts: null });
+
+		const status = await ctx.service.getBackupStatus();
+
+		expect(status.operation).toEqual({ type: "restore", state: "running", requestedAt: expect.any(String) });
+		expect(status.progress).toMatchObject({ operation: "restore", stage: "restoring" });
 	});
 });
