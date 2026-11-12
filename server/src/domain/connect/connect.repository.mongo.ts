@@ -60,6 +60,7 @@ class MongoConnectRepository implements IConnectRepository {
 			lastBackup: doc?.lastBackup ? this.toResult(doc.lastBackup) : null,
 			lastRestore: doc?.lastRestore ? this.toResult(doc.lastRestore) : null,
 			lastVerify: doc?.lastVerify ? { outcome: doc.lastVerify.outcome, at: doc.lastVerify.at, error: doc.lastVerify.error ?? null } : null,
+			schedule: doc?.schedule ? { enabled: doc.schedule.enabled, intervalHours: doc.schedule.intervalHours, kind: doc.schedule.kind } : null,
 		};
 	};
 

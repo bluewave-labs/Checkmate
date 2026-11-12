@@ -8,7 +8,7 @@ import {
 	ConnectOperations,
 	type ConnectProgress,
 	ConnectProgressStages,
-	ConnectSchedule,
+	type ConnectSchedule,
 	ConnectScheduleIntervalHours,
 	ConnectVerifyOutcomes,
 	type ConnectVerifyResult,
