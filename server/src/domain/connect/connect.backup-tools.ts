@@ -3,9 +3,11 @@ import os from "node:os";
 import path from "node:path";
 import type { execFile, spawn } from "node:child_process";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
-import { CONNECT_STATE_COLLECTION } from "@/domain/connect/connect.type.js";
 import {
+	ConnectBackupCollections,
 	ConnectBackupToolNames,
+	ConnectConfigExcludedCollections,
+	ConnectRuntimeCollections,
 	type ConnectBackupKind,
 	type ConnectBackupToolName,
 	type ConnectDump,
@@ -57,12 +59,19 @@ export class ConnectBackupTools implements IConnectBackupTools {
 		});
 
 	private dumpArgs = (configFile: string, dbName: string, kind: ConnectBackupKind): string[] => {
-		const excluded = [CONNECT_STATE_COLLECTION, ...(kind === "config" ? CONFIG_EXCLUDED_COLLECTIONS : [])];
+		const excluded = [...ConnectRuntimeCollections, ...(kind === "config" ? ConnectConfigExcludedCollections : [])];
 		return [`--config=${configFile}`, "--archive", "--gzip", `--db=${dbName}`, ...excluded.map((name) => `--excludeCollection=${name}`)];
 	};
-
 	private restoreArgs = (configFile: string, archive: string, dbName: string): string[] => {
-		return [`--config=${configFile}`, `--archive=${archive}`, "--gzip", "--drop", "--nsFrom=$db$.$coll$", `--nsTo=${dbName}.$coll$`];
+		return [
+			`--config=${configFile}`,
+			`--archive=${archive}`,
+			"--gzip",
+			"--drop",
+			...ConnectBackupCollections.map((name) => `--nsInclude=*.${name}`),
+			"--nsFrom=$db$.$coll$",
+			`--nsTo=${dbName}.$coll$`,
+		];
 	};
 
 	private restoreConnectionUri = (mongoUrl: string): string => {
