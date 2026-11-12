@@ -9,6 +9,7 @@ import type {
 	connectApiDownloadTicketSchema,
 } from "@/domain/connect/connect-backup.schema.js";
 import type { Readable } from "node:stream";
+import { CONNECT_STATE_COLLECTION } from "@/domain/connect/connect.type.js";
 
 export const CONNECT_RECOVERY_KEY_FORMAT = "CMKB1";
 
@@ -26,6 +27,36 @@ export type ConnectProgressStage = (typeof ConnectProgressStages)[number];
 
 export const ConnectBackupToolNames = ["mongodump", "mongorestore"] as const;
 export type ConnectBackupToolName = (typeof ConnectBackupToolNames)[number];
+
+export const ConnectBackupCollections = [
+	"appsettings",
+	"users",
+	"teams",
+	"invites",
+	"monitors",
+	"checks",
+	"monitorstats",
+	"geochecks",
+	"dockerlogs",
+	"incidents",
+	"maintenancewindows",
+	"notifications",
+	"statuspages",
+	"proxies",
+	"tags",
+	"migrations",
+] as const;
+
+export const ConnectConfigExcludedCollections = [
+	"checks",
+	"monitorstats",
+	"geochecks",
+	"dockerlogs",
+] as const satisfies readonly ConnectBackupCollection[];
+
+export const ConnectRuntimeCollections = [CONNECT_STATE_COLLECTION, "jobs", "queueworkers", "recoverytokens", "dlqitems"] as const;
+
+export type ConnectBackupCollection = (typeof ConnectBackupCollections)[number];
 
 export const ConnectVerifyOutcomes = ["ok", "wrong-key", "no-backups", "failed"] as const;
 export type ConnectVerifyOutcome = (typeof ConnectVerifyOutcomes)[number];
