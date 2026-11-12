@@ -114,7 +114,7 @@ Sinta-se à vontade para perguntar ou compartilhar suas ideias — adoramos ouvi
 <a id="features"></a>
 ## Funcionalidades
 
-- Totalmente código aberto, implantável em seus servidores ou dispositivos domésticos (ex.: Raspberry Pi 4 ou 5)
+- Totalmente código aberto, implantável em seus servidores ou dispositivos domésticos (ex.: Raspberry Pi 5)
 - Várias opções de monitoramento: disponibilidade, Docker, ping, SSL, porta, servidor de jogos
 - Monitoramento de velocidade de página
 - Monitoramento de infraestrutura (memória, uso de disco, desempenho de CPU, rede, etc.) — requer o agente [Capture](https://github.com/bluewave-labs/capture)

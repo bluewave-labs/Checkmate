@@ -44,11 +44,13 @@ export type WorkerHealth = {
 };
 export interface IJobScheduler {
 	addJob(monitorId: string, monitor: Monitor): Promise<void>;
+	addGlobalJob(type: JobType): Promise<void>;
 	deleteJob(monitor: Monitor): Promise<void>;
 	pauseJob(monitor: Monitor): Promise<void>;
 	resumeJob(monitor: Monitor): Promise<void>;
 	updateJob(monitor: Monitor): Promise<void>;
 	wake(type: JobType): void;
+	isGlobalJobRunning(type: JobType): Promise<boolean>;
 	getMetrics(): Promise<WorkerMetrics>;
 	getJobs(pagination: WorkerJobsPagination): Promise<WorkerJobsPage>;
 	flushQueues(): Promise<{ success: boolean }>;

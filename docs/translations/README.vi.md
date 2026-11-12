@@ -117,7 +117,7 @@ Nếu bạn có câu hỏi, góp ý hoặc bình luận, có một vài tuỳ ch
 <a id="features"></a>
 ## Tính năng
 
-- Hoàn toàn mã nguồn mở, có thể triển khai trên máy chủ riêng hoặc thiết bị tại nhà (ví dụ Raspberry Pi 4 hoặc 5)
+- Hoàn toàn mã nguồn mở, có thể triển khai trên máy chủ riêng hoặc thiết bị tại nhà (ví dụ Raspberry Pi 5)
 - Nhiều tuỳ chọn giám sát: thời gian hoạt động, Docker, Ping, SSL, cổng, máy chủ game
 - Giám sát tốc độ tải trang
 - Giám sát hạ tầng (bộ nhớ, ổ đĩa, hiệu năng CPU, mạng, v.v.) — yêu cầu agent [Capture](https://github.com/bluewave-labs/capture)

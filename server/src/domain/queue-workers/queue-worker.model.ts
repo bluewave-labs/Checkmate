@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
 import { QueueModes, type QueueMode } from "@/domain/app-settings/app-settings.type.js";
 import { EgressStatuses, type EgressProbeResult, type EgressStatus } from "@/domain/egress/egress.type.js";
+import { ConnectBackupToolNames, type ConnectBackupToolName } from "@/domain/connect/connect-backup.type.js";
 
 const probeResultSchema = new Schema<EgressProbeResult>(
 	{
@@ -29,12 +30,29 @@ const workerEgressSchema = new Schema<WorkerEgressDocument>(
 	{ _id: false }
 );
 
+interface WorkerConnectToolsDocument {
+	missing: ConnectBackupToolName[];
+	checkedAt: Date;
+}
+
+const workerConnectToolsSchema = new Schema<WorkerConnectToolsDocument>(
+	{
+		missing: {
+			type: [{ type: String, enum: ConnectBackupToolNames }],
+			default: [],
+		},
+		checkedAt: { type: Date, required: true },
+	},
+	{ _id: false }
+);
+
 interface QueueWorkerDocument {
 	_id: string;
 	mode: QueueMode;
 	processesJobs: boolean;
 	lastSeenAt: Date;
 	egress?: WorkerEgressDocument;
+	connectTools?: WorkerConnectToolsDocument;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -51,12 +69,13 @@ const QueueWorkerSchema = new Schema<QueueWorkerDocument>(
 		processesJobs: { type: Boolean, required: true },
 		lastSeenAt: { type: Date, default: Date.now, expires: WORKER_TTL_SECONDS },
 		egress: { type: workerEgressSchema, default: undefined },
+		connectTools: { type: workerConnectToolsSchema, default: undefined },
 	},
 	{ timestamps: true }
 );
 
 const QueueWorkerModel = model<QueueWorkerDocument>("QueueWorker", QueueWorkerSchema);
 
-export type { QueueWorkerDocument, WorkerEgressDocument };
+export type { QueueWorkerDocument, WorkerEgressDocument, WorkerConnectToolsDocument };
 export { QueueWorkerModel };
 export default QueueWorkerModel;

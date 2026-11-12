@@ -11,6 +11,9 @@ import { EgressStateService, IEgressStateService } from "@/domain/egress/egress-
 import { HeartbeatService, IHeartbeatService } from "@/domain/heartbeat/heartbeat.service.js";
 import { TeamService, ITeamService } from "@/domain/teams/team.service.js";
 import { AppVersionService, IAppVersionService } from "@/domain/app-version/app-version.service.js";
+import { ConnectService, IConnectService } from "@/domain/connect/connect.service.js";
+import { ConnectTunnel } from "@/domain/connect/connect-tunnel.js";
+import { ConnectApiService } from "@/domain/connect/connect-api.service.js";
 import { SharedServices } from "@/config/services.shared.js";
 
 // Third-party
@@ -18,6 +21,7 @@ import jwt from "jsonwebtoken";
 import got from "got";
 import crypto from "crypto";
 import { games } from "gamedig";
+import WebSocket from "ws";
 
 export interface ApiServices extends SharedServices {
 	worker: IJobScheduler; // control-plane handle only (DBQueueWorker in all-in-one, bare JobScheduler in API-only)
@@ -33,6 +37,7 @@ export interface ApiServices extends SharedServices {
 	heartbeatService: IHeartbeatService;
 	teamService: ITeamService;
 	appVersionService: IAppVersionService;
+	connectService: IConnectService;
 }
 
 export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): ApiServices => {
@@ -59,6 +64,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		jobsRepository,
 		proxiesRepository,
 		queueWorkersRepository,
+		connectRepository,
 		encryptionService,
 	} = shared;
 
@@ -127,6 +133,18 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 	});
 	const teamService = new TeamService({ logger, teamsRepository, encryptionService });
 	const appVersionService = new AppVersionService(got, logger);
+	const connectTunnel = new ConnectTunnel(WebSocket, got, settingsService, logger);
+	const connectApiService = new ConnectApiService(got, settingsService, logger);
+	const connectService = new ConnectService(
+		connectRepository,
+		encryptionService,
+		settingsService,
+		connectTunnel,
+		connectApiService,
+		queueWorkersRepository,
+		jobScheduler,
+		logger
+	);
 	return {
 		...shared,
 		worker: jobScheduler,
@@ -142,5 +160,6 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		heartbeatService,
 		teamService,
 		appVersionService,
+		connectService,
 	};
 };

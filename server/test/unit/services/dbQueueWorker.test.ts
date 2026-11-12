@@ -90,7 +90,7 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 	const jobsRepository = {
 		claimDueBatch: jest.fn<any>().mockResolvedValue([]),
 		upsertJob: jest.fn<any>().mockResolvedValue(true),
-		upsertCleanupJob: jest.fn<any>().mockResolvedValue(true),
+		upsertJobAndSchedule: jest.fn<any>().mockResolvedValue(true),
 		rescheduleOverdueChecks: jest.fn<any>().mockResolvedValue(0),
 		deleteGlobalJob: jest.fn<any>().mockResolvedValue(true),
 		upsertEvaluate: jest.fn<any>().mockResolvedValue(true),
@@ -196,7 +196,7 @@ describe("DBQueueWorker", () => {
 
 			const seededTypes = mocks.jobsRepository.upsertJob.mock.calls.map((c: any[]) => c[0].type);
 			expect(seededTypes).toContain("check");
-			const cleanupTypes = mocks.jobsRepository.upsertCleanupJob.mock.calls.map((c: any[]) => c[0].type);
+			const cleanupTypes = mocks.jobsRepository.upsertJobAndSchedule.mock.calls.map((c: any[]) => c[0].type);
 			expect(cleanupTypes).toContain("cleanup-orphaned");
 			expect(cleanupTypes).toContain("cleanup-retention");
 		});
@@ -222,7 +222,7 @@ describe("DBQueueWorker", () => {
 		it("worker mode does not reconcile (never seeds jobs)", async () => {
 			const { mocks } = await start({ queueMode: "worker" });
 			expect(mocks.jobsRepository.upsertJob).not.toHaveBeenCalled();
-			expect(mocks.jobsRepository.upsertCleanupJob).not.toHaveBeenCalled();
+			expect(mocks.jobsRepository.upsertJobAndSchedule).not.toHaveBeenCalled();
 		});
 
 		it("starts a polling loop per job type, each claiming up to its concurrency cap", async () => {
@@ -369,7 +369,7 @@ describe("DBQueueWorker", () => {
 			const job = makeEvaluateJob("c1");
 			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) } } });
 
-			expect(mocks.jobsRepository.recordOneShot).toHaveBeenCalledWith(job.id, expect.any(Number));
+			expect(mocks.jobsRepository.recordOneShot).toHaveBeenCalledWith(job.id, job.nextScheduledAt, expect.any(Number));
 			expect(mocks.jobsRepository.recordSuccess).not.toHaveBeenCalled();
 		});
 
@@ -983,6 +983,33 @@ describe("DBQueueWorker", () => {
 
 			const page = await worker.getJobs({ page: 0, rowsPerPage: 10 });
 			expect(page.jobs[0].monitorId).toBe("cleanup-orphaned");
+		});
+	});
+
+	describe("heartbeat hook", () => {
+		it("runs afterHeartbeat after each registry heartbeat", async () => {
+			const afterHeartbeat = jest.fn<any>().mockResolvedValue(undefined);
+			const { mocks } = await start({ mocks: { afterHeartbeat } });
+
+			expect(afterHeartbeat).toHaveBeenCalledTimes(1);
+			expect(mocks.queueWorkersRepository.upsert.mock.invocationCallOrder[0]).toBeLessThan(afterHeartbeat.mock.invocationCallOrder[0]);
+
+			await jest.advanceTimersByTimeAsync(60_000);
+			expect(afterHeartbeat).toHaveBeenCalledTimes(2);
+		});
+
+		it("keeps the worker running when the hook rejects", async () => {
+			const afterHeartbeat = jest.fn<any>().mockRejectedValue(new Error("boom"));
+			const { worker, mocks } = await start({ mocks: { afterHeartbeat } });
+
+			expect(mocks.logger.warn).toHaveBeenCalledWith({ err: expect.any(Error) }, "Heartbeat failed");
+			expect(worker.getHealth().initComplete).toBe(true);
+		});
+
+		it("works without a hook", async () => {
+			const { worker } = await start();
+
+			expect(worker.getHealth().initComplete).toBe(true);
 		});
 	});
 });

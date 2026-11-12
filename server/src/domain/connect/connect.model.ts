@@ -1,0 +1,80 @@
+import { Schema, model, type Types } from "mongoose";
+import { CONNECT_STATE_COLLECTION, type ConnectEnrollment, type ConnectState } from "@/domain/connect/connect.type.js";
+import {
+	ConnectBackupKinds,
+	type ConnectBackupResult,
+	type ConnectOperationRequest,
+	ConnectOperations,
+	type ConnectProgress,
+	ConnectProgressStages,
+} from "@/domain/connect/connect-backup.type.js";
+
+interface ConnectStateDocument extends ConnectState {
+	_id: Types.ObjectId;
+	singleton: boolean;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+const enrollmentSchema = new Schema<ConnectEnrollment>(
+	{
+		connectUrl: { type: String, required: true },
+		agentId: { type: String, required: true },
+		token: { type: String, required: true },
+		apiUrl: { type: String, default: null },
+	},
+	{ _id: false }
+);
+
+const operationSchema = new Schema<ConnectOperationRequest>(
+	{
+		type: { type: String, enum: ConnectOperations, required: true },
+		kind: { type: String, enum: ConnectBackupKinds, required: true },
+		requestedAt: { type: Date, required: true },
+		startedAt: { type: Date, default: null },
+	},
+	{ _id: false }
+);
+
+const progressSchema = new Schema<ConnectProgress>(
+	{
+		operation: { type: String, enum: ConnectOperations, required: true },
+		stage: { type: String, enum: ConnectProgressStages, required: true },
+		percent: { type: Number, default: null },
+		bytes: { type: Number, default: null },
+	},
+	{ _id: false }
+);
+
+const backupResultSchema = new Schema<ConnectBackupResult>(
+	{
+		ok: { type: Boolean, required: true },
+		at: { type: Date, required: true },
+		kind: { type: String, enum: ConnectBackupKinds, required: true },
+		sizeBytes: { type: Number, default: null },
+		sha256: { type: String, default: null },
+		backupId: { type: String, default: null },
+		durationMs: { type: Number, default: null },
+		error: { type: String, default: null },
+	},
+	{ _id: false }
+);
+
+const ConnectStateSchema = new Schema<ConnectStateDocument>(
+	{
+		singleton: { type: Boolean, required: true, unique: true, default: true },
+		enrollment: { type: enrollmentSchema, default: null },
+		remoteAccessEnabled: { type: Boolean, default: false },
+		recoveryKey: { type: String, default: null },
+		operation: { type: operationSchema, default: null },
+		progress: { type: progressSchema, default: null },
+		lastBackup: { type: backupResultSchema, default: null },
+	},
+	{ timestamps: true, collection: CONNECT_STATE_COLLECTION }
+);
+
+const ConnectStateModel = model<ConnectStateDocument>("ConnectState", ConnectStateSchema);
+
+export type { ConnectStateDocument };
+export { ConnectStateModel };
+export default ConnectStateModel;

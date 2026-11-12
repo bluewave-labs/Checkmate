@@ -143,7 +143,7 @@ The image is configured entirely through environment variables on the server con
 | `DB_CONNECTION_STRING` | Yes | MongoDB connection string, e.g. `mongodb://mongodb:27017/uptime_db` |
 | `JWT_SECRET` | Yes | Secret used to sign auth tokens; generate one with `openssl rand -hex 32` |
 | `CLIENT_HOST` | Yes | The URL users reach the app at, e.g. `https://checkmate.example.com`; used for CORS and for links in notifications and emails |
-| `ENCRYPTION_KEY` | No | Encrypts stored Docker TLS client keys at rest; generate one with `openssl rand -base64 32`. Comma-separated list: the first key encrypts, every key decrypts. Must be identical on the API and every worker. To rotate without downtime, deploy `OLD_KEY,NEW_KEY` everywhere, then `NEW_KEY,OLD_KEY` everywhere, wait for the worker to re-encrypt every row, then drop `OLD_KEY`. |
+| `ENCRYPTION_KEY` | No | Encrypts stored secrets at rest: Docker TLS client keys and the Checkmate Connect credential. Required to use TLS Docker monitors or to enroll with Checkmate Connect. Generate one with `openssl rand -base64 32`. Comma-separated list: the first key encrypts, every key decrypts. Must be identical on the API and every worker. To rotate without downtime, deploy `OLD_KEY,NEW_KEY` everywhere, then `NEW_KEY,OLD_KEY` everywhere, wait for the worker to re-encrypt every row, then drop `OLD_KEY`. |
 | `PORT` | No | Port the API and web client are served on (default `52345`) |
 | `HEALTH_PORT` | No | Port for the `/livez`, `/readyz` and `/metrics` endpoints, served by any process that runs the job worker (default `52346`) |
 | `NODE_ENV` | No | `development`, `production` or `test` (default `development`). `development` disables the general API rate limiter; set `production` on real deployments |
@@ -154,6 +154,10 @@ The image is configured entirely through environment variables on the server con
 | `STATUS_PAGE_THEMES_ENABLED` | No | `true` (default) or `false`. When `false`, status pages ignore theme settings and always render the default theme |
 | `TELEMETRY_ENABLED` | No | `true` (default) or `false`. Set `false` to stop sending the daily anonymous usage heartbeat; see [Telemetry](#telemetry) |
 | `TELEMETRY_URL` | No | Where the heartbeat is sent. Only needed to point it at your own collector |
+| `CONNECT_ALLOWED_HOSTS` | No | Comma-separated hostnames this server may enroll with Checkmate Connect against; an entry starting with `.` matches its subdomains (`.example.com` matches `connect.example.com`). Defaults to the official Checkmate Connect hosts; only needed if you run your own Connect service |
+| `CONNECT_API_URL` | No | Overrides the Checkmate Connect API base URL used for cloud backups. When set, Checkmate also accepts any `http(s)` storage URL the Connect API returns. Only needed if you run your own Connect service |
+| `CONNECT_MONGODUMP_BIN` | No | Path to `mongodump`, used for Checkmate Connect cloud backups. Defaults to `mongodump` on `PATH`; the Docker image includes it |
+| `CONNECT_MONGORESTORE_BIN` | No | Path to `mongorestore`, used for Checkmate Connect cloud backups. Defaults to `mongorestore` on `PATH`; the Docker image includes it |
 
 The web client needs no configuration by default: it calls the API on the same origin it was served from (`/api/v1`). For setups where the defaults don't apply — for example, the API is reached through a different origin than the page — the server renders overrides into the client at runtime via these optional variables:
 
@@ -342,6 +346,38 @@ curl -fsS -m 10 --retry 3 "https://<checkmate-host>/api/v1/heartbeat/<pingKey>/n
 curl -fsS "https://<checkmate-host>/api/v1/heartbeat/<pingKey>/nightly-backup?create=true&interval=3600000"
 ```
 
+### Checkmate Connect remote access
+
+Remote access keeps an outbound tunnel open from this server to Checkmate Connect, so you can reach the installation from its Connect address without opening inbound ports. A superadmin turns it on in **Settings → Checkmate Connect** after enrolling.
+
+The tunnel forwards every request to this server's own `PORT`. The web UI loads over the Connect address only when this server serves it, which the default Docker image does. If you serve the client separately, for example from its own nginx or origin, only the API is reachable through Connect.
+
+**Development.** `npm run dev` serves the client from Vite, so the API server has no UI to return and the Connect address answers `404`. To test remote access with the UI, have the server serve a production build of the client. From the repository root:
+
+```bash
+ln -s ../client/dist server/public
+cd client && npx vite build --watch
+```
+
+`vite build --watch` rebuilds `client/dist` on every save; reload the Connect address to pick up changes. Both `server/public` and `client/dist` are gitignored.
+
+To go back to the normal dev setup, stop `vite build --watch` and remove the link from the repository root:
+
+```bash
+rm server/public
+```
+
+This deletes only the link, not `client/dist`. Leave off the trailing slash: `rm server/public/` would target the linked directory instead of the link.
+
+### Checkmate Connect backups
+
+Cloud backups copy this installation's database to Checkmate Connect. Each backup is encrypted on this server before upload, so Connect only stores ciphertext.
+
+- **Recovery key.** A superadmin generates it once in **Settings → Checkmate Connect**. It is shown only once and stored on this server encrypted with `ENCRYPTION_KEY`. No backup can be restored without it, so keep a copy somewhere other than this server.
+- **Full or configuration only.** A full backup copies every collection except Connect's own state. A configuration backup also leaves out check history and other operational data (`checks`, `monitorstats`, `geochecks`, `dockerlogs`, `dlqitems`, `jobs`).
+- **Runs on the job queue.** "Back up now" queues the backup and whichever process runs jobs picks it up. With `QUEUE_PRIMARY_PROCESSES=false` and no worker running, it waits until a worker starts.
+- **Tools.** Backups need `mongodump` and `mongorestore` from the MongoDB Database Tools on the processes that run jobs. The Docker image includes them. On a source install, install them and, if they aren't on `PATH`, set `CONNECT_MONGODUMP_BIN` and `CONNECT_MONGORESTORE_BIN`. The settings page shows the install steps until at least one job-processing process finds them.
+
 For more documentation, see the [docs directory](./docs/).
 
 <a id="performance"></a>
@@ -368,7 +404,7 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 <a id="features"></a>
 ## Features
 
-- Completely open source, deployable on your servers or home devices (e.g Raspberry Pi 4 or 5)
+- Completely open source, deployable on your servers or home devices (e.g Raspberry Pi 5)
 - Several monitoring options: HTTP (with SSL certificate expiry), Ping, Port, DNS, Docker, gRPC, WebSocket, Game server
 - Heartbeat monitors for cron jobs, backups and other scheduled tasks
 - Page speed monitoring

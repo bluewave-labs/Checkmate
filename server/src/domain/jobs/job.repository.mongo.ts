@@ -137,7 +137,7 @@ class MongoJobsRepository implements IJobsRepository {
 		return res.modifiedCount === 1;
 	};
 
-	recordOneShot = async (id: string, now: number) => {
+	recordOneShot = async (id: string, scheduledRunAt: number, now: number) => {
 		const res = await JobModel.updateOne(
 			{
 				_id: id,
@@ -146,9 +146,25 @@ class MongoJobsRepository implements IJobsRepository {
 			[
 				{
 					$set: {
-						// Re-arm if more checks were pushed while this run held the lease; otherwise park
 						nextScheduledAt: {
-							$cond: [{ $gt: [{ $size: { $ifNull: ["$pendingChecks", []] } }, 0] }, now, PARKED],
+							$switch: {
+								branches: [
+									// Checks were pushed while this run held the lease: run again now
+									{
+										case: {
+											$gt: [{ $size: { $ifNull: ["$pendingChecks", []] } }, 0],
+										},
+										then: now,
+									},
+									// The job was re-armed during the run, keep it
+									{
+										case: { $ne: ["$nextScheduledAt", scheduledRunAt] },
+										then: "$nextScheduledAt",
+									},
+								],
+								// Otherwise park until something re-arms it
+								default: PARKED,
+							},
 						},
 						lockedBy: null, // Remove lock
 						lockedUntil: null,
@@ -237,7 +253,7 @@ class MongoJobsRepository implements IJobsRepository {
 		return res.acknowledged;
 	};
 
-	upsertCleanupJob = async (job: JobSeed) => {
+	upsertJobAndSchedule = async (job: JobSeed) => {
 		const res = await JobModel.updateOne(
 			{ _id: job.id },
 			{
@@ -368,6 +384,13 @@ class MongoJobsRepository implements IJobsRepository {
 	findAll = async () => {
 		const docs = await JobModel.find().lean<JobDocument[]>();
 		return docs.map(this.toEntity);
+	};
+
+	findGlobalJob = async (type: JobType) => {
+		const doc = await JobModel.findOne({
+			_id: jobId(type, null),
+		}).lean<JobDocument>();
+		return doc ? this.toEntity(doc) : null;
 	};
 
 	countDueBacklog = async (now: number) => {

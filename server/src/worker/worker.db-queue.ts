@@ -24,6 +24,8 @@ const CONCURRENCY: Record<JobType, number> = {
 	"cleanup-orphaned": 1,
 	"cleanup-retention": 1,
 	telemetry: 1,
+	"connect-heartbeat": 1,
+	"connect-operation": 1,
 };
 
 export interface DBQueueWorkerDependencies {
@@ -38,6 +40,7 @@ export interface DBQueueWorkerDependencies {
 	queuePrimaryProcesses: boolean; // consumed immediately
 	workerId: string;
 	telemetryEnabled: boolean;
+	afterHeartbeat?: () => Promise<void>;
 }
 
 export class DBQueueWorker extends JobScheduler implements IQueueWorker {
@@ -53,6 +56,8 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		"cleanup-orphaned": 0,
 		"cleanup-retention": 0,
 		telemetry: 0,
+		"connect-heartbeat": 0,
+		"connect-operation": 0,
 	};
 
 	private bufferService: IBufferService;
@@ -75,6 +80,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		this.handlers = dependencies.handlers;
 		this.bufferService = dependencies.bufferService;
 		this.isDbConnected = dependencies.isDbConnected;
+		this.afterHeartbeat = dependencies.afterHeartbeat ?? null;
 	}
 
 	static async create(dependencies: DBQueueWorkerDependencies): Promise<DBQueueWorker> {
@@ -109,7 +115,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 			await this.handlers[job.type](job);
 			if (job.intervalMs === null) {
 				// One-shot job
-				await this.jobsRepository.recordOneShot(job.id, Date.now());
+				await this.jobsRepository.recordOneShot(job.id, job.nextScheduledAt, Date.now());
 			} else {
 				await this.jobsRepository.recordSuccess(job.id, job.nextScheduledAt, job.intervalMs, Date.now());
 			}

@@ -114,7 +114,7 @@ No dudes en preguntar o compartir tus ideas — ¡nos encantará saber de ti!
 <a id="features"></a>
 ## Características
 
-- Totalmente de código abierto, desplegable en tus propios servidores o dispositivos domésticos (por ejemplo, Raspberry Pi 4 o 5)
+- Totalmente de código abierto, desplegable en tus propios servidores o dispositivos domésticos (por ejemplo, Raspberry Pi 5)
 - Varias opciones de monitorización: disponibilidad, Docker, Ping, SSL, puerto, servidor de juegos
 - Monitorización de velocidad de página
 - Monitorización de infraestructura (memoria, uso de disco, rendimiento de CPU, red, etc.) — requiere el agente [Capture](https://github.com/bluewave-labs/capture)
