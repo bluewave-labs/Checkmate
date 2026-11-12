@@ -20,6 +20,7 @@ import {
 	type ConnectBackupToolName,
 	type ConnectQueued,
 	type ConnectRecoveryKey,
+	type ConnectSchedule,
 } from "@/domain/connect/connect-backup.type.js";
 import type { IConnectApiService } from "@/domain/connect/connect-api.service.js";
 import type { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.repository.interface.js";
@@ -29,6 +30,7 @@ import { recoveryKeyId } from "@/domain/connect/connect.backup-format.js";
 
 const SERVICE_NAME = "ConnectService";
 const RECOVERY_KEY_BYTES = 32;
+const HOUR_MS = 60 * 60 * 1000;
 
 export const isConnectHostAllowed = (url: string, allowedHosts: readonly string[]): boolean => {
 	try {
@@ -52,6 +54,7 @@ export interface IConnectService {
 	runBackup(kind: ConnectBackupKind): Promise<ConnectQueued>;
 	importRecoveryKey(recoveryKey: string, replaceExisting: boolean): Promise<ConnectQueued>;
 	restoreBackup(backupId: string): Promise<ConnectQueued>;
+	setBackupSchedule(schedule: ConnectSchedule): Promise<ConnectStatus>;
 }
 
 export class ConnectService implements IConnectService {
@@ -80,7 +83,7 @@ export class ConnectService implements IConnectService {
 			agentVersion: APP_VERSION,
 			remoteAccess: { enabled: state.remoteAccessEnabled },
 			tunnel: this.tunnel.status(),
-			backup: { recoveryKeySet: state.recoveryKey !== null },
+			backup: { recoveryKeySet: state.recoveryKey !== null, schedule: state.schedule },
 		};
 	};
 
@@ -145,10 +148,23 @@ export class ConnectService implements IConnectService {
 		return { queued: true };
 	};
 
+	private resumeSchedule = async ({ schedule }: ConnectState): Promise<void> => {
+		try {
+			if (!schedule?.enabled) {
+				await this.scheduler.deleteRecurringGlobalJob("connect-backup");
+				return;
+			}
+			await this.scheduler.addRecurringGlobalJob("connect-backup", schedule.intervalHours * HOUR_MS);
+		} catch (error: unknown) {
+			this.logger.error({ err: error }, "Connect could not restore its backup schedule");
+		}
+	};
+
 	start = async (): Promise<void> => {
 		try {
 			const state = await this.connectRepository.get();
 			await this.resumeOperation(state);
+			await this.resumeSchedule(state);
 			const { enrollment, remoteAccessEnabled } = state;
 			if (!enrollment || !remoteAccessEnabled) return;
 			this.tunnel.start({ ...enrollment, token: this.decrypt(enrollment.token) });
@@ -314,5 +330,26 @@ export class ConnectService implements IConnectService {
 			requestedAt: new Date(),
 			startedAt: null,
 		});
+	};
+
+	setBackupSchedule = async (schedule: ConnectSchedule): Promise<ConnectStatus> => {
+		const state = await this.connectRepository.get();
+		this.requireEnrollment(state);
+		if (schedule.enabled && !state.recoveryKey) throw new AppError(connectErrors.noRecoveryKey, { service: SERVICE_NAME });
+		await this.connectRepository.setSchedule(schedule);
+		const status = this.toStatus({ ...state, schedule });
+
+		if (!schedule.enabled) {
+			await this.scheduler.deleteRecurringGlobalJob("connect-backup");
+			return status;
+		}
+		const intervalMs = schedule.intervalHours * HOUR_MS;
+		const previous = state.schedule;
+		if (previous?.enabled && previous.intervalHours !== schedule.intervalHours) {
+			await this.scheduler.updateRecurringGlobalJob("connect-backup", intervalMs, Date.now() + intervalMs);
+			return status;
+		}
+		await this.scheduler.addRecurringGlobalJob("connect-backup", intervalMs);
+		return status;
 	};
 }

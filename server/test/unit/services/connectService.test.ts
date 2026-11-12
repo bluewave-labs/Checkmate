@@ -35,6 +35,7 @@ const setup = (
 		listError?: Error;
 		running?: boolean;
 		workers?: QueueWorker[];
+		scheduleError?: Error;
 	} = {}
 ) => {
 	const logger = createMockLogger();
@@ -55,6 +56,13 @@ const setup = (
 	const scheduler = {
 		addGlobalJob: jest.fn(async () => undefined),
 		isGlobalJobRunning: jest.fn(async () => opts.running ?? false),
+		addRecurringGlobalJob: jest.fn(async (_type: string, _intervalMs: number) => {
+			if (opts.scheduleError) throw opts.scheduleError;
+		}),
+		updateRecurringGlobalJob: jest.fn(async (_type: string, _intervalMs: number, _nextScheduledAt: number) => undefined),
+		deleteRecurringGlobalJob: jest.fn(async (_type: string) => {
+			if (opts.scheduleError) throw opts.scheduleError;
+		}),
 	};
 	const service = new ConnectService(
 		repository,
@@ -138,7 +146,7 @@ describe("ConnectService.getStatus", () => {
 			agentVersion: APP_VERSION,
 			remoteAccess: { enabled: false },
 			tunnel: TUNNEL_STATUS,
-			backup: { recoveryKeySet: false },
+			backup: { recoveryKeySet: false, schedule: null },
 		});
 	});
 
@@ -166,7 +174,7 @@ describe("ConnectService.enroll", () => {
 			agentVersion: APP_VERSION,
 			remoteAccess: { enabled: false },
 			tunnel: TUNNEL_STATUS,
-			backup: { recoveryKeySet: false },
+			backup: { recoveryKeySet: false, schedule: null },
 		});
 		expect(JSON.stringify(status)).not.toContain(input.token);
 		const stored = (await repository.get()).enrollment;
@@ -404,11 +412,13 @@ describe("ConnectService.getStatus (backup)", () => {
 		await enrollStored(ctx);
 		expect((await ctx.service.getStatus()).backup).toEqual({
 			recoveryKeySet: false,
+			schedule: null,
 		});
 
 		await ctx.repository.setRecoveryKeyIfUnset(ctx.encryptionService.encrypt(RECOVERY_KEY));
 		expect((await ctx.service.getStatus()).backup).toEqual({
 			recoveryKeySet: true,
+			schedule: null,
 		});
 	});
 
@@ -1010,5 +1020,165 @@ describe("ConnectService.getBackupStatus (restore and verify)", () => {
 
 		expect(status.operation).toEqual({ type: "restore", state: "running", requestedAt: expect.any(String) });
 		expect(status.progress).toMatchObject({ operation: "restore", stage: "restoring" });
+	});
+});
+
+describe("ConnectService.setBackupSchedule", () => {
+	const DAY_MS = 86_400_000;
+
+	it("turns the schedule on and adds the job, due now", async () => {
+		const ctx = setup();
+		await enrollStored(ctx, { recoveryKey: RECOVERY_KEY });
+
+		const status = await ctx.service.setBackupSchedule({ enabled: true, intervalHours: 24, kind: "full" });
+
+		expect(status.backup.schedule).toEqual({ enabled: true, intervalHours: 24, kind: "full" });
+		expect((await ctx.repository.get()).schedule).toEqual({ enabled: true, intervalHours: 24, kind: "full" });
+		expect(ctx.scheduler.addRecurringGlobalJob).toHaveBeenCalledWith("connect-backup", DAY_MS);
+		expect(ctx.scheduler.updateRecurringGlobalJob).not.toHaveBeenCalled();
+		expect(ctx.scheduler.deleteRecurringGlobalJob).not.toHaveBeenCalled();
+	});
+
+	it("moves the next run when the interval changes", async () => {
+		const ctx = setup();
+		await enrollStored(ctx, { recoveryKey: RECOVERY_KEY });
+		await ctx.service.setBackupSchedule({ enabled: true, intervalHours: 24, kind: "full" });
+		const before = Date.now();
+
+		await ctx.service.setBackupSchedule({ enabled: true, intervalHours: 168, kind: "full" });
+
+		const [type, intervalMs, nextScheduledAt] = ctx.scheduler.updateRecurringGlobalJob.mock.calls[0];
+		expect(type).toBe("connect-backup");
+		expect(intervalMs).toBe(7 * DAY_MS);
+		expect(nextScheduledAt).toBeGreaterThanOrEqual(before + 7 * DAY_MS);
+		expect(nextScheduledAt).toBeLessThanOrEqual(Date.now() + 7 * DAY_MS);
+		expect(ctx.scheduler.addRecurringGlobalJob).toHaveBeenCalledTimes(1);
+	});
+
+	it("keeps the next run when only the kind changes", async () => {
+		const ctx = setup();
+		await enrollStored(ctx, { recoveryKey: RECOVERY_KEY });
+		await ctx.service.setBackupSchedule({ enabled: true, intervalHours: 72, kind: "full" });
+
+		await ctx.service.setBackupSchedule({ enabled: true, intervalHours: 72, kind: "config" });
+
+		expect(ctx.scheduler.updateRecurringGlobalJob).not.toHaveBeenCalled();
+		expect(ctx.scheduler.addRecurringGlobalJob).toHaveBeenCalledTimes(2);
+		expect(ctx.scheduler.addRecurringGlobalJob).toHaveBeenLastCalledWith("connect-backup", 3 * DAY_MS);
+		expect((await ctx.repository.get()).schedule?.kind).toBe("config");
+	});
+
+	it("adds the job, due now, when turned back on with a different interval", async () => {
+		const ctx = setup();
+		await enrollStored(ctx, { recoveryKey: RECOVERY_KEY });
+		await ctx.service.setBackupSchedule({ enabled: false, intervalHours: 24, kind: "full" });
+
+		await ctx.service.setBackupSchedule({ enabled: true, intervalHours: 72, kind: "full" });
+
+		expect(ctx.scheduler.addRecurringGlobalJob).toHaveBeenCalledWith("connect-backup", 3 * DAY_MS);
+		expect(ctx.scheduler.updateRecurringGlobalJob).not.toHaveBeenCalled();
+	});
+
+	it("turns the schedule off and deletes the job", async () => {
+		const ctx = setup();
+		await enrollStored(ctx, { recoveryKey: RECOVERY_KEY });
+		await ctx.service.setBackupSchedule({ enabled: true, intervalHours: 24, kind: "full" });
+
+		const status = await ctx.service.setBackupSchedule({ enabled: false, intervalHours: 24, kind: "full" });
+
+		expect(status.backup.schedule?.enabled).toBe(false);
+		expect((await ctx.repository.get()).schedule?.enabled).toBe(false);
+		expect(ctx.scheduler.deleteRecurringGlobalJob).toHaveBeenCalledWith("connect-backup");
+	});
+
+	it("returns the full status with the new schedule", async () => {
+		const ctx = setup();
+		await enrollStored(ctx, { recoveryKey: RECOVERY_KEY });
+
+		const status = await ctx.service.setBackupSchedule({ enabled: true, intervalHours: 168, kind: "config" });
+
+		expect(status).toMatchObject({
+			enrolled: true,
+			agentId: "agent-1",
+			backup: { recoveryKeySet: true, schedule: { enabled: true, intervalHours: 168, kind: "config" } },
+		});
+	});
+
+	it("refuses to turn it on without a recovery key", async () => {
+		const ctx = setup();
+		await enrollStored(ctx);
+
+		await expectAppError(ctx.service.setBackupSchedule({ enabled: true, intervalHours: 24, kind: "full" }), connectErrors.noRecoveryKey);
+		expect((await ctx.repository.get()).schedule).toBeNull();
+		expect(ctx.scheduler.addRecurringGlobalJob).not.toHaveBeenCalled();
+	});
+
+	it("allows turning it off without a recovery key", async () => {
+		const ctx = setup();
+		await enrollStored(ctx);
+
+		await ctx.service.setBackupSchedule({ enabled: false, intervalHours: 24, kind: "full" });
+
+		expect(ctx.scheduler.deleteRecurringGlobalJob).toHaveBeenCalledWith("connect-backup");
+	});
+
+	it("requires enrollment", async () => {
+		const ctx = setup();
+
+		await expectAppError(ctx.service.setBackupSchedule({ enabled: false, intervalHours: 24, kind: "full" }), connectErrors.notEnrolled);
+		expect(ctx.scheduler.deleteRecurringGlobalJob).not.toHaveBeenCalled();
+	});
+
+	it("keeps the saved schedule when the job can't be written", async () => {
+		const ctx = setup({ scheduleError: new Error("db down") });
+		await enrollStored(ctx, { recoveryKey: RECOVERY_KEY });
+
+		await expect(ctx.service.setBackupSchedule({ enabled: true, intervalHours: 24, kind: "full" })).rejects.toThrow("db down");
+		expect((await ctx.repository.get()).schedule).toEqual({ enabled: true, intervalHours: 24, kind: "full" });
+	});
+});
+
+describe("ConnectService.start (schedule)", () => {
+	it("restores the job at startup without moving its next run", async () => {
+		const ctx = setup();
+		await enrollStored(ctx, { recoveryKey: RECOVERY_KEY });
+		await ctx.repository.setSchedule({ enabled: true, intervalHours: 72, kind: "config" });
+
+		await ctx.service.start();
+
+		expect(ctx.scheduler.addRecurringGlobalJob).toHaveBeenCalledWith("connect-backup", 259_200_000);
+		expect(ctx.scheduler.updateRecurringGlobalJob).not.toHaveBeenCalled();
+		expect(ctx.scheduler.deleteRecurringGlobalJob).not.toHaveBeenCalled();
+	});
+
+	it("deletes a leftover job when the schedule is off", async () => {
+		const ctx = setup();
+		await enrollStored(ctx, { recoveryKey: RECOVERY_KEY });
+		await ctx.repository.setSchedule({ enabled: false, intervalHours: 24, kind: "full" });
+
+		await ctx.service.start();
+
+		expect(ctx.scheduler.deleteRecurringGlobalJob).toHaveBeenCalledWith("connect-backup");
+		expect(ctx.scheduler.addRecurringGlobalJob).not.toHaveBeenCalled();
+	});
+
+	it("deletes a leftover job when no schedule was ever saved", async () => {
+		const ctx = setup();
+
+		await ctx.service.start();
+
+		expect(ctx.scheduler.deleteRecurringGlobalJob).toHaveBeenCalledWith("connect-backup");
+	});
+
+	it("keeps starting remote access when the job can't be written", async () => {
+		const ctx = setup({ scheduleError: new Error("db down") });
+		await enrollStored(ctx, { recoveryKey: RECOVERY_KEY });
+		await ctx.repository.setSchedule({ enabled: true, intervalHours: 24, kind: "full" });
+		await ctx.repository.setRemoteAccess(true);
+
+		await ctx.service.start();
+
+		expect(ctx.logger.error).toHaveBeenCalledWith({ err: expect.any(Error) }, "Connect could not restore its backup schedule");
+		expect(ctx.tunnel.start).toHaveBeenCalledTimes(1);
 	});
 });
