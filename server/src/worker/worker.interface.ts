@@ -51,6 +51,7 @@ export interface IJobScheduler {
 	updateJob(monitor: Monitor): Promise<void>;
 	wake(type: JobType): void;
 	isGlobalJobRunning(type: JobType): Promise<boolean>;
+	reconcile(): Promise<void>;
 	getMetrics(): Promise<WorkerMetrics>;
 	getJobs(pagination: WorkerJobsPagination): Promise<WorkerJobsPage>;
 	flushQueues(): Promise<{ success: boolean }>;

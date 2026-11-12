@@ -253,7 +253,7 @@ export class JobScheduler implements IJobScheduler {
 	}
 
 	// Seed queue
-	protected reconcile = async () => {
+	reconcile = async () => {
 		const now = Date.now();
 		const monitors = await this.monitorsRepository.findAllForScheduling();
 		const heartbeatIds: string[] = [];
