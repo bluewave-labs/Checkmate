@@ -1809,6 +1809,10 @@
 						"toolsPath": "If they're installed elsewhere, set CONNECT_MONGODUMP_BIN and CONNECT_MONGORESTORE_BIN. This message clears within a minute of the tools being found.",
 						"runFull": "Back up now",
 						"runConfig": "Back up configuration only",
+						"kind": {
+							"full": "Full database",
+							"config": "Configuration only"
+						},
 						"progress": {
 							"idle": "Idle",
 							"finished": {
@@ -1860,12 +1864,14 @@
 							"confirmTitle": "Restore the backup from {{date}} ({{kind}})?",
 							"confirmBody": "This replaces the current database and cannot be undone. User accounts are replaced too, so log in with an account from the backup afterwards.",
 							"differentKey": "Different key",
-							"expires": "Removed after {{date}}",
-							"kind": {
-								"full": "Full database",
-								"config": "Configuration only"
-							}
+							"expires": "Removed after {{date}}"
 						}
+					},
+					"schedule": {
+						"title": "Scheduled backups",
+						"description": "Run an encrypted cloud backup automatically. The first one starts as soon as you turn this on, and a scheduled backup that comes due while another backup or restore is running is skipped until the next interval.",
+						"interval": "Back up every",
+						"kind": "Backup type"
 					},
 					"recoveryKey": {
 						"title": "Recovery key",

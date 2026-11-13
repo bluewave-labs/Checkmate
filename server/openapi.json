@@ -4238,7 +4238,6 @@
 							},
 							"schedule": {
 								"type": "object",
-								"nullable": true,
 								"properties": {
 									"enabled": {
 										"type": "boolean"

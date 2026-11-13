@@ -15,6 +15,7 @@ export const CONNECT_RECOVERY_KEY_FORMAT = "CMKB1";
 
 export const ConnectBackupKinds = ["full", "config"] as const;
 export type ConnectBackupKind = (typeof ConnectBackupKinds)[number];
+export const DEFAULT_SCHEDULE_KIND: ConnectBackupKind = "full";
 
 export const ConnectScheduleIntervalHours = [24, 72, 168] as const;
 export type ConnectScheduleInterval = (typeof ConnectScheduleIntervalHours)[number];

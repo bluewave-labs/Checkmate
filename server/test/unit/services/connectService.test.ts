@@ -146,7 +146,7 @@ describe("ConnectService.getStatus", () => {
 			agentVersion: APP_VERSION,
 			remoteAccess: { enabled: false },
 			tunnel: TUNNEL_STATUS,
-			backup: { recoveryKeySet: false, schedule: null },
+			backup: { recoveryKeySet: false, schedule: { enabled: false, intervalHours: 24, kind: "full" } },
 		});
 	});
 
@@ -174,7 +174,7 @@ describe("ConnectService.enroll", () => {
 			agentVersion: APP_VERSION,
 			remoteAccess: { enabled: false },
 			tunnel: TUNNEL_STATUS,
-			backup: { recoveryKeySet: false, schedule: null },
+			backup: { recoveryKeySet: false, schedule: { enabled: false, intervalHours: 24, kind: "full" } },
 		});
 		expect(JSON.stringify(status)).not.toContain(input.token);
 		const stored = (await repository.get()).enrollment;
@@ -412,13 +412,13 @@ describe("ConnectService.getStatus (backup)", () => {
 		await enrollStored(ctx);
 		expect((await ctx.service.getStatus()).backup).toEqual({
 			recoveryKeySet: false,
-			schedule: null,
+			schedule: { enabled: false, intervalHours: 24, kind: "full" },
 		});
 
 		await ctx.repository.setRecoveryKeyIfUnset(ctx.encryptionService.encrypt(RECOVERY_KEY));
 		expect((await ctx.service.getStatus()).backup).toEqual({
 			recoveryKeySet: true,
-			schedule: null,
+			schedule: { enabled: false, intervalHours: 24, kind: "full" },
 		});
 	});
 
@@ -1024,6 +1024,14 @@ describe("ConnectService.getBackupStatus (restore and verify)", () => {
 });
 
 describe("ConnectService.setBackupSchedule", () => {
+	it("reports the default schedule, off, before one is saved", async () => {
+		const ctx = setup();
+		await enrollStored(ctx, { recoveryKey: RECOVERY_KEY });
+
+		expect((await ctx.service.getStatus()).backup.schedule).toEqual({ enabled: false, intervalHours: 24, kind: "full" });
+		expect((await ctx.repository.get()).schedule).toBeNull();
+	});
+
 	const DAY_MS = 86_400_000;
 
 	it("turns the schedule on and adds the job, due now", async () => {

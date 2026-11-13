@@ -21,13 +21,11 @@ export const connectStatusSchema = z
 		tunnel: connectTunnelStatusSchema,
 		backup: z.object({
 			recoveryKeySet: z.boolean(),
-			schedule: z
-				.object({
-					enabled: z.boolean(),
-					intervalHours: z.literal(ConnectScheduleIntervalHours).meta({ enum: [...ConnectScheduleIntervalHours] }),
-					kind: z.enum(ConnectBackupKinds),
-				})
-				.nullable(),
+			schedule: z.object({
+				enabled: z.boolean(),
+				intervalHours: z.literal(ConnectScheduleIntervalHours).meta({ enum: [...ConnectScheduleIntervalHours] }),
+				kind: z.enum(ConnectBackupKinds),
+			}),
 		}),
 	})
 	.meta({ id: "ConnectStatus" });

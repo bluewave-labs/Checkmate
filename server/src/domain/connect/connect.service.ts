@@ -21,6 +21,8 @@ import {
 	type ConnectQueued,
 	type ConnectRecoveryKey,
 	type ConnectSchedule,
+	DEFAULT_SCHEDULE_INTERVAL_HOURS,
+	DEFAULT_SCHEDULE_KIND,
 } from "@/domain/connect/connect-backup.type.js";
 import type { IConnectApiService } from "@/domain/connect/connect-api.service.js";
 import type { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.repository.interface.js";
@@ -83,7 +85,10 @@ export class ConnectService implements IConnectService {
 			agentVersion: APP_VERSION,
 			remoteAccess: { enabled: state.remoteAccessEnabled },
 			tunnel: this.tunnel.status(),
-			backup: { recoveryKeySet: state.recoveryKey !== null, schedule: state.schedule },
+			backup: {
+				recoveryKeySet: state.recoveryKey !== null,
+				schedule: state.schedule ?? { enabled: false, intervalHours: DEFAULT_SCHEDULE_INTERVAL_HOURS, kind: DEFAULT_SCHEDULE_KIND },
+			},
 		};
 	};
 
