@@ -2,10 +2,12 @@ import type {
 	CheckCaptureInfo,
 	CheckCpuInfo,
 	CheckDiskInfo,
+	CheckDrive,
 	CheckErrorInfo,
 	CheckHostInfo,
 	CheckMemoryInfo,
 	CheckNetworkInterfaceInfo,
+	CheckRaidArray,
 	CheckTimings,
 	ILighthouseAudit,
 } from "@/domain/checks/check.type.js";
@@ -94,12 +96,29 @@ export interface HardwareStatusMetrics {
 	disk?: CheckDiskInfo[];
 	host?: CheckHostInfo;
 	net?: CheckNetworkInterfaceInfo[];
+	raid?: CheckRaidArray[]; // absent on Capture versions without RAID support
+}
+
+// Capture's /api/v1/metrics/smart. Before per-drive SMART, data was a single object; a non-array data means the
+// host's Capture does not support per-drive SMART.
+export interface CaptureSmartPayload {
+	data?: CheckDrive[] | Record<string, unknown> | null;
+	errors?: CheckErrorInfo[] | null;
+	capture?: CheckCaptureInfo;
+}
+
+// Attached to the hardware payload by HardwareProvider when SMART was fetched alongside the metrics.
+// drives is absent when the fetch failed; errors holds Capture's SMART errors and any fetch failure.
+export interface HardwareSmartResult {
+	drives?: CheckDrive[];
+	errors: CheckErrorInfo[];
 }
 
 export interface HardwareStatusPayload {
 	data?: HardwareStatusMetrics;
 	errors?: CheckErrorInfo[] | { errors?: CheckErrorInfo[] };
 	capture?: CheckCaptureInfo;
+	smart?: HardwareSmartResult;
 	[key: string]: unknown;
 }
 
@@ -191,4 +210,6 @@ export type MonitorStatusResponseOverrides<T> = Partial<Omit<MonitorStatusRespon
 export type CheckContext = {
 	proxyUrl?: string;
 	dockerTlsKey?: string;
+	// Hardware monitors only: set by the pipeline when a SMART fetch is due (see domain/storage/smart-schedule.ts)
+	smartUrl?: string;
 };

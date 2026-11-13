@@ -528,6 +528,184 @@
 							]
 						}
 					},
+					"raid": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"device": {
+									"type": "string"
+								},
+								"level": {
+									"type": "string"
+								},
+								"state": {
+									"type": "string"
+								},
+								"raid_disks": {
+									"type": "number",
+									"nullable": true
+								},
+								"degraded_disks": {
+									"type": "number",
+									"nullable": true
+								},
+								"sync_action": {
+									"type": "string",
+									"nullable": true
+								},
+								"sync_progress": {
+									"type": "number",
+									"nullable": true
+								},
+								"members": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"device": {
+												"type": "string"
+											},
+											"state": {
+												"type": "string"
+											}
+										},
+										"required": ["device", "state"]
+									}
+								}
+							},
+							"required": ["device", "level", "state", "members"]
+						}
+					},
+					"drives": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"device": {
+									"type": "string"
+								},
+								"type": {
+									"type": "string"
+								},
+								"protocol": {
+									"type": "string"
+								},
+								"status": {
+									"type": "string",
+									"enum": ["ok", "standby", "unsupported", "error"]
+								},
+								"model_name": {
+									"type": "string"
+								},
+								"serial_number": {
+									"type": "string"
+								},
+								"firmware_version": {
+									"type": "string"
+								},
+								"capacity_bytes": {
+									"type": "number",
+									"nullable": true
+								},
+								"warnings": {
+									"type": "array",
+									"items": {
+										"type": "string",
+										"enum": [
+											"disk_failing",
+											"prefail_attribute_at_threshold",
+											"attribute_was_at_threshold",
+											"error_log_has_errors",
+											"self_test_log_has_errors"
+										]
+									}
+								},
+								"reallocated_sectors": {
+									"type": "number",
+									"nullable": true
+								},
+								"pending_sectors": {
+									"type": "number",
+									"nullable": true
+								},
+								"offline_uncorrectable": {
+									"type": "number",
+									"nullable": true
+								},
+								"media_errors": {
+									"type": "number",
+									"nullable": true
+								},
+								"smart_overall_health_self_assessment_test_result": {
+									"type": "string"
+								},
+								"temperature": {
+									"type": "string"
+								},
+								"power_on_hours": {
+									"type": "string"
+								},
+								"power_cycles": {
+									"type": "string"
+								},
+								"unsafe_shutdowns": {
+									"type": "string"
+								},
+								"percentage_used": {
+									"type": "string"
+								},
+								"available_spare": {
+									"type": "string"
+								},
+								"available_spare_threshold": {
+									"type": "string"
+								},
+								"critical_warning": {
+									"type": "string"
+								},
+								"data_units_read": {
+									"type": "string"
+								},
+								"data_units_written": {
+									"type": "string"
+								},
+								"host_read_commands": {
+									"type": "string"
+								},
+								"host_write_commands": {
+									"type": "string"
+								},
+								"controller_busy_time": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"device",
+								"type",
+								"protocol",
+								"status",
+								"model_name",
+								"serial_number",
+								"firmware_version",
+								"warnings",
+								"smart_overall_health_self_assessment_test_result",
+								"temperature",
+								"power_on_hours",
+								"power_cycles",
+								"unsafe_shutdowns",
+								"percentage_used",
+								"available_spare",
+								"available_spare_threshold",
+								"critical_warning",
+								"data_units_read",
+								"data_units_written",
+								"host_read_commands",
+								"host_write_commands",
+								"controller_busy_time"
+							]
+						}
+					},
 					"accessibility": {
 						"type": "number"
 					},
@@ -1575,6 +1753,9 @@
 											"device": {
 												"type": "string"
 											},
+											"mountpoint": {
+												"type": "string"
+											},
 											"total_bytes": {
 												"type": "number"
 											},
@@ -1599,6 +1780,33 @@
 										"pretty_name": {
 											"type": "string"
 										}
+									}
+								},
+								"raid": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"device": {
+												"type": "string"
+											},
+											"state": {
+												"type": "string"
+											},
+											"degraded_disks": {
+												"type": "number",
+												"nullable": true
+											},
+											"sync_action": {
+												"type": "string",
+												"nullable": true
+											},
+											"sync_progress": {
+												"type": "number",
+												"nullable": true
+											}
+										},
+										"required": ["device", "state"]
 									}
 								},
 								"containerSummary": {
@@ -1630,6 +1838,9 @@
 						"type": "string"
 					},
 					"lastEvaluatedAt": {
+						"type": "number"
+					},
+					"smartCheckedAt": {
 						"type": "number"
 					}
 				},
@@ -2225,9 +2436,272 @@
 								"nullable": true
 							}
 						]
+					},
+					"raid": {
+						"type": "object",
+						"nullable": true,
+						"properties": {
+							"arrays": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"device": {
+											"type": "string"
+										},
+										"level": {
+											"type": "string"
+										},
+										"state": {
+											"type": "string"
+										},
+										"raid_disks": {
+											"type": "number",
+											"nullable": true
+										},
+										"degraded_disks": {
+											"type": "number",
+											"nullable": true
+										},
+										"sync_action": {
+											"type": "string",
+											"nullable": true
+										},
+										"sync_progress": {
+											"type": "number",
+											"nullable": true
+										},
+										"members": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"device": {
+														"type": "string"
+													},
+													"state": {
+														"type": "string"
+													}
+												},
+												"required": ["device", "state"]
+											}
+										}
+									},
+									"required": ["device", "level", "state", "members"]
+								}
+							},
+							"checkedAt": {
+								"type": "string"
+							}
+						},
+						"required": ["arrays", "checkedAt"]
+					},
+					"drives": {
+						"type": "object",
+						"nullable": true,
+						"properties": {
+							"drives": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"device": {
+											"type": "string"
+										},
+										"type": {
+											"type": "string"
+										},
+										"protocol": {
+											"type": "string"
+										},
+										"status": {
+											"type": "string",
+											"enum": ["ok", "standby", "unsupported", "error"]
+										},
+										"model_name": {
+											"type": "string"
+										},
+										"serial_number": {
+											"type": "string"
+										},
+										"firmware_version": {
+											"type": "string"
+										},
+										"capacity_bytes": {
+											"type": "number",
+											"nullable": true
+										},
+										"warnings": {
+											"type": "array",
+											"items": {
+												"type": "string",
+												"enum": [
+													"disk_failing",
+													"prefail_attribute_at_threshold",
+													"attribute_was_at_threshold",
+													"error_log_has_errors",
+													"self_test_log_has_errors"
+												]
+											}
+										},
+										"reallocated_sectors": {
+											"type": "number",
+											"nullable": true
+										},
+										"pending_sectors": {
+											"type": "number",
+											"nullable": true
+										},
+										"offline_uncorrectable": {
+											"type": "number",
+											"nullable": true
+										},
+										"media_errors": {
+											"type": "number",
+											"nullable": true
+										},
+										"smart_overall_health_self_assessment_test_result": {
+											"type": "string"
+										},
+										"temperature": {
+											"type": "string"
+										},
+										"power_on_hours": {
+											"type": "string"
+										},
+										"power_cycles": {
+											"type": "string"
+										},
+										"unsafe_shutdowns": {
+											"type": "string"
+										},
+										"percentage_used": {
+											"type": "string"
+										},
+										"available_spare": {
+											"type": "string"
+										},
+										"available_spare_threshold": {
+											"type": "string"
+										},
+										"critical_warning": {
+											"type": "string"
+										},
+										"data_units_read": {
+											"type": "string"
+										},
+										"data_units_written": {
+											"type": "string"
+										},
+										"host_read_commands": {
+											"type": "string"
+										},
+										"host_write_commands": {
+											"type": "string"
+										},
+										"controller_busy_time": {
+											"type": "string"
+										},
+										"lastKnownAt": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"device",
+										"type",
+										"protocol",
+										"status",
+										"model_name",
+										"serial_number",
+										"firmware_version",
+										"warnings",
+										"smart_overall_health_self_assessment_test_result",
+										"temperature",
+										"power_on_hours",
+										"power_cycles",
+										"unsafe_shutdowns",
+										"percentage_used",
+										"available_spare",
+										"available_spare_threshold",
+										"critical_warning",
+										"data_units_read",
+										"data_units_written",
+										"host_read_commands",
+										"host_write_commands",
+										"controller_busy_time"
+									]
+								}
+							},
+							"errors": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"metric": {
+											"type": "array",
+											"items": {
+												"type": "string"
+											}
+										},
+										"err": {
+											"type": "string"
+										}
+									},
+									"required": ["metric", "err"]
+								}
+							},
+							"checkedAt": {
+								"type": "string"
+							}
+						},
+						"required": ["drives", "errors", "checkedAt"]
+					},
+					"driveHistory": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"serial_number": {
+									"type": "string"
+								},
+								"points": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"bucketDate": {
+												"type": "string"
+											},
+											"reallocated_sectors": {
+												"type": "number",
+												"nullable": true
+											},
+											"pending_sectors": {
+												"type": "number",
+												"nullable": true
+											},
+											"offline_uncorrectable": {
+												"type": "number",
+												"nullable": true
+											},
+											"media_errors": {
+												"type": "number",
+												"nullable": true
+											},
+											"temperature": {
+												"type": "number",
+												"nullable": true
+											}
+										},
+										"required": ["bucketDate", "reallocated_sectors", "pending_sectors", "offline_uncorrectable", "media_errors", "temperature"]
+									}
+								}
+							},
+							"required": ["serial_number", "points"]
+						}
 					}
 				},
-				"required": ["monitor", "stats", "monitorStats"]
+				"required": ["monitor", "stats", "monitorStats", "raid", "drives", "driveHistory"]
 			},
 			"PageSpeedDetails": {
 				"type": "object",
@@ -3972,6 +4446,9 @@
 														"device": {
 															"type": "string"
 														},
+														"mountpoint": {
+															"type": "string"
+														},
 														"total_bytes": {
 															"type": "number"
 														},
@@ -3996,6 +4473,33 @@
 													"pretty_name": {
 														"type": "string"
 													}
+												}
+											},
+											"raid": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"device": {
+															"type": "string"
+														},
+														"state": {
+															"type": "string"
+														},
+														"degraded_disks": {
+															"type": "number",
+															"nullable": true
+														},
+														"sync_action": {
+															"type": "string",
+															"nullable": true
+														},
+														"sync_progress": {
+															"type": "number",
+															"nullable": true
+														}
+													},
+													"required": ["device", "state"]
 												}
 											},
 											"containerSummary": {

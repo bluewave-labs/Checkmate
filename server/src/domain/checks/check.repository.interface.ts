@@ -1,11 +1,15 @@
 import type {
 	Check,
 	ChecksQueryResult,
+	CheckDrive,
 	ChecksSummary,
 	DailyCheckBucket,
 	DockerChecksResult,
 	DockerContainerStats,
+	DriveHistory,
 	HardwareChecksResult,
+	LatestDrives,
+	LatestRaid,
 	PageSpeedChecksResult,
 	UptimeChecksResult,
 } from "@/domain/checks/check.type.js";
@@ -46,6 +50,11 @@ export interface IChecksRepository {
 	findSummaryByTeamId(teamId: string, dateRange: DateRange, monitorId?: string): Promise<ChecksSummary>;
 	findUnevaluatedByMonitorId(monitorId: string, pending: PendingCheck[]): Promise<Check[]>;
 	getDailyStatusBuckets(monitorIds: string[], days: number, timezone: string): Promise<DailyCheckBucket[]>;
+	// Storage health (hardware monitors). The latest lookups return null when no check in the lookback carries the data.
+	findLatestRaid(monitorId: string): Promise<LatestRaid | null>;
+	findLatestDrives(monitorId: string): Promise<LatestDrives | null>; // errors are all of that check's errors
+	findLastKnownDrive(monitorId: string, device: string): Promise<{ drive: CheckDrive; checkedAt: string } | null>;
+	findDriveHistory(monitorId: string, dateRange: DateRange): Promise<DriveHistory[]>;
 
 	// update
 	//delete

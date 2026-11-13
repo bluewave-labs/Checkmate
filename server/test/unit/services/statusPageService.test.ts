@@ -334,6 +334,21 @@ describe("StatusPageService", () => {
 			expect(monitors[0]).not.toHaveProperty("checks");
 		});
 
+		it("leaves RAID arrays and mount points out of public hardware snapshots and keeps the rest", async () => {
+			const { service, monitorsRepo } = createService();
+			const disk = { device: "/dev/md1", total_bytes: 100, used_bytes: 40, usage_percent: 0.4 };
+			const snapshot = {
+				id: "chk-1",
+				disk: [{ ...disk, mountpoint: "/srv/media" }],
+				raid: [{ device: "/dev/md1", state: "clean", degraded_disks: 1, sync_action: "recover", sync_progress: 0.42 }],
+			} as CheckSnapshot;
+			(monitorsRepo.findByIds as jest.Mock).mockResolvedValue([makeMonitor({ id: "mon-1", type: "hardware", recentChecks: [snapshot] })]);
+
+			const { monitors } = await service.getPublicStatusPagePayload(publishedPage());
+
+			expect(monitors[0].recentChecks).toEqual([{ id: "chk-1", disk: [disk] }]);
+		});
+
 		it("orders monitors to match the status page's monitor list", async () => {
 			const { service, monitorsRepo } = createService();
 			(monitorsRepo.findByIds as jest.Mock).mockResolvedValue([makeMonitor({ id: "mon-1" }), makeMonitor({ id: "mon-2" })]);

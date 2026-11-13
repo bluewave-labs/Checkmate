@@ -13,9 +13,12 @@ import {
 	checkSnapshotSchema,
 	dockerContainerStatsSchema,
 	dockerStatsSchema,
+	driveHistorySchema,
 	groupedCheckSchema,
 	groupedUptimeCheckSchema,
 	hardwareStatsSchema,
+	latestDrivesSchema,
+	latestRaidSchema,
 	pageSpeedGroupedCheckSchema,
 } from "@/domain/checks/check.schema.js";
 import { monitorStatsSchema } from "@/domain/monitor-stats/monitor-stats.schema.js";
@@ -79,6 +82,8 @@ export const monitorSchema = z.object({
 	createdAt: z.string(),
 	updatedAt: z.string(),
 	lastEvaluatedAt: z.number(), // epoch ms
+	// Hardware monitors: epoch ms of the last SMART fetch attempt, which runs at most every SMART_INTERVAL_MS
+	smartCheckedAt: z.number().optional(),
 });
 
 const monitorExample = {
@@ -179,6 +184,10 @@ export const hardwareDetailsResultSchema = z
 		monitor: monitorResponseSchema,
 		stats: hardwareStatsSchema,
 		monitorStats: monitorStatsSchema.or(z.null()),
+		// Storage health. raid and drives are null when no recent check carries them (Capture without support).
+		raid: latestRaidSchema.nullable(),
+		drives: latestDrivesSchema.nullable(),
+		driveHistory: z.array(driveHistorySchema),
 	})
 	.meta({ id: "HardwareDetails" });
 

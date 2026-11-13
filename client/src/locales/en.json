@@ -1122,7 +1122,9 @@
 				"cpuPhysical": "CPU (Physical)",
 				"disk": "Disk",
 				"memory": "Memory",
-				"os": "OS"
+				"os": "OS",
+				"drives": "Drives",
+				"raidArrays": "RAID arrays"
 			},
 			"table": {
 				"headers": {
@@ -1134,7 +1136,8 @@
 			"tabs": {
 				"labels": {
 					"network": "Network",
-					"overview": "Overview"
+					"overview": "Overview",
+					"storage": "Storage"
 				}
 			},
 			"fallback": {
@@ -1145,6 +1148,165 @@
 			"header": {
 				"title": "Infrastructure monitors",
 				"description": "Track server performance, identify bottlenecks, and ensure reliability with real-time infrastructure monitoring."
+			},
+			"storage": {
+				"summary": {
+					"drivesFailing": "{{count}} · {{failing}} failing",
+					"drivesPassed": "{{count}} · all passed",
+					"arraysDegraded": "{{count}} · {{degraded}} degraded",
+					"arraysHealthy": "{{count}} · healthy"
+				},
+				"banner": {
+					"arraysAtRisk_one": "{{count}} array degraded",
+					"arraysAtRisk_other": "{{count}} arrays degraded",
+					"drivesFailing_one": "{{count}} drive failing",
+					"drivesFailing_other": "{{count}} drives failing",
+					"arrayMissing": "{{device}} is missing {{missing}} of {{total}} disks.",
+					"arrayMissingUnknown": "{{device}} is missing disks.",
+					"arrayRebuilding": "{{device}} is missing {{missing}} of {{total}} disks and is rebuilding onto {{target}}.",
+					"arrayInactive": "{{device}} is inactive.",
+					"replaceDrive": "The failing drive is {{model}}, serial {{serial}} ({{device}}). Replace it.",
+					"replaceDriveAfterRebuild": "The failing drive is {{model}}, serial {{serial}} ({{device}}). Replace it once the rebuild finishes."
+				},
+				"updateCapture": {
+					"title": "Update Capture to see storage health",
+					"description": "This host's Capture version does not report RAID arrays or per-drive S.M.A.R.T. data."
+				},
+				"raid": {
+					"title": "Software RAID",
+					"subtitle": "mdadm arrays · updated with every check",
+					"noArrays": "No mdadm arrays on this host.",
+					"notReported": "This host's Capture version does not report RAID arrays.",
+					"disks": "Disks",
+					"disksValue": "{{present}} of {{total}}",
+					"size": "Size",
+					"mountedAt": "Mounted at",
+					"notMounted": "Not mounted",
+					"progressLabel": "Sync progress",
+					"sync": {
+						"recover": "Rebuilding onto {{target}}",
+						"recoverNoTarget": "Rebuilding",
+						"resync": "Resyncing",
+						"check": "Checking",
+						"repair": "Repairing",
+						"reshape": "Reshaping",
+						"other": "Syncing"
+					},
+					"health": {
+						"healthy": "Healthy",
+						"degraded": "Degraded",
+						"inactive": "Inactive",
+						"rebuilding": "Rebuilding"
+					},
+					"member": {
+						"inSync": "In sync",
+						"faulty": "Faulty",
+						"spare": "Spare",
+						"spareRebuilding": "Spare, rebuilding"
+					}
+				},
+				"drives": {
+					"title": "Drives",
+					"subtitle": "S.M.A.R.T. · checked every 10 minutes · last checked {{time}}",
+					"notFetched": "No S.M.A.R.T. data yet. Drive health is read every 10 minutes.",
+					"none": "Capture did not report any drives.",
+					"unavailableTitle": "S.M.A.R.T. data is not available",
+					"unavailableReason": "Capture reported: {{reason}}.",
+					"installGuidance": "Install smartmontools 7.0 or newer on the host and run Capture as root. The Capture Docker image does not include smartctl, so drive health needs Capture running directly on the host.",
+					"headers": {
+						"drive": "Drive",
+						"device": "Device",
+						"health": "Health",
+						"temperature": "Temperature",
+						"powerOn": "Power-on",
+						"wearAndErrors": "Wear and errors",
+						"warnings": "Warnings"
+					},
+					"unknownDrive": "Unknown drive",
+					"lastKnown": "Identity from last reading, {{time}}",
+					"notRead": "Not read",
+					"noWarnings": "None",
+					"details": "Details",
+					"asleepNote": "Not woken to read S.M.A.R.T. data",
+					"unsupportedNote": "No S.M.A.R.T. data, which is normal for virtual disks",
+					"hours": "{{value}} h",
+					"celsius": "{{value}} °C",
+					"health": {
+						"passed": "Passed",
+						"failed": "Failed",
+						"asleep": "Asleep",
+						"unsupported": "Not supported",
+						"unreadable": "Could not read"
+					},
+					"counters": {
+						"reallocated": "{{value}} reallocated",
+						"pending": "{{value}} pending",
+						"uncorrectable": "{{value}} uncorrectable",
+						"mediaErrors": "{{value}} media errors",
+						"wear": "{{value}} wear",
+						"spare": "{{value}} spare"
+					},
+					"warnings": {
+						"disk_failing": "Disk failing",
+						"prefail_attribute_at_threshold": "Attribute at failure threshold",
+						"attribute_was_at_threshold": "Attribute was at threshold",
+						"error_log_has_errors": "Error log has entries",
+						"self_test_log_has_errors": "Self-test log has errors"
+					}
+				}
+			},
+			"drive": {
+				"header": {
+					"title": "Drive details",
+					"description": "S.M.A.R.T. health and history for one drive, tracked by serial number."
+				},
+				"back": "Back to storage",
+				"notFound": {
+					"title": "Drive not found",
+					"description": "This drive is not in the latest S.M.A.R.T. reading for this monitor."
+				},
+				"lastRead": "Last read {{time}}",
+				"identity": {
+					"serial": "Serial number",
+					"device": "Device",
+					"capacity": "Capacity",
+					"firmware": "Firmware",
+					"powerOn": "Power-on",
+					"memberOf": "Member of",
+					"none": "None",
+					"powerOnValue": "{{hours}} h ({{years}} years)",
+					"deviceValue": "{{device}} · {{protocol}}"
+				},
+				"indicators": {
+					"title": "Failure indicators",
+					"reallocated": "Reallocated sectors",
+					"pending": "Pending sectors",
+					"uncorrectable": "Uncorrectable sectors",
+					"mediaErrors": "Media errors",
+					"wear": "Wear",
+					"temperature": "Temperature",
+					"upFrom": "Up from {{value}} at the start of this range",
+					"unchanged": "No change in this range",
+					"temperatureRange": "{{min}}–{{max}} °C in this range",
+					"noHistory": "No readings in this range",
+					"notReported": "Not reported"
+				},
+				"charts": {
+					"reallocated": "Reallocated sectors",
+					"mediaErrors": "Media errors",
+					"temperature": "Drive temperature"
+				},
+				"warnings": {
+					"title": "Warnings from the drive",
+					"none": "The drive reports no warnings.",
+					"descriptions": {
+						"disk_failing": "The drive's own health check reports that it is failing. Back up its data and replace it.",
+						"prefail_attribute_at_threshold": "At least one pre-failure attribute has reached the level the manufacturer treats as failure.",
+						"attribute_was_at_threshold": "An attribute reached its failure threshold in the past but is below it now. Keep an eye on the drive.",
+						"error_log_has_errors": "The drive's error log has entries. A few old entries are common; a growing log points to a failing drive or cable.",
+						"self_test_log_has_errors": "A self-test recorded an error. Run another self-test to see whether it repeats."
+					}
+				}
 			}
 		},
 		"tags": {
