@@ -202,7 +202,7 @@ export const editorialStyles = (
 			gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "1fr auto" },
 			gridTemplateAreas: {
 				xs: `"name" "status" "meta"`,
-				md: `"name name" "meta status"`,
+				md: `"name status" "meta status"`,
 			},
 			columnGap: { md: "20px" },
 			rowGap: { xs: "10px", md: "6px" },
@@ -248,6 +248,7 @@ export const editorialStyles = (
 			whiteSpace: "nowrap",
 			maxWidth: 280,
 			fontSize: 12,
+			textAlign: "right",
 		},
 
 		badge: (tone) => ({

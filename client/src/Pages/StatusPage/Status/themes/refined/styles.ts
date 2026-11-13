@@ -231,7 +231,7 @@ export const refinedStyles = (
 			gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "1fr auto" },
 			gridTemplateAreas: {
 				xs: `"name" "status" "meta"`,
-				md: `"name name" "meta status"`,
+				md: `"name status" "meta status"`,
 			},
 			columnGap: { md: "16px" },
 			rowGap: { xs: "10px", md: "4px" },
@@ -275,6 +275,7 @@ export const refinedStyles = (
 			textOverflow: "ellipsis",
 			whiteSpace: "nowrap",
 			maxWidth: 280,
+			textAlign: "right",
 		},
 
 		badge: (tone) => ({
