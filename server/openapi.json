@@ -10502,7 +10502,7 @@
 										"type": "array",
 										"items": {
 											"type": "string",
-											"minLength": 1
+											"pattern": "^[0-9a-fA-F]{24}$"
 										},
 										"minItems": 1,
 										"maxItems": 100
@@ -10545,6 +10545,122 @@
 												}
 											},
 											"required": ["monitors", "failedCount"]
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/monitors/bulk/delete": {
+			"post": {
+				"tags": ["monitors"],
+				"summary": "Delete several monitors (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"monitorIds": {
+										"type": "array",
+										"items": {
+											"type": "string",
+											"pattern": "^[0-9a-fA-F]{24}$"
+										},
+										"minItems": 1,
+										"maxItems": 100
+									}
+								},
+								"required": ["monitorIds"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"deletedCount": {
+													"type": "number"
+												},
+												"failedCount": {
+													"type": "number"
+												}
+											},
+											"required": ["deletedCount", "failedCount"]
 										}
 									},
 									"required": ["success", "msg", "data"]

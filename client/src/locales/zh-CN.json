@@ -510,6 +510,14 @@
 					"alreadyRunning_one": "所选监视器已经在运行",
 					"alreadyRunning_other": "所有选定的监视器均已在运行",
 					"partialFailure": "已更新 {{successCount}} 个监控，但有 {{failedCount}} 个无法与任务队列同步"
+				},
+				"bulkDelete": {
+					"title_one": "删除 {{count}} 个监视器？",
+					"title_other": "删除 {{count}} 个监视器？",
+					"deleted_one": "已删除 {{count}} 个监视器",
+					"deleted_other": "已删除 {{count}} 个监视器",
+					"partialFailure": "已删除 {{successCount}} 个监视器，但有 {{failedCount}} 个清理失败",
+					"hidden": "已被当前搜索或筛选隐藏"
 				}
 			}
 		},

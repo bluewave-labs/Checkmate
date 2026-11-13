@@ -509,6 +509,14 @@
 					"alreadyRunning_one": "所選監視器已經在運行",
 					"alreadyRunning_other": "所有選定的監視器均已在運行",
 					"partialFailure": "已更新 {{successCount}} 個監控，但有 {{failedCount}} 個無法與工作佇列同步"
+				},
+				"bulkDelete": {
+					"title_one": "刪除 {{count}} 個監視器？",
+					"title_other": "刪除 {{count}} 個監視器？",
+					"deleted_one": "已刪除 {{count}} 個監視器",
+					"deleted_other": "已刪除 {{count}} 個監視器",
+					"partialFailure": "已刪除 {{successCount}} 個監視器，但有 {{failedCount}} 個清理失敗",
+					"hidden": "已被目前的搜尋或篩選隱藏"
 				}
 			}
 		},

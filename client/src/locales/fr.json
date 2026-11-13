@@ -509,6 +509,14 @@
 					"alreadyRunning_one": "Le moniteur sélectionné est déjà en cours d'exécution",
 					"alreadyRunning_other": "Tous les moniteurs sélectionnés sont déjà en cours d'exécution",
 					"partialFailure": "{{successCount}} moniteurs mis à jour, mais {{failedCount}} n'ont pas pu se synchroniser avec la file d'attente des tâches"
+				},
+				"bulkDelete": {
+					"title_one": "Supprimer {{count}} moniteur ?",
+					"title_other": "Supprimer {{count}} moniteurs ?",
+					"deleted_one": "{{count}} moniteur supprimé",
+					"deleted_other": "{{count}} moniteurs supprimés",
+					"partialFailure": "{{successCount}} moniteurs supprimés, mais le nettoyage a échoué pour {{failedCount}}",
+					"hidden": "Masqué par la recherche ou le filtre actuel"
 				}
 			}
 		},

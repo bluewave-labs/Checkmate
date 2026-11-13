@@ -509,6 +509,14 @@
 					"alreadyRunning_one": "選択したモニターはすでに実行中です",
 					"alreadyRunning_other": "選択したすべてのモニターはすでに実行中です",
 					"partialFailure": "{{successCount}} 個のモニターが更新されましたが、{{failedCount}} 個はジョブキューとの同期に失敗しました"
+				},
+				"bulkDelete": {
+					"title_one": "{{count}} 個のモニターを削除しますか？",
+					"title_other": "{{count}} 個のモニターを削除しますか？",
+					"deleted_one": "{{count}} 個のモニターを削除しました",
+					"deleted_other": "{{count}} 個のモニターを削除しました",
+					"partialFailure": "{{successCount}} 個のモニターを削除しましたが、{{failedCount}} 個のクリーンアップに失敗しました",
+					"hidden": "現在の検索またはフィルターで非表示になっています"
 				}
 			}
 		},

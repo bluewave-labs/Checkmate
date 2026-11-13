@@ -509,6 +509,14 @@
 					"alreadyRunning_one": "Valittu näyttö on jo käynnissä",
 					"alreadyRunning_other": "Kaikki valitut näytöt ovat jo käynnissä",
 					"partialFailure": "{{successCount}} monitoria päivitettiin, mutta {{failedCount}} epäonnistui synkronoinnissa työjonon kanssa"
+				},
+				"bulkDelete": {
+					"title_one": "Poistetaanko {{count}} monitori?",
+					"title_other": "Poistetaanko {{count}} monitoria?",
+					"deleted_one": "{{count}} monitori poistettu",
+					"deleted_other": "{{count}} monitoria poistettu",
+					"partialFailure": "{{successCount}} monitoria poistettu, mutta siivous epäonnistui {{failedCount}} kohdalla",
+					"hidden": "Piilotettu nykyisellä haulla tai suodattimella"
 				}
 			}
 		},

@@ -376,6 +376,15 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.toEntity(deletedMonitor);
 	};
 
+	deleteByIds = async (monitorIds: string[], teamId: string): Promise<Monitor[]> => {
+		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		const monitors = await MonitorModel.find({ _id: { $in: objectIds }, teamId: new mongoose.Types.ObjectId(teamId) });
+		if (monitors.length === 0) return [];
+
+		await MonitorModel.deleteMany({ _id: { $in: monitors.map((doc) => doc._id) } });
+		return this.mapDocuments(monitors);
+	};
+
 	deleteByTeamId = async (teamId: string) => {
 		const monitors = await MonitorModel.find({ teamId });
 		const { deletedCount } = await MonitorModel.deleteMany({ teamId });

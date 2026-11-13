@@ -347,12 +347,18 @@ export const pauseMonitorParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
 });
 
+const bulkMonitorIdsValidation = z
+	.array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid monitor ID"))
+	.min(1, "At least one monitor ID is required")
+	.max(100, "Cannot bulk update more than 100 monitors at once");
+
 export const bulkPauseMonitorBodyValidation = z.object({
-	monitorIds: z
-		.array(z.string().min(1, "Monitor ID must not be empty"))
-		.min(1, "At least one monitor ID is required")
-		.max(100, "Cannot bulk update more than 100 monitors at once"),
+	monitorIds: bulkMonitorIdsValidation,
 	pause: z.boolean(),
+});
+
+export const bulkDeleteMonitorBodyValidation = z.object({
+	monitorIds: bulkMonitorIdsValidation,
 });
 
 export const getUptimeDetailsByIdParamValidation = z.object({
@@ -479,6 +485,11 @@ export const monitorListResponseSchema = z.array(monitorResponseSchema);
 
 export const bulkPauseResponseSchema = z.object({
 	monitors: z.array(monitorResponseSchema),
+	failedCount: z.number(),
+});
+
+export const bulkDeleteResponseSchema = z.object({
+	deletedCount: z.number(),
 	failedCount: z.number(),
 });
 

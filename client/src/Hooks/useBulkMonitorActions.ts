@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { post } from "@/Utils/ApiClient";
 import { useToast } from "@/Hooks/UseToast";
@@ -15,19 +15,56 @@ interface ApiResponse {
 	};
 }
 
+interface BulkDeleteResponse {
+	success: boolean;
+	msg: string;
+	data: {
+		deletedCount: number;
+		failedCount: number;
+	};
+}
+
+export interface BulkDeleteTarget {
+	id: string;
+	monitor?: Monitor;
+	// Selected, but filtered or searched out of the list currently shown
+	hidden: boolean;
+}
+
 interface UseBulkMonitorActionsReturn {
 	selectedRows: string[];
 	setSelectedRows: (rows: string[]) => void;
 	handleBulkPause: () => Promise<void>;
 	handleBulkResume: () => Promise<void>;
 	handleCancelSelection: () => void;
+	isBulkDeleteDialogOpen: boolean;
+	bulkDeleteTargets: BulkDeleteTarget[];
+	isBulkDeleting: boolean;
+	handleOpenBulkDelete: () => void;
+	handleCancelBulkDelete: () => void;
+	handleConfirmBulkDelete: () => Promise<void>;
 }
+
+const getErrorMessage = (err: unknown) => {
+	if (axios.isAxiosError(err)) {
+		return err.response?.data?.msg || err.message || "An error occurred";
+	}
+	if (err instanceof Error) {
+		return err.message;
+	}
+	return "An error occurred";
+};
 
 export const useBulkMonitorActions = (
 	refetch: () => void,
-	page?: number
+	page?: number,
+	monitors?: Monitor[] | null
 ): UseBulkMonitorActionsReturn => {
 	const [selectedRows, setSelectedRows] = useState<string[]>([]);
+	const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
+	const [bulkDeleteTargets, setBulkDeleteTargets] = useState<BulkDeleteTarget[]>([]);
+	const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+	const knownMonitors = useRef(new Map<string, Monitor>());
 	const { toastSuccess, toastError, toastInfo, toastWarning } = useToast();
 	const { t } = useTranslation();
 
@@ -35,6 +72,12 @@ export const useBulkMonitorActions = (
 	useEffect(() => {
 		setSelectedRows([]);
 	}, [page]);
+
+	// Remember every listed monitor, so the delete dialog can describe a selected
+	// monitor even after a search or filter has hidden it
+	useEffect(() => {
+		monitors?.forEach((monitor) => knownMonitors.current.set(monitor.id, monitor));
+	}, [monitors]);
 
 	const executeBulkAction = async (pause: boolean) => {
 		try {
@@ -68,18 +111,62 @@ export const useBulkMonitorActions = (
 			setSelectedRows([]);
 			refetch();
 		} catch (err: unknown) {
-			let errMsg = "An error occurred";
-
-			if (axios.isAxiosError(err)) {
-				errMsg = err.response?.data?.msg || err.message || errMsg;
-			} else if (err instanceof Error) {
-				errMsg = err.message;
-			}
-
 			logger.error("Bulk pause/resume failed", err instanceof Error ? err : undefined, {
 				pause,
 			});
-			toastError(errMsg);
+			toastError(getErrorMessage(err));
+		}
+	};
+
+	const handleOpenBulkDelete = () => {
+		const listedIds = new Set(monitors?.map((monitor) => monitor.id));
+		setBulkDeleteTargets(
+			selectedRows.map((id) => ({
+				id,
+				monitor: knownMonitors.current.get(id),
+				hidden: !listedIds.has(id),
+			}))
+		);
+		setIsBulkDeleteDialogOpen(true);
+	};
+
+	const handleCancelBulkDelete = () => {
+		setIsBulkDeleteDialogOpen(false);
+	};
+
+	const handleConfirmBulkDelete = async () => {
+		setIsBulkDeleting(true);
+		try {
+			const res = await post<BulkDeleteResponse>("/monitors/bulk/delete", {
+				monitorIds: selectedRows,
+			});
+
+			const deletedCount = res.data?.data?.deletedCount ?? 0;
+			const failedCount = res.data?.data?.failedCount ?? 0;
+
+			if (failedCount > 0) {
+				toastWarning(
+					t("pages.common.monitors.bulkDelete.partialFailure", {
+						successCount: deletedCount,
+						failedCount,
+					})
+				);
+			} else {
+				toastSuccess(
+					t("pages.common.monitors.bulkDelete.deleted", { count: deletedCount })
+				);
+			}
+
+			setSelectedRows([]);
+			setIsBulkDeleteDialogOpen(false);
+			refetch();
+		} catch (err: unknown) {
+			logger.error("Bulk delete failed", err instanceof Error ? err : undefined, {
+				count: selectedRows.length,
+			});
+			toastError(getErrorMessage(err));
+		} finally {
+			setIsBulkDeleting(false);
 		}
 	};
 
@@ -101,5 +188,11 @@ export const useBulkMonitorActions = (
 		handleBulkPause,
 		handleBulkResume,
 		handleCancelSelection,
+		isBulkDeleteDialogOpen,
+		bulkDeleteTargets,
+		isBulkDeleting,
+		handleOpenBulkDelete,
+		handleCancelBulkDelete,
+		handleConfirmBulkDelete,
 	};
 };

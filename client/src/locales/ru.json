@@ -509,6 +509,14 @@
 					"alreadyRunning_one": "Выбранный монитор уже запущен",
 					"alreadyRunning_other": "Все выбранные мониторы уже запущены",
 					"partialFailure": "Обновлено {{successCount}} мониторов, но {{failedCount}} не удалось синхронизировать с очередью задач"
+				},
+				"bulkDelete": {
+					"title_one": "Удалить {{count}} монитор?",
+					"title_other": "Удалить {{count}} мониторов?",
+					"deleted_one": "{{count}} монитор удален",
+					"deleted_other": "{{count}} мониторов удалено",
+					"partialFailure": "Удалено {{successCount}} мониторов, но очистка не удалась для {{failedCount}}",
+					"hidden": "Скрыт текущим поиском или фильтром"
 				}
 			}
 		},

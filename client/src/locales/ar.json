@@ -509,6 +509,14 @@
 					"alreadyRunning_one": "الشاشة المحددة قيد التشغيل بالفعل",
 					"alreadyRunning_other": "جميع الشاشات المحددة قيد التشغيل بالفعل",
 					"partialFailure": "تم تحديث {{successCount}} من أجهزة المراقبة، ولكن فشلت مزامنة {{failedCount}} مع قائمة انتظار الوظائف"
+				},
+				"bulkDelete": {
+					"title_one": "حذف {{count}} شاشة؟",
+					"title_other": "حذف {{count}} شاشات؟",
+					"deleted_one": "تم حذف {{count}} شاشة",
+					"deleted_other": "تم حذف {{count}} شاشات",
+					"partialFailure": "تم حذف {{successCount}} من أجهزة المراقبة، ولكن فشل التنظيف لـ {{failedCount}}",
+					"hidden": "مخفي بسبب البحث أو عامل التصفية الحالي"
 				}
 			}
 		},

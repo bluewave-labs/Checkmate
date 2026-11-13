@@ -1,6 +1,7 @@
 import { HeaderCreate } from "@/Components/common";
 import { ColoredLabel, MonitorBasePageWithStates } from "@/Components/design-elements";
 import { BulkActionsBar } from "@/Components/monitors/BulkActionsBar";
+import { BulkDeleteList } from "@/Components/monitors/BulkDeleteList";
 import { ControlsFilter } from "@/Components/monitors/ControlsFilter";
 import { HeaderMonitorsSummary } from "@/Components/monitors/HeaderMonitorsSummary";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
@@ -13,7 +14,7 @@ import Typography from "@mui/material/Typography";
 import { TextField, Button, Dialog } from "@/Components/inputs";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Pause, Play } from "lucide-react";
+import { Pause, Play, Trash2 } from "lucide-react";
 
 const SEARCH_FIELD_WIDTH = 320;
 
@@ -144,7 +145,33 @@ export const MonitorListPage = ({
 					>
 						{t("common.buttons.pause")}
 					</Button>
+					<Button
+						size="small"
+						color="error"
+						startIcon={<Trash2 size={16} />}
+						onClick={controller.handleOpenBulkDelete}
+					>
+						{t("common.buttons.delete")}
+					</Button>
 				</BulkActionsBar>
+			)}
+			{isAdmin && bulkActions && (
+				<Dialog
+					open={controller.isBulkDeleteDialogOpen}
+					title={t("pages.common.monitors.bulkDelete.title", {
+						count: controller.bulkDeleteTargets.length,
+					})}
+					content={t("common.dialogs.delete.description")}
+					confirmColor="error"
+					confirmText={t("common.buttons.delete")}
+					onConfirm={controller.handleConfirmBulkDelete}
+					onCancel={controller.handleCancelBulkDelete}
+					loading={controller.isBulkDeleting}
+					maxWidth="sm"
+					fullWidth
+				>
+					<BulkDeleteList targets={controller.bulkDeleteTargets} />
+				</Dialog>
 			)}
 			{children}
 			<Dialog
