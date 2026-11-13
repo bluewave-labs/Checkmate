@@ -8,6 +8,7 @@ import { PARKED, type Job } from "../../src/domain/jobs/job.type.ts";
 import MongoConnectRepository from "../../src/domain/connect/connect.repository.mongo.ts";
 import { ConnectStateModel } from "../../src/domain/connect/connect.model.ts";
 import { ConnectOperationService } from "../../src/domain/connect/connect-operation.service.ts";
+import { ConnectScheduleService } from "../../src/domain/connect/connect-schedule.service.ts";
 import type { ConnectBackupResult } from "../../src/domain/connect/connect-backup.type.ts";
 import { EncryptionService } from "../../src/service/encryption/encryptionService.ts";
 import { JobScheduler } from "../../src/worker/worker.job-scheduler.ts";
@@ -102,6 +103,19 @@ const queueBackup = async () => {
 };
 
 const readRow = () => JobModel.findById("connect-operation").lean();
+
+const scheduleService = () => new ConnectScheduleService(connectRepository, apiScheduler(), createMockLogger() as any);
+
+const enrollWithSchedule = async () => {
+	await connectRepository.setEnrollment({
+		connectUrl: "wss://relay.checkmate.so/api/tunnel",
+		agentId: "inst-1",
+		token: encryptionService.encrypt(`cmk_${"a".repeat(48)}`),
+		apiUrl: null,
+	});
+	await connectRepository.setRecoveryKeyIfUnset(encryptionService.encrypt("ab".repeat(32)));
+	await connectRepository.setSchedule({ enabled: true, intervalHours: 24, kind: "config" });
+};
 
 describe("connect-operation across workers", () => {
 	it("runs a queued backup once with two workers and parks the row", async () => {
@@ -243,5 +257,56 @@ describe("recurring global jobs on the scheduler", () => {
 		]);
 
 		expect(claimedA.length + claimedB.length).toBe(1);
+	});
+});
+
+describe("scheduled backups", () => {
+	it("runs a scheduled backup exactly once through the operation row with two workers", async () => {
+		const a = makeWorker("worker-a");
+		const b = makeWorker("worker-b");
+		await enrollWithSchedule();
+
+		await scheduleService().handleJob();
+		const ran = await Promise.all([a.runOnce(), b.runOnce()]);
+
+		expect(ran.filter(Boolean)).toHaveLength(1);
+		const calls = [...a.connectBackupService.backup.mock.calls, ...b.connectBackupService.backup.mock.calls];
+		expect(calls).toHaveLength(1);
+		expect(calls[0]).toEqual([expect.objectContaining({ kind: "config" })]);
+		const state = await connectRepository.get();
+		expect(state.operation).toBeNull();
+		expect(state.lastBackup?.ok).toBe(true);
+		expect((await readRow())?.nextScheduledAt).toBe(PARKED);
+	});
+
+	it("skips a scheduled backup that comes due while a manual one is queued", async () => {
+		const a = makeWorker("worker-a");
+		await enrollWithSchedule();
+		await connectRepository.requestOperation({ type: "backup", kind: "full", requestedAt: new Date(), startedAt: null });
+		await apiScheduler().addGlobalJob("connect-operation");
+
+		await scheduleService().handleJob();
+		await a.runOnce();
+		const ranAgain = await a.runOnce();
+
+		expect(a.connectBackupService.backup).toHaveBeenCalledTimes(1);
+		expect(a.connectBackupService.backup).toHaveBeenCalledWith(expect.objectContaining({ kind: "full" }));
+		expect(ranAgain).toBe(false);
+	});
+
+	it("runs a scheduled row due now through the worker queue and moves it one interval on", async () => {
+		const DAY_MS = 86_400_000;
+		await enrollWithSchedule();
+		await apiScheduler().addRecurringGlobalJob("connect-backup", DAY_MS);
+		const jobsRepository = new MongoJobsRepository("worker-a");
+
+		const [claimed] = await jobsRepository.claimDueBatch("connect-backup", 1, Date.now());
+		await scheduleService().handleJob();
+		await jobsRepository.recordSuccess(claimed.id, claimed.nextScheduledAt, DAY_MS, Date.now());
+
+		expect((await connectRepository.get()).operation).toMatchObject({ type: "backup", kind: "config" });
+		const row = await JobModel.findById("connect-backup").lean();
+		expect(row?.nextScheduledAt).toBeGreaterThanOrEqual(claimed.nextScheduledAt + DAY_MS);
+		expect(row?.lockedBy).toBeNull();
 	});
 });
