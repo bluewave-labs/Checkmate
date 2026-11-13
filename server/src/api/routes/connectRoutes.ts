@@ -7,6 +7,7 @@ import {
 	connectRemoteAccessBodyValidation,
 	connectRestoreBodyValidation,
 	connectRunBackupBodyValidation,
+	connectScheduleBodyValidation,
 } from "@/api/validation/connectValidation.js";
 import { connectErrors } from "@/domain/connect/connect.errors.js";
 import { connectStatusSchema } from "@/domain/connect/connect.schema.js";
@@ -128,6 +129,16 @@ export const connectRoutes: RouteTable<IConnectController> = {
 			body: connectRestoreBodyValidation,
 			errors: [connectErrors.notEnrolled, connectErrors.restoreNeedsRecoveryKey, connectErrors.busy],
 			response: connectQueuedSchema,
+		},
+		{
+			method: "post",
+			path: "/backup/schedule",
+			handler: "setBackupSchedule",
+			summary: "Turn scheduled Checkmate Connect backups on or off and set their interval and kind (superadmin)",
+			roles: ["superadmin"],
+			body: connectScheduleBodyValidation,
+			errors: [connectErrors.notEnrolled, connectErrors.noRecoveryKey],
+			response: connectStatusSchema,
 		},
 	],
 };

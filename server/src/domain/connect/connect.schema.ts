@@ -24,7 +24,7 @@ export const connectStatusSchema = z
 			schedule: z
 				.object({
 					enabled: z.boolean(),
-					intervalHours: z.literal(ConnectScheduleIntervalHours),
+					intervalHours: z.literal(ConnectScheduleIntervalHours).meta({ enum: [...ConnectScheduleIntervalHours] }),
 					kind: z.enum(ConnectBackupKinds),
 				})
 				.nullable(),
