@@ -8,6 +8,7 @@ import {
 	connectRemoteAccessBodyValidation,
 	connectRestoreBodyValidation,
 	connectRunBackupBodyValidation,
+	connectScheduleBodyValidation,
 } from "@/api/validation/connectValidation.js";
 
 export interface IConnectController {
@@ -21,6 +22,7 @@ export interface IConnectController {
 	runBackup: RequestHandler;
 	importBackupRecoveryKey: RequestHandler;
 	restoreBackup: RequestHandler;
+	setBackupSchedule: RequestHandler;
 }
 
 class ConnectController implements IConnectController {
@@ -80,6 +82,12 @@ class ConnectController implements IConnectController {
 		const { backupId } = connectRestoreBodyValidation.parse(req.body);
 		const data = await this.connectService.restoreBackup(backupId);
 		res.json({ success: true, msg: "Restore started", data });
+	};
+
+	setBackupSchedule: Handler = async (req, res) => {
+		const body = connectScheduleBodyValidation.parse(req.body);
+		const data = await this.connectService.setBackupSchedule(body);
+		res.json({ success: true, msg: body.enabled ? "Scheduled backups enabled" : "Scheduled backups disabled", data });
 	};
 }
 

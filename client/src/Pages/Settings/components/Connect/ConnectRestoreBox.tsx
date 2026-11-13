@@ -39,7 +39,7 @@ export const ConnectRestoreBox = ({
 	const lastRestore = backupStatus?.lastRestore ?? null;
 
 	const kindText = (kind: string): string =>
-		t(`pages.settings.form.connect.backup.restore.kind.${kind}`, { defaultValue: kind });
+		t(`pages.settings.form.connect.backup.kind.${kind}`, { defaultValue: kind });
 
 	const confirmTitle = selected
 		? t("pages.settings.form.connect.backup.restore.confirmTitle", {

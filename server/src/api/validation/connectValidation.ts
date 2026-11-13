@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { ConnectBackupKinds } from "@/domain/connect/connect-backup.type.js";
+import {
+	ConnectBackupKinds,
+	ConnectScheduleIntervalHours,
+	DEFAULT_SCHEDULE_INTERVAL_HOURS,
+	DEFAULT_SCHEDULE_KIND,
+} from "@/domain/connect/connect-backup.type.js";
 
 export const connectEnrollBodyValidation = z.object({
 	connectUrl: z.string().regex(/^wss:\/\/[a-z0-9.-]+\/api\/tunnel$/, "Invalid Connect tunnel URL"),
@@ -35,4 +40,13 @@ export const connectImportKeyBodyValidation = z.object({
 
 export const connectRestoreBodyValidation = z.object({
 	backupId: z.string().regex(/^[0-9a-f-]{36}$/, "Invalid backup id"),
+});
+
+export const connectScheduleBodyValidation = z.object({
+	enabled: z.boolean(),
+	intervalHours: z
+		.literal(ConnectScheduleIntervalHours)
+		.meta({ enum: [...ConnectScheduleIntervalHours] })
+		.default(DEFAULT_SCHEDULE_INTERVAL_HOURS),
+	kind: z.enum(ConnectBackupKinds).default(DEFAULT_SCHEDULE_KIND),
 });

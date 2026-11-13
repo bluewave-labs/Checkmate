@@ -1,4 +1,7 @@
-export type ConnectBackupKind = "full" | "config";
+export const ConnectBackupKinds = ["full", "config"] as const;
+export type ConnectBackupKind = (typeof ConnectBackupKinds)[number];
+export const ConnectScheduleIntervals = [24, 72, 168] as const;
+export type ConnectScheduleInterval = (typeof ConnectScheduleIntervals)[number];
 export type ConnectOperationState = "queued" | "running";
 export type ConnectOperation = "backup" | "restore" | "verify";
 export type ConnectProgressStage =
@@ -26,7 +29,13 @@ export interface ConnectStatus {
 	agentVersion: string;
 	remoteAccess: { enabled: boolean };
 	tunnel: ConnectTunnelStatus;
-	backup: { recoveryKeySet: boolean };
+	backup: { recoveryKeySet: boolean; schedule: ConnectSchedule };
+}
+
+export interface ConnectSchedule {
+	enabled: boolean;
+	intervalHours: ConnectScheduleInterval;
+	kind: ConnectBackupKind;
 }
 
 export interface ConnectEnrollBody {

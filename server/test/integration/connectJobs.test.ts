@@ -8,6 +8,7 @@ import { PARKED, type Job } from "../../src/domain/jobs/job.type.ts";
 import MongoConnectRepository from "../../src/domain/connect/connect.repository.mongo.ts";
 import { ConnectStateModel } from "../../src/domain/connect/connect.model.ts";
 import { ConnectOperationService } from "../../src/domain/connect/connect-operation.service.ts";
+import { ConnectScheduleService } from "../../src/domain/connect/connect-schedule.service.ts";
 import type { ConnectBackupResult } from "../../src/domain/connect/connect-backup.type.ts";
 import { EncryptionService } from "../../src/service/encryption/encryptionService.ts";
 import { JobScheduler } from "../../src/worker/worker.job-scheduler.ts";
@@ -103,6 +104,19 @@ const queueBackup = async () => {
 
 const readRow = () => JobModel.findById("connect-operation").lean();
 
+const scheduleService = () => new ConnectScheduleService(connectRepository, apiScheduler(), createMockLogger() as any);
+
+const enrollWithSchedule = async () => {
+	await connectRepository.setEnrollment({
+		connectUrl: "wss://relay.checkmate.so/api/tunnel",
+		agentId: "inst-1",
+		token: encryptionService.encrypt(`cmk_${"a".repeat(48)}`),
+		apiUrl: null,
+	});
+	await connectRepository.setRecoveryKeyIfUnset(encryptionService.encrypt("ab".repeat(32)));
+	await connectRepository.setSchedule({ enabled: true, intervalHours: 24, kind: "config" });
+};
+
 describe("connect-operation across workers", () => {
 	it("runs a queued backup once with two workers and parks the row", async () => {
 		const a = makeWorker("worker-a");
@@ -169,5 +183,130 @@ describe("connect-operation across workers", () => {
 		expect((await readRow())?.nextScheduledAt).not.toBe(PARKED);
 		expect(await a.runOnce()).toBe(true);
 		expect(a.connectBackupService.backup).toHaveBeenCalledTimes(2);
+	});
+});
+
+describe("recurring global jobs on the scheduler", () => {
+	const DAY_MS = 86_400_000;
+	const readBackupRow = () => JobModel.findById("connect-backup").lean();
+
+	it("adds a recurring row due now", async () => {
+		const before = Date.now();
+
+		await apiScheduler().addRecurringGlobalJob("connect-backup", DAY_MS);
+
+		const row = await readBackupRow();
+		expect(row).toMatchObject({ type: "connect-backup", refId: null, isActive: true, intervalMs: DAY_MS, lockedBy: null, lockedUntil: null });
+		expect(row?.nextScheduledAt).toBeGreaterThanOrEqual(before);
+		expect(row?.nextScheduledAt).toBeLessThanOrEqual(Date.now());
+	});
+
+	it("keeps an existing row's next run when added again, so a restart never triggers a run", async () => {
+		const scheduler = apiScheduler();
+		await scheduler.addRecurringGlobalJob("connect-backup", DAY_MS);
+		const nextRun = Date.now() + DAY_MS;
+		await JobModel.updateOne({ _id: "connect-backup" }, { $set: { nextScheduledAt: nextRun, runCount: 3 } });
+
+		await scheduler.addRecurringGlobalJob("connect-backup", 3 * DAY_MS);
+
+		const row = await readBackupRow();
+		expect(row?.nextScheduledAt).toBe(nextRun);
+		expect(row?.intervalMs).toBe(3 * DAY_MS);
+		expect(row?.runCount).toBe(3);
+	});
+
+	it("moves the next run when updated", async () => {
+		const scheduler = apiScheduler();
+		await scheduler.addRecurringGlobalJob("connect-backup", DAY_MS);
+		const nextRun = Date.now() + 7 * DAY_MS;
+
+		await scheduler.updateRecurringGlobalJob("connect-backup", 7 * DAY_MS, nextRun);
+
+		const row = await readBackupRow();
+		expect(row?.nextScheduledAt).toBe(nextRun);
+		expect(row?.intervalMs).toBe(7 * DAY_MS);
+	});
+
+	it("creates the row when updating one that doesn't exist", async () => {
+		const nextRun = Date.now() + DAY_MS;
+
+		await apiScheduler().updateRecurringGlobalJob("connect-backup", DAY_MS, nextRun);
+
+		expect((await readBackupRow())?.nextScheduledAt).toBe(nextRun);
+	});
+
+	it("deletes the row and leaves the other global rows alone", async () => {
+		const scheduler = apiScheduler();
+		await scheduler.addRecurringGlobalJob("connect-backup", DAY_MS);
+		await scheduler.addGlobalJob("connect-operation");
+
+		await scheduler.deleteRecurringGlobalJob("connect-backup");
+
+		expect(await readBackupRow()).toBeNull();
+		expect(await readRow()).not.toBeNull();
+	});
+
+	it("is claimed by exactly one of two workers", async () => {
+		await apiScheduler().addRecurringGlobalJob("connect-backup", DAY_MS);
+		const a = new MongoJobsRepository("worker-a");
+		const b = new MongoJobsRepository("worker-b");
+
+		const [claimedA, claimedB] = await Promise.all([
+			a.claimDueBatch("connect-backup", 1, Date.now()),
+			b.claimDueBatch("connect-backup", 1, Date.now()),
+		]);
+
+		expect(claimedA.length + claimedB.length).toBe(1);
+	});
+});
+
+describe("scheduled backups", () => {
+	it("runs a scheduled backup exactly once through the operation row with two workers", async () => {
+		const a = makeWorker("worker-a");
+		const b = makeWorker("worker-b");
+		await enrollWithSchedule();
+
+		await scheduleService().handleJob();
+		const ran = await Promise.all([a.runOnce(), b.runOnce()]);
+
+		expect(ran.filter(Boolean)).toHaveLength(1);
+		const calls = [...a.connectBackupService.backup.mock.calls, ...b.connectBackupService.backup.mock.calls];
+		expect(calls).toHaveLength(1);
+		expect(calls[0]).toEqual([expect.objectContaining({ kind: "config" })]);
+		const state = await connectRepository.get();
+		expect(state.operation).toBeNull();
+		expect(state.lastBackup?.ok).toBe(true);
+		expect((await readRow())?.nextScheduledAt).toBe(PARKED);
+	});
+
+	it("skips a scheduled backup that comes due while a manual one is queued", async () => {
+		const a = makeWorker("worker-a");
+		await enrollWithSchedule();
+		await connectRepository.requestOperation({ type: "backup", kind: "full", requestedAt: new Date(), startedAt: null });
+		await apiScheduler().addGlobalJob("connect-operation");
+
+		await scheduleService().handleJob();
+		await a.runOnce();
+		const ranAgain = await a.runOnce();
+
+		expect(a.connectBackupService.backup).toHaveBeenCalledTimes(1);
+		expect(a.connectBackupService.backup).toHaveBeenCalledWith(expect.objectContaining({ kind: "full" }));
+		expect(ranAgain).toBe(false);
+	});
+
+	it("runs a scheduled row due now through the worker queue and moves it one interval on", async () => {
+		const DAY_MS = 86_400_000;
+		await enrollWithSchedule();
+		await apiScheduler().addRecurringGlobalJob("connect-backup", DAY_MS);
+		const jobsRepository = new MongoJobsRepository("worker-a");
+
+		const [claimed] = await jobsRepository.claimDueBatch("connect-backup", 1, Date.now());
+		await scheduleService().handleJob();
+		await jobsRepository.recordSuccess(claimed.id, claimed.nextScheduledAt, DAY_MS, Date.now());
+
+		expect((await connectRepository.get()).operation).toMatchObject({ type: "backup", kind: "config" });
+		const row = await JobModel.findById("connect-backup").lean();
+		expect(row?.nextScheduledAt).toBeGreaterThanOrEqual(claimed.nextScheduledAt + DAY_MS);
+		expect(row?.lockedBy).toBeNull();
 	});
 });

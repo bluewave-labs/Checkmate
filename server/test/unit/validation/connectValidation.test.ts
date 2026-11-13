@@ -1,5 +1,9 @@
 import { describe, expect, it } from "@jest/globals";
-import { connectImportKeyBodyValidation, connectRestoreBodyValidation } from "../../../src/api/validation/connectValidation.ts";
+import {
+	connectImportKeyBodyValidation,
+	connectRestoreBodyValidation,
+	connectScheduleBodyValidation,
+} from "../../../src/api/validation/connectValidation.ts";
 
 const KEY = "ab".repeat(32);
 
@@ -45,6 +49,37 @@ describe("connectValidation", () => {
 			["a path", "../../../../../etc/passwd/xxxxxxxxxxx"],
 		])("rejects a backup id that is %s", (_label, backupId) => {
 			expect(() => connectRestoreBodyValidation.parse({ backupId })).toThrow();
+		});
+	});
+
+	describe("connectScheduleBodyValidation", () => {
+		it("defaults to a daily full backup", () => {
+			expect(connectScheduleBodyValidation.parse({ enabled: true })).toEqual({ enabled: true, intervalHours: 24, kind: "full" });
+		});
+
+		it("keeps the given interval and kind", () => {
+			expect(connectScheduleBodyValidation.parse({ enabled: false, intervalHours: 168, kind: "config" })).toEqual({
+				enabled: false,
+				intervalHours: 168,
+				kind: "config",
+			});
+		});
+
+		it.each([24, 72, 168])("accepts %i hours", (intervalHours) => {
+			expect(connectScheduleBodyValidation.parse({ enabled: true, intervalHours }).intervalHours).toBe(intervalHours);
+		});
+
+		it.each([0, 6, 12, 48, 169, 24.5, "24", null])("rejects %p hours", (intervalHours) => {
+			expect(() => connectScheduleBodyValidation.parse({ enabled: true, intervalHours })).toThrow();
+		});
+
+		it("rejects an unknown kind", () => {
+			expect(() => connectScheduleBodyValidation.parse({ enabled: true, kind: "logs" })).toThrow();
+		});
+
+		it("requires enabled to be a boolean", () => {
+			expect(() => connectScheduleBodyValidation.parse({})).toThrow();
+			expect(() => connectScheduleBodyValidation.parse({ enabled: "true" })).toThrow();
 		});
 	});
 });

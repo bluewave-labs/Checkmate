@@ -4235,9 +4235,26 @@
 						"properties": {
 							"recoveryKeySet": {
 								"type": "boolean"
+							},
+							"schedule": {
+								"type": "object",
+								"properties": {
+									"enabled": {
+										"type": "boolean"
+									},
+									"intervalHours": {
+										"type": "number",
+										"enum": [24, 72, 168]
+									},
+									"kind": {
+										"type": "string",
+										"enum": ["full", "config"]
+									}
+								},
+								"required": ["enabled", "intervalHours", "kind"]
 							}
 						},
-						"required": ["recoveryKeySet"]
+						"required": ["recoveryKeySet", "schedule"]
 					}
 				},
 				"required": ["enrolled", "agentId", "connectUrl", "apiUrl", "agentVersion", "remoteAccess", "tunnel", "backup"]
@@ -18175,6 +18192,127 @@
 					},
 					"409": {
 						"description": "This installation is not enrolled with Checkmate Connect, or restores need the original recovery key, or a backup or restore is already running",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/backup/schedule": {
+			"post": {
+				"tags": ["connect"],
+				"summary": "Turn scheduled Checkmate Connect backups on or off and set their interval and kind (superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"enabled": {
+										"type": "boolean"
+									},
+									"intervalHours": {
+										"type": "number",
+										"enum": [24, 72, 168],
+										"default": 24
+									},
+									"kind": {
+										"type": "string",
+										"enum": ["full", "config"],
+										"default": "full"
+									}
+								},
+								"required": ["enabled"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectStatus"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "This installation is not enrolled with Checkmate Connect, or no recovery key set",
 						"content": {
 							"application/json": {
 								"schema": {

@@ -24,6 +24,7 @@ import { ConnectToolsService } from "@/domain/connect/connect-tools.service.js";
 import { ConnectApiService } from "@/domain/connect/connect-api.service.js";
 import { ConnectBackupService } from "@/domain/connect/connect-backup.service.js";
 import { ConnectOperationService } from "@/domain/connect/connect-operation.service.js";
+import { ConnectScheduleService } from "@/domain/connect/connect-schedule.service.js";
 import { IQueueWorker, JobHandlers } from "@/worker/worker.interface.js";
 import { WorkerHelper } from "@/worker/worker.helper.js";
 import { GeoChecksPipeline } from "@/worker/worker.geo-pipeline.js";
@@ -175,6 +176,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		telemetry: workerHelper.getTelemetryJob(),
 		"connect-heartbeat": workerHelper.getConnectHeartbeatJob(),
 		"connect-operation": () => connectOperationService.handleJob(),
+		"connect-backup": () => connectScheduleService.handleJob(),
 	};
 
 	const worker = new DBQueueWorker({
@@ -200,6 +202,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		worker,
 		logger
 	);
+	const connectScheduleService = new ConnectScheduleService(connectRepository, worker, logger);
 
 	await worker.init();
 

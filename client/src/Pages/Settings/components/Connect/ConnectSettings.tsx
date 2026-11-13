@@ -15,6 +15,7 @@ import { ConnectEnrollBox } from "./ConnectEnrollBox";
 import { ConnectRecoveryKeyBox } from "./ConnectRecoveryKeyBox";
 import { ConnectRemoteAccessBox } from "./ConnectRemoteAccessBox";
 import { ConnectRestoreBox } from "./ConnectRestoreBox";
+import { ConnectScheduleBox } from "./ConnectScheduleBox";
 import { ConnectStatusBox } from "./ConnectStatusBox";
 import { ConnectUnenrollBox } from "./ConnectUnenrollBox";
 
@@ -46,6 +47,9 @@ export const ConnectSettings = () => {
 
 	if (!status) return null;
 
+	const canManageBackups =
+		isSuperAdmin && status.enrolled && status.backup.recoveryKeySet && backupToolsReady;
+
 	return (
 		<Stack gap={theme.spacing(LAYOUT.MD)}>
 			{!isSuperAdmin && (
@@ -64,17 +68,20 @@ export const ConnectSettings = () => {
 					onQueued={refetchBackupStatus}
 				/>
 			)}
-			{isSuperAdmin &&
-				status.enrolled &&
-				status.backup.recoveryKeySet &&
-				backupToolsReady && (
-					<ConnectRestoreBox
-						backups={cloudBackups}
-						backupStatus={backupStatus}
-						busy={backupBusy}
-						onQueued={refetchBackupStatus}
-					/>
-				)}
+			{canManageBackups && (
+				<ConnectScheduleBox
+					schedule={status.backup.schedule}
+					onChanged={refetch}
+				/>
+			)}
+			{canManageBackups && (
+				<ConnectRestoreBox
+					backups={cloudBackups}
+					backupStatus={backupStatus}
+					busy={backupBusy}
+					onQueued={refetchBackupStatus}
+				/>
+			)}
 			{isSuperAdmin && status.enrolled && backupToolsReady && (
 				<ConnectRecoveryKeyBox
 					recoveryKeySet={status.backup.recoveryKeySet}
