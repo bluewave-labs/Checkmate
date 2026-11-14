@@ -275,6 +275,66 @@
 				"available": "{{version}} saatavilla",
 				"tooltip": "Checkmatesta on saatavilla uudempi versio. Näytä julkaisutiedot."
 			}
+		},
+		"whatsNew": {
+			"eyebrow": "Uutta Checkmatessa {{version}}",
+			"stepCount": "{{current}}/{{total}}",
+			"goToStep": "Siirry vaiheeseen {{step}}",
+			"skip": "Ohita",
+			"done": "Valmis",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "Pääkäyttäjä rekisteröi tämän palvelimen kohdassa {{settings}}.",
+			"connectAskSuperadmin": "Pyydä pääkäyttäjää ottamaan tämä käyttöön kohdassa {{settings}}.",
+			"connectCta": "Ota Checkmate Connect käyttöön",
+			"steps": {
+				"dashboard": {
+					"title": "Koontinäyttö on uusi aloitussivusi",
+					"description": "Checkmate avautuu koontinäyttöön, joka näyttää monitorien tilan, alhaalla olevat monitorit ja kunkin käytettävyyden. Ylläpitäjät näkevät myös työjonon ja Checkmaten diagnostiikan. Järjestä kortit haluamaasi järjestykseen toiminnolla {{arrange}}. Piilota tarpeettomat kortit toiminnolla {{editCards}}."
+				},
+				"heartbeat": {
+					"title": "Heartbeat-monitorit ajastetuille töille",
+					"description": "Cron-työt, varmuuskopiot ja skriptit pingaavat Checkmatea jokaisella ajokerralla. Jos pingiä ei tule hälytysikkunan aikana, monitori merkitään alhaalla olevaksi ja ilmoituksesi lähtevät."
+				},
+				"remoteAccess": {
+					"title": "Avaa Checkmate mistä tahansa avaamatta portteja",
+					"description": "Checkmate Connectin kanssa tämä palvelin pitää lähtevän tunnelin auki. Pääset siihen sen Connect-osoitteesta avaamatta saapuvia portteja tai pystyttämättä VPN:ää."
+				},
+				"backups": {
+					"title": "Ajasta salatut pilvivarmuuskopiot",
+					"description": "Varmuuskopioi Checkmate Connectiin 1, 3 tai 7 päivän välein joko koko tietokanta tai pelkkä kokoonpano. Tämä palvelin salaa tiedot ennen lähetystä. Voit palauttaa varmuuskopion kohdassa {{settings}}."
+				},
+				"intervals": {
+					"title": "Tarkista monitorit tunneittain tai kerran päivässä",
+					"description": "Monitori voi nyt suorittaa tarkistuksen 1, 2, 6 tai 12 tunnin välein tai kerran päivässä. Jos haluamasi väli ei ole luettelossa, kirjoita se. Pitkät välit sopivat monitoreille, jotka eivät tarvitse tarkistusta joka minuutti, kuten PageSpeedille."
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "Yövarmuuskopio",
+					"subtitle": "{{type}} · hälytysikkuna {{window}}",
+					"downTitle": "{{name}} on alhaalla",
+					"pingNotReceived": "Pingiä ei vastaanotettu"
+				},
+				"remote": {
+					"network": "Verkkosi",
+					"server": "Checkmate-palvelin",
+					"tunnel": "Lähtevä tunneli",
+					"noInbound": "Ei avoimia saapuvia portteja",
+					"laptop": "Kannettavasi"
+				},
+				"backup": {
+					"encrypted": "Salattu täällä ennen lähetystä. Pilvi tallentaa vain salattua tekstiä.",
+					"database": "Tietokanta",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "Luo monitori",
+					"checksInADay": "Tarkistuksia päivässä",
+					"checksPerDay_one": "{{formatted}} tarkistus päivässä",
+					"checksPerDay_other": "{{formatted}} tarkistusta päivässä",
+					"nextCheck": "Seuraava tarkistus: {{interval}}"
+				}
+			}
 		}
 	},
 	"pages": {

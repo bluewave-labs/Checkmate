@@ -275,6 +275,66 @@
 				"available": "{{version}} kullanılabilir",
 				"tooltip": "Checkmate'in daha yeni bir sürümü mevcut. Sürüm notlarını görüntüleyin."
 			}
+		},
+		"whatsNew": {
+			"eyebrow": "Checkmate {{version}} sürümünde yeni",
+			"stepCount": "{{current}} / {{total}}",
+			"goToStep": "{{step}}. adıma git",
+			"skip": "Atla",
+			"done": "Bitti",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "Bu sunucuyu bir süper yönetici {{settings}} bölümünden kaydeder.",
+			"connectAskSuperadmin": "Bir süper yöneticiden bunu {{settings}} bölümünde kurmasını isteyin.",
+			"connectCta": "Checkmate Connect'i kurun",
+			"steps": {
+				"dashboard": {
+					"title": "Gösterge paneli yeni ana sayfanız",
+					"description": "Checkmate, monitör durumunu, hangi monitörlerin çalışmadığını ve her birinin erişilebilirliğini gösteren bir gösterge paneliyle açılır. Yöneticiler iş kuyruğunu ve Checkmate tanılamasını da görür. Kartları {{arrange}} ile istediğiniz sıraya koyun. İhtiyacınız olmayanları {{editCards}} ile gizleyin."
+				},
+				"heartbeat": {
+					"title": "Zamanlanmış işler için heartbeat monitörleri",
+					"description": "Cron işleri, yedeklemeler ve betikler her çalıştıklarında Checkmate'e ping gönderir. Uyarı aralığı içinde ping gelmezse monitör çalışmıyor olarak işaretlenir ve bildirimleriniz gönderilir."
+				},
+				"remoteAccess": {
+					"title": "Port açmadan Checkmate'e her yerden erişin",
+					"description": "Checkmate Connect ile bu sunucu giden bir tüneli açık tutar. Gelen port açmadan ya da VPN kurmadan sunucuya Connect adresinden ulaşırsınız."
+				},
+				"backups": {
+					"title": "Şifreli bulut yedeklerini zamanlayın",
+					"description": "Checkmate Connect'e 1, 3 veya 7 günde bir, tüm veritabanını ya da yalnızca yapılandırmayı yedekleyin. Bu sunucu verileri yüklemeden önce şifreler. Bir yedeği {{settings}} bölümünden geri yükleyebilirsiniz."
+				},
+				"intervals": {
+					"title": "Monitörleri saatte bir veya günde bir kontrol edin",
+					"description": "Bir monitör artık 1, 2, 6 veya 12 saatte bir ya da günde bir çalışabilir. İstediğiniz aralık listede yoksa yazın. Uzun aralıklar, PageSpeed gibi her dakika kontrol gerektirmeyen monitörlere uygundur."
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "Gece yedeği",
+					"subtitle": "{{type}} · uyarı aralığı {{window}}",
+					"downTitle": "{{name}} çalışmıyor",
+					"pingNotReceived": "Ping alınmadı"
+				},
+				"remote": {
+					"network": "Ağınız",
+					"server": "Checkmate sunucusu",
+					"tunnel": "Giden tünel",
+					"noInbound": "Açık gelen port yok",
+					"laptop": "Dizüstü bilgisayarınız"
+				},
+				"backup": {
+					"encrypted": "Yüklemeden önce burada şifrelenir. Bulut yalnızca şifreli metin saklar.",
+					"database": "Veritabanı",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "Monitör oluştur",
+					"checksInADay": "Günlük kontroller",
+					"checksPerDay_one": "Günde {{formatted}} kontrol",
+					"checksPerDay_other": "Günde {{formatted}} kontrol",
+					"nextCheck": "Sonraki kontrol {{interval}} sonra"
+				}
+			}
 		}
 	},
 	"pages": {

@@ -48,6 +48,7 @@ export const editUserBodyValidation = z
 		password: passwordValidation.optional(),
 		newPassword: passwordValidation.optional(),
 		deleteProfileImage: booleanCoercion.optional(),
+		whatsNewSeen: z.string().trim().min(1).max(64).optional(),
 	})
 	// Changing a password requires both the current password and the new one.
 	// The service only runs the change-password flow when both are present, so

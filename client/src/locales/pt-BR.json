@@ -277,6 +277,67 @@
 		"starPrompt": {
 			"title": "Dê uma estrela ao Checkmate",
 			"description": "Veja os últimos lançamentos e ajude a comunidade a crescer no GitHub"
+		},
+		"whatsNew": {
+			"eyebrow": "Novidades no Checkmate {{version}}",
+			"stepCount": "{{current}} de {{total}}",
+			"goToStep": "Ir para a etapa {{step}}",
+			"skip": "Pular",
+			"done": "Concluir",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "Um superadmin registra este servidor em {{settings}}.",
+			"connectAskSuperadmin": "Peça a um superadmin para configurar isso em {{settings}}.",
+			"connectCta": "Configurar o Checkmate Connect",
+			"steps": {
+				"dashboard": {
+					"title": "O painel é a sua nova página inicial",
+					"description": "O Checkmate abre em um painel que mostra o status dos monitores, quais estão fora do ar e a disponibilidade de cada um. Admins também veem a fila de tarefas e o diagnóstico do Checkmate. Coloque os cartões na ordem que quiser com {{arrange}}. Oculte os que você não precisa com {{editCards}}."
+				},
+				"heartbeat": {
+					"title": "Monitores heartbeat para tarefas agendadas",
+					"description": "Tarefas cron, backups e scripts enviam um ping ao Checkmate a cada execução. Se nenhum ping chegar dentro da janela de alerta, o monitor fica fora do ar e suas notificações são disparadas."
+				},
+				"remoteAccess": {
+					"title": "Abra o Checkmate de qualquer lugar sem abrir portas",
+					"description": "Com o Checkmate Connect, este servidor mantém um túnel de saída aberto. Você o acessa pelo endereço do Connect sem abrir portas de entrada nem configurar uma VPN."
+				},
+				"backups": {
+					"title": "Agende backups criptografados na nuvem",
+					"description": "Faça backup no Checkmate Connect a cada 1, 3 ou 7 dias, do banco de dados completo ou só da configuração. Este servidor criptografa os dados antes do envio. Você pode restaurar um backup em {{settings}}."
+				},
+				"intervals": {
+					"title": "Verifique monitores a cada hora ou uma vez por dia",
+					"description": "Agora um monitor pode rodar a cada 1, 2, 6 ou 12 horas, ou uma vez por dia. Se o intervalo que você quer não estiver na lista, digite-o. Intervalos longos servem para monitores que não precisam de verificação a cada minuto, como o PageSpeed."
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "Backup noturno",
+					"subtitle": "{{type}} · janela de alerta {{window}}",
+					"downTitle": "{{name}} está fora do ar",
+					"pingNotReceived": "Ping não recebido"
+				},
+				"remote": {
+					"network": "Sua rede",
+					"server": "Servidor do Checkmate",
+					"tunnel": "Túnel de saída",
+					"noInbound": "Nenhuma porta de entrada aberta",
+					"laptop": "Seu notebook"
+				},
+				"backup": {
+					"encrypted": "Criptografado aqui antes do envio. A nuvem guarda só texto cifrado.",
+					"database": "Banco de dados",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "Criar monitor",
+					"checksInADay": "Verificações por dia",
+					"checksPerDay_one": "{{formatted}} verificação por dia",
+					"checksPerDay_many": "{{formatted}} verificações por dia",
+					"checksPerDay_other": "{{formatted}} verificações por dia",
+					"nextCheck": "Próxima verificação em {{interval}}"
+				}
+			}
 		}
 	},
 	"pages": {

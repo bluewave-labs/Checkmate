@@ -275,6 +275,67 @@
 		"starPrompt": {
 			"title": "Dona una estrella a Checkmate",
 			"description": "Veu les darreres versions i ajuda a fer créixer la comunitat a GitHub"
+		},
+		"whatsNew": {
+			"eyebrow": "Novetats a Checkmate {{version}}",
+			"stepCount": "{{current}} de {{total}}",
+			"goToStep": "Ves al pas {{step}}",
+			"skip": "Omet",
+			"done": "Fet",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "Un superadmin registra aquest servidor a {{settings}}.",
+			"connectAskSuperadmin": "Demana a un superadmin que ho configuri a {{settings}}.",
+			"connectCta": "Configura Checkmate Connect",
+			"steps": {
+				"dashboard": {
+					"title": "El tauler és la teva nova pàgina d'inici",
+					"description": "Checkmate s'obre amb un tauler que mostra l'estat dels monitors, quins estan caiguts i la disponibilitat de cadascun. Els admins també veuen la cua de tasques i el diagnòstic de Checkmate. Ordena les targetes com vulguis amb {{arrange}}. Amaga les que no necessitis amb {{editCards}}."
+				},
+				"heartbeat": {
+					"title": "Monitors heartbeat per a tasques programades",
+					"description": "Les tasques cron, còpies de seguretat i scripts envien un ping a Checkmate cada vegada que s'executen. Si no arriba cap ping dins la finestra d'alerta, el monitor queda caigut i s'envien les teves notificacions."
+				},
+				"remoteAccess": {
+					"title": "Obre Checkmate des de qualsevol lloc sense obrir ports",
+					"description": "Amb Checkmate Connect, aquest servidor manté obert un túnel de sortida. Hi pots accedir des de la seva adreça de Connect sense obrir ports d'entrada ni configurar una VPN."
+				},
+				"backups": {
+					"title": "Programa còpies de seguretat xifrades al núvol",
+					"description": "Fes còpies a Checkmate Connect cada 1, 3 o 7 dies, de la base de dades completa o només de la configuració. Aquest servidor xifra les dades abans de pujar-les. Pots restaurar una còpia des de {{settings}}."
+				},
+				"intervals": {
+					"title": "Comprova els monitors cada hora o un cop al dia",
+					"description": "Ara un monitor es pot executar cada 1, 2, 6 o 12 hores, o un cop al dia. Si l'interval que vols no és a la llista, escriu-lo. Els intervals llargs van bé per a monitors que no necessiten una comprovació cada minut, com PageSpeed."
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "Còpia nocturna",
+					"subtitle": "{{type}} · finestra d'alerta {{window}}",
+					"downTitle": "{{name}} està caigut",
+					"pingNotReceived": "Ping no rebut"
+				},
+				"remote": {
+					"network": "La teva xarxa",
+					"server": "Servidor de Checkmate",
+					"tunnel": "Túnel de sortida",
+					"noInbound": "Cap port d'entrada obert",
+					"laptop": "El teu portàtil"
+				},
+				"backup": {
+					"encrypted": "Xifrat aquí abans de pujar-lo. El núvol només desa text xifrat.",
+					"database": "Base de dades",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "Crea un monitor",
+					"checksInADay": "Comprovacions al dia",
+					"checksPerDay_one": "{{formatted}} comprovació al dia",
+					"checksPerDay_many": "{{formatted}} comprovacions al dia",
+					"checksPerDay_other": "{{formatted}} comprovacions al dia",
+					"nextCheck": "Propera comprovació d'aquí a {{interval}}"
+				}
+			}
 		}
 	},
 	"pages": {

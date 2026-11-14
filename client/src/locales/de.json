@@ -275,6 +275,66 @@
 				"available": "{{version}} verfügbar",
 				"tooltip": "Eine neuere Version von Checkmate ist verfügbar. Versionshinweise anzeigen."
 			}
+		},
+		"whatsNew": {
+			"eyebrow": "Neu in Checkmate {{version}}",
+			"stepCount": "{{current}} von {{total}}",
+			"goToStep": "Zu Schritt {{step}}",
+			"skip": "Überspringen",
+			"done": "Fertig",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "Ein Superadmin registriert diesen Server unter {{settings}}.",
+			"connectAskSuperadmin": "Bitten Sie einen Superadmin, das unter {{settings}} einzurichten.",
+			"connectCta": "Checkmate Connect einrichten",
+			"steps": {
+				"dashboard": {
+					"title": "Das Dashboard ist Ihre neue Startseite",
+					"description": "Checkmate öffnet mit einem Dashboard, das den Monitorstatus, ausgefallene Monitore und die Verfügbarkeit jedes Monitors zeigt. Admins sehen zusätzlich die Job-Warteschlange und die Checkmate-Diagnose. Ordnen Sie Karten mit {{arrange}} in beliebiger Reihenfolge an. Blenden Sie nicht benötigte Karten mit {{editCards}} aus."
+				},
+				"heartbeat": {
+					"title": "Heartbeat-Monitore für geplante Jobs",
+					"description": "Cronjobs, Sicherungen und Skripte pingen Checkmate bei jedem Lauf. Kommt innerhalb des Alarmfensters kein Ping an, gilt der Monitor als ausgefallen und Ihre Benachrichtigungen werden ausgelöst."
+				},
+				"remoteAccess": {
+					"title": "Checkmate von überall öffnen, ohne Ports zu öffnen",
+					"description": "Mit Checkmate Connect hält dieser Server einen ausgehenden Tunnel offen. So erreichen Sie ihn über seine Connect-Adresse, ohne eingehende Ports zu öffnen oder ein VPN einzurichten."
+				},
+				"backups": {
+					"title": "Verschlüsselte Cloud-Sicherungen planen",
+					"description": "Sichern Sie alle 1, 3 oder 7 Tage zu Checkmate Connect, entweder die vollständige Datenbank oder nur die Konfiguration. Dieser Server verschlüsselt die Daten vor dem Hochladen. Eine Sicherung stellen Sie unter {{settings}} wieder her."
+				},
+				"intervals": {
+					"title": "Monitore stündlich oder einmal am Tag prüfen",
+					"description": "Ein Monitor kann jetzt alle 1, 2, 6 oder 12 Stunden oder einmal am Tag laufen. Steht das gewünschte Intervall nicht in der Liste, geben Sie es ein. Lange Intervalle eignen sich für Monitore, die keine minütliche Prüfung brauchen, etwa PageSpeed."
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "Nächtliche Sicherung",
+					"subtitle": "{{type}} · Alarmfenster {{window}}",
+					"downTitle": "{{name}} ist ausgefallen",
+					"pingNotReceived": "Ping nicht empfangen"
+				},
+				"remote": {
+					"network": "Ihr Netzwerk",
+					"server": "Checkmate-Server",
+					"tunnel": "Ausgehender Tunnel",
+					"noInbound": "Keine eingehenden Ports offen",
+					"laptop": "Ihr Laptop"
+				},
+				"backup": {
+					"encrypted": "Vor dem Hochladen hier verschlüsselt. Die Cloud speichert nur Chiffretext.",
+					"database": "Datenbank",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "Monitor erstellen",
+					"checksInADay": "Prüfungen pro Tag",
+					"checksPerDay_one": "{{formatted}} Prüfung pro Tag",
+					"checksPerDay_other": "{{formatted}} Prüfungen pro Tag",
+					"nextCheck": "Nächste Prüfung in {{interval}}"
+				}
+			}
 		}
 	},
 	"pages": {
