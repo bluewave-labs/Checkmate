@@ -22,7 +22,7 @@ import { typographyLevels } from "@/Utils/Theme/Palette";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 
-// VerifyWise modal: page-grey surface with hairline-separated header and footer,
+// Modal: page-grey surface with hairline-separated header and footer,
 // content in a white bordered box, actions right-aligned (Cancel, then primary).
 // Sizing is left to MUI and each caller's maxWidth / fullWidth, so no dialog
 // changes size with the restyle.

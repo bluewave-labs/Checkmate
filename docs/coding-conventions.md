@@ -151,8 +151,9 @@ The theme exposes tokens for every kind of magic value. Use them. Reserve raw nu
 - **Colors** — `theme.palette.*` (rule 2 above). Beyond the MUI keys the theme adds:
   - `theme.palette.neutral.*` — raised fills, hairline and input borders, row dividers, icon grey, hover and selected greens
   - `theme.palette.signal.{success|error|warning|neutral|info}.{bg|text|border|mark}` — status colours; always pair them with a word
-  - `theme.palette.sidebar.parts.*` — sidebar wayfinding only, never for status, charts or badges
-  - Raw values live only in `Palette.ts` (`vw`, `CHART_SERIES`, `SCORE_SPECTRUM`, `getScoreColor`); screens never contain hex literals
+  - `theme.palette.sidebar.groups.*` — sidebar wayfinding only, never for status, charts or badges
+  - `theme.palette.chart.series` — multi-series chart colours in fixed order; `theme.palette.chart.score` — 0–100 score spectrum, read through `getScoreColor(theme.palette.chart.score, value)`
+  - Raw values live only in `Palette.ts`; screens never contain hex literals
 
 ### Examples
 

@@ -1,5 +1,3 @@
-import { CHART_SERIES } from "@/Utils/Theme/Palette";
-
 export const computeYAxisCap = (values: number[]): number | undefined => {
 	const sorted = values.slice().sort((a, b) => a - b);
 	if (sorted.length < 2) return undefined;
@@ -34,13 +32,6 @@ export const PHASE_LABEL_KEYS: Record<(typeof PHASE_KEYS)[number], string> = {
 	avgFirstByte: "common.charts.phases.firstByte",
 	avgDownload: "common.charts.phases.download",
 };
-
-// VerifyWise chart series in their fixed order. Repeated so every index the
-// previous 24-colour list covered still resolves to a colour.
-export const AREA_COLORS: string[] = Array.from(
-	{ length: 24 },
-	(_, i) => CHART_SERIES[i % CHART_SERIES.length]
-);
 
 export const createGradient = ({
 	id,

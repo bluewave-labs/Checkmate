@@ -61,7 +61,10 @@ export const UptimeCard = ({ monitors }: UptimeCardProps) => {
 				<Stack gap={theme.spacing(LAYOUT.SM)}>
 					{ranked.map((monitor) => {
 						// Uptime is a score: colour the bar from the 0-100 score spectrum
-						const color = getScoreColor(monitor.uptimePercentage * 100);
+						const color = getScoreColor(
+							theme.palette.chart.score,
+							monitor.uptimePercentage * 100
+						);
 						return (
 							<BarRow
 								key={monitor.id}

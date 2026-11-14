@@ -111,8 +111,8 @@ export const Sidebar = () => {
 									variant="eyebrow"
 									component="div"
 									color={
-										group.part
-											? theme.palette.sidebar.parts[group.part].text
+										group.groupKey
+											? theme.palette.sidebar.groups[group.groupKey].text
 											: theme.palette.neutral.tertiary
 									}
 									fontSize={typographyLevels.s}
@@ -147,7 +147,7 @@ export const Sidebar = () => {
 										key={item.path}
 										item={item}
 										selected={selected}
-										part={group.part}
+										groupKey={group.groupKey}
 										onClick={() => handleNavClick(item.path)}
 									/>
 								);

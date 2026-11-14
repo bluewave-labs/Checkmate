@@ -47,7 +47,7 @@ interface MultipleProps extends FilterChipBaseProps {
 // Selected values listed in the chip before collapsing the rest into "+N"
 const MAX_VISIBLE_VALUES = 2;
 
-// One filter per column, shown as "Label: value" (VerifyWise filter chips). It is
+// One filter per column, shown as "Label: value". It is
 // sized and bordered exactly like the dropdowns elsewhere (34px, 2px corners,
 // input border) so filter rows match across pages. Presentation only: it reports
 // the chosen value(s) through onChange exactly as a Select would.

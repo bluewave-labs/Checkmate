@@ -18,7 +18,7 @@ export const LAYOUT = {
 	XXL: 16,
 } as const;
 
-export const INPUT_BASE_HEIGHT = 34; // Height for inputs/controls (VerifyWise: 34px)
+export const INPUT_BASE_HEIGHT = 34; // Height for inputs/controls
 export const SCROLLBAR_SIZE = 8;
 export const HOVER = {
 	DARKEN: 0.06, // This is a coefficient for darkening function
@@ -26,7 +26,7 @@ export const HOVER = {
 	CONTROL: 0.05, // Stronger overlay for controls nested inside a hoverable row
 } as const;
 
-// VerifyWise component tokens. The spec gives exact pixel values, and
+// Component measurements. The style spec gives exact pixel values, and
 // theme.spacing (base 2) / LAYOUT cannot express odd ones such as 9px or 14px,
 // so component measurements are named here instead of written inline.
 export const RADIUS = {

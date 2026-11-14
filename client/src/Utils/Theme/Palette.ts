@@ -16,8 +16,8 @@ export const typographyLevels = {
 	xxl: `${(typographyBase + 11) / 16}rem`, // 24px
 };
 
-// VerifyWise phase 1 tokens (light). Greys are slightly green-tinted.
-export const vw = {
+// Light mode base colours. Greys are slightly green-tinted.
+const lightTokens = {
 	ink: "#1A2E2B",
 	text2: "#33453F",
 	text3: "#495A56",
@@ -37,42 +37,42 @@ export const vw = {
 	green100: "#D9F2E9",
 	sortedCell: "#F7FBF9", // faint green behind a sorted table column
 	// Signal colours: tint background, text on the tint, border, solid mark
-	criticalBg: "#FDE2E2",
-	criticalText: "#B91C1C",
-	criticalBorder: "#F5B5B5",
-	criticalMark: "#DC2626",
-	highBg: "#FDEBD5",
-	highText: "#9A4D05",
-	highBorder: "#F8C98F",
-	highMark: "#F28C18",
-	lowBg: "#DCF2E4",
-	lowText: "#17703B",
-	lowBorder: "#A6DDB9",
-	lowMark: "#22A55A",
-	noneBg: "#EEF1F0",
-	noneText: "#495A56",
-	noneBorder: "#C9D1CF",
-	noneMark: "#C9D1CF",
+	errorBg: "#FDE2E2",
+	errorText: "#B91C1C",
+	errorBorder: "#F5B5B5",
+	errorMark: "#DC2626",
+	warningBg: "#FDEBD5",
+	warningText: "#9A4D05",
+	warningBorder: "#F8C98F",
+	warningMark: "#F28C18",
+	successBg: "#DCF2E4",
+	successText: "#17703B",
+	successBorder: "#A6DDB9",
+	successMark: "#22A55A",
+	neutralBg: "#EEF1F0",
+	neutralText: "#495A56",
+	neutralBorder: "#C9D1CF",
+	neutralMark: "#C9D1CF",
 	infoBg: "#E3F2FC",
 	infoText: "#2D6F99",
 	infoBorder: "#BFE0F5",
 	infoMark: "#8CC8EE",
 	// Sidebar part colours (wayfinding only)
-	recordSolid: "#208DAA",
-	recordText: "#196F86",
-	recordHover: "#F1F8FB",
-	recordSelected: "#DCEDF3",
-	recordPressed: "#C8E2EB",
-	trackSolid: "#E09B26",
-	trackText: "#85590F",
-	trackHover: "#FDF7EC",
-	trackSelected: "#F9EBD3",
-	trackPressed: "#F3DCB5",
-	enforceSolid: "#1D8A4C",
-	enforceText: "#187340",
-	enforceHover: "#EFF8F2",
-	enforceSelected: "#DBEFE2",
-	enforcePressed: "#C3E4CF",
+	monitoringSolid: "#208DAA",
+	monitoringText: "#196F86",
+	monitoringHover: "#F1F8FB",
+	monitoringSelected: "#DCEDF3",
+	monitoringPressed: "#C8E2EB",
+	alertingSolid: "#E09B26",
+	alertingText: "#85590F",
+	alertingHover: "#FDF7EC",
+	alertingSelected: "#F9EBD3",
+	alertingPressed: "#F3DCB5",
+	reportingSolid: "#1D8A4C",
+	reportingText: "#187340",
+	reportingHover: "#EFF8F2",
+	reportingSelected: "#DBEFE2",
+	reportingPressed: "#C3E4CF",
 };
 
 export const colors = {
@@ -103,8 +103,8 @@ export const colors = {
 };
 
 // Score spectrum, 0 → 100 in steps of 10, for score bars such as uptime.
-// Pick SCORE_SPECTRUM[Math.round(value / 10)].
-export const SCORE_SPECTRUM = [
+// Read it from theme.palette.chart.score through getScoreColor.
+const scoreSpectrum = [
 	"#DC2626",
 	"#E65723",
 	"#EE7B1D",
@@ -118,14 +118,15 @@ export const SCORE_SPECTRUM = [
 	"#22A55A",
 ] as const;
 
-export const getScoreColor = (score: number): string => {
+export const getScoreColor = (spectrum: readonly string[], score: number): string => {
 	const clamped = Math.min(100, Math.max(0, Number.isFinite(score) ? score : 0));
-	return SCORE_SPECTRUM[Math.round(clamped / 10)];
+	return spectrum[Math.round((clamped / 100) * (spectrum.length - 1))];
 };
 
 // Chart series, fixed order. Equal lightness and chroma so no series looks
-// heavier; they avoid the signal hues on purpose.
-export const CHART_SERIES = [
+// heavier; they avoid the signal hues on purpose. Read them from
+// theme.palette.chart.series.
+const chartSeries = [
 	"#6076BE", // indigo
 	"#AE5B7E", // rose
 	"#90790F", // sand
@@ -148,9 +149,9 @@ export const toSignalKey = (palette: string): SignalKey =>
 		: "neutral";
 
 // Sidebar wayfinding only (never status, charts or badges)
-export const SidebarParts = ["record", "track", "enforce"] as const;
-export type SidebarPart = (typeof SidebarParts)[number];
-export type PartTone = {
+export const SidebarGroupKeys = ["monitoring", "alerting", "reporting"] as const;
+export type SidebarGroupKey = (typeof SidebarGroupKeys)[number];
+export type GroupTone = {
 	solid: string;
 	text: string;
 	hover: string;
@@ -158,31 +159,31 @@ export type PartTone = {
 	pressed: string;
 };
 
-const lightParts: Record<SidebarPart, PartTone> = {
-	record: {
-		solid: vw.recordSolid,
-		text: vw.recordText,
-		hover: vw.recordHover,
-		selected: vw.recordSelected,
-		pressed: vw.recordPressed,
+const lightGroups: Record<SidebarGroupKey, GroupTone> = {
+	monitoring: {
+		solid: lightTokens.monitoringSolid,
+		text: lightTokens.monitoringText,
+		hover: lightTokens.monitoringHover,
+		selected: lightTokens.monitoringSelected,
+		pressed: lightTokens.monitoringPressed,
 	},
-	track: {
-		solid: vw.trackSolid,
-		text: vw.trackText,
-		hover: vw.trackHover,
-		selected: vw.trackSelected,
-		pressed: vw.trackPressed,
+	alerting: {
+		solid: lightTokens.alertingSolid,
+		text: lightTokens.alertingText,
+		hover: lightTokens.alertingHover,
+		selected: lightTokens.alertingSelected,
+		pressed: lightTokens.alertingPressed,
 	},
-	enforce: {
-		solid: vw.enforceSolid,
-		text: vw.enforceText,
-		hover: vw.enforceHover,
-		selected: vw.enforceSelected,
-		pressed: vw.enforcePressed,
+	reporting: {
+		solid: lightTokens.reportingSolid,
+		text: lightTokens.reportingText,
+		hover: lightTokens.reportingHover,
+		selected: lightTokens.reportingSelected,
+		pressed: lightTokens.reportingPressed,
 	},
 };
 
-const darkPart = (solid: string): PartTone => ({
+const darkGroup = (solid: string): GroupTone => ({
 	solid,
 	text: solid,
 	hover: alpha(solid, 0.08),
@@ -190,121 +191,134 @@ const darkPart = (solid: string): PartTone => ({
 	pressed: alpha(solid, 0.22),
 });
 
-const darkParts: Record<SidebarPart, PartTone> = {
-	record: darkPart(vw.recordSolid),
-	track: darkPart(vw.trackSolid),
-	enforce: darkPart(vw.enforceSolid),
+const darkGroups: Record<SidebarGroupKey, GroupTone> = {
+	monitoring: darkGroup(lightTokens.monitoringSolid),
+	alerting: darkGroup(lightTokens.alertingSolid),
+	reporting: darkGroup(lightTokens.reportingSolid),
 };
 
 export const lightPalette = {
 	primary: {
-		main: vw.primary,
-		dark: vw.primaryHover,
-		contrastText: vw.white,
+		main: lightTokens.primary,
+		dark: lightTokens.primaryHover,
+		contrastText: lightTokens.white,
 	},
 	action: {
-		rowHover: vw.page,
-		controlHover: vw.raised,
-		selected: vw.green100,
-		selectedHover: vw.green100,
+		rowHover: lightTokens.page,
+		controlHover: lightTokens.raised,
+		selected: lightTokens.green100,
+		selectedHover: lightTokens.green100,
 	},
 	secondary: {
 		main: colors.gray200,
 	},
 	background: {
-		default: vw.page,
-		paper: vw.white,
+		default: lightTokens.page,
+		paper: lightTokens.white,
 	},
 	text: {
-		primary: vw.ink,
-		secondary: vw.text2,
-		disabled: vw.disabled,
+		primary: lightTokens.ink,
+		secondary: lightTokens.text2,
+		disabled: lightTokens.disabled,
 	},
-	divider: vw.hairline,
+	divider: lightTokens.hairline,
 	// main is the solid mark (dots, bars); dark is the text colour on a tint
 	success: {
-		main: vw.lowMark,
-		dark: vw.lowText,
-		contrastText: vw.white,
+		main: lightTokens.successMark,
+		dark: lightTokens.successText,
+		contrastText: lightTokens.white,
 	},
 	error: {
-		main: vw.criticalMark,
-		dark: vw.criticalText,
-		contrastText: vw.white,
+		main: lightTokens.errorMark,
+		dark: lightTokens.errorText,
+		contrastText: lightTokens.white,
 	},
 	warning: {
-		main: vw.highMark,
-		dark: vw.highText,
-		contrastText: vw.white,
+		main: lightTokens.warningMark,
+		dark: lightTokens.warningText,
+		contrastText: lightTokens.white,
 	},
 	info: {
-		main: vw.infoText,
-		contrastText: vw.white,
+		main: lightTokens.infoText,
+		contrastText: lightTokens.white,
 	},
 	neutral: {
-		raised: vw.raised,
-		hairline: vw.hairline,
-		border: vw.border,
-		borderHover: vw.grey500,
-		rowDivider: vw.rowDivider,
-		icon: vw.icon,
-		tertiary: vw.text3,
-		subdued: vw.subdued,
-		hoverGreen: vw.green50,
-		selectedGreen: vw.green100,
-		tooltip: vw.ink,
-		sortedHeader: vw.green50,
-		sortedCell: vw.sortedCell,
+		raised: lightTokens.raised,
+		hairline: lightTokens.hairline,
+		border: lightTokens.border,
+		borderHover: lightTokens.grey500,
+		rowDivider: lightTokens.rowDivider,
+		icon: lightTokens.icon,
+		tertiary: lightTokens.text3,
+		subdued: lightTokens.subdued,
+		hoverGreen: lightTokens.green50,
+		selectedGreen: lightTokens.green100,
+		tooltip: lightTokens.ink,
+		sortedHeader: lightTokens.green50,
+		sortedCell: lightTokens.sortedCell,
 	},
 	signal: {
-		success: { bg: vw.lowBg, text: vw.lowText, border: vw.lowBorder, mark: vw.lowMark },
+		success: {
+			bg: lightTokens.successBg,
+			text: lightTokens.successText,
+			border: lightTokens.successBorder,
+			mark: lightTokens.successMark,
+		},
 		error: {
-			bg: vw.criticalBg,
-			text: vw.criticalText,
-			border: vw.criticalBorder,
-			mark: vw.criticalMark,
+			bg: lightTokens.errorBg,
+			text: lightTokens.errorText,
+			border: lightTokens.errorBorder,
+			mark: lightTokens.errorMark,
 		},
 		warning: {
-			bg: vw.highBg,
-			text: vw.highText,
-			border: vw.highBorder,
-			mark: vw.highMark,
+			bg: lightTokens.warningBg,
+			text: lightTokens.warningText,
+			border: lightTokens.warningBorder,
+			mark: lightTokens.warningMark,
 		},
 		neutral: {
-			bg: vw.noneBg,
-			text: vw.noneText,
-			border: vw.noneBorder,
-			mark: vw.noneMark,
+			bg: lightTokens.neutralBg,
+			text: lightTokens.neutralText,
+			border: lightTokens.neutralBorder,
+			mark: lightTokens.neutralMark,
 		},
-		info: { bg: vw.infoBg, text: vw.infoText, border: vw.infoBorder, mark: vw.infoMark },
+		info: {
+			bg: lightTokens.infoBg,
+			text: lightTokens.infoText,
+			border: lightTokens.infoBorder,
+			mark: lightTokens.infoMark,
+		},
 	} satisfies Record<SignalKey, SignalTone>,
 	sidebar: {
-		accent: vw.primary,
-		parts: lightParts,
+		accent: lightTokens.primary,
+		groups: lightGroups,
 	},
 	scrollbar: {
-		track: "transparent",
-		thumb: vw.border,
+		alerting: "transparent",
+		thumb: lightTokens.border,
 	},
 	rowStatus: {
-		running: vw.lowBg,
-		paused: vw.highBg,
+		running: lightTokens.successBg,
+		paused: lightTokens.warningBg,
 	},
 	chart: {
 		// Multi-series chart: series colours in their fixed order
 		phases: {
-			dns: CHART_SERIES[0],
-			tcp: CHART_SERIES[1],
-			tls: CHART_SERIES[2],
-			request: CHART_SERIES[3],
-			firstByte: CHART_SERIES[4],
-			download: CHART_SERIES[5],
+			dns: chartSeries[0],
+			tcp: chartSeries[1],
+			tls: chartSeries[2],
+			request: chartSeries[3],
+			firstByte: chartSeries[4],
+			download: chartSeries[5],
 		},
+		series: chartSeries,
+		score: scoreSpectrum,
 	},
 };
 
-// Dark mode is not part of the VerifyWise spec; it keeps the existing look and
-// only gains the token groups the shared components now read.
+// Dark mode keeps its existing look and only gains the token groups the shared
+// components now read. Series and score colours are mid-lightness, so they are
+// shared with light mode until dark mode gets its own pass.
 export const darkPalette = {
 	primary: {
 		main: colors.brandGreen,
@@ -387,10 +401,10 @@ export const darkPalette = {
 	} satisfies Record<SignalKey, SignalTone>,
 	sidebar: {
 		accent: colors.brandGreenLight,
-		parts: darkParts,
+		groups: darkGroups,
 	},
 	scrollbar: {
-		track: "transparent",
+		alerting: "transparent",
 		thumb: colors.ruleDarkStrong,
 	},
 	rowStatus: {
@@ -406,5 +420,7 @@ export const darkPalette = {
 			firstByte: colors.blue500,
 			download: colors.green700,
 		},
+		series: chartSeries,
+		score: scoreSpectrum,
 	},
 };

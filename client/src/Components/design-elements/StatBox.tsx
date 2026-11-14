@@ -15,7 +15,7 @@ type GradientBox = React.PropsWithChildren<{
 	interactive?: boolean;
 }>;
 
-// Kept the GradientBox name for its callers; the VerifyWise look is flat, so
+// Kept the GradientBox name for its callers; the current look is flat, so
 // the card is plain paper and a status colour moves to the value text instead.
 export const GradientBox = ({ children, sx, interactive }: GradientBox) => {
 	const theme = useTheme();

@@ -12,7 +12,7 @@ import { XTick } from "@/Components/monitors/charts/XTick";
 
 import { useTheme } from "@mui/material/styles";
 import type { HardwareCheckStats } from "@/Types/Monitor";
-import { AREA_COLORS, createGradient } from "@/Components/monitors/charts/ChartUtils";
+import { createGradient } from "@/Components/monitors/charts/ChartUtils";
 
 export const HistogramInfrastructure = ({
 	dateRange,
@@ -102,12 +102,14 @@ export const HistogramInfrastructure = ({
 					/>
 					{dataKeys?.map((dataKey, index) => {
 						const gradientId = `gradient-${uniqueId}-${index}`;
+						const series = theme.palette.chart.series;
+						const seriesColor = series[index % series.length];
 						return (
 							<Fragment key={`${dataKey}-${index}`}>
 								{gradient === true &&
 									createGradient({
 										id: gradientId,
-										startColor: gradientStartColor || AREA_COLORS[index],
+										startColor: gradientStartColor || seriesColor,
 										endColor: gradientEndColor || "transparent",
 										direction: gradientDirection,
 									})}
@@ -115,7 +117,7 @@ export const HistogramInfrastructure = ({
 									key={dataKey}
 									type="monotone"
 									dataKey={dataKey}
-									stroke={strokeColor || AREA_COLORS[index]}
+									stroke={strokeColor || seriesColor}
 									fill={gradient === true ? `url(#${gradientId})` : fillColor}
 								/>
 							</Fragment>

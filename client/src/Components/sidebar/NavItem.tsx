@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { SPACING, GAP, FONT_WEIGHT, RADIUS } from "@/Utils/Theme/constants";
 import useSidebar from "@/Hooks/useSidebar";
-import type { SidebarPart } from "@/Utils/Theme/Palette";
+import type { SidebarGroupKey } from "@/Utils/Theme/Palette";
 
 export interface NavData {
 	name: string;
@@ -17,18 +17,18 @@ export const NavItem = ({
 	item,
 	selected,
 	onClick,
-	part,
+	groupKey,
 }: {
 	item: NavData;
 	selected: boolean;
 	onClick: (event: React.MouseEvent) => void;
-	part?: SidebarPart;
+	groupKey?: SidebarGroupKey;
 }) => {
 	const { collapsed, itemInset } = useSidebar();
 	const theme = useTheme();
-	// Grouped items take their part's colours; ungrouped items stay grey with a
+	// Grouped items take their group's colours; ungrouped items stay grey with a
 	// brand-green active state
-	const tone = part ? theme.palette.sidebar.parts[part] : null;
+	const tone = groupKey ? theme.palette.sidebar.groups[groupKey] : null;
 	const iconStroke = tone
 		? tone.solid
 		: selected
