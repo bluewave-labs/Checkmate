@@ -1229,6 +1229,8 @@
 				"monitoring": "İzleme",
 				"email": "E-posta",
 				"integrations": "Entegrasyonlar",
+				"tags": "Etiketler",
+				"proxies": "Proxy sunucuları",
 				"data": "Veri"
 			},
 			"form": {

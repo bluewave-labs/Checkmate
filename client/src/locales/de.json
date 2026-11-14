@@ -1230,6 +1230,8 @@
 				"monitoring": "Überwachung",
 				"email": "E-Mail",
 				"integrations": "Integrationen",
+				"tags": "Tags",
+				"proxies": "Proxys",
 				"data": "Daten"
 			},
 			"form": {

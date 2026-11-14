@@ -1229,6 +1229,8 @@
 				"monitoring": "Valvonta",
 				"email": "Sähköposti",
 				"integrations": "Integraatiot",
+				"tags": "Tunnisteet",
+				"proxies": "Välityspalvelimet",
 				"data": "Tiedot"
 			},
 			"form": {

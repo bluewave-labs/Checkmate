@@ -1229,6 +1229,8 @@
 				"monitoring": "監控",
 				"email": "郵件",
 				"integrations": "整合",
+				"tags": "標籤",
+				"proxies": "代理",
 				"data": "資料"
 			},
 			"form": {

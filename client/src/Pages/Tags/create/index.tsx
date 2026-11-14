@@ -48,7 +48,7 @@ const TagsCreatePage = () => {
 			: await post("/tags", data);
 		if (result?.success) {
 			await mutate((key) => typeof key === "string" && key.startsWith("/tags"));
-			navigate("/tags");
+			navigate("/settings?tab=tags");
 		}
 	};
 

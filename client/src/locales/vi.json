@@ -1229,6 +1229,8 @@
 				"monitoring": "Giám sát",
 				"email": "Email",
 				"integrations": "Tích hợp",
+				"tags": "Thẻ",
+				"proxies": "Proxy",
 				"data": "Dữ liệu"
 			},
 			"form": {

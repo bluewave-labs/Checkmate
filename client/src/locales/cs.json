@@ -1229,6 +1229,8 @@
 				"monitoring": "Monitorování",
 				"email": "E-mail",
 				"integrations": "Integrace",
+				"tags": "Štítky",
+				"proxies": "Proxy",
 				"data": "Data"
 			},
 			"form": {

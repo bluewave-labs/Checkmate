@@ -207,7 +207,6 @@
 				"infrastructure": "Infrastruttura",
 				"docker": "Docker",
 				"notifications": "Notifiche",
-				"tags": "Tag",
 				"checks": "Verifiche",
 				"incidents": "Incidenti",
 				"statusPages": "Pagine di stato",
@@ -1325,6 +1324,8 @@
 				"monitoring": "Monitoraggio",
 				"email": "Email",
 				"integrations": "Integrazioni",
+				"tags": "Tag",
+				"proxies": "Proxy",
 				"data": "Dati"
 			},
 			"form": {

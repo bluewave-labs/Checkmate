@@ -1229,6 +1229,8 @@
 				"monitoring": "การตรวจสอบ",
 				"email": "อีเมล",
 				"integrations": "การเชื่อมต่อ",
+				"tags": "แท็ก",
+				"proxies": "พร็อกซี",
 				"data": "ข้อมูล"
 			},
 			"form": {

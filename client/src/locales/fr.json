@@ -1229,6 +1229,8 @@
 				"monitoring": "Surveillance",
 				"email": "E-mail",
 				"integrations": "Intégrations",
+				"tags": "Étiquettes",
+				"proxies": "Proxys",
 				"data": "Données"
 			},
 			"form": {

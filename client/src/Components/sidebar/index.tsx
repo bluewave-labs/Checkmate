@@ -139,7 +139,9 @@ export const Sidebar = () => {
 								/>
 							</Box>
 							{group.items.map((item) => {
-								const selected = location.pathname.startsWith(`/${item.path}`);
+								const selected = [item.path, ...(item.activePaths ?? [])].some((path) =>
+									location.pathname.startsWith(`/${path}`)
+								);
 								return (
 									<NavItem
 										key={item.path}

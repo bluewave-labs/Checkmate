@@ -1229,6 +1229,8 @@
 				"monitoring": "監視",
 				"email": "メール",
 				"integrations": "連携",
+				"tags": "タグ",
+				"proxies": "プロキシ",
 				"data": "データ"
 			},
 			"form": {

@@ -1230,6 +1230,8 @@
 				"monitoring": "监控",
 				"email": "邮件",
 				"integrations": "集成",
+				"tags": "标签",
+				"proxies": "代理",
 				"data": "数据"
 			},
 			"form": {

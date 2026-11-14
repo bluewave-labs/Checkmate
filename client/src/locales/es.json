@@ -1229,6 +1229,8 @@
 				"monitoring": "Monitorización",
 				"email": "Correo electrónico",
 				"integrations": "Integraciones",
+				"tags": "Etiquetas",
+				"proxies": "Proxies",
 				"data": "Datos"
 			},
 			"form": {

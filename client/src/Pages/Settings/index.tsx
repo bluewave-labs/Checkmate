@@ -14,6 +14,8 @@ import {
 	Mail,
 	Plug,
 	SlidersHorizontal,
+	Tag,
+	Waypoints,
 	type LucideIcon,
 } from "lucide-react";
 import { Autocomplete, Select, Dialog } from "@/Components/inputs";
@@ -35,6 +37,8 @@ import { useSelector, useDispatch } from "react-redux";
 import DummyChart from "@/Pages/Settings/DummyChart";
 import { HeartbeatKeyBox } from "@/Pages/Settings/components/HeartbeatKeyBox";
 import { ConnectSettings } from "@/Pages/Settings/components/Connect/ConnectSettings";
+import { TagsPanel } from "@/Pages/Tags";
+import { ProxiesPanel } from "@/Pages/Proxies";
 import { useGet, usePatch, usePost, useLazyGet } from "@/Hooks/UseApi";
 import { useToast } from "@/Hooks/UseToast";
 import { useSettingsForm } from "@/Hooks/useSettingsForm";
@@ -76,6 +80,8 @@ const SETTINGS_TABS = [
 	{ key: "monitoring", labelKey: "pages.settings.tabs.monitoring", adminOnly: true },
 	{ key: "email", labelKey: "pages.settings.tabs.email", adminOnly: true },
 	{ key: "integrations", labelKey: "pages.settings.tabs.integrations", adminOnly: true },
+	{ key: "tags", labelKey: "pages.settings.tabs.tags" },
+	{ key: "proxies", labelKey: "pages.settings.tabs.proxies", adminOnly: true },
 	{ key: "data", labelKey: "pages.settings.tabs.data", adminOnly: true },
 	{ key: "connect", labelKey: "pages.settings.tabs.connect", adminOnly: true },
 ] as const;
@@ -85,11 +91,17 @@ const SETTINGS_TAB_ICONS: Record<(typeof SETTINGS_TABS)[number]["key"], LucideIc
 	monitoring: Activity,
 	email: Mail,
 	integrations: Plug,
+	tags: Tag,
+	proxies: Waypoints,
 	data: Database,
 	connect: Cloud,
 };
 
 type SettingsTabKey = (typeof SETTINGS_TABS)[number]["key"];
+
+// Tabs that list records rather than edit settings: they save nothing through the
+// settings form, and their buttons must not sit inside it (a button submits by default).
+const LIST_TABS: readonly SettingsTabKey[] = ["tags", "proxies"];
 
 const FIELD_TAB: Record<string, SettingsTabKey> = {
 	checkTTL: "monitoring",
@@ -489,6 +501,8 @@ export const SettingsPage = () => {
 
 	const languages = Object.keys(i18n.options.resources || {});
 
+	const isListTab = LIST_TABS.includes(activeTab);
+
 	const globalProxyEnabled = watch("globalProxyEnabled");
 
 	// Enabling the proxy with nothing selected preselects the first proxy
@@ -508,8 +522,9 @@ export const SettingsPage = () => {
 		<FormProvider {...form}>
 			<BasePage
 				headerKey="settings"
-				component="form"
-				onSubmit={form.handleSubmit(onSubmit, onError)}
+				{...(isListTab
+					? {}
+					: { component: "form", onSubmit: form.handleSubmit(onSubmit, onError) })}
 			>
 				{visibleTabs.length > 1 && (
 					<Tabs
@@ -1009,7 +1024,7 @@ export const SettingsPage = () => {
 										<TextLink
 											text={t("pages.settings.form.globalProxy.option.empty.text")}
 											linkText={t("pages.settings.form.globalProxy.option.empty.link")}
-											href="/proxies"
+											href="/settings?tab=proxies"
 										/>
 									)
 								}
@@ -1157,6 +1172,10 @@ export const SettingsPage = () => {
 					</Stack>
 				)}
 
+				{activeTab === "tags" && <TagsPanel />}
+
+				{activeTab === "proxies" && <ProxiesPanel />}
+
 				{activeTab === "connect" && <ConnectSettings />}
 
 				{/* Clear Stats Confirmation Dialog */}
@@ -1193,6 +1212,7 @@ export const SettingsPage = () => {
 					justifyContent="flex-end"
 					alignItems="center"
 					gap={theme.spacing(LAYOUT.MD)}
+					display={isListTab ? "none" : "flex"}
 					sx={{
 						position: "sticky",
 						bottom: 0,

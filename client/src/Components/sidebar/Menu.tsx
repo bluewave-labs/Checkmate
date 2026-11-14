@@ -14,8 +14,6 @@ import {
 	User,
 	Lock,
 	Users,
-	Tag,
-	Waypoints,
 	Container,
 	LayoutDashboard,
 } from "lucide-react";
@@ -27,6 +25,8 @@ import type { SidebarPart } from "@/Utils/Theme/Palette";
 export interface SidebarMenuItem extends NavData {
 	path: string;
 	roles?: UserRole[];
+	// Other path prefixes that also mark this item as the current page
+	activePaths?: string[];
 }
 
 export interface SidebarMenuGroup {
@@ -119,20 +119,11 @@ export const getMenu = (t: TFunction, userRoles: UserRole[]): SidebarMenuGroup[]
 			group: t("components.sidebar.menu.groups.configuration"),
 			items: [
 				{
-					name: t("components.sidebar.menu.tags"),
-					path: "tags",
-					icon: <Icon icon={Tag} />,
-				},
-				{
-					name: t("components.sidebar.menu.proxies"),
-					path: "proxies",
-					icon: <Icon icon={Waypoints} />,
-					roles: ["admin", "superadmin"],
-				},
-				{
 					name: t("components.sidebar.menu.settings"),
 					path: "settings",
 					icon: <Icon icon={Settings} />,
+					// Tags and proxies are Settings tabs; their create/edit pages keep their own paths
+					activePaths: ["tags", "proxies"],
 				},
 			],
 		},

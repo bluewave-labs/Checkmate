@@ -232,8 +232,6 @@
 				"infrastructure": "Infrastructure",
 				"docker": "Docker",
 				"notifications": "Notifications",
-				"tags": "Tags",
-				"proxies": "Proxies",
 				"checks": "Checks",
 				"incidents": "Incidents",
 				"statusPages": "Status pages",
@@ -1522,6 +1520,8 @@
 				"monitoring": "Monitoring",
 				"email": "Email",
 				"integrations": "Integrations",
+				"tags": "Tags",
+				"proxies": "Proxies",
 				"data": "Data",
 				"connect": "Checkmate Connect"
 			},
