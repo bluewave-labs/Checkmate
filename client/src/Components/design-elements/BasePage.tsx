@@ -131,6 +131,7 @@ interface BasePageWithStatesProps extends StackProps {
 	actionLink: string;
 	children: React.ReactNode;
 	headerKey?: string;
+	breadcrumbOverride?: string[];
 }
 
 export const BasePageWithStates = ({

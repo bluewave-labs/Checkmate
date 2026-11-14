@@ -3,6 +3,7 @@ import { useTheme } from "@mui/material/styles";
 import { Upload, X } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { RADIUS } from "@/Utils/Theme/constants";
 
 interface FileObject {
 	src: string;
@@ -78,7 +79,12 @@ export const ImageUpload = ({
 						component="img"
 						src={displaySrc}
 						alt="Preview"
-						sx={{ maxWidth: 250, maxHeight: 250, objectFit: "contain", borderRadius: 1 }}
+						sx={{
+							maxWidth: 250,
+							maxHeight: 250,
+							objectFit: "contain",
+							borderRadius: RADIUS.SM,
+						}}
 					/>
 					<IconButton
 						size="small"
@@ -108,7 +114,7 @@ export const ImageUpload = ({
 						width: "100%",
 						minHeight: 150,
 						border: "2px dashed",
-						borderRadius: 1,
+						borderRadius: RADIUS.SM,
 						borderColor: isDragging ? theme.palette.primary.main : theme.palette.divider,
 						backgroundColor: isDragging ? theme.palette.action.hover : "transparent",
 						transition: "0.2s",

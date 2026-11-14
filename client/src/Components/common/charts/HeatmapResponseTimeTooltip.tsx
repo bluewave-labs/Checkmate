@@ -6,6 +6,7 @@ import type { CheckSnapshot } from "@/Types/Check";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { useFormatDate } from "@/Hooks/useFormatDate";
+import { RADIUS } from "@/Utils/Theme/constants";
 
 type HeatmapCheck =
 	| CheckSnapshot
@@ -23,8 +24,8 @@ export const HeatmapResponseTimeTooltip = ({
 	const formatDate = useFormatDate();
 
 	const getColor = (status: boolean) => {
-		if (status === true) return theme.palette.success.light;
-		if (status === false) return theme.palette.error.light;
+		if (status === true) return theme.palette.signal.success.mark;
+		if (status === false) return theme.palette.signal.error.mark;
 	};
 
 	if (check.status === "placeholder") {
@@ -48,7 +49,7 @@ export const HeatmapResponseTimeTooltip = ({
 						backgroundColor: theme.palette.secondary.main,
 						border: 1,
 						borderColor: theme.palette.divider,
-						borderRadius: theme.shape.borderRadius,
+						borderRadius: RADIUS.SM,
 						p: theme.spacing(4),
 					}}
 				>

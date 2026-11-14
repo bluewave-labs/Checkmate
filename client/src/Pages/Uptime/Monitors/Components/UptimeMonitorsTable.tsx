@@ -7,6 +7,7 @@ import {
 	Pagination,
 	StatusLabel,
 	ColoredLabel,
+	SignalLabel,
 } from "@/Components/design-elements";
 import { HeatmapResponseTime, HistogramResponseTime } from "@/Components/common";
 import { ActionsMenu } from "@/Components/actions-menu";
@@ -28,6 +29,7 @@ import type { SortOrder } from "@/Types/Query";
 import { SPACING } from "@/Utils/Theme/constants";
 import { getNextMonitorSort, getUptimePercentageColor } from "@/Utils/MonitorUtils";
 import { formatPercentage } from "@/Utils/FormatUtils";
+import { toSignalKey } from "@/Utils/Theme/Palette";
 
 interface MonitorTableProps {
 	monitors: Monitor[];
@@ -264,12 +266,11 @@ export const MonitorTable = ({
 					const uptimePercentage = row.uptimePercentage ?? 0;
 					const formattedPercentage = formatPercentage(uptimePercentage);
 					const paletteKey = getUptimePercentageColor(uptimePercentage);
-					const color = theme.palette[paletteKey].main;
 					return (
 						<Stack alignItems={"center"}>
-							<ColoredLabel
+							<SignalLabel
 								text={formattedPercentage}
-								color={color}
+								signal={toSignalKey(paletteKey)}
 							/>
 						</Stack>
 					);
@@ -347,6 +348,8 @@ export const MonitorTable = ({
 					navigate(`/uptime/${row.id}`);
 				}}
 				isRowSelected={(row) => isRowSelected(row.id)}
+				sortedColumnId={sortField || undefined}
+				sortDirection={sortOrder}
 			/>
 			<Pagination
 				component="div"

@@ -166,6 +166,10 @@
 			"copy": "Copia al porta-retalls",
 			"copied": "Copiat al porta-retalls",
 			"copyFailed": "No s'ha pogut copiar. Selecciona el text i copia'l manualment."
+		},
+		"filters": {
+			"any": "Qualsevol",
+			"state": "Estat"
 		}
 	},
 	"components": {
@@ -191,6 +195,10 @@
 				"invalidFileSize": "La mida del fitxer és massa gran!",
 				"invalidFileFormat": "Format de fitxer no admès!"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} seleccionat",
+			"selectedCount_other": "{{count}} seleccionats"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "Enllaç públic"
@@ -1448,6 +1456,8 @@
 				"monitoring": "Monitoratge",
 				"email": "Correu electrònic",
 				"integrations": "Integracions",
+				"tags": "Etiquetes",
+				"proxies": "Proxies",
 				"data": "Dades",
 				"connect": "Checkmate Connect"
 			},

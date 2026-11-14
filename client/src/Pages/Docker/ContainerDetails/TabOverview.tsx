@@ -23,7 +23,7 @@ const getChartConfigs = (theme: Theme, t: TFunction, stats: DockerContainerStats
 	{
 		title: t("common.charts.labels.cpuUsage"),
 		key: "avgCpuPct",
-		color: theme.palette.success.main,
+		color: theme.palette.primary.main,
 		rightTitle: formatPercentage(stats?.latest?.container.cpuPct || 0),
 		formatter: formatPercentage,
 		labelKey: "common.charts.histogram.avgCpuUsage",

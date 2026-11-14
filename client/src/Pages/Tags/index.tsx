@@ -9,7 +9,8 @@ import { useTranslation } from "react-i18next";
 import type { Tag } from "@/Types/Tag";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 
-const TagsPage = () => {
+// Rendered as a Settings tab, so it brings no page header of its own
+export const TagsPanel = () => {
 	const { t } = useTranslation();
 	const isAdmin = useIsAdmin();
 
@@ -39,7 +40,7 @@ const TagsPage = () => {
 
 	return (
 		<BasePageWithStates
-			headerKey="tags"
+			breadcrumbOverride={[]}
 			page={t("pages.tags.fallback.title")}
 			description={t("pages.tags.fallback.description")}
 			loading={isLoading || isValidating}
@@ -69,5 +70,3 @@ const TagsPage = () => {
 		</BasePageWithStates>
 	);
 };
-
-export default TagsPage;

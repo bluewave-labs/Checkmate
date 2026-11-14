@@ -13,6 +13,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { AuthResponse } from "@/Types/User";
 import { useEffect, useRef, useState } from "react";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
+import { RADIUS } from "@/Utils/Theme/constants";
 
 interface RegisterPayload {
 	user: Omit<RegisterFormData, "confirm">;
@@ -108,7 +109,7 @@ const RegisterPage = () => {
 							color: theme.palette.text.secondary,
 							backgroundColor: theme.palette.action.hover,
 							border: `1px solid ${theme.palette.divider}`,
-							borderRadius: 1,
+							borderRadius: RADIUS.SM,
 							"& .MuiAlert-message": { padding: 0 },
 						})}
 					>

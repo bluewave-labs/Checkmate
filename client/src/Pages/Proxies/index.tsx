@@ -9,7 +9,8 @@ import { useTranslation } from "react-i18next";
 import type { ProxyResponse } from "@/Types/Proxy";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 
-const ProxiesPage = () => {
+// Rendered as a Settings tab, so it brings no page header of its own
+export const ProxiesPanel = () => {
 	const { t } = useTranslation();
 	const isAdmin = useIsAdmin();
 
@@ -39,7 +40,7 @@ const ProxiesPage = () => {
 
 	return (
 		<BasePageWithStates
-			headerKey="proxies"
+			breadcrumbOverride={[]}
 			page={t("pages.proxies.fallback.title")}
 			description={t("pages.proxies.fallback.description")}
 			loading={isLoading || isValidating}
@@ -68,5 +69,3 @@ const ProxiesPage = () => {
 		</BasePageWithStates>
 	);
 };
-
-export default ProxiesPage;

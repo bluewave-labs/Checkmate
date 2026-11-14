@@ -166,6 +166,10 @@
 			"copy": "Copiar para a área de transferência",
 			"copied": "Copiado para a área de transferência",
 			"copyFailed": "Não foi possível copiar. Selecione o texto e copie manualmente."
+		},
+		"filters": {
+			"any": "Qualquer",
+			"state": "Estado"
 		}
 	},
 	"components": {
@@ -191,6 +195,10 @@
 				"invalidFileSize": "O tamanho do arquivo é muito grande!",
 				"invalidFileFormat": "Formato de arquivo não suportado!"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} selecionado",
+			"selectedCount_other": "{{count}} selecionados"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "Link público"
@@ -228,8 +236,6 @@
 				"infrastructure": "Infraestrutura",
 				"docker": "Docker",
 				"notifications": "Notificações",
-				"tags": "Tags",
-				"proxies": "Proxies",
 				"checks": "Verificações",
 				"incidents": "Incidentes",
 				"statusPages": "Páginas de status",
@@ -1518,6 +1524,8 @@
 				"monitoring": "Monitoramento",
 				"email": "E-mail",
 				"integrations": "Integrações",
+				"tags": "Tags",
+				"proxies": "Proxies",
 				"data": "Dados",
 				"connect": "Checkmate Connect"
 			},

@@ -8,7 +8,7 @@ import { FieldLabel } from "./FieldLabel";
 import { Calendar } from "lucide-react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
-import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT, RADIUS } from "@/Utils/Theme/constants";
 
 interface DatePickerComponentProps extends Omit<DatePickerProps<Dayjs>, "label"> {
 	fieldLabel?: string;
@@ -63,7 +63,7 @@ export const DatePickerComponent = ({
 							},
 							"& fieldset": {
 								borderColor: error ? theme.palette.error.main : theme.palette.divider,
-								borderRadius: theme.shape.borderRadius,
+								borderRadius: RADIUS.SM,
 							},
 							"&:not(:has(.Mui-disabled)):not(:has(.Mui-error)) .MuiOutlinedInput-root:not(:has(input:focus)):hover fieldset":
 								{

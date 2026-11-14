@@ -3,7 +3,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
-import { LAYOUT } from "@/Utils/Theme/constants";
+import { LAYOUT, RADIUS } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 
 interface DashboardCardProps {
@@ -26,7 +26,7 @@ export const DashboardCard = ({
 			bgcolor={theme.palette.background.paper}
 			border={1}
 			borderColor={theme.palette.divider}
-			borderRadius={`${theme.shape.borderRadius}px`}
+			borderRadius={RADIUS.SM}
 			padding={theme.spacing(LAYOUT.MD)}
 			display="flex"
 			flexDirection="column"

@@ -1044,6 +1044,7 @@ const CreateMonitorPage = () => {
 						rightContent={
 							<FormMultiSelectField
 								name="tags"
+								display="chips"
 								options={tags ?? []}
 								renderRow={(tag) => (
 									<Box flexGrow={1}>
@@ -1145,6 +1146,7 @@ const CreateMonitorPage = () => {
 
 								<FormMultiSelectField
 									name="customUpCodes"
+									display="chips"
 									options={ALL_HTTP_STATUS_CODES}
 									fieldLabel={t(
 										"pages.createMonitor.form.advanced.option.customUpCodes.label"
@@ -1225,6 +1227,7 @@ const CreateMonitorPage = () => {
 									<Stack spacing={theme.spacing(LAYOUT.MD)}>
 										<FormMultiSelectField
 											name="geoCheckLocations"
+											display="chips"
 											options={locationOptions}
 											fieldLabel={t(
 												"pages.createMonitor.form.geoChecks.option.locations.label"

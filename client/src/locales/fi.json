@@ -166,6 +166,10 @@
 			"copy": "Kopioi leikepöydälle",
 			"copied": "Kopioitu leikepöydälle",
 			"copyFailed": "Kopiointi epäonnistui. Valitse teksti ja kopioi se käsin."
+		},
+		"filters": {
+			"any": "Mikä tahansa",
+			"state": "Tila"
 		}
 	},
 	"components": {
@@ -179,6 +183,10 @@
 				"invalidFileSize": "Tiedoston koko on liian suuri!",
 				"invalidFileFormat": "Tiedostomuotoa ei tueta!"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} valittu",
+			"selectedCount_other": "{{count}} valittu"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "Julkinen linkki"
@@ -1448,6 +1456,8 @@
 				"monitoring": "Valvonta",
 				"email": "Sähköposti",
 				"integrations": "Integraatiot",
+				"tags": "Tunnisteet",
+				"proxies": "Välityspalvelimet",
 				"data": "Tiedot",
 				"connect": "Checkmate Connect"
 			},

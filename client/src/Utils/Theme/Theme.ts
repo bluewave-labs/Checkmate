@@ -1,9 +1,43 @@
 import { createTheme } from "@mui/material";
-import { lightPalette, darkPalette, typographyLevels } from "@/Utils/Theme/Palette";
+import {
+	lightPalette,
+	darkPalette,
+	typographyLevels,
+	type SignalKey,
+	type SignalTone,
+	type SidebarGroupKey,
+	type GroupTone,
+} from "@/Utils/Theme/Palette";
 
 import type { Theme } from "@mui/material/styles";
 import type {} from "@mui/material/styles";
-import { SCROLLBAR_SIZE } from "@/Utils/Theme/constants";
+import {
+	CONTROL_HEIGHT,
+	FOCUS_RING,
+	FONT_WEIGHT,
+	LAYOUT,
+	LINE_HEIGHT,
+	PADDING,
+	RADIUS,
+	RADIUS_PX,
+	SCROLLBAR_SIZE,
+} from "@/Utils/Theme/constants";
+
+interface NeutralTokens {
+	raised: string;
+	hairline: string;
+	border: string;
+	borderHover: string;
+	rowDivider: string;
+	icon: string;
+	tertiary: string;
+	subdued: string;
+	hoverGreen: string;
+	selectedGreen: string;
+	tooltip: string;
+	sortedHeader: string;
+	sortedCell: string;
+}
 
 declare module "@mui/material/styles" {
 	interface TypographyVariants {
@@ -20,7 +54,9 @@ declare module "@mui/material/styles" {
 		selectedHover: string;
 	}
 	interface Palette {
-		sidebar: { accent: string };
+		neutral: NeutralTokens;
+		signal: Record<SignalKey, SignalTone>;
+		sidebar: { accent: string; groups: Record<SidebarGroupKey, GroupTone> };
 		scrollbar: { track: string; thumb: string };
 		rowStatus: { running: string; paused: string };
 		chart: {
@@ -32,10 +68,14 @@ declare module "@mui/material/styles" {
 				firstByte: string;
 				download: string;
 			};
+			series: readonly string[];
+			score: readonly string[];
 		};
 	}
 	interface PaletteOptions {
-		sidebar?: { accent: string };
+		neutral?: NeutralTokens;
+		signal?: Record<SignalKey, SignalTone>;
+		sidebar?: { accent: string; groups: Record<SidebarGroupKey, GroupTone> };
 		scrollbar?: { track: string; thumb: string };
 		rowStatus?: { running: string; paused: string };
 		chart?: {
@@ -47,6 +87,8 @@ declare module "@mui/material/styles" {
 				firstByte: string;
 				download: string;
 			};
+			series: readonly string[];
+			score: readonly string[];
 		};
 	}
 }
@@ -89,34 +131,41 @@ export const theme = (mode: string, palette: any) =>
 			fontSize: typographyLevels.base,
 			h1: {
 				fontSize: typographyLevels.xxl,
-				fontWeight: 700,
-				letterSpacing: "-0.015em",
+				fontWeight: FONT_WEIGHT.SEMIBOLD,
+				lineHeight: LINE_HEIGHT.HEADING,
+				letterSpacing: "-0.02em",
 			},
 			h2: {
 				fontSize: typographyLevels.l,
-				fontWeight: 600,
-				letterSpacing: "-0.01em",
+				fontWeight: FONT_WEIGHT.SEMIBOLD,
+				lineHeight: LINE_HEIGHT.TITLE,
 			},
 			body1: {
 				fontSize: typographyLevels.m,
-				fontWeight: 400,
+				fontWeight: FONT_WEIGHT.REGULAR,
+				lineHeight: LINE_HEIGHT.BODY,
 			},
 			body2: {
-				fontSize: typographyLevels.s,
-				fontWeight: 400,
+				fontSize: typographyLevels.sm,
+				fontWeight: FONT_WEIGHT.REGULAR,
+				lineHeight: LINE_HEIGHT.BODY,
 			},
 			eyebrow: {
-				fontSize: 13,
-				fontWeight: 500,
+				fontSize: typographyLevels.s,
+				fontWeight: FONT_WEIGHT.MEDIUM,
 				textTransform: "uppercase",
-				letterSpacing: "0.08em",
-				lineHeight: 1.4,
+				letterSpacing: "0.07em",
+				lineHeight: LINE_HEIGHT.TITLE,
 			},
 		},
 
 		components: {
 			MuiCssBaseline: {
 				styleOverrides: (theme) => ({
+					// Always keep the scrollbar track so content doesn't shift between short and long pages
+					html: { overflowY: "scroll" },
+					body: { backgroundColor: theme.palette.background.default },
+					"*:focus:not(:focus-visible)": { outline: "none" },
 					"*": {
 						scrollbarWidth: "auto",
 						scrollbarColor: `${theme.palette.scrollbar.thumb} ${theme.palette.scrollbar.track}`,
@@ -157,13 +206,31 @@ export const theme = (mode: string, palette: any) =>
 				},
 				styleOverrides: {
 					root: ({ theme }) => ({
+						fontSize: typographyLevels.base,
+						fontWeight: FONT_WEIGHT.MEDIUM,
+						textTransform: "none",
+						borderRadius: RADIUS.SM,
+						boxShadow: "none",
+						"&:hover": { boxShadow: "none" },
 						"&.Mui-focusVisible": {
-							outline: `1px solid ${
+							outline: `${FOCUS_RING.WIDTH}px solid ${
 								theme.palette.mode === "dark"
 									? theme.palette.primary.light
 									: theme.palette.primary.main
 							}`,
-							outlineOffset: 2,
+							outlineOffset: FOCUS_RING.OFFSET,
+						},
+					}),
+					sizeSmall: {
+						height: CONTROL_HEIGHT.SM,
+						padding: PADDING.BUTTON_SM,
+						fontSize: typographyLevels.sm,
+					},
+					containedPrimary: ({ theme }) => ({
+						"&:hover": { backgroundColor: theme.palette.primary.dark },
+						"&.Mui-disabled": {
+							backgroundColor: theme.palette.neutral.hairline,
+							color: theme.palette.text.disabled,
 						},
 					}),
 				},
@@ -173,6 +240,16 @@ export const theme = (mode: string, palette: any) =>
 					disableRipple: true,
 					disableTouchRipple: true,
 					disableFocusRipple: true,
+				},
+				styleOverrides: {
+					root: ({ theme }) => ({
+						borderRadius: RADIUS.SM,
+						"&:hover": { backgroundColor: theme.palette.neutral.selectedGreen },
+						"&.Mui-focusVisible": {
+							outline: `${FOCUS_RING.WIDTH}px solid ${theme.palette.primary.main}`,
+							outlineOffset: FOCUS_RING.OFFSET,
+						},
+					}),
 				},
 			},
 			MuiListItemButton: {
@@ -241,13 +318,14 @@ export const theme = (mode: string, palette: any) =>
 							minHeight: "unset",
 							alignSelf: "stretch",
 						},
+						borderRadius: RADIUS.SM,
 						"& .MuiOutlinedInput-notchedOutline": {
-							borderColor: theme.palette.divider,
+							borderColor: theme.palette.neutral.border,
 							transition: "border-color 0.15s ease",
 						},
 						"&:hover:not(.Mui-focused):not(.Mui-disabled) .MuiOutlinedInput-notchedOutline":
 							{
-								borderColor: theme.palette.text.disabled,
+								borderColor: theme.palette.neutral.border,
 							},
 						"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
 							borderColor:
@@ -272,12 +350,62 @@ export const theme = (mode: string, palette: any) =>
 							border: 1,
 							borderStyle: "solid",
 							borderColor: theme.palette.divider,
-							borderRadius: 4,
-							boxShadow: shadow,
+							borderRadius: RADIUS.SM,
+							boxShadow: "none",
 							backgroundColor: theme.palette.background.paper,
 							backgroundImage: "none",
 						};
 					},
+				},
+			},
+			// Only floating surfaces keep a shadow; cards and tables are flat
+			MuiPopover: { styleOverrides: { paper: { boxShadow: shadow } } },
+			// Items carry a 2px margin, so lists need no vertical padding
+			MuiMenu: {
+				styleOverrides: {
+					paper: { boxShadow: shadow },
+					list: { paddingTop: 0, paddingBottom: 0 },
+				},
+			},
+			MuiAutocomplete: {
+				styleOverrides: {
+					paper: { boxShadow: shadow },
+					listbox: {
+						paddingTop: 0,
+						paddingBottom: 0,
+						"& .MuiAutocomplete-option": { padding: PADDING.MENU_ITEM },
+					},
+				},
+			},
+			MuiMenuItem: {
+				styleOverrides: {
+					root: ({ theme }) => ({
+						fontSize: typographyLevels.base,
+						color: theme.palette.text.secondary,
+						padding: PADDING.MENU_ITEM,
+						margin: LAYOUT.XXS,
+						borderRadius: RADIUS.SM,
+						"&:hover, &.Mui-selected, &.Mui-selected:hover": {
+							backgroundColor: theme.palette.neutral.selectedGreen,
+						},
+					}),
+				},
+			},
+			MuiTooltip: {
+				styleOverrides: {
+					tooltip: ({ theme }) => ({
+						fontSize: typographyLevels.base,
+						backgroundColor: theme.palette.neutral.tooltip,
+						padding: PADDING.TOOLTIP,
+						borderRadius: RADIUS.SM,
+					}),
+					arrow: ({ theme }) => ({ color: theme.palette.neutral.tooltip }),
+				},
+			},
+			MuiDialog: { styleOverrides: { paper: { borderRadius: RADIUS.SM } } },
+			MuiSkeleton: {
+				styleOverrides: {
+					root: ({ theme }) => ({ backgroundColor: theme.palette.neutral.raised }),
 				},
 			},
 
@@ -389,7 +517,7 @@ export const theme = (mode: string, palette: any) =>
 			},
 		},
 		shape: {
-			borderRadius: 2,
+			borderRadius: RADIUS_PX,
 		},
 	});
 

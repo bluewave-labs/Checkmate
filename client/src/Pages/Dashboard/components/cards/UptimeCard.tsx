@@ -8,9 +8,8 @@ import { ArrowDown, ArrowUp } from "lucide-react";
 import { Icon } from "@/Components/design-elements";
 import { DashboardCard } from "@/Pages/Dashboard/components/DashboardCard";
 import { BarRow } from "@/Pages/Dashboard/components/cards/BarRow";
-import { getUptimePercentageColor } from "@/Utils/MonitorUtils";
 import { formatPercentage } from "@/Utils/FormatUtils";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { typographyLevels, getScoreColor } from "@/Utils/Theme/Palette";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { setDashboardUptimeOrder } from "@/Features/UI/uiSlice";
 import type { DashboardMonitor } from "@/Types/Dashboard";
@@ -61,8 +60,10 @@ export const UptimeCard = ({ monitors }: UptimeCardProps) => {
 			) : (
 				<Stack gap={theme.spacing(LAYOUT.SM)}>
 					{ranked.map((monitor) => {
-						const paletteKey = getUptimePercentageColor(monitor.uptimePercentage);
-						const color = theme.palette[paletteKey].main;
+						const color = getScoreColor(
+							theme.palette.chart.score,
+							monitor.uptimePercentage * 100
+						);
 						return (
 							<BarRow
 								key={monitor.id}
@@ -70,6 +71,7 @@ export const UptimeCard = ({ monitors }: UptimeCardProps) => {
 								value={formatPercentage(monitor.uptimePercentage)}
 								fillRatio={monitor.uptimePercentage}
 								valueColor={color}
+								barColor={color}
 							/>
 						);
 					})}

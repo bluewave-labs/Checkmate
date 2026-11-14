@@ -166,6 +166,10 @@
 			"copy": "クリップボードにコピー",
 			"copied": "クリップボードにコピーしました",
 			"copyFailed": "コピーできませんでした。テキストを選択して手動でコピーしてください。"
+		},
+		"filters": {
+			"any": "すべて",
+			"state": "状態"
 		}
 	},
 	"components": {
@@ -179,6 +183,9 @@
 				"invalidFileSize": "ファイルサイズが大きすぎます！",
 				"invalidFileFormat": "サポートされていないファイル形式！"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_other": "{{count}} 件選択中"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "公開リンク"
@@ -1448,6 +1455,8 @@
 				"monitoring": "監視",
 				"email": "メール",
 				"integrations": "連携",
+				"tags": "タグ",
+				"proxies": "プロキシ",
 				"data": "データ",
 				"connect": "Checkmate Connect"
 			},

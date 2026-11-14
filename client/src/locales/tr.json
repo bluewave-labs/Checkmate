@@ -166,6 +166,10 @@
 			"copy": "Panoya kopyala",
 			"copied": "Panoya kopyalandı",
 			"copyFailed": "Kopyalanamadı. Metni seçip elle kopyalayın."
+		},
+		"filters": {
+			"any": "Tümü",
+			"state": "Durum"
 		}
 	},
 	"components": {
@@ -179,6 +183,10 @@
 				"invalidFileSize": "Dosya boyutu çok büyük!",
 				"invalidFileFormat": "Desteklenmeyen dosya biçimi!"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} seçildi",
+			"selectedCount_other": "{{count}} seçildi"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "Herkese açık bağlantı"
@@ -1448,6 +1456,8 @@
 				"monitoring": "İzleme",
 				"email": "E-posta",
 				"integrations": "Entegrasyonlar",
+				"tags": "Etiketler",
+				"proxies": "Proxy sunucuları",
 				"data": "Veri",
 				"connect": "Checkmate Connect"
 			},

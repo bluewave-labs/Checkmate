@@ -27,7 +27,7 @@ function App() {
 	return (
 		<SWRConfig value={swrConfig}>
 			<ThemeProvider theme={theme}>
-				<CssBaseline />
+				<CssBaseline enableColorScheme />
 				<GlobalStyles
 					styles={{
 						body: {

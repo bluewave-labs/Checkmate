@@ -166,6 +166,10 @@
 			"copy": "Sao chép vào bộ nhớ tạm",
 			"copied": "Đã sao chép vào bộ nhớ tạm",
 			"copyFailed": "Không thể sao chép. Hãy chọn văn bản và sao chép thủ công."
+		},
+		"filters": {
+			"any": "Tất cả",
+			"state": "Trạng thái"
 		}
 	},
 	"components": {
@@ -179,6 +183,9 @@
 				"invalidFileSize": "Tệp quá lớn!",
 				"invalidFileFormat": "Định dạng tệp không được hỗ trợ!"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_other": "Đã chọn {{count}}"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "Liên kết công khai"
@@ -1448,6 +1455,8 @@
 				"monitoring": "Giám sát",
 				"email": "Email",
 				"integrations": "Tích hợp",
+				"tags": "Thẻ",
+				"proxies": "Proxy",
 				"data": "Dữ liệu",
 				"connect": "Checkmate Connect"
 			},

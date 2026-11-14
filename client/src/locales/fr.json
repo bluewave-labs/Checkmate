@@ -166,6 +166,10 @@
 			"copy": "Copier dans le presse-papiers",
 			"copied": "Copié dans le presse-papiers",
 			"copyFailed": "Copie impossible. Sélectionnez le texte et copiez-le manuellement."
+		},
+		"filters": {
+			"any": "Tous",
+			"state": "État"
 		}
 	},
 	"components": {
@@ -179,6 +183,10 @@
 				"invalidFileSize": "Le fichier est trop volumineux !",
 				"invalidFileFormat": "Format de fichier non supporté !"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} sélectionné",
+			"selectedCount_other": "{{count}} sélectionnés"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "Lien public"
@@ -1448,6 +1456,8 @@
 				"monitoring": "Surveillance",
 				"email": "E-mail",
 				"integrations": "Intégrations",
+				"tags": "Étiquettes",
+				"proxies": "Proxys",
 				"data": "Données",
 				"connect": "Checkmate Connect"
 			},

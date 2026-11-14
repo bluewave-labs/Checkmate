@@ -3,6 +3,7 @@ import type { RadioProps } from "@mui/material/Radio";
 import { useTheme } from "@mui/material/styles";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Typography from "@mui/material/Typography";
+import { RADIUS } from "@/Utils/Theme/constants";
 
 interface RadioInputProps extends RadioProps {}
 
@@ -34,7 +35,7 @@ export const RadioWithDescription = ({
 				alignItems: "flex-start",
 				p: theme.spacing(2.5),
 				m: theme.spacing(-2.5),
-				borderRadius: theme.shape.borderRadius,
+				borderRadius: RADIUS.SM,
 
 				"&:hover": {
 					backgroundColor: theme.palette.background.paper,

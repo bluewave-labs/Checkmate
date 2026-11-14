@@ -3,6 +3,7 @@ import { useTheme } from "@mui/material/styles";
 import { Info } from "lucide-react";
 
 import type { TooltipProps } from "@mui/material/Tooltip";
+import { PADDING, RADIUS } from "@/Utils/Theme/constants";
 
 type StyledTooltipProps = TooltipProps;
 
@@ -20,15 +21,12 @@ export const Tooltip = ({
 			slotProps={{
 				tooltip: {
 					sx: {
-						backgroundColor:
-							theme.palette.mode === "dark"
-								? theme.palette.grey[900]
-								: theme.palette.grey[800],
+						backgroundColor: theme.palette.neutral.tooltip,
 						color: theme.palette.common.white,
 						fontSize: "13px",
-						padding: `${theme.spacing(4)} ${theme.spacing(5)}`,
-						borderRadius: `${theme.shape.borderRadius}px`,
-						boxShadow: theme.shadows[6],
+						padding: PADDING.TOOLTIP,
+						borderRadius: RADIUS.SM,
+						boxShadow: "none",
 					},
 				},
 				...slotProps,

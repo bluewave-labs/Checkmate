@@ -1,27 +1,87 @@
 import Box from "@mui/material/Box";
-import { BaseBox } from "@/Components/design-elements";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 
 import type { MonitorStatus } from "@/Types/Monitor";
 import type { SxProps } from "@mui/material/styles";
-import {
-	getDockerStatePalette,
-	getStatusPalette,
-	getValuePalette,
-} from "@/Utils/MonitorUtils";
-import { useTheme } from "@mui/material/styles";
+import { getDockerStatePalette } from "@/Utils/MonitorUtils";
+import { useTheme, alpha, darken, lighten } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import type { DockerContainerState } from "@/Types/Check";
-import { SPACING } from "@/Utils/Theme/constants";
+import {
+	SPACING,
+	BADGE,
+	RADIUS,
+	FONT_WEIGHT,
+	LINE_HEIGHT,
+	TAG_TINT,
+} from "@/Utils/Theme/constants";
+import { typographyLevels, type SignalKey } from "@/Utils/Theme/Palette";
 
 export const ValueTypes = ["positive", "negative", "neutral"] as const;
 export type ValueType = (typeof ValueTypes)[number];
 
+const STATUS_SIGNAL: Record<MonitorStatus, SignalKey> = {
+	up: "success",
+	down: "error",
+	breached: "error",
+	paused: "neutral",
+	maintenance: "neutral",
+	initializing: "info",
+};
+
+const VALUE_SIGNAL: Record<ValueType, SignalKey> = {
+	positive: "success",
+	negative: "error",
+	neutral: "warning",
+};
+
+const SignalBadge = ({
+	signal,
+	children,
+	dot = true,
+	tabular = false,
+	sx,
+}: React.PropsWithChildren<{
+	signal: SignalKey;
+	dot?: boolean;
+	tabular?: boolean;
+	sx?: SxProps;
+}>) => {
+	const theme = useTheme();
+	const tone = theme.palette.signal[signal];
+	return (
+		<Box
+			display="inline-flex"
+			alignItems="center"
+			gap={BADGE.DOT_GAP}
+			height={BADGE.HEIGHT}
+			padding={BADGE.PADDING}
+			borderRadius={RADIUS.SM}
+			bgcolor={tone.bg}
+			color={tone.text}
+			fontSize={typographyLevels.s}
+			fontWeight={FONT_WEIGHT.MEDIUM}
+			lineHeight={LINE_HEIGHT.TIGHT}
+			whiteSpace="nowrap"
+			sx={{ ...(tabular && { fontVariantNumeric: "tabular-nums" }), ...sx }}
+		>
+			{dot && (
+				<Box
+					width={BADGE.DOT}
+					height={BADGE.DOT}
+					borderRadius="50%"
+					bgcolor="currentColor"
+					flexShrink={0}
+				/>
+			)}
+			{children}
+		</Box>
+	);
+};
+
 export const StatusLabel = ({ status, sx }: { status: MonitorStatus; sx?: SxProps }) => {
 	const { t } = useTranslation();
-	const theme = useTheme();
-	const palette = getStatusPalette(status);
 
 	const determineStatus = (status: MonitorStatus): string => {
 		if (status === "up") {
@@ -41,31 +101,14 @@ export const StatusLabel = ({ status, sx }: { status: MonitorStatus; sx?: SxProp
 		return t("pages.common.monitors.status.initializing");
 	};
 
+	const label = determineStatus(status);
 	return (
-		<BaseBox
-			sx={{
-				display: "inline-flex",
-				flexDirection: "row",
-				alignItems: "center",
-				justifyContent: "center",
-				padding: theme.spacing(3, 5),
-				color: theme.palette[palette].main,
-				borderColor:
-					theme.palette.mode === "dark"
-						? "rgba(255, 255, 255, 0.08)"
-						: "rgba(0, 0, 0, 0.08)",
-				...sx,
-			}}
+		<SignalBadge
+			signal={STATUS_SIGNAL[status] ?? "info"}
+			sx={sx}
 		>
-			<Box
-				width={7}
-				height={7}
-				bgcolor={theme.palette[palette].light}
-				borderRadius="50%"
-				marginRight="5px"
-			/>
-			<Typography textTransform={"capitalize"}>{determineStatus(status)}</Typography>
-		</BaseBox>
+			{label.charAt(0).toUpperCase() + label.slice(1)}
+		</SignalBadge>
 	);
 };
 
@@ -78,53 +121,54 @@ export const ValueLabel = ({
 	text: string;
 	preserveCase?: boolean;
 }) => {
-	const theme = useTheme();
-	const palette = getValuePalette(value);
 	const transformedText = preserveCase
 		? text
 		: text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 
-	return (
-		<BaseBox
-			sx={{
-				display: "inline-flex",
-				flexDirection: "row",
-				alignItems: "center",
-				justifyContent: "center",
-				padding: theme.spacing(3, 5),
-				color: theme.palette[palette].main,
-				borderColor:
-					theme.palette.mode === "dark"
-						? "rgba(255, 255, 255, 0.08)"
-						: "rgba(0, 0, 0, 0.08)",
-			}}
-		>
-			<Box
-				width={7}
-				height={7}
-				bgcolor={theme.palette[palette].light}
-				borderRadius="50%"
-				marginRight="5px"
-			/>
-			<Typography>{transformedText}</Typography>
-		</BaseBox>
-	);
+	return <SignalBadge signal={VALUE_SIGNAL[value]}>{transformedText}</SignalBadge>;
 };
+
+export const SignalLabel = ({ text, signal }: { text: string; signal: SignalKey }) => (
+	<SignalBadge
+		signal={signal}
+		dot={false}
+		tabular
+	>
+		{text}
+	</SignalBadge>
+);
 
 export const ColoredLabel = ({ text, color }: { text: string; color: string }) => {
 	const theme = useTheme();
+	const isDark = theme.palette.mode === "dark";
+	let bg = color;
+	let fg = color;
+	try {
+		bg = alpha(color, isDark ? TAG_TINT.BG_DARK : TAG_TINT.BG_LIGHT);
+		fg = isDark
+			? lighten(color, TAG_TINT.TEXT_SHIFT)
+			: darken(color, TAG_TINT.TEXT_SHIFT);
+	} catch {
+		// Not a colour MUI can parse; fall back to the raw value
+	}
 
 	return (
-		<BaseBox
-			sx={{
-				width: "fit-content",
-				padding: theme.spacing(1, 3),
-				color: color,
-				borderColor: color,
-			}}
+		<Box
+			display="inline-flex"
+			alignItems="center"
+			width="fit-content"
+			height={BADGE.TAG_HEIGHT}
+			padding={BADGE.PADDING}
+			borderRadius={RADIUS.SM}
+			bgcolor={bg}
+			color={fg}
+			fontSize={typographyLevels.sm}
+			fontWeight={FONT_WEIGHT.MEDIUM}
+			lineHeight={LINE_HEIGHT.TIGHT}
+			whiteSpace="nowrap"
 		>
-			<Typography>{text}</Typography>
-		</BaseBox>
+			{text}
+		</Box>
 	);
 };
 
@@ -147,9 +191,9 @@ export const DockerStateLabel = ({
 			alignItems={"center"}
 		>
 			<Box
-				width={7}
-				height={7}
-				bgcolor={theme.palette[palette].light}
+				width={BADGE.DOT}
+				height={BADGE.DOT}
+				bgcolor={theme.palette[palette].main}
 				borderRadius="50%"
 				marginRight="5px"
 			/>

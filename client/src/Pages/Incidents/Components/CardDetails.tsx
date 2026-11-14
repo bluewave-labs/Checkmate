@@ -1,5 +1,6 @@
 import Stack from "@mui/material/Stack";
-import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import Tooltip from "@mui/material/Tooltip";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import { BaseBox, ValueLabel, StatusCodeLabel } from "@/Components/design-elements";
@@ -36,6 +37,60 @@ const Cell = ({ children }: { children: React.ReactNode }) => (
 	<Typography variant="body1">{children}</Typography>
 );
 
+// Label columns size to their longest label so labels never wrap
+const DetailGrid = ({ pairs, children }: { pairs: 1 | 2; children: React.ReactNode }) => {
+	const theme = useTheme();
+	return (
+		<Box
+			display="grid"
+			gridTemplateColumns={
+				pairs === 2
+					? "max-content minmax(0, 1fr) max-content minmax(0, 1fr)"
+					: "max-content minmax(0, 1fr)"
+			}
+			// Baseline: a label lines up with the first line of a long, wrapping value
+			alignItems="baseline"
+			columnGap={theme.spacing(LAYOUT.MD)}
+			rowGap={theme.spacing(LAYOUT.SM)}
+		>
+			{children}
+		</Box>
+	);
+};
+
+// Long messages are clamped; the full text is in the tooltip
+const MESSAGE_MAX_LINES = 3;
+
+const ClampedMessage = ({ text }: { text: string }) => (
+	<Tooltip
+		title={text}
+		placement="top"
+		disableInteractive
+	>
+		<Typography
+			variant="body1"
+			overflow="hidden"
+			display="-webkit-box"
+			sx={{
+				WebkitLineClamp: MESSAGE_MAX_LINES,
+				WebkitBoxOrient: "vertical",
+				wordBreak: "break-word",
+			}}
+		>
+			{text}
+		</Typography>
+	</Tooltip>
+);
+
+const Label = ({ children }: { children: React.ReactNode }) => (
+	<Typography
+		variant="body1"
+		whiteSpace="nowrap"
+	>
+		{children}
+	</Typography>
+);
+
 export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
@@ -54,15 +109,9 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 			<BaseBox padding={LAYOUT.MD}>
 				<Stack gap={theme.spacing(LAYOUT.MD)}>
 					<SectionHeading>{t("pages.incidents.dialog.details.overview")}</SectionHeading>
-					<Grid
-						container
-						spacing={theme.spacing(LAYOUT.MD)}
-						alignItems="center"
-					>
-						<Grid size={2}>
-							<Cell>{t("pages.incidents.dialog.details.status")}</Cell>
-						</Grid>
-						<Grid size={10}>
+					<DetailGrid pairs={1}>
+						<Label>{t("pages.incidents.dialog.details.status")}</Label>
+						<Box>
 							<ValueLabel
 								value={incident.status ? "negative" : "positive"}
 								text={
@@ -71,127 +120,76 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 										: t("common.labels.resolved")
 								}
 							/>
-						</Grid>
+						</Box>
 						{monitor && (
 							<>
-								<Grid size={2}>
-									<Cell>{t("pages.incidents.dialog.details.monitor")}</Cell>
-								</Grid>
-								<Grid size={10}>
-									<Cell>{monitor.name ?? "N/A"}</Cell>
-								</Grid>
-								<Grid size={2}>
-									<Cell>{t("pages.incidents.dialog.details.url")}</Cell>
-								</Grid>
-								<Grid size={10}>
-									<Cell>{monitor.url ?? "N/A"}</Cell>
-								</Grid>
+								<Label>{t("pages.incidents.dialog.details.monitor")}</Label>
+								<Cell>{monitor.name ?? "N/A"}</Cell>
+								<Label>{t("pages.incidents.dialog.details.url")}</Label>
+								<Cell>{monitor.url ?? "N/A"}</Cell>
 							</>
 						)}
-					</Grid>
+					</DetailGrid>
 				</Stack>
 			</BaseBox>
 			<BaseBox padding={LAYOUT.MD}>
 				<Stack gap={theme.spacing(LAYOUT.MD)}>
 					<SectionHeading>{t("pages.incidents.dialog.details.analysis")}</SectionHeading>
-					<Grid
-						container
-						spacing={theme.spacing(LAYOUT.MD)}
-					>
-						<Grid size={6}>
+					<DetailGrid pairs={2}>
+						<Box gridColumn="span 2">
 							<Cell>{t("pages.incidents.dialog.details.timeline")}</Cell>
-						</Grid>
-						<Grid size={6}>
+						</Box>
+						<Box gridColumn="span 2">
 							<Cell>{t("pages.incidents.dialog.details.detailsLabel")}</Cell>
-						</Grid>
-						<Grid size={6}>
-							<Divider />
-						</Grid>
-						<Grid size={6}>
-							<Divider />
-						</Grid>
-						<Grid size={2}>
-							<Cell>{t("pages.incidents.dialog.details.startedAt")}</Cell>
-						</Grid>
-						<Grid size={4}>
-							<Cell>{formatDate(incident.startTime, "dateTime")}</Cell>
-						</Grid>
-						<Grid size={2}>
-							<Cell>{t("pages.incidents.dialog.details.statusCode")}</Cell>
-						</Grid>
-						<Grid size={4}>
-							<Cell>
-								<StatusCodeLabel
-									statusCode={incident.statusCode}
-									message={incident.message}
-								/>
-							</Cell>
-						</Grid>
-						<Grid size={2}>
-							<Cell>{t("pages.incidents.dialog.details.downtime")}</Cell>
-						</Grid>
-						<Grid size={4}>
-							<Cell>{getIncidentsDuration(incident)}</Cell>
-						</Grid>
-						<Grid size={2}>
-							<Cell>{t("pages.incidents.dialog.details.message")}</Cell>
-						</Grid>
-						<Grid size={4}>
-							<Cell>{incident.message ?? "N/A"}</Cell>
-						</Grid>
-					</Grid>
+						</Box>
+						<Divider sx={{ gridColumn: "span 2" }} />
+						<Divider sx={{ gridColumn: "span 2" }} />
+						<Label>{t("pages.incidents.dialog.details.startedAt")}</Label>
+						<Cell>{formatDate(incident.startTime, "dateTime")}</Cell>
+						<Label>{t("pages.incidents.dialog.details.statusCode")}</Label>
+						<Box>
+							<StatusCodeLabel
+								statusCode={incident.statusCode}
+								message={incident.message}
+							/>
+						</Box>
+						<Label>{t("pages.incidents.dialog.details.downtime")}</Label>
+						<Cell>{getIncidentsDuration(incident)}</Cell>
+						<Label>{t("pages.incidents.dialog.details.message")}</Label>
+						<ClampedMessage text={incident.message ?? "N/A"} />
+					</DetailGrid>
 				</Stack>
 			</BaseBox>
 			{!incident.status && (
 				<BaseBox padding={LAYOUT.MD}>
-					<Stack gap={theme.spacing(LAYOUT.XS)}>
+					<Stack gap={theme.spacing(LAYOUT.MD)}>
 						<SectionHeading>
 							{t("pages.incidents.dialog.details.resolutionDetails")}
 						</SectionHeading>
-						<Grid
-							container
-							spacing={theme.spacing(LAYOUT.MD)}
-							alignItems="center"
-						>
-							<Grid size={2}>
-								<Cell>{t("pages.incidents.dialog.details.resolvedAt")}</Cell>
-							</Grid>
-							<Grid size={10}>
-								<Cell>{formatDate(incident.endTime, "dateTime")}</Cell>
-							</Grid>
-							<Grid size={2}>
-								<Cell>{t("pages.incidents.dialog.details.resolutionType")}</Cell>
-							</Grid>
-							<Grid size={10}>
-								<Cell>
-									{incident.resolutionType
-										? t(
-												`pages.incidents.dialog.details.resolutionTypes.${incident.resolutionType}`
-											)
-										: "N/A"}
-								</Cell>
-							</Grid>
+						<DetailGrid pairs={1}>
+							<Label>{t("pages.incidents.dialog.details.resolvedAt")}</Label>
+							<Cell>{formatDate(incident.endTime, "dateTime")}</Cell>
+							<Label>{t("pages.incidents.dialog.details.resolutionType")}</Label>
+							<Cell>
+								{incident.resolutionType
+									? t(
+											`pages.incidents.dialog.details.resolutionTypes.${incident.resolutionType}`
+										)
+									: "N/A"}
+							</Cell>
 							{incident.resolvedBy && (
 								<>
-									<Grid size={2}>
-										<Cell>{t("pages.incidents.dialog.details.resolvedBy")}</Cell>
-									</Grid>
-									<Grid size={10}>
-										<Cell>{incident.resolvedByEmail ?? incident.resolvedBy}</Cell>
-									</Grid>
+									<Label>{t("pages.incidents.dialog.details.resolvedBy")}</Label>
+									<Cell>{incident.resolvedByEmail ?? incident.resolvedBy}</Cell>
 								</>
 							)}
 							{incident.comment && (
 								<>
-									<Grid size={2}>
-										<Cell>{t("pages.incidents.dialog.details.comment")}</Cell>
-									</Grid>
-									<Grid size={10}>
-										<Cell>{incident.comment}</Cell>
-									</Grid>
+									<Label>{t("pages.incidents.dialog.details.comment")}</Label>
+									<Cell>{incident.comment}</Cell>
 								</>
 							)}
-						</Grid>
+						</DetailGrid>
 					</Stack>
 				</BaseBox>
 			)}

@@ -8,6 +8,7 @@ import { formatStatusCode } from "@/Utils/statusCode";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { formatMs } from "@/Utils/TimeUtils";
 import { useFormatDate } from "@/Hooks/useFormatDate";
+import { RADIUS } from "@/Utils/Theme/constants";
 
 interface GeoChecksMapProps {
 	geoChecks: FlatGeoCheck[];
@@ -92,7 +93,7 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 			<Box
 				height={500}
 				width={"100%"}
-				borderRadius={theme.shape.borderRadius}
+				borderRadius={RADIUS.SM}
 				overflow={"hidden"}
 			>
 				<Map
@@ -149,7 +150,7 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 									borderWidth: 1,
 									borderStyle: "solid",
 									borderColor: theme.palette.divider,
-									borderRadius: 1,
+									borderRadius: RADIUS.SM,
 								}}
 							>
 								<Typography

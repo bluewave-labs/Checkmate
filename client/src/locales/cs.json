@@ -166,6 +166,10 @@
 			"copy": "Kopírovat do schránky",
 			"copied": "Zkopírováno do schránky",
 			"copyFailed": "Kopírování se nezdařilo. Označte text a zkopírujte ho ručně."
+		},
+		"filters": {
+			"any": "Jakýkoli",
+			"state": "Stav"
 		}
 	},
 	"components": {
@@ -179,6 +183,12 @@
 				"invalidFileSize": "Soubor je příliš velký!",
 				"invalidFileFormat": "Nepodporovaný formát souboru!"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} vybraná položka",
+			"selectedCount_few": "{{count}} vybrané položky",
+			"selectedCount_many": "{{count}} vybraných položek",
+			"selectedCount_other": "{{count}} vybraných položek"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "Veřejný odkaz"
@@ -1448,6 +1458,8 @@
 				"monitoring": "Monitorování",
 				"email": "E-mail",
 				"integrations": "Integrace",
+				"tags": "Štítky",
+				"proxies": "Proxy",
 				"data": "Data",
 				"connect": "Checkmate Connect"
 			},

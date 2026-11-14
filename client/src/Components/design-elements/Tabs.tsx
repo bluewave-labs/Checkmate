@@ -2,23 +2,31 @@ import MuiTabs from "@mui/material/Tabs";
 import type { TabsProps } from "@mui/material/Tabs";
 import { useTheme } from "@mui/material/styles";
 import { typographyLevels } from "@/Utils/Theme/Palette";
-import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import {
+	FOCUS_RING,
+	FONT_WEIGHT,
+	GAP,
+	ICON_SIZE,
+	ICON_STROKE,
+	PADDING,
+	RADIUS,
+} from "@/Utils/Theme/constants";
 interface CustomTabsProps extends TabsProps {}
 
+// Folder tabs: the selected tab joins the panel below, no indicator bar
 export const Tabs = (props: CustomTabsProps) => {
 	const theme = useTheme();
 	return (
 		<MuiTabs
 			sx={{
-				minHeight: INPUT_BASE_HEIGHT,
-				borderBottom: `1px solid ${theme.palette.divider}`,
+				minHeight: "auto",
+				boxShadow: `inset 0 -1px 0 ${theme.palette.neutral.hairline}`,
 				"& .MuiTabs-indicator": {
-					backgroundColor: theme.palette.primary.main,
-					height: 2,
-					bottom: 0,
+					display: "none",
 				},
 				"& .MuiTabs-flexContainer": {
-					gap: theme.spacing(16),
+					gap: GAP.TAB,
+					paddingLeft: PADDING.TAB_ROW_INSET,
 				},
 			}}
 			{...props}
@@ -30,7 +38,15 @@ export const Tabs = (props: CustomTabsProps) => {
 
 import MuiTab from "@mui/material/Tab";
 import type { TabProps } from "@mui/material/Tab";
+import type { LucideIcon } from "lucide-react";
 interface CustomTabProps extends TabProps {}
+
+export const TabIcon = ({ icon: IconComponent }: { icon: LucideIcon }) => (
+	<IconComponent
+		size={ICON_SIZE.TAB}
+		strokeWidth={ICON_STROKE}
+	/>
+);
 
 export const Tab = (props: CustomTabProps) => {
 	const theme = useTheme();
@@ -41,22 +57,32 @@ export const Tab = (props: CustomTabProps) => {
 			sx={{
 				textTransform: "none",
 				fontSize: typographyLevels.m,
-				fontWeight: 500,
-				minHeight: INPUT_BASE_HEIGHT,
-				padding: theme.spacing(1, 0),
-				paddingBottom: 0,
+				fontWeight: FONT_WEIGHT.REGULAR,
+				minHeight: "auto",
 				minWidth: "auto",
-				alignItems: "flex-start",
-				color: theme.palette.text.secondary,
-				"&.Mui-selected": {
-					color: theme.palette.primary.main,
-				},
+				padding: PADDING.TAB,
+				color: theme.palette.neutral.tertiary,
+				backgroundColor: theme.palette.neutral.raised,
+				border: `1px solid ${theme.palette.neutral.hairline}`,
+				borderRadius: RADIUS.TAB,
 				"&:hover": {
-					color: theme.palette.text.secondary,
+					color: theme.palette.text.primary,
 				},
-				"& .MuiTab-iconWrapper": {
-					marginRight: theme.spacing(2),
-					marginBottom: 0,
+				"&.Mui-selected": {
+					color: theme.palette.text.primary,
+					fontWeight: FONT_WEIGHT.MEDIUM,
+					backgroundColor: theme.palette.background.paper,
+					borderBottomColor: theme.palette.background.paper,
+				},
+				"&.Mui-focusVisible": {
+					outline: `${FOCUS_RING.WIDTH}px solid ${theme.palette.primary.main}`,
+					outlineOffset: FOCUS_RING.INSET_OFFSET,
+				},
+				// Doubled selector beats MUI's icon margin so GAP.ICON is the only spacing
+				gap: GAP.ICON,
+				"&& > .MuiTab-icon, && > .MuiTab-iconWrapper": {
+					margin: 0,
+					color: theme.palette.neutral.icon,
 				},
 			}}
 			{...props}

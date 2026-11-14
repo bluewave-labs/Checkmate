@@ -1,7 +1,7 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import { useTheme, alpha } from "@mui/material/styles";
-import { LAYOUT } from "@/Utils/Theme/constants";
+import { LAYOUT, RADIUS } from "@/Utils/Theme/constants";
 
 interface StepProgressProps {
 	steps: number;
@@ -30,7 +30,7 @@ export const StepProgress = ({ steps, current }: StepProgressProps) => {
 					key={index}
 					flex={1}
 					height={theme.spacing(LAYOUT.XXS)}
-					borderRadius={theme.shape.borderRadius}
+					borderRadius={RADIUS.SM}
 					sx={{
 						background: getSegmentBackground(index),
 						transition: "background 0.2s ease",

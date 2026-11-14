@@ -7,7 +7,7 @@ import Typography from "@mui/material/Typography";
 import { FieldLabel } from "./FieldLabel";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
-import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT, RADIUS } from "@/Utils/Theme/constants";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
 
@@ -44,7 +44,7 @@ export const TimePickerComponent = ({
 							},
 							"& fieldset": {
 								borderColor: error ? theme.palette.error.main : theme.palette.divider,
-								borderRadius: theme.shape.borderRadius,
+								borderRadius: RADIUS.SM,
 							},
 							"&:not(:has(.Mui-disabled)):not(:has(.Mui-error)) .MuiOutlinedInput-root:not(:has(input:focus)):hover fieldset":
 								{

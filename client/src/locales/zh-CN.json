@@ -166,6 +166,10 @@
 			"copy": "复制到剪贴板",
 			"copied": "已复制到剪贴板",
 			"copyFailed": "无法复制。请选中文本并手动复制。"
+		},
+		"filters": {
+			"any": "全部",
+			"state": "状态"
 		}
 	},
 	"components": {
@@ -179,6 +183,9 @@
 				"invalidFileSize": "文件太大了！",
 				"invalidFileFormat": "不支持的文件格式！"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_other": "已选择 {{count}} 项"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "公共链接"
@@ -1448,6 +1455,8 @@
 				"monitoring": "监控",
 				"email": "邮件",
 				"integrations": "集成",
+				"tags": "标签",
+				"proxies": "代理",
 				"data": "数据",
 				"connect": "Checkmate Connect"
 			},

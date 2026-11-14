@@ -1,5 +1,12 @@
 // Components
-import { BasePage, Tabs, Tab, DockerStateLabel } from "@/Components/design-elements";
+import {
+	BasePage,
+	Tabs,
+	Tab,
+	TabIcon,
+	DockerStateLabel,
+} from "@/Components/design-elements";
+import { LayoutDashboard, ScrollText } from "lucide-react";
 import { TabOverview } from "@/Pages/Docker/ContainerDetails/TabOverview";
 import { TabLogs } from "@/Pages/Docker/ContainerDetails/TabLogs";
 
@@ -66,8 +73,14 @@ const DockerDetailsPage = ({ open = "overview" }: DockerContainerDetailsProps) =
 				value={activeTab}
 				onChange={(_, newValue: number) => setActiveTab(newValue)}
 			>
-				<Tab label={t("pages.docker.container.tabs.overview")} />
-				<Tab label={t("pages.docker.container.tabs.logs")} />
+				<Tab
+					label={t("pages.docker.container.tabs.overview")}
+					icon={<TabIcon icon={LayoutDashboard} />}
+				/>
+				<Tab
+					label={t("pages.docker.container.tabs.logs")}
+					icon={<TabIcon icon={ScrollText} />}
+				/>
 			</Tabs>
 			{activeTab === 0 && (
 				<TabOverview

@@ -1,6 +1,5 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
 import { BaseBox, Icon, ValueLabel } from "@/Components/design-elements";
 import { CircleCheck, TriangleAlert, Bell, Wrench, Globe } from "lucide-react";
 import Box from "@mui/material/Box";
@@ -9,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material";
 import type { IncidentSummary, IncidentSummaryItem } from "@/Types/Incident";
 import { getIncidentsDuration } from "@/Pages/Incidents/utils";
+import { FONT_WEIGHT, LAYOUT } from "@/Utils/Theme/constants";
 
 interface SummaryItemProps {
 	icon: React.ReactNode;
@@ -23,13 +23,13 @@ const SummaryItem = ({ icon, label, value }: SummaryItemProps) => {
 			direction="row"
 			alignItems="center"
 			justifyContent="space-between"
-			gap={theme.spacing(2)}
+			gap={theme.spacing(LAYOUT.XXS)}
 			minHeight={32}
 		>
 			<Stack
 				direction="row"
 				alignItems="center"
-				gap={theme.spacing(2)}
+				gap={theme.spacing(LAYOUT.XXS)}
 				sx={{ "& svg": { color: theme.palette.text.secondary } }}
 			>
 				{icon}
@@ -63,7 +63,7 @@ export const SummaryCard = ({
 			flex={1}
 		>
 			<Stack
-				gap={theme.spacing(4)}
+				gap={theme.spacing(LAYOUT.XS)}
 				height="100%"
 			>
 				<Typography
@@ -115,7 +115,7 @@ export const SummaryCardActiveIncidents = ({
 				flex={1}
 				alignItems="center"
 				justifyContent="center"
-				gap={theme.spacing(4)}
+				gap={theme.spacing(LAYOUT.XS)}
 			>
 				{icon}
 				<Typography>{msg}</Typography>
@@ -129,20 +129,14 @@ const SummaryIncidentItem = ({ incident }: { incident: IncidentSummaryItem }) =>
 	const { t } = useTranslation();
 	const duration = getIncidentsDuration(incident);
 	return (
-		<Grid
-			container
-			alignItems="center"
-			spacing={2}
-			sx={{ width: "100%", minHeight: 32 }}
-		>
-			<Grid
-				size={{ xs: 12, lg: 5 }}
-				sx={{
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "flex-start",
-					gap: theme.spacing(2),
-				}}
+		// Cells of the shared grid in SummaryCardLatestIncidents, so columns align
+		<Box display="contents">
+			<Stack
+				direction="row"
+				alignItems="center"
+				gap={theme.spacing(LAYOUT.XS)}
+				minWidth={0}
+				minHeight={theme.spacing(LAYOUT.MD)}
 			>
 				<Icon
 					icon={Globe}
@@ -150,33 +144,27 @@ const SummaryIncidentItem = ({ incident }: { incident: IncidentSummaryItem }) =>
 				/>
 				<Typography
 					variant="body1"
-					fontWeight={500}
+					fontWeight={FONT_WEIGHT.MEDIUM}
 					noWrap
 				>
 					{incident.monitorName ?? t("common.labels.na")}
 				</Typography>
-			</Grid>
-
-			<Grid
-				size={{ xs: 12, md: 6, lg: 3 }}
-				sx={{ display: "flex" }}
-			>
+			</Stack>
+			<Box>
 				<ValueLabel
 					value={incident.status ? "negative" : "positive"}
 					text={incident.status ? t("common.labels.active") : t("common.labels.resolved")}
 				/>
-			</Grid>
-
-			<Grid
-				size={{ xs: 12, md: 6, lg: 4 }}
-				sx={{
-					textAlign: { xs: "left", md: "right" },
-					fontWeight: 600,
-				}}
+			</Box>
+			<Typography
+				variant="body1"
+				textAlign="right"
+				whiteSpace="nowrap"
+				sx={{ fontVariantNumeric: "tabular-nums" }}
 			>
-				<Typography variant="body1">{duration}</Typography>
-			</Grid>
-		</Grid>
+				{duration}
+			</Typography>
+		</Box>
 	);
 };
 
@@ -188,17 +176,27 @@ export const SummaryCardLatestIncidents = ({
 	summary,
 }: SummaryCardLatestIncidentsProps) => {
 	const { t } = useTranslation();
+	const theme = useTheme();
 
 	const latestIncidents = summary?.latestIncidents ?? [];
 
 	return (
 		<SummaryCard title={t("pages.incidents.summaryCard.latestIncidents.title")}>
-			{latestIncidents.slice(0, 3).map((incident) => (
-				<SummaryIncidentItem
-					key={incident.id}
-					incident={incident}
-				/>
-			))}
+			{/* One grid for all rows: name | status pill (left-aligned column) | duration */}
+			<Box
+				display="grid"
+				gridTemplateColumns="minmax(0, 1fr) max-content max-content"
+				alignItems="center"
+				columnGap={theme.spacing(LAYOUT.SM)}
+				rowGap={theme.spacing(LAYOUT.XS)}
+			>
+				{latestIncidents.slice(0, 3).map((incident) => (
+					<SummaryIncidentItem
+						key={incident.id}
+						incident={incident}
+					/>
+				))}
+			</Box>
 		</SummaryCard>
 	);
 };

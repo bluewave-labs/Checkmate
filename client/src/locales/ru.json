@@ -166,6 +166,10 @@
 			"copy": "Копировать в буфер обмена",
 			"copied": "Скопировано в буфер обмена",
 			"copyFailed": "Не удалось скопировать. Выделите текст и скопируйте его вручную."
+		},
+		"filters": {
+			"any": "Любой",
+			"state": "Состояние"
 		}
 	},
 	"components": {
@@ -179,6 +183,12 @@
 				"invalidFileSize": "Размер файла слишком велик!",
 				"invalidFileFormat": "Неподдерживаемый формат файла!"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_one": "Выбран {{count}}",
+			"selectedCount_few": "Выбрано {{count}}",
+			"selectedCount_many": "Выбрано {{count}}",
+			"selectedCount_other": "Выбрано {{count}}"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "Публичная ссылка"
@@ -1448,6 +1458,8 @@
 				"monitoring": "Мониторинг",
 				"email": "Электронная почта",
 				"integrations": "Интеграции",
+				"tags": "Теги",
+				"proxies": "Прокси",
 				"data": "Данные",
 				"connect": "Checkmate Connect"
 			},

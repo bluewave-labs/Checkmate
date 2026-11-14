@@ -10,9 +10,16 @@ interface BarRowProps {
 	value: React.ReactNode;
 	fillRatio: number;
 	valueColor?: string;
+	barColor?: string;
 }
 
-export const BarRow = ({ label, value, fillRatio, valueColor }: BarRowProps) => {
+export const BarRow = ({
+	label,
+	value,
+	fillRatio,
+	valueColor,
+	barColor,
+}: BarRowProps) => {
 	const theme = useTheme();
 
 	return (
@@ -36,7 +43,10 @@ export const BarRow = ({ label, value, fillRatio, valueColor }: BarRowProps) => 
 					{value}
 				</Typography>
 			</Stack>
-			<ProgressBar fillRatio={fillRatio} />
+			<ProgressBar
+				fillRatio={fillRatio}
+				fillColor={barColor}
+			/>
 		</Stack>
 	);
 };

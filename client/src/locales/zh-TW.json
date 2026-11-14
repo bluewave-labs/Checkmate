@@ -166,6 +166,10 @@
 			"copy": "複製到剪貼簿",
 			"copied": "已複製到剪貼簿",
 			"copyFailed": "無法複製。請選取文字並手動複製。"
+		},
+		"filters": {
+			"any": "全部",
+			"state": "狀態"
 		}
 	},
 	"components": {
@@ -179,6 +183,9 @@
 				"invalidFileSize": "檔案大小過大！",
 				"invalidFileFormat": "不支援的檔案格式！"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_other": "已選擇 {{count}} 項"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "公開連結"
@@ -1448,6 +1455,8 @@
 				"monitoring": "監控",
 				"email": "郵件",
 				"integrations": "整合",
+				"tags": "標籤",
+				"proxies": "代理",
 				"data": "資料",
 				"connect": "Checkmate Connect"
 			},

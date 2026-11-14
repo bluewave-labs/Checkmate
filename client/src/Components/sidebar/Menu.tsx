@@ -14,22 +14,25 @@ import {
 	User,
 	Lock,
 	Users,
-	Tag,
-	Waypoints,
 	Container,
 	LayoutDashboard,
 } from "lucide-react";
 import type { TFunction } from "i18next";
 import type { NavData } from "@/Components/sidebar/NavItem";
 import type { UserRole } from "@/Types/User";
+import type { SidebarGroupKey } from "@/Utils/Theme/Palette";
 
 export interface SidebarMenuItem extends NavData {
 	path: string;
 	roles?: UserRole[];
+	// Other path prefixes that also mark this item as the current page
+	activePaths?: string[];
 }
 
 export interface SidebarMenuGroup {
 	group: string;
+	// Wayfinding tint for the heading and icons; ungrouped (grey) when absent
+	groupKey?: SidebarGroupKey;
 	items: SidebarMenuItem[];
 }
 
@@ -40,6 +43,7 @@ export const getMenu = (t: TFunction, userRoles: UserRole[]): SidebarMenuGroup[]
 	const menu: SidebarMenuGroup[] = [
 		{
 			group: t("components.sidebar.menu.groups.monitoring"),
+			groupKey: "monitoring",
 			items: [
 				{
 					name: t("components.sidebar.menu.dashboard"),
@@ -70,6 +74,7 @@ export const getMenu = (t: TFunction, userRoles: UserRole[]): SidebarMenuGroup[]
 		},
 		{
 			group: t("components.sidebar.menu.groups.alerting"),
+			groupKey: "alerting",
 			items: [
 				{
 					name: t("components.sidebar.menu.incidents"),
@@ -90,6 +95,7 @@ export const getMenu = (t: TFunction, userRoles: UserRole[]): SidebarMenuGroup[]
 		},
 		{
 			group: t("components.sidebar.menu.groups.reporting"),
+			groupKey: "reporting",
 			items: [
 				{
 					name: t("components.sidebar.menu.statusPages"),
@@ -113,20 +119,11 @@ export const getMenu = (t: TFunction, userRoles: UserRole[]): SidebarMenuGroup[]
 			group: t("components.sidebar.menu.groups.configuration"),
 			items: [
 				{
-					name: t("components.sidebar.menu.tags"),
-					path: "tags",
-					icon: <Icon icon={Tag} />,
-				},
-				{
-					name: t("components.sidebar.menu.proxies"),
-					path: "proxies",
-					icon: <Icon icon={Waypoints} />,
-					roles: ["admin", "superadmin"],
-				},
-				{
 					name: t("components.sidebar.menu.settings"),
 					path: "settings",
 					icon: <Icon icon={Settings} />,
+					// Tags and proxies are Settings tabs; their create/edit pages keep their own paths
+					activePaths: ["tags", "proxies"],
 				},
 			],
 		},

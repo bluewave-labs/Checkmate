@@ -5,7 +5,7 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useTheme } from "@mui/material";
-import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
+import { SPACING, LAYOUT, RADIUS } from "@/Utils/Theme/constants";
 import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
@@ -60,7 +60,7 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 
 	const menuItemSx = {
 		gap: theme.spacing(LAYOUT.MD),
-		borderRadius: theme.shape.borderRadius,
+		borderRadius: RADIUS.SM,
 		pl: theme.spacing(LAYOUT.XS),
 		"& svg": {
 			height: 16,

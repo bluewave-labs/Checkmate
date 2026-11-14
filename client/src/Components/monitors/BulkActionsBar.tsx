@@ -10,7 +10,7 @@ import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { LAYOUT } from "@/Utils/Theme/constants";
+import { LAYOUT, RADIUS } from "@/Utils/Theme/constants";
 import { useSidebar } from "@/Hooks/useSidebar";
 
 interface BulkActionsBarProps {
@@ -57,7 +57,7 @@ export const BulkActionsBar = ({
 						pointerEvents: "auto",
 						px: LAYOUT.MD,
 						py: LAYOUT.XS,
-						borderRadius: theme.shape.borderRadius,
+						borderRadius: RADIUS.SM,
 						backgroundColor: theme.palette.background.paper,
 						border: `1px solid ${theme.palette.divider}`,
 						display: "flex",

@@ -166,6 +166,10 @@
 			"copy": "Copy to clipboard",
 			"copied": "Copied to clipboard",
 			"copyFailed": "Could not copy. Select the text and copy it manually."
+		},
+		"filters": {
+			"any": "Any",
+			"state": "State"
 		}
 	},
 	"components": {
@@ -191,6 +195,10 @@
 				"invalidFileSize": "File size is too large!",
 				"invalidFileFormat": "Unsupported file format!"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} selected",
+			"selectedCount_other": "{{count}} selected"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "Public link"
@@ -228,8 +236,6 @@
 				"infrastructure": "Infrastructure",
 				"docker": "Docker",
 				"notifications": "Notifications",
-				"tags": "Tags",
-				"proxies": "Proxies",
 				"checks": "Checks",
 				"incidents": "Incidents",
 				"statusPages": "Status pages",
@@ -305,7 +311,7 @@
 							"label": "Protocol"
 						},
 						"host": {
-							"label": "Hostname / IP Address",
+							"label": "Hostname / IP address",
 							"placeholder": "proxy.example.com"
 						},
 						"port": {
@@ -825,7 +831,7 @@
 					}
 				},
 				"geoChecks": {
-					"title": "Geo-Distributed Checks",
+					"title": "Geo-distributed checks",
 					"description": "Run checks from multiple geographic locations to monitor global availability and performance.",
 					"option": {
 						"enabled": {
@@ -958,7 +964,7 @@
 						"automatic": "Automatic",
 						"manual": "Manual"
 					},
-					"resolve": "Resolve Incident",
+					"resolve": "Resolve incident",
 					"resolvedAt": "Resolved at:",
 					"resolvedBy": "Resolved by:",
 					"startedAt": "Started at:",
@@ -981,35 +987,35 @@
 			},
 			"summaryCard": {
 				"activeIncidents": {
-					"title": "Active Incidents",
+					"title": "Active incidents",
 					"active_zero": "No active incidents",
 					"active_one": "{{count}} active incident",
 					"active_other": "{{count}} active incidents"
 				},
 				"incidentStats": {
-					"avgResolutionTime": "Avg Resolution Time",
-					"mostAffectedMonitor": "Most Affected Monitor",
-					"title": "Incident Statistics",
-					"totalIncidents": "Total Incidents"
+					"avgResolutionTime": "Avg resolution time",
+					"mostAffectedMonitor": "Most affected monitor",
+					"title": "Incident statistics",
+					"totalIncidents": "Total incidents"
 				},
 				"latestIncidents": {
-					"title": "Latest Incidents"
+					"title": "Latest incidents"
 				}
 			},
 			"table": {
 				"actions": {
 					"details": "Details",
 					"goToMonitor": "Go to monitor",
-					"resolveManually": "Resolve Manually"
+					"resolveManually": "Resolve manually"
 				},
-				"activeIncidents": "Active Incidents",
+				"activeIncidents": "Active incidents",
 				"headers": {
-					"endTime": "End Time",
-					"resolutionType": "Resolution Type",
-					"startTime": "Start Time",
-					"statusCode": "Status Code"
+					"endTime": "End time",
+					"resolutionType": "Resolution type",
+					"startTime": "Start time",
+					"statusCode": "Status code"
 				},
-				"resolvedIncidents": "Resolved Incidents",
+				"resolvedIncidents": "Resolved incidents",
 				"status": {
 					"active": "Active",
 					"resolved": "Resolved"
@@ -1092,8 +1098,8 @@
 			"charts": {
 				"labels": {
 					"disk": "Disk usage",
-					"netBytesRecv": "{{name}} - Bytes Received",
-					"netBytesSent": "{{name}} - Bytes Sent",
+					"netBytesRecv": "{{name}} - Bytes received",
+					"netBytesSent": "{{name}} - Bytes sent",
 					"loopbackOnlyNotice": "Capture is only seeing container network interfaces, and none of them are carrying real traffic. This is normal when Capture runs inside a container that can only observe its own network namespace — interfaces with host-like names (eth0, ens3) are the container's virtual interfaces, not the host's. Run Capture directly on the host to see real network activity.",
 					"temp": "CPU temperature"
 				}
@@ -1116,8 +1122,8 @@
 				}
 			},
 			"statBoxes": {
-				"avgCpuTemperature": "Average CPU Temperature",
-				"cpuFrequency": "CPU Frequency",
+				"avgCpuTemperature": "Average CPU temperature",
+				"cpuFrequency": "CPU frequency",
 				"cpuLogical": "CPU (Logical)",
 				"cpuPhysical": "CPU (Physical)",
 				"disk": "Disk",
@@ -1518,6 +1524,8 @@
 				"monitoring": "Monitoring",
 				"email": "Email",
 				"integrations": "Integrations",
+				"tags": "Tags",
+				"proxies": "Proxies",
 				"data": "Data",
 				"connect": "Checkmate Connect"
 			},
@@ -1620,19 +1628,19 @@
 					"description": "Set global CPU, Memory, Disk, and Temperature thresholds for infrastructure monitoring. These apply to all hardware monitors unless overridden.",
 					"option": {
 						"cpu": {
-							"label": "CPU Threshold (%)",
+							"label": "CPU threshold (%)",
 							"placeholder": "1 - 100"
 						},
 						"memory": {
-							"label": "Memory Threshold (%)",
+							"label": "Memory threshold (%)",
 							"placeholder": "1 - 100"
 						},
 						"disk": {
-							"label": "Disk Threshold (%)",
+							"label": "Disk threshold (%)",
 							"placeholder": "1 - 100"
 						},
 						"temperature": {
-							"label": "Temperature Threshold (°C)",
+							"label": "Temperature threshold (°C)",
 							"placeholder": "1 - 150"
 						}
 					}
@@ -1644,7 +1652,7 @@
 					"descriptionTransportLink": "See specifications here",
 					"option": {
 						"host": {
-							"label": "Email host - Hostname or IP address to connect to",
+							"label": "Email host - hostname or IP address to connect to",
 							"placeholder": "smtp.gmail.com"
 						},
 						"port": {
@@ -1652,7 +1660,7 @@
 							"placeholder": "587"
 						},
 						"address": {
-							"label": "Email address - Used for authentication",
+							"label": "Email address - used for authentication",
 							"placeholder": "you@example.com"
 						},
 						"displayName": {
@@ -1664,7 +1672,7 @@
 							"placeholder": "Leave empty if not required"
 						},
 						"password": {
-							"label": "Email password - Password for authentication",
+							"label": "Email password - password for authentication",
 							"labelSet": "Password is set. Click Reset to change it.",
 							"placeholder": "Enter your password"
 						},
@@ -1729,7 +1737,7 @@
 					"title": "Export monitors"
 				},
 				"importExportMonitors": {
-					"title": "Import / Export monitors",
+					"title": "Import / export monitors",
 					"description": "Import or export your monitors data as a JSON file for backup or transfer.",
 					"backupNotice": "This JSON file only contains your monitors, so it isn't a full backup. To back up or restore your Checkmate data, use Checkmate Connect.",
 					"connectTabLink": "Open the Checkmate Connect tab",
@@ -2005,7 +2013,7 @@
 				"poweredBy": "Powered by"
 			},
 			"editorial": {
-				"reportTitle": "Service Report",
+				"reportTitle": "Service report",
 				"allUp": "All systems are operating normally."
 			},
 			"form": {

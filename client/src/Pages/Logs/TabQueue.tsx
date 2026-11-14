@@ -11,7 +11,7 @@ import type { QueueData } from "@/Types/Queue";
 import { Metrics } from "@/Pages/Logs/components/Metrics";
 import { Button } from "@/Components/inputs";
 import { EmptyState } from "@/Components/design-elements";
-import { SPACING } from "@/Utils/Theme/constants";
+import { SPACING, RADIUS } from "@/Utils/Theme/constants";
 
 export const TabQueue = () => {
 	const theme = useTheme();
@@ -77,7 +77,7 @@ export const TabQueue = () => {
 										color={theme.palette.text.primary}
 										px={SPACING.SM}
 										py={SPACING.XXS}
-										borderRadius={theme.shape.borderRadius}
+										borderRadius={RADIUS.SM}
 									/>
 								),
 							}}
@@ -105,7 +105,7 @@ export const TabQueue = () => {
 										color={theme.palette.text.primary}
 										px={SPACING.SM}
 										py={SPACING.XXS}
-										borderRadius={theme.shape.borderRadius}
+										borderRadius={RADIUS.SM}
 									/>
 								),
 							}}

@@ -166,6 +166,10 @@
 			"copy": "คัดลอกไปยังคลิปบอร์ด",
 			"copied": "คัดลอกไปยังคลิปบอร์ดแล้ว",
 			"copyFailed": "คัดลอกไม่ได้ เลือกข้อความแล้วคัดลอกด้วยตนเอง"
+		},
+		"filters": {
+			"any": "ทั้งหมด",
+			"state": "สถานะการทำงาน"
 		}
 	},
 	"components": {
@@ -179,6 +183,9 @@
 				"invalidFileSize": "ขนาดไฟล์ใหญ่เกินไป!",
 				"invalidFileFormat": "รูปแบบไฟล์ไม่รองรับ!"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_other": "เลือกแล้ว {{count}} รายการ"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "ลิงก์สาธารณะ"
@@ -1448,6 +1455,8 @@
 				"monitoring": "การตรวจสอบ",
 				"email": "อีเมล",
 				"integrations": "การเชื่อมต่อ",
+				"tags": "แท็ก",
+				"proxies": "พร็อกซี",
 				"data": "ข้อมูล",
 				"connect": "Checkmate Connect"
 			},
