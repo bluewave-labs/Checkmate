@@ -1225,7 +1225,8 @@
 				"monitoring": "監控",
 				"email": "郵件",
 				"integrations": "整合",
-				"data": "資料"
+				"data": "資料",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1420,7 +1421,159 @@
 				},
 				"importExportMonitors": {
 					"title": "匯入/匯出監控",
-					"description": "將監控資料匯入或匯出為 JSON 檔案以進行備份或轉移。"
+					"description": "將監控資料匯入或匯出為 JSON 檔案以進行備份或轉移。",
+					"backupNotice": "此 JSON 檔案僅包含您的監控，並非完整備份。如需備份或還原 Checkmate 資料，請使用 Checkmate Connect。",
+					"connectTabLink": "開啟 Checkmate Connect 分頁",
+					"connectSiteLink": "前往 Checkmate Connect 網站"
+				},
+				"connect": {
+					"superadminOnly": "只有超級管理員可以註冊此伺服器、變更遠端存取、執行或還原備份，以及移除其註冊。如果您的角色最近有變更，請登出後重新登入。",
+					"clickToConfirm": "再按一次以確認",
+					"status": {
+						"title": "狀態",
+						"description": "此安裝的連線狀態。",
+						"enrolled": "已註冊",
+						"notEnrolled": "未註冊",
+						"connected": "通道已連線",
+						"disconnected": "通道已中斷",
+						"connecting": "通道連線中",
+						"remoteAccessOff": "遠端存取已關閉",
+						"agentId": "代理程式 ID",
+						"lastConnected": "上次連線"
+					},
+					"enroll": {
+						"title": "註冊此安裝",
+						"description": "貼上 Checkmate Connect 主控台中的憑證區塊。憑證會加密儲存在此安裝的資料庫中，只有在向 Checkmate Connect 進行驗證時才會傳送出去。",
+						"button": "註冊"
+					},
+					"remoteAccess": {
+						"title": "遠端存取",
+						"description": "保持一條對外通道開啟，讓您可以透過 Connect 位址存取此安裝。不會開放任何對內連接埠。"
+					},
+					"tooltips": {
+						"enroll": "將此伺服器連結到您的帳戶",
+						"unenroll": "中斷此伺服器與 Connect 的連結",
+						"generateKey": "建立用來解鎖備份的金鑰",
+						"lostKey": "使用新金鑰重新開始",
+						"runFull": "立即備份整個資料庫",
+						"runConfig": "備份檢查歷史以外的所有內容",
+						"importKey": "使用原伺服器上的金鑰",
+						"useKey": "以您的備份驗證此金鑰",
+						"replaceKey": "改用另一組復原金鑰",
+						"restore": "以此備份取代此伺服器的資料"
+					},
+					"backup": {
+						"title": "雲端備份",
+						"description": "此安裝資料庫的加密備份，上傳至 Checkmate Connect。資料在上傳前於本機加密，雲端只會儲存密文。",
+						"needsKey": "請在下方設定復原金鑰以開始備份。",
+						"generateKey": "產生復原金鑰",
+						"existingBackups": "此帳戶已有雲端備份。請輸入原伺服器上的復原金鑰以還原這些備份。",
+						"lostKey": "我遺失了金鑰",
+						"lostKeyWarning": "沒有原金鑰，就無法還原現有的雲端備份。這些備份會在您以新金鑰完成首次備份後保留 30 天，若您找回原金鑰，可以切換回去。",
+						"importKey": "我已有復原金鑰",
+						"importKeyHelp": "貼上原伺服器上的 64 個字元金鑰。Checkmate 會解密您的其中一個雲端備份來驗證金鑰，然後才儲存。",
+						"replaceKey": "使用其他復原金鑰",
+						"replaceKeyHelp": "貼上您要改用的 64 個字元金鑰。Checkmate 會解密您的雲端備份來驗證金鑰；若都無法開啟，則保留目前的金鑰。",
+						"replaceKeyWarning": "切換後，以目前金鑰建立的備份將無法還原。",
+						"importKeyConfirm": "使用此金鑰",
+						"verifyOutcome": {
+							"ok": "復原金鑰已儲存",
+							"wrong-key": "此金鑰無法解密您的雲端備份",
+							"no-backups": "沒有可用來驗證此金鑰的雲端備份",
+							"failed": "無法驗證金鑰：{{error}}"
+						},
+						"keyTitle": "復原金鑰",
+						"keyWarning": "請將此金鑰存放在遠離此伺服器的安全位置。它只會顯示一次。若遺失，您的雲端備份將無法還原，也沒有人能幫您找回。",
+						"keyCopy": "複製金鑰",
+						"keyLabel": "您的復原金鑰",
+						"keyContinue": "我已儲存",
+						"keyDone": "我已妥善保存金鑰",
+						"keyShowAgain": "再次顯示金鑰",
+						"keyVerifyHelp": "開啟您儲存金鑰的位置並貼到此處，以確認您有一份可用的副本。",
+						"keyPlaceholder": "復原金鑰",
+						"keyAcknowledge": "我了解，若遺失此金鑰，將無法還原我的雲端備份。",
+						"keyMismatch": "與您的復原金鑰不符。請再次顯示金鑰並重新儲存一份。",
+						"keyAckRequired": "請勾選此方塊以確認您已了解。",
+						"toolsMissing": "雲端備份需要 mongodump 和 mongorestore，但在此伺服器上找不到。",
+						"toolsMac": "在 macOS 上執行：brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "下載適用於 Linux 的 MongoDB Database Tools",
+						"toolsPath": "若它們安裝在其他位置，請設定 CONNECT_MONGODUMP_BIN 和 CONNECT_MONGORESTORE_BIN。找到工具後，此訊息會在一分鐘內消失。",
+						"runFull": "立即備份",
+						"runConfig": "僅備份設定",
+						"kind": {
+							"full": "完整資料庫",
+							"config": "僅設定"
+						},
+						"progress": {
+							"idle": "閒置",
+							"finished": {
+								"backup": {
+									"ok": "備份已完成",
+									"failed": "備份失敗"
+								},
+								"restore": {
+									"ok": "還原已完成",
+									"failed": "還原失敗"
+								},
+								"verify": {
+									"ok": "復原金鑰已儲存",
+									"failed": "金鑰驗證失敗"
+								}
+							},
+							"queued": {
+								"backup": "備份工作已加入佇列",
+								"restore": "還原工作已加入佇列"
+							},
+							"checking": "正在驗證您的金鑰…",
+							"restore": {
+								"downloading": "第 1 步，共 3 步：正在下載備份",
+								"decrypting": "第 2 步，共 3 步：正在解密備份",
+								"restoring": "第 3 步，共 3 步：正在還原資料庫"
+							},
+							"verify": {
+								"downloading": "正在驗證金鑰：正在下載第 {{attempt}} 個備份，共 {{attempts}} 個",
+								"decrypting": "正在驗證金鑰：正在解密第 {{attempt}} 個備份，共 {{attempts}} 個"
+							},
+							"backup": {
+								"dumping": "第 1 步，共 3 步：正在讀取並加密資料庫",
+								"uploading": "第 2 步，共 3 步：正在上傳加密備份",
+								"saving": "第 3 步，共 3 步：正在將備份儲存到您的帳戶"
+							}
+						},
+						"progressWithPercent": "{{step}}（{{percent}}%）",
+						"progressWithSize": "{{step}}（{{size}}）",
+						"lastBackupSucceeded": "上次備份（{{date}}）：成功",
+						"lastBackupSucceededSize": "上次備份（{{date}}）：成功 · {{size}}",
+						"lastBackupFailed": "上次備份（{{date}}）：失敗 — {{error}}",
+						"lastRestoreSucceeded": "上次還原（{{date}}）：成功",
+						"lastRestoreFailed": "上次還原（{{date}}）：失敗 — {{error}}",
+						"restore": {
+							"title": "還原備份",
+							"description": "下載所選的備份，在此伺服器上驗證並解密，然後取代目前的資料庫。",
+							"empty": "尚無已驗證的雲端備份。",
+							"button": "還原",
+							"confirmTitle": "要還原 {{date}} 的備份（{{kind}}）嗎？",
+							"confirmBody": "此操作會取代目前的資料庫，且無法復原。使用者帳戶也會被取代，因此之後請使用備份中的帳戶登入。",
+							"differentKey": "不同的金鑰",
+							"expires": "將於 {{date}} 後移除"
+						}
+					},
+					"schedule": {
+						"title": "排程備份",
+						"description": "自動執行加密雲端備份。開啟後會立即開始第一次備份；若排程備份到期時另一個備份或還原正在執行，則會略過，等待下一個週期。",
+						"interval": "備份頻率",
+						"kind": "備份類型"
+					},
+					"recoveryKey": {
+						"title": "復原金鑰",
+						"description": "在此伺服器上加密您的雲端備份。它絕不會離開此伺服器，沒有它，您的備份將無法還原。",
+						"set": "此伺服器已設定復原金鑰。"
+					},
+					"unenroll": {
+						"title": "移除註冊",
+						"description": "中斷此安裝與 Checkmate Connect 的連結，並刪除本機憑證。本機監控不受影響。",
+						"button": "移除註冊"
+					}
 				},
 				"about": {
 					"title": "關於",

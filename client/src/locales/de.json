@@ -1226,7 +1226,8 @@
 				"monitoring": "Überwachung",
 				"email": "E-Mail",
 				"integrations": "Integrationen",
-				"data": "Daten"
+				"data": "Daten",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1421,7 +1422,159 @@
 				},
 				"importExportMonitors": {
 					"title": "Monitore importieren / exportieren",
-					"description": "Importieren oder exportieren Sie Ihre Monitor-Daten als JSON-Datei zur Sicherung oder Übertragung."
+					"description": "Importieren oder exportieren Sie Ihre Monitor-Daten als JSON-Datei zur Sicherung oder Übertragung.",
+					"backupNotice": "Diese JSON-Datei enthält nur Ihre Monitore und ist daher keine vollständige Sicherung. Um Ihre Checkmate-Daten zu sichern oder wiederherzustellen, verwenden Sie Checkmate Connect.",
+					"connectTabLink": "Tab Checkmate Connect öffnen",
+					"connectSiteLink": "Website von Checkmate Connect besuchen"
+				},
+				"connect": {
+					"superadminOnly": "Nur ein Superadmin kann diesen Server registrieren, den Fernzugriff ändern, Sicherungen ausführen oder wiederherstellen oder die Registrierung entfernen. Melden Sie sich ab und wieder an, wenn sich Ihre Rolle kürzlich geändert hat.",
+					"clickToConfirm": "Zum Bestätigen erneut klicken",
+					"status": {
+						"title": "Status",
+						"description": "Verbindungsstatus dieser Installation.",
+						"enrolled": "Registriert",
+						"notEnrolled": "Nicht registriert",
+						"connected": "Tunnel verbunden",
+						"disconnected": "Tunnel getrennt",
+						"connecting": "Tunnel wird verbunden",
+						"remoteAccessOff": "Fernzugriff aus",
+						"agentId": "Agent-ID",
+						"lastConnected": "Zuletzt verbunden"
+					},
+					"enroll": {
+						"title": "Installation registrieren",
+						"description": "Fügen Sie den Zugangsdatenblock aus Ihrem Checkmate Connect-Dashboard ein. Die Zugangsdaten werden verschlüsselt in der Datenbank dieser Installation gespeichert und verlassen sie nur zur Authentifizierung bei Checkmate Connect.",
+						"button": "Registrieren"
+					},
+					"remoteAccess": {
+						"title": "Fernzugriff",
+						"description": "Hält einen ausgehenden Tunnel offen, damit Sie diese Installation über Ihre Connect-Adresse erreichen. Es werden keine eingehenden Ports geöffnet."
+					},
+					"tooltips": {
+						"enroll": "Diesen Server mit Ihrem Konto verbinden",
+						"unenroll": "Diesen Server von Connect trennen",
+						"generateKey": "Schlüssel erstellen, der Ihre Sicherungen entsperrt",
+						"lostKey": "Mit einem neuen Schlüssel neu beginnen",
+						"runFull": "Jetzt die gesamte Datenbank sichern",
+						"runConfig": "Alles außer dem Prüfverlauf sichern",
+						"importKey": "Schlüssel Ihres ursprünglichen Servers verwenden",
+						"useKey": "Diesen Schlüssel mit Ihren Sicherungen prüfen",
+						"replaceKey": "Zu einem anderen Wiederherstellungsschlüssel wechseln",
+						"restore": "Daten dieses Servers durch diese Sicherung ersetzen"
+					},
+					"backup": {
+						"title": "Cloud-Sicherungen",
+						"description": "Verschlüsselte Sicherungen der Datenbank dieser Installation, hochgeladen zu Checkmate Connect. Die Daten werden vor dem Hochladen hier verschlüsselt; in der Cloud wird nur Chiffretext gespeichert.",
+						"needsKey": "Richten Sie unten einen Wiederherstellungsschlüssel ein, um mit der Sicherung zu beginnen.",
+						"generateKey": "Wiederherstellungsschlüssel erstellen",
+						"existingBackups": "Für dieses Konto gibt es bereits Cloud-Sicherungen. Geben Sie den Wiederherstellungsschlüssel Ihres ursprünglichen Servers ein, um sie wiederherzustellen.",
+						"lostKey": "Ich habe meinen Schlüssel verloren",
+						"lostKeyWarning": "Ihre vorhandenen Cloud-Sicherungen können ohne den ursprünglichen Schlüssel nicht wiederhergestellt werden. Sie werden nach Ihrer ersten Sicherung mit einem neuen Schlüssel noch 30 Tage aufbewahrt, sodass Sie zurückwechseln können, falls Sie den ursprünglichen finden.",
+						"importKey": "Ich habe bereits einen Wiederherstellungsschlüssel",
+						"importKeyHelp": "Fügen Sie den 64-stelligen Schlüssel Ihres ursprünglichen Servers ein. Checkmate entschlüsselt eine Ihrer Cloud-Sicherungen, um den Schlüssel vor dem Speichern zu prüfen.",
+						"replaceKey": "Anderen Wiederherstellungsschlüssel verwenden",
+						"replaceKeyHelp": "Fügen Sie den 64-stelligen Schlüssel ein, den Sie stattdessen verwenden möchten. Checkmate entschlüsselt Ihre Cloud-Sicherungen, um den Schlüssel zu prüfen, und behält Ihren aktuellen Schlüssel, wenn sich keine davon öffnen lässt.",
+						"replaceKeyWarning": "Mit Ihrem aktuellen Schlüssel erstellte Sicherungen können nach dem Wechsel nicht wiederhergestellt werden.",
+						"importKeyConfirm": "Diesen Schlüssel verwenden",
+						"verifyOutcome": {
+							"ok": "Wiederherstellungsschlüssel gespeichert",
+							"wrong-key": "Dieser Schlüssel entschlüsselt Ihre Cloud-Sicherungen nicht",
+							"no-backups": "Keine Cloud-Sicherungen, mit denen dieser Schlüssel geprüft werden kann",
+							"failed": "Der Schlüssel konnte nicht geprüft werden: {{error}}"
+						},
+						"keyTitle": "Wiederherstellungsschlüssel",
+						"keyWarning": "Bewahren Sie diesen Schlüssel an einem sicheren Ort getrennt von diesem Server auf. Er wird nur einmal angezeigt. Wenn Sie ihn verlieren, können Ihre Cloud-Sicherungen nicht wiederhergestellt werden, und niemand kann ihn für Sie wiederherstellen.",
+						"keyCopy": "Schlüssel kopieren",
+						"keyLabel": "Ihr Wiederherstellungsschlüssel",
+						"keyContinue": "Ich habe ihn gespeichert",
+						"keyDone": "Ich habe den Schlüssel aufbewahrt",
+						"keyShowAgain": "Schlüssel erneut anzeigen",
+						"keyVerifyHelp": "Öffnen Sie den Ort, an dem Sie den Schlüssel gespeichert haben, und fügen Sie ihn hier ein, um zu bestätigen, dass Sie eine funktionierende Kopie haben.",
+						"keyPlaceholder": "Wiederherstellungsschlüssel",
+						"keyAcknowledge": "Mir ist bewusst, dass ich meine Cloud-Sicherungen nicht wiederherstellen kann, wenn ich diesen Schlüssel verliere.",
+						"keyMismatch": "Das stimmt nicht mit Ihrem Wiederherstellungsschlüssel überein. Zeigen Sie den Schlüssel erneut an und speichern Sie eine neue Kopie.",
+						"keyAckRequired": "Aktivieren Sie das Kontrollkästchen, um zu bestätigen, dass Sie dies verstanden haben.",
+						"toolsMissing": "Cloud-Sicherungen benötigen mongodump und mongorestore, die auf diesem Server nicht gefunden wurden.",
+						"toolsMac": "Unter macOS ausführen: brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "MongoDB Database Tools für Linux herunterladen",
+						"toolsPath": "Wenn sie an einem anderen Ort installiert sind, setzen Sie CONNECT_MONGODUMP_BIN und CONNECT_MONGORESTORE_BIN. Diese Meldung verschwindet innerhalb einer Minute, nachdem die Tools gefunden wurden.",
+						"runFull": "Jetzt sichern",
+						"runConfig": "Nur Konfiguration sichern",
+						"kind": {
+							"full": "Gesamte Datenbank",
+							"config": "Nur Konfiguration"
+						},
+						"progress": {
+							"idle": "Inaktiv",
+							"finished": {
+								"backup": {
+									"ok": "Sicherung abgeschlossen",
+									"failed": "Sicherung fehlgeschlagen"
+								},
+								"restore": {
+									"ok": "Wiederherstellung abgeschlossen",
+									"failed": "Wiederherstellung fehlgeschlagen"
+								},
+								"verify": {
+									"ok": "Wiederherstellungsschlüssel gespeichert",
+									"failed": "Schlüsselprüfung fehlgeschlagen"
+								}
+							},
+							"queued": {
+								"backup": "Sicherungsauftrag in Warteschlange",
+								"restore": "Wiederherstellungsauftrag in Warteschlange"
+							},
+							"checking": "Ihr Schlüssel wird geprüft…",
+							"restore": {
+								"downloading": "Schritt 1 von 3: Sicherung wird heruntergeladen",
+								"decrypting": "Schritt 2 von 3: Sicherung wird entschlüsselt",
+								"restoring": "Schritt 3 von 3: Ihre Datenbank wird wiederhergestellt"
+							},
+							"verify": {
+								"downloading": "Schlüssel wird geprüft: Sicherung {{attempt}} von {{attempts}} wird heruntergeladen",
+								"decrypting": "Schlüssel wird geprüft: Sicherung {{attempt}} von {{attempts}} wird entschlüsselt"
+							},
+							"backup": {
+								"dumping": "Schritt 1 von 3: Ihre Datenbank wird gelesen und verschlüsselt",
+								"uploading": "Schritt 2 von 3: verschlüsselte Sicherung wird hochgeladen",
+								"saving": "Schritt 3 von 3: Sicherung wird in Ihrem Konto gespeichert"
+							}
+						},
+						"progressWithPercent": "{{step}} ({{percent}} %)",
+						"progressWithSize": "{{step}} ({{size}})",
+						"lastBackupSucceeded": "Letzte Sicherung ({{date}}): erfolgreich",
+						"lastBackupSucceededSize": "Letzte Sicherung ({{date}}): erfolgreich · {{size}}",
+						"lastBackupFailed": "Letzte Sicherung ({{date}}): fehlgeschlagen — {{error}}",
+						"lastRestoreSucceeded": "Letzte Wiederherstellung ({{date}}): erfolgreich",
+						"lastRestoreFailed": "Letzte Wiederherstellung ({{date}}): fehlgeschlagen — {{error}}",
+						"restore": {
+							"title": "Sicherung wiederherstellen",
+							"description": "Lädt die ausgewählte Sicherung herunter, prüft und entschlüsselt sie auf diesem Server und ersetzt dann die aktuelle Datenbank.",
+							"empty": "Noch keine geprüften Cloud-Sicherungen.",
+							"button": "Wiederherstellen",
+							"confirmTitle": "Sicherung vom {{date}} ({{kind}}) wiederherstellen?",
+							"confirmBody": "Dadurch wird die aktuelle Datenbank ersetzt. Dies kann nicht rückgängig gemacht werden. Auch Benutzerkonten werden ersetzt, melden Sie sich danach also mit einem Konto aus der Sicherung an.",
+							"differentKey": "Anderer Schlüssel",
+							"expires": "Wird nach dem {{date}} entfernt"
+						}
+					},
+					"schedule": {
+						"title": "Geplante Sicherungen",
+						"description": "Führt automatisch eine verschlüsselte Cloud-Sicherung aus. Die erste startet, sobald Sie dies aktivieren. Eine geplante Sicherung, die fällig wird, während eine andere Sicherung oder Wiederherstellung läuft, wird bis zum nächsten Intervall übersprungen.",
+						"interval": "Sichern alle",
+						"kind": "Sicherungstyp"
+					},
+					"recoveryKey": {
+						"title": "Wiederherstellungsschlüssel",
+						"description": "Verschlüsselt Ihre Cloud-Sicherungen auf diesem Server. Er verlässt diesen Server nie, und ohne ihn können Ihre Sicherungen nicht wiederhergestellt werden.",
+						"set": "Auf diesem Server ist ein Wiederherstellungsschlüssel festgelegt."
+					},
+					"unenroll": {
+						"title": "Registrierung entfernen",
+						"description": "Trennt diese Installation von Checkmate Connect und löscht die lokalen Zugangsdaten. Die lokale Überwachung ist nicht betroffen.",
+						"button": "Registrierung entfernen"
+					}
 				},
 				"about": {
 					"title": "Über",

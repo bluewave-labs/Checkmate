@@ -1225,7 +1225,8 @@
 				"monitoring": "Valvonta",
 				"email": "Sähköposti",
 				"integrations": "Integraatiot",
-				"data": "Tiedot"
+				"data": "Tiedot",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1420,7 +1421,159 @@
 				},
 				"importExportMonitors": {
 					"title": "Monitorien tuonti / vienti",
-					"description": "Tuo tai vie monitorien tiedot JSON-tiedostona varmuuskopiointia tai siirtoa varten."
+					"description": "Tuo tai vie monitorien tiedot JSON-tiedostona varmuuskopiointia tai siirtoa varten.",
+					"backupNotice": "Tämä JSON-tiedosto sisältää vain monitorisi, joten se ei ole täydellinen varmuuskopio. Käytä Checkmate Connect -palvelua Checkmate-tietojesi varmuuskopiointiin tai palauttamiseen.",
+					"connectTabLink": "Avaa Checkmate Connect -välilehti",
+					"connectSiteLink": "Siirry Checkmate Connect -sivustolle"
+				},
+				"connect": {
+					"superadminOnly": "Vain pääylläpitäjä voi rekisteröidä tämän palvelimen, muuttaa etäkäyttöä, tehdä tai palauttaa varmuuskopioita tai poistaa sen rekisteröinnin. Jos roolisi muuttui äskettäin, kirjaudu ulos ja takaisin sisään.",
+					"clickToConfirm": "Vahvista napsauttamalla uudelleen",
+					"status": {
+						"title": "Tila",
+						"description": "Tämän asennuksen yhteyden tila.",
+						"enrolled": "Rekisteröity",
+						"notEnrolled": "Ei rekisteröity",
+						"connected": "Tunneli yhdistetty",
+						"disconnected": "Tunnelin yhteys katkaistu",
+						"connecting": "Tunneli yhdistää",
+						"remoteAccessOff": "Etäkäyttö pois päältä",
+						"agentId": "Agentin ID",
+						"lastConnected": "Viimeksi yhdistetty"
+					},
+					"enroll": {
+						"title": "Rekisteröi asennus",
+						"description": "Liitä tunnistetietolohko Checkmate Connect -hallintapaneelista. Tunnistetieto tallennetaan salattuna tämän asennuksen tietokantaan, ja se lähtee sieltä vain tunnistautumista varten Checkmate Connect -palveluun.",
+						"button": "Rekisteröi"
+					},
+					"remoteAccess": {
+						"title": "Etäkäyttö",
+						"description": "Pitää lähtevän tunnelin auki, jotta voit käyttää tätä asennusta Connect-osoitteesi kautta. Saapuvia portteja ei avata."
+					},
+					"tooltips": {
+						"enroll": "Yhdistä tämä palvelin tiliisi",
+						"unenroll": "Irrota tämä palvelin Connect-palvelusta",
+						"generateKey": "Luo avain, joka avaa varmuuskopiosi",
+						"lostKey": "Aloita alusta uudella avaimella",
+						"runFull": "Varmuuskopioi koko tietokanta nyt",
+						"runConfig": "Varmuuskopioi kaikki paitsi tarkistushistoria",
+						"importKey": "Käytä alkuperäisen palvelimen avainta",
+						"useKey": "Tarkista tämä avain varmuuskopioitasi vasten",
+						"replaceKey": "Vaihda toiseen palautusavaimeen",
+						"restore": "Korvaa tämän palvelimen tiedot tällä varmuuskopiolla"
+					},
+					"backup": {
+						"title": "Pilvivarmuuskopiot",
+						"description": "Tämän asennuksen tietokannan salatut varmuuskopiot, jotka lähetetään Checkmate Connect -palveluun. Tiedot salataan täällä ennen lähetystä; pilveen tallennetaan vain salattua dataa.",
+						"needsKey": "Määritä palautusavain alla aloittaaksesi varmuuskopioinnin.",
+						"generateKey": "Luo palautusavain",
+						"existingBackups": "Tällä tilillä on jo pilvivarmuuskopioita. Syötä alkuperäisen palvelimesi palautusavain palauttaaksesi ne.",
+						"lostKey": "Kadotin avaimeni",
+						"lostKeyWarning": "Nykyisiä pilvivarmuuskopioitasi ei voi palauttaa ilman alkuperäistä avainta. Niitä säilytetään 30 päivää ensimmäisestä uudella avaimella tehdystä varmuuskopiosta, joten voit vaihtaa takaisin, jos löydät alkuperäisen.",
+						"importKey": "Minulla on jo palautusavain",
+						"importKeyHelp": "Liitä alkuperäisen palvelimesi 64-merkkinen avain. Checkmate purkaa yhden pilvivarmuuskopioistasi tarkistaakseen avaimen ennen sen tallentamista.",
+						"replaceKey": "Käytä toista palautusavainta",
+						"replaceKeyHelp": "Liitä 64-merkkinen avain, jota haluat käyttää nykyisen sijaan. Checkmate purkaa pilvivarmuuskopiosi tarkistaakseen avaimen ja säilyttää nykyisen avaimesi, jos mikään niistä ei aukea.",
+						"replaceKeyWarning": "Nykyisellä avaimellasi tehtyjä varmuuskopioita ei voi palauttaa vaihdon jälkeen.",
+						"importKeyConfirm": "Käytä tätä avainta",
+						"verifyOutcome": {
+							"ok": "Palautusavain tallennettu",
+							"wrong-key": "Tämä avain ei pura pilvivarmuuskopioitasi",
+							"no-backups": "Ei pilvivarmuuskopioita, joita vasten avaimen voisi tarkistaa",
+							"failed": "Avainta ei voitu tarkistaa: {{error}}"
+						},
+						"keyTitle": "Palautusavain",
+						"keyWarning": "Säilytä tämä avain turvallisessa paikassa erillään tästä palvelimesta. Se näytetään vain kerran. Jos kadotat sen, pilvivarmuuskopioitasi ei voi palauttaa eikä kukaan voi palauttaa avainta puolestasi.",
+						"keyCopy": "Kopioi avain",
+						"keyLabel": "Palautusavaimesi",
+						"keyContinue": "Olen tallentanut sen",
+						"keyDone": "Olen tallentanut avaimen",
+						"keyShowAgain": "Näytä avain uudelleen",
+						"keyVerifyHelp": "Avaa paikka, johon tallensit avaimen, ja liitä se tähän vahvistaaksesi, että sinulla on toimiva kopio.",
+						"keyPlaceholder": "Palautusavain",
+						"keyAcknowledge": "Ymmärrän, että jos kadotan tämän avaimen, en voi palauttaa pilvivarmuuskopioitani.",
+						"keyMismatch": "Tämä ei vastaa palautusavaintasi. Näytä avain uudelleen ja tallenna uusi kopio.",
+						"keyAckRequired": "Vahvista valitsemalla ruutu, että ymmärrät.",
+						"toolsMissing": "Pilvivarmuuskopiot tarvitsevat mongodump- ja mongorestore-työkalut, joita ei löytynyt tältä palvelimelta.",
+						"toolsMac": "Suorita macOS:ssä: brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "Lataa MongoDB Database Tools (Linux)",
+						"toolsPath": "Jos ne on asennettu muualle, aseta CONNECT_MONGODUMP_BIN ja CONNECT_MONGORESTORE_BIN. Tämä viesti poistuu minuutin kuluessa siitä, kun työkalut löytyvät.",
+						"runFull": "Varmuuskopioi nyt",
+						"runConfig": "Varmuuskopioi vain asetukset",
+						"kind": {
+							"full": "Koko tietokanta",
+							"config": "Vain asetukset"
+						},
+						"progress": {
+							"idle": "Joutilas",
+							"finished": {
+								"backup": {
+									"ok": "Varmuuskopiointi valmis",
+									"failed": "Varmuuskopiointi epäonnistui"
+								},
+								"restore": {
+									"ok": "Palautus valmis",
+									"failed": "Palautus epäonnistui"
+								},
+								"verify": {
+									"ok": "Palautusavain tallennettu",
+									"failed": "Avaimen tarkistus epäonnistui"
+								}
+							},
+							"queued": {
+								"backup": "Varmuuskopiointityö lisätty jonoon",
+								"restore": "Palautustyö lisätty jonoon"
+							},
+							"checking": "Tarkistetaan avainta…",
+							"restore": {
+								"downloading": "Vaihe 1/3: ladataan varmuuskopiota",
+								"decrypting": "Vaihe 2/3: puretaan varmuuskopion salausta",
+								"restoring": "Vaihe 3/3: palautetaan tietokantaa"
+							},
+							"verify": {
+								"downloading": "Tarkistetaan avainta: ladataan varmuuskopiota {{attempt}}/{{attempts}}",
+								"decrypting": "Tarkistetaan avainta: puretaan varmuuskopiota {{attempt}}/{{attempts}}"
+							},
+							"backup": {
+								"dumping": "Vaihe 1/3: luetaan ja salataan tietokantaa",
+								"uploading": "Vaihe 2/3: lähetetään salattua varmuuskopiota",
+								"saving": "Vaihe 3/3: tallennetaan varmuuskopiota tilillesi"
+							}
+						},
+						"progressWithPercent": "{{step}} ({{percent}} %)",
+						"progressWithSize": "{{step}} ({{size}})",
+						"lastBackupSucceeded": "Viimeisin varmuuskopio ({{date}}): onnistui",
+						"lastBackupSucceededSize": "Viimeisin varmuuskopio ({{date}}): onnistui · {{size}}",
+						"lastBackupFailed": "Viimeisin varmuuskopio ({{date}}): epäonnistui — {{error}}",
+						"lastRestoreSucceeded": "Viimeisin palautus ({{date}}): onnistui",
+						"lastRestoreFailed": "Viimeisin palautus ({{date}}): epäonnistui — {{error}}",
+						"restore": {
+							"title": "Palauta varmuuskopio",
+							"description": "Lataa valitun varmuuskopion, tarkistaa ja purkaa sen tällä palvelimella ja korvaa sitten nykyisen tietokannan.",
+							"empty": "Ei vielä tarkistettuja pilvivarmuuskopioita.",
+							"button": "Palauta",
+							"confirmTitle": "Palautetaanko varmuuskopio ({{kind}}, päiväys: {{date}})?",
+							"confirmBody": "Tämä korvaa nykyisen tietokannan, eikä toimintoa voi kumota. Myös käyttäjätilit korvataan, joten kirjaudu sen jälkeen sisään varmuuskopiossa olevalla tilillä.",
+							"differentKey": "Eri avain",
+							"expires": "Poistetaan {{date}} jälkeen"
+						}
+					},
+					"schedule": {
+						"title": "Ajastetut varmuuskopiot",
+						"description": "Tee salattu pilvivarmuuskopio automaattisesti. Ensimmäinen alkaa heti, kun otat tämän käyttöön, ja ajastettu varmuuskopio, jonka vuoro tulee toisen varmuuskopioinnin tai palautuksen aikana, ohitetaan seuraavaan väliin asti.",
+						"interval": "Varmuuskopiointiväli",
+						"kind": "Varmuuskopion tyyppi"
+					},
+					"recoveryKey": {
+						"title": "Palautusavain",
+						"description": "Salaa pilvivarmuuskopiosi tällä palvelimella. Se ei koskaan poistu tältä palvelimelta, eikä varmuuskopioita voi palauttaa ilman sitä.",
+						"set": "Tälle palvelimelle on asetettu palautusavain."
+					},
+					"unenroll": {
+						"title": "Poista rekisteröinti",
+						"description": "Irrottaa tämän asennuksen Checkmate Connect -palvelusta ja poistaa paikallisen tunnistetiedon. Paikallinen valvonta ei muutu.",
+						"button": "Poista rekisteröinti"
+					}
 				},
 				"about": {
 					"title": "Tietoja",

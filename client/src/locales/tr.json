@@ -1225,7 +1225,8 @@
 				"monitoring": "İzleme",
 				"email": "E-posta",
 				"integrations": "Entegrasyonlar",
-				"data": "Veri"
+				"data": "Veri",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1420,7 +1421,159 @@
 				},
 				"importExportMonitors": {
 					"title": "Monitörleri içe / dışa aktar",
-					"description": "Yedekleme veya aktarım için monitör verilerinizi JSON dosyası olarak içe veya dışa aktarın."
+					"description": "Yedekleme veya aktarım için monitör verilerinizi JSON dosyası olarak içe veya dışa aktarın.",
+					"backupNotice": "Bu JSON dosyası yalnızca monitörlerinizi içerir, bu nedenle tam bir yedek değildir. Checkmate verilerinizi yedeklemek veya geri yüklemek için Checkmate Connect kullanın.",
+					"connectTabLink": "Checkmate Connect sekmesini aç",
+					"connectSiteLink": "Checkmate Connect web sitesini ziyaret et"
+				},
+				"connect": {
+					"superadminOnly": "Bu sunucuyu yalnızca bir süper yönetici kaydedebilir, uzaktan erişimi değiştirebilir, yedek alıp geri yükleyebilir veya kaydını kaldırabilir. Rolünüz yakın zamanda değiştiyse oturumu kapatıp yeniden açın.",
+					"clickToConfirm": "Onaylamak için tekrar tıklayın",
+					"status": {
+						"title": "Durum",
+						"description": "Bu kurulumun bağlantı durumu.",
+						"enrolled": "Kayıtlı",
+						"notEnrolled": "Kayıtlı değil",
+						"connected": "Tünel bağlı",
+						"disconnected": "Tünel bağlı değil",
+						"connecting": "Tünel bağlanıyor",
+						"remoteAccessOff": "Uzaktan erişim kapalı",
+						"agentId": "Ajan ID",
+						"lastConnected": "Son bağlantı"
+					},
+					"enroll": {
+						"title": "Kurulum kaydı",
+						"description": "Checkmate Connect panonuzdaki kimlik bilgisi bloğunu yapıştırın. Kimlik bilgisi bu kurulumun veritabanında şifreli olarak saklanır ve yalnızca Checkmate Connect ile kimlik doğrulamak için dışarı gönderilir.",
+						"button": "Kaydı tamamla"
+					},
+					"remoteAccess": {
+						"title": "Uzaktan erişim",
+						"description": "Bu kuruluma Connect adresinizden erişebilmeniz için giden bir tünel açık tutulur. Hiçbir gelen bağlantı noktası açılmaz."
+					},
+					"tooltips": {
+						"enroll": "Bu sunucuyu hesabınıza bağlayın",
+						"unenroll": "Bu sunucunun Connect bağlantısını kesin",
+						"generateKey": "Yedeklerinizin kilidini açan anahtarı oluşturun",
+						"lostKey": "Yeni bir anahtarla baştan başlayın",
+						"runFull": "Tüm veritabanını şimdi yedekleyin",
+						"runConfig": "Kontrol geçmişi dışındaki her şeyi yedekleyin",
+						"importKey": "Orijinal sunucunuzdaki anahtarı kullanın",
+						"useKey": "Bu anahtarı yedeklerinizle doğrulayın",
+						"replaceKey": "Başka bir kurtarma anahtarına geçin",
+						"restore": "Bu sunucunun verilerini bu yedekle değiştirin"
+					},
+					"backup": {
+						"title": "Bulut yedekleri",
+						"description": "Bu kurulumun veritabanının Checkmate Connect hizmetine yüklenen şifreli yedekleri. Veriler yüklenmeden önce burada şifrelenir; bulutta yalnızca şifreli veri saklanır.",
+						"needsKey": "Yedeklemeye başlamak için aşağıdan bir kurtarma anahtarı ayarlayın.",
+						"generateKey": "Kurtarma anahtarı oluştur",
+						"existingBackups": "Bu hesapta zaten bulut yedekleri var. Bunları geri yüklemek için orijinal sunucunuzdaki kurtarma anahtarını girin.",
+						"lostKey": "Anahtarımı kaybettim",
+						"lostKeyWarning": "Mevcut bulut yedekleriniz orijinal anahtar olmadan geri yüklenemez. Yeni anahtarla alınan ilk yedekten sonra 30 gün saklanırlar, böylece orijinal anahtarı bulursanız geri dönebilirsiniz.",
+						"importKey": "Zaten bir kurtarma anahtarım var",
+						"importKeyHelp": "Orijinal sunucunuzdaki 64 karakterlik anahtarı yapıştırın. Checkmate, anahtarı kaydetmeden önce doğrulamak için bulut yedeklerinizden birinin şifresini çözer.",
+						"replaceKey": "Farklı bir kurtarma anahtarı kullan",
+						"replaceKeyHelp": "Bunun yerine kullanmak istediğiniz 64 karakterlik anahtarı yapıştırın. Checkmate, anahtarı doğrulamak için bulut yedeklerinizin şifresini çözer ve hiçbiri açılmazsa mevcut anahtarınızı korur.",
+						"replaceKeyWarning": "Geçiş yaptıktan sonra mevcut anahtarınızla alınan yedekler geri yüklenemez.",
+						"importKeyConfirm": "Bu anahtarı kullan",
+						"verifyOutcome": {
+							"ok": "Kurtarma anahtarı kaydedildi",
+							"wrong-key": "Bu anahtar bulut yedeklerinizin şifresini çözmüyor",
+							"no-backups": "Bu anahtarın doğrulanabileceği bulut yedeği yok",
+							"failed": "Anahtar doğrulanamadı: {{error}}"
+						},
+						"keyTitle": "Kurtarma anahtarı",
+						"keyWarning": "Bu anahtarı bu sunucudan uzakta, güvenli bir yerde saklayın. Yalnızca bir kez gösterilir. Kaybederseniz bulut yedekleriniz geri yüklenemez ve kimse anahtarı sizin için kurtaramaz.",
+						"keyCopy": "Anahtarı kopyala",
+						"keyLabel": "Kurtarma anahtarınız",
+						"keyContinue": "Kaydettim",
+						"keyDone": "Anahtarı sakladım",
+						"keyShowAgain": "Anahtarı tekrar göster",
+						"keyVerifyHelp": "Anahtarı kaydettiğiniz yeri açın ve çalışan bir kopyanız olduğunu doğrulamak için buraya yapıştırın.",
+						"keyPlaceholder": "Kurtarma anahtarı",
+						"keyAcknowledge": "Bu anahtarı kaybedersem bulut yedeklerimi geri yükleyemeyeceğimi anlıyorum.",
+						"keyMismatch": "Bu, kurtarma anahtarınızla eşleşmiyor. Anahtarı tekrar gösterin ve yeni bir kopyasını kaydedin.",
+						"keyAckRequired": "Anladığınızı onaylamak için kutuyu işaretleyin.",
+						"toolsMissing": "Bulut yedekleri için mongodump ve mongorestore gerekir, ancak bunlar bu sunucuda bulunamadı.",
+						"toolsMac": "macOS üzerinde şunu çalıştırın: brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "Linux için MongoDB Database Tools indir",
+						"toolsPath": "Başka bir yere kuruluysa CONNECT_MONGODUMP_BIN ve CONNECT_MONGORESTORE_BIN değişkenlerini ayarlayın. Araçlar bulunduktan sonra bu mesaj bir dakika içinde kaybolur.",
+						"runFull": "Şimdi yedekle",
+						"runConfig": "Yalnızca yapılandırmayı yedekle",
+						"kind": {
+							"full": "Tam veritabanı",
+							"config": "Yalnızca yapılandırma"
+						},
+						"progress": {
+							"idle": "Boşta",
+							"finished": {
+								"backup": {
+									"ok": "Yedekleme tamamlandı",
+									"failed": "Yedekleme başarısız oldu"
+								},
+								"restore": {
+									"ok": "Geri yükleme tamamlandı",
+									"failed": "Geri yükleme başarısız oldu"
+								},
+								"verify": {
+									"ok": "Kurtarma anahtarı kaydedildi",
+									"failed": "Anahtar doğrulaması başarısız oldu"
+								}
+							},
+							"queued": {
+								"backup": "Yedekleme işi kuyruğa alındı",
+								"restore": "Geri yükleme işi kuyruğa alındı"
+							},
+							"checking": "Anahtarınız doğrulanıyor…",
+							"restore": {
+								"downloading": "Adım 1/3: yedek indiriliyor",
+								"decrypting": "Adım 2/3: yedeğin şifresi çözülüyor",
+								"restoring": "Adım 3/3: veritabanınız geri yükleniyor"
+							},
+							"verify": {
+								"downloading": "Anahtarınız doğrulanıyor: yedek indiriliyor ({{attempt}}/{{attempts}})",
+								"decrypting": "Anahtarınız doğrulanıyor: yedeğin şifresi çözülüyor ({{attempt}}/{{attempts}})"
+							},
+							"backup": {
+								"dumping": "Adım 1/3: veritabanınız okunuyor ve şifreleniyor",
+								"uploading": "Adım 2/3: şifreli yedek yükleniyor",
+								"saving": "Adım 3/3: yedek hesabınıza kaydediliyor"
+							}
+						},
+						"progressWithPercent": "{{step}} (%{{percent}})",
+						"progressWithSize": "{{step}} ({{size}})",
+						"lastBackupSucceeded": "Son yedek ({{date}}): başarılı",
+						"lastBackupSucceededSize": "Son yedek ({{date}}): başarılı · {{size}}",
+						"lastBackupFailed": "Son yedek ({{date}}): başarısız — {{error}}",
+						"lastRestoreSucceeded": "Son geri yükleme ({{date}}): başarılı",
+						"lastRestoreFailed": "Son geri yükleme ({{date}}): başarısız — {{error}}",
+						"restore": {
+							"title": "Bir yedeği geri yükle",
+							"description": "Seçilen yedeği indirir, bu sunucuda doğrulayıp şifresini çözer, ardından mevcut veritabanını değiştirir.",
+							"empty": "Henüz doğrulanmış bulut yedeği yok.",
+							"button": "Geri yükle",
+							"confirmTitle": "Yedek geri yüklensin mi? ({{kind}}, tarih: {{date}})",
+							"confirmBody": "Bu işlem mevcut veritabanını değiştirir ve geri alınamaz. Kullanıcı hesapları da değiştirilir, bu nedenle ardından yedekteki bir hesapla oturum açın.",
+							"differentKey": "Farklı anahtar",
+							"expires": "Silinme: {{date}} sonrası"
+						}
+					},
+					"schedule": {
+						"title": "Zamanlanmış yedeklemeler",
+						"description": "Şifreli bulut yedeklemesini otomatik olarak çalıştırın. İlki bu özelliği açar açmaz başlar; başka bir yedekleme veya geri yükleme sürerken zamanı gelen zamanlanmış yedekleme bir sonraki aralığa kadar atlanır.",
+						"interval": "Yedekleme sıklığı",
+						"kind": "Yedek türü"
+					},
+					"recoveryKey": {
+						"title": "Kurtarma anahtarı",
+						"description": "Bulut yedeklerinizi bu sunucuda şifreler. Bu sunucudan asla çıkmaz ve o olmadan yedekleriniz geri yüklenemez.",
+						"set": "Bu sunucuda bir kurtarma anahtarı ayarlı."
+					},
+					"unenroll": {
+						"title": "Kaydı kaldır",
+						"description": "Bu kurulumun Checkmate Connect bağlantısını keser ve yerel kimlik bilgisini siler. Yerel izleme etkilenmez.",
+						"button": "Kaydı kaldır"
+					}
 				},
 				"about": {
 					"title": "Hakkında",

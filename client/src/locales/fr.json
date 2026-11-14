@@ -1225,7 +1225,8 @@
 				"monitoring": "Surveillance",
 				"email": "E-mail",
 				"integrations": "Intégrations",
-				"data": "Données"
+				"data": "Données",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1420,7 +1421,159 @@
 				},
 				"importExportMonitors": {
 					"title": "Importer / Exporter les moniteurs",
-					"description": "Importez ou exportez vos données de moniteurs sous forme de fichier JSON pour sauvegarde ou transfert."
+					"description": "Importez ou exportez vos données de moniteurs sous forme de fichier JSON pour sauvegarde ou transfert.",
+					"backupNotice": "Ce fichier JSON ne contient que vos moniteurs : ce n'est donc pas une sauvegarde complète. Pour sauvegarder ou restaurer vos données Checkmate, utilisez Checkmate Connect.",
+					"connectTabLink": "Ouvrir l'onglet Checkmate Connect",
+					"connectSiteLink": "Visiter le site de Checkmate Connect"
+				},
+				"connect": {
+					"superadminOnly": "Seul un superadmin peut inscrire ce serveur, modifier l'accès à distance, lancer ou restaurer des sauvegardes, ou supprimer son inscription. Déconnectez-vous puis reconnectez-vous si votre rôle a changé récemment.",
+					"clickToConfirm": "Cliquez à nouveau pour confirmer",
+					"status": {
+						"title": "Statut",
+						"description": "État de connexion de cette installation.",
+						"enrolled": "Inscrit",
+						"notEnrolled": "Non inscrit",
+						"connected": "Tunnel connecté",
+						"disconnected": "Tunnel déconnecté",
+						"connecting": "Connexion du tunnel en cours",
+						"remoteAccessOff": "Accès à distance désactivé",
+						"agentId": "ID de l'agent",
+						"lastConnected": "Dernière connexion"
+					},
+					"enroll": {
+						"title": "Inscrire l'installation",
+						"description": "Collez le bloc d'identifiants de votre tableau de bord Checkmate Connect. Les identifiants sont stockés chiffrés dans la base de données de cette installation et n'en sortent que pour s'authentifier auprès de Checkmate Connect.",
+						"button": "Inscrire"
+					},
+					"remoteAccess": {
+						"title": "Accès à distance",
+						"description": "Maintient un tunnel sortant ouvert pour que vous puissiez accéder à cette installation depuis votre adresse Connect. Aucun port entrant n'est ouvert."
+					},
+					"tooltips": {
+						"enroll": "Connecter ce serveur à votre compte",
+						"unenroll": "Déconnecter ce serveur de Connect",
+						"generateKey": "Créer la clé qui déverrouille vos sauvegardes",
+						"lostKey": "Recommencer avec une nouvelle clé",
+						"runFull": "Sauvegarder toute la base de données maintenant",
+						"runConfig": "Tout sauvegarder sauf l'historique des vérifications",
+						"importKey": "Utiliser la clé de votre serveur d'origine",
+						"useKey": "Tester cette clé sur vos sauvegardes",
+						"replaceKey": "Passer à une autre clé de récupération",
+						"restore": "Remplacer les données de ce serveur par cette sauvegarde"
+					},
+					"backup": {
+						"title": "Sauvegardes cloud",
+						"description": "Sauvegardes chiffrées de la base de données de cette installation, envoyées vers Checkmate Connect. Les données sont chiffrées ici avant l'envoi ; le cloud ne stocke jamais que du texte chiffré.",
+						"needsKey": "Configurez une clé de récupération ci-dessous pour commencer les sauvegardes.",
+						"generateKey": "Générer une clé de récupération",
+						"existingBackups": "Ce compte possède déjà des sauvegardes cloud. Saisissez la clé de récupération de votre serveur d'origine pour les restaurer.",
+						"lostKey": "J'ai perdu ma clé",
+						"lostKeyWarning": "Vos sauvegardes cloud existantes ne peuvent pas être restaurées sans la clé d'origine. Elles sont conservées 30 jours après votre première sauvegarde avec une nouvelle clé, afin que vous puissiez revenir en arrière si vous retrouvez l'originale.",
+						"importKey": "J'ai déjà une clé de récupération",
+						"importKeyHelp": "Collez la clé de 64 caractères de votre serveur d'origine. Checkmate déchiffre l'une de vos sauvegardes cloud pour vérifier la clé avant de l'enregistrer.",
+						"replaceKey": "Utiliser une autre clé de récupération",
+						"replaceKeyHelp": "Collez la clé de 64 caractères que vous souhaitez utiliser à la place. Checkmate déchiffre vos sauvegardes cloud pour vérifier la clé et conserve votre clé actuelle si aucune ne s'ouvre.",
+						"replaceKeyWarning": "Les sauvegardes créées avec votre clé actuelle ne pourront plus être restaurées après le changement.",
+						"importKeyConfirm": "Utiliser cette clé",
+						"verifyOutcome": {
+							"ok": "Clé de récupération enregistrée",
+							"wrong-key": "Cette clé ne déchiffre pas vos sauvegardes cloud",
+							"no-backups": "Aucune sauvegarde cloud sur laquelle vérifier cette clé",
+							"failed": "Impossible de vérifier la clé : {{error}}"
+						},
+						"keyTitle": "Clé de récupération",
+						"keyWarning": "Conservez cette clé en lieu sûr, à l'écart de ce serveur. Elle n'est affichée qu'une seule fois. Si vous la perdez, vos sauvegardes cloud ne pourront pas être restaurées et personne ne pourra la récupérer pour vous.",
+						"keyCopy": "Copier la clé",
+						"keyLabel": "Votre clé de récupération",
+						"keyContinue": "Je l'ai enregistrée",
+						"keyDone": "J'ai conservé la clé",
+						"keyShowAgain": "Afficher à nouveau la clé",
+						"keyVerifyHelp": "Ouvrez l'endroit où vous avez enregistré la clé et collez-la ici pour confirmer que vous en avez une copie valide.",
+						"keyPlaceholder": "Clé de récupération",
+						"keyAcknowledge": "Je comprends que si je perds cette clé, je ne pourrai pas restaurer mes sauvegardes cloud.",
+						"keyMismatch": "Cela ne correspond pas à votre clé de récupération. Affichez à nouveau la clé et enregistrez-en une nouvelle copie.",
+						"keyAckRequired": "Cochez la case pour confirmer que vous avez compris.",
+						"toolsMissing": "Les sauvegardes cloud nécessitent mongodump et mongorestore, introuvables sur ce serveur.",
+						"toolsMac": "Sous macOS, exécutez : brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "Télécharger MongoDB Database Tools pour Linux",
+						"toolsPath": "S'ils sont installés ailleurs, définissez CONNECT_MONGODUMP_BIN et CONNECT_MONGORESTORE_BIN. Ce message disparaît dans la minute qui suit la détection des outils.",
+						"runFull": "Sauvegarder maintenant",
+						"runConfig": "Sauvegarder la configuration uniquement",
+						"kind": {
+							"full": "Base de données complète",
+							"config": "Configuration uniquement"
+						},
+						"progress": {
+							"idle": "Inactif",
+							"finished": {
+								"backup": {
+									"ok": "Sauvegarde terminée",
+									"failed": "Échec de la sauvegarde"
+								},
+								"restore": {
+									"ok": "Restauration terminée",
+									"failed": "Échec de la restauration"
+								},
+								"verify": {
+									"ok": "Clé de récupération enregistrée",
+									"failed": "Échec de la vérification de la clé"
+								}
+							},
+							"queued": {
+								"backup": "Tâche de sauvegarde en file d'attente",
+								"restore": "Tâche de restauration en file d'attente"
+							},
+							"checking": "Vérification de votre clé…",
+							"restore": {
+								"downloading": "Étape 1 sur 3 : téléchargement de la sauvegarde",
+								"decrypting": "Étape 2 sur 3 : déchiffrement de la sauvegarde",
+								"restoring": "Étape 3 sur 3 : restauration de votre base de données"
+							},
+							"verify": {
+								"downloading": "Vérification de votre clé : téléchargement de la sauvegarde {{attempt}} sur {{attempts}}",
+								"decrypting": "Vérification de votre clé : déchiffrement de la sauvegarde {{attempt}} sur {{attempts}}"
+							},
+							"backup": {
+								"dumping": "Étape 1 sur 3 : lecture et chiffrement de votre base de données",
+								"uploading": "Étape 2 sur 3 : envoi de la sauvegarde chiffrée",
+								"saving": "Étape 3 sur 3 : enregistrement de la sauvegarde dans votre compte"
+							}
+						},
+						"progressWithPercent": "{{step}} ({{percent}} %)",
+						"progressWithSize": "{{step}} ({{size}})",
+						"lastBackupSucceeded": "Dernière sauvegarde ({{date}}) : réussie",
+						"lastBackupSucceededSize": "Dernière sauvegarde ({{date}}) : réussie · {{size}}",
+						"lastBackupFailed": "Dernière sauvegarde ({{date}}) : échec — {{error}}",
+						"lastRestoreSucceeded": "Dernière restauration ({{date}}) : réussie",
+						"lastRestoreFailed": "Dernière restauration ({{date}}) : échec — {{error}}",
+						"restore": {
+							"title": "Restaurer une sauvegarde",
+							"description": "Télécharge la sauvegarde sélectionnée, la vérifie et la déchiffre sur ce serveur, puis remplace la base de données actuelle.",
+							"empty": "Aucune sauvegarde cloud vérifiée pour l'instant.",
+							"button": "Restaurer",
+							"confirmTitle": "Restaurer la sauvegarde du {{date}} ({{kind}}) ?",
+							"confirmBody": "Cette opération remplace la base de données actuelle et est irréversible. Les comptes utilisateur sont également remplacés : connectez-vous ensuite avec un compte présent dans la sauvegarde.",
+							"differentKey": "Clé différente",
+							"expires": "Supprimée après le {{date}}"
+						}
+					},
+					"schedule": {
+						"title": "Sauvegardes planifiées",
+						"description": "Lance automatiquement une sauvegarde cloud chiffrée. La première démarre dès que vous activez cette option, et une sauvegarde planifiée qui arrive à échéance pendant qu'une autre sauvegarde ou restauration est en cours est ignorée jusqu'à l'intervalle suivant.",
+						"interval": "Sauvegarder toutes les",
+						"kind": "Type de sauvegarde"
+					},
+					"recoveryKey": {
+						"title": "Clé de récupération",
+						"description": "Chiffre vos sauvegardes cloud sur ce serveur. Elle ne quitte jamais ce serveur et, sans elle, vos sauvegardes ne peuvent pas être restaurées.",
+						"set": "Une clé de récupération est définie sur ce serveur."
+					},
+					"unenroll": {
+						"title": "Supprimer l'inscription",
+						"description": "Déconnecte cette installation de Checkmate Connect et supprime les identifiants locaux. La surveillance locale n'est pas affectée.",
+						"button": "Supprimer l'inscription"
+					}
 				},
 				"about": {
 					"title": "À propos",

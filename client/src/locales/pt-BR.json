@@ -1514,7 +1514,8 @@
 				"monitoring": "Monitoramento",
 				"email": "E-mail",
 				"integrations": "Integrações",
-				"data": "Dados"
+				"data": "Dados",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1725,7 +1726,159 @@
 				},
 				"importExportMonitors": {
 					"title": "Importar / Exportar monitores",
-					"description": "Importe ou exporte os dados dos seus monitores como um arquivo JSON para backup ou transferência."
+					"description": "Importe ou exporte os dados dos seus monitores como um arquivo JSON para backup ou transferência.",
+					"backupNotice": "Este arquivo JSON contém apenas seus monitores, portanto não é um backup completo. Para fazer backup ou restaurar seus dados do Checkmate, use o Checkmate Connect.",
+					"connectTabLink": "Abrir a aba Checkmate Connect",
+					"connectSiteLink": "Visitar o site do Checkmate Connect"
+				},
+				"connect": {
+					"superadminOnly": "Somente um superadmin pode registrar este servidor, alterar o acesso remoto, executar ou restaurar backups ou remover o registro. Saia e entre novamente se sua função mudou recentemente.",
+					"clickToConfirm": "Clique novamente para confirmar",
+					"status": {
+						"title": "Status",
+						"description": "Estado da conexão desta instalação.",
+						"enrolled": "Registrada",
+						"notEnrolled": "Não registrada",
+						"connected": "Túnel conectado",
+						"disconnected": "Túnel desconectado",
+						"connecting": "Conectando o túnel",
+						"remoteAccessOff": "Acesso remoto desativado",
+						"agentId": "ID do agente",
+						"lastConnected": "Última conexão"
+					},
+					"enroll": {
+						"title": "Registrar instalação",
+						"description": "Cole o bloco de credenciais do seu painel do Checkmate Connect. A credencial é armazenada criptografada no banco de dados desta instalação e só sai dele para autenticar com o Checkmate Connect.",
+						"button": "Registrar"
+					},
+					"remoteAccess": {
+						"title": "Acesso remoto",
+						"description": "Mantém um túnel de saída aberto para que você possa acessar esta instalação pelo seu endereço do Connect. Nenhuma porta de entrada é aberta."
+					},
+					"tooltips": {
+						"enroll": "Conectar este servidor à sua conta",
+						"unenroll": "Desconectar este servidor do Connect",
+						"generateKey": "Criar a chave que desbloqueia seus backups",
+						"lostKey": "Recomeçar com uma nova chave",
+						"runFull": "Fazer backup de todo o banco de dados agora",
+						"runConfig": "Fazer backup de tudo, exceto o histórico de verificações",
+						"importKey": "Usar a chave do seu servidor original",
+						"useKey": "Testar esta chave com seus backups",
+						"replaceKey": "Trocar para outra chave de recuperação",
+						"restore": "Substituir os dados deste servidor por este backup"
+					},
+					"backup": {
+						"title": "Backups na nuvem",
+						"description": "Backups criptografados do banco de dados desta instalação, enviados para o Checkmate Connect. Os dados são criptografados aqui antes do envio; a nuvem só armazena texto cifrado.",
+						"needsKey": "Configure uma chave de recuperação abaixo para começar a fazer backups.",
+						"generateKey": "Gerar chave de recuperação",
+						"existingBackups": "Esta conta já tem backups na nuvem. Digite a chave de recuperação do seu servidor original para restaurá-los.",
+						"lostKey": "Perdi minha chave",
+						"lostKeyWarning": "Seus backups na nuvem existentes não podem ser restaurados sem a chave original. Eles são mantidos por 30 dias após seu primeiro backup com uma nova chave, para que você possa voltar atrás se encontrar a original.",
+						"importKey": "Já tenho uma chave de recuperação",
+						"importKeyHelp": "Cole a chave de 64 caracteres do seu servidor original. O Checkmate descriptografa um dos seus backups na nuvem para verificar a chave antes de salvá-la.",
+						"replaceKey": "Usar outra chave de recuperação",
+						"replaceKeyHelp": "Cole a chave de 64 caracteres que você quer usar no lugar. O Checkmate descriptografa seus backups na nuvem para verificar a chave e mantém a chave atual se nenhum deles abrir.",
+						"replaceKeyWarning": "Backups feitos com sua chave atual não poderão ser restaurados após a troca.",
+						"importKeyConfirm": "Usar esta chave",
+						"verifyOutcome": {
+							"ok": "Chave de recuperação salva",
+							"wrong-key": "Esta chave não descriptografa seus backups na nuvem",
+							"no-backups": "Não há backups na nuvem para verificar esta chave",
+							"failed": "Não foi possível verificar a chave: {{error}}"
+						},
+						"keyTitle": "Chave de recuperação",
+						"keyWarning": "Guarde esta chave em um lugar seguro, longe deste servidor. Ela é exibida apenas uma vez. Se você perdê-la, seus backups na nuvem não poderão ser restaurados e ninguém poderá recuperá-la para você.",
+						"keyCopy": "Copiar chave",
+						"keyLabel": "Sua chave de recuperação",
+						"keyContinue": "Já salvei",
+						"keyDone": "Guardei a chave",
+						"keyShowAgain": "Mostrar a chave novamente",
+						"keyVerifyHelp": "Abra o local onde você salvou a chave e cole-a aqui para confirmar que tem uma cópia válida.",
+						"keyPlaceholder": "Chave de recuperação",
+						"keyAcknowledge": "Entendo que, se eu perder esta chave, não poderei restaurar meus backups na nuvem.",
+						"keyMismatch": "Isso não corresponde à sua chave de recuperação. Mostre a chave novamente e salve uma nova cópia.",
+						"keyAckRequired": "Marque a caixa para confirmar que você entendeu.",
+						"toolsMissing": "Os backups na nuvem precisam do mongodump e do mongorestore, que não foram encontrados neste servidor.",
+						"toolsMac": "No macOS, execute: brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "Baixar o MongoDB Database Tools para Linux",
+						"toolsPath": "Se estiverem instalados em outro lugar, defina CONNECT_MONGODUMP_BIN e CONNECT_MONGORESTORE_BIN. Esta mensagem desaparece em até um minuto depois que as ferramentas forem encontradas.",
+						"runFull": "Fazer backup agora",
+						"runConfig": "Fazer backup só da configuração",
+						"kind": {
+							"full": "Banco de dados completo",
+							"config": "Somente configuração"
+						},
+						"progress": {
+							"idle": "Ocioso",
+							"finished": {
+								"backup": {
+									"ok": "Backup concluído",
+									"failed": "Falha no backup"
+								},
+								"restore": {
+									"ok": "Restauração concluída",
+									"failed": "Falha na restauração"
+								},
+								"verify": {
+									"ok": "Chave de recuperação salva",
+									"failed": "Falha na verificação da chave"
+								}
+							},
+							"queued": {
+								"backup": "Job de backup na fila",
+								"restore": "Job de restauração na fila"
+							},
+							"checking": "Verificando sua chave…",
+							"restore": {
+								"downloading": "Etapa 1 de 3: baixando o backup",
+								"decrypting": "Etapa 2 de 3: descriptografando o backup",
+								"restoring": "Etapa 3 de 3: restaurando seu banco de dados"
+							},
+							"verify": {
+								"downloading": "Verificando sua chave: baixando o backup {{attempt}} de {{attempts}}",
+								"decrypting": "Verificando sua chave: descriptografando o backup {{attempt}} de {{attempts}}"
+							},
+							"backup": {
+								"dumping": "Etapa 1 de 3: lendo e criptografando seu banco de dados",
+								"uploading": "Etapa 2 de 3: enviando o backup criptografado",
+								"saving": "Etapa 3 de 3: salvando o backup na sua conta"
+							}
+						},
+						"progressWithPercent": "{{step}} ({{percent}}%)",
+						"progressWithSize": "{{step}} ({{size}})",
+						"lastBackupSucceeded": "Último backup ({{date}}): concluído com sucesso",
+						"lastBackupSucceededSize": "Último backup ({{date}}): concluído com sucesso · {{size}}",
+						"lastBackupFailed": "Último backup ({{date}}): falhou — {{error}}",
+						"lastRestoreSucceeded": "Última restauração ({{date}}): concluída com sucesso",
+						"lastRestoreFailed": "Última restauração ({{date}}): falhou — {{error}}",
+						"restore": {
+							"title": "Restaurar um backup",
+							"description": "Baixa o backup selecionado, verifica e descriptografa neste servidor e, em seguida, substitui o banco de dados atual.",
+							"empty": "Ainda não há backups na nuvem verificados.",
+							"button": "Restaurar",
+							"confirmTitle": "Restaurar o backup de {{date}} ({{kind}})?",
+							"confirmBody": "Isso substitui o banco de dados atual e não pode ser desfeito. As contas de usuário também são substituídas, então depois entre com uma conta do backup.",
+							"differentKey": "Chave diferente",
+							"expires": "Removido após {{date}}"
+						}
+					},
+					"schedule": {
+						"title": "Backups agendados",
+						"description": "Executa automaticamente um backup criptografado na nuvem. O primeiro começa assim que você ativar esta opção, e um backup agendado que vencer enquanto outro backup ou restauração estiver em andamento é ignorado até o próximo intervalo.",
+						"interval": "Fazer backup a cada",
+						"kind": "Tipo de backup"
+					},
+					"recoveryKey": {
+						"title": "Chave de recuperação",
+						"description": "Criptografa seus backups na nuvem neste servidor. Ela nunca sai deste servidor e, sem ela, seus backups não podem ser restaurados.",
+						"set": "Há uma chave de recuperação definida neste servidor."
+					},
+					"unenroll": {
+						"title": "Remover registro",
+						"description": "Desconecta esta instalação do Checkmate Connect e exclui a credencial local. O monitoramento local não é afetado.",
+						"button": "Remover registro"
+					}
 				},
 				"about": {
 					"title": "Sobre",

@@ -1290,7 +1290,8 @@
 				"monitoring": "Monitorowanie",
 				"email": "E-mail",
 				"integrations": "Integracje",
-				"data": "Dane"
+				"data": "Dane",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"about": {
@@ -1381,7 +1382,159 @@
 				},
 				"importExportMonitors": {
 					"description": "Importuj lub eksportuj dane monitorów jako plik JSON w celu wykonania kopii zapasowej lub przeniesienia.",
+					"backupNotice": "Ten plik JSON zawiera tylko Twoje monitory, więc nie jest pełną kopią zapasową. Aby utworzyć kopię zapasową lub przywrócić dane Checkmate, użyj Checkmate Connect.",
+					"connectTabLink": "Otwórz kartę Checkmate Connect",
+					"connectSiteLink": "Odwiedź stronę Checkmate Connect",
 					"title": "Importuj / Eksportuj monitory"
+				},
+				"connect": {
+					"superadminOnly": "Tylko super administrator może zarejestrować ten serwer, zmienić dostęp zdalny, wykonywać lub przywracać kopie zapasowe albo usunąć jego rejestrację. Jeśli Twoja rola niedawno się zmieniła, wyloguj się i zaloguj ponownie.",
+					"clickToConfirm": "Kliknij ponownie, aby potwierdzić",
+					"status": {
+						"title": "Status",
+						"description": "Stan połączenia tej instalacji.",
+						"enrolled": "Zarejestrowano",
+						"notEnrolled": "Nie zarejestrowano",
+						"connected": "Tunel połączony",
+						"disconnected": "Tunel rozłączony",
+						"connecting": "Łączenie tunelu",
+						"remoteAccessOff": "Dostęp zdalny wyłączony",
+						"agentId": "ID agenta",
+						"lastConnected": "Ostatnie połączenie"
+					},
+					"enroll": {
+						"title": "Zarejestruj instalację",
+						"description": "Wklej blok danych uwierzytelniających z panelu Checkmate Connect. Dane są przechowywane w zaszyfrowanej postaci w bazie danych tej instalacji i opuszczają ją tylko w celu uwierzytelnienia w Checkmate Connect.",
+						"button": "Zarejestruj"
+					},
+					"remoteAccess": {
+						"title": "Dostęp zdalny",
+						"description": "Utrzymuje otwarty tunel wychodzący, aby można było połączyć się z tą instalacją przez Twój adres Connect. Żadne porty przychodzące nie są otwierane."
+					},
+					"tooltips": {
+						"enroll": "Połącz ten serwer ze swoim kontem",
+						"unenroll": "Odłącz ten serwer od Connect",
+						"generateKey": "Utwórz klucz, który odblokowuje Twoje kopie zapasowe",
+						"lostKey": "Zacznij od nowa z nowym kluczem",
+						"runFull": "Utwórz teraz kopię całej bazy danych",
+						"runConfig": "Utwórz kopię wszystkiego oprócz historii sprawdzeń",
+						"importKey": "Użyj klucza z pierwotnego serwera",
+						"useKey": "Sprawdź ten klucz na kopiach zapasowych",
+						"replaceKey": "Przełącz na inny klucz odzyskiwania",
+						"restore": "Zastąp dane tego serwera tą kopią zapasową"
+					},
+					"backup": {
+						"title": "Kopie zapasowe w chmurze",
+						"description": "Zaszyfrowane kopie zapasowe bazy danych tej instalacji, przesyłane do Checkmate Connect. Dane są szyfrowane tutaj przed przesłaniem; chmura przechowuje wyłącznie zaszyfrowane dane.",
+						"needsKey": "Skonfiguruj poniżej klucz odzyskiwania, aby zacząć tworzyć kopie zapasowe.",
+						"generateKey": "Wygeneruj klucz odzyskiwania",
+						"existingBackups": "To konto ma już kopie zapasowe w chmurze. Wprowadź klucz odzyskiwania z pierwotnego serwera, aby je przywrócić.",
+						"lostKey": "Nie mam już klucza",
+						"lostKeyWarning": "Bez pierwotnego klucza nie można przywrócić istniejących kopii zapasowych w chmurze. Są one przechowywane przez 30 dni od pierwszej kopii z nowym kluczem, więc możesz do nich wrócić, jeśli odnajdziesz pierwotny klucz.",
+						"importKey": "Mam już klucz odzyskiwania",
+						"importKeyHelp": "Wklej 64-znakowy klucz z pierwotnego serwera. Przed zapisaniem klucza Checkmate odszyfrowuje jedną z Twoich kopii zapasowych w chmurze, aby go sprawdzić.",
+						"replaceKey": "Użyj innego klucza odzyskiwania",
+						"replaceKeyHelp": "Wklej 64-znakowy klucz, którego chcesz używać zamiast obecnego. Checkmate odszyfrowuje Twoje kopie zapasowe w chmurze, aby sprawdzić klucz, i zachowuje obecny klucz, jeśli żadnej z nich nie da się otworzyć.",
+						"replaceKeyWarning": "Po przełączeniu nie będzie można przywrócić kopii utworzonych obecnym kluczem.",
+						"importKeyConfirm": "Użyj tego klucza",
+						"verifyOutcome": {
+							"ok": "Zapisano klucz odzyskiwania",
+							"wrong-key": "Ten klucz nie odszyfrowuje Twoich kopii zapasowych w chmurze",
+							"no-backups": "Brak kopii zapasowych w chmurze, na których można sprawdzić ten klucz",
+							"failed": "Nie udało się sprawdzić klucza: {{error}}"
+						},
+						"keyTitle": "Klucz odzyskiwania",
+						"keyWarning": "Przechowuj ten klucz w bezpiecznym miejscu, z dala od tego serwera. Jest wyświetlany tylko raz. Jeśli go zgubisz, nie będzie można przywrócić kopii zapasowych w chmurze i nikt nie odzyska go za Ciebie.",
+						"keyCopy": "Kopiuj klucz",
+						"keyLabel": "Twój klucz odzyskiwania",
+						"keyContinue": "Klucz jest zapisany",
+						"keyDone": "Przechowuję klucz",
+						"keyShowAgain": "Pokaż klucz ponownie",
+						"keyVerifyHelp": "Otwórz miejsce, w którym zapisano klucz, i wklej go tutaj, aby potwierdzić, że masz działającą kopię.",
+						"keyPlaceholder": "Klucz odzyskiwania",
+						"keyAcknowledge": "Rozumiem, że po utracie tego klucza przywrócenie kopii zapasowych w chmurze nie będzie możliwe.",
+						"keyMismatch": "To nie pasuje do Twojego klucza odzyskiwania. Pokaż klucz ponownie i zapisz nową kopię.",
+						"keyAckRequired": "Zaznacz pole, aby potwierdzić, że rozumiesz.",
+						"toolsMissing": "Kopie zapasowe w chmurze wymagają narzędzi mongodump i mongorestore, których nie znaleziono na tym serwerze.",
+						"toolsMac": "W systemie macOS uruchom: brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "Pobierz MongoDB Database Tools dla systemu Linux",
+						"toolsPath": "Jeśli są zainstalowane w innym miejscu, ustaw CONNECT_MONGODUMP_BIN i CONNECT_MONGORESTORE_BIN. Ten komunikat zniknie w ciągu minuty od wykrycia narzędzi.",
+						"runFull": "Utwórz kopię teraz",
+						"runConfig": "Kopia tylko konfiguracji",
+						"kind": {
+							"full": "Pełna baza danych",
+							"config": "Tylko konfiguracja"
+						},
+						"progress": {
+							"idle": "Bezczynny",
+							"finished": {
+								"backup": {
+									"ok": "Kopia zapasowa ukończona",
+									"failed": "Kopia zapasowa nie powiodła się"
+								},
+								"restore": {
+									"ok": "Przywracanie ukończone",
+									"failed": "Przywracanie nie powiodło się"
+								},
+								"verify": {
+									"ok": "Zapisano klucz odzyskiwania",
+									"failed": "Sprawdzanie klucza nie powiodło się"
+								}
+							},
+							"queued": {
+								"backup": "Zadanie kopii zapasowej dodane do kolejki",
+								"restore": "Zadanie przywracania dodane do kolejki"
+							},
+							"checking": "Sprawdzanie klucza…",
+							"restore": {
+								"downloading": "Krok 1 z 3: pobieranie kopii zapasowej",
+								"decrypting": "Krok 2 z 3: odszyfrowywanie kopii zapasowej",
+								"restoring": "Krok 3 z 3: przywracanie bazy danych"
+							},
+							"verify": {
+								"downloading": "Sprawdzanie klucza: pobieranie kopii {{attempt}}/{{attempts}}",
+								"decrypting": "Sprawdzanie klucza: odszyfrowywanie kopii {{attempt}}/{{attempts}}"
+							},
+							"backup": {
+								"dumping": "Krok 1 z 3: odczyt i szyfrowanie bazy danych",
+								"uploading": "Krok 2 z 3: przesyłanie zaszyfrowanej kopii zapasowej",
+								"saving": "Krok 3 z 3: zapisywanie kopii zapasowej na Twoim koncie"
+							}
+						},
+						"progressWithPercent": "{{step}} ({{percent}}%)",
+						"progressWithSize": "{{step}} ({{size}})",
+						"lastBackupSucceeded": "Ostatnia kopia zapasowa ({{date}}): udana",
+						"lastBackupSucceededSize": "Ostatnia kopia zapasowa ({{date}}): udana · {{size}}",
+						"lastBackupFailed": "Ostatnia kopia zapasowa ({{date}}): nieudana — {{error}}",
+						"lastRestoreSucceeded": "Ostatnie przywracanie ({{date}}): udane",
+						"lastRestoreFailed": "Ostatnie przywracanie ({{date}}): nieudane — {{error}}",
+						"restore": {
+							"title": "Przywróć kopię zapasową",
+							"description": "Pobiera wybraną kopię zapasową, weryfikuje i odszyfrowuje ją na tym serwerze, a następnie zastępuje bieżącą bazę danych.",
+							"empty": "Brak zweryfikowanych kopii zapasowych w chmurze.",
+							"button": "Przywróć",
+							"confirmTitle": "Przywrócić kopię zapasową ({{kind}}, data: {{date}})?",
+							"confirmBody": "Spowoduje to zastąpienie bieżącej bazy danych i nie można tego cofnąć. Konta użytkowników również zostaną zastąpione, więc później zaloguj się kontem z kopii zapasowej.",
+							"differentKey": "Inny klucz",
+							"expires": "Usunięcie po: {{date}}"
+						}
+					},
+					"schedule": {
+						"title": "Zaplanowane kopie zapasowe",
+						"description": "Automatycznie wykonuj zaszyfrowaną kopię zapasową w chmurze. Pierwsza rozpoczyna się zaraz po włączeniu tej opcji, a zaplanowana kopia, której termin przypada w trakcie innej kopii lub przywracania, jest pomijana do następnego interwału.",
+						"interval": "Twórz kopię co",
+						"kind": "Typ kopii zapasowej"
+					},
+					"recoveryKey": {
+						"title": "Klucz odzyskiwania",
+						"description": "Szyfruje Twoje kopie zapasowe w chmurze na tym serwerze. Nigdy nie opuszcza tego serwera, a bez niego nie można przywrócić kopii zapasowych.",
+						"set": "Na tym serwerze ustawiono klucz odzyskiwania."
+					},
+					"unenroll": {
+						"title": "Usuń rejestrację",
+						"description": "Odłącza tę instalację od Checkmate Connect i usuwa lokalne dane uwierzytelniające. Nie wpływa na lokalne monitorowanie.",
+						"button": "Usuń rejestrację"
+					}
 				},
 				"pagespeed": {
 					"description": "Wprowadź swój klucz API Google PageSpeed, aby włączyć monitorowanie Google PageSpeed. Kliknij Resetuj, aby zaktualizować klucz.",
