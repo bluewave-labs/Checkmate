@@ -275,6 +275,70 @@
 				"available": "{{version}} متاح",
 				"tooltip": "يتوفر إصدار أحدث من Checkmate. اعرض ملاحظات الإصدار."
 			}
+		},
+		"whatsNew": {
+			"eyebrow": "الجديد في Checkmate {{version}}",
+			"stepCount": "{{current}} من {{total}}",
+			"goToStep": "الانتقال إلى الخطوة {{step}}",
+			"skip": "تخطي",
+			"done": "تم",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "يسجّل المسؤول الأعلى هذا الخادم من {{settings}}.",
+			"connectAskSuperadmin": "اطلب من المسؤول الأعلى إعداد ذلك من {{settings}}.",
+			"connectCta": "إعداد Checkmate Connect",
+			"steps": {
+				"dashboard": {
+					"title": "لوحة المعلومات هي صفحتك الرئيسية الجديدة",
+					"description": "يفتح Checkmate على لوحة معلومات تعرض حالة المراقبات، والمراقبات المتوقفة، ونسبة التشغيل لكل منها. يرى المسؤولون أيضًا قائمة انتظار المهام وتشخيصات Checkmate. رتّب البطاقات كما تشاء باستخدام «{{arrange}}». أخفِ ما لا تحتاج إليه باستخدام «{{editCards}}»."
+				},
+				"heartbeat": {
+					"title": "مراقبات نبض للمهام المجدولة",
+					"description": "ترسل مهام cron والنسخ الاحتياطية والبرامج النصية إشارة ping إلى Checkmate في كل تشغيل. إذا لم تصل أي إشارة خلال نافذة التنبيه، تصبح المراقبة متوقفة وتُرسَل إشعاراتك."
+				},
+				"remoteAccess": {
+					"title": "افتح Checkmate من أي مكان دون فتح منافذ",
+					"description": "مع Checkmate Connect يُبقي هذا الخادم نفقًا صادرًا مفتوحًا، فتصل إليه من عنوان Connect الخاص به دون فتح منافذ واردة أو إعداد شبكة VPN."
+				},
+				"backups": {
+					"title": "جدولة نسخ احتياطية مشفّرة إلى السحابة",
+					"description": "انسخ احتياطيًا إلى Checkmate Connect كل 1 أو 3 أو 7 أيام، إما قاعدة البيانات كاملة أو الإعدادات فقط. يشفّر هذا الخادم البيانات قبل رفعها. يمكنك استعادة نسخة احتياطية من {{settings}}."
+				},
+				"intervals": {
+					"title": "افحص المراقبات كل ساعة أو مرة يوميًا",
+					"description": "يمكن للمراقبة الآن أن تعمل كل 1 أو 2 أو 6 أو 12 ساعة، أو مرة واحدة يوميًا. إذا لم تجد الفاصل الزمني الذي تريده في القائمة، فاكتبه. تناسب الفواصل الطويلة المراقبات التي لا تحتاج إلى فحص كل دقيقة، مثل PageSpeed."
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "نسخة احتياطية ليلية",
+					"subtitle": "{{type}} · نافذة التنبيه {{window}}",
+					"downTitle": "{{name}} متوقفة",
+					"pingNotReceived": "لم تُستلم إشارة ping"
+				},
+				"remote": {
+					"network": "شبكتك",
+					"server": "خادم Checkmate",
+					"tunnel": "نفق صادر",
+					"noInbound": "لا منافذ واردة مفتوحة",
+					"laptop": "حاسوبك المحمول"
+				},
+				"backup": {
+					"encrypted": "يُشفَّر هنا قبل الرفع. لا تخزّن السحابة إلا نصًا مشفّرًا.",
+					"database": "قاعدة البيانات",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "إنشاء مراقبة",
+					"checksInADay": "الفحوصات في اليوم",
+					"checksPerDay_zero": "{{formatted}} فحص يوميًا",
+					"checksPerDay_one": "فحص واحد يوميًا",
+					"checksPerDay_two": "فحصان يوميًا",
+					"checksPerDay_few": "{{formatted}} فحوصات يوميًا",
+					"checksPerDay_many": "{{formatted}} فحصًا يوميًا",
+					"checksPerDay_other": "{{formatted}} فحص يوميًا",
+					"nextCheck": "الفحص التالي بعد {{interval}}"
+				}
+			}
 		}
 	},
 	"pages": {

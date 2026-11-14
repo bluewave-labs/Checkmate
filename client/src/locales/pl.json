@@ -276,6 +276,68 @@
 		"starPrompt": {
 			"description": "Zobacz najnowsze wydania i wspieraj rozwój społeczności na GitHub",
 			"title": "Zagwiazdkuj Checkmate"
+		},
+		"whatsNew": {
+			"eyebrow": "Nowości w Checkmate {{version}}",
+			"stepCount": "{{current}} z {{total}}",
+			"goToStep": "Przejdź do kroku {{step}}",
+			"skip": "Pomiń",
+			"done": "Gotowe",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "Superadmin rejestruje ten serwer w sekcji {{settings}}.",
+			"connectAskSuperadmin": "Poproś superadmina o skonfigurowanie tego w sekcji {{settings}}.",
+			"connectCta": "Skonfiguruj Checkmate Connect",
+			"steps": {
+				"dashboard": {
+					"title": "Pulpit to twoja nowa strona startowa",
+					"description": "Checkmate otwiera się na pulpicie, który pokazuje stan monitorów, te, które nie działają, oraz dostępność każdego z nich. Admini widzą też kolejkę zadań i diagnostykę Checkmate. Ułóż karty w dowolnej kolejności za pomocą opcji {{arrange}}. Ukryj niepotrzebne karty za pomocą opcji {{editCards}}."
+				},
+				"heartbeat": {
+					"title": "Monitory heartbeat dla zaplanowanych zadań",
+					"description": "Zadania cron, kopie zapasowe i skrypty wysyłają ping do Checkmate przy każdym uruchomieniu. Jeśli w oknie alertu nie dotrze żaden ping, monitor zostaje oznaczony jako niedziałający i wysyłane są twoje powiadomienia."
+				},
+				"remoteAccess": {
+					"title": "Otwieraj Checkmate z dowolnego miejsca bez otwierania portów",
+					"description": "Dzięki Checkmate Connect ten serwer utrzymuje otwarty tunel wychodzący. Łączysz się z nim przez adres Connect bez otwierania portów przychodzących i bez konfigurowania VPN."
+				},
+				"backups": {
+					"title": "Planuj szyfrowane kopie zapasowe w chmurze",
+					"description": "Twórz kopie w Checkmate Connect co 1, 3 lub 7 dni, całej bazy danych albo tylko konfiguracji. Ten serwer szyfruje dane przed wysłaniem. Kopię możesz przywrócić w sekcji {{settings}}."
+				},
+				"intervals": {
+					"title": "Sprawdzaj monitory co godzinę lub raz dziennie",
+					"description": "Monitor może teraz działać co 1, 2, 6 lub 12 godzin albo raz dziennie. Jeśli interwału, którego potrzebujesz, nie ma na liście, wpisz go. Długie interwały pasują do monitorów, które nie wymagają sprawdzania co minutę, na przykład PageSpeed."
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "Nocna kopia zapasowa",
+					"subtitle": "{{type}} · okno alertu {{window}}",
+					"downTitle": "{{name}} nie działa",
+					"pingNotReceived": "Nie odebrano pingu"
+				},
+				"remote": {
+					"network": "Twoja sieć",
+					"server": "Serwer Checkmate",
+					"tunnel": "Tunel wychodzący",
+					"noInbound": "Brak otwartych portów przychodzących",
+					"laptop": "Twój laptop"
+				},
+				"backup": {
+					"encrypted": "Szyfrowane tutaj przed wysłaniem. Chmura przechowuje tylko szyfrogram.",
+					"database": "Baza danych",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "Utwórz monitor",
+					"checksInADay": "Sprawdzenia w ciągu dnia",
+					"checksPerDay_one": "{{formatted}} sprawdzenie dziennie",
+					"checksPerDay_few": "{{formatted}} sprawdzenia dziennie",
+					"checksPerDay_many": "{{formatted}} sprawdzeń dziennie",
+					"checksPerDay_other": "{{formatted}} sprawdzenia dziennie",
+					"nextCheck": "Następne sprawdzenie za {{interval}}"
+				}
+			}
 		}
 	},
 	"pages": {

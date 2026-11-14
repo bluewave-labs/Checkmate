@@ -277,6 +277,66 @@
 		"starPrompt": {
 			"title": "Star Checkmate",
 			"description": "See the latest releases and help grow the community on GitHub"
+		},
+		"whatsNew": {
+			"eyebrow": "New in Checkmate {{version}}",
+			"stepCount": "{{current}} of {{total}}",
+			"goToStep": "Go to step {{step}}",
+			"skip": "Skip",
+			"done": "Done",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "A superadmin enrolls this server in {{settings}}.",
+			"connectAskSuperadmin": "Ask a superadmin to set it up in {{settings}}.",
+			"connectCta": "Set up Checkmate Connect",
+			"steps": {
+				"dashboard": {
+					"title": "The dashboard is your new home page",
+					"description": "Checkmate opens on a dashboard that shows monitor status, which monitors are down and the uptime of each one. Admins also see the job queue and Checkmate diagnostics. Drag cards into any order with {{arrange}}. Hide the ones you don't need with {{editCards}}."
+				},
+				"heartbeat": {
+					"title": "Heartbeat monitors for scheduled jobs",
+					"description": "Cron jobs, backups and scripts ping Checkmate each time they run. If no ping arrives within the alert window, the monitor goes down and your notifications fire."
+				},
+				"remoteAccess": {
+					"title": "Open Checkmate from anywhere without opening ports",
+					"description": "With Checkmate Connect, this server keeps an outbound tunnel open, so you can reach it from its Connect address without opening inbound ports or setting up a VPN."
+				},
+				"backups": {
+					"title": "Schedule encrypted backups to the cloud",
+					"description": "Back up to Checkmate Connect every 1, 3 or 7 days, either the full database or the configuration only. This server encrypts the data before it uploads. You can restore a backup from {{settings}}."
+				},
+				"intervals": {
+					"title": "Check monitors hourly or once a day",
+					"description": "A monitor can now run every 1, 2, 6 or 12 hours, or once a day. If the interval you want isn't in the list, type it in. Long intervals suit monitors that don't need a check every minute, such as PageSpeed."
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "Nightly backup",
+					"subtitle": "{{type}} · alert window {{window}}",
+					"downTitle": "{{name}} is down",
+					"pingNotReceived": "Ping not received"
+				},
+				"remote": {
+					"network": "Your network",
+					"server": "Checkmate server",
+					"tunnel": "Outbound tunnel",
+					"noInbound": "No inbound ports open",
+					"laptop": "Your laptop"
+				},
+				"backup": {
+					"encrypted": "Encrypted here before upload. The cloud only stores ciphertext.",
+					"database": "Database",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "Create monitor",
+					"checksInADay": "Checks in a day",
+					"checksPerDay_one": "{{formatted}} check a day",
+					"checksPerDay_other": "{{formatted}} checks a day",
+					"nextCheck": "Next check in {{interval}}"
+				}
+			}
 		}
 	},
 	"pages": {

@@ -275,6 +275,65 @@
 				"available": "Đã có {{version}}",
 				"tooltip": "Đã có phiên bản Checkmate mới hơn. Xem ghi chú phát hành."
 			}
+		},
+		"whatsNew": {
+			"eyebrow": "Có gì mới trong Checkmate {{version}}",
+			"stepCount": "{{current}} / {{total}}",
+			"goToStep": "Đến bước {{step}}",
+			"skip": "Bỏ qua",
+			"done": "Xong",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "Quản trị viên cấp cao đăng ký máy chủ này trong {{settings}}.",
+			"connectAskSuperadmin": "Hãy nhờ quản trị viên cấp cao thiết lập trong {{settings}}.",
+			"connectCta": "Thiết lập Checkmate Connect",
+			"steps": {
+				"dashboard": {
+					"title": "Bảng điều khiển là trang chủ mới của bạn",
+					"description": "Checkmate mở ra bảng điều khiển hiển thị trạng thái giám sát, những giám sát đang ngừng hoạt động và thời gian hoạt động của từng giám sát. Quản trị viên còn thấy hàng đợi công việc và chẩn đoán của Checkmate. Dùng {{arrange}} để kéo thẻ theo thứ tự bất kỳ. Dùng {{editCards}} để ẩn những thẻ bạn không cần."
+				},
+				"heartbeat": {
+					"title": "Giám sát heartbeat cho các công việc theo lịch",
+					"description": "Công việc cron, bản sao lưu và tập lệnh gửi ping đến Checkmate mỗi lần chạy. Nếu không có ping nào đến trong khoảng thời gian cảnh báo, giám sát sẽ chuyển sang ngừng hoạt động và thông báo của bạn được gửi đi."
+				},
+				"remoteAccess": {
+					"title": "Mở Checkmate từ mọi nơi mà không cần mở cổng",
+					"description": "Với Checkmate Connect, máy chủ này giữ một đường hầm đi ra luôn mở. Bạn truy cập máy chủ qua địa chỉ Connect mà không cần mở cổng vào hay thiết lập VPN."
+				},
+				"backups": {
+					"title": "Lên lịch sao lưu mã hóa lên đám mây",
+					"description": "Sao lưu lên Checkmate Connect mỗi 1, 3 hoặc 7 ngày, toàn bộ cơ sở dữ liệu hoặc chỉ cấu hình. Máy chủ này mã hóa dữ liệu trước khi tải lên. Bạn có thể khôi phục bản sao lưu trong {{settings}}."
+				},
+				"intervals": {
+					"title": "Kiểm tra giám sát mỗi giờ hoặc mỗi ngày một lần",
+					"description": "Giờ đây một giám sát có thể chạy mỗi 1, 2, 6 hoặc 12 giờ, hoặc mỗi ngày một lần. Nếu khoảng thời gian bạn muốn không có trong danh sách, hãy nhập vào. Khoảng thời gian dài phù hợp với giám sát không cần kiểm tra mỗi phút, chẳng hạn PageSpeed."
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "Sao lưu ban đêm",
+					"subtitle": "{{type}} · khoảng thời gian cảnh báo {{window}}",
+					"downTitle": "{{name}} ngừng hoạt động",
+					"pingNotReceived": "Không nhận được ping"
+				},
+				"remote": {
+					"network": "Mạng của bạn",
+					"server": "Máy chủ Checkmate",
+					"tunnel": "Đường hầm đi ra",
+					"noInbound": "Không mở cổng vào nào",
+					"laptop": "Máy tính xách tay của bạn"
+				},
+				"backup": {
+					"encrypted": "Được mã hóa tại đây trước khi tải lên. Đám mây chỉ lưu bản mã.",
+					"database": "Cơ sở dữ liệu",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "Tạo giám sát",
+					"checksInADay": "Số lần kiểm tra mỗi ngày",
+					"checksPerDay_other": "{{formatted}} lần kiểm tra mỗi ngày",
+					"nextCheck": "Lần kiểm tra tiếp theo sau {{interval}}"
+				}
+			}
 		}
 	},
 	"pages": {

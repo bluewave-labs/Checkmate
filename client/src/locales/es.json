@@ -275,6 +275,67 @@
 				"available": "{{version}} disponible",
 				"tooltip": "Hay una versión más reciente de Checkmate disponible. Ver las notas de la versión."
 			}
+		},
+		"whatsNew": {
+			"eyebrow": "Novedades en Checkmate {{version}}",
+			"stepCount": "{{current}} de {{total}}",
+			"goToStep": "Ir al paso {{step}}",
+			"skip": "Omitir",
+			"done": "Listo",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "Un superadmin registra este servidor en {{settings}}.",
+			"connectAskSuperadmin": "Pide a un superadmin que lo configure en {{settings}}.",
+			"connectCta": "Configurar Checkmate Connect",
+			"steps": {
+				"dashboard": {
+					"title": "El panel es tu nueva página de inicio",
+					"description": "Checkmate se abre en un panel que muestra el estado de los monitores, cuáles están caídos y la disponibilidad de cada uno. Los admins también ven la cola de tareas y el diagnóstico de Checkmate. Ordena las tarjetas como quieras con {{arrange}}. Oculta las que no necesites con {{editCards}}."
+				},
+				"heartbeat": {
+					"title": "Monitores heartbeat para tareas programadas",
+					"description": "Las tareas cron, copias de seguridad y scripts envían un ping a Checkmate cada vez que se ejecutan. Si no llega ningún ping dentro de la ventana de alerta, el monitor se marca como caído y se envían tus notificaciones."
+				},
+				"remoteAccess": {
+					"title": "Abre Checkmate desde cualquier lugar sin abrir puertos",
+					"description": "Con Checkmate Connect, este servidor mantiene abierto un túnel saliente. Puedes acceder a él desde su dirección de Connect sin abrir puertos entrantes ni configurar una VPN."
+				},
+				"backups": {
+					"title": "Programa copias de seguridad cifradas en la nube",
+					"description": "Haz copias en Checkmate Connect cada 1, 3 o 7 días, ya sea de la base de datos completa o solo de la configuración. Este servidor cifra los datos antes de subirlos. Puedes restaurar una copia desde {{settings}}."
+				},
+				"intervals": {
+					"title": "Comprueba monitores cada hora o una vez al día",
+					"description": "Un monitor ahora puede ejecutarse cada 1, 2, 6 o 12 horas, o una vez al día. Si el intervalo que quieres no está en la lista, escríbelo. Los intervalos largos van bien para monitores que no necesitan una comprobación cada minuto, como PageSpeed."
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "Copia nocturna",
+					"subtitle": "{{type}} · ventana de alerta {{window}}",
+					"downTitle": "{{name}} está caído",
+					"pingNotReceived": "Ping no recibido"
+				},
+				"remote": {
+					"network": "Tu red",
+					"server": "Servidor de Checkmate",
+					"tunnel": "Túnel saliente",
+					"noInbound": "Sin puertos entrantes abiertos",
+					"laptop": "Tu portátil"
+				},
+				"backup": {
+					"encrypted": "Cifrado aquí antes de subirlo. La nube solo guarda texto cifrado.",
+					"database": "Base de datos",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "Crear monitor",
+					"checksInADay": "Comprobaciones al día",
+					"checksPerDay_one": "{{formatted}} comprobación al día",
+					"checksPerDay_many": "{{formatted}} comprobaciones al día",
+					"checksPerDay_other": "{{formatted}} comprobaciones al día",
+					"nextCheck": "Próxima comprobación en {{interval}}"
+				}
+			}
 		}
 	},
 	"pages": {

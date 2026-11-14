@@ -194,6 +194,9 @@
 					"checkTTL": {
 						"type": "number"
 					},
+					"whatsNewSeen": {
+						"type": "string"
+					},
 					"createdAt": {
 						"type": "string"
 					},
@@ -6366,6 +6369,11 @@
 									},
 									"deleteProfileImage": {
 										"type": "boolean"
+									},
+									"whatsNewSeen": {
+										"type": "string",
+										"minLength": 1,
+										"maxLength": 64
 									},
 									"profileImage": {
 										"type": "string",

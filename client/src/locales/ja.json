@@ -275,6 +275,65 @@
 				"available": "{{version}} が利用可能",
 				"tooltip": "Checkmate の新しいバージョンが利用可能です。リリースノートを表示します。"
 			}
+		},
+		"whatsNew": {
+			"eyebrow": "Checkmate {{version}} の新機能",
+			"stepCount": "{{current}} / {{total}}",
+			"goToStep": "ステップ {{step}} へ移動",
+			"skip": "スキップ",
+			"done": "完了",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "スーパー管理者が{{settings}}でこのサーバーを登録します。",
+			"connectAskSuperadmin": "{{settings}}での設定をスーパー管理者に依頼してください。",
+			"connectCta": "Checkmate Connect を設定",
+			"steps": {
+				"dashboard": {
+					"title": "ダッシュボードが新しいホームページになりました",
+					"description": "Checkmate を開くと、モニターの状態、ダウンしているモニター、各モニターの稼働率を表示するダッシュボードが表示されます。管理者にはジョブキューと Checkmate の診断も表示されます。「{{arrange}}」でカードを好きな順に並べ替え、「{{editCards}}」で不要なカードを非表示にできます。"
+				},
+				"heartbeat": {
+					"title": "スケジュールされたジョブ向けのハートビートモニター",
+					"description": "cron ジョブ、バックアップ、スクリプトは実行のたびに Checkmate へ ping を送ります。アラート期間内に ping が届かないとモニターはダウンとなり、通知が送信されます。"
+				},
+				"remoteAccess": {
+					"title": "ポートを開けずにどこからでも Checkmate を開く",
+					"description": "Checkmate Connect を使うと、このサーバーは送信方向のトンネルを開いたままにします。受信ポートを開けたり VPN を設定したりせずに、Connect アドレスからアクセスできます。"
+				},
+				"backups": {
+					"title": "暗号化したクラウドバックアップをスケジュール",
+					"description": "1日、3日、7日ごとに、データベース全体または設定のみを Checkmate Connect にバックアップします。データはアップロード前にこのサーバーで暗号化されます。バックアップは{{settings}}から復元できます。"
+				},
+				"intervals": {
+					"title": "1時間ごと、または1日1回モニターをチェック",
+					"description": "モニターを 1、2、6、12 時間ごと、または1日1回実行できるようになりました。希望の間隔がリストにない場合は入力してください。長い間隔は、PageSpeed のように毎分のチェックが不要なモニターに向いています。"
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "夜間バックアップ",
+					"subtitle": "{{type}} · アラート期間 {{window}}",
+					"downTitle": "{{name}} がダウンしています",
+					"pingNotReceived": "ping を受信していません"
+				},
+				"remote": {
+					"network": "あなたのネットワーク",
+					"server": "Checkmate サーバー",
+					"tunnel": "送信トンネル",
+					"noInbound": "受信ポートは閉じています",
+					"laptop": "あなたのノートPC"
+				},
+				"backup": {
+					"encrypted": "アップロード前にここで暗号化。クラウドには暗号文のみ保存されます。",
+					"database": "データベース",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "モニターを作成",
+					"checksInADay": "1日のチェック回数",
+					"checksPerDay_other": "1日 {{formatted}} 回のチェック",
+					"nextCheck": "次のチェックまで {{interval}}"
+				}
+			}
 		}
 	},
 	"pages": {

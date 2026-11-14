@@ -19,6 +19,8 @@ export const userSchema = z.object({
 	role: z.array(z.enum(UserRoles)),
 	teamId: z.string(),
 	checkTTL: z.number().optional(),
+	// Id of the last "What's new" popup this user has seen
+	whatsNewSeen: z.string().optional(),
 	createdAt: z.string(),
 	updatedAt: z.string(),
 });

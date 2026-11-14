@@ -275,6 +275,65 @@
 				"available": "{{version}} 可用",
 				"tooltip": "Checkmate 有新版本可用。查看发行说明。"
 			}
+		},
+		"whatsNew": {
+			"eyebrow": "Checkmate {{version}} 新功能",
+			"stepCount": "{{current}} / {{total}}",
+			"goToStep": "前往第 {{step}} 步",
+			"skip": "跳过",
+			"done": "完成",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "由超级管理员在{{settings}}中注册此服务器。",
+			"connectAskSuperadmin": "请让超级管理员在{{settings}}中完成设置。",
+			"connectCta": "设置 Checkmate Connect",
+			"steps": {
+				"dashboard": {
+					"title": "仪表盘现在是你的主页",
+					"description": "Checkmate 打开后显示仪表盘，展示监控状态、哪些监控已宕机以及每个监控的正常运行时间。管理员还能看到任务队列和 Checkmate 诊断。用“{{arrange}}”把卡片拖成任意顺序，用“{{editCards}}”隐藏不需要的卡片。"
+				},
+				"heartbeat": {
+					"title": "用于计划任务的心跳监控",
+					"description": "cron 任务、备份和脚本每次运行时都会向 Checkmate 发送 ping。如果在告警窗口内没有收到 ping，监控会变为宕机并发送你的通知。"
+				},
+				"remoteAccess": {
+					"title": "无需开放端口，随时随地打开 Checkmate",
+					"description": "使用 Checkmate Connect，此服务器会保持一条出站隧道。你可以通过它的 Connect 地址访问，无需开放入站端口，也无需配置 VPN。"
+				},
+				"backups": {
+					"title": "定时加密备份到云端",
+					"description": "每 1、3 或 7 天备份到 Checkmate Connect，可以备份完整数据库或仅备份配置。此服务器会在上传前加密数据。你可以在{{settings}}中恢复备份。"
+				},
+				"intervals": {
+					"title": "每小时或每天检查一次监控",
+					"description": "监控现在可以每 1、2、6 或 12 小时运行一次，也可以每天一次。如果列表里没有你需要的间隔，直接输入即可。较长的间隔适合不需要每分钟检查的监控，例如 PageSpeed。"
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "夜间备份",
+					"subtitle": "{{type}} · 告警窗口 {{window}}",
+					"downTitle": "{{name}} 已宕机",
+					"pingNotReceived": "未收到 ping"
+				},
+				"remote": {
+					"network": "你的网络",
+					"server": "Checkmate 服务器",
+					"tunnel": "出站隧道",
+					"noInbound": "未开放入站端口",
+					"laptop": "你的笔记本电脑"
+				},
+				"backup": {
+					"encrypted": "上传前在此加密。云端只保存密文。",
+					"database": "数据库",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "创建监控",
+					"checksInADay": "每天的检查次数",
+					"checksPerDay_other": "每天 {{formatted}} 次检查",
+					"nextCheck": "{{interval}}后进行下次检查"
+				}
+			}
 		}
 	},
 	"pages": {
