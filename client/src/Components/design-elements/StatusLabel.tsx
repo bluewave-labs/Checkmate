@@ -1,12 +1,11 @@
 import Box from "@mui/material/Box";
-import { BaseBox } from "@/Components/design-elements";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 
 import type { MonitorStatus } from "@/Types/Monitor";
 import type { SxProps } from "@mui/material/styles";
 import { getDockerStatePalette } from "@/Utils/MonitorUtils";
-import { useTheme } from "@mui/material/styles";
+import { useTheme, alpha, darken, lighten } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import type { DockerContainerState } from "@/Types/Check";
 import { SPACING } from "@/Utils/Theme/constants";
@@ -115,20 +114,62 @@ export const ValueLabel = ({
 	return <SignalPill signal={VALUE_SIGNAL[value]}>{transformedText}</SignalPill>;
 };
 
+// A number or short value in a signal tint (e.g. uptime %). No dot: the value
+// itself is the content, and tabular numbers keep columns aligned.
+export const SignalLabel = ({ text, signal }: { text: string; signal: SignalKey }) => {
+	const theme = useTheme();
+	const tone = theme.palette.signal[signal];
+	return (
+		<Box
+			display="inline-flex"
+			alignItems="center"
+			height={24}
+			padding="1px 8px"
+			borderRadius="999px"
+			bgcolor={tone.bg}
+			color={tone.text}
+			fontSize={typographyLevels.s}
+			fontWeight={500}
+			lineHeight={1}
+			whiteSpace="nowrap"
+			sx={{ fontVariantNumeric: "tabular-nums" }}
+		>
+			{text}
+		</Box>
+	);
+};
+
+// Category badge in a user-chosen colour (tags): flat tint of the colour with
+// darker text in the same hue, pill radius, no border.
 export const ColoredLabel = ({ text, color }: { text: string; color: string }) => {
 	const theme = useTheme();
+	const isDark = theme.palette.mode === "dark";
+	let bg = color;
+	let fg = color;
+	try {
+		bg = alpha(color, isDark ? 0.2 : 0.14);
+		fg = isDark ? lighten(color, 0.35) : darken(color, 0.35);
+	} catch {
+		// Not a colour MUI can parse; fall back to the raw value
+	}
 
 	return (
-		<BaseBox
-			sx={{
-				width: "fit-content",
-				padding: theme.spacing(1, 3),
-				color: color,
-				borderColor: color,
-			}}
+		<Box
+			display="inline-flex"
+			alignItems="center"
+			width="fit-content"
+			height={22}
+			padding="1px 8px"
+			borderRadius="999px"
+			bgcolor={bg}
+			color={fg}
+			fontSize="0.75rem"
+			fontWeight={500}
+			lineHeight={1}
+			whiteSpace="nowrap"
 		>
-			<Typography>{text}</Typography>
-		</BaseBox>
+			{text}
+		</Box>
 	);
 };
 

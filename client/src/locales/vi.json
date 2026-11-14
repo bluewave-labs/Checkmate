@@ -138,6 +138,10 @@
 			"copy": "Sao chép vào bộ nhớ tạm",
 			"copied": "Đã sao chép vào bộ nhớ tạm",
 			"copyFailed": "Không thể sao chép. Hãy chọn văn bản và sao chép thủ công."
+		},
+		"filters": {
+			"any": "Tất cả",
+			"state": "Trạng thái"
 		}
 	},
 	"components": {

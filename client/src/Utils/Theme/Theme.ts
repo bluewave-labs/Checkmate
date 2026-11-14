@@ -5,6 +5,8 @@ import {
 	typographyLevels,
 	type SignalKey,
 	type SignalTone,
+	type SidebarPart,
+	type PartTone,
 } from "@/Utils/Theme/Palette";
 
 import type { Theme } from "@mui/material/styles";
@@ -42,7 +44,7 @@ declare module "@mui/material/styles" {
 	interface Palette {
 		neutral: NeutralTokens;
 		signal: Record<SignalKey, SignalTone>;
-		sidebar: { accent: string };
+		sidebar: { accent: string; parts: Record<SidebarPart, PartTone> };
 		scrollbar: { track: string; thumb: string };
 		rowStatus: { running: string; paused: string };
 		chart: {
@@ -59,7 +61,7 @@ declare module "@mui/material/styles" {
 	interface PaletteOptions {
 		neutral?: NeutralTokens;
 		signal?: Record<SignalKey, SignalTone>;
-		sidebar?: { accent: string };
+		sidebar?: { accent: string; parts: Record<SidebarPart, PartTone> };
 		scrollbar?: { track: string; thumb: string };
 		rowStatus?: { running: string; paused: string };
 		chart?: {

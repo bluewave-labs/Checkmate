@@ -138,6 +138,10 @@
 			"copy": "Kopioi leikepöydälle",
 			"copied": "Kopioitu leikepöydälle",
 			"copyFailed": "Kopiointi epäonnistui. Valitse teksti ja kopioi se käsin."
+		},
+		"filters": {
+			"any": "Mikä tahansa",
+			"state": "Tila"
 		}
 	},
 	"components": {

@@ -110,7 +110,11 @@ export const Sidebar = () => {
 								<Typography
 									variant="eyebrow"
 									component="div"
-									color={theme.palette.neutral.tertiary}
+									color={
+										group.part
+											? theme.palette.sidebar.parts[group.part].text
+											: theme.palette.neutral.tertiary
+									}
 									fontSize={typographyLevels.s}
 									paddingLeft={theme.spacing(LAYOUT.XS)}
 									paddingTop={theme.spacing(LAYOUT.SM)}
@@ -141,6 +145,7 @@ export const Sidebar = () => {
 										key={item.path}
 										item={item}
 										selected={selected}
+										part={group.part}
 										onClick={() => handleNavClick(item.path)}
 									/>
 								);

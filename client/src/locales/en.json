@@ -166,6 +166,10 @@
 			"copy": "Copy to clipboard",
 			"copied": "Copied to clipboard",
 			"copyFailed": "Could not copy. Select the text and copy it manually."
+		},
+		"filters": {
+			"any": "Any",
+			"state": "State"
 		}
 	},
 	"components": {

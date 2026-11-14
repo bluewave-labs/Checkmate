@@ -1,3 +1,5 @@
+import { CHART_SERIES } from "@/Utils/Theme/Palette";
+
 export const computeYAxisCap = (values: number[]): number | undefined => {
 	const sorted = values.slice().sort((a, b) => a - b);
 	if (sorted.length < 2) return undefined;
@@ -33,47 +35,12 @@ export const PHASE_LABEL_KEYS: Record<(typeof PHASE_KEYS)[number], string> = {
 	avgDownload: "common.charts.phases.download",
 };
 
-export const AREA_COLORS = [
-	// Blues
-	"#3182bd", // Deep blue
-	"#6baed6", // Medium blue
-	"#9ecae1", // Light blue
-
-	// Greens
-	"#74c476", // Soft green
-	"#a1d99b", // Light green
-	"#c7e9c0", // Pale green
-
-	// Oranges
-	"#fdae6b", // Warm orange
-	"#fdd0a2", // Light orange
-	"#feedde", // Pale orange
-
-	// Purples
-	"#9467bd", // Lavender
-	"#a55194", // Deep magenta
-	"#c994c7", // Soft magenta
-
-	// Reds
-	"#ff9896", // Soft red
-	"#de2d26", // Deep red
-	"#fc9272", // Medium red
-
-	// Cyans/Teals
-	"#17becf", // Cyan
-	"#7fcdbb", // Teal
-	"#a1dab4", // Light teal
-
-	// Yellows
-	"#fec44f", // Mustard
-	"#fee391", // Light yellow
-	"#ffffd4", // Pale yellow
-
-	// Additional colors
-	"#e377c2", // Soft pink
-	"#bcbd22", // Olive
-	"#2ca02c", // Vibrant green
-];
+// VerifyWise chart series in their fixed order. Repeated so every index the
+// previous 24-colour list covered still resolves to a colour.
+export const AREA_COLORS: string[] = Array.from(
+	{ length: 24 },
+	(_, i) => CHART_SERIES[i % CHART_SERIES.length]
+);
 
 export const createGradient = ({
 	id,

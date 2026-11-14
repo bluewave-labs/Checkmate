@@ -141,6 +141,10 @@
 			"copy": "Kopiuj do schowka",
 			"copied": "Skopiowano do schowka",
 			"copyFailed": "Nie udało się skopiować. Zaznacz tekst i skopiuj go ręcznie."
+		},
+		"filters": {
+			"any": "Dowolny",
+			"state": "Stan"
 		}
 	},
 	"components": {

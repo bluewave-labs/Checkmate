@@ -1,4 +1,5 @@
-import { BasePage, Tabs, Tab } from "@/Components/design-elements";
+import { BasePage, Tabs, Tab, TabIcon } from "@/Components/design-elements";
+import { ListOrdered, ScrollText, Stethoscope } from "lucide-react";
 import { TabLogs } from "@/Pages/Logs/TabLogs";
 import { TabQueue } from "@/Pages/Logs/TabQueue";
 import { TabDiagnostics } from "@/Pages/Logs/TabDiagnostics";
@@ -15,9 +16,18 @@ const LogsPage = () => {
 				value={activeTab}
 				onChange={(_, newValue: number) => setActiveTab(newValue)}
 			>
-				<Tab label={t("pages.logs.tabs.logs")} />
-				<Tab label={t("pages.logs.tabs.queue")} />
-				<Tab label={t("pages.logs.tabs.diagnostics")} />
+				<Tab
+					label={t("pages.logs.tabs.logs")}
+					icon={<TabIcon icon={ScrollText} />}
+				/>
+				<Tab
+					label={t("pages.logs.tabs.queue")}
+					icon={<TabIcon icon={ListOrdered} />}
+				/>
+				<Tab
+					label={t("pages.logs.tabs.diagnostics")}
+					icon={<TabIcon icon={Stethoscope} />}
+				/>
 			</Tabs>
 			{activeTab === 0 && <TabLogs />}
 			{activeTab === 1 && <TabQueue />}

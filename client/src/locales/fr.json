@@ -138,6 +138,10 @@
 			"copy": "Copier dans le presse-papiers",
 			"copied": "Copié dans le presse-papiers",
 			"copyFailed": "Copie impossible. Sélectionnez le texte et copiez-le manuellement."
+		},
+		"filters": {
+			"any": "Tous",
+			"state": "État"
 		}
 	},
 	"components": {

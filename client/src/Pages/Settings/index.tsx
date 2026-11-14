@@ -4,8 +4,18 @@ import {
 	TextLink,
 	Tabs,
 	Tab,
+	TabIcon,
 	CodeBlock,
 } from "@/Components/design-elements";
+import {
+	Activity,
+	Cloud,
+	Database,
+	Mail,
+	Plug,
+	SlidersHorizontal,
+	type LucideIcon,
+} from "lucide-react";
 import { Autocomplete, Select, Dialog } from "@/Components/inputs";
 import { logger } from "@/Utils/logger";
 import { LAYOUT } from "@/Utils/Theme/constants";
@@ -69,6 +79,15 @@ const SETTINGS_TABS = [
 	{ key: "data", labelKey: "pages.settings.tabs.data", adminOnly: true },
 	{ key: "connect", labelKey: "pages.settings.tabs.connect", adminOnly: true },
 ] as const;
+
+const SETTINGS_TAB_ICONS: Record<(typeof SETTINGS_TABS)[number]["key"], LucideIcon> = {
+	general: SlidersHorizontal,
+	monitoring: Activity,
+	email: Mail,
+	integrations: Plug,
+	data: Database,
+	connect: Cloud,
+};
 
 type SettingsTabKey = (typeof SETTINGS_TABS)[number]["key"];
 
@@ -502,6 +521,7 @@ export const SettingsPage = () => {
 								key={tab.key}
 								value={tab.key}
 								label={t(tab.labelKey)}
+								icon={<TabIcon icon={SETTINGS_TAB_ICONS[tab.key]} />}
 							/>
 						))}
 					</Tabs>

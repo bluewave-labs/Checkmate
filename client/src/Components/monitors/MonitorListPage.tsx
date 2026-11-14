@@ -6,7 +6,8 @@ import { HeaderMonitorsSummary } from "@/Components/monitors/HeaderMonitorsSumma
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import type { MonitorListController } from "@/Hooks/useMonitorListController";
 import { useMediaQuery, useTheme } from "@mui/material";
-import { SPACING } from "@/Utils/Theme/constants";
+import { SPACING, INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -99,7 +100,15 @@ export const MonitorListPage = ({
 					onChange={(event) => {
 						controller.setSearch(event.target.value);
 					}}
-					sx={{ width: isSmall ? "100%" : SEARCH_FIELD_WIDTH }}
+					sx={{
+						width: isSmall ? "100%" : SEARCH_FIELD_WIDTH,
+						// The list search field is the one control with 8px corners
+						"& .MuiOutlinedInput-root": {
+							borderRadius: "8px",
+							height: INPUT_BASE_HEIGHT,
+							fontSize: typographyLevels.base,
+						},
+					}}
 				/>
 			</Stack>
 			{controller.selectedTags.length > 0 && (

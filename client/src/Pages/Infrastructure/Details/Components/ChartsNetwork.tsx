@@ -52,8 +52,8 @@ const getChartConfigs = (
 				}),
 				type: "netBytesRecv",
 				dataKeys: [`net[${idx}].deltaBytesRecv`],
-				strokeColor: theme.palette.success.main,
-				gradientStartColor: theme.palette.success.main,
+				strokeColor: theme.palette.primary.main,
+				gradientStartColor: theme.palette.primary.main,
 				idx,
 				interfaceName: iface.name,
 			}

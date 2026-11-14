@@ -30,7 +30,16 @@ export const Tabs = (props: CustomTabsProps) => {
 
 import MuiTab from "@mui/material/Tab";
 import type { TabProps } from "@mui/material/Tab";
+import type { LucideIcon } from "lucide-react";
 interface CustomTabProps extends TabProps {}
+
+// 15px icon shown before a tab label; colour comes from the Tab's icon wrapper
+export const TabIcon = ({ icon: IconComponent }: { icon: LucideIcon }) => (
+	<IconComponent
+		size={15}
+		strokeWidth={1.5}
+	/>
+);
 
 export const Tab = (props: CustomTabProps) => {
 	const theme = useTheme();
@@ -62,9 +71,11 @@ export const Tab = (props: CustomTabProps) => {
 					outline: `2px solid ${theme.palette.primary.main}`,
 					outlineOffset: "-2px",
 				},
-				"& .MuiTab-iconWrapper": {
-					marginRight: theme.spacing(3),
-					marginBottom: 0,
+				// Icon-to-label gap; MUI's own icon margin is zeroed so the gap is the
+				// only spacing (doubled selector to beat MUI's icon rule)
+				gap: "8px",
+				"&& > .MuiTab-icon, && > .MuiTab-iconWrapper": {
+					margin: 0,
 					color: theme.palette.neutral.icon,
 				},
 			}}

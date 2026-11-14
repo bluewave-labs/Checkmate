@@ -1,7 +1,6 @@
 import Stack from "@mui/material/Stack";
-import { Select, Autocomplete, Button, TextField } from "@/Components/inputs";
+import { Button, FilterChip } from "@/Components/inputs";
 import { ColoredLabel } from "@/Components/design-elements";
-import MenuItem from "@mui/material/MenuItem";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 import {
@@ -12,8 +11,10 @@ import {
 	type MonitorType,
 } from "@/Types/Monitor";
 import type { Tag } from "@/Types/Tag";
-import { Typography, useTheme } from "@mui/material";
+import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
+
+const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 
 const types = ["http", "ping", "port", "game", "grpc", "websocket", "heartbeat"];
 const typeDisplayNames: Record<string, string> = {
@@ -59,97 +60,76 @@ export const ControlsFilter = ({
 		Boolean(selectedStatus) ||
 		Boolean(selectedState) ||
 		(selectedTags?.length ?? 0) > 0;
-	const selectedTagObjects = (tagOptions ?? []).filter((tag) =>
-		(selectedTags ?? []).includes(tag.id)
-	);
+	const anyLabel = t("common.filters.any");
 	return (
 		<Stack
-			direction={isSmall ? "column" : "row"}
-			gap={theme.spacing(2)}
+			direction="row"
+			flexWrap="wrap"
+			alignItems="center"
+			gap={theme.spacing(4)}
+			width={isSmall ? "100%" : "auto"}
 		>
 			{showTypes && setSelectedTypes && (
-				<Select
+				<FilterChip
 					multiple
-					placeholder="Type"
+					label={t("common.table.headers.type")}
+					anyLabel={anyLabel}
 					value={selectedTypes ?? []}
-					onChange={(e) => setSelectedTypes(e.target.value as MonitorType[])}
-				>
-					{types.map((type) => (
-						<MenuItem
-							key={type}
-							value={type}
-						>
-							<Typography>{typeDisplayNames[type] ?? type}</Typography>
-						</MenuItem>
-					))}
-				</Select>
+					onChange={(value) => setSelectedTypes(value as MonitorType[])}
+					options={types.map((type) => ({
+						value: type,
+						label: typeDisplayNames[type] ?? type,
+					}))}
+				/>
 			)}
 			{setSelectedStatus && (
-				<Select
-					placeholder="Status"
+				<FilterChip
+					label={t("common.table.headers.status")}
+					anyLabel={anyLabel}
 					value={selectedStatus ?? ""}
-					onChange={(e) => setSelectedStatus(e.target.value as MonitorStatusFilter)}
-				>
-					{MonitorStatusFilters.map((status) => (
-						<MenuItem
-							key={status}
-							value={status}
-						>
-							<Typography textTransform={"capitalize"}>{status}</Typography>
-						</MenuItem>
-					))}
-				</Select>
+					onChange={(value) => setSelectedStatus(value as MonitorStatusFilter)}
+					options={MonitorStatusFilters.map((status) => ({
+						value: status,
+						label: capitalize(status),
+					}))}
+				/>
 			)}
 			{setSelectedState && (
-				<Select
-					placeholder="State"
+				<FilterChip
+					label={t("common.filters.state")}
+					anyLabel={anyLabel}
 					value={selectedState ?? ""}
-					onChange={(e) => setSelectedState(e.target.value as MonitorStateFilter)}
-				>
-					{MonitorStateFilters.map((state) => (
-						<MenuItem
-							key={state}
-							value={state}
-						>
-							<Typography textTransform={"capitalize"}>{state}</Typography>
-						</MenuItem>
-					))}
-				</Select>
+					onChange={(value) => setSelectedState(value as MonitorStateFilter)}
+					options={MonitorStateFilters.map((state) => ({
+						value: state,
+						label: capitalize(state),
+					}))}
+				/>
 			)}
-			{tagOptions && setSelectedTags && (
-				<Autocomplete
+			{tagOptions && setSelectedTags && tagOptions.length > 0 && (
+				<FilterChip
 					multiple
-					options={tagOptions}
-					value={selectedTagObjects}
-					getOptionLabel={(option) => option.name}
-					onChange={(_: unknown, newValue: Tag[]) => {
-						setSelectedTags(newValue.map((tag) => tag.id));
-					}}
-					isOptionEqualToValue={(option, value) => option.id === value.id}
-					renderOptionContent={(option) => (
-						<ColoredLabel
-							text={option.name}
-							color={option.color}
-						/>
-					)}
-					renderInput={(params) => (
-						<TextField
-							{...params}
-							placeholder={t("common.table.headers.tags")}
-						/>
-					)}
-					slotProps={{
-						popper: {
-							sx: { width: "fit-content !important", minWidth: 280 },
-						},
-					}}
-					sx={{ minWidth: 180 }}
+					label={t("common.table.headers.tags")}
+					anyLabel={anyLabel}
+					value={selectedTags ?? []}
+					onChange={setSelectedTags}
+					options={tagOptions.map((tag: Tag) => ({
+						value: tag.id,
+						label: tag.name,
+						content: (
+							<ColoredLabel
+								text={tag.name}
+								color={tag.color}
+							/>
+						),
+					}))}
 				/>
 			)}
 			{isFilterActive && (
 				<Button
-					variant="contained"
+					variant="text"
 					onClick={onClearFilters}
+					sx={{ height: 30, color: theme.palette.neutral.borderHover }}
 				>
 					{t("common.buttons.clearFilters")}
 				</Button>

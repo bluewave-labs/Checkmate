@@ -59,8 +59,8 @@ export const HeatmapResponseTime = ({
 						check.status === "placeholder"
 							? theme.palette.action.hover
 							: check.status === true
-								? theme.palette.success.light
-								: theme.palette.error.light;
+								? theme.palette.signal.success.mark
+								: theme.palette.signal.error.mark;
 					const respBg =
 						check.status === "placeholder"
 							? theme.palette.action.hover

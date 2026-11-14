@@ -25,7 +25,7 @@ export const XTick = ({ x, y, payload, range }: XTickProps) => {
 			x={x}
 			y={y + 10}
 			textAnchor="middle"
-			fill={theme.palette.text.secondary}
+			fill={theme.palette.neutral.tertiary}
 			fontSize={11}
 			fontWeight={400}
 		>

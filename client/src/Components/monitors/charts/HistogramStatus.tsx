@@ -27,7 +27,7 @@ const XLabel = ({ p1, p2, range }: XLabelProps) => {
 				dy={-3}
 				textAnchor="start"
 				fontSize={11}
-				fill={theme.palette.text.secondary}
+				fill={theme.palette.neutral.tertiary}
 			>
 				{formatDate(p1.bucketDate, dateFormat)}
 			</text>
@@ -37,7 +37,7 @@ const XLabel = ({ p1, p2, range }: XLabelProps) => {
 				dy={-3}
 				textAnchor="end"
 				fontSize={11}
-				fill={theme.palette.text.secondary}
+				fill={theme.palette.neutral.tertiary}
 			>
 				{formatDate(p2.bucketDate, dateFormat)}
 			</text>
@@ -145,6 +145,7 @@ export const HistogramStatus = ({
 						<Bar
 							dataKey="avgResponseTime"
 							maxBarSize={7}
+							radius={[2, 2, 0, 0]}
 							background={{ fill: "transparent" }}
 						>
 							{checks?.map((groupedCheck, index) => {

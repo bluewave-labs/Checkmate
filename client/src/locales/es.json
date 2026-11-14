@@ -138,6 +138,10 @@
 			"copy": "Copiar al portapapeles",
 			"copied": "Copiado al portapapeles",
 			"copyFailed": "No se pudo copiar. Seleccione el texto y cópielo manualmente."
+		},
+		"filters": {
+			"any": "Cualquiera",
+			"state": "Estado"
 		}
 	},
 	"components": {

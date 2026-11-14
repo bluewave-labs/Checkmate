@@ -138,6 +138,10 @@
 			"copy": "Kopírovat do schránky",
 			"copied": "Zkopírováno do schránky",
 			"copyFailed": "Kopírování se nezdařilo. Označte text a zkopírujte ho ručně."
+		},
+		"filters": {
+			"any": "Jakýkoli",
+			"state": "Stav"
 		}
 	},
 	"components": {

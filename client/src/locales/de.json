@@ -138,6 +138,10 @@
 			"copy": "In die Zwischenablage kopieren",
 			"copied": "In die Zwischenablage kopiert",
 			"copyFailed": "Kopieren fehlgeschlagen. Markieren Sie den Text und kopieren Sie ihn manuell."
+		},
+		"filters": {
+			"any": "Beliebig",
+			"state": "Zustand"
 		}
 	},
 	"components": {

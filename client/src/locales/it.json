@@ -141,6 +141,10 @@
 			"copy": "Copia negli appunti",
 			"copied": "Copiato negli appunti",
 			"copyFailed": "Impossibile copiare. Seleziona il testo e copialo manualmente."
+		},
+		"filters": {
+			"any": "Qualsiasi",
+			"state": "Stato"
 		}
 	},
 	"components": {

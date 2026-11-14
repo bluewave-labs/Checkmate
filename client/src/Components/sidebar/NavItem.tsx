@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { SPACING } from "@/Utils/Theme/constants";
 import useSidebar from "@/Hooks/useSidebar";
+import type { SidebarPart } from "@/Utils/Theme/Palette";
 
 export interface NavData {
 	name: string;
@@ -16,18 +17,31 @@ export const NavItem = ({
 	item,
 	selected,
 	onClick,
+	part,
 }: {
 	item: NavData;
 	selected: boolean;
 	onClick: (event: React.MouseEvent) => void;
+	part?: SidebarPart;
 }) => {
 	const { collapsed, itemInset } = useSidebar();
 	const theme = useTheme();
-	const iconStroke = selected ? theme.palette.sidebar.accent : theme.palette.neutral.icon;
-	const buttonBgColor = selected ? theme.palette.neutral.selectedGreen : "transparent";
+	// Grouped items take their part's colours; ungrouped items stay grey with a
+	// brand-green active state
+	const tone = part ? theme.palette.sidebar.parts[part] : null;
+	const iconStroke = tone
+		? tone.solid
+		: selected
+			? theme.palette.sidebar.accent
+			: theme.palette.neutral.icon;
+	const iconHoverStroke = tone ? tone.solid : theme.palette.sidebar.accent;
+	const selectedBg = tone ? tone.selected : theme.palette.neutral.selectedGreen;
+	const buttonBgColor = selected ? selectedBg : "transparent";
 	const buttonBgHoverColor = selected
-		? theme.palette.neutral.selectedGreen
-		: theme.palette.neutral.hoverGreen;
+		? selectedBg
+		: tone
+			? tone.hover
+			: theme.palette.neutral.hoverGreen;
 	const fontWeight = selected ? 500 : 400;
 	const labelColor = selected ? theme.palette.text.primary : theme.palette.text.secondary;
 	return (
@@ -59,7 +73,7 @@ export const NavItem = ({
 						backgroundImage: "none",
 					},
 					height: 32,
-					gap: theme.spacing(SPACING.MD),
+					gap: "8px", // icon-to-label gap from the spec
 					borderRadius: theme.shape.borderRadius,
 					px: theme.spacing(SPACING.MD),
 					pl: theme.spacing(itemInset),
@@ -79,7 +93,7 @@ export const NavItem = ({
 						},
 						".MuiListItemButton-root:hover &": {
 							"& svg path, & svg line, & svg polyline, & svg rect, & svg circle": {
-								stroke: theme.palette.sidebar.accent,
+								stroke: iconHoverStroke,
 							},
 						},
 					}}

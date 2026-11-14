@@ -138,6 +138,10 @@
 			"copy": "Panoya kopyala",
 			"copied": "Panoya kopyalandı",
 			"copyFailed": "Kopyalanamadı. Metni seçip elle kopyalayın."
+		},
+		"filters": {
+			"any": "Tümü",
+			"state": "Durum"
 		}
 	},
 	"components": {

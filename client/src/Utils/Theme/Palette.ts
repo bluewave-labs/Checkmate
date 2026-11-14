@@ -75,21 +75,103 @@ export const colors = {
 	brandGreen: "#13715B",
 	brandGreenLight: "#4DAF94",
 	green700: "#008300",
-	yellow500: "#EDA100",
 	yellow600: "#C98500",
 	orange500: "#FFA500",
-	orange600: "#EB6834",
 	orange700: "#D95926",
 	blue500: "#2A78D6",
-	aqua500: "#1BAF7A",
 	aqua600: "#199E70",
-	magenta300: "#E87BA4",
 	magenta400: "#D55181",
 };
 
+// Score spectrum, 0 → 100 in steps of 10, for score bars such as uptime.
+// Pick SCORE_SPECTRUM[Math.round(value / 10)].
+export const SCORE_SPECTRUM = [
+	"#DC2626",
+	"#E65723",
+	"#EE7B1D",
+	"#F19416",
+	"#EEA411",
+	"#EAB308",
+	"#C9B925",
+	"#A4BD34",
+	"#7EBA43",
+	"#59B051",
+	"#22A55A",
+] as const;
+
+export const getScoreColor = (score: number): string => {
+	const clamped = Math.min(100, Math.max(0, Number.isFinite(score) ? score : 0));
+	return SCORE_SPECTRUM[Math.round(clamped / 10)];
+};
+
+// Chart series, fixed order. Equal lightness and chroma so no series looks
+// heavier; they avoid the signal hues on purpose.
+export const CHART_SERIES = [
+	"#6076BE", // indigo
+	"#AE5B7E", // rose
+	"#90790F", // sand
+	"#008B91", // teal
+	"#B36043", // clay
+	"#8A67B1", // violet
+	"#6B8632", // moss
+	"#2A82B7", // sky
+	"#A0609B", // plum
+] as const;
 export const SignalKeys = ["success", "error", "warning", "neutral", "info"] as const;
 export type SignalKey = (typeof SignalKeys)[number];
 export type SignalTone = { bg: string; text: string; border: string; mark: string };
+
+// Sidebar wayfinding only (never status, charts or badges)
+export const SidebarParts = ["record", "track", "enforce"] as const;
+export type SidebarPart = (typeof SidebarParts)[number];
+export type PartTone = {
+	solid: string;
+	text: string;
+	hover: string;
+	selected: string;
+	pressed: string;
+};
+
+const PART_SOLIDS: Record<SidebarPart, { solid: string; text: string }> = {
+	record: { solid: "#208DAA", text: "#196F86" },
+	track: { solid: "#E09B26", text: "#85590F" },
+	enforce: { solid: "#1D8A4C", text: "#187340" },
+};
+
+const lightParts: Record<SidebarPart, PartTone> = {
+	record: {
+		...PART_SOLIDS.record,
+		hover: "#F1F8FB",
+		selected: "#DCEDF3",
+		pressed: "#C8E2EB",
+	},
+	track: {
+		...PART_SOLIDS.track,
+		hover: "#FDF7EC",
+		selected: "#F9EBD3",
+		pressed: "#F3DCB5",
+	},
+	enforce: {
+		...PART_SOLIDS.enforce,
+		hover: "#EFF8F2",
+		selected: "#DBEFE2",
+		pressed: "#C3E4CF",
+	},
+};
+
+const darkPart = (solid: string): PartTone => ({
+	solid,
+	text: solid,
+	hover: alpha(solid, 0.08),
+	selected: alpha(solid, 0.16),
+	pressed: alpha(solid, 0.22),
+});
+
+const darkParts: Record<SidebarPart, PartTone> = {
+	record: darkPart(PART_SOLIDS.record.solid),
+	track: darkPart(PART_SOLIDS.track.solid),
+	enforce: darkPart(PART_SOLIDS.enforce.solid),
+};
 
 export const lightPalette = {
 	primary: {
@@ -173,6 +255,7 @@ export const lightPalette = {
 	} satisfies Record<SignalKey, SignalTone>,
 	sidebar: {
 		accent: vw.primary,
+		parts: lightParts,
 	},
 	scrollbar: {
 		track: "transparent",
@@ -183,13 +266,14 @@ export const lightPalette = {
 		paused: vw.highBg,
 	},
 	chart: {
+		// Multi-series chart: series colours in their fixed order
 		phases: {
-			dns: colors.magenta300,
-			tcp: colors.orange600,
-			tls: colors.aqua500,
-			request: colors.yellow500,
-			firstByte: colors.blue500,
-			download: colors.green700,
+			dns: CHART_SERIES[0],
+			tcp: CHART_SERIES[1],
+			tls: CHART_SERIES[2],
+			request: CHART_SERIES[3],
+			firstByte: CHART_SERIES[4],
+			download: CHART_SERIES[5],
 		},
 	},
 };
@@ -276,6 +360,7 @@ export const darkPalette = {
 	} satisfies Record<SignalKey, SignalTone>,
 	sidebar: {
 		accent: colors.brandGreenLight,
+		parts: darkParts,
 	},
 	scrollbar: {
 		track: "transparent",

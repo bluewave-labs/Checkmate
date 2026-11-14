@@ -1,4 +1,5 @@
-import { BasePage, Tabs, Tab } from "@/Components/design-elements";
+import { BasePage, Tabs, Tab, TabIcon } from "@/Components/design-elements";
+import { Lock, User, Users, type LucideIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
@@ -7,6 +8,12 @@ import { TabPassword } from "./TabPassword";
 import { TabTeam } from "./TabTeam";
 import type { RootState } from "@/Types/state";
 import type { UserRole } from "@/Types/User";
+
+const ACCOUNT_TAB_ICONS: Record<AccountTabKey, LucideIcon> = {
+	profile: User,
+	password: Lock,
+	team: Users,
+};
 
 const ACCOUNT_TABS: { key: AccountTabKey; labelKey: string; roles?: UserRole[] }[] = [
 	{ key: "profile", labelKey: "pages.account.tabs.profile" },
@@ -51,6 +58,7 @@ const Account = ({ open = "profile" }: AccountProps) => {
 						key={tab.key}
 						value={tab.key}
 						label={t(tab.labelKey)}
+						icon={<TabIcon icon={ACCOUNT_TAB_ICONS[tab.key]} />}
 					/>
 				))}
 			</Tabs>

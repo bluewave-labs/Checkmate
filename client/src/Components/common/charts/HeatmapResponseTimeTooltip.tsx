@@ -23,8 +23,8 @@ export const HeatmapResponseTimeTooltip = ({
 	const formatDate = useFormatDate();
 
 	const getColor = (status: boolean) => {
-		if (status === true) return theme.palette.success.light;
-		if (status === false) return theme.palette.error.light;
+		if (status === true) return theme.palette.signal.success.mark;
+		if (status === false) return theme.palette.signal.error.mark;
 	};
 
 	if (check.status === "placeholder") {

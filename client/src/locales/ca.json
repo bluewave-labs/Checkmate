@@ -138,6 +138,10 @@
 			"copy": "Copia al porta-retalls",
 			"copied": "Copiat al porta-retalls",
 			"copyFailed": "No s'ha pogut copiar. Selecciona el text i copia'l manualment."
+		},
+		"filters": {
+			"any": "Qualsevol",
+			"state": "Estat"
 		}
 	},
 	"components": {

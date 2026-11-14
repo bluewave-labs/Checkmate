@@ -138,6 +138,10 @@
 			"copy": "复制到剪贴板",
 			"copied": "已复制到剪贴板",
 			"copyFailed": "无法复制。请选中文本并手动复制。"
+		},
+		"filters": {
+			"any": "全部",
+			"state": "状态"
 		}
 	},
 	"components": {

@@ -4,9 +4,11 @@ import { useTheme } from "@mui/material/styles";
 
 interface ProgressBarProps {
 	fillRatio: number;
+	// Defaults to brand green (single measure); score bars pass a spectrum colour
+	fillColor?: string;
 }
 
-export const ProgressBar = ({ fillRatio }: ProgressBarProps) => {
+export const ProgressBar = ({ fillRatio, fillColor }: ProgressBarProps) => {
 	const theme = useTheme();
 	const clamped = Math.min(1, Math.max(0, fillRatio));
 
@@ -14,14 +16,14 @@ export const ProgressBar = ({ fillRatio }: ProgressBarProps) => {
 		<Box
 			height={theme.spacing(LAYOUT.XS)}
 			borderRadius={theme.shape.borderRadius}
-			bgcolor={theme.palette.action.disabledBackground}
+			bgcolor={theme.palette.neutral.hairline}
 			overflow="hidden"
 		>
 			<Box
 				height="100%"
 				width={`${clamped * 100}%`}
 				borderRadius={theme.shape.borderRadius}
-				bgcolor={theme.palette.primary.main}
+				bgcolor={fillColor ?? theme.palette.primary.main}
 			/>
 		</Box>
 	);
