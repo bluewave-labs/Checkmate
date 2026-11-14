@@ -36,9 +36,9 @@ const VALUE_SIGNAL: Record<ValueType, SignalKey> = {
 	neutral: "warning",
 };
 
-// Flat tinted pill in a signal colour. Status words get a 6px dot in the text
+// Flat tinted badge in a signal colour. Status words get a 6px dot in the text
 // colour; values (e.g. uptime %) drop the dot and use tabular numbers.
-const SignalPill = ({
+const SignalBadge = ({
 	signal,
 	children,
 	dot = true,
@@ -59,7 +59,7 @@ const SignalPill = ({
 			gap={BADGE.DOT_GAP}
 			height={BADGE.HEIGHT}
 			padding={BADGE.PADDING}
-			borderRadius={RADIUS.PILL}
+			borderRadius={RADIUS.SM}
 			bgcolor={tone.bg}
 			color={tone.text}
 			fontSize={typographyLevels.s}
@@ -105,12 +105,12 @@ export const StatusLabel = ({ status, sx }: { status: MonitorStatus; sx?: SxProp
 
 	const label = determineStatus(status);
 	return (
-		<SignalPill
+		<SignalBadge
 			signal={STATUS_SIGNAL[status] ?? "info"}
 			sx={sx}
 		>
 			{label.charAt(0).toUpperCase() + label.slice(1)}
-		</SignalPill>
+		</SignalBadge>
 	);
 };
 
@@ -127,22 +127,22 @@ export const ValueLabel = ({
 		? text
 		: text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 
-	return <SignalPill signal={VALUE_SIGNAL[value]}>{transformedText}</SignalPill>;
+	return <SignalBadge signal={VALUE_SIGNAL[value]}>{transformedText}</SignalBadge>;
 };
 
 // A number or short value in a signal tint (e.g. uptime %)
 export const SignalLabel = ({ text, signal }: { text: string; signal: SignalKey }) => (
-	<SignalPill
+	<SignalBadge
 		signal={signal}
 		dot={false}
 		tabular
 	>
 		{text}
-	</SignalPill>
+	</SignalBadge>
 );
 
 // Category badge in a user-chosen colour (tags): flat tint of the colour with
-// darker text in the same hue, pill radius, no border.
+// darker text in the same hue, 4px corners, no border.
 export const ColoredLabel = ({ text, color }: { text: string; color: string }) => {
 	const theme = useTheme();
 	const isDark = theme.palette.mode === "dark";
@@ -164,7 +164,7 @@ export const ColoredLabel = ({ text, color }: { text: string; color: string }) =
 			width="fit-content"
 			height={BADGE.TAG_HEIGHT}
 			padding={BADGE.PADDING}
-			borderRadius={RADIUS.PILL}
+			borderRadius={RADIUS.SM}
 			bgcolor={bg}
 			color={fg}
 			fontSize={typographyLevels.sm}

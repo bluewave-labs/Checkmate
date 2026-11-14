@@ -146,7 +146,7 @@ The theme exposes tokens for every kind of magic value. Use them. Reserve raw nu
   - `xs / s / sm / m / l / xl / title / xxl` (rem values; 11, 11, 12, 13, 14, 18, 20, 24 px; `title` is for page titles). Don't invent other sizes.
 - **Font weight / line height** — `FONT_WEIGHT.REGULAR | MEDIUM | SEMIBOLD`, `LINE_HEIGHT.TIGHT | HEADING | TITLE | BODY`
 - **Hover / interaction** — `HOVER.DARKEN`, `MOTION.HOVER`, `FOCUS_RING.WIDTH | OFFSET`
-- **Shape** — `RADIUS.SM` (4px, every card, table, input, button, menu and control), `RADIUS.TAB` (folder tab tops), `RADIUS.PILL` (pills, chips, badges). Both `RADIUS.SM` and `theme.shape.borderRadius` come from `RADIUS_PX` in `constants.ts`; change it there. Don't use `theme.shape.borderRadius` in `sx` or system props: MUI multiplies a bare number by the shape radius, so it renders 16px instead of 4px.
+- **Shape** — `RADIUS.SM` (4px, every card, table, input, button, menu, control and status badge), `RADIUS.TAB` (folder tab tops). No pill shapes. Both `RADIUS.SM` and `theme.shape.borderRadius` come from `RADIUS_PX` in `constants.ts`; change it there. Don't use `theme.shape.borderRadius` in `sx` or system props: MUI multiplies a bare number by the shape radius, so it renders 16px instead of 4px.
 - **Component measurements** — `CONTROL_HEIGHT`, `INPUT_BASE_HEIGHT` (34px controls), `BADGE`, `ICON_SIZE` / `ICON_STROKE`, `GAP`, `PADDING`, `TAG_TINT`. Use these for the exact pixel values `theme.spacing` can't express (e.g. 9px or 14px table padding).
 - **Colors** — `theme.palette.*` (rule 2 above). Beyond the MUI keys the theme adds:
   - `theme.palette.neutral.*` — raised fills, hairline and input borders, row dividers, icon grey, hover and selected greens

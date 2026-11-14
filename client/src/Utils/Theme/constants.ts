@@ -36,7 +36,6 @@ export const RADIUS = {
 	XS: "2px", // elements nested inside a 4px container (segmented options)
 	SM: `${RADIUS_PX}px`, // buttons, cards, inputs, menus, modals, table frames, controls
 	TAB: "9px 9px 0 0", // folder tab top corners
-	PILL: "999px", // status pills, filter chips, badges
 } as const;
 
 // Medium controls use INPUT_BASE_HEIGHT (34)
@@ -45,7 +44,7 @@ export const CONTROL_HEIGHT = {
 } as const;
 
 export const BADGE = {
-	HEIGHT: 24, // status and value pills
+	HEIGHT: 24, // status and value badges
 	TAG_HEIGHT: 22, // category tags
 	PADDING: "1px 8px",
 	DOT: 6,
