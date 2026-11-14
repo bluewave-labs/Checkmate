@@ -493,7 +493,7 @@ export const theme = (mode: string, palette: any) =>
 			},
 		},
 		shape: {
-			borderRadius: 2,
+			borderRadius: 4, // keep in step with RADIUS.SM
 		},
 	});
 

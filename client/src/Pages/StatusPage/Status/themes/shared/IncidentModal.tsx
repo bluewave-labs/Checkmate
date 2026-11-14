@@ -8,7 +8,7 @@ import { X as XIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useGet } from "@/Hooks/UseApi";
 import { useTheme } from "@mui/material";
-import { SPACING } from "@/Utils/Theme/constants";
+import { SPACING, RADIUS } from "@/Utils/Theme/constants";
 
 import type { Incident } from "@/Types/Incident";
 import { formatDate } from "@/Utils/TimeUtils";
@@ -86,7 +86,7 @@ export const IncidentModal = ({
 								p={SPACING.LG}
 								border={1}
 								borderColor="divider"
-								borderRadius={theme.shape.borderRadius}
+								borderRadius={RADIUS.SM}
 							>
 								<Typography
 									variant="subtitle2"

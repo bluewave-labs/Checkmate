@@ -30,8 +30,7 @@ export const HOVER = {
 // theme.spacing (base 2) / LAYOUT cannot express odd ones such as 9px or 14px,
 // so component measurements are named here instead of written inline.
 export const RADIUS = {
-	SM: "2px", // buttons, cards, inputs, menus, modals, table frames
-	SEARCH: "8px", // the search field above a list
+	SM: "4px", // buttons, cards, inputs, menus, modals, table frames, controls
 	TAB: "9px 9px 0 0", // folder tab top corners
 	PILL: "999px", // status pills, filter chips, badges
 } as const;
@@ -39,7 +38,6 @@ export const RADIUS = {
 // Medium controls use INPUT_BASE_HEIGHT (34)
 export const CONTROL_HEIGHT = {
 	SM: 28,
-	CHIP: 30,
 } as const;
 
 export const BADGE = {
@@ -66,11 +64,12 @@ export const GAP = {
 export const PADDING = {
 	BUTTON_SM: "6px 12px",
 	ICON_BUTTON: "4px",
-	CHIP: "4px 10px 4px 12px",
+	CHIP: "0 10px 0 13px", // text sits 14px in (13 + 1px border), same as a Select
 	MENU_ITEM: "4px 6px",
 	TOOLTIP: "8px 12px",
 	TAB: "7px 14px 8px",
 	TAB_ROW_INSET: "10px",
+	SEGMENT: "0 14px", // segmented control buttons
 	TABLE_HEAD: "9px 14px",
 	TABLE_CELL: "10px 14px",
 	TABLE_CELL_X: "14px",

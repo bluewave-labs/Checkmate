@@ -7,13 +7,13 @@ import { useTheme } from "@mui/material/styles";
 import { Check, ChevronDown } from "lucide-react";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import {
-	CONTROL_HEIGHT,
 	FILTER_MENU_MIN_WIDTH,
 	FOCUS_RING,
 	FONT_WEIGHT,
 	GAP,
 	ICON_SIZE,
 	ICON_STROKE,
+	INPUT_BASE_HEIGHT,
 	MOTION,
 	PADDING,
 	RADIUS,
@@ -47,8 +47,10 @@ interface MultipleProps extends FilterChipBaseProps {
 // Selected values listed in the chip before collapsing the rest into "+N"
 const MAX_VISIBLE_VALUES = 2;
 
-// One chip per filterable column (VerifyWise filter chips). Presentation only:
-// it reports the chosen value(s) through onChange exactly as a Select would.
+// One filter per column, shown as "Label: value" (VerifyWise filter chips). It is
+// sized and bordered exactly like the dropdowns elsewhere (34px, 2px corners,
+// input border) so filter rows match across pages. Presentation only: it reports
+// the chosen value(s) through onChange exactly as a Select would.
 export const FilterChip = (props: SingleProps | MultipleProps) => {
 	const theme = useTheme();
 	const menuId = useId();
@@ -90,15 +92,15 @@ export const FilterChip = (props: SingleProps | MultipleProps) => {
 					display: "inline-flex",
 					alignItems: "center",
 					gap: GAP.CHIP,
-					height: CONTROL_HEIGHT.CHIP,
+					height: INPUT_BASE_HEIGHT,
 					padding: PADDING.CHIP,
-					borderRadius: RADIUS.PILL,
-					border: `1px solid ${isSet ? theme.palette.primary.main : theme.palette.neutral.hairline}`,
+					borderRadius: RADIUS.SM,
+					border: `1px solid ${isSet ? theme.palette.primary.main : theme.palette.neutral.border}`,
 					backgroundColor: isSet
 						? theme.palette.neutral.hoverGreen
 						: theme.palette.background.paper,
 					color: theme.palette.text.primary,
-					fontSize: typographyLevels.sm,
+					fontSize: typographyLevels.base,
 					whiteSpace: "nowrap",
 					transition: `background-color ${MOTION.HOVER}, border-color ${MOTION.HOVER}`,
 					"&:hover": {

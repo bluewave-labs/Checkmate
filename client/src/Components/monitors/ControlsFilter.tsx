@@ -13,7 +13,7 @@ import {
 import type { Tag } from "@/Types/Tag";
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { CONTROL_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
 
 const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 
@@ -140,7 +140,7 @@ export const ControlsFilter = ({
 				<Button
 					variant="text"
 					onClick={onClearFilters}
-					sx={{ height: CONTROL_HEIGHT.CHIP, color: theme.palette.neutral.borderHover }}
+					sx={{ height: INPUT_BASE_HEIGHT, color: theme.palette.neutral.borderHover }}
 				>
 					{t("common.buttons.clearFilters")}
 				</Button>
