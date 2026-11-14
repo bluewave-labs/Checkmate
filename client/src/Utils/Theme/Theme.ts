@@ -162,9 +162,7 @@ export const theme = (mode: string, palette: any) =>
 		components: {
 			MuiCssBaseline: {
 				styleOverrides: (theme) => ({
-					// Always keep the scrollbar track (transparent in the palette), so content
-					// doesn't shift sideways when moving between short and long pages.
-					// scrollbar-gutter does not reserve space for the custom 8px scrollbar.
+					// Always keep the scrollbar track so content doesn't shift between short and long pages
 					html: { overflowY: "scroll" },
 					body: { backgroundColor: theme.palette.background.default },
 					"*:focus:not(:focus-visible)": { outline: "none" },
@@ -362,8 +360,7 @@ export const theme = (mode: string, palette: any) =>
 			},
 			// Only floating surfaces keep a shadow; cards and tables are flat
 			MuiPopover: { styleOverrides: { paper: { boxShadow: shadow } } },
-			// Menu items carry a 2px margin, so the list itself has no vertical padding:
-			// a highlighted first or last item sits 2px from the edge like the others
+			// Items carry a 2px margin, so lists need no vertical padding
 			MuiMenu: {
 				styleOverrides: {
 					paper: { boxShadow: shadow },
@@ -373,7 +370,11 @@ export const theme = (mode: string, palette: any) =>
 			MuiAutocomplete: {
 				styleOverrides: {
 					paper: { boxShadow: shadow },
-					listbox: { paddingTop: 0, paddingBottom: 0 },
+					listbox: {
+						paddingTop: 0,
+						paddingBottom: 0,
+						"& .MuiAutocomplete-option": { padding: PADDING.MENU_ITEM },
+					},
 				},
 			},
 			MuiMenuItem: {

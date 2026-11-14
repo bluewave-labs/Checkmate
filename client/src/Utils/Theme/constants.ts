@@ -26,10 +26,8 @@ export const HOVER = {
 	CONTROL: 0.05, // Stronger overlay for controls nested inside a hoverable row
 } as const;
 
-// Component measurements. The style spec gives exact pixel values, and
-// theme.spacing (base 2) / LAYOUT cannot express odd ones such as 9px or 14px,
-// so component measurements are named here instead of written inline.
-// The one corner radius. theme.shape.borderRadius and RADIUS.SM both read it.
+// Exact component measurements that theme.spacing / LAYOUT can't express.
+// RADIUS_PX feeds both theme.shape.borderRadius and RADIUS.SM.
 export const RADIUS_PX = 4;
 
 export const RADIUS = {
@@ -38,7 +36,6 @@ export const RADIUS = {
 	TAB: "9px 9px 0 0", // folder tab top corners
 } as const;
 
-// Medium controls use INPUT_BASE_HEIGHT (30)
 export const CONTROL_HEIGHT = {
 	SM: 28,
 } as const;
@@ -71,7 +68,7 @@ export const PADDING = {
 	BUTTON_SM: "6px 12px",
 	ICON_BUTTON: "4px",
 	CHIP: "0 10px 0 13px", // text sits 14px in (13 + 1px border), same as a Select
-	MENU_ITEM: "4px 6px",
+	MENU_ITEM: "5px 12px", // with the 2px item margin, text sits 14px in like a Select
 	TOOLTIP: "8px 12px",
 	TAB: "7px 14px 8px",
 	TAB_ROW_INSET: "10px",
@@ -116,12 +113,10 @@ export const SELECTED_LIST = {
 	ROW_HEIGHT: 34,
 } as const;
 
-// Every table header row is the same height, whatever its cells contain
-// (plain labels, sort arrows or a select-all checkbox)
+// Same height whatever the header cells contain
 export const TABLE_HEAD_HEIGHT = 36;
 
-// Tag badges tint a user-chosen colour: alpha for the background, a
-// darken/lighten shift for readable text in the same hue
+// Tag badge tint: background alpha and text darken/lighten shift
 export const TAG_TINT = {
 	BG_LIGHT: 0.14,
 	BG_DARK: 0.2,
