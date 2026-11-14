@@ -32,6 +32,7 @@ import { ThemePicker } from "./Components/ThemePicker";
 import { FormSwitchField } from "@/Components/inputs/forms/FormSwitchField";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { FormMultiSelectField } from "@/Components/inputs/forms/FormMultiSelectField";
+import { MonitorSelectedRow } from "@/Components/monitors/MonitorSelectedRow";
 import { FormAutocompleteField } from "@/Components/inputs/forms/FormAutoCompleteField";
 import { FormCheckboxField } from "@/Components/inputs/forms/FormCheckboxField";
 import { FormColorField } from "@/Components/inputs/forms/FormColorField";
@@ -329,11 +330,7 @@ const CreateStatusPage = () => {
 										})}
 									</Stack>
 								)}
-								renderRow={(monitor) => (
-									<Typography flexGrow={1}>
-										{`${monitor.name} (${getMonitorTypeLabel(monitor.type, t)})`}
-									</Typography>
-								)}
+								renderRow={(monitor) => <MonitorSelectedRow monitor={monitor} />}
 							/>
 						}
 					/>
