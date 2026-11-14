@@ -41,6 +41,7 @@ export const DialogInput = ({
 	maxWidth,
 	fullWidth = false,
 	additionalButtons,
+	framed = true,
 }: {
 	open: boolean;
 	title?: string;
@@ -55,6 +56,9 @@ export const DialogInput = ({
 	maxWidth?: DialogProps["maxWidth"];
 	fullWidth?: boolean;
 	additionalButtons?: ReactNode;
+	// Wrap the body in the white bordered box. Turn off when the content already
+	// brings its own cards, so they aren't framed twice.
+	framed?: boolean;
 }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
@@ -133,14 +137,18 @@ export const DialogInput = ({
 						".MuiDialogTitle-root + &": { paddingTop: PADDING.DIALOG_SECTION_TOP },
 					}}
 				>
-					<Box
-						bgcolor={theme.palette.background.paper}
-						border={`1px solid ${theme.palette.neutral.hairline}`}
-						borderRadius={RADIUS.SM}
-						padding={PADDING.DIALOG_BOX}
-					>
-						{children}
-					</Box>
+					{framed ? (
+						<Box
+							bgcolor={theme.palette.background.paper}
+							border={`1px solid ${theme.palette.neutral.hairline}`}
+							borderRadius={RADIUS.SM}
+							padding={PADDING.DIALOG_BOX}
+						>
+							{children}
+						</Box>
+					) : (
+						children
+					)}
 				</DialogContent>
 			)}
 			<DialogActions

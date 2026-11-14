@@ -19,6 +19,7 @@ import { useGet } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
 import type { ChecksSummary, ChecksResponse } from "@/Types/Check";
 import type { DateRange } from "@/Types/Query";
+import { GAP } from "@/Utils/Theme/constants";
 
 const Checks = () => {
 	const { t } = useTranslation();
@@ -137,10 +138,10 @@ const Checks = () => {
 				direction={{ xs: "column", md: "row" }}
 				justifyContent="space-between"
 				alignItems={{ xs: "stretch", md: "center" }}
-				gap={2}
+				gap={GAP.CONTROL}
 			>
 				<Stack
-					gap={2}
+					gap={GAP.CONTROL}
 					direction={{ xs: "column", md: "row" }}
 				>
 					<Select

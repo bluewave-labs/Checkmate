@@ -61,6 +61,7 @@ export const GAP = {
 	CHIP: "4px", // label to chevron inside a filter chip
 	TAB: "3px", // between folder tabs
 	SEGMENT: "2px", // between segmented control options
+	CONTROL: "8px", // between dropdowns, filters and selectors in a toolbar row
 } as const;
 
 export const PADDING = {
@@ -102,6 +103,10 @@ export const LINE_HEIGHT = {
 } as const;
 
 export const FILTER_MENU_MIN_WIDTH = 180;
+
+// Every table header row is the same height, whatever its cells contain
+// (plain labels, sort arrows or a select-all checkbox)
+export const TABLE_HEAD_HEIGHT = 36;
 
 // Tag badges tint a user-chosen colour: alpha for the background, a
 // darken/lighten shift for readable text in the same hue

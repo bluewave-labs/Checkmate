@@ -129,21 +129,15 @@ const SummaryIncidentItem = ({ incident }: { incident: IncidentSummaryItem }) =>
 	const { t } = useTranslation();
 	const duration = getIncidentsDuration(incident);
 	return (
-		// Name takes the free space and truncates only when it must; the pill and the
-		// duration keep their natural width so no space is wasted beside the pill
-		<Stack
-			direction="row"
-			alignItems="center"
-			gap={theme.spacing(LAYOUT.SM)}
-			width="100%"
-			minHeight={theme.spacing(LAYOUT.MD)}
-		>
+		// Cells of the shared grid in SummaryCardLatestIncidents, so every row's pill
+		// starts at the same x and every duration ends at the right edge
+		<Box display="contents">
 			<Stack
 				direction="row"
 				alignItems="center"
 				gap={theme.spacing(LAYOUT.XS)}
-				flex={1}
 				minWidth={0}
+				minHeight={theme.spacing(LAYOUT.MD)}
 			>
 				<Icon
 					icon={Globe}
@@ -157,7 +151,7 @@ const SummaryIncidentItem = ({ incident }: { incident: IncidentSummaryItem }) =>
 					{incident.monitorName ?? t("common.labels.na")}
 				</Typography>
 			</Stack>
-			<Box flexShrink={0}>
+			<Box>
 				<ValueLabel
 					value={incident.status ? "negative" : "positive"}
 					text={incident.status ? t("common.labels.active") : t("common.labels.resolved")}
@@ -165,13 +159,13 @@ const SummaryIncidentItem = ({ incident }: { incident: IncidentSummaryItem }) =>
 			</Box>
 			<Typography
 				variant="body1"
-				flexShrink={0}
 				textAlign="right"
+				whiteSpace="nowrap"
 				sx={{ fontVariantNumeric: "tabular-nums" }}
 			>
 				{duration}
 			</Typography>
-		</Stack>
+		</Box>
 	);
 };
 
@@ -183,17 +177,27 @@ export const SummaryCardLatestIncidents = ({
 	summary,
 }: SummaryCardLatestIncidentsProps) => {
 	const { t } = useTranslation();
+	const theme = useTheme();
 
 	const latestIncidents = summary?.latestIncidents ?? [];
 
 	return (
 		<SummaryCard title={t("pages.incidents.summaryCard.latestIncidents.title")}>
-			{latestIncidents.slice(0, 3).map((incident) => (
-				<SummaryIncidentItem
-					key={incident.id}
-					incident={incident}
-				/>
-			))}
+			{/* One grid for all rows: name | status pill (left-aligned column) | duration */}
+			<Box
+				display="grid"
+				gridTemplateColumns="minmax(0, 1fr) max-content max-content"
+				alignItems="center"
+				columnGap={theme.spacing(LAYOUT.SM)}
+				rowGap={theme.spacing(4)}
+			>
+				{latestIncidents.slice(0, 3).map((incident) => (
+					<SummaryIncidentItem
+						key={incident.id}
+						incident={incident}
+					/>
+				))}
+			</Box>
 		</SummaryCard>
 	);
 };

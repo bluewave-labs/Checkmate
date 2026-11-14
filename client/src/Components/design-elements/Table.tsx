@@ -35,8 +35,12 @@ import {
 	FONT_WEIGHT,
 	LINE_HEIGHT,
 	RADIUS,
+	TABLE_HEAD_HEIGHT,
 } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
+
+// MUI's default checkbox padding around its icon
+const CHECKBOX_PADDING = 9;
 import type { SxProps, Theme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
@@ -226,6 +230,24 @@ export function DataTable<
 						fontSize: typographyLevels.s,
 						lineHeight: LINE_HEIGHT.BODY,
 						whiteSpace: "nowrap",
+						height: TABLE_HEAD_HEIGHT,
+					},
+					// A select-all checkbox keeps its click target but no longer stretches the
+					// header row, so every table header has the same height
+					// Header labels rendered through Typography (e.g. sortable headers) take the
+					// header's own type settings instead of body text, so they look and size
+					// like every other header cell
+					"& :is(th) .MuiTypography-root": {
+						fontSize: "inherit",
+						fontWeight: "inherit",
+						lineHeight: "inherit",
+						letterSpacing: "inherit",
+						color: "inherit",
+					},
+					"& :is(th) .MuiCheckbox-root": {
+						// Vertical only, so the icon stays aligned with the row checkboxes below
+						marginTop: `-${CHECKBOX_PADDING}px`,
+						marginBottom: `-${CHECKBOX_PADDING}px`,
 					},
 					"& :is(td)": {
 						backgroundColor: theme.palette.background.paper,

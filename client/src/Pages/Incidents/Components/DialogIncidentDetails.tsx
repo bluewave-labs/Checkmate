@@ -33,6 +33,7 @@ export const DialogIncidentDetails = ({
 			confirmText={isActive ? t("pages.incidents.dialog.details.resolve") : undefined}
 			maxWidth="sm"
 			fullWidth
+			framed={false}
 		>
 			<CardDetails
 				incident={incident}

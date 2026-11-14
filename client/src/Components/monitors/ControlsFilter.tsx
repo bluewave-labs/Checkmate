@@ -13,7 +13,7 @@ import {
 import type { Tag } from "@/Types/Tag";
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT, GAP } from "@/Utils/Theme/constants";
 
 const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 
@@ -77,7 +77,7 @@ export const ControlsFilter = ({
 			direction="row"
 			flexWrap="wrap"
 			alignItems="center"
-			gap={theme.spacing(4)}
+			gap={GAP.CONTROL}
 			width={isSmall ? "100%" : "auto"}
 		>
 			{showTypes && setSelectedTypes && (
