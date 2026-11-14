@@ -3,7 +3,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { typographyLevels, SignalKeys, type SignalKey } from "@/Utils/Theme/Palette";
 import type { PaletteKey } from "@/Utils/Theme/Theme";
 import { BaseBox, TooltipWithInfo } from "@/Components/design-elements";
 import type { SxProps } from "@mui/material";
@@ -62,12 +62,28 @@ export const StatBox = ({
 	const theme = useTheme();
 	// Colour the value only when it is a status (e.g. up / down)
 	const valueColor = palette ? theme.palette[palette].dark : theme.palette.text.primary;
+	// A status with no value (e.g. "Service is down") is a status banner: signal tint,
+	// border and text, so it still stands out without a number to colour
+	const bannerTone =
+		palette && !subtitle
+			? theme.palette.signal[
+					(SignalKeys as readonly string[]).includes(palette)
+						? (palette as SignalKey)
+						: "neutral"
+				]
+			: null;
 
 	return (
 		<GradientBox
 			palette={palette}
 			interactive={Boolean(onClick)}
-			sx={{ ...(sx as object) }}
+			sx={{
+				...(bannerTone && {
+					backgroundColor: bannerTone.bg,
+					borderColor: bannerTone.border,
+				}),
+				...(sx as object),
+			}}
 		>
 			<Stack
 				onClick={onClick}
@@ -80,7 +96,7 @@ export const StatBox = ({
 				>
 					<Typography
 						variant="eyebrow"
-						color={theme.palette.neutral.tertiary}
+						color={bannerTone ? bannerTone.text : theme.palette.neutral.tertiary}
 					>
 						{title}
 					</Typography>
@@ -92,15 +108,17 @@ export const StatBox = ({
 						/>
 					)}
 				</Box>
-				<Typography
-					color={valueColor}
-					fontSize={typographyLevels.xl}
-					fontWeight={600}
-					lineHeight={1.3}
-					sx={{ fontVariantNumeric: "tabular-nums" }}
-				>
-					{subtitle}
-				</Typography>
+				{subtitle && (
+					<Typography
+						color={valueColor}
+						fontSize={typographyLevels.xl}
+						fontWeight={600}
+						lineHeight={1.3}
+						sx={{ fontVariantNumeric: "tabular-nums" }}
+					>
+						{subtitle}
+					</Typography>
+				)}
 				{children}
 			</Stack>
 		</GradientBox>
