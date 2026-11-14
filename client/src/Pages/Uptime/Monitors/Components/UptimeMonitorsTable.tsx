@@ -348,6 +348,8 @@ export const MonitorTable = ({
 					navigate(`/uptime/${row.id}`);
 				}}
 				isRowSelected={(row) => isRowSelected(row.id)}
+				sortedColumnId={sortField || undefined}
+				sortDirection={sortOrder}
 			/>
 			<Pagination
 				component="div"

@@ -34,6 +34,8 @@ interface NeutralTokens {
 	hoverGreen: string;
 	selectedGreen: string;
 	tooltip: string;
+	sortedHeader: string;
+	sortedCell: string;
 }
 
 declare module "@mui/material/styles" {
@@ -351,8 +353,20 @@ export const theme = (mode: string, palette: any) =>
 			},
 			// Only floating surfaces keep a shadow; cards and tables are flat
 			MuiPopover: { styleOverrides: { paper: { boxShadow: shadow } } },
-			MuiMenu: { styleOverrides: { paper: { boxShadow: shadow } } },
-			MuiAutocomplete: { styleOverrides: { paper: { boxShadow: shadow } } },
+			// Menu items carry a 2px margin, so the list itself has no vertical padding:
+			// a highlighted first or last item sits 2px from the edge like the others
+			MuiMenu: {
+				styleOverrides: {
+					paper: { boxShadow: shadow },
+					list: { paddingTop: 0, paddingBottom: 0 },
+				},
+			},
+			MuiAutocomplete: {
+				styleOverrides: {
+					paper: { boxShadow: shadow },
+					listbox: { paddingTop: 0, paddingBottom: 0 },
+				},
+			},
 			MuiMenuItem: {
 				styleOverrides: {
 					root: ({ theme }) => ({

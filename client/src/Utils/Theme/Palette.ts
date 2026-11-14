@@ -35,6 +35,7 @@ export const vw = {
 	primaryHover: "#075443",
 	green50: "#EFFAF6",
 	green100: "#D9F2E9",
+	sortedCell: "#F7FBF9", // faint green behind a sorted table column
 	// Signal colours: tint background, text on the tint, border, solid mark
 	criticalBg: "#FDE2E2",
 	criticalText: "#B91C1C",
@@ -252,6 +253,8 @@ export const lightPalette = {
 		hoverGreen: vw.green50,
 		selectedGreen: vw.green100,
 		tooltip: vw.ink,
+		sortedHeader: vw.green50,
+		sortedCell: vw.sortedCell,
 	},
 	signal: {
 		success: { bg: vw.lowBg, text: vw.lowText, border: vw.lowBorder, mark: vw.lowMark },
@@ -347,6 +350,8 @@ export const darkPalette = {
 		hoverGreen: alpha(colors.brandGreenLight, 0.07),
 		selectedGreen: alpha(colors.brandGreenLight, 0.14),
 		tooltip: colors.gray700,
+		sortedHeader: alpha(colors.brandGreenLight, 0.1),
+		sortedCell: alpha(colors.brandGreenLight, 0.04),
 	},
 	signal: {
 		success: {

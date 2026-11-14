@@ -38,6 +38,7 @@ import {
 	TABLE_HEAD_HEIGHT,
 } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
+import type { SortOrder } from "@/Types/Query";
 
 // MUI's default checkbox padding around its icon
 const CHECKBOX_PADDING = 9;
@@ -65,6 +66,10 @@ type DataTableProps<T extends { id?: string | number; _id?: string | number }> =
 	emptyViewPositive?: boolean;
 	getRowSx?: (row: T) => SxProps<Theme>;
 	isRowSelected?: (row: T) => boolean;
+	// Header id of the column the data is currently sorted by; that column is
+	// tinted so the active sort is visible at a glance
+	sortedColumnId?: string | number;
+	sortDirection?: SortOrder;
 };
 
 export function DataTable<
@@ -84,8 +89,21 @@ export function DataTable<
 	emptyViewPositive,
 	getRowSx,
 	isRowSelected,
+	sortedColumnId,
+	sortDirection,
 }: DataTableProps<T>) {
 	const theme = useTheme();
+	const isSorted = (header: Header<T>) =>
+		sortedColumnId !== undefined && header.id === sortedColumnId;
+	// Doubled selector so the tint beats the table-wide cell background; row hover
+	// and selection still take precedence
+	const sortedHeaderSx = {
+		"&&": {
+			backgroundColor: theme.palette.neutral.sortedHeader,
+			color: theme.palette.text.primary,
+		},
+	};
+	const sortedCellSx = { "&&": { backgroundColor: theme.palette.neutral.sortedCell } };
 	const [expanded, setExpanded] = useState<(string | number) | null>(null);
 	const handleExpand = (row: T) => {
 		const key = row.id ?? row._id ?? null;
@@ -275,6 +293,14 @@ export function DataTable<
 								<TableCell
 									align={header.align ?? (idx === 0 ? "left" : "center")}
 									key={header.id}
+									aria-sort={
+										isSorted(header)
+											? sortDirection === "desc"
+												? "descending"
+												: "ascending"
+											: undefined
+									}
+									sx={isSorted(header) ? sortedHeaderSx : undefined}
 								>
 									{header.content}
 								</TableCell>
@@ -355,6 +381,7 @@ export function DataTable<
 											<TableCell
 												align={header.align ?? (index === 0 ? "left" : "center")}
 												key={header.id}
+												sx={isSorted(header) ? sortedCellSx : undefined}
 												onClick={
 													header.onClick ? (e) => header.onClick!(e, row) : undefined
 												}
