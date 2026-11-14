@@ -19,6 +19,7 @@ import {
 	LINE_HEIGHT,
 	PADDING,
 	RADIUS,
+	RADIUS_PX,
 	SCROLLBAR_SIZE,
 } from "@/Utils/Theme/constants";
 
@@ -511,7 +512,7 @@ export const theme = (mode: string, palette: any) =>
 			},
 		},
 		shape: {
-			borderRadius: 4, // keep in step with RADIUS.SM
+			borderRadius: RADIUS_PX,
 		},
 	});
 

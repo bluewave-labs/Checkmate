@@ -29,9 +29,12 @@ export const HOVER = {
 // Component measurements. The style spec gives exact pixel values, and
 // theme.spacing (base 2) / LAYOUT cannot express odd ones such as 9px or 14px,
 // so component measurements are named here instead of written inline.
+// The one corner radius. theme.shape.borderRadius and RADIUS.SM both read it.
+export const RADIUS_PX = 4;
+
 export const RADIUS = {
 	XS: "2px", // elements nested inside a 4px container (segmented options)
-	SM: "4px", // buttons, cards, inputs, menus, modals, table frames, controls
+	SM: `${RADIUS_PX}px`, // buttons, cards, inputs, menus, modals, table frames, controls
 	TAB: "9px 9px 0 0", // folder tab top corners
 	PILL: "999px", // status pills, filter chips, badges
 } as const;
