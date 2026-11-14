@@ -18,6 +18,11 @@ export const notificationSchema = z
 		topic: z.string().optional(),
 		ntfyAuthType: z.enum(NtfyAuthTypes).optional(),
 		ntfyUsername: z.string().optional(),
+		customTitle: z.string().max(200).optional(),
+		customBody: z.string().max(1000).optional(),
+		pingContent: z.string().max(500).optional(),
+		showMonitorUrl: z.boolean().optional(),
+		showDetails: z.boolean().optional(),
 		createdAt: z.string(),
 		updatedAt: z.string(),
 	})

@@ -39,6 +39,14 @@ const refineNtfyAuth = (body: { ntfyAuthType?: string; ntfyUsername?: string; ac
 	}
 };
 
+// Optional per-channel message customization, shared by every channel variant (rule 10).
+const customContentFields = {
+	customTitle: z.string().max(200, "Title must be at most 200 characters").optional(),
+	customBody: z.string().max(1000, "Body must be at most 1000 characters").optional(),
+	showMonitorUrl: z.boolean().optional(),
+	showDetails: z.boolean().optional(),
+};
+
 const notificationChannelVariants = z.discriminatedUnion("type", [
 	// Email notification
 	z.object({
@@ -48,6 +56,7 @@ const notificationChannelVariants = z.discriminatedUnion("type", [
 		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
 		roomId: z.union([z.string(), z.literal("")]).optional(),
 		accessToken: z.union([z.string(), z.literal("")]).optional(),
+		...customContentFields,
 	}),
 	// Webhook notification
 	z.object({
@@ -57,6 +66,7 @@ const notificationChannelVariants = z.discriminatedUnion("type", [
 		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
 		roomId: z.union([z.string(), z.literal("")]).optional(),
 		accessToken: z.union([z.string(), z.literal("")]).optional(),
+		...customContentFields,
 	}),
 	// Rocket.Chat notification
 	z.object({
@@ -66,6 +76,7 @@ const notificationChannelVariants = z.discriminatedUnion("type", [
 			protocol: /^https?$/,
 			message: "Please enter a valid Rocket.Chat webhook URL",
 		}),
+		...customContentFields,
 	}),
 	// Slack notification
 	z.object({
@@ -75,6 +86,7 @@ const notificationChannelVariants = z.discriminatedUnion("type", [
 		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
 		roomId: z.union([z.string(), z.literal("")]).optional(),
 		accessToken: z.union([z.string(), z.literal("")]).optional(),
+		...customContentFields,
 	}),
 	// Discord notification
 	z.object({
@@ -84,6 +96,8 @@ const notificationChannelVariants = z.discriminatedUnion("type", [
 		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
 		roomId: z.union([z.string(), z.literal("")]).optional(),
 		accessToken: z.union([z.string(), z.literal("")]).optional(),
+		pingContent: z.string().max(500, "Ping message must be at most 500 characters").optional(),
+		...customContentFields,
 	}),
 	// PagerDuty notification
 	z.object({
@@ -93,6 +107,7 @@ const notificationChannelVariants = z.discriminatedUnion("type", [
 		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
 		roomId: z.union([z.string(), z.literal("")]).optional(),
 		accessToken: z.union([z.string(), z.literal("")]).optional(),
+		...customContentFields,
 	}),
 	// Matrix notification
 	z.object({
@@ -102,12 +117,14 @@ const notificationChannelVariants = z.discriminatedUnion("type", [
 		homeserverUrl: z.url({ message: "Please enter a valid Homeserver URL" }),
 		roomId: z.string().min(1, "Room ID is required"),
 		accessToken: z.string().min(1, "Access Token is required"),
+		...customContentFields,
 	}),
 	// Teams notification
 	z.object({
 		notificationName: z.string().min(1, "Notification name is required"),
 		type: z.literal("teams"),
 		address: z.url({ message: "Please enter a valid Webhook URL" }),
+		...customContentFields,
 	}),
 	// Telegram notification
 	z.object({
@@ -115,6 +132,7 @@ const notificationChannelVariants = z.discriminatedUnion("type", [
 		type: z.literal("telegram"),
 		address: z.string().min(1, "Chat ID is required"),
 		accessToken: z.string().min(1, "Bot token is required"),
+		...customContentFields,
 	}),
 	// Pushover notification
 	z.object({
@@ -122,6 +140,7 @@ const notificationChannelVariants = z.discriminatedUnion("type", [
 		type: z.literal("pushover"),
 		address: z.string().min(1, "User key is required"),
 		accessToken: z.string().min(1, "App token is required"),
+		...customContentFields,
 	}),
 	// Signalgrid notification
 	z.object({
@@ -129,6 +148,7 @@ const notificationChannelVariants = z.discriminatedUnion("type", [
 		type: z.literal("signalgrid"),
 		address: z.string().min(1, "Channel is required"),
 		accessToken: z.string().min(1, "Client key is required"),
+		...customContentFields,
 	}),
 	// Twilio SMS notification
 	z.object({
@@ -138,6 +158,7 @@ const notificationChannelVariants = z.discriminatedUnion("type", [
 		accessToken: z.string().min(1, "Auth token is required"),
 		phone: z.string().min(1, "Recipient phone number is required"),
 		twilioPhoneNumber: z.string().min(1, "Twilio phone number is required"),
+		...customContentFields,
 	}),
 	// ntfy notification
 	z
@@ -149,6 +170,7 @@ const notificationChannelVariants = z.discriminatedUnion("type", [
 			ntfyAuthType: z.enum(NtfyAuthTypes).optional(),
 			ntfyUsername: z.union([z.string(), z.literal("")]).optional(),
 			accessToken: z.union([z.string(), z.literal("")]).optional(),
+			...customContentFields,
 		})
 		.superRefine(refineNtfyAuth),
 ]);
