@@ -52,6 +52,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Průměrná doba odezvy",
+				"checkCount": "Kontroly",
 				"downtime": "Výpadek",
 				"high": "Vysoké",
 				"low": "Nízké",

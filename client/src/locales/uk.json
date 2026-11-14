@@ -52,6 +52,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Середній час відповіді",
+				"checkCount": "Перевірки",
 				"downtime": "Час простою",
 				"high": "Високий",
 				"low": "Низький",

@@ -52,6 +52,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Thời gian phản hồi trung bình",
+				"checkCount": "Lượt kiểm tra",
 				"downtime": "Thời gian ngừng hoạt động",
 				"high": "Cao",
 				"low": "Thấp",

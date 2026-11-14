@@ -52,6 +52,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Keskimääräinen vasteaika",
+				"checkCount": "Tarkistukset",
 				"downtime": "Käyttökatko",
 				"high": "Korkea",
 				"low": "Matala",

@@ -52,6 +52,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Среднее время ответа",
+				"checkCount": "Проверки",
 				"downtime": "Простой",
 				"high": "высокий",
 				"low": "низкий",

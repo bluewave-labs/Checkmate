@@ -52,6 +52,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "เวลาตอบสนองเฉลี่ย",
+				"checkCount": "การตรวจสอบ",
 				"downtime": "ดาวน์ไทม์",
 				"high": "สูง",
 				"low": "ต่ำ",

@@ -65,6 +65,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Tempo di risposta medio",
+				"checkCount": "Verifiche",
 				"downtime": "Downtime",
 				"high": "Alto",
 				"low": "Basso",
