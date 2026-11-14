@@ -20,15 +20,12 @@ export const Tooltip = ({
 			slotProps={{
 				tooltip: {
 					sx: {
-						backgroundColor:
-							theme.palette.mode === "dark"
-								? theme.palette.grey[900]
-								: theme.palette.grey[800],
+						backgroundColor: theme.palette.neutral.tooltip,
 						color: theme.palette.common.white,
 						fontSize: "13px",
-						padding: `${theme.spacing(4)} ${theme.spacing(5)}`,
+						padding: `${theme.spacing(4)} ${theme.spacing(6)}`,
 						borderRadius: `${theme.shape.borderRadius}px`,
-						boxShadow: theme.shadows[6],
+						boxShadow: "none",
 					},
 				},
 				...slotProps,

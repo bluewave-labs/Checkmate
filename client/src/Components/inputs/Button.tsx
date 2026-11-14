@@ -19,22 +19,26 @@ export const ButtonInput = ({ sx, ...props }: ButtonProps) => {
 	const hoverOverrides: Record<string, unknown> = { boxShadow: "none" };
 
 	if (props.variant === "outlined") {
-		hoverOverrides.borderColor = theme.palette.text.secondary;
+		hoverOverrides.borderColor = theme.palette.neutral.borderHover;
+		hoverOverrides.backgroundColor = theme.palette.neutral.raised;
 	}
 
 	if (props.variant === "contained") {
 		const colorKey = (props.color ?? "primary") as PaletteColor;
 		const palette = theme.palette[colorKey];
-		if (palette && typeof palette === "object" && "main" in palette) {
+		if (colorKey === "primary") {
+			hoverOverrides.backgroundColor = theme.palette.primary.dark;
+		} else if (palette && typeof palette === "object" && "main" in palette) {
 			hoverOverrides.backgroundColor = darken(palette.main, HOVER.DARKEN);
 		}
 	}
 
+	// Outlined is the secondary ("Cancel") button: grey border, secondary text
 	const variantSx =
 		props.variant === "outlined"
 			? {
-					color: theme.palette.text.primary,
-					borderColor: theme.palette.divider,
+					color: theme.palette.text.secondary,
+					borderColor: theme.palette.neutral.border,
 				}
 			: {};
 
@@ -45,8 +49,8 @@ export const ButtonInput = ({ sx, ...props }: ButtonProps) => {
 				textTransform: "none",
 				height: INPUT_BASE_HEIGHT,
 				lineHeight: 1.2,
-				fontWeight: 400,
-				borderRadius: 2,
+				fontWeight: 500,
+				borderRadius: "2px",
 				whiteSpace: "nowrap",
 				textOverflow: "ellipsis",
 				overflow: "hidden",

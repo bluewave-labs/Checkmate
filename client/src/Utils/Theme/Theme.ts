@@ -1,9 +1,29 @@
 import { createTheme } from "@mui/material";
-import { lightPalette, darkPalette, typographyLevels } from "@/Utils/Theme/Palette";
+import {
+	lightPalette,
+	darkPalette,
+	typographyLevels,
+	type SignalKey,
+	type SignalTone,
+} from "@/Utils/Theme/Palette";
 
 import type { Theme } from "@mui/material/styles";
 import type {} from "@mui/material/styles";
 import { SCROLLBAR_SIZE } from "@/Utils/Theme/constants";
+
+interface NeutralTokens {
+	raised: string;
+	hairline: string;
+	border: string;
+	borderHover: string;
+	rowDivider: string;
+	icon: string;
+	tertiary: string;
+	subdued: string;
+	hoverGreen: string;
+	selectedGreen: string;
+	tooltip: string;
+}
 
 declare module "@mui/material/styles" {
 	interface TypographyVariants {
@@ -20,6 +40,8 @@ declare module "@mui/material/styles" {
 		selectedHover: string;
 	}
 	interface Palette {
+		neutral: NeutralTokens;
+		signal: Record<SignalKey, SignalTone>;
 		sidebar: { accent: string };
 		scrollbar: { track: string; thumb: string };
 		rowStatus: { running: string; paused: string };
@@ -35,6 +57,8 @@ declare module "@mui/material/styles" {
 		};
 	}
 	interface PaletteOptions {
+		neutral?: NeutralTokens;
+		signal?: Record<SignalKey, SignalTone>;
 		sidebar?: { accent: string };
 		scrollbar?: { track: string; thumb: string };
 		rowStatus?: { running: string; paused: string };
@@ -89,27 +113,30 @@ export const theme = (mode: string, palette: any) =>
 			fontSize: typographyLevels.base,
 			h1: {
 				fontSize: typographyLevels.xxl,
-				fontWeight: 700,
-				letterSpacing: "-0.015em",
+				fontWeight: 600,
+				lineHeight: 1.3,
+				letterSpacing: "-0.02em",
 			},
 			h2: {
 				fontSize: typographyLevels.l,
 				fontWeight: 600,
-				letterSpacing: "-0.01em",
+				lineHeight: 1.4,
 			},
 			body1: {
 				fontSize: typographyLevels.m,
 				fontWeight: 400,
+				lineHeight: 1.5,
 			},
 			body2: {
-				fontSize: typographyLevels.s,
+				fontSize: "0.75rem", // 12px, body small
 				fontWeight: 400,
+				lineHeight: 1.5,
 			},
 			eyebrow: {
-				fontSize: 13,
+				fontSize: typographyLevels.s,
 				fontWeight: 500,
 				textTransform: "uppercase",
-				letterSpacing: "0.08em",
+				letterSpacing: "0.07em",
 				lineHeight: 1.4,
 			},
 		},
@@ -117,6 +144,8 @@ export const theme = (mode: string, palette: any) =>
 		components: {
 			MuiCssBaseline: {
 				styleOverrides: (theme) => ({
+					body: { backgroundColor: theme.palette.background.default },
+					"*:focus:not(:focus-visible)": { outline: "none" },
 					"*": {
 						scrollbarWidth: "auto",
 						scrollbarColor: `${theme.palette.scrollbar.thumb} ${theme.palette.scrollbar.track}`,
@@ -157,13 +186,27 @@ export const theme = (mode: string, palette: any) =>
 				},
 				styleOverrides: {
 					root: ({ theme }) => ({
+						fontSize: typographyLevels.base,
+						fontWeight: 500,
+						textTransform: "none",
+						borderRadius: "2px",
+						boxShadow: "none",
+						"&:hover": { boxShadow: "none" },
 						"&.Mui-focusVisible": {
-							outline: `1px solid ${
+							outline: `2px solid ${
 								theme.palette.mode === "dark"
 									? theme.palette.primary.light
 									: theme.palette.primary.main
 							}`,
-							outlineOffset: 2,
+							outlineOffset: 1,
+						},
+					}),
+					sizeSmall: { height: 28, padding: "6px 12px", fontSize: "0.75rem" },
+					containedPrimary: ({ theme }) => ({
+						"&:hover": { backgroundColor: theme.palette.primary.dark },
+						"&.Mui-disabled": {
+							backgroundColor: theme.palette.neutral.hairline,
+							color: theme.palette.text.disabled,
 						},
 					}),
 				},
@@ -173,6 +216,16 @@ export const theme = (mode: string, palette: any) =>
 					disableRipple: true,
 					disableTouchRipple: true,
 					disableFocusRipple: true,
+				},
+				styleOverrides: {
+					root: ({ theme }) => ({
+						borderRadius: "2px",
+						"&:hover": { backgroundColor: theme.palette.neutral.selectedGreen },
+						"&.Mui-focusVisible": {
+							outline: `2px solid ${theme.palette.primary.main}`,
+							outlineOffset: 1,
+						},
+					}),
 				},
 			},
 			MuiListItemButton: {
@@ -241,13 +294,14 @@ export const theme = (mode: string, palette: any) =>
 							minHeight: "unset",
 							alignSelf: "stretch",
 						},
+						borderRadius: "2px",
 						"& .MuiOutlinedInput-notchedOutline": {
-							borderColor: theme.palette.divider,
+							borderColor: theme.palette.neutral.border,
 							transition: "border-color 0.15s ease",
 						},
 						"&:hover:not(.Mui-focused):not(.Mui-disabled) .MuiOutlinedInput-notchedOutline":
 							{
-								borderColor: theme.palette.text.disabled,
+								borderColor: theme.palette.neutral.border,
 							},
 						"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
 							borderColor:
@@ -272,12 +326,47 @@ export const theme = (mode: string, palette: any) =>
 							border: 1,
 							borderStyle: "solid",
 							borderColor: theme.palette.divider,
-							borderRadius: 4,
-							boxShadow: shadow,
+							borderRadius: "2px",
+							boxShadow: "none",
 							backgroundColor: theme.palette.background.paper,
 							backgroundImage: "none",
 						};
 					},
+				},
+			},
+			// Only floating surfaces keep a shadow; cards and tables are flat
+			MuiPopover: { styleOverrides: { paper: { boxShadow: shadow } } },
+			MuiMenu: { styleOverrides: { paper: { boxShadow: shadow } } },
+			MuiAutocomplete: { styleOverrides: { paper: { boxShadow: shadow } } },
+			MuiMenuItem: {
+				styleOverrides: {
+					root: ({ theme }) => ({
+						fontSize: typographyLevels.base,
+						color: theme.palette.text.secondary,
+						padding: "4px 6px",
+						margin: 2,
+						borderRadius: "2px",
+						"&:hover, &.Mui-selected, &.Mui-selected:hover": {
+							backgroundColor: theme.palette.neutral.selectedGreen,
+						},
+					}),
+				},
+			},
+			MuiTooltip: {
+				styleOverrides: {
+					tooltip: ({ theme }) => ({
+						fontSize: typographyLevels.base,
+						backgroundColor: theme.palette.neutral.tooltip,
+						padding: "8px 12px",
+						borderRadius: "2px",
+					}),
+					arrow: ({ theme }) => ({ color: theme.palette.neutral.tooltip }),
+				},
+			},
+			MuiDialog: { styleOverrides: { paper: { borderRadius: "2px" } } },
+			MuiSkeleton: {
+				styleOverrides: {
+					root: ({ theme }) => ({ backgroundColor: theme.palette.neutral.raised }),
 				},
 			},
 

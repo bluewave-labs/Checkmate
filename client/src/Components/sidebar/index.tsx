@@ -110,7 +110,7 @@ export const Sidebar = () => {
 								<Typography
 									variant="eyebrow"
 									component="div"
-									color={theme.palette.text.disabled}
+									color={theme.palette.neutral.tertiary}
 									fontSize={typographyLevels.s}
 									paddingLeft={theme.spacing(LAYOUT.XS)}
 									paddingTop={theme.spacing(LAYOUT.SM)}

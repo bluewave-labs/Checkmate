@@ -5,23 +5,70 @@ import Stack from "@mui/material/Stack";
 
 import type { MonitorStatus } from "@/Types/Monitor";
 import type { SxProps } from "@mui/material/styles";
-import {
-	getDockerStatePalette,
-	getStatusPalette,
-	getValuePalette,
-} from "@/Utils/MonitorUtils";
+import { getDockerStatePalette } from "@/Utils/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import type { DockerContainerState } from "@/Types/Check";
 import { SPACING } from "@/Utils/Theme/constants";
+import { typographyLevels, type SignalKey } from "@/Utils/Theme/Palette";
 
 export const ValueTypes = ["positive", "negative", "neutral"] as const;
 export type ValueType = (typeof ValueTypes)[number];
 
+const STATUS_SIGNAL: Record<MonitorStatus, SignalKey> = {
+	up: "success",
+	down: "error",
+	breached: "error",
+	paused: "neutral",
+	maintenance: "neutral",
+	initializing: "info",
+};
+
+const VALUE_SIGNAL: Record<ValueType, SignalKey> = {
+	positive: "success",
+	negative: "error",
+	neutral: "warning",
+};
+
+// Flat tinted pill with a 6px dot in the text colour; status words always sit
+// beside their colour.
+const SignalPill = ({
+	signal,
+	children,
+	sx,
+}: React.PropsWithChildren<{ signal: SignalKey; sx?: SxProps }>) => {
+	const theme = useTheme();
+	const tone = theme.palette.signal[signal];
+	return (
+		<Box
+			display="inline-flex"
+			alignItems="center"
+			gap="6px"
+			height={24}
+			padding="1px 8px"
+			borderRadius="999px"
+			bgcolor={tone.bg}
+			color={tone.text}
+			fontSize={typographyLevels.s}
+			fontWeight={500}
+			lineHeight={1}
+			whiteSpace="nowrap"
+			sx={sx}
+		>
+			<Box
+				width={6}
+				height={6}
+				borderRadius="50%"
+				bgcolor="currentColor"
+				flexShrink={0}
+			/>
+			{children}
+		</Box>
+	);
+};
+
 export const StatusLabel = ({ status, sx }: { status: MonitorStatus; sx?: SxProps }) => {
 	const { t } = useTranslation();
-	const theme = useTheme();
-	const palette = getStatusPalette(status);
 
 	const determineStatus = (status: MonitorStatus): string => {
 		if (status === "up") {
@@ -41,31 +88,14 @@ export const StatusLabel = ({ status, sx }: { status: MonitorStatus; sx?: SxProp
 		return t("pages.common.monitors.status.initializing");
 	};
 
+	const label = determineStatus(status);
 	return (
-		<BaseBox
-			sx={{
-				display: "inline-flex",
-				flexDirection: "row",
-				alignItems: "center",
-				justifyContent: "center",
-				padding: theme.spacing(3, 5),
-				color: theme.palette[palette].main,
-				borderColor:
-					theme.palette.mode === "dark"
-						? "rgba(255, 255, 255, 0.08)"
-						: "rgba(0, 0, 0, 0.08)",
-				...sx,
-			}}
+		<SignalPill
+			signal={STATUS_SIGNAL[status] ?? "info"}
+			sx={sx}
 		>
-			<Box
-				width={7}
-				height={7}
-				bgcolor={theme.palette[palette].light}
-				borderRadius="50%"
-				marginRight="5px"
-			/>
-			<Typography textTransform={"capitalize"}>{determineStatus(status)}</Typography>
-		</BaseBox>
+			{label.charAt(0).toUpperCase() + label.slice(1)}
+		</SignalPill>
 	);
 };
 
@@ -78,37 +108,11 @@ export const ValueLabel = ({
 	text: string;
 	preserveCase?: boolean;
 }) => {
-	const theme = useTheme();
-	const palette = getValuePalette(value);
 	const transformedText = preserveCase
 		? text
 		: text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 
-	return (
-		<BaseBox
-			sx={{
-				display: "inline-flex",
-				flexDirection: "row",
-				alignItems: "center",
-				justifyContent: "center",
-				padding: theme.spacing(3, 5),
-				color: theme.palette[palette].main,
-				borderColor:
-					theme.palette.mode === "dark"
-						? "rgba(255, 255, 255, 0.08)"
-						: "rgba(0, 0, 0, 0.08)",
-			}}
-		>
-			<Box
-				width={7}
-				height={7}
-				bgcolor={theme.palette[palette].light}
-				borderRadius="50%"
-				marginRight="5px"
-			/>
-			<Typography>{transformedText}</Typography>
-		</BaseBox>
-	);
+	return <SignalPill signal={VALUE_SIGNAL[value]}>{transformedText}</SignalPill>;
 };
 
 export const ColoredLabel = ({ text, color }: { text: string; color: string }) => {
@@ -147,9 +151,9 @@ export const DockerStateLabel = ({
 			alignItems={"center"}
 		>
 			<Box
-				width={7}
-				height={7}
-				bgcolor={theme.palette[palette].light}
+				width={6}
+				height={6}
+				bgcolor={theme.palette[palette].main}
 				borderRadius="50%"
 				marginRight="5px"
 			/>

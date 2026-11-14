@@ -29,6 +29,7 @@ import { useTranslation } from "react-i18next";
 import { useState, Fragment, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 import type { SxProps, Theme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
@@ -199,32 +200,32 @@ export function DataTable<
 			<Table
 				sx={{
 					"&.MuiTable-root  :is(.MuiTableHead-root, .MuiTableBody-root) :is(th, td)": {
-						paddingLeft: theme.spacing(LAYOUT.MD),
+						paddingLeft: "14px",
 					},
 					"& .MuiTableCell-root": {
-						borderBottom: `1px solid ${theme.palette.divider}`,
-					},
-					"& .MuiTableHead-root .MuiTableRow-root": {
-						height: "28px",
-						borderBottom: `1px solid ${theme.palette.divider}`,
+						borderBottom: `1px solid ${theme.palette.neutral.rowDivider}`,
 					},
 					"& .MuiTableHead-root .MuiTableCell-root": {
-						borderBottom: "none",
+						borderBottom: `1px solid ${theme.palette.neutral.hairline}`,
 					},
+					// Flat raised header row, sentence-case source uppercased by CSS
 					"& :is(th)": {
-						backgroundColor: theme.palette.background.paper,
-						color: theme.palette.text.secondary,
-						fontWeight: 600,
+						backgroundColor: theme.palette.neutral.raised,
+						color: theme.palette.neutral.tertiary,
+						fontWeight: 500,
 						textTransform: "uppercase",
-						letterSpacing: "0.08em",
-						padding: `${theme.spacing(SPACING.LG)} ${theme.spacing(LAYOUT.MD)}`,
-						fontSize: 11,
+						letterSpacing: "0.07em",
+						padding: "9px 14px",
+						fontSize: typographyLevels.s,
+						lineHeight: 1.5,
+						whiteSpace: "nowrap",
 					},
 					"& :is(td)": {
 						backgroundColor: theme.palette.background.paper,
 						color: theme.palette.text.secondary,
-						padding: `${theme.spacing(LAYOUT.MD)} ${theme.spacing(LAYOUT.MD)}`,
+						padding: "10px 14px",
 						fontSize: theme.typography.fontSize,
+						fontVariantNumeric: "tabular-nums",
 						overflowX: "hidden",
 					},
 					"& .MuiTableBody-root .MuiTableRow-root:last-child .MuiTableCell-root": {

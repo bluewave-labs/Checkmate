@@ -3,14 +3,57 @@ import { HOVER } from "@/Utils/Theme/constants";
 
 const typographyBase = 13;
 
+// Allowed sizes only: 11, 12, 13, 14, 16, 18, 24 px
 export const typographyLevels = {
 	base: typographyBase, // 13px
-	xs: `${(typographyBase - 4) / 16}rem`, // 9px
+	xs: `${(typographyBase - 2) / 16}rem`, // 11px
 	s: `${(typographyBase - 2) / 16}rem`, // 11px
 	m: `${typographyBase / 16}rem`, // 13px
-	l: `${(typographyBase + 2) / 16}rem`, // 15px
+	l: `${(typographyBase + 1) / 16}rem`, // 14px
 	xl: `${(typographyBase + 5) / 16}rem`, // 18px
-	xxl: `${(typographyBase + 10) / 16}rem`, // 23px
+	xxl: `${(typographyBase + 11) / 16}rem`, // 24px
+};
+
+// VerifyWise phase 1 tokens (light). Greys are slightly green-tinted.
+export const vw = {
+	ink: "#1A2E2B",
+	text2: "#33453F",
+	text3: "#495A56",
+	grey500: "#5C6D69",
+	icon: "#6B7C78",
+	subdued: "#8A9894",
+	disabled: "#A3AFAC",
+	border: "#D1D5D5",
+	hairline: "#E4E6E6",
+	rowDivider: "#EFF1F0",
+	raised: "#F3F6F5",
+	page: "#FAFAFA",
+	white: "#FFFFFF",
+	primary: "#14715B",
+	primaryHover: "#075443",
+	green50: "#EFFAF6",
+	green100: "#D9F2E9",
+	// Signal colours: tint background, text on the tint, border, solid mark
+	criticalBg: "#FDE2E2",
+	criticalText: "#B91C1C",
+	criticalBorder: "#F5B5B5",
+	criticalMark: "#DC2626",
+	highBg: "#FDEBD5",
+	highText: "#9A4D05",
+	highBorder: "#F8C98F",
+	highMark: "#F28C18",
+	lowBg: "#DCF2E4",
+	lowText: "#17703B",
+	lowBorder: "#A6DDB9",
+	lowMark: "#22A55A",
+	noneBg: "#EEF1F0",
+	noneText: "#495A56",
+	noneBorder: "#C9D1CF",
+	noneMark: "#C9D1CF",
+	infoBg: "#E3F2FC",
+	infoText: "#2D6F99",
+	infoBorder: "#BFE0F5",
+	infoMark: "#8CC8EE",
 };
 
 export const colors = {
@@ -18,31 +61,25 @@ export const colors = {
 	gray700: "#313131",
 	gray900: "#151518",
 	gray850: "#1c1c21",
-	ink900: "#101917",
-	ink600: "#55635C",
+	gray800: "#24242A",
 	ink400: "#7C8983",
-	surface50: "#F6F8F7",
-	rule200: "#C7D2CC",
-	successMain: "#0D6049",
-	errorMain: "#A02B24",
-	warningMain: "#8C5806",
 	inkDark900: "#ECEFED",
 	inkDark600: "#A3ADA8",
 	ruleDark: "#3A4642",
+	ruleDarkStrong: "#4A5652",
+	rowDividerDark: "#2A2F2D",
 	successDark: "#4BC49E",
 	errorDark: "#E8837A",
 	warningDark: "#E0A458",
+	infoDark: "#7FB8DE",
 	brandGreen: "#13715B",
 	brandGreenLight: "#4DAF94",
-	green200: "#ECF7F2",
 	green700: "#008300",
-	yellow200: "#FFF4E5",
 	yellow500: "#EDA100",
 	yellow600: "#C98500",
 	orange500: "#FFA500",
 	orange600: "#EB6834",
 	orange700: "#D95926",
-	blue400: "#3987E5",
 	blue500: "#2A78D6",
 	aqua500: "#1BAF7A",
 	aqua600: "#199E70",
@@ -50,48 +87,100 @@ export const colors = {
 	magenta400: "#D55181",
 };
 
+export const SignalKeys = ["success", "error", "warning", "neutral", "info"] as const;
+export type SignalKey = (typeof SignalKeys)[number];
+export type SignalTone = { bg: string; text: string; border: string; mark: string };
+
 export const lightPalette = {
 	primary: {
-		main: colors.brandGreen,
+		main: vw.primary,
+		dark: vw.primaryHover,
+		contrastText: vw.white,
 	},
 	action: {
-		rowHover: alpha(colors.gray900, HOVER.ROW),
-		controlHover: alpha(colors.gray900, HOVER.CONTROL),
-		selected: alpha(colors.brandGreen, 0.06),
-		selectedHover: alpha(colors.brandGreen, 0.1),
+		rowHover: vw.page,
+		controlHover: vw.raised,
+		selected: vw.green100,
+		selectedHover: vw.green100,
 	},
 	secondary: {
 		main: colors.gray200,
 	},
 	background: {
-		default: colors.surface50,
-		paper: "#FFFFFF",
+		default: vw.page,
+		paper: vw.white,
 	},
 	text: {
-		primary: colors.ink900,
-		secondary: colors.ink600,
-		disabled: colors.ink400,
+		primary: vw.ink,
+		secondary: vw.text2,
+		disabled: vw.disabled,
 	},
-	divider: colors.rule200,
+	divider: vw.hairline,
+	// main is the solid mark (dots, bars); dark is the text colour on a tint
 	success: {
-		main: colors.successMain,
+		main: vw.lowMark,
+		dark: vw.lowText,
+		contrastText: vw.white,
 	},
 	error: {
-		main: colors.errorMain,
+		main: vw.criticalMark,
+		dark: vw.criticalText,
+		contrastText: vw.white,
 	},
 	warning: {
-		main: colors.warningMain,
+		main: vw.highMark,
+		dark: vw.highText,
+		contrastText: vw.white,
 	},
+	info: {
+		main: vw.infoText,
+		contrastText: vw.white,
+	},
+	neutral: {
+		raised: vw.raised,
+		hairline: vw.hairline,
+		border: vw.border,
+		borderHover: vw.grey500,
+		rowDivider: vw.rowDivider,
+		icon: vw.icon,
+		tertiary: vw.text3,
+		subdued: vw.subdued,
+		hoverGreen: vw.green50,
+		selectedGreen: vw.green100,
+		tooltip: vw.ink,
+	},
+	signal: {
+		success: { bg: vw.lowBg, text: vw.lowText, border: vw.lowBorder, mark: vw.lowMark },
+		error: {
+			bg: vw.criticalBg,
+			text: vw.criticalText,
+			border: vw.criticalBorder,
+			mark: vw.criticalMark,
+		},
+		warning: {
+			bg: vw.highBg,
+			text: vw.highText,
+			border: vw.highBorder,
+			mark: vw.highMark,
+		},
+		neutral: {
+			bg: vw.noneBg,
+			text: vw.noneText,
+			border: vw.noneBorder,
+			mark: vw.noneMark,
+		},
+		info: { bg: vw.infoBg, text: vw.infoText, border: vw.infoBorder, mark: vw.infoMark },
+	} satisfies Record<SignalKey, SignalTone>,
 	sidebar: {
-		accent: colors.brandGreen,
+		accent: vw.primary,
 	},
 	scrollbar: {
-		track: colors.rule200,
-		thumb: colors.brandGreen,
+		track: "transparent",
+		thumb: vw.border,
 	},
 	rowStatus: {
-		running: colors.green200,
-		paused: colors.yellow200,
+		running: vw.lowBg,
+		paused: vw.highBg,
 	},
 	chart: {
 		phases: {
@@ -105,6 +194,8 @@ export const lightPalette = {
 	},
 };
 
+// Dark mode is not part of the VerifyWise spec; it keeps the existing look and
+// only gains the token groups the shared components now read.
 export const darkPalette = {
 	primary: {
 		main: colors.brandGreen,
@@ -138,12 +229,57 @@ export const darkPalette = {
 	warning: {
 		main: colors.warningDark,
 	},
+	neutral: {
+		raised: colors.gray800,
+		hairline: colors.ruleDark,
+		border: colors.ruleDarkStrong,
+		borderHover: colors.inkDark600,
+		rowDivider: colors.rowDividerDark,
+		icon: colors.inkDark600,
+		tertiary: colors.inkDark600,
+		subdued: colors.ink400,
+		hoverGreen: alpha(colors.brandGreenLight, 0.07),
+		selectedGreen: alpha(colors.brandGreenLight, 0.14),
+		tooltip: colors.gray700,
+	},
+	signal: {
+		success: {
+			bg: alpha(colors.successDark, 0.14),
+			text: colors.successDark,
+			border: alpha(colors.successDark, 0.35),
+			mark: colors.successDark,
+		},
+		error: {
+			bg: alpha(colors.errorDark, 0.14),
+			text: colors.errorDark,
+			border: alpha(colors.errorDark, 0.35),
+			mark: colors.errorDark,
+		},
+		warning: {
+			bg: alpha(colors.warningDark, 0.14),
+			text: colors.warningDark,
+			border: alpha(colors.warningDark, 0.35),
+			mark: colors.warningDark,
+		},
+		neutral: {
+			bg: alpha("#FFFFFF", 0.06),
+			text: colors.inkDark600,
+			border: colors.ruleDark,
+			mark: colors.inkDark600,
+		},
+		info: {
+			bg: alpha(colors.infoDark, 0.14),
+			text: colors.infoDark,
+			border: alpha(colors.infoDark, 0.35),
+			mark: colors.infoDark,
+		},
+	} satisfies Record<SignalKey, SignalTone>,
 	sidebar: {
 		accent: colors.brandGreenLight,
 	},
 	scrollbar: {
-		track: colors.ruleDark,
-		thumb: colors.brandGreen,
+		track: "transparent",
+		thumb: colors.ruleDarkStrong,
 	},
 	rowStatus: {
 		running: alpha(colors.brandGreen, 0.18),

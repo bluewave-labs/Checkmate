@@ -23,14 +23,13 @@ export const NavItem = ({
 }) => {
 	const { collapsed, itemInset } = useSidebar();
 	const theme = useTheme();
-	const iconStroke = selected
-		? theme.palette.sidebar.accent
-		: theme.palette.text.secondary;
-	const buttonBgColor = selected ? theme.palette.action.selected : "transparent";
+	const iconStroke = selected ? theme.palette.sidebar.accent : theme.palette.neutral.icon;
+	const buttonBgColor = selected ? theme.palette.neutral.selectedGreen : "transparent";
 	const buttonBgHoverColor = selected
-		? theme.palette.action.selectedHover
-		: theme.palette.action.rowHover;
-	const fontWeight = selected ? 600 : 400;
+		? theme.palette.neutral.selectedGreen
+		: theme.palette.neutral.hoverGreen;
+	const fontWeight = selected ? 500 : 400;
+	const labelColor = selected ? theme.palette.text.primary : theme.palette.text.secondary;
 	return (
 		<Tooltip
 			placement="right"
@@ -73,7 +72,6 @@ export const NavItem = ({
 						"& svg": {
 							height: 16,
 							width: 16,
-							opacity: 0.81,
 							transition: "stroke 0.2s ease",
 						},
 						"& svg path, & svg line, & svg polyline, & svg rect, & svg circle": {
@@ -98,10 +96,8 @@ export const NavItem = ({
 				>
 					<Typography
 						variant="body1"
-						sx={{
-							fontWeight: fontWeight,
-							opacity: 0.9,
-						}}
+						fontWeight={fontWeight}
+						color={labelColor}
 					>
 						{item.name}
 					</Typography>
