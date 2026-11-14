@@ -12,6 +12,7 @@ export const typographyLevels = {
 	m: `${typographyBase / 16}rem`, // 13px
 	l: `${(typographyBase + 1) / 16}rem`, // 14px
 	xl: `${(typographyBase + 5) / 16}rem`, // 18px
+	title: `${(typographyBase + 7) / 16}rem`, // 20px, page titles
 	xxl: `${(typographyBase + 11) / 16}rem`, // 24px
 };
 

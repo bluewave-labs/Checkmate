@@ -6,7 +6,15 @@ import { Link as RouterLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { ChevronLeft, HelpCircle, FileText, Code } from "lucide-react";
-import { INPUT_BASE_HEIGHT, RADIUS } from "@/Utils/Theme/constants";
+import {
+	FONT_WEIGHT,
+	ICON_SIZE,
+	ICON_STROKE,
+	INPUT_BASE_HEIGHT,
+	LINE_HEIGHT,
+	RADIUS,
+} from "@/Utils/Theme/constants";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 import { useAppVersion } from "@/Hooks/useAppVersion";
 import { PulseDot } from "@/Components/design-elements/PulseDot";
 import { formatVersion } from "@/Utils/FormatUtils";
@@ -16,7 +24,7 @@ import type { ReactNode } from "react";
 const EXTERNAL_LINKS = {
 	support: "https://discord.com/invite/NAb6H3UTjK",
 	docs: "https://checkmate.so/docs",
-	changelog: "https://github.com/bluewave-labs/checkmate/releases",
+	changelog: "https://checkmate.so/changelog",
 };
 
 interface PageHeaderProps {
@@ -87,37 +95,34 @@ export const PageHeader = ({
 							gap: 0.5,
 							textDecoration: "none",
 							color: theme.palette.text.secondary,
-							fontSize: 13,
+							fontSize: typographyLevels.base,
 							mb: theme.spacing(1),
 							"&:hover": { color: theme.palette.text.primary },
 						}}
 					>
 						<ChevronLeft
-							size={14}
-							strokeWidth={1.8}
+							size={ICON_SIZE.SM}
+							strokeWidth={ICON_STROKE}
 						/>
 						{backLabel}
 					</Box>
 				)}
 				<Typography
-					sx={{
-						fontSize: 26,
-						fontWeight: 400,
-						color: theme.palette.text.primary,
-						lineHeight: 1.15,
-						letterSpacing: "-0.02em",
-					}}
+					component="h1"
+					fontSize={typographyLevels.title}
+					fontWeight={FONT_WEIGHT.MEDIUM}
+					color={theme.palette.text.primary}
+					lineHeight={LINE_HEIGHT.HEADING}
+					letterSpacing="-0.02em"
 				>
 					{title}
 				</Typography>
 				{description && (
 					<Typography
-						sx={{
-							fontSize: 14,
-							color: theme.palette.text.secondary,
-							lineHeight: 1.55,
-							maxWidth: "108ch",
-						}}
+						fontSize={typographyLevels.base}
+						color={theme.palette.text.secondary}
+						lineHeight={LINE_HEIGHT.BODY}
+						maxWidth="108ch"
 					>
 						{description}
 					</Typography>
@@ -149,7 +154,7 @@ export const PageHeader = ({
 							pr={theme.spacing(5)}
 							borderRight={`1px solid ${theme.palette.divider}`}
 							color={theme.palette.text.primary}
-							fontSize={13}
+							fontSize={typographyLevels.base}
 							sx={{
 								textDecoration: "none",
 								whiteSpace: "nowrap",

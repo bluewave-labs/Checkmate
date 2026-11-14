@@ -143,7 +143,7 @@ The theme exposes tokens for every kind of magic value. Use them. Reserve raw nu
   - `LAYOUT.XXS = 2` · `LAYOUT.XS = 4` · `LAYOUT.SM = 6` · `LAYOUT.MD = 8` · `LAYOUT.LG = 10` · `LAYOUT.XL = 12` · `LAYOUT.XXL = 16`
   - `SPACING` for `theme.spacing(...)` multipliers
 - **Typography sizes** — `client/src/Utils/Theme/Palette.ts` → `typographyLevels`
-  - `xs / s / sm / m / l / xl / xxl` (rem values; 11, 11, 12, 13, 14, 18, 24 px). Don't invent other sizes.
+  - `xs / s / sm / m / l / xl / title / xxl` (rem values; 11, 11, 12, 13, 14, 18, 20, 24 px; `title` is for page titles). Don't invent other sizes.
 - **Font weight / line height** — `FONT_WEIGHT.REGULAR | MEDIUM | SEMIBOLD`, `LINE_HEIGHT.TIGHT | HEADING | TITLE | BODY`
 - **Hover / interaction** — `HOVER.DARKEN`, `MOTION.HOVER`, `FOCUS_RING.WIDTH | OFFSET`
 - **Shape** — `RADIUS.SM` (4px, every card, table, input, button, menu and control), `RADIUS.TAB` (folder tab tops), `RADIUS.PILL` (pills, chips, badges). Don't use `theme.shape.borderRadius` in `sx` or system props: MUI multiplies a bare number by the shape radius, so it renders 4px instead of 2px.

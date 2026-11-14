@@ -25,7 +25,7 @@ const URL_MAP: Record<string, string> = {
 	support: "https://discord.com/invite/NAb6H3UTjK",
 	discussions: "https://github.com/bluewave-labs/checkmate/discussions",
 	docs: "https://checkmate.so/docs",
-	changelog: "https://github.com/bluewave-labs/checkmate/releases",
+	changelog: "https://checkmate.so/changelog",
 };
 
 export const Sidebar = () => {

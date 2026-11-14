@@ -6,7 +6,7 @@ import { getStatusColor, formatUrl } from "@/Utils/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { LAYOUT } from "@/Utils/Theme/constants";
+import { LAYOUT, FONT_WEIGHT } from "@/Utils/Theme/constants";
 import { formatDuration } from "@/Utils/TimeUtils";
 import { useTranslation } from "react-i18next";
 
@@ -21,8 +21,8 @@ export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 	return (
 		<Stack>
 			<Typography
-				fontSize={typographyLevels.xxl}
-				fontWeight={500}
+				fontSize={typographyLevels.title}
+				fontWeight={FONT_WEIGHT.MEDIUM}
 				overflow={"hidden"}
 				textOverflow={"ellipsis"}
 				whiteSpace={"nowrap"}
