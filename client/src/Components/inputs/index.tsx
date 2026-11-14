@@ -18,4 +18,4 @@ export { DatePickerComponent as DatePicker } from "./DatePicker";
 export { TimePickerComponent as TimePicker } from "./TimePicker";
 export * from "./LanguageSelector";
 export * from "./SwitchTheme";
-export * from "./FilterChip";
+export { FilterChip, type FilterChipOption } from "./FilterChip";

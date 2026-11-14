@@ -6,7 +6,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { ChevronLeft, HelpCircle, FileText, Code } from "lucide-react";
-import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT, RADIUS } from "@/Utils/Theme/constants";
 import { useAppVersion } from "@/Hooks/useAppVersion";
 import { PulseDot } from "@/Components/design-elements/PulseDot";
 import { formatVersion } from "@/Utils/FormatUtils";
@@ -128,7 +128,7 @@ export const PageHeader = ({
 					display: "inline-flex",
 					alignItems: "center",
 					border: `1px solid ${theme.palette.divider}`,
-					borderRadius: 1,
+					borderRadius: RADIUS.SM,
 					overflow: "hidden",
 					backgroundColor: theme.palette.background.paper,
 					flexShrink: 0,

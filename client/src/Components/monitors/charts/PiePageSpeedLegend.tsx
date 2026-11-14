@@ -8,6 +8,7 @@ import type { CheckSnapshot } from "@/Types/Check";
 import { useTranslation } from "react-i18next";
 import { getPageSpeedPalette } from "@/Utils/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
+import { RADIUS } from "@/Utils/Theme/constants";
 
 const MetricBox = ({
 	label,
@@ -28,7 +29,7 @@ const MetricBox = ({
 				border: 1,
 				borderStyle: "solid",
 				borderColor: theme.palette.divider,
-				borderRadius: theme.shape.borderRadius,
+				borderRadius: RADIUS.SM,
 			}}
 		>
 			<Stack
@@ -48,8 +49,8 @@ const MetricBox = ({
 				width={4}
 				bgcolor={theme.palette[palette].light}
 				sx={{
-					borderTopRightRadius: theme.shape.borderRadius,
-					borderBottomRightRadius: theme.shape.borderRadius,
+					borderTopRightRadius: RADIUS.SM,
+					borderBottomRightRadius: RADIUS.SM,
 				}}
 			/>
 		</Stack>

@@ -34,6 +34,7 @@ import {
 	PADDING,
 	FONT_WEIGHT,
 	LINE_HEIGHT,
+	RADIUS,
 } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import type { SxProps, Theme } from "@mui/material/styles";
@@ -132,7 +133,7 @@ export function DataTable<
 								borderStyle: "solid",
 								borderWidth: 1,
 								borderColor: theme.palette.divider,
-								borderRadius: theme.shape.borderRadius,
+								borderRadius: RADIUS.SM,
 								padding: theme.spacing(LAYOUT.XS),
 								cursor: onRowClick ? "pointer" : "default",
 								...(onRowClick && {
@@ -670,7 +671,7 @@ export const Pagination = ({ ...props }: PaginationProps) => {
 				"& .MuiSelect-select": {
 					border: 1,
 					borderColor: theme.palette.divider,
-					borderRadius: theme.shape.borderRadius,
+					borderRadius: RADIUS.SM,
 				},
 			}}
 		/>
@@ -684,7 +685,7 @@ const EmptyView = ({ text }: { text?: string; positive?: boolean }) => {
 		<Box
 			sx={{
 				border: `1px solid ${theme.palette.divider}`,
-				borderRadius: 1,
+				borderRadius: RADIUS.SM,
 				backgroundColor: theme.palette.background.paper,
 			}}
 		>

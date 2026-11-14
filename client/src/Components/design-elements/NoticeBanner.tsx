@@ -2,7 +2,7 @@ import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useTheme, alpha } from "@mui/material/styles";
-import { LAYOUT } from "@/Utils/Theme/constants";
+import { LAYOUT, RADIUS } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 
 export const Severities = ["info", "warning", "error"] as const;
@@ -29,7 +29,7 @@ export const NoticeBanner = ({ severity = "info", children }: NoticeBannerProps)
 			gap={theme.spacing(LAYOUT.SM)}
 			width={"100%"}
 			p={theme.spacing(LAYOUT.MD)}
-			borderRadius={theme.shape.borderRadius}
+			borderRadius={RADIUS.SM}
 			border={`1px solid ${alpha(tone, 0.45)}`}
 			bgcolor={alpha(tone, 0.08)}
 			textAlign={"left"}

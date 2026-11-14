@@ -29,7 +29,7 @@ import type { SortOrder } from "@/Types/Query";
 import { SPACING } from "@/Utils/Theme/constants";
 import { getNextMonitorSort, getUptimePercentageColor } from "@/Utils/MonitorUtils";
 import { formatPercentage } from "@/Utils/FormatUtils";
-import type { SignalKey } from "@/Utils/Theme/Palette";
+import { toSignalKey } from "@/Utils/Theme/Palette";
 
 interface MonitorTableProps {
 	monitors: Monitor[];
@@ -270,7 +270,7 @@ export const MonitorTable = ({
 						<Stack alignItems={"center"}>
 							<SignalLabel
 								text={formattedPercentage}
-								signal={paletteKey as SignalKey}
+								signal={toSignalKey(paletteKey)}
 							/>
 						</Stack>
 					);

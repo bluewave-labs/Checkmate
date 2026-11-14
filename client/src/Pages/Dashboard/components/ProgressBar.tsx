@@ -1,4 +1,4 @@
-import { LAYOUT } from "@/Utils/Theme/constants";
+import { LAYOUT, RADIUS } from "@/Utils/Theme/constants";
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 
@@ -15,14 +15,14 @@ export const ProgressBar = ({ fillRatio, fillColor }: ProgressBarProps) => {
 	return (
 		<Box
 			height={theme.spacing(LAYOUT.XS)}
-			borderRadius={theme.shape.borderRadius}
+			borderRadius={RADIUS.SM}
 			bgcolor={theme.palette.neutral.hairline}
 			overflow="hidden"
 		>
 			<Box
 				height="100%"
 				width={`${clamped * 100}%`}
-				borderRadius={theme.shape.borderRadius}
+				borderRadius={RADIUS.SM}
 				bgcolor={fillColor ?? theme.palette.primary.main}
 			/>
 		</Box>

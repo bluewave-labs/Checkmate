@@ -143,10 +143,16 @@ The theme exposes tokens for every kind of magic value. Use them. Reserve raw nu
   - `LAYOUT.XXS = 2` · `LAYOUT.XS = 4` · `LAYOUT.SM = 6` · `LAYOUT.MD = 8` · `LAYOUT.LG = 10` · `LAYOUT.XL = 12` · `LAYOUT.XXL = 16`
   - `SPACING` for `theme.spacing(...)` multipliers
 - **Typography sizes** — `client/src/Utils/Theme/Palette.ts` → `typographyLevels`
-  - `xs / s / m / l / xl / xxl` (rem values)
-- **Hover / interaction** — `HOVER.DARKEN` etc.
-- **Shape** — `theme.shape.borderRadius` (don't write `borderRadius: 1` or `borderRadius: 4`)
-- **Colors** — `theme.palette.*` (rule 2 above)
+  - `xs / s / sm / m / l / xl / xxl` (rem values; 11, 11, 12, 13, 14, 18, 24 px). Don't invent other sizes.
+- **Font weight / line height** — `FONT_WEIGHT.REGULAR | MEDIUM | SEMIBOLD`, `LINE_HEIGHT.TIGHT | HEADING | TITLE | BODY`
+- **Hover / interaction** — `HOVER.DARKEN`, `MOTION.HOVER`, `FOCUS_RING.WIDTH | OFFSET`
+- **Shape** — `RADIUS.SM` (2px, almost everything), `RADIUS.SEARCH` (list search field), `RADIUS.TAB` (folder tab tops), `RADIUS.PILL` (pills, chips, badges). Don't use `theme.shape.borderRadius` in `sx` or system props: MUI multiplies a bare number by the shape radius, so it renders 4px instead of 2px.
+- **Component measurements** — `CONTROL_HEIGHT`, `INPUT_BASE_HEIGHT` (34px controls), `BADGE`, `ICON_SIZE` / `ICON_STROKE`, `GAP`, `PADDING`, `TAG_TINT`. Use these for the exact pixel values `theme.spacing` can't express (e.g. 9px or 14px table padding).
+- **Colors** — `theme.palette.*` (rule 2 above). Beyond the MUI keys the theme adds:
+  - `theme.palette.neutral.*` — raised fills, hairline and input borders, row dividers, icon grey, hover and selected greens
+  - `theme.palette.signal.{success|error|warning|neutral|info}.{bg|text|border|mark}` — status colours; always pair them with a word
+  - `theme.palette.sidebar.parts.*` — sidebar wayfinding only, never for status, charts or badges
+  - Raw values live only in `Palette.ts` (`vw`, `CHART_SERIES`, `SCORE_SPECTRUM`, `getScoreColor`); screens never contain hex literals
 
 ### Examples
 
@@ -401,6 +407,7 @@ Before opening a PR, grep your diff for the patterns below. Each item describes 
 - [ ] No `sx={{ … }}` block containing keys with a native-prop equivalent (rule 1).
 - [ ] No `color="text.X"`, `bgcolor="background.X"`, or other short-string palette paths (rule 2).
 - [ ] No raw number or px-string in spacing / margin / padding / fontSize / borderRadius props that should be a token (rule 3).
+- [ ] No hex or `rgba()` colour literal outside `Utils/Theme/Palette.ts`, and no `theme.shape.borderRadius` in `sx` / system props (use `RADIUS.*`) (rule 3).
 - [ ] No `import { theme } from "@/Utils/Theme/Theme"` inside a component (rule 4).
 - [ ] No `type X = "a" | "b" | "c"` for a closed set used at runtime (rule 5).
 

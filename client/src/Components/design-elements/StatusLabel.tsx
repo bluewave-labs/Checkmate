@@ -14,6 +14,7 @@ import {
 	RADIUS,
 	FONT_WEIGHT,
 	LINE_HEIGHT,
+	TAG_TINT,
 } from "@/Utils/Theme/constants";
 import { typographyLevels, type SignalKey } from "@/Utils/Theme/Palette";
 
@@ -35,13 +36,20 @@ const VALUE_SIGNAL: Record<ValueType, SignalKey> = {
 	neutral: "warning",
 };
 
-// Flat tinted pill with a 6px dot in the text colour; status words always sit
-// beside their colour.
+// Flat tinted pill in a signal colour. Status words get a 6px dot in the text
+// colour; values (e.g. uptime %) drop the dot and use tabular numbers.
 const SignalPill = ({
 	signal,
 	children,
+	dot = true,
+	tabular = false,
 	sx,
-}: React.PropsWithChildren<{ signal: SignalKey; sx?: SxProps }>) => {
+}: React.PropsWithChildren<{
+	signal: SignalKey;
+	dot?: boolean;
+	tabular?: boolean;
+	sx?: SxProps;
+}>) => {
 	const theme = useTheme();
 	const tone = theme.palette.signal[signal];
 	return (
@@ -58,15 +66,17 @@ const SignalPill = ({
 			fontWeight={FONT_WEIGHT.MEDIUM}
 			lineHeight={LINE_HEIGHT.TIGHT}
 			whiteSpace="nowrap"
-			sx={sx}
+			sx={{ ...(tabular && { fontVariantNumeric: "tabular-nums" }), ...sx }}
 		>
-			<Box
-				width={BADGE.DOT}
-				height={BADGE.DOT}
-				borderRadius="50%"
-				bgcolor="currentColor"
-				flexShrink={0}
-			/>
+			{dot && (
+				<Box
+					width={BADGE.DOT}
+					height={BADGE.DOT}
+					borderRadius="50%"
+					bgcolor="currentColor"
+					flexShrink={0}
+				/>
+			)}
 			{children}
 		</Box>
 	);
@@ -120,30 +130,16 @@ export const ValueLabel = ({
 	return <SignalPill signal={VALUE_SIGNAL[value]}>{transformedText}</SignalPill>;
 };
 
-// A number or short value in a signal tint (e.g. uptime %). No dot: the value
-// itself is the content, and tabular numbers keep columns aligned.
-export const SignalLabel = ({ text, signal }: { text: string; signal: SignalKey }) => {
-	const theme = useTheme();
-	const tone = theme.palette.signal[signal];
-	return (
-		<Box
-			display="inline-flex"
-			alignItems="center"
-			height={BADGE.HEIGHT}
-			padding={BADGE.PADDING}
-			borderRadius={RADIUS.PILL}
-			bgcolor={tone.bg}
-			color={tone.text}
-			fontSize={typographyLevels.s}
-			fontWeight={FONT_WEIGHT.MEDIUM}
-			lineHeight={LINE_HEIGHT.TIGHT}
-			whiteSpace="nowrap"
-			sx={{ fontVariantNumeric: "tabular-nums" }}
-		>
-			{text}
-		</Box>
-	);
-};
+// A number or short value in a signal tint (e.g. uptime %)
+export const SignalLabel = ({ text, signal }: { text: string; signal: SignalKey }) => (
+	<SignalPill
+		signal={signal}
+		dot={false}
+		tabular
+	>
+		{text}
+	</SignalPill>
+);
 
 // Category badge in a user-chosen colour (tags): flat tint of the colour with
 // darker text in the same hue, pill radius, no border.
@@ -153,8 +149,10 @@ export const ColoredLabel = ({ text, color }: { text: string; color: string }) =
 	let bg = color;
 	let fg = color;
 	try {
-		bg = alpha(color, isDark ? 0.2 : 0.14);
-		fg = isDark ? lighten(color, 0.35) : darken(color, 0.35);
+		bg = alpha(color, isDark ? TAG_TINT.BG_DARK : TAG_TINT.BG_LIGHT);
+		fg = isDark
+			? lighten(color, TAG_TINT.TEXT_SHIFT)
+			: darken(color, TAG_TINT.TEXT_SHIFT);
 	} catch {
 		// Not a colour MUI can parse; fall back to the raw value
 	}

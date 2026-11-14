@@ -1,6 +1,7 @@
 import Box, { type BoxProps } from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import { forwardRef } from "react";
+import { RADIUS } from "@/Utils/Theme/constants";
 
 export const BaseBox = forwardRef<HTMLDivElement, BoxProps>(({ sx, ...rest }, ref) => {
 	const theme = useTheme();
@@ -13,7 +14,7 @@ export const BaseBox = forwardRef<HTMLDivElement, BoxProps>(({ sx, ...rest }, re
 				border: 1,
 				borderStyle: "solid",
 				borderColor: theme.palette.divider,
-				borderRadius: theme.shape.borderRadius,
+				borderRadius: RADIUS.SM,
 				...sx,
 			}}
 		/>

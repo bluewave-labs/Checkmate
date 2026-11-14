@@ -8,6 +8,7 @@ import { ResponsiveContainer, BarChart, XAxis, Bar, Cell, Tooltip } from "rechar
 import { getResponseTimeColor } from "@/Utils/MonitorUtils";
 import type { GroupedCheck } from "@/Types/Check";
 import { useFormatDate } from "@/Hooks/useFormatDate";
+import { RADIUS } from "@/Utils/Theme/constants";
 
 interface XLabelProps {
 	p1: GroupedCheck;
@@ -82,17 +83,15 @@ export const HistogramStatus = ({
 		}
 		return (
 			<Stack
-				sx={{
-					p: 1,
-					bgcolor: "background.paper",
-					border: 1,
-					borderColor: "divider",
-					borderRadius: 1,
-				}}
+				p={theme.spacing(1)}
+				bgcolor={theme.palette.background.paper}
+				border={1}
+				borderColor={theme.palette.divider}
+				borderRadius={RADIUS.SM}
 			>
 				{dateLabel ? (
 					<Typography
-						sx={{ color: "text.secondary" }}
+						color={theme.palette.text.secondary}
 						variant="caption"
 					>
 						{dateLabel}

@@ -4,7 +4,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
-import { SPACING, GAP, FONT_WEIGHT } from "@/Utils/Theme/constants";
+import { SPACING, GAP, FONT_WEIGHT, RADIUS } from "@/Utils/Theme/constants";
 import useSidebar from "@/Hooks/useSidebar";
 import type { SidebarPart } from "@/Utils/Theme/Palette";
 
@@ -74,7 +74,7 @@ export const NavItem = ({
 					},
 					height: 32,
 					gap: GAP.ICON,
-					borderRadius: theme.shape.borderRadius,
+					borderRadius: RADIUS.SM,
 					px: theme.spacing(SPACING.MD),
 					pl: theme.spacing(itemInset),
 				}}

@@ -24,9 +24,9 @@ export const vw = {
 	icon: "#6B7C78",
 	subdued: "#8A9894",
 	disabled: "#A3AFAC",
-	border: "#D1D5D5",
-	hairline: "#E4E6E6",
-	rowDivider: "#EFF1F0",
+	border: "#C3C9C8", // spec #D1D5D5, darkened a step
+	hairline: "#D8DCDB", // spec #E4E6E6, darkened a step
+	rowDivider: "#E6E9E8", // spec #EFF1F0, darkened a step
 	raised: "#F3F6F5",
 	page: "#FAFAFA",
 	white: "#FFFFFF",
@@ -55,6 +55,22 @@ export const vw = {
 	infoText: "#2D6F99",
 	infoBorder: "#BFE0F5",
 	infoMark: "#8CC8EE",
+	// Sidebar part colours (wayfinding only)
+	recordSolid: "#208DAA",
+	recordText: "#196F86",
+	recordHover: "#F1F8FB",
+	recordSelected: "#DCEDF3",
+	recordPressed: "#C8E2EB",
+	trackSolid: "#E09B26",
+	trackText: "#85590F",
+	trackHover: "#FDF7EC",
+	trackSelected: "#F9EBD3",
+	trackPressed: "#F3DCB5",
+	enforceSolid: "#1D8A4C",
+	enforceText: "#187340",
+	enforceHover: "#EFF8F2",
+	enforceSelected: "#DBEFE2",
+	enforcePressed: "#C3E4CF",
 };
 
 export const colors = {
@@ -122,6 +138,13 @@ export const SignalKeys = ["success", "error", "warning", "neutral", "info"] as 
 export type SignalKey = (typeof SignalKeys)[number];
 export type SignalTone = { bg: string; text: string; border: string; mark: string };
 
+// Maps a MUI palette key (e.g. from getStatusPalette) onto a signal tone;
+// anything that is not a status colour falls back to neutral.
+export const toSignalKey = (palette: string): SignalKey =>
+	(SignalKeys as readonly string[]).includes(palette)
+		? (palette as SignalKey)
+		: "neutral";
+
 // Sidebar wayfinding only (never status, charts or badges)
 export const SidebarParts = ["record", "track", "enforce"] as const;
 export type SidebarPart = (typeof SidebarParts)[number];
@@ -133,30 +156,27 @@ export type PartTone = {
 	pressed: string;
 };
 
-const PART_SOLIDS: Record<SidebarPart, { solid: string; text: string }> = {
-	record: { solid: "#208DAA", text: "#196F86" },
-	track: { solid: "#E09B26", text: "#85590F" },
-	enforce: { solid: "#1D8A4C", text: "#187340" },
-};
-
 const lightParts: Record<SidebarPart, PartTone> = {
 	record: {
-		...PART_SOLIDS.record,
-		hover: "#F1F8FB",
-		selected: "#DCEDF3",
-		pressed: "#C8E2EB",
+		solid: vw.recordSolid,
+		text: vw.recordText,
+		hover: vw.recordHover,
+		selected: vw.recordSelected,
+		pressed: vw.recordPressed,
 	},
 	track: {
-		...PART_SOLIDS.track,
-		hover: "#FDF7EC",
-		selected: "#F9EBD3",
-		pressed: "#F3DCB5",
+		solid: vw.trackSolid,
+		text: vw.trackText,
+		hover: vw.trackHover,
+		selected: vw.trackSelected,
+		pressed: vw.trackPressed,
 	},
 	enforce: {
-		...PART_SOLIDS.enforce,
-		hover: "#EFF8F2",
-		selected: "#DBEFE2",
-		pressed: "#C3E4CF",
+		solid: vw.enforceSolid,
+		text: vw.enforceText,
+		hover: vw.enforceHover,
+		selected: vw.enforceSelected,
+		pressed: vw.enforcePressed,
 	},
 };
 
@@ -169,9 +189,9 @@ const darkPart = (solid: string): PartTone => ({
 });
 
 const darkParts: Record<SidebarPart, PartTone> = {
-	record: darkPart(PART_SOLIDS.record.solid),
-	track: darkPart(PART_SOLIDS.track.solid),
-	enforce: darkPart(PART_SOLIDS.enforce.solid),
+	record: darkPart(vw.recordSolid),
+	track: darkPart(vw.trackSolid),
+	enforce: darkPart(vw.enforceSolid),
 };
 
 export const lightPalette = {

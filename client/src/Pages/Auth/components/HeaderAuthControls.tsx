@@ -5,6 +5,7 @@ import { LanguageSelector, SwitchTheme } from "@/Components/inputs";
 
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
+import { RADIUS } from "@/Utils/Theme/constants";
 
 interface HeaderAuthControlsProps extends StackProps {
 	hideLogo?: boolean;
@@ -35,7 +36,7 @@ export const HeaderAuthControls = ({
 			>
 				{!hideLogo && (
 					<>
-						<Logo style={{ borderRadius: theme.shape.borderRadius }} />
+						<Logo style={{ borderRadius: RADIUS.SM }} />
 						<Typography sx={{ userSelect: "none" }}>{t("common.appName")}</Typography>
 					</>
 				)}

@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { LAYOUT } from "@/Utils/Theme/constants";
+import { LAYOUT, RADIUS } from "@/Utils/Theme/constants";
 export const SplitBox = ({
 	left,
 	right,
@@ -19,7 +19,7 @@ export const SplitBox = ({
 			bgcolor={theme.palette.background.paper}
 			border={1}
 			borderColor={theme.palette.divider}
-			borderRadius={theme.shape.borderRadius}
+			borderRadius={RADIUS.SM}
 		>
 			<Box
 				padding={theme.spacing(LAYOUT.XXL)}

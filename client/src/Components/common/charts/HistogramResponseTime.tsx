@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 import { computeBarHeights } from "@/Utils/DataUtils";
 import { formatMs } from "@/Utils/TimeUtils";
+import { RADIUS } from "@/Utils/Theme/constants";
 
 interface HistogramResponseTimeProps {
 	checks: CheckSnapshot[];
@@ -121,7 +122,7 @@ export const HistogramResponseTime = ({
 							<Box
 								width={"100%"}
 								height={"100%"}
-								borderRadius={theme.shape.borderRadius}
+								borderRadius={RADIUS.SM}
 								bgcolor={theme.palette.action.hover}
 								sx={{
 									position: "relative",

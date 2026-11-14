@@ -6,6 +6,7 @@ import { HeatmapResponseTimeTooltip } from "@/Components/common/charts/HeatmapRe
 import type { SxProps } from "@mui/material/styles";
 import type { ResponsiveStyleValue } from "@mui/system";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
+import { RADIUS } from "@/Utils/Theme/constants";
 interface PlaceholderCheck {
 	status: "placeholder";
 	responseTime: 0;
@@ -103,7 +104,7 @@ export const HeatmapResponseTime = ({
 									>
 										<Box
 											bgcolor={statusBg}
-											borderRadius={theme.shape.borderRadius}
+											borderRadius={RADIUS.SM}
 											sx={{
 												position: "absolute",
 												inset: 0,
@@ -111,7 +112,7 @@ export const HeatmapResponseTime = ({
 											}}
 										/>
 										<Box
-											borderRadius={theme.shape.borderRadius}
+											borderRadius={RADIUS.SM}
 											sx={{
 												position: "absolute",
 												inset: 0,
@@ -123,7 +124,7 @@ export const HeatmapResponseTime = ({
 									<Box
 										width={"100%"}
 										bgcolor={respBg}
-										borderRadius={theme.shape.borderRadius}
+										borderRadius={RADIUS.SM}
 										sx={{
 											aspectRatio: "1 / 1",
 											...responseCellSx,

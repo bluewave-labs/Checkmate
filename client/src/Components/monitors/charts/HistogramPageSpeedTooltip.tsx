@@ -3,6 +3,7 @@ import Typography from "@mui/material/Typography";
 import type { TooltipProps } from "recharts";
 import { useTheme } from "@mui/material/styles";
 import { useFormatDate } from "@/Hooks/useFormatDate";
+import { RADIUS } from "@/Utils/Theme/constants";
 
 export const HistogramPageSpeedTooltip = ({
 	active,
@@ -24,7 +25,7 @@ export const HistogramPageSpeedTooltip = ({
 				backgroundColor: theme.palette.secondary.main,
 				border: 1,
 				borderColor: theme.palette.divider,
-				borderRadius: theme.shape.borderRadius,
+				borderRadius: RADIUS.SM,
 				p: theme.spacing(4),
 			}}
 		>

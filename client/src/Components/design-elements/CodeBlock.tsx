@@ -1,7 +1,7 @@
 import Box, { type BoxProps } from "@mui/material/Box";
 import { useTheme } from "@mui/material";
 import type { ReactNode } from "react";
-import { SPACING } from "@/Utils/Theme/constants";
+import { SPACING, RADIUS } from "@/Utils/Theme/constants";
 
 interface CodeBlockProps {
 	children: ReactNode;
@@ -17,7 +17,7 @@ export const CodeBlock = ({ children, maxHeight, wrap = false }: CodeBlockProps)
 			component="pre"
 			m={0}
 			p={theme.spacing(SPACING.LG)}
-			borderRadius={theme.shape.borderRadius}
+			borderRadius={RADIUS.SM}
 			bgcolor={theme.palette.action.hover}
 			fontFamily={theme.typography.fontFamilyMonospace}
 			overflow="auto"

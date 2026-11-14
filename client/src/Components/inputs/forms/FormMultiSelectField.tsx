@@ -14,7 +14,7 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import type { DropResult } from "@hello-pangea/dnd";
 import { useTranslation } from "react-i18next";
 import { Autocomplete } from "@/Components/inputs";
-import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
+import { SPACING, LAYOUT, RADIUS } from "@/Utils/Theme/constants";
 
 export interface MultiSelectOption {
 	id: string | number;
@@ -143,7 +143,7 @@ export const FormMultiSelectField = <T extends FieldValues, O extends MultiSelec
 																	spacing={theme.spacing(LAYOUT.XS)}
 																	padding={theme.spacing(LAYOUT.XS)}
 																	marginTop={theme.spacing(SPACING.LG)}
-																	borderRadius={1}
+																	borderRadius={RADIUS.SM}
 																	border={`1px solid ${theme.palette.divider}`}
 																	sx={{
 																		cursor: "grab",
@@ -171,7 +171,7 @@ export const FormMultiSelectField = <T extends FieldValues, O extends MultiSelec
 										spacing={theme.spacing(LAYOUT.XS)}
 										padding={theme.spacing(LAYOUT.XS)}
 										marginTop={theme.spacing(SPACING.LG)}
-										borderRadius={1}
+										borderRadius={RADIUS.SM}
 										border={`1px solid ${theme.palette.divider}`}
 										width="100%"
 									>

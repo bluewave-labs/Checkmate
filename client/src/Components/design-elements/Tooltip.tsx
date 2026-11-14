@@ -3,6 +3,7 @@ import { useTheme } from "@mui/material/styles";
 import { Info } from "lucide-react";
 
 import type { TooltipProps } from "@mui/material/Tooltip";
+import { RADIUS } from "@/Utils/Theme/constants";
 
 type StyledTooltipProps = TooltipProps;
 
@@ -24,7 +25,7 @@ export const Tooltip = ({
 						color: theme.palette.common.white,
 						fontSize: "13px",
 						padding: `${theme.spacing(4)} ${theme.spacing(6)}`,
-						borderRadius: `${theme.shape.borderRadius}px`,
+						borderRadius: RADIUS.SM,
 						boxShadow: "none",
 					},
 				},

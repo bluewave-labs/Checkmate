@@ -5,6 +5,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useTranslation } from "react-i18next";
 import type { DashboardCardKey } from "@/Types/Dashboard";
+import { RADIUS } from "@/Utils/Theme/constants";
 
 interface SortableCardProps {
 	cardKey: DashboardCardKey;
@@ -44,7 +45,7 @@ export const SortableCard = ({ cardKey, arranging, children }: SortableCardProps
 					bottom={0}
 					border={2}
 					borderColor={isDragging ? theme.palette.primary.main : theme.palette.divider}
-					borderRadius={`${theme.shape.borderRadius}px`}
+					borderRadius={RADIUS.SM}
 					bgcolor={
 						isDragging ? theme.palette.action.selected : theme.palette.action.hover
 					}

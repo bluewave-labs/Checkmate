@@ -100,3 +100,16 @@ export const LINE_HEIGHT = {
 } as const;
 
 export const FILTER_MENU_MIN_WIDTH = 180;
+
+// Tag badges tint a user-chosen colour: alpha for the background, a
+// darken/lighten shift for readable text in the same hue
+export const TAG_TINT = {
+	BG_LIGHT: 0.14,
+	BG_DARK: 0.2,
+	TEXT_SHIFT: 0.35,
+} as const;
+
+// Minimal motion: colour changes on hover only
+export const MOTION = {
+	HOVER: "150ms ease",
+} as const;

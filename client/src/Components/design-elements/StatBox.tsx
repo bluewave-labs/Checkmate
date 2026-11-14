@@ -3,7 +3,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { typographyLevels, SignalKeys, type SignalKey } from "@/Utils/Theme/Palette";
+import { typographyLevels, toSignalKey } from "@/Utils/Theme/Palette";
 import type { PaletteKey } from "@/Utils/Theme/Theme";
 import { BaseBox, TooltipWithInfo } from "@/Components/design-elements";
 import type { SxProps } from "@mui/material";
@@ -66,13 +66,7 @@ export const StatBox = ({
 	// A status with no value (e.g. "Service is down") is a status banner: signal tint,
 	// border and text, so it still stands out without a number to colour
 	const bannerTone =
-		palette && !subtitle
-			? theme.palette.signal[
-					(SignalKeys as readonly string[]).includes(palette)
-						? (palette as SignalKey)
-						: "neutral"
-				]
-			: null;
+		palette && !subtitle ? theme.palette.signal[toSignalKey(palette)] : null;
 
 	return (
 		<GradientBox

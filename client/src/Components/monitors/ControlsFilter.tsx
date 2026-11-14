@@ -17,6 +17,16 @@ import { CONTROL_HEIGHT } from "@/Utils/Theme/constants";
 
 const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 
+const STATUS_LABEL_KEYS: Record<MonitorStatusFilter, string> = {
+	up: "pages.common.monitors.status.up",
+	down: "pages.common.monitors.status.down",
+};
+
+const STATE_LABEL_KEYS: Record<MonitorStateFilter, string> = {
+	active: "common.labels.active",
+	paused: "pages.common.monitors.status.paused",
+};
+
 const types = ["http", "ping", "port", "game", "grpc", "websocket", "heartbeat"];
 const typeDisplayNames: Record<string, string> = {
 	http: "HTTP",
@@ -91,7 +101,7 @@ export const ControlsFilter = ({
 					onChange={(value) => setSelectedStatus(value as MonitorStatusFilter)}
 					options={MonitorStatusFilters.map((status) => ({
 						value: status,
-						label: capitalize(status),
+						label: capitalize(t(STATUS_LABEL_KEYS[status])),
 					}))}
 				/>
 			)}
@@ -103,7 +113,7 @@ export const ControlsFilter = ({
 					onChange={(value) => setSelectedState(value as MonitorStateFilter)}
 					options={MonitorStateFilters.map((state) => ({
 						value: state,
-						label: capitalize(state),
+						label: capitalize(t(STATE_LABEL_KEYS[state])),
 					}))}
 				/>
 			)}

@@ -1,5 +1,5 @@
 import { Box, Stack, useTheme } from "@mui/material";
-import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT, RADIUS } from "@/Utils/Theme/constants";
 
 interface SkeletonCardProps {
 	width?: number | string | { xs?: number | string; md?: number | string };
@@ -28,7 +28,7 @@ export const SkeletonCard = ({
 	const cardStyle = {
 		width: width,
 		height: 57,
-		borderRadius: theme.shape.borderRadius,
+		borderRadius: RADIUS.SM,
 		background:
 			theme.palette.mode === "dark"
 				? theme.palette.secondary.dark
@@ -46,7 +46,7 @@ export const SkeletonCard = ({
 	const blockStyle = {
 		width: 55,
 		height: INPUT_BASE_HEIGHT,
-		borderRadius: theme.shape.borderRadius,
+		borderRadius: RADIUS.SM,
 		background: theme.palette.secondary.main,
 		border: `1px solid ${theme.palette.divider}`,
 		animation: "pulse 1.6s ease-in-out infinite",
@@ -55,7 +55,7 @@ export const SkeletonCard = ({
 
 	const lineStyle = {
 		height: 7,
-		borderRadius: theme.shape.borderRadius,
+		borderRadius: RADIUS.SM,
 		background: theme.palette.secondary.main,
 		border: `1px solid ${theme.palette.divider}`,
 		animation: "pulse 1.6s ease-in-out infinite",

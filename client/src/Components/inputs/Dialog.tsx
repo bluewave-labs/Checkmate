@@ -24,9 +24,8 @@ import type { ReactNode } from "react";
 
 // VerifyWise modal: page-grey surface with hairline-separated header and footer,
 // content in a white bordered box, actions right-aligned (Cancel, then primary).
-const DIALOG_DEFAULT_WIDTH = 760;
-const DIALOG_VIEWPORT_GUTTER = 48;
-const DIALOG_CONFIRM_MIN_WIDTH = 420;
+// Sizing is left to MUI and each caller's maxWidth / fullWidth, so no dialog
+// changes size with the restyle.
 
 export const DialogInput = ({
 	open,
@@ -59,12 +58,10 @@ export const DialogInput = ({
 }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-	// Forms get the default modal width; a plain confirmation keeps its natural width
-	const useDefaultWidth = Boolean(children) && !maxWidth && !fullWidth;
 	return (
 		<Dialog
 			open={open}
-			maxWidth={useDefaultWidth ? false : maxWidth}
+			maxWidth={maxWidth}
 			fullWidth={fullWidth}
 			onClose={(_event, reason) => {
 				if (reason !== "backdropClick" && onCancel) onCancel(undefined);
@@ -72,11 +69,9 @@ export const DialogInput = ({
 			slotProps={{
 				paper: {
 					sx: {
+						// Colour and corners only; never width (see note above)
 						backgroundColor: theme.palette.background.default,
 						borderRadius: RADIUS.SM,
-						maxWidth: `calc(100vw - ${DIALOG_VIEWPORT_GUTTER}px)`,
-						...(useDefaultWidth && { width: DIALOG_DEFAULT_WIDTH }),
-						...(!children && { minWidth: DIALOG_CONFIRM_MIN_WIDTH }),
 					},
 				},
 			}}
@@ -113,7 +108,7 @@ export const DialogInput = ({
 					</Box>
 					{onCancel && (
 						<IconButton
-							aria-label={cancelText ?? t("common.buttons.cancel")}
+							aria-label={t("common.buttons.close")}
 							onClick={onCancel}
 							sx={{
 								padding: PADDING.ICON_BUTTON,

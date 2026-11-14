@@ -2,7 +2,7 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import type { PageSpeedStrategy } from "@/Types/Monitor";
-import { SPACING } from "@/Utils/Theme/constants";
+import { SPACING, RADIUS } from "@/Utils/Theme/constants";
 
 interface StrategyBadgeProps {
 	strategy: PageSpeedStrategy | undefined;
@@ -22,7 +22,7 @@ export const StrategyBadge = ({ strategy, variant = "body2" }: StrategyBadgeProp
 			variant={variant}
 			px={SPACING.XXL}
 			py={SPACING.SM}
-			borderRadius={theme.shape.borderRadius}
+			borderRadius={RADIUS.SM}
 			bgcolor={theme.palette.secondary.light}
 			color={theme.palette.text.primary}
 		>
