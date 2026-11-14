@@ -275,6 +275,67 @@
 				"available": "{{version}} disponible",
 				"tooltip": "Une version plus récente de Checkmate est disponible. Voir les notes de version."
 			}
+		},
+		"whatsNew": {
+			"eyebrow": "Nouveau dans Checkmate {{version}}",
+			"stepCount": "{{current}} sur {{total}}",
+			"goToStep": "Aller à l'étape {{step}}",
+			"skip": "Passer",
+			"done": "Terminé",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "Un superadmin inscrit ce serveur dans {{settings}}.",
+			"connectAskSuperadmin": "Demandez à un superadmin de le configurer dans {{settings}}.",
+			"connectCta": "Configurer Checkmate Connect",
+			"steps": {
+				"dashboard": {
+					"title": "Le tableau de bord est votre nouvelle page d'accueil",
+					"description": "Checkmate s'ouvre sur un tableau de bord qui affiche l'état des moniteurs, ceux qui sont hors service et la disponibilité de chacun. Les admins voient aussi la file des tâches et les diagnostics de Checkmate. Placez les cartes dans l'ordre voulu avec {{arrange}}. Masquez celles dont vous n'avez pas besoin avec {{editCards}}."
+				},
+				"heartbeat": {
+					"title": "Des moniteurs heartbeat pour les tâches planifiées",
+					"description": "Les tâches cron, sauvegardes et scripts envoient un ping à Checkmate à chaque exécution. Si aucun ping n'arrive pendant la fenêtre d'alerte, le moniteur passe hors service et vos notifications partent."
+				},
+				"remoteAccess": {
+					"title": "Ouvrez Checkmate de partout sans ouvrir de ports",
+					"description": "Avec Checkmate Connect, ce serveur garde un tunnel sortant ouvert. Vous l'atteignez depuis son adresse Connect sans ouvrir de ports entrants ni configurer de VPN."
+				},
+				"backups": {
+					"title": "Planifiez des sauvegardes chiffrées dans le cloud",
+					"description": "Sauvegardez vers Checkmate Connect tous les 1, 3 ou 7 jours, soit la base de données complète, soit la configuration seule. Ce serveur chiffre les données avant l'envoi. Vous pouvez restaurer une sauvegarde depuis {{settings}}."
+				},
+				"intervals": {
+					"title": "Vérifiez les moniteurs toutes les heures ou une fois par jour",
+					"description": "Un moniteur peut désormais s'exécuter toutes les 1, 2, 6 ou 12 heures, ou une fois par jour. Si l'intervalle voulu n'est pas dans la liste, saisissez-le. Les longs intervalles conviennent aux moniteurs qui n'ont pas besoin d'une vérification chaque minute, comme PageSpeed."
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "Sauvegarde nocturne",
+					"subtitle": "{{type}} · fenêtre d'alerte {{window}}",
+					"downTitle": "{{name}} est hors service",
+					"pingNotReceived": "Ping non reçu"
+				},
+				"remote": {
+					"network": "Votre réseau",
+					"server": "Serveur Checkmate",
+					"tunnel": "Tunnel sortant",
+					"noInbound": "Aucun port entrant ouvert",
+					"laptop": "Votre ordinateur portable"
+				},
+				"backup": {
+					"encrypted": "Chiffré ici avant l'envoi. Le cloud ne stocke que du texte chiffré.",
+					"database": "Base de données",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "Créer un moniteur",
+					"checksInADay": "Vérifications par jour",
+					"checksPerDay_one": "{{formatted}} vérification par jour",
+					"checksPerDay_many": "{{formatted}} vérifications par jour",
+					"checksPerDay_other": "{{formatted}} vérifications par jour",
+					"nextCheck": "Prochaine vérification dans {{interval}}"
+				}
+			}
 		}
 	},
 	"pages": {

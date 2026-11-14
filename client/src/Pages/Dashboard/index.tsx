@@ -19,6 +19,8 @@ import { CurrentlyDownCard } from "@/Pages/Dashboard/components/cards/CurrentlyD
 import { UptimeCard } from "@/Pages/Dashboard/components/cards/UptimeCard";
 import { MonitorsByTypeCard } from "@/Pages/Dashboard/components/cards/MonitorsByTypeCard";
 import { EditCardsModal } from "@/Pages/Dashboard/components/EditCardsModal";
+import { WhatsNewDialog } from "@/Components/whats-new/WhatsNewDialog";
+import { useWhatsNew } from "@/Hooks/useWhatsNew";
 import { SortableCard } from "@/Pages/Dashboard/components/SortableCard";
 import {
 	type DashboardCardKey,
@@ -49,6 +51,7 @@ const Dashboard = () => {
 	const { t } = useTranslation();
 	const dispatch = useDispatch<AppDispatch>();
 	const [editOpen, setEditOpen] = useState(false);
+	const whatsNew = useWhatsNew();
 	const isAdmin = useIsAdmin();
 	const hiddenCardsList = useSelector(
 		(state: RootState) => state.ui.dashboardHiddenCards
@@ -226,6 +229,10 @@ const Dashboard = () => {
 					dispatch(setDashboardHiddenCards([...keptHidden, ...newlyHidden]));
 					setEditOpen(false);
 				}}
+			/>
+			<WhatsNewDialog
+				open={whatsNew.open}
+				onClose={whatsNew.close}
 			/>
 		</BasePage>
 	);

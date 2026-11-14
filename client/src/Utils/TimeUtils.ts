@@ -155,6 +155,8 @@ export const DATE_FORMATS = {
 	dateShort: { month: "short", day: "numeric" },
 	// 14:19
 	time: { hour: "numeric", minute: "2-digit" },
+	// Wed
+	weekday: { weekday: "short" },
 } satisfies Record<string, Intl.DateTimeFormatOptions>;
 export type DateFormat = keyof typeof DATE_FORMATS;
 

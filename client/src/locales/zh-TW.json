@@ -275,6 +275,65 @@
 				"available": "{{version}} 可用",
 				"tooltip": "Checkmate 有新版本可用。查看版本說明。"
 			}
+		},
+		"whatsNew": {
+			"eyebrow": "Checkmate {{version}} 新功能",
+			"stepCount": "{{current}} / {{total}}",
+			"goToStep": "前往第 {{step}} 步",
+			"skip": "略過",
+			"done": "完成",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "由超級管理員在{{settings}}中註冊此伺服器。",
+			"connectAskSuperadmin": "請超級管理員在{{settings}}中完成設定。",
+			"connectCta": "設定 Checkmate Connect",
+			"steps": {
+				"dashboard": {
+					"title": "儀表板現在是你的首頁",
+					"description": "Checkmate 開啟後會顯示儀表板，呈現監控狀態、哪些監控已停止運作，以及每個監控的正常運作時間。管理員還能看到工作佇列和 Checkmate 診斷。使用「{{arrange}}」將卡片拖成任意順序，使用「{{editCards}}」隱藏不需要的卡片。"
+				},
+				"heartbeat": {
+					"title": "適用於排程工作的心跳監控",
+					"description": "cron 工作、備份和指令碼每次執行時都會向 Checkmate 傳送 ping。如果在警示時間範圍內沒有收到 ping，監控會變為停止運作並傳送你的通知。"
+				},
+				"remoteAccess": {
+					"title": "不必開放連接埠，隨時隨地開啟 Checkmate",
+					"description": "使用 Checkmate Connect，這台伺服器會保持一條對外通道。你可以透過它的 Connect 位址連線，不必開放對內連接埠，也不必設定 VPN。"
+				},
+				"backups": {
+					"title": "排程加密備份到雲端",
+					"description": "每 1、3 或 7 天備份到 Checkmate Connect，可以備份完整資料庫或僅備份設定。這台伺服器會在上傳前加密資料。你可以在{{settings}}中還原備份。"
+				},
+				"intervals": {
+					"title": "每小時或每天檢查一次監控",
+					"description": "監控現在可以每 1、2、6 或 12 小時執行一次，也可以每天一次。如果清單中沒有你需要的間隔，直接輸入即可。較長的間隔適合不需要每分鐘檢查的監控，例如 PageSpeed。"
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "夜間備份",
+					"subtitle": "{{type}} · 警示時間範圍 {{window}}",
+					"downTitle": "{{name}} 已停止運作",
+					"pingNotReceived": "未收到 ping"
+				},
+				"remote": {
+					"network": "你的網路",
+					"server": "Checkmate 伺服器",
+					"tunnel": "對外通道",
+					"noInbound": "未開放對內連接埠",
+					"laptop": "你的筆記型電腦"
+				},
+				"backup": {
+					"encrypted": "上傳前在此加密。雲端只儲存密文。",
+					"database": "資料庫",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "建立監控",
+					"checksInADay": "每天的檢查次數",
+					"checksPerDay_other": "每天 {{formatted}} 次檢查",
+					"nextCheck": "{{interval}}後進行下次檢查"
+				}
+			}
 		}
 	},
 	"pages": {

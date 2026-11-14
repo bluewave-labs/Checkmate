@@ -46,6 +46,7 @@ const UserSchema = new Schema<UserDocument>(
 			immutable: true,
 		},
 		checkTTL: { type: Number },
+		whatsNewSeen: { type: String },
 	},
 	{ timestamps: true }
 );

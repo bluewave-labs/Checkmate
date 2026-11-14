@@ -34,6 +34,7 @@ class MongoUsersRepository implements IUsersRepository {
 			role: doc.role ?? [],
 			teamId: toStringId(doc.teamId),
 			checkTTL: doc.checkTTL ?? undefined,
+			whatsNewSeen: doc.whatsNewSeen ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};

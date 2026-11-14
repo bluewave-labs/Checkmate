@@ -275,6 +275,68 @@
 				"available": "{{version}} k dispozici",
 				"tooltip": "Je k dispozici novější verze Checkmate. Zobrazit poznámky k vydání."
 			}
+		},
+		"whatsNew": {
+			"eyebrow": "Novinky v Checkmate {{version}}",
+			"stepCount": "{{current}} z {{total}}",
+			"goToStep": "Přejít na krok {{step}}",
+			"skip": "Přeskočit",
+			"done": "Hotovo",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "Superadmin zaregistruje tento server v sekci {{settings}}.",
+			"connectAskSuperadmin": "Požádejte superadmina, aby to nastavil v sekci {{settings}}.",
+			"connectCta": "Nastavit Checkmate Connect",
+			"steps": {
+				"dashboard": {
+					"title": "Nástěnka je vaše nová úvodní stránka",
+					"description": "Checkmate se otevírá na nástěnce, která ukazuje stav monitorů, které z nich nefungují a dostupnost každého z nich. Administrátoři vidí také frontu úloh a diagnostiku Checkmate. Karty seřadíte libovolně pomocí volby {{arrange}}. Nepotřebné karty skryjete pomocí volby {{editCards}}."
+				},
+				"heartbeat": {
+					"title": "Heartbeat monitory pro plánované úlohy",
+					"description": "Úlohy cron, zálohy a skripty posílají Checkmate ping při každém spuštění. Pokud v okně upozornění žádný ping nedorazí, monitor se označí jako nefunkční a odešlou se vaše oznámení."
+				},
+				"remoteAccess": {
+					"title": "Otevřete Checkmate odkudkoli bez otevírání portů",
+					"description": "S Checkmate Connect udržuje tento server otevřený odchozí tunel. Připojíte se k němu přes jeho adresu Connect bez otevírání příchozích portů a bez nastavování VPN."
+				},
+				"backups": {
+					"title": "Naplánujte šifrované zálohy do cloudu",
+					"description": "Zálohujte do Checkmate Connect každé 1, 3 nebo 7 dní, buď celou databázi, nebo jen konfiguraci. Tento server data před nahráním zašifruje. Zálohu obnovíte v sekci {{settings}}."
+				},
+				"intervals": {
+					"title": "Kontrolujte monitory každou hodinu nebo jednou denně",
+					"description": "Monitor teď může běžet každé 1, 2, 6 nebo 12 hodin, případně jednou denně. Pokud požadovaný interval v seznamu není, zadejte ho. Dlouhé intervaly se hodí pro monitory, které nepotřebují kontrolu každou minutu, například PageSpeed."
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "Noční záloha",
+					"subtitle": "{{type}} · okno upozornění {{window}}",
+					"downTitle": "{{name}} nefunguje",
+					"pingNotReceived": "Ping nepřijat"
+				},
+				"remote": {
+					"network": "Vaše síť",
+					"server": "Server Checkmate",
+					"tunnel": "Odchozí tunel",
+					"noInbound": "Žádné otevřené příchozí porty",
+					"laptop": "Váš notebook"
+				},
+				"backup": {
+					"encrypted": "Zašifrováno zde před nahráním. Cloud ukládá jen šifrovaný text.",
+					"database": "Databáze",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "Vytvořit monitor",
+					"checksInADay": "Kontroly za den",
+					"checksPerDay_one": "{{formatted}} kontrola denně",
+					"checksPerDay_few": "{{formatted}} kontroly denně",
+					"checksPerDay_many": "{{formatted}} kontroly denně",
+					"checksPerDay_other": "{{formatted}} kontrol denně",
+					"nextCheck": "Další kontrola za {{interval}}"
+				}
+			}
 		}
 	},
 	"pages": {
