@@ -7,15 +7,16 @@ import { typographyLevels } from "@/Utils/Theme/Palette";
 import {
 	FOCUS_RING,
 	FONT_WEIGHT,
+	GAP,
 	INPUT_BASE_HEIGHT,
 	MOTION,
 	PADDING,
 	RADIUS,
 } from "@/Utils/Theme/constants";
 
-// Segment inside a segmented control (e.g. Recent / Day / Week / Month).
-// The selected segment uses the same light green fill as selected sidebar and
-// menu items.
+// Option inside a segmented control (e.g. Recent / Day / Week / Month), styled
+// after the public status page range switch: small uppercase label, no
+// dividers, the selected option filled with a soft green block.
 export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 	const theme = useTheme();
 	const selectedText =
@@ -28,24 +29,25 @@ export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 			sx={{
 				height: "100%",
 				padding: PADDING.SEGMENT,
-				textTransform: "none",
-				fontSize: typographyLevels.base,
-				fontWeight: FONT_WEIGHT.REGULAR,
+				border: 0,
+				borderRadius: RADIUS.XS,
+				backgroundColor: "transparent",
+				textTransform: "uppercase",
+				letterSpacing: theme.typography.eyebrow.letterSpacing,
+				fontSize: typographyLevels.s,
+				fontWeight: FONT_WEIGHT.SEMIBOLD,
 				whiteSpace: "nowrap",
-				textOverflow: "ellipsis",
-				overflow: "hidden",
 				boxShadow: "none",
-				color: theme.palette.text.secondary,
+				color: theme.palette.neutral.subdued,
 				transition: `background-color ${MOTION.HOVER}, color ${MOTION.HOVER}`,
 				"&:hover": {
 					boxShadow: "none",
-					backgroundColor: theme.palette.neutral.raised,
+					backgroundColor: "transparent",
 					color: theme.palette.text.primary,
 				},
 				"&.Mui-selected, &.Mui-selected:hover": {
 					backgroundColor: theme.palette.neutral.selectedGreen,
 					color: selectedText,
-					fontWeight: FONT_WEIGHT.MEDIUM,
 				},
 				"&.Mui-focusVisible": {
 					outline: `${FOCUS_RING.WIDTH}px solid ${theme.palette.primary.main}`,
@@ -57,8 +59,9 @@ export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 	);
 };
 
-// Segmented control: one bordered container, hairline dividers between
-// segments, input-height and input border so it lines up with other controls.
+// Segmented control container: hairline border, white surface, a small inner
+// padding so the selected option sits inside as a block. Input height so it
+// lines up with other controls in a row.
 export const ToggleButtonGroupInput = ({ sx, ...props }: ToggleButtonGroupProps) => {
 	const theme = useTheme();
 	return (
@@ -67,16 +70,18 @@ export const ToggleButtonGroupInput = ({ sx, ...props }: ToggleButtonGroupProps)
 			sx={{
 				height: INPUT_BASE_HEIGHT,
 				boxSizing: "border-box",
+				padding: PADDING.SEGMENT_GROUP,
+				gap: GAP.SEGMENT,
 				backgroundColor: theme.palette.background.paper,
-				border: `1px solid ${theme.palette.neutral.border}`,
+				border: `1px solid ${theme.palette.neutral.hairline}`,
 				borderRadius: RADIUS.SM,
-				overflow: "hidden",
 				"& .MuiToggleButtonGroup-grouped": {
-					border: "none",
-					borderRadius: 0,
+					border: 0,
 					margin: 0,
-					"&:not(:first-of-type)": {
-						borderLeft: `1px solid ${theme.palette.neutral.hairline}`,
+					// Override MUI's grouped corner and divider rules
+					"&, &:not(:first-of-type), &:not(:last-of-type)": {
+						borderRadius: RADIUS.XS,
+						borderLeft: 0,
 					},
 				},
 				...sx,

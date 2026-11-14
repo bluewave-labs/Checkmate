@@ -30,6 +30,7 @@ export const HOVER = {
 // theme.spacing (base 2) / LAYOUT cannot express odd ones such as 9px or 14px,
 // so component measurements are named here instead of written inline.
 export const RADIUS = {
+	XS: "2px", // elements nested inside a 4px container (segmented options)
 	SM: "4px", // buttons, cards, inputs, menus, modals, table frames, controls
 	TAB: "9px 9px 0 0", // folder tab top corners
 	PILL: "999px", // status pills, filter chips, badges
@@ -59,6 +60,7 @@ export const GAP = {
 	ICON: "8px", // icon to label (sidebar items, tabs)
 	CHIP: "4px", // label to chevron inside a filter chip
 	TAB: "3px", // between folder tabs
+	SEGMENT: "2px", // between segmented control options
 } as const;
 
 export const PADDING = {
@@ -69,7 +71,8 @@ export const PADDING = {
 	TOOLTIP: "8px 12px",
 	TAB: "7px 14px 8px",
 	TAB_ROW_INSET: "10px",
-	SEGMENT: "0 14px", // segmented control buttons
+	SEGMENT: "0 16px", // segmented control options
+	SEGMENT_GROUP: "3px", // inset between the segmented container and its options
 	TABLE_HEAD: "9px 14px",
 	TABLE_CELL: "10px 14px",
 	TABLE_CELL_X: "14px",
