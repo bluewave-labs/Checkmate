@@ -82,13 +82,13 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 
 请参阅 [Checkmate 文档门户](https://checkmate.so/docs)中的安装说明。
 
-你也可以使用 [Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](../../charts/helm/checkmate/INSTALLATION.md)、[Sive Host](https://sive.host)（南非）、[Cloudzy](https://cloudzy.com/marketplace/checkmate) 或 [Pikapods](https://www.pikapods.com/) 快速启动一个 Checkmate 实例。如果想监控服务器基础设施，你需要 [Capture 代理](https://github.com/bluewave-labs/capture)，Capture 仓库中也提供了安装说明。
+你也可以使用 [Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm)、[Sive Host](https://sive.host)（南非）、[Cloudzy](https://cloudzy.com/marketplace/checkmate) 或 [Pikapods](https://www.pikapods.com/) 快速启动一个 Checkmate 实例。如果想监控服务器基础设施，你需要 [Capture 代理](https://checkmate.so/docs/infrastructure/installing-capture)，Capture 仓库中也提供了安装说明。
 
 ### 使用自定义 CA
 
-如果你需要使用私有 CA（例如 Smallstep）签发的证书来监控内部 HTTPS 端点，请查看我们的 [自定义 CA 信任指南](../custom-ca-trust.md)，其中介绍了 Docker 的配置选项。
+如果你需要使用私有 CA（例如 Smallstep）签发的证书来监控内部 HTTPS 端点，请查看我们的 [自定义 CA 信任指南](https://checkmate.so/docs/settings/custom-ca-trust)，其中介绍了 Docker 的配置选项。
 
-更多文档请参见 [docs 目录](../)。
+更多文档请参见 [Checkmate 文档门户](https://checkmate.so/docs)。
 
 <a id="performance"></a>
 ## 性能
@@ -184,7 +184,7 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 参与贡献的方式:
 
 0. 给本仓库点亮 ⭐ :)
-1. 阅读 [贡献者指南](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md)。新手建议先查看 `good-first-issue` 标签。
+1. 阅读 [贡献者指南](https://checkmate.so/docs/getting-started/contributing)。新手建议先查看 `good-first-issue` 标签。
 2. 如果想深入了解架构，请阅读 [Checkmate 的详细结构介绍](https://deepwiki.com/bluewave-labs/Checkmate)。
 3. 如果你认为遇到了 bug，请提交一个 issue。
 4. 如果你是新手，建议从 `good-first-issue` 入手。

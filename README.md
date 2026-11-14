@@ -487,7 +487,7 @@ Our repo is starred by employees from **Google, Microsoft, Intel, Cisco, Tencent
 Here's how you can contribute:
 
 0. Star this repo :)
-1. Check [Contributor's guideline](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). First timers are encouraged to check `good-first-issue` tag.
+1. Check [Contributor's guideline](https://checkmate.so/docs/getting-started/contributing). First timers are encouraged to check `good-first-issue` tag.
 2. Read a detailed structure of [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate) if you would like to deep dive into the architecture.
 3. Open an issue if you believe you've encountered a bug.
 4. Check for good-first-issue's if you are a newcomer.

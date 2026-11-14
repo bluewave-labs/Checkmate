@@ -82,13 +82,13 @@ Die Nutzungsanleitung findest du [hier](https://checkmate.so/docs).
 
 Die Installationsanleitung findest du im [Dokumentationsportal von Checkmate](https://checkmate.so/docs).
 
-Alternativ kannst du [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Südafrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) oder [Pikapods](https://www.pikapods.com/) nutzen, um schnell eine Checkmate-Instanz hochzuziehen. Für das Monitoring deiner Server-Infrastruktur brauchst du den [Capture-Agenten](https://github.com/bluewave-labs/capture); dessen Repository enthält ebenfalls eine Installationsanleitung.
+Alternativ kannst du [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Südafrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) oder [Pikapods](https://www.pikapods.com/) nutzen, um schnell eine Checkmate-Instanz hochzuziehen. Für das Monitoring deiner Server-Infrastruktur brauchst du den [Capture-Agenten](https://checkmate.so/docs/infrastructure/installing-capture); dessen Repository enthält ebenfalls eine Installationsanleitung.
 
 ### Eigene CA verwenden
 
-Wenn du interne HTTPS-Endpunkte mit Zertifikaten privater Zertifizierungsstellen (z. B. Smallstep) überwachen möchtest, schau in unseren [Leitfaden für eigene CAs](../custom-ca-trust.md) — dort stehen die passenden Docker-Konfigurationen.
+Wenn du interne HTTPS-Endpunkte mit Zertifikaten privater Zertifizierungsstellen (z. B. Smallstep) überwachen möchtest, schau in unseren [Leitfaden für eigene CAs](https://checkmate.so/docs/settings/custom-ca-trust) — dort stehen die passenden Docker-Konfigurationen.
 
-Weitere Dokumentation liegt im [docs-Verzeichnis](../).
+Weitere Dokumentation findest du im [Checkmate-Dokumentationsportal](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Leistung
@@ -184,7 +184,7 @@ Mitarbeiterinnen und Mitarbeiter von **Google, Microsoft, Intel, Cisco, Tencent,
 So kannst du beitragen:
 
 0. Gib dem Repo einen Stern :)
-1. Lies den [Beitragsleitfaden](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). Neulinge schauen am besten zuerst nach dem Tag `good-first-issue`.
+1. Lies den [Beitragsleitfaden](https://checkmate.so/docs/getting-started/contributing). Neulinge schauen am besten zuerst nach dem Tag `good-first-issue`.
 2. Wenn du tiefer in die Architektur einsteigen willst, lies die ausführliche Struktur von [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate).
 3. Öffne ein Issue, wenn du einen Bug findest.
 4. Wenn du neu hier bist, schau dir die `good-first-issue`-Tasks an.

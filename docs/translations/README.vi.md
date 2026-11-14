@@ -85,13 +85,13 @@ Có thể tìm thấy hướng dẫn sử dụng [tại đây](https://checkmate
 
 Xem hướng dẫn cài đặt trong [cổng tài liệu của Checkmate](https://checkmate.so/docs).
 
-Hoặc bạn có thể dùng [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Nam Phi), [Cloudzy](https://cloudzy.com/marketplace/checkmate) hoặc [Pikapods](https://www.pikapods.com/) để dựng nhanh một instance Checkmate. Nếu muốn giám sát hạ tầng máy chủ, bạn sẽ cần [agent Capture](https://github.com/bluewave-labs/capture). Kho Capture cũng chứa hướng dẫn cài đặt.
+Hoặc bạn có thể dùng [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Nam Phi), [Cloudzy](https://cloudzy.com/marketplace/checkmate) hoặc [Pikapods](https://www.pikapods.com/) để dựng nhanh một instance Checkmate. Nếu muốn giám sát hạ tầng máy chủ, bạn sẽ cần [agent Capture](https://checkmate.so/docs/infrastructure/installing-capture). Kho Capture cũng chứa hướng dẫn cài đặt.
 
 ### Sử dụng CA tuỳ chỉnh
 
-Nếu bạn cần giám sát các endpoint HTTPS nội bộ với chứng chỉ từ các tổ chức phát hành riêng (ví dụ Smallstep), hãy xem [Hướng dẫn tin cậy CA tuỳ chỉnh](../custom-ca-trust.md) với các tuỳ chọn cấu hình Docker.
+Nếu bạn cần giám sát các endpoint HTTPS nội bộ với chứng chỉ từ các tổ chức phát hành riêng (ví dụ Smallstep), hãy xem [Hướng dẫn tin cậy CA tuỳ chỉnh](https://checkmate.so/docs/settings/custom-ca-trust) với các tuỳ chọn cấu hình Docker.
 
-Để biết thêm tài liệu, xem [thư mục docs](../).
+Để biết thêm tài liệu, xem [cổng tài liệu Checkmate](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Hiệu năng
@@ -187,7 +187,7 @@ Kho của chúng tôi đã được nhân viên của **Google, Microsoft, Intel
 Cách bạn có thể đóng góp:
 
 0. Đánh sao cho repo này :)
-1. Đọc [hướng dẫn dành cho người đóng góp](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). Người mới được khuyến khích kiểm tra tag `good-first-issue`.
+1. Đọc [hướng dẫn dành cho người đóng góp](https://checkmate.so/docs/getting-started/contributing). Người mới được khuyến khích kiểm tra tag `good-first-issue`.
 2. Nếu muốn đi sâu vào kiến trúc, đọc [cấu trúc chi tiết của Checkmate](https://deepwiki.com/bluewave-labs/Checkmate).
 3. Mở issue nếu bạn cho rằng đã gặp lỗi.
 4. Nếu mới tham gia, hãy tìm các issue gắn nhãn `good-first-issue`.

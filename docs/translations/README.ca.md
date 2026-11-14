@@ -85,13 +85,13 @@ Pots trobar les instruccions d'ús [aquí](https://checkmate.so/docs).
 
 Consulta les instruccions d'instal·lació al [portal de documentació de Checkmate](https://checkmate.so/docs).
 
-Alternativament, també pots utilitzar [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Sud-àfrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate) o [Pikapods](https://www.pikapods.com/) per posar en marxa ràpidament una instància de Checkmate. Si vols monitoritzar la infraestructura de servidors, necessitaràs l'[agent Capture](https://github.com/bluewave-labs/capture). El repositori de Capture també conté les instruccions d'instal·lació.
+Alternativament, també pots utilitzar [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Sud-àfrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate) o [Pikapods](https://www.pikapods.com/) per posar en marxa ràpidament una instància de Checkmate. Si vols monitoritzar la infraestructura de servidors, necessitaràs l'[agent Capture](https://checkmate.so/docs/infrastructure/installing-capture). El repositori de Capture també conté les instruccions d'instal·lació.
 
 ### Utilitzar una CA personalitzada
 
-Si necessites monitoritzar punts HTTPS interns amb certificats d'autoritats certificadores privades (com Smallstep), consulta la nostra [Guia de confiança per a CA personalitzades](../custom-ca-trust.md) per a les opcions de configuració de Docker.
+Si necessites monitoritzar punts HTTPS interns amb certificats d'autoritats certificadores privades (com Smallstep), consulta la nostra [Guia de confiança per a CA personalitzades](https://checkmate.so/docs/settings/custom-ca-trust) per a les opcions de configuració de Docker.
 
-Per a més documentació, consulta el [directori docs](../).
+Per a més documentació, consulta el [portal de documentació de Checkmate](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Rendiment
@@ -187,7 +187,7 @@ El nostre repositori té estrelles d'empleats de **Google, Microsoft, Intel, Cis
 Així pots contribuir:
 
 0. Posa una estrella a aquest repositori :)
-1. Consulta la [guia per a col·laboradors](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). Recomanem als principiants revisar l'etiqueta `good-first-issue`.
+1. Consulta la [guia per a col·laboradors](https://checkmate.so/docs/getting-started/contributing). Recomanem als principiants revisar l'etiqueta `good-first-issue`.
 2. Llegeix una estructura detallada de [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate) si vols aprofundir en l'arquitectura.
 3. Obre una issue si creus que has trobat un error.
 4. Mira els `good-first-issue` si ets nou.
