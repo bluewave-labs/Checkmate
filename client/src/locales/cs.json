@@ -32,6 +32,8 @@
 			"pause": "Pozastavit",
 			"resume": "Obnovit",
 			"save": "Uložit",
+			"next": "Další",
+			"back": "Zpět",
 			"sendInvite": "Odeslat pozvánku",
 			"test": "Test",
 			"testNotifications": "Testovat oznámení",
@@ -47,19 +49,37 @@
 			"exportToJSON": "Exportovat do JSON",
 			"importFromJSON": "Importovat z JSON",
 			"clearFilters": "Vymazat filtry",
-			"removeUser": "Odebrat uživatele"
+			"removeUser": "Odebrat uživatele",
+			"removeItem": "Odebrat: {{item}}"
 		},
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Průměrná doba odezvy",
+				"cpuUsage": "Využití CPU",
 				"downtime": "Výpadek",
 				"high": "Vysoké",
 				"low": "Nízké",
+				"memoryUsage": "Využití paměti",
+				"responseTime": "Doba odezvy",
+				"timingPhases": "Fáze požadavku",
+				"totalResponseTime": "Celková doba odezvy",
 				"uptime": "Dostupnost"
 			},
 			"histogram": {
 				"avg": "Prům.: {{value}}",
-				"max": "Max: {{value}}"
+				"max": "Max: {{value}}",
+				"responseTime": "Doba odezvy: {{value}}",
+				"total": "Celkem: {{value}}",
+				"avgCpuUsage": "Průměrné využití CPU: {{value}}",
+				"avgMemoryUsage": "Průměrné využití paměti: {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "Požadavek",
+				"firstByte": "První bajt",
+				"download": "Stahování"
 			}
 		},
 		"dialogs": {
@@ -74,10 +94,17 @@
 			"na": "N/A",
 			"resolved": "Vyřešeno",
 			"responseTime": "Doba odezvy",
+			"state": "Stav",
+			"uptime": "Doba běhu",
+			"health": "Stav zdraví",
+			"restarts": "Restarty",
 			"idle": "Nečinný",
 			"running": "Spuštěno"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "Začněte psát pro vyhledávání"
+			},
 			"role": {
 				"option": {
 					"role": {
@@ -120,7 +147,8 @@
 				"url": "URL",
 				"interval": "Interval",
 				"active": "Aktivní",
-				"responseTime": "Doba odezvy"
+				"responseTime": "Doba odezvy",
+				"tags": "Štítky"
 			}
 		},
 		"statusCode": {
@@ -250,6 +278,63 @@
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "Proxy",
+				"description": "Spravujte proxy servery pro směrování provozu HTTP monitorů."
+			},
+			"fallback": {
+				"title": "Zatím žádné proxy",
+				"description": "Směrujte kontroly HTTP monitorů přes proxy server. Jakmile proxy vytvoříte, můžete ji vybrat u jednotlivých monitorů nebo ji nastavit jako globální výchozí v Nastavení.",
+				"actionButton": "Vytvořit proxy"
+			},
+			"form": {
+				"name": {
+					"title": "Název proxy",
+					"description": "Výstižný název pro identifikaci této proxy",
+					"optionName": "Název proxy",
+					"placeholder": "Moje proxy"
+				},
+				"server": {
+					"title": "Proxy server",
+					"description": "Kde je proxy server dostupný. Nastavte protokol, kterým se k němu Checkmate připojuje, jeho název hostitele nebo IP adresu a port, na kterém naslouchá.",
+					"option": {
+						"protocol": {
+							"label": "Protokol"
+						},
+						"host": {
+							"label": "Název hostitele / IP adresa",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "Port"
+						}
+					}
+				},
+				"auth": {
+					"title": "Ověření",
+					"description": "Volitelné. Potřeba pouze tehdy, pokud proxy server vyžaduje základní ověření.",
+					"option": {
+						"username": {
+							"label": "Uživatelské jméno",
+							"placeholder": "Uživatelské jméno proxy",
+							"labelSet": "Uživatelské jméno je nastaveno. Pro změnu klikněte na „Resetovat“."
+						},
+						"password": {
+							"label": "Heslo",
+							"labelSet": "Heslo je nastaveno. Pro změnu klikněte na „Resetovat“."
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "Protokol",
+					"host": "Hostitel",
+					"port": "Port"
+				}
+			}
+		},
 		"notFound": {
 			"title": "Ale ne! Upustili jste své sushi!",
 			"subtitle": "Buď tato URL neexistuje, nebo k ní nemáte přístup."
@@ -471,7 +556,9 @@
 				},
 				"statBoxes": {
 					"activeFor": "Aktivní po dobu",
+					"checkingEvery": "Interval kontroly: {{interval}}",
 					"certificateExpiry": "Expirace certifikátu",
+					"domainExpiry": "Expirace domény",
 					"lastCheck": "Poslední kontrola",
 					"lastResponseTime": "Poslední doba odezvy",
 					"serviceIsDown": "Služba je nedostupná"
@@ -517,6 +604,13 @@
 				"advanced": {
 					"description": "Volitelná nastavení pro pokročilé použití",
 					"option": {
+						"method": {
+							"label": "Metoda požadavku",
+							"description": {
+								"GET": "GET načte celou odpověď včetně těla. Pokročilé porovnávání je plně podporováno",
+								"HEAD": "HEAD načte pouze hlavičky odpovědi, což snižuje zátěž cíle. Podporuje porovnávání stavových kódů, ale ne pokročilé porovnávání, protože odpověď nemá tělo."
+							}
+						},
 						"advancedMatching": {
 							"label": "Použít pokročilé porovnávání"
 						},
@@ -532,6 +626,10 @@
 							"equal": "Rovná se",
 							"include": "Obsahuje",
 							"regex": "Regulární výraz"
+						},
+						"customUpCodes": {
+							"label": "Přijímané stavové kódy",
+							"description": "Přidejte kódy mimo 2xx, které se mají také považovat za úspěšné."
 						}
 					},
 					"title": "Pokročilá nastavení"
@@ -565,6 +663,9 @@
 					"title": "Frekvence kontroly"
 				},
 				"general": {
+					"url": {
+						"alert": "Budoucí kontroly budou používat novou URL. Historická data tohoto monitoru zůstanou zachována, byla však shromážděna ze staré URL."
+					},
 					"option": {
 						"host": {
 							"label": "Hostitel",
@@ -581,6 +682,24 @@
 						"url": {
 							"label": "URL",
 							"placeholder": "https://www.google.com"
+						},
+						"proxyMode": {
+							"label": "Proxy",
+							"value": {
+								"inheritDirect": "Výchozí (přímé připojení)",
+								"inheritGlobal": "Výchozí ({{name}})",
+								"none": "Nikdy nepoužívat proxy",
+								"custom": "Vlastní proxy"
+							},
+							"description": {
+								"inheritDirect": "Není nastavena žádná globální proxy, připojení je přímé. Pokud bude globální proxy nastavena později, tento monitor ji použije.",
+								"inheritGlobal": "Použít globální nastavení proxy",
+								"none": "Vždy se připojuje přímo, i když bude později povolena globální proxy.",
+								"custom": "Směrovat kontroly tohoto monitoru přes konkrétní proxy. Přepíše globální proxy"
+							}
+						},
+						"proxy": {
+							"label": "Proxy server"
 						},
 						"game": {
 							"label": "Vybrat hru",
@@ -667,6 +786,10 @@
 				"notifications": {
 					"description": "Vyberte kanály pro oznámení, které chcete použít",
 					"title": "Oznámení"
+				},
+				"tags": {
+					"description": "Vyberte štítky, které chcete použít pro tento monitor",
+					"title": "Štítky"
 				},
 				"type": {
 					"description": "Vyberte typ kontroly, která se má provádět",
@@ -901,6 +1024,7 @@
 					"disk": "Využití disku",
 					"netBytesRecv": "{{name}} - přijaté bajty",
 					"netBytesSent": "{{name}} - odeslané bajty",
+					"loopbackOnlyNotice": "Capture vidí pouze síťová rozhraní kontejneru a žádné z nich nepřenáší skutečný provoz. To je normální, když Capture běží uvnitř kontejneru, který vidí pouze svůj vlastní síťový jmenný prostor — rozhraní s názvy jako na hostiteli (eth0, ens3) jsou virtuální rozhraní kontejneru, ne hostitele. Chcete-li vidět skutečnou síťovou aktivitu, spusťte Capture přímo na hostiteli.",
 					"temp": "Teplota"
 				}
 			},
@@ -953,6 +1077,37 @@
 				"description": "Sledujte výkon serverů, identifikujte úzká místa a zajistěte spolehlivost pomocí monitoringu infrastruktury v reálném čase."
 			}
 		},
+		"tags": {
+			"header": {
+				"title": "Štítky",
+				"description": "Uspořádejte své monitory pomocí štítků"
+			},
+			"fallback": {
+				"title": "Zatím žádné štítky",
+				"description": "Uspořádejte své monitory pomocí štítků. Jakmile vytvoříte štítek a přiřadíte ho k monitoru, budete podle něj moci filtrovat v celé aplikaci a zobrazit zde jeho podrobnosti.",
+				"actionButton": "Vytvořit štítek"
+			},
+			"table": {
+				"headers": {
+					"color": "Barva",
+					"appearance": "Vzhled"
+				}
+			},
+			"form": {
+				"name": {
+					"title": "Název štítku",
+					"description": "Zvolte název štítku",
+					"optionName": "Název štítku",
+					"placeholder": "např. Skupina 1"
+				},
+				"color": {
+					"title": "Barva štítku",
+					"description": "Zvolte barvu štítku",
+					"optionName": "Barva štítku",
+					"placeholder": "např. #13715B"
+				}
+			}
+		},
 		"logs": {
 			"fallback": {
 				"title": "Zatím žádné protokoly",
@@ -966,6 +1121,8 @@
 			"logLevelSelect": {
 				"label": "Úroveň logování"
 			},
+			"workers": "Workery",
+			"workersExplainers": "Zobrazuje procesy workerů. ID workerů jsou zkrácená, pro celé ID najeďte myší",
 			"jobQueue": "Fronta úloh",
 			"jobQueueExplainer": "<highlight>Zvýrazněné řádky</highlight> jsou úlohy, které právě zpracovává worker.",
 			"failedJobs": "Neúspěšné úlohy",
@@ -986,6 +1143,26 @@
 					"totalHeapSize": "Celková velikost haldy",
 					"osMemoryLimit": "Limit paměti OS"
 				},
+				"mongoDBStats": {
+					"readyState": "Stav připravenosti",
+					"readsPerSecond": "Čtení/s",
+					"insertsPerSecond": "Vložení/s",
+					"updatesPerSecond": "Aktualizace/s",
+					"deletesPerSecond": "Smazání/s",
+					"writesPerSecond": "Celkem zápisů/s",
+					"host": "Hostitel",
+					"port": "Port",
+					"dbName": "Název databáze",
+					"storageSize": "Velikost úložiště"
+				},
+				"mongoDBCollectionStats": {
+					"documents": "Dokumenty: {{count}}",
+					"bucketCount": "Počet bucketů: {{count}}",
+					"storageSize": "Velikost úložiště: {{size}}",
+					"indexSize": "Velikost indexů: {{size}}",
+					"totalSize": "Celková velikost: {{size}}",
+					"dbUsageTooltip": "{{percentage}} % úložiště DB"
+				},
 				"gauges": {
 					"heapAllocation": "Alokace haldy",
 					"heapUsage": "Využití haldy",
@@ -1005,17 +1182,32 @@
 					"memoryCpu": {
 						"title": "Paměť a CPU",
 						"description": "Jak proces využívá přidělenou paměť a CPU hostitele."
+					},
+					"mongoDBStats": {
+						"title": "Statistiky MongoDB",
+						"description": "Snímek metrik MongoDB"
+					},
+					"mongoDBCollectionStats": {
+						"title": "Statistiky kolekcí MongoDB",
+						"description": "Statistiky kolekcí MongoDB"
 					}
 				}
 			},
 			"table": {
 				"headers": {
+					"host": "Hostitel",
+					"processId": "ID procesu",
+					"workerId": "ID workeru",
+					"workerMode": "Režim workeru",
+					"lastSeenAt": "Naposledy viděn",
 					"timestamp": "Časové razítko",
 					"level": "Úroveň",
 					"service": "Služba",
 					"monitorId": "ID monitoru",
 					"runCount": "Počet spuštění",
 					"failCount": "Počet selhání",
+					"nextScheduledAt": "Další spuštění",
+					"lockedBy": "Zámek drží",
 					"lastFinishedAt": "Naposledy dokončeno",
 					"lastFailedAt": "Poslední selhání",
 					"failReason": "Důvod selhání",
@@ -1142,7 +1334,22 @@
 				"type": {
 					"description": "Vyberte typ kanálu oznámení, který chcete vytvořit.",
 					"optionType": "Typ",
-					"title": "Typ kanálu"
+					"title": "Typ kanálu",
+					"value": {
+						"email": "E-mail",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"signalgrid": "Signalgrid",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "Konfigurace Telegramu",
@@ -1160,6 +1367,14 @@
 					"optionUserKey": "Uživatelský klíč",
 					"placeholderUserKey": "Zadejte uživatelský klíč"
 				},
+				"signalgrid": {
+					"title": "Konfigurace Signalgrid",
+					"description": "Nakonfigurujte Signalgrid pro příjem push oznámení na vašich zařízeních.",
+					"optionClientKey": "Klientský klíč",
+					"placeholderClientKey": "Váš klientský klíč Signalgrid",
+					"optionChannel": "Kanál",
+					"placeholderChannel": "Váš kanál Signalgrid"
+				},
 				"twilio": {
 					"title": "Konfigurace Twilio",
 					"description": "Zadejte přihlašovací údaje účtu Twilio pro odesílání SMS.",
@@ -1171,6 +1386,14 @@
 					"placeholderFromNumber": "+1234567890",
 					"optionToNumber": "Na číslo",
 					"placeholderToNumber": "+1234567890"
+				},
+				"ntfy": {
+					"title": "Konfigurace ntfy",
+					"description": "Nakonfigurujte server ntfy a téma pro push oznámení.",
+					"optionServerUrl": "URL serveru",
+					"placeholderServerUrl": "https://ntfy.sh",
+					"optionTopic": "Téma",
+					"placeholderTopic": "checkmate-alerts"
 				}
 			},
 			"table": {
@@ -1260,6 +1483,22 @@
 							"label": "Typ grafu",
 							"histogram": "Histogram",
 							"heatmap": "Heatmapa"
+						}
+					}
+				},
+				"globalProxy": {
+					"title": "Globální proxy",
+					"description": "Ve výchozím nastavení směrovat kontroly přes proxy. Platí pro všechny HTTP monitory s nastavením proxy „Výchozí“; monitory s nastavením „Nikdy nepoužívat proxy“ nebo s vlastní proxy nejsou ovlivněny.",
+					"option": {
+						"enabled": {
+							"label": "Použít globální proxy"
+						},
+						"proxy": {
+							"label": "Vyberte globální proxy"
+						},
+						"empty": {
+							"text": "Zatím nejsou nastaveny žádné proxy.",
+							"link": "Nejprve nějakou vytvořte"
 						}
 					}
 				},
@@ -1602,6 +1841,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "Stavová stránka byla úspěšně smazána",
+			"rangeSelectorAria": "Rozsah historie",
+			"rangeExceedsRetention": "Doba uchovávání historie kontrol (ve dnech): {{days}}. Pro více dat dobu uchovávání prodlužte.",
+			"range": {
+				"latest": "Nejnovější",
+				"30d": "30 dní",
+				"60d": "60 dní",
+				"90d": "90 dní"
+			},
 			"fallback": {
 				"title": "Zatím žádné stavové stránky",
 				"actionButton": "Vytvořte stavovou stránku!",
@@ -1629,6 +1876,9 @@
 					"avg": "průměr {{value}}",
 					"downTooltip": "Mimo provoz",
 					"heatmapAria": "Tepelná mapa doby odezvy",
+					"dayAria": "{{date}}, dostupnost {{uptime}}",
+					"dayUptime": "Dostupnost: {{uptime}} (kontroly: {{upChecks}}/{{totalChecks}})",
+					"dayAvgResponse": "Prům. odezva: {{value}}",
 					"max": "max {{value}}"
 				},
 				"status": {
@@ -1640,6 +1890,10 @@
 					"up": "V provozu"
 				},
 				"incidents": {
+					"modalTitle": "Incidenty: {{date}}",
+					"loading": "Načítání...",
+					"noIncidents": "Pro tento den nebyly hlášeny žádné incidenty.",
+					"ongoing": "Probíhá",
 					"errorLoading": "Nepodařilo se načíst incidenty."
 				}
 			},
@@ -1698,6 +1952,11 @@
 						"url": {
 							"label": "Adresa vaší stavové stránky",
 							"placeholder": "moje-stavova-stranka"
+						},
+						"customDomain": {
+							"label": "Vlastní doména",
+							"placeholder": "status.example.com",
+							"helper": "Volitelné. Nasměrujte záznam DNS na tuto instanci Checkmate, aby se stavová stránka zobrazovala na vaší vlastní doméně."
 						}
 					}
 				},
@@ -1764,6 +2023,10 @@
 							"description": "Patkové nadpisy a tenké oddělovače. Odlišný a klidný.",
 							"name": "Redakční"
 						},
+						"minimal": {
+							"name": "Minimalistický",
+							"description": "Plochý, soustředěný a kompaktní, jen to podstatné."
+						},
 						"modern": {
 							"description": "Úroveň SaaS s pulzující stavovou tečkou a jemně mizejícími kartami.",
 							"name": "Moderní"
@@ -1780,11 +2043,24 @@
 					"dark": "Pouze tmavý",
 					"label": "Režim motivu",
 					"light": "Pouze světlý"
+				},
+				"customCSS": {
+					"title": "Vlastní CSS",
+					"description": "Přidejte vlastní CSS pro doladění vzhledu vaší veřejné stavové stránky.",
+					"option": {
+						"customCSS": {
+							"label": "Vlastní CSS",
+							"placeholder": "footer { display: none; }"
+						}
+					}
 				}
 			},
 			"header": {
 				"title": "Stavové stránky",
 				"description": "Publikujte veřejné stránky, které zákazníkům a zúčastněným stranám zobrazují dostupnost v reálném čase a historii incidentů."
+			},
+			"preview": {
+				"title": "Náhled stavové stránky"
 			},
 			"editorial": {
 				"allUp": "Všechny systémy fungují normálně.",
@@ -1798,11 +2074,13 @@
 			"filters": {
 				"search": {
 					"placeholder": "Hledat monitory..."
-				}
+				},
+				"activeTags": "Aktivní štítky"
 			},
 			"table": {
 				"headers": {
-					"responseTime": "Doba odezvy"
+					"responseTime": "Doba odezvy",
+					"uptime": "Dostupnost %"
 				}
 			},
 			"fallback": {

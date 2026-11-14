@@ -32,6 +32,8 @@
 			"pause": "Duraklat",
 			"resume": "Devam et",
 			"save": "Kaydet",
+			"next": "İleri",
+			"back": "Geri",
 			"sendInvite": "Davet gönder",
 			"test": "Test",
 			"testNotifications": "Bildirimleri test et",
@@ -47,19 +49,37 @@
 			"exportToJSON": "JSON olarak dışa aktar",
 			"importFromJSON": "JSON dosyasından içe aktar",
 			"clearFilters": "Filtreleri temizle",
-			"removeUser": "Kullanıcıyı kaldır"
+			"removeUser": "Kullanıcıyı kaldır",
+			"removeItem": "{{item}} öğesini kaldır"
 		},
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Ortalama yanıt süresi",
+				"cpuUsage": "CPU kullanımı",
 				"downtime": "Kesinti süresi",
 				"high": "yüksek",
 				"low": "düşük",
+				"memoryUsage": "Bellek kullanımı",
+				"responseTime": "Yanıt süresi",
+				"timingPhases": "İstek aşamaları",
+				"totalResponseTime": "Toplam yanıt süresi",
 				"uptime": "Çalışma süresi"
 			},
 			"histogram": {
 				"avg": "Ort: {{value}}",
-				"max": "Maks: {{value}}"
+				"max": "Maks: {{value}}",
+				"responseTime": "Yanıt süresi: {{value}}",
+				"total": "Toplam: {{value}}",
+				"avgCpuUsage": "Ortalama CPU kullanımı: {{value}}",
+				"avgMemoryUsage": "Ortalama bellek kullanımı: {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "İstek",
+				"firstByte": "İlk bayt",
+				"download": "İndirme"
 			}
 		},
 		"dialogs": {
@@ -74,10 +94,17 @@
 			"na": "N/A",
 			"resolved": "Çözüldü",
 			"responseTime": "Yanıt süresi",
+			"state": "Durum",
+			"uptime": "Çalışma süresi",
+			"health": "Sağlık",
+			"restarts": "Yeniden başlatmalar",
 			"idle": "Boşta",
 			"running": "Çalışıyor"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "Aramak için yazın"
+			},
 			"role": {
 				"option": {
 					"role": {
@@ -120,7 +147,8 @@
 				"url": "URL",
 				"interval": "Aralık",
 				"active": "Aktif",
-				"responseTime": "Yanıt süresi"
+				"responseTime": "Yanıt süresi",
+				"tags": "Etiketler"
 			}
 		},
 		"statusCode": {
@@ -250,6 +278,63 @@
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "Proxy'ler",
+				"description": "HTTP izleme trafiğini yönlendirmek için proxy sunucularınızı yönetin."
+			},
+			"fallback": {
+				"title": "Henüz proxy yok",
+				"description": "HTTP monitör kontrollerini bir proxy sunucusu üzerinden yönlendirin. Bir proxy oluşturduktan sonra onu tek tek monitörlerde seçebilir veya Ayarlar'da genel varsayılan olarak belirleyebilirsiniz.",
+				"actionButton": "Proxy oluştur"
+			},
+			"form": {
+				"name": {
+					"title": "Proxy adı",
+					"description": "Bu proxy'yi tanımlamak için kolay bir ad",
+					"optionName": "Proxy adı",
+					"placeholder": "Proxy'm"
+				},
+				"server": {
+					"title": "Proxy sunucusu",
+					"description": "Proxy sunucusuna nereden erişilebildiği. Checkmate'in ona bağlanmak için kullandığı protokolü, ana bilgisayar adını veya IP adresini ve dinlediği portu belirleyin.",
+					"option": {
+						"protocol": {
+							"label": "Protokol"
+						},
+						"host": {
+							"label": "Ana bilgisayar adı / IP adresi",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "Port"
+						}
+					}
+				},
+				"auth": {
+					"title": "Kimlik doğrulama",
+					"description": "İsteğe bağlı. Yalnızca proxy sunucusu temel kimlik doğrulama gerektiriyorsa gereklidir.",
+					"option": {
+						"username": {
+							"label": "Kullanıcı adı",
+							"placeholder": "Proxy kullanıcı adı",
+							"labelSet": "Kullanıcı adı ayarlandı. Değiştirmek için \"Sıfırla\" düğmesine tıklayın."
+						},
+						"password": {
+							"label": "Parola",
+							"labelSet": "Parola ayarlandı. Değiştirmek için \"Sıfırla\" düğmesine tıklayın."
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "Protokol",
+					"host": "Ana bilgisayar",
+					"port": "Port"
+				}
+			}
+		},
 		"notFound": {
 			"title": "Eyvah! Sushini düşürdün!",
 			"subtitle": "URL mevcut değil veya erişim yetkiniz yok."
@@ -471,7 +556,9 @@
 				},
 				"statBoxes": {
 					"activeFor": "Aktif süresi",
+					"checkingEvery": "Kontrol aralığı: {{interval}}",
 					"certificateExpiry": "Sertifika bitiş tarihi",
+					"domainExpiry": "Alan adı bitiş tarihi",
 					"lastCheck": "Son kontrol",
 					"lastResponseTime": "Son yanıt süresi",
 					"serviceIsDown": "Servis çalışmıyor"
@@ -517,6 +604,13 @@
 				"advanced": {
 					"description": "Gelişmiş kullanım senaryoları için isteğe bağlı ayarlar",
 					"option": {
+						"method": {
+							"label": "İstek yöntemi",
+							"description": {
+								"GET": "GET, gövde dahil yanıtın tamamını alır. Gelişmiş eşleştirme tam olarak desteklenir",
+								"HEAD": "HEAD, hedefteki yükü azaltmak için yalnızca yanıt başlıklarını alır. Durum kodu eşleştirmeyi destekler, ancak gövde olmadığından gelişmiş eşleştirmeyi desteklemez."
+							}
+						},
 						"advancedMatching": {
 							"label": "Gelişmiş eşleştirme kullan"
 						},
@@ -532,6 +626,10 @@
 							"equal": "Eşit",
 							"include": "İçerir",
 							"regex": "Regex"
+						},
+						"customUpCodes": {
+							"label": "Kabul edilen durum kodları",
+							"description": "Başarılı sayılması gereken 2xx dışındaki kodları ekleyin."
 						}
 					},
 					"title": "Gelişmiş ayarlar"
@@ -565,6 +663,9 @@
 					"title": "Kontrol sıklığı"
 				},
 				"general": {
+					"url": {
+						"alert": "Gelecekteki kontroller yeni URL'yi kullanacak. Bu monitörün geçmiş verileri korunur, ancak bu veriler eski URL'den toplanmıştır."
+					},
 					"option": {
 						"host": {
 							"label": "Ana bilgisayar",
@@ -581,6 +682,24 @@
 						"url": {
 							"label": "URL",
 							"placeholder": "https://www.google.com"
+						},
+						"proxyMode": {
+							"label": "Proxy",
+							"value": {
+								"inheritDirect": "Varsayılan (doğrudan bağlantı)",
+								"inheritGlobal": "Varsayılan ({{name}})",
+								"none": "Asla proxy kullanma",
+								"custom": "Özel proxy"
+							},
+							"description": {
+								"inheritDirect": "Genel proxy yapılandırılmamış, doğrudan bağlanılır. Daha sonra bir genel proxy yapılandırılırsa bu monitör onu kullanır.",
+								"inheritGlobal": "Genel proxy ayarını kullan",
+								"none": "Daha sonra genel proxy etkinleştirilse bile her zaman doğrudan bağlanır.",
+								"custom": "Bu monitörün kontrollerini belirli bir proxy üzerinden yönlendirin. Genel proxy'yi geçersiz kılar"
+							}
+						},
+						"proxy": {
+							"label": "Proxy sunucusu"
 						},
 						"game": {
 							"label": "Oyun seç",
@@ -667,6 +786,10 @@
 				"notifications": {
 					"description": "Kullanmak istediğiniz bildirim kanallarını seçin",
 					"title": "Bildirimler"
+				},
+				"tags": {
+					"description": "Bu monitöre uygulamak istediğiniz etiketleri seçin",
+					"title": "Etiketler"
 				},
 				"type": {
 					"description": "Gerçekleştirilecek kontrol türünü seçin",
@@ -901,6 +1024,7 @@
 					"disk": "Disk kullanımı",
 					"netBytesRecv": "{{name}} - Alınan bayt",
 					"netBytesSent": "{{name}} - Gönderilen bayt",
+					"loopbackOnlyNotice": "Capture yalnızca konteyner ağ arayüzlerini görüyor ve hiçbiri gerçek trafik taşımıyor. Bu, Capture yalnızca kendi ağ ad alanını görebilen bir konteyner içinde çalıştığında normaldir — ana makineye benzer adlara sahip arayüzler (eth0, ens3) ana makinenin değil, konteynerin sanal arayüzleridir. Gerçek ağ etkinliğini görmek için Capture'ı doğrudan ana makinede çalıştırın.",
 					"temp": "Sıcaklık"
 				}
 			},
@@ -953,6 +1077,37 @@
 				"description": "Sunucu performansını izleyin, darboğazları belirleyin ve gerçek zamanlı altyapı izleme ile güvenilirliği sağlayın."
 			}
 		},
+		"tags": {
+			"header": {
+				"title": "Etiketler",
+				"description": "Monitörlerinizi etiketlerle düzenleyin"
+			},
+			"fallback": {
+				"title": "Henüz etiket yok",
+				"description": "Monitörlerinizi etiketlerle düzenleyin. Bir etiket oluşturup bir monitöre atadığınızda, uygulama genelinde bu etikete göre filtreleme yapabilir ve etiket ayrıntılarını burada görebilirsiniz.",
+				"actionButton": "Etiket oluştur"
+			},
+			"table": {
+				"headers": {
+					"color": "Renk",
+					"appearance": "Görünüm"
+				}
+			},
+			"form": {
+				"name": {
+					"title": "Etiket adı",
+					"description": "Etiketiniz için bir ad seçin",
+					"optionName": "Etiket adı",
+					"placeholder": "ör. Grup 1"
+				},
+				"color": {
+					"title": "Etiket rengi",
+					"description": "Etiketiniz için bir renk seçin",
+					"optionName": "Etiket rengi",
+					"placeholder": "ör. #13715B"
+				}
+			}
+		},
 		"logs": {
 			"fallback": {
 				"title": "Henüz günlük yok",
@@ -966,6 +1121,8 @@
 			"logLevelSelect": {
 				"label": "Günlük seviyesi"
 			},
+			"workers": "İşçiler",
+			"workersExplainers": "İşçi süreçlerini gösterir. İşçi kimlikleri kısaltılmıştır, tam kimliği görmek için üzerine gelin",
 			"jobQueue": "İş kuyruğu",
 			"jobQueueExplainer": "<highlight>Vurgulanan satırlar</highlight> şu anda bir işçi tarafından işlenmekte olan işlerdir.",
 			"failedJobs": "Başarısız işler",
@@ -986,6 +1143,26 @@
 					"totalHeapSize": "Toplam heap boyutu",
 					"osMemoryLimit": "İşletim sistemi bellek limiti"
 				},
+				"mongoDBStats": {
+					"readyState": "Hazır olma durumu",
+					"readsPerSecond": "Okuma/sn",
+					"insertsPerSecond": "Ekleme/sn",
+					"updatesPerSecond": "Güncelleme/sn",
+					"deletesPerSecond": "Silme/sn",
+					"writesPerSecond": "Toplam yazma/sn",
+					"host": "Ana bilgisayar",
+					"port": "Port",
+					"dbName": "Veritabanı adı",
+					"storageSize": "Depolama boyutu"
+				},
+				"mongoDBCollectionStats": {
+					"documents": "Belgeler: {{count}}",
+					"bucketCount": "Bucket sayısı: {{count}}",
+					"storageSize": "Depolama boyutu: {{size}}",
+					"indexSize": "Dizin boyutu: {{size}}",
+					"totalSize": "Toplam boyut: {{size}}",
+					"dbUsageTooltip": "DB depolama payı: %{{percentage}}"
+				},
 				"gauges": {
 					"heapAllocation": "Heap tahsisi",
 					"heapUsage": "Heap kullanımı",
@@ -1005,17 +1182,32 @@
 					"memoryCpu": {
 						"title": "Bellek ve CPU",
 						"description": "Sürecin ayrılmış belleğini ve ana makinenin CPU'sunu nasıl kullandığı."
+					},
+					"mongoDBStats": {
+						"title": "MongoDB istatistikleri",
+						"description": "MongoDB metriklerinin anlık görüntüsü"
+					},
+					"mongoDBCollectionStats": {
+						"title": "MongoDB koleksiyon istatistikleri",
+						"description": "MongoDB koleksiyonlarına ait istatistikler"
 					}
 				}
 			},
 			"table": {
 				"headers": {
+					"host": "Ana bilgisayar",
+					"processId": "Süreç kimliği",
+					"workerId": "İşçi kimliği",
+					"workerMode": "İşçi modu",
+					"lastSeenAt": "Son görülme",
 					"timestamp": "Zaman damgası",
 					"level": "Seviye",
 					"service": "Servis",
 					"monitorId": "Monitör ID",
 					"runCount": "Çalışma sayısı",
 					"failCount": "Başarısızlık sayısı",
+					"nextScheduledAt": "Sonraki çalıştırma",
+					"lockedBy": "Kilitleyen",
 					"lastFinishedAt": "Son tamamlanma zamanı",
 					"lastFailedAt": "Son başarısızlık zamanı",
 					"failReason": "Başarısızlık nedeni",
@@ -1142,7 +1334,22 @@
 				"type": {
 					"description": "Oluşturulacak bildirim kanalı türünü seçin.",
 					"optionType": "Tür",
-					"title": "Kanal türü"
+					"title": "Kanal türü",
+					"value": {
+						"email": "E-posta",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"signalgrid": "Signalgrid",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "Telegram yapılandırması",
@@ -1160,6 +1367,14 @@
 					"optionUserKey": "Kullanıcı anahtarı",
 					"placeholderUserKey": "Kullanıcı anahtarını girin"
 				},
+				"signalgrid": {
+					"title": "Signalgrid yapılandırması",
+					"description": "Cihazlarınızda anlık bildirim almak için Signalgrid'i yapılandırın.",
+					"optionClientKey": "İstemci anahtarı",
+					"placeholderClientKey": "Signalgrid istemci anahtarınız",
+					"optionChannel": "Kanal",
+					"placeholderChannel": "Signalgrid kanalınız"
+				},
 				"twilio": {
 					"title": "Twilio yapılandırması",
 					"description": "SMS göndermek için Twilio hesap kimlik bilgilerinizi girin.",
@@ -1171,6 +1386,14 @@
 					"placeholderFromNumber": "+1234567890",
 					"optionToNumber": "Alıcı numara",
 					"placeholderToNumber": "+1234567890"
+				},
+				"ntfy": {
+					"title": "ntfy yapılandırması",
+					"description": "Anlık bildirimler için bir ntfy sunucusu ve konusu yapılandırın.",
+					"optionServerUrl": "Sunucu URL'si",
+					"placeholderServerUrl": "https://ntfy.sh",
+					"optionTopic": "Konu",
+					"placeholderTopic": "checkmate-alerts"
 				}
 			},
 			"table": {
@@ -1260,6 +1483,22 @@
 							"label": "Grafik türü",
 							"histogram": "Histogram",
 							"heatmap": "Isı haritası"
+						}
+					}
+				},
+				"globalProxy": {
+					"title": "Genel proxy",
+					"description": "İzleme kontrollerini varsayılan olarak bir proxy üzerinden yönlendirin. Proxy ayarı \"Varsayılan\" olan tüm HTTP monitörleri için geçerlidir; \"Asla proxy kullanma\" veya özel bir proxy olarak ayarlanmış monitörler etkilenmez.",
+					"option": {
+						"enabled": {
+							"label": "Genel proxy kullan"
+						},
+						"proxy": {
+							"label": "Bir genel proxy seçin"
+						},
+						"empty": {
+							"text": "Henüz yapılandırılmış proxy yok.",
+							"link": "Önce bir tane oluşturun"
 						}
 					}
 				},
@@ -1602,6 +1841,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "Durum sayfası başarıyla silindi",
+			"rangeSelectorAria": "Geçmiş aralığı",
+			"rangeExceedsRetention": "Kontrol geçmişi saklama süresi {{days}} gün olarak ayarlı. Daha fazla veri için saklama süresini artırın.",
+			"range": {
+				"latest": "En son",
+				"30d": "30 gün",
+				"60d": "60 gün",
+				"90d": "90 gün"
+			},
 			"fallback": {
 				"title": "Henüz durum sayfası yok",
 				"actionButton": "Durum sayfası oluşturun!",
@@ -1629,6 +1876,9 @@
 					"avg": "ort {{value}}",
 					"downTooltip": "Çalışmıyor",
 					"heatmapAria": "Yanıt süresi ısı haritası",
+					"dayAria": "{{date}}, çalışma süresi {{uptime}}",
+					"dayUptime": "Çalışma süresi: {{uptime}} ({{upChecks}}/{{totalChecks}} kontrol)",
+					"dayAvgResponse": "Ort. yanıt: {{value}}",
 					"max": "maks {{value}}"
 				},
 				"status": {
@@ -1640,6 +1890,10 @@
 					"up": "Çalışıyor"
 				},
 				"incidents": {
+					"modalTitle": "Olaylar: {{date}}",
+					"loading": "Yükleniyor...",
+					"noIncidents": "Bu gün için bildirilen olay yok.",
+					"ongoing": "Devam ediyor",
 					"errorLoading": "Olaylar yüklenemedi."
 				}
 			},
@@ -1698,6 +1952,11 @@
 						"url": {
 							"label": "Durum sayfası adresiniz",
 							"placeholder": "my-status-page"
+						},
+						"customDomain": {
+							"label": "Özel alan adı",
+							"placeholder": "status.example.com",
+							"helper": "İsteğe bağlı. Durum sayfasını kendi alan adınızda sunmak için bir DNS kaydını bu Checkmate örneğine yönlendirin."
 						}
 					}
 				},
@@ -1764,6 +2023,10 @@
 							"description": "Serifli başlıklar ve ince ayraçlar. Belirgin ve sakin.",
 							"name": "Editöryal"
 						},
+						"minimal": {
+							"name": "Minimal",
+							"description": "Yalnızca temel öğelerle düz, odaklı ve kompakt."
+						},
 						"modern": {
 							"description": "Atan bir durum noktası ve yumuşakça solan kartlarla SaaS kalitesinde.",
 							"name": "Modern"
@@ -1780,11 +2043,24 @@
 					"dark": "Yalnızca koyu",
 					"label": "Tema modu",
 					"light": "Yalnızca açık"
+				},
+				"customCSS": {
+					"title": "Özel CSS",
+					"description": "Herkese açık durum sayfanızın görünümüne ince ayar yapmak için özel CSS ekleyin.",
+					"option": {
+						"customCSS": {
+							"label": "Özel CSS",
+							"placeholder": "footer { display: none; }"
+						}
+					}
 				}
 			},
 			"header": {
 				"title": "Durum sayfaları",
 				"description": "Müşterilerinize ve paydaşlarınıza gerçek zamanlı çalışma süresi ve olay geçmişini gösteren herkese açık sayfalar yayınlayın."
+			},
+			"preview": {
+				"title": "Durum sayfası önizlemesi"
 			},
 			"editorial": {
 				"allUp": "Tüm sistemler normal şekilde çalışıyor.",
@@ -1798,11 +2074,13 @@
 			"filters": {
 				"search": {
 					"placeholder": "Monitör ara..."
-				}
+				},
+				"activeTags": "Aktif etiketler"
 			},
 			"table": {
 				"headers": {
-					"responseTime": "Yanıt süresi"
+					"responseTime": "Yanıt süresi",
+					"uptime": "Çalışma süresi %"
 				}
 			},
 			"fallback": {

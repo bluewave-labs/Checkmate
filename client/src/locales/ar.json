@@ -32,6 +32,8 @@
 			"pause": "إيقاف مؤقت",
 			"resume": "استئناف",
 			"save": "حفظ",
+			"next": "التالي",
+			"back": "رجوع",
 			"sendInvite": "إرسال دعوة",
 			"test": "اختبار",
 			"testNotifications": "اختبار الإشعارات",
@@ -47,19 +49,37 @@
 			"exportToJSON": "تصدير إلى JSON",
 			"importFromJSON": "استيراد من JSON",
 			"clearFilters": "مسح المرشحات",
-			"removeUser": "إزالة المستخدم"
+			"removeUser": "إزالة المستخدم",
+			"removeItem": "إزالة {{item}}"
 		},
 		"charts": {
 			"labels": {
 				"averageResponseTime": "متوسط وقت الاستجابة",
+				"cpuUsage": "استخدام CPU",
 				"downtime": "وقت التوقف",
 				"high": "مرتفع",
 				"low": "منخفض",
+				"memoryUsage": "استخدام الذاكرة",
+				"responseTime": "وقت الاستجابة",
+				"timingPhases": "مراحل التوقيت",
+				"totalResponseTime": "إجمالي وقت الاستجابة",
 				"uptime": "وقت التشغيل"
 			},
 			"histogram": {
 				"avg": "المتوسط: {{value}}",
-				"max": "الحد الأقصى: {{value}}"
+				"max": "الحد الأقصى: {{value}}",
+				"responseTime": "وقت الاستجابة: {{value}}",
+				"total": "الإجمالي: {{value}}",
+				"avgCpuUsage": "متوسط استخدام CPU: {{value}}",
+				"avgMemoryUsage": "متوسط استخدام الذاكرة: {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "الطلب",
+				"firstByte": "أول بايت",
+				"download": "التنزيل"
 			}
 		},
 		"dialogs": {
@@ -74,10 +94,17 @@
 			"na": "غير متوفر",
 			"resolved": "تم الحل",
 			"responseTime": "وقت الاستجابة",
+			"state": "الحالة",
+			"uptime": "وقت التشغيل",
+			"health": "السلامة",
+			"restarts": "مرات إعادة التشغيل",
 			"idle": "خامل",
 			"running": "قيد التشغيل"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "اكتب للبحث"
+			},
 			"role": {
 				"option": {
 					"role": {
@@ -120,7 +147,8 @@
 				"url": "الرابط",
 				"interval": "الفاصل الزمني",
 				"active": "نشط",
-				"responseTime": "وقت الاستجابة"
+				"responseTime": "وقت الاستجابة",
+				"tags": "الوسوم"
 			}
 		},
 		"statusCode": {
@@ -250,6 +278,63 @@
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "الوكلاء",
+				"description": "إدارة الخوادم الوكيلة لتوجيه حركة مراقبة HTTP."
+			},
+			"fallback": {
+				"title": "لا توجد خوادم وكيلة بعد",
+				"description": "وجّه فحوصات مراقبات HTTP عبر خادم وكيل. بعد إنشاء خادم وكيل، يمكنك اختياره لمراقبات فردية أو تعيينه كخادم افتراضي عام في الإعدادات.",
+				"actionButton": "إنشاء خادم وكيل"
+			},
+			"form": {
+				"name": {
+					"title": "اسم الخادم الوكيل",
+					"description": "اسم مألوف لتمييز هذا الخادم الوكيل",
+					"optionName": "اسم الخادم الوكيل",
+					"placeholder": "خادمي الوكيل"
+				},
+				"server": {
+					"title": "الخادم الوكيل",
+					"description": "عنوان الوصول إلى الخادم الوكيل. حدّد البروتوكول الذي يستخدمه Checkmate للاتصال به، واسم المضيف أو عنوان IP، والمنفذ الذي يستمع عليه.",
+					"option": {
+						"protocol": {
+							"label": "البروتوكول"
+						},
+						"host": {
+							"label": "اسم المضيف / عنوان IP",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "المنفذ"
+						}
+					}
+				},
+				"auth": {
+					"title": "المصادقة",
+					"description": "اختياري. مطلوب فقط إذا كان الخادم الوكيل يتطلب مصادقة أساسية.",
+					"option": {
+						"username": {
+							"label": "اسم المستخدم",
+							"placeholder": "اسم مستخدم الخادم الوكيل",
+							"labelSet": "تم تعيين اسم المستخدم. انقر على \"إعادة تعيين\" لتغييره."
+						},
+						"password": {
+							"label": "كلمة المرور",
+							"labelSet": "تم تعيين كلمة المرور. انقر على \"إعادة تعيين\" لتغييرها."
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "البروتوكول",
+					"host": "المضيف",
+					"port": "المنفذ"
+				}
+			}
+		},
 		"notFound": {
 			"title": "يا إلهي! لقد أسقطت السوشي!",
 			"subtitle": "إما أن الرابط غير موجود، أو ليس لديك صلاحية الوصول إليه."
@@ -471,7 +556,9 @@
 				},
 				"statBoxes": {
 					"activeFor": "نشط منذ",
+					"checkingEvery": "الفحص كل {{interval}}",
 					"certificateExpiry": "انتهاء الشهادة",
+					"domainExpiry": "انتهاء النطاق",
 					"lastCheck": "آخر فحص",
 					"lastResponseTime": "آخر وقت استجابة",
 					"serviceIsDown": "الخدمة معطلة"
@@ -517,6 +604,13 @@
 				"advanced": {
 					"description": "إعدادات اختيارية لحالات الاستخدام المتقدمة",
 					"option": {
+						"method": {
+							"label": "طريقة الطلب",
+							"description": {
+								"GET": "تجلب GET الاستجابة الكاملة بما في ذلك المحتوى. تدعم المطابقة المتقدمة بالكامل.",
+								"HEAD": "تجلب HEAD ترويسات الاستجابة فقط لتقليل الحمل على الهدف. تدعم مطابقة رمز الحالة لكنها لا تدعم المطابقة المتقدمة لعدم وجود محتوى."
+							}
+						},
 						"advancedMatching": {
 							"label": "استخدام المطابقة المتقدمة"
 						},
@@ -532,6 +626,10 @@
 							"equal": "يساوي",
 							"include": "يحتوي",
 							"regex": "تعبير عادي"
+						},
+						"customUpCodes": {
+							"label": "رموز الحالة المقبولة",
+							"description": "أضف أي رموز غير 2xx يجب اعتبارها ناجحة أيضاً."
 						}
 					},
 					"title": "إعدادات متقدمة"
@@ -565,6 +663,9 @@
 					"title": "تكرار الفحص"
 				},
 				"general": {
+					"url": {
+						"alert": "ستستخدم الفحوصات القادمة عنوان URL الجديد. يتم الاحتفاظ بالبيانات السابقة لهذا المراقب، لكنها جُمعت من عنوان URL القديم."
+					},
 					"option": {
 						"host": {
 							"label": "المضيف",
@@ -581,6 +682,24 @@
 						"url": {
 							"label": "URL",
 							"placeholder": "https://www.google.com"
+						},
+						"proxyMode": {
+							"label": "الخادم الوكيل",
+							"value": {
+								"inheritDirect": "افتراضي (اتصال مباشر)",
+								"inheritGlobal": "افتراضي ({{name}})",
+								"none": "عدم استخدام خادم وكيل مطلقاً",
+								"custom": "خادم وكيل مخصص"
+							},
+							"description": {
+								"inheritDirect": "لم يتم تهيئة خادم وكيل عام، لذا يتم الاتصال مباشرة. إذا تمت تهيئة خادم وكيل عام لاحقاً، فسيستخدمه هذا المراقب.",
+								"inheritGlobal": "استخدام إعداد الخادم الوكيل العام",
+								"none": "يتصل دائماً بشكل مباشر حتى لو تم تفعيل خادم وكيل عام لاحقاً.",
+								"custom": "توجيه فحوصات هذا المراقب عبر خادم وكيل محدد. يتجاوز الخادم الوكيل العام"
+							}
+						},
+						"proxy": {
+							"label": "الخادم الوكيل"
 						},
 						"game": {
 							"label": "اختر اللعبة",
@@ -667,6 +786,10 @@
 				"notifications": {
 					"description": "اختر قنوات الإشعارات التي تريد استخدامها",
 					"title": "الإشعارات"
+				},
+				"tags": {
+					"description": "اختر الوسوم التي تريد تطبيقها على هذا المراقب",
+					"title": "الوسوم"
 				},
 				"type": {
 					"description": "اختر نوع الفحص المراد تنفيذه",
@@ -901,6 +1024,7 @@
 					"disk": "استخدام القرص",
 					"netBytesRecv": "{{name}} - البايتات المستلمة",
 					"netBytesSent": "{{name}} - البايتات المرسلة",
+					"loopbackOnlyNotice": "لا يرى Capture سوى واجهات شبكة الحاوية، ولا يحمل أي منها حركة مرور حقيقية. هذا طبيعي عندما يعمل Capture داخل حاوية لا يمكنها إلا مراقبة مساحة أسماء الشبكة الخاصة بها — فالواجهات ذات الأسماء الشبيهة بالمضيف (eth0، ens3) هي واجهات افتراضية للحاوية وليست واجهات المضيف. شغّل Capture مباشرة على المضيف لرؤية نشاط الشبكة الحقيقي.",
 					"temp": "الحرارة"
 				}
 			},
@@ -953,6 +1077,37 @@
 				"description": "تتبّع أداء الخوادم وحدد الاختناقات واضمن الموثوقية مع مراقبة البنية التحتية في الوقت الفعلي."
 			}
 		},
+		"tags": {
+			"header": {
+				"title": "الوسوم",
+				"description": "نظّم مراقباتك باستخدام الوسوم"
+			},
+			"fallback": {
+				"title": "لا توجد وسوم بعد",
+				"description": "نظّم مراقباتك باستخدام الوسوم. بعد إنشاء وسم وتعيينه لمراقب، ستتمكن من التصفية حسب هذا الوسم في جميع أنحاء التطبيق وعرض تفاصيل الوسم هنا.",
+				"actionButton": "إنشاء وسم"
+			},
+			"table": {
+				"headers": {
+					"color": "اللون",
+					"appearance": "المظهر"
+				}
+			},
+			"form": {
+				"name": {
+					"title": "اسم الوسم",
+					"description": "اختر اسماً للوسم",
+					"optionName": "اسم الوسم",
+					"placeholder": "مثال: المجموعة 1"
+				},
+				"color": {
+					"title": "لون الوسم",
+					"description": "اختر لوناً للوسم",
+					"optionName": "لون الوسم",
+					"placeholder": "مثال: #13715B"
+				}
+			}
+		},
 		"logs": {
 			"fallback": {
 				"title": "لا توجد سجلات بعد",
@@ -966,6 +1121,8 @@
 			"logLevelSelect": {
 				"label": "مستوى السجل"
 			},
+			"workers": "العمّال",
+			"workersExplainers": "يعرض عمليات العمّال. معرّفات العمّال مختصرة، مرّر المؤشر لرؤية المعرّف الكامل",
 			"jobQueue": "قائمة المهام",
 			"jobQueueExplainer": "<highlight>الصفوف المميزة</highlight> هي المهام التي تتم معالجتها حالياً بواسطة عامل.",
 			"failedJobs": "المهام الفاشلة",
@@ -986,6 +1143,26 @@
 					"totalHeapSize": "إجمالي حجم الذاكرة",
 					"osMemoryLimit": "حد ذاكرة نظام التشغيل"
 				},
+				"mongoDBStats": {
+					"readyState": "حالة الجاهزية",
+					"readsPerSecond": "القراءات/ث",
+					"insertsPerSecond": "الإدراجات/ث",
+					"updatesPerSecond": "التحديثات/ث",
+					"deletesPerSecond": "الحذف/ث",
+					"writesPerSecond": "إجمالي الكتابات/ث",
+					"host": "المضيف",
+					"port": "المنفذ",
+					"dbName": "اسم قاعدة البيانات",
+					"storageSize": "حجم التخزين"
+				},
+				"mongoDBCollectionStats": {
+					"documents": "المستندات: {{count}}",
+					"bucketCount": "عدد الحاويات: {{count}}",
+					"storageSize": "حجم التخزين: {{size}}",
+					"indexSize": "حجم الفهرس: {{size}}",
+					"totalSize": "الحجم الإجمالي: {{size}}",
+					"dbUsageTooltip": "{{percentage}}% من تخزين قاعدة البيانات"
+				},
 				"gauges": {
 					"heapAllocation": "تخصيص الذاكرة",
 					"heapUsage": "استخدام الذاكرة",
@@ -1005,17 +1182,32 @@
 					"memoryCpu": {
 						"title": "الذاكرة والمعالج",
 						"description": "كيف تستخدم العملية الذاكرة المخصصة لها ومعالج الجهاز المضيف."
+					},
+					"mongoDBStats": {
+						"title": "إحصائيات MongoDB",
+						"description": "لقطة لمقاييس MongoDB"
+					},
+					"mongoDBCollectionStats": {
+						"title": "إحصائيات مجموعات MongoDB",
+						"description": "إحصائيات مجموعات MongoDB"
 					}
 				}
 			},
 			"table": {
 				"headers": {
+					"host": "المضيف",
+					"processId": "معرّف العملية",
+					"workerId": "معرّف العامل",
+					"workerMode": "وضع العامل",
+					"lastSeenAt": "آخر ظهور",
 					"timestamp": "الطابع الزمني",
 					"level": "المستوى",
 					"service": "الخدمة",
 					"monitorId": "معرّف المراقب",
 					"runCount": "عدد التشغيلات",
 					"failCount": "عدد حالات الفشل",
+					"nextScheduledAt": "التشغيل التالي",
+					"lockedBy": "مقفل بواسطة",
 					"lastFinishedAt": "آخر انتهاء في",
 					"lastFailedAt": "آخر فشل في",
 					"failReason": "سبب الفشل",
@@ -1142,7 +1334,22 @@
 				"type": {
 					"description": "اختر نوع قناة الإشعارات المراد إنشاؤها.",
 					"optionType": "النوع",
-					"title": "نوع القناة"
+					"title": "نوع القناة",
+					"value": {
+						"email": "البريد الإلكتروني",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"signalgrid": "Signalgrid",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "تهيئة Telegram",
@@ -1160,6 +1367,14 @@
 					"optionUserKey": "مفتاح المستخدم",
 					"placeholderUserKey": "أدخل مفتاح المستخدم"
 				},
+				"signalgrid": {
+					"title": "إعدادات Signalgrid",
+					"description": "قم بتهيئة Signalgrid لتلقي الإشعارات الفورية على أجهزتك.",
+					"optionClientKey": "مفتاح العميل",
+					"placeholderClientKey": "مفتاح عميل Signalgrid الخاص بك",
+					"optionChannel": "القناة",
+					"placeholderChannel": "قناة Signalgrid الخاصة بك"
+				},
 				"twilio": {
 					"title": "إعدادات Twilio",
 					"description": "أدخل بيانات اعتماد حساب Twilio لإرسال الرسائل النصية.",
@@ -1171,6 +1386,14 @@
 					"placeholderFromNumber": "+1234567890",
 					"optionToNumber": "إلى الرقم",
 					"placeholderToNumber": "+1234567890"
+				},
+				"ntfy": {
+					"title": "إعدادات ntfy",
+					"description": "قم بتهيئة خادم وموضوع ntfy للإشعارات الفورية.",
+					"optionServerUrl": "عنوان URL للخادم",
+					"placeholderServerUrl": "https://ntfy.sh",
+					"optionTopic": "الموضوع",
+					"placeholderTopic": "checkmate-alerts"
 				}
 			},
 			"table": {
@@ -1260,6 +1483,22 @@
 							"label": "نوع المخطط",
 							"histogram": "مدرج تكراري",
 							"heatmap": "خريطة حرارية"
+						}
+					}
+				},
+				"globalProxy": {
+					"title": "الخادم الوكيل العام",
+					"description": "توجيه فحوصات المراقبة عبر خادم وكيل بشكل افتراضي. ينطبق على جميع مراقبات HTTP التي يكون إعداد الخادم الوكيل فيها \"افتراضي\"؛ ولا تتأثر المراقبات المعيّنة على \"عدم استخدام خادم وكيل مطلقاً\" أو على خادم وكيل مخصص.",
+					"option": {
+						"enabled": {
+							"label": "استخدام الخادم الوكيل العام"
+						},
+						"proxy": {
+							"label": "اختر خادماً وكيلاً عاماً"
+						},
+						"empty": {
+							"text": "لم تتم تهيئة أي خوادم وكيلة بعد.",
+							"link": "أنشئ واحداً أولاً"
 						}
 					}
 				},
@@ -1602,6 +1841,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "تم حذف صفحة الحالة بنجاح",
+			"rangeSelectorAria": "نطاق السجل",
+			"rangeExceedsRetention": "تم تعيين فترة الاحتفاظ بسجل الفحوصات على {{days}} يوماً. زد فترة الاحتفاظ للحصول على مزيد من البيانات.",
+			"range": {
+				"latest": "الأحدث",
+				"30d": "30 يوماً",
+				"60d": "60 يوماً",
+				"90d": "90 يوماً"
+			},
 			"fallback": {
 				"title": "لا توجد بعد صفحات حالة",
 				"actionButton": "أنشئ صفحة حالة!",
@@ -1629,6 +1876,9 @@
 					"avg": "متوسط {{value}}",
 					"downTooltip": "متوقف",
 					"heatmapAria": "خريطة حرارية لزمن الاستجابة",
+					"dayAria": "{{date}}، وقت التشغيل {{uptime}}",
+					"dayUptime": "وقت التشغيل: {{uptime}} ({{upChecks}}/{{totalChecks}} فحص)",
+					"dayAvgResponse": "متوسط الاستجابة: {{value}}",
 					"max": "أقصى {{value}}"
 				},
 				"status": {
@@ -1640,6 +1890,10 @@
 					"up": "قيد التشغيل"
 				},
 				"incidents": {
+					"modalTitle": "حوادث يوم {{date}}",
+					"loading": "جارٍ التحميل...",
+					"noIncidents": "لم يتم الإبلاغ عن أي حوادث في هذا اليوم.",
+					"ongoing": "مستمرة",
 					"errorLoading": "فشل تحميل الحوادث."
 				}
 			},
@@ -1698,6 +1952,11 @@
 						"url": {
 							"label": "عنوان صفحة الحالة",
 							"placeholder": "my-status-page"
+						},
+						"customDomain": {
+							"label": "نطاق مخصص",
+							"placeholder": "status.example.com",
+							"helper": "اختياري. وجّه سجل DNS إلى نسخة Checkmate هذه لعرض صفحة الحالة على نطاقك الخاص."
 						}
 					}
 				},
@@ -1764,6 +2023,10 @@
 							"description": "عناوين بخط مسرف وفواصل دقيقة. مميز وهادئ.",
 							"name": "تحريري"
 						},
+						"minimal": {
+							"name": "بسيط",
+							"description": "مسطح ومركّز ومضغوط، يقتصر على الأساسيات فقط."
+						},
 						"modern": {
 							"description": "بجودة SaaS مع نقطة حالة نابضة وبطاقات تتلاشى بنعومة.",
 							"name": "حديث"
@@ -1780,11 +2043,24 @@
 					"dark": "داكن فقط",
 					"label": "وضع السمة",
 					"light": "فاتح فقط"
+				},
+				"customCSS": {
+					"title": "CSS مخصص",
+					"description": "أضف CSS مخصصاً لضبط مظهر صفحة الحالة العامة بدقة.",
+					"option": {
+						"customCSS": {
+							"label": "CSS مخصص",
+							"placeholder": "footer { display: none; }"
+						}
+					}
 				}
 			},
 			"header": {
 				"title": "صفحات الحالة",
 				"description": "انشر صفحات عامة تُظهر للعملاء وأصحاب المصلحة وقت التشغيل الفعلي وتاريخ الحوادث."
+			},
+			"preview": {
+				"title": "معاينة صفحة الحالة"
 			},
 			"editorial": {
 				"allUp": "جميع الأنظمة تعمل بشكل طبيعي.",
@@ -1798,11 +2074,13 @@
 			"filters": {
 				"search": {
 					"placeholder": "البحث في المراقبات..."
-				}
+				},
+				"activeTags": "الوسوم المحددة"
 			},
 			"table": {
 				"headers": {
-					"responseTime": "وقت الاستجابة"
+					"responseTime": "وقت الاستجابة",
+					"uptime": "وقت التشغيل %"
 				}
 			},
 			"fallback": {

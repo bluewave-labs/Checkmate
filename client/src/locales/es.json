@@ -32,6 +32,8 @@
 			"pause": "Pausar",
 			"resume": "Reanudar",
 			"save": "Guardar",
+			"next": "Siguiente",
+			"back": "Atrás",
 			"sendInvite": "Enviar invitación",
 			"test": "Probar",
 			"testNotifications": "Probar notificaciones",
@@ -47,19 +49,37 @@
 			"exportToJSON": "Exportar a JSON",
 			"importFromJSON": "Importar desde JSON",
 			"clearFilters": "Limpiar filtros",
-			"removeUser": "Eliminar usuario"
+			"removeUser": "Eliminar usuario",
+			"removeItem": "Quitar {{item}}"
 		},
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Tiempo de respuesta promedio",
+				"cpuUsage": "Uso de CPU",
 				"downtime": "Tiempo de inactividad",
 				"high": "alto",
 				"low": "bajo",
+				"memoryUsage": "Uso de memoria",
+				"responseTime": "Tiempo de respuesta",
+				"timingPhases": "Fases de la solicitud",
+				"totalResponseTime": "Tiempo de respuesta total",
 				"uptime": "Tiempo de actividad"
 			},
 			"histogram": {
 				"avg": "Prom: {{value}}",
-				"max": "Máx: {{value}}"
+				"max": "Máx: {{value}}",
+				"responseTime": "Tiempo de respuesta: {{value}}",
+				"total": "Total: {{value}}",
+				"avgCpuUsage": "Uso medio de CPU: {{value}}",
+				"avgMemoryUsage": "Uso medio de memoria: {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "Solicitud",
+				"firstByte": "Primer byte",
+				"download": "Descarga"
 			}
 		},
 		"dialogs": {
@@ -74,10 +94,17 @@
 			"na": "N/D",
 			"resolved": "Resuelto",
 			"responseTime": "Tiempo de respuesta",
+			"state": "Estado",
+			"uptime": "Tiempo de actividad",
+			"health": "Salud",
+			"restarts": "Reinicios",
 			"idle": "Inactivo",
 			"running": "En ejecución"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "Escribe para buscar"
+			},
 			"role": {
 				"option": {
 					"role": {
@@ -120,7 +147,8 @@
 				"url": "URL",
 				"interval": "Intervalo",
 				"active": "Activo",
-				"responseTime": "Tiempo de respuesta"
+				"responseTime": "Tiempo de respuesta",
+				"tags": "Etiquetas"
 			}
 		},
 		"statusCode": {
@@ -250,6 +278,63 @@
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "Proxies",
+				"description": "Gestiona tus servidores proxy para enrutar el tráfico de monitoreo HTTP."
+			},
+			"fallback": {
+				"title": "Aún no hay proxies",
+				"description": "Enruta las verificaciones de los monitores HTTP a través de un servidor proxy. Cuando crees un proxy, podrás seleccionarlo en monitores individuales o establecerlo como predeterminado global en Configuración.",
+				"actionButton": "Crear un proxy"
+			},
+			"form": {
+				"name": {
+					"title": "Nombre del proxy",
+					"description": "Un nombre descriptivo para identificar este proxy",
+					"optionName": "Nombre del proxy",
+					"placeholder": "Mi proxy"
+				},
+				"server": {
+					"title": "Servidor proxy",
+					"description": "Dónde se puede acceder al servidor proxy. Indica el protocolo que usa Checkmate para conectarse, su nombre de host o dirección IP y el puerto en el que escucha.",
+					"option": {
+						"protocol": {
+							"label": "Protocolo"
+						},
+						"host": {
+							"label": "Nombre de host / dirección IP",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "Puerto"
+						}
+					}
+				},
+				"auth": {
+					"title": "Autenticación",
+					"description": "Opcional. Solo es necesario si el servidor proxy requiere autenticación básica.",
+					"option": {
+						"username": {
+							"label": "Nombre de usuario",
+							"placeholder": "Usuario del proxy",
+							"labelSet": "El nombre de usuario está configurado. Haz clic en Restablecer para cambiarlo."
+						},
+						"password": {
+							"label": "Contraseña",
+							"labelSet": "La contraseña está configurada. Haz clic en Restablecer para cambiarla."
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "Protocolo",
+					"host": "Host",
+					"port": "Puerto"
+				}
+			}
+		},
 		"notFound": {
 			"title": "¡Oh no! ¡Se le cayó el sushi!",
 			"subtitle": "La URL no existe o no tiene acceso a ella."
@@ -471,7 +556,9 @@
 				},
 				"statBoxes": {
 					"activeFor": "Activo desde hace",
+					"checkingEvery": "Verificando cada {{interval}}",
 					"certificateExpiry": "Vencimiento del certificado",
+					"domainExpiry": "Vencimiento del dominio",
 					"lastCheck": "Última verificación",
 					"lastResponseTime": "Último tiempo de respuesta",
 					"serviceIsDown": "El servicio está caído"
@@ -517,6 +604,13 @@
 				"advanced": {
 					"description": "Configuración opcional para casos de uso avanzados",
 					"option": {
+						"method": {
+							"label": "Método de solicitud",
+							"description": {
+								"GET": "GET obtiene la respuesta completa, incluido el cuerpo. Admite totalmente la coincidencia avanzada",
+								"HEAD": "HEAD obtiene solo los encabezados de la respuesta para reducir la carga en el destino. Admite la coincidencia por código de estado, pero no la coincidencia avanzada, ya que no hay cuerpo."
+							}
+						},
 						"advancedMatching": {
 							"label": "Usar coincidencia avanzada"
 						},
@@ -532,6 +626,10 @@
 							"equal": "Igual",
 							"include": "Contiene",
 							"regex": "Regex"
+						},
+						"customUpCodes": {
+							"label": "Códigos de estado aceptados",
+							"description": "Añade los códigos que no sean 2xx y que también deban considerarse correctos."
 						}
 					},
 					"title": "Configuración avanzada"
@@ -565,6 +663,9 @@
 					"title": "Frecuencia de verificación"
 				},
 				"general": {
+					"url": {
+						"alert": "Las próximas verificaciones usarán la nueva URL. Los datos históricos de este monitor se conservan, pero se recopilaron con la URL anterior."
+					},
 					"option": {
 						"host": {
 							"label": "Host",
@@ -581,6 +682,24 @@
 						"url": {
 							"label": "URL",
 							"placeholder": "https://www.google.com"
+						},
+						"proxyMode": {
+							"label": "Proxy",
+							"value": {
+								"inheritDirect": "Predeterminado (conexión directa)",
+								"inheritGlobal": "Predeterminado ({{name}})",
+								"none": "No usar nunca un proxy",
+								"custom": "Proxy personalizado"
+							},
+							"description": {
+								"inheritDirect": "No hay ningún proxy global configurado, se conecta directamente. Si más adelante se configura un proxy global, este monitor lo usará.",
+								"inheritGlobal": "Usar la configuración de proxy global",
+								"none": "Siempre se conecta directamente, aunque más adelante se active un proxy global.",
+								"custom": "Enruta las verificaciones de este monitor a través de un proxy específico. Anula el proxy global"
+							}
+						},
+						"proxy": {
+							"label": "Servidor proxy"
 						},
 						"game": {
 							"label": "Elige el juego",
@@ -667,6 +786,10 @@
 				"notifications": {
 					"description": "Seleccione los canales de notificación que desea usar",
 					"title": "Notificaciones"
+				},
+				"tags": {
+					"description": "Selecciona las etiquetas que quieres aplicar a este monitor",
+					"title": "Etiquetas"
 				},
 				"type": {
 					"description": "Seleccione el tipo de verificación a realizar",
@@ -901,6 +1024,7 @@
 					"disk": "Uso de disco",
 					"netBytesRecv": "{{name}} - Bytes recibidos",
 					"netBytesSent": "{{name}} - Bytes enviados",
+					"loopbackOnlyNotice": "Capture solo ve interfaces de red del contenedor y ninguna transporta tráfico real. Es normal cuando Capture se ejecuta dentro de un contenedor que solo puede observar su propio espacio de nombres de red — las interfaces con nombres de tipo host (eth0, ens3) son las interfaces virtuales del contenedor, no las del host. Ejecuta Capture directamente en el host para ver la actividad de red real.",
 					"temp": "Temp"
 				}
 			},
@@ -953,6 +1077,37 @@
 				"description": "Rastrea el rendimiento de los servidores, identifica cuellos de botella y garantiza la fiabilidad con monitoreo en tiempo real."
 			}
 		},
+		"tags": {
+			"header": {
+				"title": "Etiquetas",
+				"description": "Organiza tus monitores con etiquetas"
+			},
+			"fallback": {
+				"title": "Aún no hay etiquetas",
+				"description": "Organiza tus monitores con etiquetas. Cuando crees una etiqueta y la asignes a un monitor, podrás filtrar por ella en toda la aplicación y ver aquí sus detalles.",
+				"actionButton": "Crear una etiqueta"
+			},
+			"table": {
+				"headers": {
+					"color": "Color",
+					"appearance": "Apariencia"
+				}
+			},
+			"form": {
+				"name": {
+					"title": "Nombre de la etiqueta",
+					"description": "Elige un nombre para tu etiqueta",
+					"optionName": "Nombre de la etiqueta",
+					"placeholder": "p. ej. Grupo 1"
+				},
+				"color": {
+					"title": "Color de la etiqueta",
+					"description": "Elige un color para tu etiqueta",
+					"optionName": "Color de la etiqueta",
+					"placeholder": "p. ej. #13715B"
+				}
+			}
+		},
 		"logs": {
 			"fallback": {
 				"title": "Aún no hay registros",
@@ -966,6 +1121,8 @@
 			"logLevelSelect": {
 				"label": "Nivel de registro"
 			},
+			"workers": "Workers",
+			"workersExplainers": "Muestra los procesos worker. Los ID de worker están truncados; pasa el cursor por encima para ver el ID completo",
 			"jobQueue": "Cola de trabajos",
 			"jobQueueExplainer": "<highlight>Las filas resaltadas</highlight> son los trabajos que un worker está procesando actualmente.",
 			"failedJobs": "Trabajos fallidos",
@@ -986,6 +1143,26 @@
 					"totalHeapSize": "Tamaño total de heap",
 					"osMemoryLimit": "Límite de memoria del SO"
 				},
+				"mongoDBStats": {
+					"readyState": "Estado de conexión",
+					"readsPerSecond": "Lecturas/s",
+					"insertsPerSecond": "Inserciones/s",
+					"updatesPerSecond": "Actualizaciones/s",
+					"deletesPerSecond": "Eliminaciones/s",
+					"writesPerSecond": "Escrituras totales/s",
+					"host": "Host",
+					"port": "Puerto",
+					"dbName": "Nombre de la base de datos",
+					"storageSize": "Tamaño de almacenamiento"
+				},
+				"mongoDBCollectionStats": {
+					"documents": "Documentos: {{count}}",
+					"bucketCount": "Número de buckets: {{count}}",
+					"storageSize": "Tamaño de almacenamiento: {{size}}",
+					"indexSize": "Tamaño de índices: {{size}}",
+					"totalSize": "Tamaño total: {{size}}",
+					"dbUsageTooltip": "{{percentage}} % del almacenamiento de la BD"
+				},
 				"gauges": {
 					"heapAllocation": "Asignación de heap",
 					"heapUsage": "Uso de heap",
@@ -1005,17 +1182,32 @@
 					"memoryCpu": {
 						"title": "Memoria y CPU",
 						"description": "Cómo el proceso utiliza la memoria asignada y la CPU del host."
+					},
+					"mongoDBStats": {
+						"title": "Estadísticas de MongoDB",
+						"description": "Instantánea de las métricas de MongoDB"
+					},
+					"mongoDBCollectionStats": {
+						"title": "Estadísticas de colecciones de MongoDB",
+						"description": "Estadísticas de las colecciones de MongoDB"
 					}
 				}
 			},
 			"table": {
 				"headers": {
+					"host": "Host",
+					"processId": "ID de proceso",
+					"workerId": "ID de worker",
+					"workerMode": "Modo de worker",
+					"lastSeenAt": "Visto por última vez",
 					"timestamp": "Marca de tiempo",
 					"level": "Nivel",
 					"service": "Servicio",
 					"monitorId": "ID de monitor",
 					"runCount": "Conteo de ejecuciones",
 					"failCount": "Conteo de fallas",
+					"nextScheduledAt": "Próxima ejecución",
+					"lockedBy": "Bloqueado por",
 					"lastFinishedAt": "Última finalización",
 					"lastFailedAt": "Última falla",
 					"failReason": "Razón de falla",
@@ -1142,7 +1334,22 @@
 				"type": {
 					"description": "Seleccione el tipo de canal de notificación a crear.",
 					"optionType": "Tipo",
-					"title": "Tipo de canal"
+					"title": "Tipo de canal",
+					"value": {
+						"email": "Correo electrónico",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"signalgrid": "Signalgrid",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "Configuración de Telegram",
@@ -1160,6 +1367,14 @@
 					"optionUserKey": "Clave de usuario",
 					"placeholderUserKey": "Introduce la clave de usuario"
 				},
+				"signalgrid": {
+					"title": "Configuración de Signalgrid",
+					"description": "Configura Signalgrid para recibir notificaciones push en tus dispositivos.",
+					"optionClientKey": "Clave de cliente",
+					"placeholderClientKey": "Tu clave de cliente de Signalgrid",
+					"optionChannel": "Canal",
+					"placeholderChannel": "Tu canal de Signalgrid"
+				},
 				"twilio": {
 					"title": "Configuración de Twilio",
 					"description": "Introduce las credenciales de tu cuenta de Twilio para enviar SMS.",
@@ -1171,6 +1386,14 @@
 					"placeholderFromNumber": "+1234567890",
 					"optionToNumber": "Número de destino",
 					"placeholderToNumber": "+1234567890"
+				},
+				"ntfy": {
+					"title": "Configuración de ntfy",
+					"description": "Configura un servidor y un tema de ntfy para las notificaciones push.",
+					"optionServerUrl": "URL del servidor",
+					"placeholderServerUrl": "https://ntfy.sh",
+					"optionTopic": "Tema",
+					"placeholderTopic": "checkmate-alerts"
 				}
 			},
 			"table": {
@@ -1260,6 +1483,22 @@
 							"label": "Tipo de gráfico",
 							"histogram": "Histograma",
 							"heatmap": "Mapa de calor"
+						}
+					}
+				},
+				"globalProxy": {
+					"title": "Proxy global",
+					"description": "Enruta las verificaciones de monitoreo a través de un proxy de forma predeterminada. Se aplica a todos los monitores HTTP cuya configuración de proxy sea \"Predeterminado\"; los monitores configurados con \"No usar nunca un proxy\" o con un proxy personalizado no se ven afectados.",
+					"option": {
+						"enabled": {
+							"label": "Usar proxy global"
+						},
+						"proxy": {
+							"label": "Elige un proxy global"
+						},
+						"empty": {
+							"text": "Aún no hay proxies configurados.",
+							"link": "Crea uno primero"
 						}
 					}
 				},
@@ -1602,6 +1841,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "Página de estado eliminada exitosamente",
+			"rangeSelectorAria": "Rango del historial",
+			"rangeExceedsRetention": "La retención del historial de verificaciones está configurada en {{days}} días. Aumenta la retención para obtener más datos.",
+			"range": {
+				"latest": "Reciente",
+				"30d": "30 días",
+				"60d": "60 días",
+				"90d": "90 días"
+			},
 			"fallback": {
 				"title": "Aún no hay páginas de estado",
 				"actionButton": "¡Cree una página de estado!",
@@ -1629,6 +1876,9 @@
 					"avg": "prom {{value}}",
 					"downTooltip": "Caído",
 					"heatmapAria": "Mapa de calor del tiempo de respuesta",
+					"dayAria": "{{date}}, {{uptime}} de tiempo de actividad",
+					"dayUptime": "Tiempo de actividad: {{uptime}} ({{upChecks}}/{{totalChecks}} verificaciones)",
+					"dayAvgResponse": "Respuesta media: {{value}}",
 					"max": "máx {{value}}"
 				},
 				"status": {
@@ -1640,6 +1890,10 @@
 					"up": "Operativo"
 				},
 				"incidents": {
+					"modalTitle": "Incidentes del {{date}}",
+					"loading": "Cargando...",
+					"noIncidents": "No se registraron incidentes este día.",
+					"ongoing": "En curso",
 					"errorLoading": "Error al cargar incidentes."
 				}
 			},
@@ -1698,6 +1952,11 @@
 						"url": {
 							"label": "Dirección de su página de estado",
 							"placeholder": "mi-pagina-de-estado"
+						},
+						"customDomain": {
+							"label": "Dominio personalizado",
+							"placeholder": "status.example.com",
+							"helper": "Opcional. Apunta un registro DNS a esta instancia de Checkmate para servir la página de estado en tu propio dominio."
 						}
 					}
 				},
@@ -1764,6 +2023,10 @@
 							"description": "Encabezados con serifa y divisores finos. Distintivo y tranquilo.",
 							"name": "Editorial"
 						},
+						"minimal": {
+							"name": "Minimalista",
+							"description": "Plano, centrado y compacto, solo con lo esencial."
+						},
 						"modern": {
 							"description": "Calidad SaaS con un punto de estado pulsante y tarjetas que se desvanecen suavemente.",
 							"name": "Moderno"
@@ -1780,11 +2043,24 @@
 					"dark": "Solo oscuro",
 					"label": "Modo de tema",
 					"light": "Solo claro"
+				},
+				"customCSS": {
+					"title": "CSS personalizado",
+					"description": "Añade CSS personalizado para ajustar el aspecto de tu página de estado pública.",
+					"option": {
+						"customCSS": {
+							"label": "CSS personalizado",
+							"placeholder": "footer { display: none; }"
+						}
+					}
 				}
 			},
 			"header": {
 				"title": "Páginas de estado",
 				"description": "Publica páginas públicas que muestren a tus clientes y partes interesadas la disponibilidad en tiempo real y el historial de incidentes."
+			},
+			"preview": {
+				"title": "Vista previa de la página de estado"
 			},
 			"editorial": {
 				"allUp": "Todos los sistemas funcionan con normalidad.",
@@ -1798,11 +2074,13 @@
 			"filters": {
 				"search": {
 					"placeholder": "Buscar monitores..."
-				}
+				},
+				"activeTags": "Etiquetas activas"
 			},
 			"table": {
 				"headers": {
-					"responseTime": "Tiempo de respuesta"
+					"responseTime": "Tiempo de respuesta",
+					"uptime": "Disponibilidad %"
 				}
 			},
 			"fallback": {
