@@ -184,6 +184,9 @@
 				"invalidFileFormat": "サポートされていないファイル形式！"
 			}
 		},
+		"multiSelect": {
+			"selectedCount_other": "{{count}} 件選択中"
+		},
 		"headerStatusPageControls": {
 			"publicLink": "公開リンク"
 		},

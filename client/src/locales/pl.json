@@ -201,6 +201,12 @@
 			"orDragAndDrop": "lub przeciągnij i upuść",
 			"supportedFormats": "Obsługiwane formaty"
 		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} wybrany",
+			"selectedCount_few": "{{count}} wybrane",
+			"selectedCount_many": "{{count}} wybranych",
+			"selectedCount_other": "{{count}} wybranych"
+		},
 		"offlineBanner": {
 			"reconnected": "Połączenie przywrócone",
 			"retry": "Ponów próbę",

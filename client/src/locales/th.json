@@ -184,6 +184,9 @@
 				"invalidFileFormat": "รูปแบบไฟล์ไม่รองรับ!"
 			}
 		},
+		"multiSelect": {
+			"selectedCount_other": "เลือกแล้ว {{count}} รายการ"
+		},
 		"headerStatusPageControls": {
 			"publicLink": "ลิงก์สาธารณะ"
 		},

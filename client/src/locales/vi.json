@@ -184,6 +184,9 @@
 				"invalidFileFormat": "Định dạng tệp không được hỗ trợ!"
 			}
 		},
+		"multiSelect": {
+			"selectedCount_other": "Đã chọn {{count}}"
+		},
 		"headerStatusPageControls": {
 			"publicLink": "Liên kết công khai"
 		},

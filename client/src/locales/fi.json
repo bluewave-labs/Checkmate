@@ -184,6 +184,10 @@
 				"invalidFileFormat": "Tiedostomuotoa ei tueta!"
 			}
 		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} valittu",
+			"selectedCount_other": "{{count}} valittu"
+		},
 		"headerStatusPageControls": {
 			"publicLink": "Julkinen linkki"
 		},

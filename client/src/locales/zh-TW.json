@@ -184,6 +184,9 @@
 				"invalidFileFormat": "不支援的檔案格式！"
 			}
 		},
+		"multiSelect": {
+			"selectedCount_other": "已選擇 {{count}} 項"
+		},
 		"headerStatusPageControls": {
 			"publicLink": "公開連結"
 		},

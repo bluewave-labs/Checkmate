@@ -64,6 +64,7 @@ export const GAP = {
 	TAB: "3px", // between folder tabs
 	SEGMENT: "2px", // between segmented control options
 	CONTROL: "8px", // between dropdowns, filters and selectors in a toolbar row
+	SELECTED: "6px", // between chips of selected values under a multi-select
 } as const;
 
 export const PADDING = {
@@ -108,6 +109,12 @@ export const FILTER_MENU_MIN_WIDTH = 180;
 
 // Width of each icon link in the page header group (help, docs, API)
 export const HEADER_LINK_WIDTH = 32;
+
+// Selected-items list under a multi-select: a count header and one row per pick
+export const SELECTED_LIST = {
+	HEADER_HEIGHT: 32,
+	ROW_HEIGHT: 34,
+} as const;
 
 // Every table header row is the same height, whatever its cells contain
 // (plain labels, sort arrows or a select-all checkbox)

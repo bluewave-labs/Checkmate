@@ -196,6 +196,10 @@
 				"invalidFileFormat": "Formato de arquivo não suportado!"
 			}
 		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} selecionado",
+			"selectedCount_other": "{{count}} selecionados"
+		},
 		"headerStatusPageControls": {
 			"publicLink": "Link público"
 		},

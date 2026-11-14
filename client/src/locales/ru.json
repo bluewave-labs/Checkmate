@@ -184,6 +184,12 @@
 				"invalidFileFormat": "Неподдерживаемый формат файла!"
 			}
 		},
+		"multiSelect": {
+			"selectedCount_one": "Выбран {{count}}",
+			"selectedCount_few": "Выбрано {{count}}",
+			"selectedCount_many": "Выбрано {{count}}",
+			"selectedCount_other": "Выбрано {{count}}"
+		},
 		"headerStatusPageControls": {
 			"publicLink": "Публичная ссылка"
 		},

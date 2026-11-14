@@ -184,6 +184,14 @@
 				"invalidFileFormat": "تنسيق الملف غير مدعوم!"
 			}
 		},
+		"multiSelect": {
+			"selectedCount_zero": "لم يتم تحديد أي عنصر",
+			"selectedCount_one": "تم تحديد عنصر واحد",
+			"selectedCount_two": "تم تحديد عنصرين",
+			"selectedCount_few": "تم تحديد {{count}} عناصر",
+			"selectedCount_many": "تم تحديد {{count}} عنصرًا",
+			"selectedCount_other": "تم تحديد {{count}} عنصر"
+		},
 		"headerStatusPageControls": {
 			"publicLink": "رابط عام"
 		},

@@ -184,6 +184,10 @@
 				"invalidFileFormat": "Desteklenmeyen dosya biçimi!"
 			}
 		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} seçildi",
+			"selectedCount_other": "{{count}} seçildi"
+		},
 		"headerStatusPageControls": {
 			"publicLink": "Herkese açık bağlantı"
 		},

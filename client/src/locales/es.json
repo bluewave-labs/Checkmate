@@ -184,6 +184,10 @@
 				"invalidFileFormat": "¡Formato de archivo no admitido!"
 			}
 		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} seleccionado",
+			"selectedCount_other": "{{count}} seleccionados"
+		},
 		"headerStatusPageControls": {
 			"publicLink": "Enlace público"
 		},

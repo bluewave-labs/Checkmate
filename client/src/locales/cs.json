@@ -184,6 +184,12 @@
 				"invalidFileFormat": "Nepodporovaný formát souboru!"
 			}
 		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} vybraná položka",
+			"selectedCount_few": "{{count}} vybrané položky",
+			"selectedCount_many": "{{count}} vybraných položek",
+			"selectedCount_other": "{{count}} vybraných položek"
+		},
 		"headerStatusPageControls": {
 			"publicLink": "Veřejný odkaz"
 		},

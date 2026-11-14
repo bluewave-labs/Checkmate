@@ -196,6 +196,10 @@
 				"invalidFileFormat": "Format de fitxer no admès!"
 			}
 		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} seleccionat",
+			"selectedCount_other": "{{count}} seleccionats"
+		},
 		"headerStatusPageControls": {
 			"publicLink": "Enllaç públic"
 		},
