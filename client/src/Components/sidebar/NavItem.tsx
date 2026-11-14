@@ -26,8 +26,6 @@ export const NavItem = ({
 }) => {
 	const { collapsed, itemInset } = useSidebar();
 	const theme = useTheme();
-	// Grouped items take their group's colours; ungrouped items stay grey with a
-	// brand-green active state
 	const tone = groupKey ? theme.palette.sidebar.groups[groupKey] : null;
 	const iconStroke = tone
 		? tone.solid

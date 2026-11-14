@@ -14,6 +14,7 @@ import {
 	ICON_SIZE,
 	ICON_STROKE,
 	INPUT_BASE_HEIGHT,
+	LAYOUT,
 	MOTION,
 	PADDING,
 	RADIUS,
@@ -22,7 +23,6 @@ import {
 export interface FilterChipOption {
 	value: string;
 	label: string;
-	// Optional custom rendering inside the menu (e.g. a coloured tag label)
 	content?: React.ReactNode;
 }
 
@@ -47,10 +47,7 @@ interface MultipleProps extends FilterChipBaseProps {
 // Selected values listed in the chip before collapsing the rest into "+N"
 const MAX_VISIBLE_VALUES = 2;
 
-// One filter per column, shown as "Label: value". It is
-// sized and bordered exactly like the dropdowns elsewhere (30px, 4px corners,
-// input border) so filter rows match across pages. Presentation only: it reports
-// the chosen value(s) through onChange exactly as a Select would.
+// "Label: value" filter, sized like a Select so filter rows line up
 export const FilterChip = (props: SingleProps | MultipleProps) => {
 	const theme = useTheme();
 	const menuId = useId();
@@ -148,7 +145,7 @@ export const FilterChip = (props: SingleProps | MultipleProps) => {
 							role={props.multiple ? "menuitemcheckbox" : "menuitemradio"}
 							aria-checked={isSelected}
 							onClick={() => handleSelect(option.value)}
-							sx={{ gap: theme.spacing(4), justifyContent: "space-between" }}
+							sx={{ gap: theme.spacing(LAYOUT.XS), justifyContent: "space-between" }}
 						>
 							<Box
 								component="span"

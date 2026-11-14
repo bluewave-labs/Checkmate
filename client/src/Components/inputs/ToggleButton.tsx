@@ -14,9 +14,6 @@ import {
 	RADIUS,
 } from "@/Utils/Theme/constants";
 
-// Option inside a segmented control (e.g. Recent / Day / Week / Month), styled
-// after the public status page range switch: small uppercase label, no
-// dividers, the selected option filled with a soft green block.
 export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 	const theme = useTheme();
 	const selectedText =
@@ -59,9 +56,6 @@ export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 	);
 };
 
-// Segmented control container: hairline border, white surface, a small inner
-// padding so the selected option sits inside as a block. Input height so it
-// lines up with other controls in a row.
 export const ToggleButtonGroupInput = ({ sx, ...props }: ToggleButtonGroupProps) => {
 	const theme = useTheme();
 	return (

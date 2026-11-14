@@ -99,8 +99,7 @@ const SETTINGS_TAB_ICONS: Record<(typeof SETTINGS_TABS)[number]["key"], LucideIc
 
 type SettingsTabKey = (typeof SETTINGS_TABS)[number]["key"];
 
-// Tabs that list records rather than edit settings: they save nothing through the
-// settings form, and their buttons must not sit inside it (a button submits by default).
+// List tabs render outside the settings form, or their buttons would submit it
 const LIST_TABS: readonly SettingsTabKey[] = ["tags", "proxies"];
 
 const FIELD_TAB: Record<string, SettingsTabKey> = {

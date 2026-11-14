@@ -33,7 +33,6 @@ export const ButtonInput = ({ sx, ...props }: ButtonProps) => {
 		}
 	}
 
-	// Outlined is the secondary ("Cancel") button: grey border, secondary text
 	const variantSx =
 		props.variant === "outlined"
 			? {

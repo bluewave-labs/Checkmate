@@ -7,7 +7,7 @@ import { typographyLevels, toSignalKey } from "@/Utils/Theme/Palette";
 import type { PaletteKey } from "@/Utils/Theme/Theme";
 import { BaseBox, TooltipWithInfo } from "@/Components/design-elements";
 import type { SxProps } from "@mui/material";
-import { FONT_WEIGHT, LINE_HEIGHT } from "@/Utils/Theme/constants";
+import { FONT_WEIGHT, LAYOUT, LINE_HEIGHT } from "@/Utils/Theme/constants";
 
 type GradientBox = React.PropsWithChildren<{
 	palette?: PaletteKey;
@@ -15,8 +15,7 @@ type GradientBox = React.PropsWithChildren<{
 	interactive?: boolean;
 }>;
 
-// Kept the GradientBox name for its callers; the current look is flat, so
-// the card is plain paper and a status colour moves to the value text instead.
+// Name kept for existing callers; the card itself is flat
 export const GradientBox = ({ children, sx, interactive }: GradientBox) => {
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -24,8 +23,8 @@ export const GradientBox = ({ children, sx, interactive }: GradientBox) => {
 	return (
 		<BaseBox
 			sx={{
-				padding: `${theme.spacing(6)} ${theme.spacing(8)}`,
-				width: isSmall ? `100%` : `calc(25% - (3 * ${theme.spacing(8)} / 4))`,
+				padding: `${theme.spacing(LAYOUT.SM)} ${theme.spacing(LAYOUT.MD)}`,
+				width: isSmall ? `100%` : `calc(25% - (3 * ${theme.spacing(LAYOUT.MD)} / 4))`,
 				backgroundColor: theme.palette.background.paper,
 				...(interactive && {
 					cursor: "pointer",
@@ -61,10 +60,8 @@ export const StatBox = ({
 	onClick,
 }: StatBoxProps) => {
 	const theme = useTheme();
-	// Colour the value only when it is a status (e.g. up / down)
 	const valueColor = palette ? theme.palette[palette].dark : theme.palette.text.primary;
-	// A status with no value (e.g. "Service is down") is a status banner: signal tint,
-	// border and text, so it still stands out without a number to colour
+	// A status with no value renders as a tinted banner
 	const bannerTone =
 		palette && !subtitle ? theme.palette.signal[toSignalKey(palette)] : null;
 
@@ -82,12 +79,12 @@ export const StatBox = ({
 		>
 			<Stack
 				onClick={onClick}
-				gap={theme.spacing(2)}
+				gap={theme.spacing(LAYOUT.XXS)}
 			>
 				<Box
 					display="flex"
 					alignItems="center"
-					gap={theme.spacing(2)}
+					gap={theme.spacing(LAYOUT.XXS)}
 				>
 					<Typography
 						variant="eyebrow"

@@ -33,8 +33,7 @@ export interface MultiSelectOption {
 	name: string;
 }
 
-// How picks are shown under the field: one bordered list (long names, order
-// or reordering matter) or wrapped chips (short values such as tags or codes)
+// list: long names or ordering matters; chips: short values such as tags
 export const MultiSelectDisplays = ["list", "chips"] as const;
 export type MultiSelectDisplay = (typeof MultiSelectDisplays)[number];
 
@@ -77,8 +76,7 @@ export const FormMultiSelectField = <T extends FieldValues, O extends MultiSelec
 				const selected = selectedIds
 					.map((id) => optionsById.get(id))
 					.filter((o): o is O => o !== undefined);
-				// Ids missing from options (e.g. a role excluded from the selectable
-				// list) are kept on every change so they are never silently dropped
+				// Ids missing from options (e.g. excluded roles) are kept on every change
 				const unresolved = selectedIds.filter((id) => !optionsById.has(id));
 
 				const handleDragEnd = (result: DropResult) => {
@@ -234,8 +232,7 @@ export const FormMultiSelectField = <T extends FieldValues, O extends MultiSelec
 					</Box>
 				);
 
-				// Custom row content (e.g. a coloured tag) already looks like a chip,
-				// so it gets the remove button beside it instead of a second frame
+				// Custom content (coloured tags) already looks like a chip, so no second frame
 				const chip = (option: O) =>
 					renderRow ? (
 						<Stack

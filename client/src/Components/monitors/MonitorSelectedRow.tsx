@@ -8,9 +8,7 @@ import { getStatusPalette } from "@/Utils/MonitorUtils";
 import { toSignalKey, typographyLevels } from "@/Utils/Theme/Palette";
 import { BADGE, LAYOUT } from "@/Utils/Theme/constants";
 
-// One line for a monitor picked in a multi-select: status dot, name, then the
-// type and address in a quieter tone. The name keeps at least half the width;
-// the details truncate with an ellipsis, so the row never wraps.
+// Never wraps: the name keeps at least half the width, details truncate
 export const MonitorSelectedRow = ({ monitor }: { monitor: Monitor }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();

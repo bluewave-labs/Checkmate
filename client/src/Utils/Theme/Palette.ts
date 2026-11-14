@@ -25,9 +25,9 @@ const lightTokens = {
 	icon: "#6B7C78",
 	subdued: "#8A9894",
 	disabled: "#A3AFAC",
-	border: "#C3C9C8", // spec #D1D5D5, darkened a step
-	hairline: "#D8DCDB", // spec #E4E6E6, darkened a step
-	rowDivider: "#E6E9E8", // spec #EFF1F0, darkened a step
+	border: "#C3C9C8",
+	hairline: "#D8DCDB",
+	rowDivider: "#E6E9E8",
 	raised: "#F3F6F5",
 	page: "#FAFAFA",
 	white: "#FFFFFF",
@@ -102,8 +102,7 @@ export const colors = {
 	magenta400: "#D55181",
 };
 
-// Score spectrum, 0 → 100 in steps of 10, for score bars such as uptime.
-// Read it from theme.palette.chart.score through getScoreColor.
+// 0 → 100 in steps of 10; read via getScoreColor(theme.palette.chart.score, value)
 const scoreSpectrum = [
 	"#DC2626",
 	"#E65723",
@@ -123,26 +122,23 @@ export const getScoreColor = (spectrum: readonly string[], score: number): strin
 	return spectrum[Math.round((clamped / 100) * (spectrum.length - 1))];
 };
 
-// Chart series, fixed order. Equal lightness and chroma so no series looks
-// heavier; they avoid the signal hues on purpose. Read them from
-// theme.palette.chart.series.
+// Equal lightness and chroma, avoiding the signal hues
 const chartSeries = [
-	"#6076BE", // indigo
-	"#AE5B7E", // rose
-	"#90790F", // sand
-	"#008B91", // teal
-	"#B36043", // clay
-	"#8A67B1", // violet
-	"#6B8632", // moss
-	"#2A82B7", // sky
-	"#A0609B", // plum
+	"#6076BE",
+	"#AE5B7E",
+	"#90790F",
+	"#008B91",
+	"#B36043",
+	"#8A67B1",
+	"#6B8632",
+	"#2A82B7",
+	"#A0609B",
 ] as const;
 export const SignalKeys = ["success", "error", "warning", "neutral", "info"] as const;
 export type SignalKey = (typeof SignalKeys)[number];
 export type SignalTone = { bg: string; text: string; border: string; mark: string };
 
-// Maps a MUI palette key (e.g. from getStatusPalette) onto a signal tone;
-// anything that is not a status colour falls back to neutral.
+// Non-status palette keys fall back to neutral
 export const toSignalKey = (palette: string): SignalKey =>
 	(SignalKeys as readonly string[]).includes(palette)
 		? (palette as SignalKey)
@@ -302,7 +298,6 @@ export const lightPalette = {
 		paused: lightTokens.warningBg,
 	},
 	chart: {
-		// Multi-series chart: series colours in their fixed order
 		phases: {
 			dns: chartSeries[0],
 			tcp: chartSeries[1],
@@ -316,9 +311,7 @@ export const lightPalette = {
 	},
 };
 
-// Dark mode keeps its existing look and only gains the token groups the shared
-// components now read. Series and score colours are mid-lightness, so they are
-// shared with light mode until dark mode gets its own pass.
+// Dark mode keeps its own colours; series and score colours are shared with light
 export const darkPalette = {
 	primary: {
 		main: colors.brandGreen,

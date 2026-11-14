@@ -36,8 +36,6 @@ const VALUE_SIGNAL: Record<ValueType, SignalKey> = {
 	neutral: "warning",
 };
 
-// Flat tinted badge in a signal colour. Status words get a 6px dot in the text
-// colour; values (e.g. uptime %) drop the dot and use tabular numbers.
 const SignalBadge = ({
 	signal,
 	children,
@@ -130,7 +128,6 @@ export const ValueLabel = ({
 	return <SignalBadge signal={VALUE_SIGNAL[value]}>{transformedText}</SignalBadge>;
 };
 
-// A number or short value in a signal tint (e.g. uptime %)
 export const SignalLabel = ({ text, signal }: { text: string; signal: SignalKey }) => (
 	<SignalBadge
 		signal={signal}
@@ -141,8 +138,6 @@ export const SignalLabel = ({ text, signal }: { text: string; signal: SignalKey 
 	</SignalBadge>
 );
 
-// Category badge in a user-chosen colour (tags): flat tint of the colour with
-// darker text in the same hue, 4px corners, no border.
 export const ColoredLabel = ({ text, color }: { text: string; color: string }) => {
 	const theme = useTheme();
 	const isDark = theme.palette.mode === "dark";

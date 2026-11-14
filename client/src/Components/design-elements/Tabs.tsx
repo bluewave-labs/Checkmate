@@ -13,8 +13,7 @@ import {
 } from "@/Utils/Theme/constants";
 interface CustomTabsProps extends TabsProps {}
 
-// Folder tabs: a hairline runs along the bottom of the row and the selected tab
-// joins the panel below. No indicator bar.
+// Folder tabs: the selected tab joins the panel below, no indicator bar
 export const Tabs = (props: CustomTabsProps) => {
 	const theme = useTheme();
 	return (
@@ -42,7 +41,6 @@ import type { TabProps } from "@mui/material/Tab";
 import type { LucideIcon } from "lucide-react";
 interface CustomTabProps extends TabProps {}
 
-// 15px icon shown before a tab label; colour comes from the Tab's icon wrapper
 export const TabIcon = ({ icon: IconComponent }: { icon: LucideIcon }) => (
 	<IconComponent
 		size={ICON_SIZE.TAB}
@@ -80,8 +78,7 @@ export const Tab = (props: CustomTabProps) => {
 					outline: `${FOCUS_RING.WIDTH}px solid ${theme.palette.primary.main}`,
 					outlineOffset: FOCUS_RING.INSET_OFFSET,
 				},
-				// Icon-to-label gap; MUI's own icon margin is zeroed so the gap is the
-				// only spacing (doubled selector to beat MUI's icon rule)
+				// Doubled selector beats MUI's icon margin so GAP.ICON is the only spacing
 				gap: GAP.ICON,
 				"&& > .MuiTab-icon, && > .MuiTab-iconWrapper": {
 					margin: 0,

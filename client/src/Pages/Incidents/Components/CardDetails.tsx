@@ -37,8 +37,7 @@ const Cell = ({ children }: { children: React.ReactNode }) => (
 	<Typography variant="body1">{children}</Typography>
 );
 
-// Label | value grid. Label columns are as wide as their longest label, so labels
-// like "Resolved at:" never wrap; value columns take the remaining width.
+// Label columns size to their longest label so labels never wrap
 const DetailGrid = ({ pairs, children }: { pairs: 1 | 2; children: React.ReactNode }) => {
 	const theme = useTheme();
 	return (
@@ -59,8 +58,7 @@ const DetailGrid = ({ pairs, children }: { pairs: 1 | 2; children: React.ReactNo
 	);
 };
 
-// Long messages (e.g. a list of failing containers) are clamped to a few lines;
-// the full text is in the tooltip
+// Long messages are clamped; the full text is in the tooltip
 const MESSAGE_MAX_LINES = 3;
 
 const ClampedMessage = ({ text }: { text: string }) => (
@@ -72,8 +70,8 @@ const ClampedMessage = ({ text }: { text: string }) => (
 		<Typography
 			variant="body1"
 			overflow="hidden"
+			display="-webkit-box"
 			sx={{
-				display: "-webkit-box",
 				WebkitLineClamp: MESSAGE_MAX_LINES,
 				WebkitBoxOrient: "vertical",
 				wordBreak: "break-word",

@@ -22,10 +22,7 @@ import { typographyLevels } from "@/Utils/Theme/Palette";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 
-// Modal: page-grey surface with hairline-separated header and footer,
-// content in a white bordered box, actions right-aligned (Cancel, then primary).
-// Sizing is left to MUI and each caller's maxWidth / fullWidth, so no dialog
-// changes size with the restyle.
+// Sizing stays with MUI and each caller's maxWidth / fullWidth
 
 export const DialogInput = ({
 	open,
@@ -56,8 +53,7 @@ export const DialogInput = ({
 	maxWidth?: DialogProps["maxWidth"];
 	fullWidth?: boolean;
 	additionalButtons?: ReactNode;
-	// Wrap the body in the white bordered box. Turn off when the content already
-	// brings its own cards, so they aren't framed twice.
+	// Turn off when the content brings its own cards
 	framed?: boolean;
 }) => {
 	const { t } = useTranslation();
@@ -73,7 +69,6 @@ export const DialogInput = ({
 			slotProps={{
 				paper: {
 					sx: {
-						// Colour and corners only; never width (see note above)
 						backgroundColor: theme.palette.background.default,
 						borderRadius: RADIUS.SM,
 					},
@@ -86,7 +81,7 @@ export const DialogInput = ({
 					display="flex"
 					alignItems="flex-start"
 					justifyContent="space-between"
-					gap={theme.spacing(8)}
+					gap={theme.spacing(LAYOUT.MD)}
 					padding={PADDING.DIALOG_SECTION}
 					borderBottom={`1px solid ${theme.palette.neutral.hairline}`}
 				>
@@ -154,7 +149,7 @@ export const DialogInput = ({
 			<DialogActions
 				sx={{
 					padding: PADDING.DIALOG_FOOTER,
-					gap: theme.spacing(4),
+					gap: theme.spacing(LAYOUT.XS),
 					borderTop: `1px solid ${theme.palette.neutral.hairline}`,
 					"& > :not(style) ~ :not(style)": { marginLeft: 0 },
 				}}

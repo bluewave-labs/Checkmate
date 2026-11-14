@@ -4,7 +4,6 @@ import { useTheme } from "@mui/material/styles";
 
 interface ProgressBarProps {
 	fillRatio: number;
-	// Defaults to brand green (single measure); score bars pass a spectrum colour
 	fillColor?: string;
 }
 

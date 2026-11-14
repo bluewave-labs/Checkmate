@@ -66,8 +66,7 @@ type DataTableProps<T extends { id?: string | number; _id?: string | number }> =
 	emptyViewPositive?: boolean;
 	getRowSx?: (row: T) => SxProps<Theme>;
 	isRowSelected?: (row: T) => boolean;
-	// Header id of the column the data is currently sorted by; that column is
-	// tinted so the active sort is visible at a glance
+	// Id of the sorted column; its cells get a tint
 	sortedColumnId?: string | number;
 	sortDirection?: SortOrder;
 };
@@ -95,8 +94,7 @@ export function DataTable<
 	const theme = useTheme();
 	const isSorted = (header: Header<T>) =>
 		sortedColumnId !== undefined && header.id === sortedColumnId;
-	// Doubled selector so the tint beats the table-wide cell background; row hover
-	// and selection still take precedence
+	// Doubled selector beats the table-wide cell background
 	const sortedHeaderSx = {
 		"&&": {
 			backgroundColor: theme.palette.neutral.sortedHeader,
@@ -237,7 +235,6 @@ export function DataTable<
 					"& .MuiTableHead-root .MuiTableCell-root": {
 						borderBottom: `1px solid ${theme.palette.neutral.hairline}`,
 					},
-					// Flat raised header row, sentence-case source uppercased by CSS
 					"& :is(th)": {
 						backgroundColor: theme.palette.neutral.raised,
 						color: theme.palette.neutral.tertiary,
@@ -250,11 +247,7 @@ export function DataTable<
 						whiteSpace: "nowrap",
 						height: TABLE_HEAD_HEIGHT,
 					},
-					// A select-all checkbox keeps its click target but no longer stretches the
-					// header row, so every table header has the same height
-					// Header labels rendered through Typography (e.g. sortable headers) take the
-					// header's own type settings instead of body text, so they look and size
-					// like every other header cell
+					// Fixed header height; Typography labels (sortable headers) inherit the header type
 					"& :is(th) .MuiTypography-root": {
 						fontSize: "inherit",
 						fontWeight: "inherit",

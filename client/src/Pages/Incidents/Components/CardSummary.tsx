@@ -23,13 +23,13 @@ const SummaryItem = ({ icon, label, value }: SummaryItemProps) => {
 			direction="row"
 			alignItems="center"
 			justifyContent="space-between"
-			gap={theme.spacing(2)}
+			gap={theme.spacing(LAYOUT.XXS)}
 			minHeight={32}
 		>
 			<Stack
 				direction="row"
 				alignItems="center"
-				gap={theme.spacing(2)}
+				gap={theme.spacing(LAYOUT.XXS)}
 				sx={{ "& svg": { color: theme.palette.text.secondary } }}
 			>
 				{icon}
@@ -63,7 +63,7 @@ export const SummaryCard = ({
 			flex={1}
 		>
 			<Stack
-				gap={theme.spacing(4)}
+				gap={theme.spacing(LAYOUT.XS)}
 				height="100%"
 			>
 				<Typography
@@ -115,7 +115,7 @@ export const SummaryCardActiveIncidents = ({
 				flex={1}
 				alignItems="center"
 				justifyContent="center"
-				gap={theme.spacing(4)}
+				gap={theme.spacing(LAYOUT.XS)}
 			>
 				{icon}
 				<Typography>{msg}</Typography>
@@ -129,8 +129,7 @@ const SummaryIncidentItem = ({ incident }: { incident: IncidentSummaryItem }) =>
 	const { t } = useTranslation();
 	const duration = getIncidentsDuration(incident);
 	return (
-		// Cells of the shared grid in SummaryCardLatestIncidents, so every row's pill
-		// starts at the same x and every duration ends at the right edge
+		// Cells of the shared grid in SummaryCardLatestIncidents, so columns align
 		<Box display="contents">
 			<Stack
 				direction="row"
@@ -189,7 +188,7 @@ export const SummaryCardLatestIncidents = ({
 				gridTemplateColumns="minmax(0, 1fr) max-content max-content"
 				alignItems="center"
 				columnGap={theme.spacing(LAYOUT.SM)}
-				rowGap={theme.spacing(4)}
+				rowGap={theme.spacing(LAYOUT.XS)}
 			>
 				{latestIncidents.slice(0, 3).map((incident) => (
 					<SummaryIncidentItem
