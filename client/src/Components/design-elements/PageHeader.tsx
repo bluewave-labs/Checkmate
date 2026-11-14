@@ -8,6 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import { ChevronLeft, HelpCircle, FileText, Code } from "lucide-react";
 import {
 	FONT_WEIGHT,
+	HEADER_LINK_WIDTH,
 	ICON_SIZE,
 	ICON_STROKE,
 	INPUT_BASE_HEIGHT,
@@ -187,7 +188,7 @@ export const PageHeader = ({
 								display: "inline-flex",
 								alignItems: "center",
 								justifyContent: "center",
-								width: 36,
+								width: HEADER_LINK_WIDTH,
 								height: INPUT_BASE_HEIGHT,
 								color: theme.palette.text.secondary,
 								borderRight:

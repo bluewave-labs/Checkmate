@@ -18,7 +18,7 @@ export const LAYOUT = {
 	XXL: 16,
 } as const;
 
-export const INPUT_BASE_HEIGHT = 34; // Height for inputs/controls
+export const INPUT_BASE_HEIGHT = 30; // Height for inputs/controls
 export const SCROLLBAR_SIZE = 8;
 export const HOVER = {
 	DARKEN: 0.06, // This is a coefficient for darkening function
@@ -38,7 +38,7 @@ export const RADIUS = {
 	TAB: "9px 9px 0 0", // folder tab top corners
 } as const;
 
-// Medium controls use INPUT_BASE_HEIGHT (34)
+// Medium controls use INPUT_BASE_HEIGHT (30)
 export const CONTROL_HEIGHT = {
 	SM: 28,
 } as const;
@@ -105,6 +105,9 @@ export const LINE_HEIGHT = {
 } as const;
 
 export const FILTER_MENU_MIN_WIDTH = 180;
+
+// Width of each icon link in the page header group (help, docs, API)
+export const HEADER_LINK_WIDTH = 32;
 
 // Every table header row is the same height, whatever its cells contain
 // (plain labels, sort arrows or a select-all checkbox)

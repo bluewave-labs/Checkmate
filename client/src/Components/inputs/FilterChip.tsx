@@ -48,7 +48,7 @@ interface MultipleProps extends FilterChipBaseProps {
 const MAX_VISIBLE_VALUES = 2;
 
 // One filter per column, shown as "Label: value". It is
-// sized and bordered exactly like the dropdowns elsewhere (34px, 2px corners,
+// sized and bordered exactly like the dropdowns elsewhere (30px, 4px corners,
 // input border) so filter rows match across pages. Presentation only: it reports
 // the chosen value(s) through onChange exactly as a Select would.
 export const FilterChip = (props: SingleProps | MultipleProps) => {
