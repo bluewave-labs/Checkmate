@@ -162,6 +162,10 @@ export const theme = (mode: string, palette: any) =>
 		components: {
 			MuiCssBaseline: {
 				styleOverrides: (theme) => ({
+					// Always keep the scrollbar track (transparent in the palette), so content
+					// doesn't shift sideways when moving between short and long pages.
+					// scrollbar-gutter does not reserve space for the custom 8px scrollbar.
+					html: { overflowY: "scroll" },
 					body: { backgroundColor: theme.palette.background.default },
 					"*:focus:not(:focus-visible)": { outline: "none" },
 					"*": {
