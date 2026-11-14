@@ -1,7 +1,7 @@
 import Button from "@mui/material/Button";
 import type { ButtonProps } from "@mui/material/Button";
 import { useTheme, darken } from "@mui/material/styles";
-import { INPUT_BASE_HEIGHT, HOVER } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT, HOVER, FONT_WEIGHT, RADIUS } from "@/Utils/Theme/constants";
 
 const PALETTE_COLORS = [
 	"primary",
@@ -49,8 +49,8 @@ export const ButtonInput = ({ sx, ...props }: ButtonProps) => {
 				textTransform: "none",
 				height: INPUT_BASE_HEIGHT,
 				lineHeight: 1.2,
-				fontWeight: 500,
-				borderRadius: "2px",
+				fontWeight: FONT_WEIGHT.MEDIUM,
+				borderRadius: RADIUS.SM,
 				whiteSpace: "nowrap",
 				textOverflow: "ellipsis",
 				overflow: "hidden",

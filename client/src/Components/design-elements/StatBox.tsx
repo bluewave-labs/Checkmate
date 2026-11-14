@@ -7,6 +7,7 @@ import { typographyLevels, SignalKeys, type SignalKey } from "@/Utils/Theme/Pale
 import type { PaletteKey } from "@/Utils/Theme/Theme";
 import { BaseBox, TooltipWithInfo } from "@/Components/design-elements";
 import type { SxProps } from "@mui/material";
+import { FONT_WEIGHT, LINE_HEIGHT } from "@/Utils/Theme/constants";
 
 type GradientBox = React.PropsWithChildren<{
 	palette?: PaletteKey;
@@ -112,8 +113,8 @@ export const StatBox = ({
 					<Typography
 						color={valueColor}
 						fontSize={typographyLevels.xl}
-						fontWeight={600}
-						lineHeight={1.3}
+						fontWeight={FONT_WEIGHT.SEMIBOLD}
+						lineHeight={LINE_HEIGHT.HEADING}
 						sx={{ fontVariantNumeric: "tabular-nums" }}
 					>
 						{subtitle}

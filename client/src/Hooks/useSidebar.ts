@@ -2,7 +2,7 @@ import type { RootState } from "@/Types/state";
 import { useSelector } from "react-redux";
 
 // CSS variable names for sidebar widths
-const SIDEBAR_WIDTH_VAR = 260;
+const SIDEBAR_WIDTH_VAR = 204;
 const SIDEBAR_COLLAPSED_WIDTH_VAR = 56;
 
 // Transition timing for sidebar width changes

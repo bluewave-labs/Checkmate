@@ -8,7 +8,13 @@ import { getDockerStatePalette } from "@/Utils/MonitorUtils";
 import { useTheme, alpha, darken, lighten } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import type { DockerContainerState } from "@/Types/Check";
-import { SPACING } from "@/Utils/Theme/constants";
+import {
+	SPACING,
+	BADGE,
+	RADIUS,
+	FONT_WEIGHT,
+	LINE_HEIGHT,
+} from "@/Utils/Theme/constants";
 import { typographyLevels, type SignalKey } from "@/Utils/Theme/Palette";
 
 export const ValueTypes = ["positive", "negative", "neutral"] as const;
@@ -42,21 +48,21 @@ const SignalPill = ({
 		<Box
 			display="inline-flex"
 			alignItems="center"
-			gap="6px"
-			height={24}
-			padding="1px 8px"
-			borderRadius="999px"
+			gap={BADGE.DOT_GAP}
+			height={BADGE.HEIGHT}
+			padding={BADGE.PADDING}
+			borderRadius={RADIUS.PILL}
 			bgcolor={tone.bg}
 			color={tone.text}
 			fontSize={typographyLevels.s}
-			fontWeight={500}
-			lineHeight={1}
+			fontWeight={FONT_WEIGHT.MEDIUM}
+			lineHeight={LINE_HEIGHT.TIGHT}
 			whiteSpace="nowrap"
 			sx={sx}
 		>
 			<Box
-				width={6}
-				height={6}
+				width={BADGE.DOT}
+				height={BADGE.DOT}
 				borderRadius="50%"
 				bgcolor="currentColor"
 				flexShrink={0}
@@ -123,14 +129,14 @@ export const SignalLabel = ({ text, signal }: { text: string; signal: SignalKey 
 		<Box
 			display="inline-flex"
 			alignItems="center"
-			height={24}
-			padding="1px 8px"
-			borderRadius="999px"
+			height={BADGE.HEIGHT}
+			padding={BADGE.PADDING}
+			borderRadius={RADIUS.PILL}
 			bgcolor={tone.bg}
 			color={tone.text}
 			fontSize={typographyLevels.s}
-			fontWeight={500}
-			lineHeight={1}
+			fontWeight={FONT_WEIGHT.MEDIUM}
+			lineHeight={LINE_HEIGHT.TIGHT}
 			whiteSpace="nowrap"
 			sx={{ fontVariantNumeric: "tabular-nums" }}
 		>
@@ -158,14 +164,14 @@ export const ColoredLabel = ({ text, color }: { text: string; color: string }) =
 			display="inline-flex"
 			alignItems="center"
 			width="fit-content"
-			height={22}
-			padding="1px 8px"
-			borderRadius="999px"
+			height={BADGE.TAG_HEIGHT}
+			padding={BADGE.PADDING}
+			borderRadius={RADIUS.PILL}
 			bgcolor={bg}
 			color={fg}
-			fontSize="0.75rem"
-			fontWeight={500}
-			lineHeight={1}
+			fontSize={typographyLevels.sm}
+			fontWeight={FONT_WEIGHT.MEDIUM}
+			lineHeight={LINE_HEIGHT.TIGHT}
 			whiteSpace="nowrap"
 		>
 			{text}
@@ -192,8 +198,8 @@ export const DockerStateLabel = ({
 			alignItems={"center"}
 		>
 			<Box
-				width={6}
-				height={6}
+				width={BADGE.DOT}
+				height={BADGE.DOT}
 				bgcolor={theme.palette[palette].main}
 				borderRadius="50%"
 				marginRight="5px"

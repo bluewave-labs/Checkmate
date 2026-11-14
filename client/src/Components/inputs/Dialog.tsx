@@ -9,6 +9,16 @@ import Box from "@mui/material/Box";
 import { X } from "lucide-react";
 import { Button } from "@/Components/inputs";
 import { useTheme } from "@mui/material/styles";
+import {
+	FONT_WEIGHT,
+	ICON_SIZE,
+	ICON_STROKE,
+	LAYOUT,
+	LINE_HEIGHT,
+	PADDING,
+	RADIUS,
+} from "@/Utils/Theme/constants";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 
@@ -63,7 +73,7 @@ export const DialogInput = ({
 				paper: {
 					sx: {
 						backgroundColor: theme.palette.background.default,
-						borderRadius: "2px",
+						borderRadius: RADIUS.SM,
 						maxWidth: `calc(100vw - ${DIALOG_VIEWPORT_GUTTER}px)`,
 						...(useDefaultWidth && { width: DIALOG_DEFAULT_WIDTH }),
 						...(!children && { minWidth: DIALOG_CONFIRM_MIN_WIDTH }),
@@ -78,15 +88,15 @@ export const DialogInput = ({
 					alignItems="flex-start"
 					justifyContent="space-between"
 					gap={theme.spacing(8)}
-					padding="16px 24px"
+					padding={PADDING.DIALOG_SECTION}
 					borderBottom={`1px solid ${theme.palette.neutral.hairline}`}
 				>
 					<Box>
 						<Typography
 							component="h2"
-							fontSize="0.9375rem"
-							fontWeight={600}
-							lineHeight={1.4}
+							fontSize={typographyLevels.l}
+							fontWeight={FONT_WEIGHT.SEMIBOLD}
+							lineHeight={LINE_HEIGHT.TITLE}
 							color={theme.palette.text.primary}
 						>
 							{title}
@@ -95,7 +105,7 @@ export const DialogInput = ({
 							<Typography
 								variant="body1"
 								color={theme.palette.text.secondary}
-								mt="4px"
+								mt={theme.spacing(LAYOUT.XXS)}
 							>
 								{content}
 							</Typography>
@@ -106,15 +116,15 @@ export const DialogInput = ({
 							aria-label={cancelText ?? t("common.buttons.cancel")}
 							onClick={onCancel}
 							sx={{
-								padding: "4px",
-								mt: "-2px",
+								padding: PADDING.ICON_BUTTON,
+								mt: theme.spacing(-1),
 								color: theme.palette.neutral.icon,
 								"&:hover": { backgroundColor: theme.palette.neutral.raised },
 							}}
 						>
 							<X
-								size={16}
-								strokeWidth={1.5}
+								size={ICON_SIZE.MD}
+								strokeWidth={ICON_STROKE}
 							/>
 						</IconButton>
 					)}
@@ -123,16 +133,16 @@ export const DialogInput = ({
 			{children && (
 				<DialogContent
 					sx={{
-						padding: "16px 24px",
+						padding: PADDING.DIALOG_SECTION,
 						// MUI drops top padding after a title; keep the gap below the header line
-						".MuiDialogTitle-root + &": { paddingTop: "16px" },
+						".MuiDialogTitle-root + &": { paddingTop: PADDING.DIALOG_SECTION_TOP },
 					}}
 				>
 					<Box
 						bgcolor={theme.palette.background.paper}
 						border={`1px solid ${theme.palette.neutral.hairline}`}
-						borderRadius="2px"
-						padding="20px"
+						borderRadius={RADIUS.SM}
+						padding={PADDING.DIALOG_BOX}
 					>
 						{children}
 					</Box>
@@ -140,7 +150,7 @@ export const DialogInput = ({
 			)}
 			<DialogActions
 				sx={{
-					padding: "12px 24px",
+					padding: PADDING.DIALOG_FOOTER,
 					gap: theme.spacing(4),
 					borderTop: `1px solid ${theme.palette.neutral.hairline}`,
 					"& > :not(style) ~ :not(style)": { marginLeft: 0 },

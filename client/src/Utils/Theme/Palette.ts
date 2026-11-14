@@ -8,6 +8,7 @@ export const typographyLevels = {
 	base: typographyBase, // 13px
 	xs: `${(typographyBase - 2) / 16}rem`, // 11px
 	s: `${(typographyBase - 2) / 16}rem`, // 11px
+	sm: `${(typographyBase - 1) / 16}rem`, // 12px, body small and chips
 	m: `${typographyBase / 16}rem`, // 13px
 	l: `${(typographyBase + 1) / 16}rem`, // 14px
 	xl: `${(typographyBase + 5) / 16}rem`, // 18px

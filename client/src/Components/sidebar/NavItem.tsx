@@ -4,7 +4,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
-import { SPACING } from "@/Utils/Theme/constants";
+import { SPACING, GAP, FONT_WEIGHT } from "@/Utils/Theme/constants";
 import useSidebar from "@/Hooks/useSidebar";
 import type { SidebarPart } from "@/Utils/Theme/Palette";
 
@@ -42,7 +42,7 @@ export const NavItem = ({
 		: tone
 			? tone.hover
 			: theme.palette.neutral.hoverGreen;
-	const fontWeight = selected ? 500 : 400;
+	const fontWeight = selected ? FONT_WEIGHT.MEDIUM : FONT_WEIGHT.REGULAR;
 	const labelColor = selected ? theme.palette.text.primary : theme.palette.text.secondary;
 	return (
 		<Tooltip
@@ -73,7 +73,7 @@ export const NavItem = ({
 						backgroundImage: "none",
 					},
 					height: 32,
-					gap: "8px", // icon-to-label gap from the spec
+					gap: GAP.ICON,
 					borderRadius: theme.shape.borderRadius,
 					px: theme.spacing(SPACING.MD),
 					pl: theme.spacing(itemInset),

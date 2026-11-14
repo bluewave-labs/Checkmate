@@ -2,6 +2,15 @@ import MuiTabs from "@mui/material/Tabs";
 import type { TabsProps } from "@mui/material/Tabs";
 import { useTheme } from "@mui/material/styles";
 import { typographyLevels } from "@/Utils/Theme/Palette";
+import {
+	FOCUS_RING,
+	FONT_WEIGHT,
+	GAP,
+	ICON_SIZE,
+	ICON_STROKE,
+	PADDING,
+	RADIUS,
+} from "@/Utils/Theme/constants";
 interface CustomTabsProps extends TabsProps {}
 
 // Folder tabs: a hairline runs along the bottom of the row and the selected tab
@@ -17,8 +26,8 @@ export const Tabs = (props: CustomTabsProps) => {
 					display: "none",
 				},
 				"& .MuiTabs-flexContainer": {
-					gap: "3px",
-					paddingLeft: "10px",
+					gap: GAP.TAB,
+					paddingLeft: PADDING.TAB_ROW_INSET,
 				},
 			}}
 			{...props}
@@ -36,8 +45,8 @@ interface CustomTabProps extends TabProps {}
 // 15px icon shown before a tab label; colour comes from the Tab's icon wrapper
 export const TabIcon = ({ icon: IconComponent }: { icon: LucideIcon }) => (
 	<IconComponent
-		size={15}
-		strokeWidth={1.5}
+		size={ICON_SIZE.TAB}
+		strokeWidth={ICON_STROKE}
 	/>
 );
 
@@ -50,30 +59,30 @@ export const Tab = (props: CustomTabProps) => {
 			sx={{
 				textTransform: "none",
 				fontSize: typographyLevels.m,
-				fontWeight: 400,
+				fontWeight: FONT_WEIGHT.REGULAR,
 				minHeight: "auto",
 				minWidth: "auto",
-				padding: "7px 14px 8px",
+				padding: PADDING.TAB,
 				color: theme.palette.neutral.tertiary,
 				backgroundColor: theme.palette.neutral.raised,
 				border: `1px solid ${theme.palette.neutral.hairline}`,
-				borderRadius: "9px 9px 0 0",
+				borderRadius: RADIUS.TAB,
 				"&:hover": {
 					color: theme.palette.text.primary,
 				},
 				"&.Mui-selected": {
 					color: theme.palette.text.primary,
-					fontWeight: 500,
+					fontWeight: FONT_WEIGHT.MEDIUM,
 					backgroundColor: theme.palette.background.paper,
 					borderBottomColor: theme.palette.background.paper,
 				},
 				"&.Mui-focusVisible": {
-					outline: `2px solid ${theme.palette.primary.main}`,
-					outlineOffset: "-2px",
+					outline: `${FOCUS_RING.WIDTH}px solid ${theme.palette.primary.main}`,
+					outlineOffset: FOCUS_RING.INSET_OFFSET,
 				},
 				// Icon-to-label gap; MUI's own icon margin is zeroed so the gap is the
 				// only spacing (doubled selector to beat MUI's icon rule)
-				gap: "8px",
+				gap: GAP.ICON,
 				"&& > .MuiTab-icon, && > .MuiTab-iconWrapper": {
 					margin: 0,
 					color: theme.palette.neutral.icon,

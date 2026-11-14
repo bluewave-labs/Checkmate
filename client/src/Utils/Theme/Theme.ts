@@ -11,7 +11,16 @@ import {
 
 import type { Theme } from "@mui/material/styles";
 import type {} from "@mui/material/styles";
-import { SCROLLBAR_SIZE } from "@/Utils/Theme/constants";
+import {
+	CONTROL_HEIGHT,
+	FOCUS_RING,
+	FONT_WEIGHT,
+	LAYOUT,
+	LINE_HEIGHT,
+	PADDING,
+	RADIUS,
+	SCROLLBAR_SIZE,
+} from "@/Utils/Theme/constants";
 
 interface NeutralTokens {
 	raised: string;
@@ -115,31 +124,31 @@ export const theme = (mode: string, palette: any) =>
 			fontSize: typographyLevels.base,
 			h1: {
 				fontSize: typographyLevels.xxl,
-				fontWeight: 600,
-				lineHeight: 1.3,
+				fontWeight: FONT_WEIGHT.SEMIBOLD,
+				lineHeight: LINE_HEIGHT.HEADING,
 				letterSpacing: "-0.02em",
 			},
 			h2: {
 				fontSize: typographyLevels.l,
-				fontWeight: 600,
-				lineHeight: 1.4,
+				fontWeight: FONT_WEIGHT.SEMIBOLD,
+				lineHeight: LINE_HEIGHT.TITLE,
 			},
 			body1: {
 				fontSize: typographyLevels.m,
-				fontWeight: 400,
-				lineHeight: 1.5,
+				fontWeight: FONT_WEIGHT.REGULAR,
+				lineHeight: LINE_HEIGHT.BODY,
 			},
 			body2: {
-				fontSize: "0.75rem", // 12px, body small
-				fontWeight: 400,
-				lineHeight: 1.5,
+				fontSize: typographyLevels.sm,
+				fontWeight: FONT_WEIGHT.REGULAR,
+				lineHeight: LINE_HEIGHT.BODY,
 			},
 			eyebrow: {
 				fontSize: typographyLevels.s,
-				fontWeight: 500,
+				fontWeight: FONT_WEIGHT.MEDIUM,
 				textTransform: "uppercase",
 				letterSpacing: "0.07em",
-				lineHeight: 1.4,
+				lineHeight: LINE_HEIGHT.TITLE,
 			},
 		},
 
@@ -189,21 +198,25 @@ export const theme = (mode: string, palette: any) =>
 				styleOverrides: {
 					root: ({ theme }) => ({
 						fontSize: typographyLevels.base,
-						fontWeight: 500,
+						fontWeight: FONT_WEIGHT.MEDIUM,
 						textTransform: "none",
-						borderRadius: "2px",
+						borderRadius: RADIUS.SM,
 						boxShadow: "none",
 						"&:hover": { boxShadow: "none" },
 						"&.Mui-focusVisible": {
-							outline: `2px solid ${
+							outline: `${FOCUS_RING.WIDTH}px solid ${
 								theme.palette.mode === "dark"
 									? theme.palette.primary.light
 									: theme.palette.primary.main
 							}`,
-							outlineOffset: 1,
+							outlineOffset: FOCUS_RING.OFFSET,
 						},
 					}),
-					sizeSmall: { height: 28, padding: "6px 12px", fontSize: "0.75rem" },
+					sizeSmall: {
+						height: CONTROL_HEIGHT.SM,
+						padding: PADDING.BUTTON_SM,
+						fontSize: typographyLevels.sm,
+					},
 					containedPrimary: ({ theme }) => ({
 						"&:hover": { backgroundColor: theme.palette.primary.dark },
 						"&.Mui-disabled": {
@@ -221,11 +234,11 @@ export const theme = (mode: string, palette: any) =>
 				},
 				styleOverrides: {
 					root: ({ theme }) => ({
-						borderRadius: "2px",
+						borderRadius: RADIUS.SM,
 						"&:hover": { backgroundColor: theme.palette.neutral.selectedGreen },
 						"&.Mui-focusVisible": {
-							outline: `2px solid ${theme.palette.primary.main}`,
-							outlineOffset: 1,
+							outline: `${FOCUS_RING.WIDTH}px solid ${theme.palette.primary.main}`,
+							outlineOffset: FOCUS_RING.OFFSET,
 						},
 					}),
 				},
@@ -296,7 +309,7 @@ export const theme = (mode: string, palette: any) =>
 							minHeight: "unset",
 							alignSelf: "stretch",
 						},
-						borderRadius: "2px",
+						borderRadius: RADIUS.SM,
 						"& .MuiOutlinedInput-notchedOutline": {
 							borderColor: theme.palette.neutral.border,
 							transition: "border-color 0.15s ease",
@@ -328,7 +341,7 @@ export const theme = (mode: string, palette: any) =>
 							border: 1,
 							borderStyle: "solid",
 							borderColor: theme.palette.divider,
-							borderRadius: "2px",
+							borderRadius: RADIUS.SM,
 							boxShadow: "none",
 							backgroundColor: theme.palette.background.paper,
 							backgroundImage: "none",
@@ -345,9 +358,9 @@ export const theme = (mode: string, palette: any) =>
 					root: ({ theme }) => ({
 						fontSize: typographyLevels.base,
 						color: theme.palette.text.secondary,
-						padding: "4px 6px",
-						margin: 2,
-						borderRadius: "2px",
+						padding: PADDING.MENU_ITEM,
+						margin: LAYOUT.XXS,
+						borderRadius: RADIUS.SM,
 						"&:hover, &.Mui-selected, &.Mui-selected:hover": {
 							backgroundColor: theme.palette.neutral.selectedGreen,
 						},
@@ -359,13 +372,13 @@ export const theme = (mode: string, palette: any) =>
 					tooltip: ({ theme }) => ({
 						fontSize: typographyLevels.base,
 						backgroundColor: theme.palette.neutral.tooltip,
-						padding: "8px 12px",
-						borderRadius: "2px",
+						padding: PADDING.TOOLTIP,
+						borderRadius: RADIUS.SM,
 					}),
 					arrow: ({ theme }) => ({ color: theme.palette.neutral.tooltip }),
 				},
 			},
-			MuiDialog: { styleOverrides: { paper: { borderRadius: "2px" } } },
+			MuiDialog: { styleOverrides: { paper: { borderRadius: RADIUS.SM } } },
 			MuiSkeleton: {
 				styleOverrides: {
 					root: ({ theme }) => ({ backgroundColor: theme.palette.neutral.raised }),

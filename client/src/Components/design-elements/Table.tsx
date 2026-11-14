@@ -28,7 +28,13 @@ import type { TablePaginationOwnProps } from "@mui/material/TablePagination";
 import { useTranslation } from "react-i18next";
 import { useState, Fragment, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
-import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
+import {
+	SPACING,
+	LAYOUT,
+	PADDING,
+	FONT_WEIGHT,
+	LINE_HEIGHT,
+} from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import type { SxProps, Theme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -200,7 +206,7 @@ export function DataTable<
 			<Table
 				sx={{
 					"&.MuiTable-root  :is(.MuiTableHead-root, .MuiTableBody-root) :is(th, td)": {
-						paddingLeft: "14px",
+						paddingLeft: PADDING.TABLE_CELL_X,
 					},
 					"& .MuiTableCell-root": {
 						borderBottom: `1px solid ${theme.palette.neutral.rowDivider}`,
@@ -212,18 +218,18 @@ export function DataTable<
 					"& :is(th)": {
 						backgroundColor: theme.palette.neutral.raised,
 						color: theme.palette.neutral.tertiary,
-						fontWeight: 500,
+						fontWeight: FONT_WEIGHT.MEDIUM,
 						textTransform: "uppercase",
 						letterSpacing: "0.07em",
-						padding: "9px 14px",
+						padding: PADDING.TABLE_HEAD,
 						fontSize: typographyLevels.s,
-						lineHeight: 1.5,
+						lineHeight: LINE_HEIGHT.BODY,
 						whiteSpace: "nowrap",
 					},
 					"& :is(td)": {
 						backgroundColor: theme.palette.background.paper,
 						color: theme.palette.text.secondary,
-						padding: "10px 14px",
+						padding: PADDING.TABLE_CELL,
 						fontSize: theme.typography.fontSize,
 						fontVariantNumeric: "tabular-nums",
 						overflowX: "hidden",

@@ -6,7 +6,7 @@ import { HeaderMonitorsSummary } from "@/Components/monitors/HeaderMonitorsSumma
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import type { MonitorListController } from "@/Hooks/useMonitorListController";
 import { useMediaQuery, useTheme } from "@mui/material";
-import { SPACING, INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import { SPACING, INPUT_BASE_HEIGHT, RADIUS } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 
 import Stack from "@mui/material/Stack";
@@ -104,7 +104,7 @@ export const MonitorListPage = ({
 						width: isSmall ? "100%" : SEARCH_FIELD_WIDTH,
 						// The list search field is the one control with 8px corners
 						"& .MuiOutlinedInput-root": {
-							borderRadius: "8px",
+							borderRadius: RADIUS.SEARCH,
 							height: INPUT_BASE_HEIGHT,
 							fontSize: typographyLevels.base,
 						},

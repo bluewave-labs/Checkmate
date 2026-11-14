@@ -6,6 +6,17 @@ import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import { Check, ChevronDown } from "lucide-react";
 import { typographyLevels } from "@/Utils/Theme/Palette";
+import {
+	CONTROL_HEIGHT,
+	FILTER_MENU_MIN_WIDTH,
+	FOCUS_RING,
+	FONT_WEIGHT,
+	GAP,
+	ICON_SIZE,
+	ICON_STROKE,
+	PADDING,
+	RADIUS,
+} from "@/Utils/Theme/constants";
 
 export interface FilterChipOption {
 	value: string;
@@ -71,16 +82,16 @@ export const FilterChip = (props: SingleProps | MultipleProps) => {
 				sx={{
 					display: "inline-flex",
 					alignItems: "center",
-					gap: "4px",
-					height: 30,
-					padding: "4px 10px 4px 12px",
-					borderRadius: "999px",
+					gap: GAP.CHIP,
+					height: CONTROL_HEIGHT.CHIP,
+					padding: PADDING.CHIP,
+					borderRadius: RADIUS.PILL,
 					border: `1px solid ${isSet ? theme.palette.primary.main : theme.palette.neutral.hairline}`,
 					backgroundColor: isSet
 						? theme.palette.neutral.hoverGreen
 						: theme.palette.background.paper,
 					color: theme.palette.text.primary,
-					fontSize: "0.75rem",
+					fontSize: typographyLevels.sm,
 					whiteSpace: "nowrap",
 					transition: "background-color 150ms ease, border-color 150ms ease",
 					"&:hover": {
@@ -92,8 +103,8 @@ export const FilterChip = (props: SingleProps | MultipleProps) => {
 							: theme.palette.neutral.border,
 					},
 					"&.Mui-focusVisible": {
-						outline: `2px solid ${theme.palette.primary.main}`,
-						outlineOffset: 1,
+						outline: `${FOCUS_RING.WIDTH}px solid ${theme.palette.primary.main}`,
+						outlineOffset: FOCUS_RING.OFFSET,
 					},
 				}}
 			>
@@ -101,14 +112,14 @@ export const FilterChip = (props: SingleProps | MultipleProps) => {
 					{label}:{" "}
 					<Box
 						component="span"
-						fontWeight={isSet ? 500 : 400}
+						fontWeight={isSet ? FONT_WEIGHT.MEDIUM : FONT_WEIGHT.REGULAR}
 					>
 						{valueText}
 					</Box>
 				</Box>
 				<ChevronDown
-					size={14}
-					strokeWidth={1.5}
+					size={ICON_SIZE.SM}
+					strokeWidth={ICON_STROKE}
 					color={theme.palette.neutral.icon}
 				/>
 			</ButtonBase>
@@ -116,7 +127,7 @@ export const FilterChip = (props: SingleProps | MultipleProps) => {
 				anchorEl={anchor}
 				open={Boolean(anchor)}
 				onClose={() => setAnchor(null)}
-				slotProps={{ paper: { sx: { minWidth: 180 } } }}
+				slotProps={{ paper: { sx: { minWidth: FILTER_MENU_MIN_WIDTH } } }}
 			>
 				{options.map((option) => {
 					const isSelected = selected.includes(option.value);
@@ -135,8 +146,8 @@ export const FilterChip = (props: SingleProps | MultipleProps) => {
 							</Box>
 							{isSelected && (
 								<Check
-									size={14}
-									strokeWidth={1.5}
+									size={ICON_SIZE.SM}
+									strokeWidth={ICON_STROKE}
 									color={theme.palette.primary.main}
 								/>
 							)}
