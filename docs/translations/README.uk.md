@@ -85,13 +85,13 @@ Checkmate пройшов навантажувальне тестування з 
 
 Інструкції зі встановлення дивіться у [порталі документації Checkmate](https://checkmate.so/docs).
 
-Альтернативно, для швидкого розгортання Checkmate можна скористатися [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Південна Африка), [Cloudzy](https://cloudzy.com/marketplace/checkmate) або [Pikapods](https://www.pikapods.com/). Якщо хочете моніторити серверну інфраструктуру, знадобиться агент [Capture](https://github.com/bluewave-labs/capture). У репозиторії Capture також є інструкції зі встановлення.
+Альтернативно, для швидкого розгортання Checkmate можна скористатися [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Південна Африка), [Cloudzy](https://cloudzy.com/marketplace/checkmate) або [Pikapods](https://www.pikapods.com/). Якщо хочете моніторити серверну інфраструктуру, знадобиться агент [Capture](https://checkmate.so/docs/infrastructure/installing-capture). У репозиторії Capture також є інструкції зі встановлення.
 
 ### Використання власного УЦ
 
-Якщо потрібно моніторити внутрішні HTTPS-ендпоїнти з сертифікатами від приватних центрів сертифікації (як-от Smallstep), див. наш [посібник з довіри власному УЦ](../custom-ca-trust.md) для опцій конфігурації Docker.
+Якщо потрібно моніторити внутрішні HTTPS-ендпоїнти з сертифікатами від приватних центрів сертифікації (як-от Smallstep), див. наш [посібник з довіри власному УЦ](https://checkmate.so/docs/settings/custom-ca-trust) для опцій конфігурації Docker.
 
-Додаткову документацію шукайте у [каталозі docs](../).
+Додаткову документацію шукайте на [порталі документації Checkmate](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Продуктивність
@@ -187,7 +187,7 @@ Checkmate пройшов навантажувальне тестування з 
 Як долучитися:
 
 0. Поставте зірку цьому репозиторію :)
-1. Прочитайте [посібник контриб'ютора](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). Початківцям радимо подивитися мітку `good-first-issue`.
+1. Прочитайте [посібник контриб'ютора](https://checkmate.so/docs/getting-started/contributing). Початківцям радимо подивитися мітку `good-first-issue`.
 2. Прочитайте детальний опис [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate), якщо хочете глибше зануритись у архітектуру.
 3. Відкрийте issue, якщо вважаєте, що знайшли баг.
 4. Якщо ви новачок, шукайте `good-first-issue`.

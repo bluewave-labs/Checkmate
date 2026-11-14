@@ -82,13 +82,13 @@ Kullanım talimatlarını [burada](https://checkmate.so/docs) bulabilirsiniz.
 
 Kurulum talimatları için [Checkmate dokümantasyon portalına](https://checkmate.so/docs) bakın.
 
-Alternatif olarak hızlıca bir Checkmate örneği çalıştırmak için [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Güney Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) veya [Pikapods](https://www.pikapods.com/)'u kullanabilirsiniz. Sunucu altyapınızı izlemek isterseniz [Capture ajanına](https://github.com/bluewave-labs/capture) ihtiyacınız olacak. Capture deposu da kurulum talimatlarını içerir.
+Alternatif olarak hızlıca bir Checkmate örneği çalıştırmak için [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Güney Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) veya [Pikapods](https://www.pikapods.com/)'u kullanabilirsiniz. Sunucu altyapınızı izlemek isterseniz [Capture ajanına](https://checkmate.so/docs/infrastructure/installing-capture) ihtiyacınız olacak. Capture deposu da kurulum talimatlarını içerir.
 
 ### Özel CA Kullanımı
 
-Özel sertifika otoritelerinden (örneğin Smallstep) gelen sertifikalarla iç HTTPS uç noktalarını izlemeniz gerekiyorsa, Docker yapılandırma seçenekleri için [Özel CA Güven Kılavuzumuza](../custom-ca-trust.md) bakın.
+Özel sertifika otoritelerinden (örneğin Smallstep) gelen sertifikalarla iç HTTPS uç noktalarını izlemeniz gerekiyorsa, Docker yapılandırma seçenekleri için [Özel CA Güven Kılavuzumuza](https://checkmate.so/docs/settings/custom-ca-trust) bakın.
 
-Daha fazla dokümantasyon için [docs dizinine](../) göz atın.
+Daha fazla dokümantasyon için [Checkmate dokümantasyon portalına](https://checkmate.so/docs) göz atın.
 
 <a id="performance"></a>
 ## Performans
@@ -184,7 +184,7 @@ Reponuz **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, 
 Nasıl katkıda bulunabilirsiniz:
 
 0. Bu repoya yıldız verin :)
-1. [Katkıda bulunma kılavuzunu](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md) inceleyin. Yeni başlayanların `good-first-issue` etiketine bakmasını öneririz.
+1. [Katkıda bulunma kılavuzunu](https://checkmate.so/docs/getting-started/contributing) inceleyin. Yeni başlayanların `good-first-issue` etiketine bakmasını öneririz.
 2. Mimari hakkında derinlemesine bilgi almak isterseniz, ayrıntılı [Checkmate yapısını](https://deepwiki.com/bluewave-labs/Checkmate) okuyun.
 3. Bir hata yakaladığınızı düşünüyorsanız bir issue açın.
 4. Yeni başlıyorsanız `good-first-issue`'lara bakın.

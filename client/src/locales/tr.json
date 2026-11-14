@@ -32,6 +32,8 @@
 			"pause": "Duraklat",
 			"resume": "Devam et",
 			"save": "Kaydet",
+			"next": "İleri",
+			"back": "Geri",
 			"sendInvite": "Davet gönder",
 			"test": "Test",
 			"testNotifications": "Bildirimleri test et",
@@ -47,19 +49,37 @@
 			"exportToJSON": "JSON olarak dışa aktar",
 			"importFromJSON": "JSON dosyasından içe aktar",
 			"clearFilters": "Filtreleri temizle",
-			"removeUser": "Kullanıcıyı kaldır"
+			"removeUser": "Kullanıcıyı kaldır",
+			"removeItem": "{{item}} öğesini kaldır"
 		},
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Ortalama yanıt süresi",
+				"cpuUsage": "CPU kullanımı",
 				"downtime": "Kesinti süresi",
 				"high": "yüksek",
 				"low": "düşük",
+				"memoryUsage": "Bellek kullanımı",
+				"responseTime": "Yanıt süresi",
+				"timingPhases": "İstek aşamaları",
+				"totalResponseTime": "Toplam yanıt süresi",
 				"uptime": "Çalışma süresi"
 			},
 			"histogram": {
 				"avg": "Ort: {{value}}",
-				"max": "Maks: {{value}}"
+				"max": "Maks: {{value}}",
+				"responseTime": "Yanıt süresi: {{value}}",
+				"total": "Toplam: {{value}}",
+				"avgCpuUsage": "Ortalama CPU kullanımı: {{value}}",
+				"avgMemoryUsage": "Ortalama bellek kullanımı: {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "İstek",
+				"firstByte": "İlk bayt",
+				"download": "İndirme"
 			}
 		},
 		"dialogs": {
@@ -74,10 +94,17 @@
 			"na": "N/A",
 			"resolved": "Çözüldü",
 			"responseTime": "Yanıt süresi",
+			"state": "Durum",
+			"uptime": "Çalışma süresi",
+			"health": "Sağlık",
+			"restarts": "Yeniden başlatmalar",
 			"idle": "Boşta",
 			"running": "Çalışıyor"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "Aramak için yazın"
+			},
 			"role": {
 				"option": {
 					"role": {
@@ -120,7 +147,8 @@
 				"url": "URL",
 				"interval": "Aralık",
 				"active": "Aktif",
-				"responseTime": "Yanıt süresi"
+				"responseTime": "Yanıt süresi",
+				"tags": "Etiketler"
 			}
 		},
 		"statusCode": {
@@ -254,6 +282,63 @@
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "Proxy'ler",
+				"description": "HTTP izleme trafiğini yönlendirmek için proxy sunucularınızı yönetin."
+			},
+			"fallback": {
+				"title": "Henüz proxy yok",
+				"description": "HTTP monitör kontrollerini bir proxy sunucusu üzerinden yönlendirin. Bir proxy oluşturduktan sonra onu tek tek monitörlerde seçebilir veya Ayarlar'da genel varsayılan olarak belirleyebilirsiniz.",
+				"actionButton": "Proxy oluştur"
+			},
+			"form": {
+				"name": {
+					"title": "Proxy adı",
+					"description": "Bu proxy'yi tanımlamak için kolay bir ad",
+					"optionName": "Proxy adı",
+					"placeholder": "Proxy'm"
+				},
+				"server": {
+					"title": "Proxy sunucusu",
+					"description": "Proxy sunucusuna nereden erişilebildiği. Checkmate'in ona bağlanmak için kullandığı protokolü, ana bilgisayar adını veya IP adresini ve dinlediği portu belirleyin.",
+					"option": {
+						"protocol": {
+							"label": "Protokol"
+						},
+						"host": {
+							"label": "Ana bilgisayar adı / IP adresi",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "Port"
+						}
+					}
+				},
+				"auth": {
+					"title": "Kimlik doğrulama",
+					"description": "İsteğe bağlı. Yalnızca proxy sunucusu temel kimlik doğrulama gerektiriyorsa gereklidir.",
+					"option": {
+						"username": {
+							"label": "Kullanıcı adı",
+							"placeholder": "Proxy kullanıcı adı",
+							"labelSet": "Kullanıcı adı ayarlandı. Değiştirmek için \"Sıfırla\" düğmesine tıklayın."
+						},
+						"password": {
+							"label": "Parola",
+							"labelSet": "Parola ayarlandı. Değiştirmek için \"Sıfırla\" düğmesine tıklayın."
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "Protokol",
+					"host": "Ana bilgisayar",
+					"port": "Port"
+				}
+			}
+		},
 		"notFound": {
 			"title": "Eyvah! Sushini düşürdün!",
 			"subtitle": "URL mevcut değil veya erişim yetkiniz yok."
@@ -475,7 +560,9 @@
 				},
 				"statBoxes": {
 					"activeFor": "Aktif süresi",
+					"checkingEvery": "Kontrol aralığı: {{interval}}",
 					"certificateExpiry": "Sertifika bitiş tarihi",
+					"domainExpiry": "Alan adı bitiş tarihi",
 					"lastCheck": "Son kontrol",
 					"lastResponseTime": "Son yanıt süresi",
 					"serviceIsDown": "Servis çalışmıyor"
@@ -521,6 +608,13 @@
 				"advanced": {
 					"description": "Gelişmiş kullanım senaryoları için isteğe bağlı ayarlar",
 					"option": {
+						"method": {
+							"label": "İstek yöntemi",
+							"description": {
+								"GET": "GET, gövde dahil yanıtın tamamını alır. Gelişmiş eşleştirme tam olarak desteklenir",
+								"HEAD": "HEAD, hedefteki yükü azaltmak için yalnızca yanıt başlıklarını alır. Durum kodu eşleştirmeyi destekler, ancak gövde olmadığından gelişmiş eşleştirmeyi desteklemez."
+							}
+						},
 						"advancedMatching": {
 							"label": "Gelişmiş eşleştirme kullan"
 						},
@@ -536,6 +630,10 @@
 							"equal": "Eşit",
 							"include": "İçerir",
 							"regex": "Regex"
+						},
+						"customUpCodes": {
+							"label": "Kabul edilen durum kodları",
+							"description": "Başarılı sayılması gereken 2xx dışındaki kodları ekleyin."
 						}
 					},
 					"title": "Gelişmiş ayarlar"
@@ -569,6 +667,9 @@
 					"title": "Kontrol sıklığı"
 				},
 				"general": {
+					"url": {
+						"alert": "Gelecekteki kontroller yeni URL'yi kullanacak. Bu monitörün geçmiş verileri korunur, ancak bu veriler eski URL'den toplanmıştır."
+					},
 					"option": {
 						"host": {
 							"label": "Ana bilgisayar",
@@ -585,6 +686,24 @@
 						"url": {
 							"label": "URL",
 							"placeholder": "https://www.google.com"
+						},
+						"proxyMode": {
+							"label": "Proxy",
+							"value": {
+								"inheritDirect": "Varsayılan (doğrudan bağlantı)",
+								"inheritGlobal": "Varsayılan ({{name}})",
+								"none": "Asla proxy kullanma",
+								"custom": "Özel proxy"
+							},
+							"description": {
+								"inheritDirect": "Genel proxy yapılandırılmamış, doğrudan bağlanılır. Daha sonra bir genel proxy yapılandırılırsa bu monitör onu kullanır.",
+								"inheritGlobal": "Genel proxy ayarını kullan",
+								"none": "Daha sonra genel proxy etkinleştirilse bile her zaman doğrudan bağlanır.",
+								"custom": "Bu monitörün kontrollerini belirli bir proxy üzerinden yönlendirin. Genel proxy'yi geçersiz kılar"
+							}
+						},
+						"proxy": {
+							"label": "Proxy sunucusu"
 						},
 						"game": {
 							"label": "Oyun seç",
@@ -671,6 +790,10 @@
 				"notifications": {
 					"description": "Kullanmak istediğiniz bildirim kanallarını seçin",
 					"title": "Bildirimler"
+				},
+				"tags": {
+					"description": "Bu monitöre uygulamak istediğiniz etiketleri seçin",
+					"title": "Etiketler"
 				},
 				"type": {
 					"description": "Gerçekleştirilecek kontrol türünü seçin",
@@ -905,6 +1028,7 @@
 					"disk": "Disk kullanımı",
 					"netBytesRecv": "{{name}} - Alınan bayt",
 					"netBytesSent": "{{name}} - Gönderilen bayt",
+					"loopbackOnlyNotice": "Capture yalnızca konteyner ağ arayüzlerini görüyor ve hiçbiri gerçek trafik taşımıyor. Bu, Capture yalnızca kendi ağ ad alanını görebilen bir konteyner içinde çalıştığında normaldir — ana makineye benzer adlara sahip arayüzler (eth0, ens3) ana makinenin değil, konteynerin sanal arayüzleridir. Gerçek ağ etkinliğini görmek için Capture'ı doğrudan ana makinede çalıştırın.",
 					"temp": "Sıcaklık"
 				}
 			},
@@ -957,6 +1081,37 @@
 				"description": "Sunucu performansını izleyin, darboğazları belirleyin ve gerçek zamanlı altyapı izleme ile güvenilirliği sağlayın."
 			}
 		},
+		"tags": {
+			"header": {
+				"title": "Etiketler",
+				"description": "Monitörlerinizi etiketlerle düzenleyin"
+			},
+			"fallback": {
+				"title": "Henüz etiket yok",
+				"description": "Monitörlerinizi etiketlerle düzenleyin. Bir etiket oluşturup bir monitöre atadığınızda, uygulama genelinde bu etikete göre filtreleme yapabilir ve etiket ayrıntılarını burada görebilirsiniz.",
+				"actionButton": "Etiket oluştur"
+			},
+			"table": {
+				"headers": {
+					"color": "Renk",
+					"appearance": "Görünüm"
+				}
+			},
+			"form": {
+				"name": {
+					"title": "Etiket adı",
+					"description": "Etiketiniz için bir ad seçin",
+					"optionName": "Etiket adı",
+					"placeholder": "ör. Grup 1"
+				},
+				"color": {
+					"title": "Etiket rengi",
+					"description": "Etiketiniz için bir renk seçin",
+					"optionName": "Etiket rengi",
+					"placeholder": "ör. #13715B"
+				}
+			}
+		},
 		"logs": {
 			"fallback": {
 				"title": "Henüz günlük yok",
@@ -970,6 +1125,8 @@
 			"logLevelSelect": {
 				"label": "Günlük seviyesi"
 			},
+			"workers": "İşçiler",
+			"workersExplainers": "İşçi süreçlerini gösterir. İşçi kimlikleri kısaltılmıştır, tam kimliği görmek için üzerine gelin",
 			"jobQueue": "İş kuyruğu",
 			"jobQueueExplainer": "<highlight>Vurgulanan satırlar</highlight> şu anda bir işçi tarafından işlenmekte olan işlerdir.",
 			"failedJobs": "Başarısız işler",
@@ -990,6 +1147,26 @@
 					"totalHeapSize": "Toplam heap boyutu",
 					"osMemoryLimit": "İşletim sistemi bellek limiti"
 				},
+				"mongoDBStats": {
+					"readyState": "Hazır olma durumu",
+					"readsPerSecond": "Okuma/sn",
+					"insertsPerSecond": "Ekleme/sn",
+					"updatesPerSecond": "Güncelleme/sn",
+					"deletesPerSecond": "Silme/sn",
+					"writesPerSecond": "Toplam yazma/sn",
+					"host": "Ana bilgisayar",
+					"port": "Port",
+					"dbName": "Veritabanı adı",
+					"storageSize": "Depolama boyutu"
+				},
+				"mongoDBCollectionStats": {
+					"documents": "Belgeler: {{count}}",
+					"bucketCount": "Bucket sayısı: {{count}}",
+					"storageSize": "Depolama boyutu: {{size}}",
+					"indexSize": "Dizin boyutu: {{size}}",
+					"totalSize": "Toplam boyut: {{size}}",
+					"dbUsageTooltip": "DB depolama payı: %{{percentage}}"
+				},
 				"gauges": {
 					"heapAllocation": "Heap tahsisi",
 					"heapUsage": "Heap kullanımı",
@@ -1009,17 +1186,32 @@
 					"memoryCpu": {
 						"title": "Bellek ve CPU",
 						"description": "Sürecin ayrılmış belleğini ve ana makinenin CPU'sunu nasıl kullandığı."
+					},
+					"mongoDBStats": {
+						"title": "MongoDB istatistikleri",
+						"description": "MongoDB metriklerinin anlık görüntüsü"
+					},
+					"mongoDBCollectionStats": {
+						"title": "MongoDB koleksiyon istatistikleri",
+						"description": "MongoDB koleksiyonlarına ait istatistikler"
 					}
 				}
 			},
 			"table": {
 				"headers": {
+					"host": "Ana bilgisayar",
+					"processId": "Süreç kimliği",
+					"workerId": "İşçi kimliği",
+					"workerMode": "İşçi modu",
+					"lastSeenAt": "Son görülme",
 					"timestamp": "Zaman damgası",
 					"level": "Seviye",
 					"service": "Servis",
 					"monitorId": "Monitör ID",
 					"runCount": "Çalışma sayısı",
 					"failCount": "Başarısızlık sayısı",
+					"nextScheduledAt": "Sonraki çalıştırma",
+					"lockedBy": "Kilitleyen",
 					"lastFinishedAt": "Son tamamlanma zamanı",
 					"lastFailedAt": "Son başarısızlık zamanı",
 					"failReason": "Başarısızlık nedeni",
@@ -1146,7 +1338,22 @@
 				"type": {
 					"description": "Oluşturulacak bildirim kanalı türünü seçin.",
 					"optionType": "Tür",
-					"title": "Kanal türü"
+					"title": "Kanal türü",
+					"value": {
+						"email": "E-posta",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"signalgrid": "Signalgrid",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "Telegram yapılandırması",
@@ -1164,6 +1371,14 @@
 					"optionUserKey": "Kullanıcı anahtarı",
 					"placeholderUserKey": "Kullanıcı anahtarını girin"
 				},
+				"signalgrid": {
+					"title": "Signalgrid yapılandırması",
+					"description": "Cihazlarınızda anlık bildirim almak için Signalgrid'i yapılandırın.",
+					"optionClientKey": "İstemci anahtarı",
+					"placeholderClientKey": "Signalgrid istemci anahtarınız",
+					"optionChannel": "Kanal",
+					"placeholderChannel": "Signalgrid kanalınız"
+				},
 				"twilio": {
 					"title": "Twilio yapılandırması",
 					"description": "SMS göndermek için Twilio hesap kimlik bilgilerinizi girin.",
@@ -1175,6 +1390,14 @@
 					"placeholderFromNumber": "+1234567890",
 					"optionToNumber": "Alıcı numara",
 					"placeholderToNumber": "+1234567890"
+				},
+				"ntfy": {
+					"title": "ntfy yapılandırması",
+					"description": "Anlık bildirimler için bir ntfy sunucusu ve konusu yapılandırın.",
+					"optionServerUrl": "Sunucu URL'si",
+					"placeholderServerUrl": "https://ntfy.sh",
+					"optionTopic": "Konu",
+					"placeholderTopic": "checkmate-alerts"
 				}
 			},
 			"table": {
@@ -1231,7 +1454,8 @@
 				"integrations": "Entegrasyonlar",
 				"tags": "Etiketler",
 				"proxies": "Proxy sunucuları",
-				"data": "Veri"
+				"data": "Veri",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1265,6 +1489,22 @@
 							"label": "Grafik türü",
 							"histogram": "Histogram",
 							"heatmap": "Isı haritası"
+						}
+					}
+				},
+				"globalProxy": {
+					"title": "Genel proxy",
+					"description": "İzleme kontrollerini varsayılan olarak bir proxy üzerinden yönlendirin. Proxy ayarı \"Varsayılan\" olan tüm HTTP monitörleri için geçerlidir; \"Asla proxy kullanma\" veya özel bir proxy olarak ayarlanmış monitörler etkilenmez.",
+					"option": {
+						"enabled": {
+							"label": "Genel proxy kullan"
+						},
+						"proxy": {
+							"label": "Bir genel proxy seçin"
+						},
+						"empty": {
+							"text": "Henüz yapılandırılmış proxy yok.",
+							"link": "Önce bir tane oluşturun"
 						}
 					}
 				},
@@ -1426,7 +1666,159 @@
 				},
 				"importExportMonitors": {
 					"title": "Monitörleri içe / dışa aktar",
-					"description": "Yedekleme veya aktarım için monitör verilerinizi JSON dosyası olarak içe veya dışa aktarın."
+					"description": "Yedekleme veya aktarım için monitör verilerinizi JSON dosyası olarak içe veya dışa aktarın.",
+					"backupNotice": "Bu JSON dosyası yalnızca monitörlerinizi içerir, bu nedenle tam bir yedek değildir. Checkmate verilerinizi yedeklemek veya geri yüklemek için Checkmate Connect kullanın.",
+					"connectTabLink": "Checkmate Connect sekmesini aç",
+					"connectSiteLink": "Checkmate Connect web sitesini ziyaret et"
+				},
+				"connect": {
+					"superadminOnly": "Bu sunucuyu yalnızca bir süper yönetici kaydedebilir, uzaktan erişimi değiştirebilir, yedek alıp geri yükleyebilir veya kaydını kaldırabilir. Rolünüz yakın zamanda değiştiyse oturumu kapatıp yeniden açın.",
+					"clickToConfirm": "Onaylamak için tekrar tıklayın",
+					"status": {
+						"title": "Durum",
+						"description": "Bu kurulumun bağlantı durumu.",
+						"enrolled": "Kayıtlı",
+						"notEnrolled": "Kayıtlı değil",
+						"connected": "Tünel bağlı",
+						"disconnected": "Tünel bağlı değil",
+						"connecting": "Tünel bağlanıyor",
+						"remoteAccessOff": "Uzaktan erişim kapalı",
+						"agentId": "Ajan ID",
+						"lastConnected": "Son bağlantı"
+					},
+					"enroll": {
+						"title": "Kurulum kaydı",
+						"description": "Checkmate Connect panonuzdaki kimlik bilgisi bloğunu yapıştırın. Kimlik bilgisi bu kurulumun veritabanında şifreli olarak saklanır ve yalnızca Checkmate Connect ile kimlik doğrulamak için dışarı gönderilir.",
+						"button": "Kaydı tamamla"
+					},
+					"remoteAccess": {
+						"title": "Uzaktan erişim",
+						"description": "Bu kuruluma Connect adresinizden erişebilmeniz için giden bir tünel açık tutulur. Hiçbir gelen bağlantı noktası açılmaz."
+					},
+					"tooltips": {
+						"enroll": "Bu sunucuyu hesabınıza bağlayın",
+						"unenroll": "Bu sunucunun Connect bağlantısını kesin",
+						"generateKey": "Yedeklerinizin kilidini açan anahtarı oluşturun",
+						"lostKey": "Yeni bir anahtarla baştan başlayın",
+						"runFull": "Tüm veritabanını şimdi yedekleyin",
+						"runConfig": "Kontrol geçmişi dışındaki her şeyi yedekleyin",
+						"importKey": "Orijinal sunucunuzdaki anahtarı kullanın",
+						"useKey": "Bu anahtarı yedeklerinizle doğrulayın",
+						"replaceKey": "Başka bir kurtarma anahtarına geçin",
+						"restore": "Bu sunucunun verilerini bu yedekle değiştirin"
+					},
+					"backup": {
+						"title": "Bulut yedekleri",
+						"description": "Bu kurulumun veritabanının Checkmate Connect hizmetine yüklenen şifreli yedekleri. Veriler yüklenmeden önce burada şifrelenir; bulutta yalnızca şifreli veri saklanır.",
+						"needsKey": "Yedeklemeye başlamak için aşağıdan bir kurtarma anahtarı ayarlayın.",
+						"generateKey": "Kurtarma anahtarı oluştur",
+						"existingBackups": "Bu hesapta zaten bulut yedekleri var. Bunları geri yüklemek için orijinal sunucunuzdaki kurtarma anahtarını girin.",
+						"lostKey": "Anahtarımı kaybettim",
+						"lostKeyWarning": "Mevcut bulut yedekleriniz orijinal anahtar olmadan geri yüklenemez. Yeni anahtarla alınan ilk yedekten sonra 30 gün saklanırlar, böylece orijinal anahtarı bulursanız geri dönebilirsiniz.",
+						"importKey": "Zaten bir kurtarma anahtarım var",
+						"importKeyHelp": "Orijinal sunucunuzdaki 64 karakterlik anahtarı yapıştırın. Checkmate, anahtarı kaydetmeden önce doğrulamak için bulut yedeklerinizden birinin şifresini çözer.",
+						"replaceKey": "Farklı bir kurtarma anahtarı kullan",
+						"replaceKeyHelp": "Bunun yerine kullanmak istediğiniz 64 karakterlik anahtarı yapıştırın. Checkmate, anahtarı doğrulamak için bulut yedeklerinizin şifresini çözer ve hiçbiri açılmazsa mevcut anahtarınızı korur.",
+						"replaceKeyWarning": "Geçiş yaptıktan sonra mevcut anahtarınızla alınan yedekler geri yüklenemez.",
+						"importKeyConfirm": "Bu anahtarı kullan",
+						"verifyOutcome": {
+							"ok": "Kurtarma anahtarı kaydedildi",
+							"wrong-key": "Bu anahtar bulut yedeklerinizin şifresini çözmüyor",
+							"no-backups": "Bu anahtarın doğrulanabileceği bulut yedeği yok",
+							"failed": "Anahtar doğrulanamadı: {{error}}"
+						},
+						"keyTitle": "Kurtarma anahtarı",
+						"keyWarning": "Bu anahtarı bu sunucudan uzakta, güvenli bir yerde saklayın. Yalnızca bir kez gösterilir. Kaybederseniz bulut yedekleriniz geri yüklenemez ve kimse anahtarı sizin için kurtaramaz.",
+						"keyCopy": "Anahtarı kopyala",
+						"keyLabel": "Kurtarma anahtarınız",
+						"keyContinue": "Kaydettim",
+						"keyDone": "Anahtarı sakladım",
+						"keyShowAgain": "Anahtarı tekrar göster",
+						"keyVerifyHelp": "Anahtarı kaydettiğiniz yeri açın ve çalışan bir kopyanız olduğunu doğrulamak için buraya yapıştırın.",
+						"keyPlaceholder": "Kurtarma anahtarı",
+						"keyAcknowledge": "Bu anahtarı kaybedersem bulut yedeklerimi geri yükleyemeyeceğimi anlıyorum.",
+						"keyMismatch": "Bu, kurtarma anahtarınızla eşleşmiyor. Anahtarı tekrar gösterin ve yeni bir kopyasını kaydedin.",
+						"keyAckRequired": "Anladığınızı onaylamak için kutuyu işaretleyin.",
+						"toolsMissing": "Bulut yedekleri için mongodump ve mongorestore gerekir, ancak bunlar bu sunucuda bulunamadı.",
+						"toolsMac": "macOS üzerinde şunu çalıştırın: brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "Linux için MongoDB Database Tools indir",
+						"toolsPath": "Başka bir yere kuruluysa CONNECT_MONGODUMP_BIN ve CONNECT_MONGORESTORE_BIN değişkenlerini ayarlayın. Araçlar bulunduktan sonra bu mesaj bir dakika içinde kaybolur.",
+						"runFull": "Şimdi yedekle",
+						"runConfig": "Yalnızca yapılandırmayı yedekle",
+						"kind": {
+							"full": "Tam veritabanı",
+							"config": "Yalnızca yapılandırma"
+						},
+						"progress": {
+							"idle": "Boşta",
+							"finished": {
+								"backup": {
+									"ok": "Yedekleme tamamlandı",
+									"failed": "Yedekleme başarısız oldu"
+								},
+								"restore": {
+									"ok": "Geri yükleme tamamlandı",
+									"failed": "Geri yükleme başarısız oldu"
+								},
+								"verify": {
+									"ok": "Kurtarma anahtarı kaydedildi",
+									"failed": "Anahtar doğrulaması başarısız oldu"
+								}
+							},
+							"queued": {
+								"backup": "Yedekleme işi kuyruğa alındı",
+								"restore": "Geri yükleme işi kuyruğa alındı"
+							},
+							"checking": "Anahtarınız doğrulanıyor…",
+							"restore": {
+								"downloading": "Adım 1/3: yedek indiriliyor",
+								"decrypting": "Adım 2/3: yedeğin şifresi çözülüyor",
+								"restoring": "Adım 3/3: veritabanınız geri yükleniyor"
+							},
+							"verify": {
+								"downloading": "Anahtarınız doğrulanıyor: yedek indiriliyor ({{attempt}}/{{attempts}})",
+								"decrypting": "Anahtarınız doğrulanıyor: yedeğin şifresi çözülüyor ({{attempt}}/{{attempts}})"
+							},
+							"backup": {
+								"dumping": "Adım 1/3: veritabanınız okunuyor ve şifreleniyor",
+								"uploading": "Adım 2/3: şifreli yedek yükleniyor",
+								"saving": "Adım 3/3: yedek hesabınıza kaydediliyor"
+							}
+						},
+						"progressWithPercent": "{{step}} (%{{percent}})",
+						"progressWithSize": "{{step}} ({{size}})",
+						"lastBackupSucceeded": "Son yedek ({{date}}): başarılı",
+						"lastBackupSucceededSize": "Son yedek ({{date}}): başarılı · {{size}}",
+						"lastBackupFailed": "Son yedek ({{date}}): başarısız — {{error}}",
+						"lastRestoreSucceeded": "Son geri yükleme ({{date}}): başarılı",
+						"lastRestoreFailed": "Son geri yükleme ({{date}}): başarısız — {{error}}",
+						"restore": {
+							"title": "Bir yedeği geri yükle",
+							"description": "Seçilen yedeği indirir, bu sunucuda doğrulayıp şifresini çözer, ardından mevcut veritabanını değiştirir.",
+							"empty": "Henüz doğrulanmış bulut yedeği yok.",
+							"button": "Geri yükle",
+							"confirmTitle": "Yedek geri yüklensin mi? ({{kind}}, tarih: {{date}})",
+							"confirmBody": "Bu işlem mevcut veritabanını değiştirir ve geri alınamaz. Kullanıcı hesapları da değiştirilir, bu nedenle ardından yedekteki bir hesapla oturum açın.",
+							"differentKey": "Farklı anahtar",
+							"expires": "Silinme: {{date}} sonrası"
+						}
+					},
+					"schedule": {
+						"title": "Zamanlanmış yedeklemeler",
+						"description": "Şifreli bulut yedeklemesini otomatik olarak çalıştırın. İlki bu özelliği açar açmaz başlar; başka bir yedekleme veya geri yükleme sürerken zamanı gelen zamanlanmış yedekleme bir sonraki aralığa kadar atlanır.",
+						"interval": "Yedekleme sıklığı",
+						"kind": "Yedek türü"
+					},
+					"recoveryKey": {
+						"title": "Kurtarma anahtarı",
+						"description": "Bulut yedeklerinizi bu sunucuda şifreler. Bu sunucudan asla çıkmaz ve o olmadan yedekleriniz geri yüklenemez.",
+						"set": "Bu sunucuda bir kurtarma anahtarı ayarlı."
+					},
+					"unenroll": {
+						"title": "Kaydı kaldır",
+						"description": "Bu kurulumun Checkmate Connect bağlantısını keser ve yerel kimlik bilgisini siler. Yerel izleme etkilenmez.",
+						"button": "Kaydı kaldır"
+					}
 				},
 				"about": {
 					"title": "Hakkında",
@@ -1455,6 +1847,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "Durum sayfası başarıyla silindi",
+			"rangeSelectorAria": "Geçmiş aralığı",
+			"rangeExceedsRetention": "Kontrol geçmişi saklama süresi {{days}} gün olarak ayarlı. Daha fazla veri için saklama süresini artırın.",
+			"range": {
+				"latest": "En son",
+				"30d": "30 gün",
+				"60d": "60 gün",
+				"90d": "90 gün"
+			},
 			"fallback": {
 				"title": "Henüz durum sayfası yok",
 				"actionButton": "Durum sayfası oluşturun!",
@@ -1482,6 +1882,9 @@
 					"avg": "ort {{value}}",
 					"downTooltip": "Çalışmıyor",
 					"heatmapAria": "Yanıt süresi ısı haritası",
+					"dayAria": "{{date}}, çalışma süresi {{uptime}}",
+					"dayUptime": "Çalışma süresi: {{uptime}} ({{upChecks}}/{{totalChecks}} kontrol)",
+					"dayAvgResponse": "Ort. yanıt: {{value}}",
 					"max": "maks {{value}}"
 				},
 				"status": {
@@ -1493,6 +1896,10 @@
 					"up": "Çalışıyor"
 				},
 				"incidents": {
+					"modalTitle": "Olaylar: {{date}}",
+					"loading": "Yükleniyor...",
+					"noIncidents": "Bu gün için bildirilen olay yok.",
+					"ongoing": "Devam ediyor",
 					"errorLoading": "Olaylar yüklenemedi."
 				}
 			},
@@ -1551,6 +1958,11 @@
 						"url": {
 							"label": "Durum sayfası adresiniz",
 							"placeholder": "my-status-page"
+						},
+						"customDomain": {
+							"label": "Özel alan adı",
+							"placeholder": "status.example.com",
+							"helper": "İsteğe bağlı. Durum sayfasını kendi alan adınızda sunmak için bir DNS kaydını bu Checkmate örneğine yönlendirin."
 						}
 					}
 				},
@@ -1617,6 +2029,10 @@
 							"description": "Serifli başlıklar ve ince ayraçlar. Belirgin ve sakin.",
 							"name": "Editöryal"
 						},
+						"minimal": {
+							"name": "Minimal",
+							"description": "Yalnızca temel öğelerle düz, odaklı ve kompakt."
+						},
 						"modern": {
 							"description": "Atan bir durum noktası ve yumuşakça solan kartlarla SaaS kalitesinde.",
 							"name": "Modern"
@@ -1633,11 +2049,24 @@
 					"dark": "Yalnızca koyu",
 					"label": "Tema modu",
 					"light": "Yalnızca açık"
+				},
+				"customCSS": {
+					"title": "Özel CSS",
+					"description": "Herkese açık durum sayfanızın görünümüne ince ayar yapmak için özel CSS ekleyin.",
+					"option": {
+						"customCSS": {
+							"label": "Özel CSS",
+							"placeholder": "footer { display: none; }"
+						}
+					}
 				}
 			},
 			"header": {
 				"title": "Durum sayfaları",
 				"description": "Müşterilerinize ve paydaşlarınıza gerçek zamanlı çalışma süresi ve olay geçmişini gösteren herkese açık sayfalar yayınlayın."
+			},
+			"preview": {
+				"title": "Durum sayfası önizlemesi"
 			},
 			"editorial": {
 				"allUp": "Tüm sistemler normal şekilde çalışıyor.",
@@ -1651,11 +2080,13 @@
 			"filters": {
 				"search": {
 					"placeholder": "Monitör ara..."
-				}
+				},
+				"activeTags": "Aktif etiketler"
 			},
 			"table": {
 				"headers": {
-					"responseTime": "Yanıt süresi"
+					"responseTime": "Yanıt süresi",
+					"uptime": "Çalışma süresi %"
 				}
 			},
 			"fallback": {

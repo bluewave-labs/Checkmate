@@ -32,6 +32,8 @@
 			"pause": "一時停止",
 			"resume": "再開",
 			"save": "保存",
+			"next": "次へ",
+			"back": "戻る",
 			"sendInvite": "招待を送信",
 			"test": "テスト",
 			"testNotifications": "通知テスト",
@@ -47,19 +49,37 @@
 			"exportToJSON": "JSONにエクスポート",
 			"importFromJSON": "JSONからインポート",
 			"clearFilters": "フィルターをクリア",
-			"removeUser": "ユーザーを削除"
+			"removeUser": "ユーザーを削除",
+			"removeItem": "{{item}}を削除"
 		},
 		"charts": {
 			"labels": {
 				"averageResponseTime": "平均応答時間",
+				"cpuUsage": "CPU使用率",
 				"downtime": "ダウンタイム",
 				"high": "高",
 				"low": "低",
+				"memoryUsage": "メモリ使用率",
+				"responseTime": "応答時間",
+				"timingPhases": "タイミングフェーズ",
+				"totalResponseTime": "合計応答時間",
 				"uptime": "稼働時間"
 			},
 			"histogram": {
 				"avg": "平均: {{value}}",
-				"max": "最大: {{value}}"
+				"max": "最大: {{value}}",
+				"responseTime": "応答時間: {{value}}",
+				"total": "合計: {{value}}",
+				"avgCpuUsage": "平均CPU使用率: {{value}}",
+				"avgMemoryUsage": "平均メモリ使用率: {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "リクエスト",
+				"firstByte": "最初のバイト",
+				"download": "ダウンロード"
 			}
 		},
 		"dialogs": {
@@ -74,10 +94,17 @@
 			"na": "N/A",
 			"resolved": "解決済み",
 			"responseTime": "応答時間",
+			"state": "状態",
+			"uptime": "稼働時間",
+			"health": "ヘルス",
+			"restarts": "再起動回数",
 			"idle": "アイドル",
 			"running": "実行中"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "入力して検索"
+			},
 			"role": {
 				"option": {
 					"role": {
@@ -120,7 +147,8 @@
 				"url": "URL",
 				"interval": "間隔",
 				"active": "アクティブ",
-				"responseTime": "応答時間"
+				"responseTime": "応答時間",
+				"tags": "タグ"
 			}
 		},
 		"statusCode": {
@@ -254,6 +282,63 @@
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "プロキシ",
+				"description": "HTTPモニタリングのトラフィックをルーティングするプロキシサーバーを管理します。"
+			},
+			"fallback": {
+				"title": "プロキシがまだありません",
+				"description": "HTTPモニターのチェックをプロキシサーバー経由でルーティングします。プロキシを作成すると、個々のモニターで選択したり、設定でグローバルのデフォルトに指定したりできます。",
+				"actionButton": "プロキシを作成"
+			},
+			"form": {
+				"name": {
+					"title": "プロキシ名",
+					"description": "このプロキシを識別するためのわかりやすい名前",
+					"optionName": "プロキシ名",
+					"placeholder": "マイプロキシ"
+				},
+				"server": {
+					"title": "プロキシサーバー",
+					"description": "プロキシサーバーの接続先です。Checkmateが接続に使用するプロトコル、ホスト名またはIPアドレス、待ち受けポートを設定します。",
+					"option": {
+						"protocol": {
+							"label": "プロトコル"
+						},
+						"host": {
+							"label": "ホスト名 / IPアドレス",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "ポート"
+						}
+					}
+				},
+				"auth": {
+					"title": "認証",
+					"description": "任意。プロキシサーバーがBasic認証を必要とする場合のみ入力してください。",
+					"option": {
+						"username": {
+							"label": "ユーザー名",
+							"placeholder": "プロキシのユーザー名",
+							"labelSet": "ユーザー名は設定済みです。変更するには「リセット」をクリックしてください。"
+						},
+						"password": {
+							"label": "パスワード",
+							"labelSet": "パスワードは設定済みです。変更するには「リセット」をクリックしてください。"
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "プロトコル",
+					"host": "ホスト",
+					"port": "ポート"
+				}
+			}
+		},
 		"notFound": {
 			"title": "おっと！お寿司を落としてしまいました！",
 			"subtitle": "URLが存在しないか、アクセス権限がありません。"
@@ -475,7 +560,9 @@
 				},
 				"statBoxes": {
 					"activeFor": "稼働期間",
+					"checkingEvery": "{{interval}}ごとにチェック",
 					"certificateExpiry": "証明書の有効期限",
+					"domainExpiry": "ドメインの有効期限",
 					"lastCheck": "最終チェック",
 					"lastResponseTime": "最終応答時間",
 					"serviceIsDown": "サービスがダウンしています"
@@ -521,6 +608,13 @@
 				"advanced": {
 					"description": "高度なユースケース向けのオプション設定",
 					"option": {
+						"method": {
+							"label": "リクエストメソッド",
+							"description": {
+								"GET": "GETはボディを含むレスポンス全体を取得します。高度なマッチングに完全対応しています。",
+								"HEAD": "HEADはレスポンスヘッダーのみを取得し、対象への負荷を軽減します。ステータスコードのマッチングには対応していますが、ボディがないため高度なマッチングには対応していません。"
+							}
+						},
 						"advancedMatching": {
 							"label": "高度なマッチングを使用"
 						},
@@ -536,6 +630,10 @@
 							"equal": "等しい",
 							"include": "含む",
 							"regex": "正規表現"
+						},
+						"customUpCodes": {
+							"label": "許可するステータスコード",
+							"description": "成功とみなす2xx以外のコードを追加してください。"
 						}
 					},
 					"title": "詳細設定"
@@ -569,6 +667,9 @@
 					"title": "チェック頻度"
 				},
 				"general": {
+					"url": {
+						"alert": "今後のチェックでは新しいURLが使用されます。このモニターの履歴データは保持されますが、それらは以前のURLから収集されたものです。"
+					},
 					"option": {
 						"host": {
 							"label": "ホスト",
@@ -585,6 +686,24 @@
 						"url": {
 							"label": "URL",
 							"placeholder": "https://www.google.com"
+						},
+						"proxyMode": {
+							"label": "プロキシ",
+							"value": {
+								"inheritDirect": "デフォルト（直接接続）",
+								"inheritGlobal": "デフォルト（{{name}}）",
+								"none": "プロキシを使用しない",
+								"custom": "カスタムプロキシ"
+							},
+							"description": {
+								"inheritDirect": "グローバルプロキシが設定されていないため、直接接続します。後でグローバルプロキシが設定されると、このモニターはそれを使用します。",
+								"inheritGlobal": "グローバルプロキシの設定を使用します",
+								"none": "後でグローバルプロキシが有効になっても、常に直接接続します。",
+								"custom": "このモニターのチェックを特定のプロキシ経由でルーティングします。グローバルプロキシより優先されます。"
+							}
+						},
+						"proxy": {
+							"label": "プロキシサーバー"
 						},
 						"game": {
 							"label": "ゲームを選択",
@@ -671,6 +790,10 @@
 				"notifications": {
 					"description": "使用する通知チャンネルを選択してください",
 					"title": "通知"
+				},
+				"tags": {
+					"description": "このモニターに適用するタグを選択してください",
+					"title": "タグ"
 				},
 				"type": {
 					"description": "実行するチェックの種類を選択",
@@ -905,6 +1028,7 @@
 					"disk": "ディスク使用率",
 					"netBytesRecv": "{{name}} - 受信バイト数",
 					"netBytesSent": "{{name}} - 送信バイト数",
+					"loopbackOnlyNotice": "Captureからはコンテナのネットワークインターフェースしか見えず、いずれも実際のトラフィックを流していません。これは、Captureが自身のネットワーク名前空間しか観測できないコンテナ内で動作している場合には正常です。ホストのような名前のインターフェース（eth0、ens3）はコンテナの仮想インターフェースであり、ホストのものではありません。実際のネットワークアクティビティを確認するには、Captureをホスト上で直接実行してください。",
 					"temp": "温度"
 				}
 			},
@@ -957,6 +1081,37 @@
 				"description": "サーバーのパフォーマンスを追跡し、ボトルネックを特定し、リアルタイムのインフラ監視で信頼性を確保します。"
 			}
 		},
+		"tags": {
+			"header": {
+				"title": "タグ",
+				"description": "タグでモニターを整理します"
+			},
+			"fallback": {
+				"title": "タグがまだありません",
+				"description": "タグでモニターを整理しましょう。タグを作成してモニターに割り当てると、アプリ全体でそのタグで絞り込めるようになり、ここでタグの詳細を確認できます。",
+				"actionButton": "タグを作成"
+			},
+			"table": {
+				"headers": {
+					"color": "色",
+					"appearance": "表示"
+				}
+			},
+			"form": {
+				"name": {
+					"title": "タグ名",
+					"description": "タグの名前を選択してください",
+					"optionName": "タグ名",
+					"placeholder": "例: グループ1"
+				},
+				"color": {
+					"title": "タグの色",
+					"description": "タグの色を選択してください",
+					"optionName": "タグの色",
+					"placeholder": "例: #13715B"
+				}
+			}
+		},
 		"logs": {
 			"fallback": {
 				"title": "ログがまだありません",
@@ -970,6 +1125,8 @@
 			"logLevelSelect": {
 				"label": "ログレベル"
 			},
+			"workers": "ワーカー",
+			"workersExplainers": "ワーカープロセスを表示します。ワーカーIDは省略表示されています。ホバーすると完全なIDが表示されます",
 			"jobQueue": "ジョブキュー",
 			"jobQueueExplainer": "<highlight>ハイライトされた行</highlight>は、現在ワーカーによって処理中のジョブです。",
 			"failedJobs": "失敗したジョブ",
@@ -990,6 +1147,26 @@
 					"totalHeapSize": "合計ヒープサイズ",
 					"osMemoryLimit": "OSメモリ制限"
 				},
+				"mongoDBStats": {
+					"readyState": "接続状態",
+					"readsPerSecond": "読み取り/秒",
+					"insertsPerSecond": "挿入/秒",
+					"updatesPerSecond": "更新/秒",
+					"deletesPerSecond": "削除/秒",
+					"writesPerSecond": "合計書き込み/秒",
+					"host": "ホスト",
+					"port": "ポート",
+					"dbName": "データベース名",
+					"storageSize": "ストレージサイズ"
+				},
+				"mongoDBCollectionStats": {
+					"documents": "ドキュメント数: {{count}}",
+					"bucketCount": "バケット数: {{count}}",
+					"storageSize": "ストレージサイズ: {{size}}",
+					"indexSize": "インデックスサイズ: {{size}}",
+					"totalSize": "合計サイズ: {{size}}",
+					"dbUsageTooltip": "DBストレージの{{percentage}}%"
+				},
 				"gauges": {
 					"heapAllocation": "ヒープ割り当て",
 					"heapUsage": "ヒープ使用率",
@@ -1009,17 +1186,32 @@
 					"memoryCpu": {
 						"title": "メモリとCPU",
 						"description": "プロセスが割り当てられたメモリとホストCPUをどのように使用しているか。"
+					},
+					"mongoDBStats": {
+						"title": "MongoDB統計",
+						"description": "MongoDBメトリクスのスナップショット"
+					},
+					"mongoDBCollectionStats": {
+						"title": "MongoDBコレクション統計",
+						"description": "MongoDBコレクションの統計"
 					}
 				}
 			},
 			"table": {
 				"headers": {
+					"host": "ホスト",
+					"processId": "プロセスID",
+					"workerId": "ワーカーID",
+					"workerMode": "ワーカーモード",
+					"lastSeenAt": "最終確認日時",
 					"timestamp": "タイムスタンプ",
 					"level": "レベル",
 					"service": "サービス",
 					"monitorId": "モニターID",
 					"runCount": "実行回数",
 					"failCount": "失敗回数",
+					"nextScheduledAt": "次回実行日時",
+					"lockedBy": "ロック元",
 					"lastFinishedAt": "最終完了日時",
 					"lastFailedAt": "最終失敗日時",
 					"failReason": "失敗理由",
@@ -1146,7 +1338,22 @@
 				"type": {
 					"description": "作成する通知チャンネルの種類を選択してください。",
 					"optionType": "タイプ",
-					"title": "チャンネルタイプ"
+					"title": "チャンネルタイプ",
+					"value": {
+						"email": "メール",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"signalgrid": "Signalgrid",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "Telegram設定",
@@ -1164,6 +1371,14 @@
 					"optionUserKey": "ユーザーキー",
 					"placeholderUserKey": "ユーザーキーを入力"
 				},
+				"signalgrid": {
+					"title": "Signalgrid の設定",
+					"description": "デバイスでプッシュ通知を受け取るためにSignalgridを設定します。",
+					"optionClientKey": "クライアントキー",
+					"placeholderClientKey": "Signalgridのクライアントキー",
+					"optionChannel": "チャンネル",
+					"placeholderChannel": "Signalgridのチャンネル"
+				},
 				"twilio": {
 					"title": "Twilio の設定",
 					"description": "SMS を送信するための Twilio アカウント認証情報を入力してください。",
@@ -1175,6 +1390,14 @@
 					"placeholderFromNumber": "+1234567890",
 					"optionToNumber": "送信先番号",
 					"placeholderToNumber": "+1234567890"
+				},
+				"ntfy": {
+					"title": "ntfy の設定",
+					"description": "プッシュ通知用のntfyサーバーとトピックを設定します。",
+					"optionServerUrl": "サーバーURL",
+					"placeholderServerUrl": "https://ntfy.sh",
+					"optionTopic": "トピック",
+					"placeholderTopic": "checkmate-alerts"
 				}
 			},
 			"table": {
@@ -1231,7 +1454,8 @@
 				"integrations": "連携",
 				"tags": "タグ",
 				"proxies": "プロキシ",
-				"data": "データ"
+				"data": "データ",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1265,6 +1489,22 @@
 							"label": "チャートタイプ",
 							"histogram": "ヒストグラム",
 							"heatmap": "ヒートマップ"
+						}
+					}
+				},
+				"globalProxy": {
+					"title": "グローバルプロキシ",
+					"description": "モニタリングのチェックをデフォルトでプロキシ経由にします。プロキシ設定が「デフォルト」のすべてのHTTPモニターに適用されます。「プロキシを使用しない」またはカスタムプロキシに設定されたモニターには影響しません。",
+					"option": {
+						"enabled": {
+							"label": "グローバルプロキシを使用"
+						},
+						"proxy": {
+							"label": "グローバルプロキシを選択"
+						},
+						"empty": {
+							"text": "プロキシがまだ設定されていません。",
+							"link": "先に作成してください"
 						}
 					}
 				},
@@ -1426,7 +1666,159 @@
 				},
 				"importExportMonitors": {
 					"title": "モニターのインポート/エクスポート",
-					"description": "バックアップまたは転送のために、モニターデータをJSONファイルとしてインポートまたはエクスポートします。"
+					"description": "バックアップまたは転送のために、モニターデータをJSONファイルとしてインポートまたはエクスポートします。",
+					"backupNotice": "このJSONファイルにはモニターのみが含まれるため、完全なバックアップではありません。Checkmateのデータをバックアップまたは復元するには、Checkmate Connectを使用してください。",
+					"connectTabLink": "Checkmate Connectタブを開く",
+					"connectSiteLink": "Checkmate Connectのウェブサイトを開く"
+				},
+				"connect": {
+					"superadminOnly": "このサーバーの登録、リモートアクセスの変更、バックアップの実行・復元、登録の解除ができるのはスーパー管理者のみです。最近ロールが変更された場合は、一度ログアウトしてから再度ログインしてください。",
+					"clickToConfirm": "もう一度クリックして確定",
+					"status": {
+						"title": "ステータス",
+						"description": "このインストールの接続状態です。",
+						"enrolled": "登録済み",
+						"notEnrolled": "未登録",
+						"connected": "トンネル接続済み",
+						"disconnected": "トンネル切断",
+						"connecting": "トンネル接続中",
+						"remoteAccessOff": "リモートアクセスオフ",
+						"agentId": "エージェントID",
+						"lastConnected": "最終接続"
+					},
+					"enroll": {
+						"title": "インストールを登録",
+						"description": "Checkmate Connectのダッシュボードに表示される認証情報ブロックを貼り付けてください。認証情報はこのインストールのデータベースに暗号化して保存され、Checkmate Connectでの認証時にのみ外部に送信されます。",
+						"button": "登録"
+					},
+					"remoteAccess": {
+						"title": "リモートアクセス",
+						"description": "送信方向のトンネルを開いたままにして、Connectのアドレスからこのインストールにアクセスできるようにします。受信ポートは開きません。"
+					},
+					"tooltips": {
+						"enroll": "このサーバーをアカウントに接続",
+						"unenroll": "このサーバーをConnectから切断",
+						"generateKey": "バックアップを復号するキーを作成",
+						"lostKey": "新しいキーでやり直す",
+						"runFull": "データベース全体を今すぐバックアップ",
+						"runConfig": "チェック履歴以外をすべてバックアップ",
+						"importKey": "元のサーバーのキーを使用",
+						"useKey": "このキーをバックアップで検証",
+						"replaceKey": "別のリカバリーキーに切り替え",
+						"restore": "このサーバーのデータをこのバックアップで置き換え"
+					},
+					"backup": {
+						"title": "クラウドバックアップ",
+						"description": "このインストールのデータベースを暗号化してCheckmate Connectにアップロードするバックアップです。データはアップロード前にここで暗号化され、クラウドには暗号文のみが保存されます。",
+						"needsKey": "バックアップを開始するには、下でリカバリーキーを設定してください。",
+						"generateKey": "リカバリーキーを生成",
+						"existingBackups": "このアカウントにはすでにクラウドバックアップがあります。復元するには、元のサーバーのリカバリーキーを入力してください。",
+						"lostKey": "キーを紛失しました",
+						"lostKeyWarning": "元のキーがないと、既存のクラウドバックアップは復元できません。新しいキーで最初のバックアップを作成してから30日間は保持されるため、元のキーが見つかれば切り替えて戻せます。",
+						"importKey": "リカバリーキーを持っています",
+						"importKeyHelp": "元のサーバーの64文字のキーを貼り付けてください。Checkmateは保存する前に、クラウドバックアップの1つを復号してキーを検証します。",
+						"replaceKey": "別のリカバリーキーを使用",
+						"replaceKeyHelp": "代わりに使用する64文字のキーを貼り付けてください。Checkmateはクラウドバックアップを復号してキーを検証し、どれも開けない場合は現在のキーを保持します。",
+						"replaceKeyWarning": "切り替えた後は、現在のキーで作成したバックアップを復元できなくなります。",
+						"importKeyConfirm": "このキーを使用",
+						"verifyOutcome": {
+							"ok": "リカバリーキーを保存しました",
+							"wrong-key": "このキーではクラウドバックアップを復号できません",
+							"no-backups": "このキーを検証できるクラウドバックアップがありません",
+							"failed": "キーを検証できませんでした: {{error}}"
+						},
+						"keyTitle": "リカバリーキー",
+						"keyWarning": "このキーは、このサーバーとは別の安全な場所に保管してください。表示されるのは一度だけです。紛失するとクラウドバックアップは復元できず、誰も復旧できません。",
+						"keyCopy": "キーをコピー",
+						"keyLabel": "リカバリーキー",
+						"keyContinue": "保存しました",
+						"keyDone": "キーを保管しました",
+						"keyShowAgain": "キーを再表示",
+						"keyVerifyHelp": "キーを保存した場所を開き、ここに貼り付けて、使えるコピーがあることを確認してください。",
+						"keyPlaceholder": "リカバリーキー",
+						"keyAcknowledge": "このキーを紛失すると、クラウドバックアップを復元できなくなることを理解しました。",
+						"keyMismatch": "リカバリーキーと一致しません。キーを再表示して、新しいコピーを保存してください。",
+						"keyAckRequired": "内容を理解したことを確認するには、チェックボックスをオンにしてください。",
+						"toolsMissing": "クラウドバックアップにはmongodumpとmongorestoreが必要ですが、このサーバーで見つかりませんでした。",
+						"toolsMac": "macOSでは次を実行してください: brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "Linux用のMongoDB Database Toolsをダウンロード",
+						"toolsPath": "別の場所にインストールされている場合は、CONNECT_MONGODUMP_BINとCONNECT_MONGORESTORE_BINを設定してください。ツールが見つかると、このメッセージは1分以内に消えます。",
+						"runFull": "今すぐバックアップ",
+						"runConfig": "設定のみバックアップ",
+						"kind": {
+							"full": "データベース全体",
+							"config": "設定のみ"
+						},
+						"progress": {
+							"idle": "アイドル",
+							"finished": {
+								"backup": {
+									"ok": "バックアップが完了しました",
+									"failed": "バックアップに失敗しました"
+								},
+								"restore": {
+									"ok": "復元が完了しました",
+									"failed": "復元に失敗しました"
+								},
+								"verify": {
+									"ok": "リカバリーキーを保存しました",
+									"failed": "キーの検証に失敗しました"
+								}
+							},
+							"queued": {
+								"backup": "バックアップジョブをキューに追加しました",
+								"restore": "復元ジョブをキューに追加しました"
+							},
+							"checking": "キーを検証しています…",
+							"restore": {
+								"downloading": "ステップ 1/3: バックアップをダウンロードしています",
+								"decrypting": "ステップ 2/3: バックアップを復号しています",
+								"restoring": "ステップ 3/3: データベースを復元しています"
+							},
+							"verify": {
+								"downloading": "キーを検証中: バックアップ {{attempt}}/{{attempts}} をダウンロードしています",
+								"decrypting": "キーを検証中: バックアップ {{attempt}}/{{attempts}} を復号しています"
+							},
+							"backup": {
+								"dumping": "ステップ 1/3: データベースを読み取り、暗号化しています",
+								"uploading": "ステップ 2/3: 暗号化したバックアップをアップロードしています",
+								"saving": "ステップ 3/3: バックアップをアカウントに保存しています"
+							}
+						},
+						"progressWithPercent": "{{step}}（{{percent}}%）",
+						"progressWithSize": "{{step}}（{{size}}）",
+						"lastBackupSucceeded": "前回のバックアップ（{{date}}）: 成功",
+						"lastBackupSucceededSize": "前回のバックアップ（{{date}}）: 成功 · {{size}}",
+						"lastBackupFailed": "前回のバックアップ（{{date}}）: 失敗 — {{error}}",
+						"lastRestoreSucceeded": "前回の復元（{{date}}）: 成功",
+						"lastRestoreFailed": "前回の復元（{{date}}）: 失敗 — {{error}}",
+						"restore": {
+							"title": "バックアップを復元",
+							"description": "選択したバックアップをダウンロードし、このサーバーで検証・復号してから、現在のデータベースを置き換えます。",
+							"empty": "検証済みのクラウドバックアップはまだありません。",
+							"button": "復元",
+							"confirmTitle": "{{date}} のバックアップ（{{kind}}）を復元しますか？",
+							"confirmBody": "現在のデータベースが置き換えられ、元に戻すことはできません。ユーザーアカウントも置き換えられるため、復元後はバックアップ内のアカウントでログインしてください。",
+							"differentKey": "別のキー",
+							"expires": "{{date}} 以降に削除"
+						}
+					},
+					"schedule": {
+						"title": "定期バックアップ",
+						"description": "暗号化したクラウドバックアップを自動で実行します。オンにするとすぐに最初のバックアップが始まります。予定時刻に別のバックアップや復元が実行中の場合、その回はスキップされ次の間隔まで待ちます。",
+						"interval": "バックアップ間隔",
+						"kind": "バックアップの種類"
+					},
+					"recoveryKey": {
+						"title": "リカバリーキー",
+						"description": "このサーバー上でクラウドバックアップを暗号化します。キーがこのサーバーの外に出ることはなく、キーがなければバックアップは復元できません。",
+						"set": "このサーバーにはリカバリーキーが設定されています。"
+					},
+					"unenroll": {
+						"title": "登録を解除",
+						"description": "このインストールをCheckmate Connectから切断し、ローカルの認証情報を削除します。ローカルの監視には影響しません。",
+						"button": "登録を解除"
+					}
 				},
 				"about": {
 					"title": "概要",
@@ -1455,6 +1847,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "ステータスページが正常に削除されました",
+			"rangeSelectorAria": "履歴の期間",
+			"rangeExceedsRetention": "チェック履歴の保持期間は{{days}}日に設定されています。より多くのデータを表示するには保持期間を延長してください。",
+			"range": {
+				"latest": "最新",
+				"30d": "30日",
+				"60d": "60日",
+				"90d": "90日"
+			},
 			"fallback": {
 				"title": "ステータスページがまだありません",
 				"actionButton": "ステータスページを作成！",
@@ -1482,6 +1882,9 @@
 					"avg": "平均 {{value}}",
 					"downTooltip": "ダウン",
 					"heatmapAria": "応答時間のヒートマップ",
+					"dayAria": "{{date}}、稼働率 {{uptime}}",
+					"dayUptime": "稼働率: {{uptime}}（{{upChecks}}/{{totalChecks}} チェック）",
+					"dayAvgResponse": "平均応答: {{value}}",
 					"max": "最大 {{value}}"
 				},
 				"status": {
@@ -1493,6 +1896,10 @@
 					"up": "稼働中"
 				},
 				"incidents": {
+					"modalTitle": "{{date}}のインシデント",
+					"loading": "読み込み中...",
+					"noIncidents": "この日に報告されたインシデントはありません。",
+					"ongoing": "継続中",
 					"errorLoading": "インシデントの読み込みに失敗しました。"
 				}
 			},
@@ -1551,6 +1958,11 @@
 						"url": {
 							"label": "ステータスページのアドレス",
 							"placeholder": "my-status-page"
+						},
+						"customDomain": {
+							"label": "カスタムドメイン",
+							"placeholder": "status.example.com",
+							"helper": "任意。DNSレコードをこのCheckmateインスタンスに向けると、独自ドメインでステータスページを公開できます。"
 						}
 					}
 				},
@@ -1617,6 +2029,10 @@
 							"description": "セリフ見出しと細い区切り線。独特で落ち着いています。",
 							"name": "エディトリアル"
 						},
+						"minimal": {
+							"name": "ミニマル",
+							"description": "フラットで焦点が絞られ、必要なものだけを備えたコンパクトなデザイン。"
+						},
 						"modern": {
 							"description": "脈動するステータスドットと柔らかくフェードするカードを備えたSaaS品質。",
 							"name": "モダン"
@@ -1633,11 +2049,24 @@
 					"dark": "ダークのみ",
 					"label": "テーマモード",
 					"light": "ライトのみ"
+				},
+				"customCSS": {
+					"title": "カスタムCSS",
+					"description": "カスタムCSSを追加して、公開ステータスページの外観を細かく調整します。",
+					"option": {
+						"customCSS": {
+							"label": "カスタムCSS",
+							"placeholder": "footer { display: none; }"
+						}
+					}
 				}
 			},
 			"header": {
 				"title": "ステータスページ",
 				"description": "顧客と関係者にリアルタイムの稼働状況とインシデント履歴を表示する公開ページを公開します。"
+			},
+			"preview": {
+				"title": "ステータスページのプレビュー"
 			},
 			"editorial": {
 				"allUp": "すべてのシステムは正常に動作しています。",
@@ -1651,11 +2080,13 @@
 			"filters": {
 				"search": {
 					"placeholder": "モニターを検索..."
-				}
+				},
+				"activeTags": "選択中のタグ"
 			},
 			"table": {
 				"headers": {
-					"responseTime": "応答時間"
+					"responseTime": "応答時間",
+					"uptime": "稼働率 %"
 				}
 			},
 			"fallback": {

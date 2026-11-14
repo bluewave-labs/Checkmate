@@ -85,13 +85,13 @@ Käyttöohjeet löytyvät [täältä](https://checkmate.so/docs).
 
 Asennusohjeet löytyvät [Checkmaten dokumentaatioportaalista](https://checkmate.so/docs).
 
-Vaihtoehtoisesti voit käyttää [Coolifya](https://coolify.io/), [Elestiota](https://elest.io/open-source/checkmate), [K8s:ää](../../charts/helm/checkmate/INSTALLATION.md), [Sive Hostia](https://sive.host) (Etelä-Afrikka), [Cloudzya](https://cloudzy.com/marketplace/checkmate) tai [Pikapodsia](https://www.pikapods.com/) Checkmate-instanssin nopeaan käynnistämiseen. Jos haluat valvoa palvelininfrastruktuuriasi, tarvitset [Capture-agentin](https://github.com/bluewave-labs/capture). Capturen repositorio sisältää myös sen asennusohjeet.
+Vaihtoehtoisesti voit käyttää [Coolifya](https://coolify.io/), [Elestiota](https://elest.io/open-source/checkmate), [K8s:ää](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Hostia](https://sive.host) (Etelä-Afrikka), [Cloudzya](https://cloudzy.com/marketplace/checkmate) tai [Pikapodsia](https://www.pikapods.com/) Checkmate-instanssin nopeaan käynnistämiseen. Jos haluat valvoa palvelininfrastruktuuriasi, tarvitset [Capture-agentin](https://checkmate.so/docs/infrastructure/installing-capture). Capturen repositorio sisältää myös sen asennusohjeet.
 
 ### Mukautetun CA:n käyttö
 
-Jos haluat valvoa sisäisiä HTTPS-päätepisteitä yksityisten varmenneauktoriteettien (kuten Smallstepin) varmenteilla, lue [mukautetun CA:n luottamusopas](../custom-ca-trust.md) Dockerin konfigurointivaihtoehdoista.
+Jos haluat valvoa sisäisiä HTTPS-päätepisteitä yksityisten varmenneauktoriteettien (kuten Smallstepin) varmenteilla, lue [mukautetun CA:n luottamusopas](https://checkmate.so/docs/settings/custom-ca-trust) Dockerin konfigurointivaihtoehdoista.
 
-Lisää dokumentaatiota löydät [docs-hakemistosta](../).
+Lisää dokumentaatiota löydät [Checkmaten dokumentaatioportaalista](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Suorituskyky
@@ -187,7 +187,7 @@ Repoamme tähdittävät työntekijät yhtiöistä **Google, Microsoft, Intel, Ci
 Näin voit osallistua:
 
 0. Tähditä tämä repo :)
-1. Tutustu [osallistujan oppaaseen](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). Aloittelijoille suositellaan `good-first-issue`-tagia.
+1. Tutustu [osallistujan oppaaseen](https://checkmate.so/docs/getting-started/contributing). Aloittelijoille suositellaan `good-first-issue`-tagia.
 2. Lue tarkka [Checkmate-arkkitehtuurikuvaus](https://deepwiki.com/bluewave-labs/Checkmate), jos haluat syventyä rakenteeseen.
 3. Avaa issue, jos uskot löytäneesi virheen.
 4. Etsi `good-first-issue`-merkintöjä, jos olet uusi.

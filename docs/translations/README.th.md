@@ -85,13 +85,13 @@ Checkmate ผ่านการทดสอบโหลดสำหรับม�
 
 ดูวิธีการติดตั้งใน [พอร์ทัลเอกสารของ Checkmate](https://checkmate.so/docs)
 
-อีกทางเลือกหนึ่ง คุณสามารถใช้ [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (แอฟริกาใต้), [Cloudzy](https://cloudzy.com/marketplace/checkmate) หรือ [Pikapods](https://www.pikapods.com/) เพื่อเปิดอินสแตนซ์ Checkmate ได้อย่างรวดเร็ว หากต้องการมอนิเตอร์โครงสร้างพื้นฐานเซิร์ฟเวอร์ คุณจะต้องใช้ [เอเจนต์ Capture](https://github.com/bluewave-labs/capture) รีโพ Capture ยังมีวิธีการติดตั้งด้วย
+อีกทางเลือกหนึ่ง คุณสามารถใช้ [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (แอฟริกาใต้), [Cloudzy](https://cloudzy.com/marketplace/checkmate) หรือ [Pikapods](https://www.pikapods.com/) เพื่อเปิดอินสแตนซ์ Checkmate ได้อย่างรวดเร็ว หากต้องการมอนิเตอร์โครงสร้างพื้นฐานเซิร์ฟเวอร์ คุณจะต้องใช้ [เอเจนต์ Capture](https://checkmate.so/docs/infrastructure/installing-capture) รีโพ Capture ยังมีวิธีการติดตั้งด้วย
 
 ### การใช้ Custom CA
 
-หากคุณต้องการมอนิเตอร์ HTTPS เอนด์พอยต์ภายในที่ใช้ใบรับรองจาก CA ส่วนตัว (เช่น Smallstep) โปรดดู [คู่มือการเชื่อถือ CA แบบกำหนดเอง](../custom-ca-trust.md) สำหรับตัวเลือกการตั้งค่า Docker
+หากคุณต้องการมอนิเตอร์ HTTPS เอนด์พอยต์ภายในที่ใช้ใบรับรองจาก CA ส่วนตัว (เช่น Smallstep) โปรดดู [คู่มือการเชื่อถือ CA แบบกำหนดเอง](https://checkmate.so/docs/settings/custom-ca-trust) สำหรับตัวเลือกการตั้งค่า Docker
 
-สำหรับเอกสารเพิ่มเติม ดูที่ [โฟลเดอร์ docs](../)
+สำหรับเอกสารเพิ่มเติม ดูที่ [พอร์ทัลเอกสารของ Checkmate](https://checkmate.so/docs)
 
 <a id="performance"></a>
 ## ประสิทธิภาพ
@@ -187,7 +187,7 @@ Checkmate ผ่านการทดสอบโหลดสำหรับม�
 วิธีที่คุณสามารถร่วมพัฒนา:
 
 0. ให้ดาวกับรีโพนี้ :)
-1. อ่าน [คู่มือผู้ร่วมพัฒนา](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md) ผู้เริ่มต้นแนะนำให้ดูแท็ก `good-first-issue`
+1. อ่าน [คู่มือผู้ร่วมพัฒนา](https://checkmate.so/docs/getting-started/contributing) ผู้เริ่มต้นแนะนำให้ดูแท็ก `good-first-issue`
 2. อ่านโครงสร้างเชิงลึกของ [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate) หากต้องการเจาะลึกสถาปัตยกรรม
 3. เปิด issue หากคุณคิดว่าพบบั๊ก
 4. มองหาประเด็นที่ติดแท็ก `good-first-issue` หากเป็นมือใหม่

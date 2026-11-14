@@ -32,6 +32,8 @@
 			"pause": "暂停",
 			"resume": "恢复",
 			"save": "保存",
+			"next": "下一步",
+			"back": "返回",
 			"sendInvite": "发送邀请",
 			"test": "测试",
 			"testNotifications": "测试通知",
@@ -47,19 +49,37 @@
 			"exportToJSON": "导出为 JSON",
 			"importFromJSON": "从 JSON 导入",
 			"clearFilters": "清除筛选",
-			"removeUser": "移除用户"
+			"removeUser": "移除用户",
+			"removeItem": "移除 {{item}}"
 		},
 		"charts": {
 			"labels": {
 				"averageResponseTime": "平均响应时间",
+				"cpuUsage": "CPU 使用率",
 				"downtime": "停机时间",
 				"high": "高的",
 				"low": "低的",
+				"memoryUsage": "内存使用率",
+				"responseTime": "响应时间",
+				"timingPhases": "耗时阶段",
+				"totalResponseTime": "总响应时间",
 				"uptime": "正常运行时间"
 			},
 			"histogram": {
 				"avg": "平均: {{value}}",
-				"max": "最大: {{value}}"
+				"max": "最大: {{value}}",
+				"responseTime": "响应时间：{{value}}",
+				"total": "总计：{{value}}",
+				"avgCpuUsage": "平均 CPU 使用率：{{value}}",
+				"avgMemoryUsage": "平均内存使用率：{{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "请求",
+				"firstByte": "首字节",
+				"download": "下载"
 			}
 		},
 		"dialogs": {
@@ -74,10 +94,17 @@
 			"na": "不适用",
 			"resolved": "已解决",
 			"responseTime": "响应时间",
+			"state": "状态",
+			"uptime": "正常运行时间",
+			"health": "健康状况",
+			"restarts": "重启次数",
 			"idle": "空闲",
 			"running": "运行中"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "输入以搜索"
+			},
 			"role": {
 				"option": {
 					"role": {
@@ -120,7 +147,8 @@
 				"url": "URL",
 				"interval": "间隔",
 				"active": "活跃",
-				"responseTime": "响应时间"
+				"responseTime": "响应时间",
+				"tags": "标签"
 			}
 		},
 		"statusCode": {
@@ -254,6 +282,63 @@
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "代理",
+				"description": "管理用于转发 HTTP 监控流量的代理服务器。"
+			},
+			"fallback": {
+				"title": "暂无代理",
+				"description": "通过代理服务器转发 HTTP 监控的检查请求。创建代理后，您可以在单个监控中选择它，或在设置中将其设为全局默认代理。",
+				"actionButton": "创建代理"
+			},
+			"form": {
+				"name": {
+					"title": "代理名称",
+					"description": "用于识别此代理的易记名称",
+					"optionName": "代理名称",
+					"placeholder": "我的代理"
+				},
+				"server": {
+					"title": "代理服务器",
+					"description": "代理服务器的访问地址。设置 Checkmate 连接它所用的协议、主机名或 IP 地址，以及它监听的端口。",
+					"option": {
+						"protocol": {
+							"label": "协议"
+						},
+						"host": {
+							"label": "主机名 / IP 地址",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "端口"
+						}
+					}
+				},
+				"auth": {
+					"title": "身份验证",
+					"description": "可选。仅当代理服务器要求基本身份验证时才需要填写。",
+					"option": {
+						"username": {
+							"label": "用户名",
+							"placeholder": "代理用户名",
+							"labelSet": "用户名已设置。点击“重置”以更改。"
+						},
+						"password": {
+							"label": "密码",
+							"labelSet": "密码已设置。点击“重置”以更改。"
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "协议",
+					"host": "主机",
+					"port": "端口"
+				}
+			}
+		},
 		"notFound": {
 			"title": "哦不！你的寿司掉了！",
 			"subtitle": "该 URL 不存在，或者您没有访问权限。"
@@ -475,6 +560,7 @@
 				},
 				"statBoxes": {
 					"activeFor": "已活跃",
+					"checkingEvery": "每 {{interval}} 检查一次",
 					"certificateExpiry": "证书到期",
 					"domainExpiry": "域名到期",
 					"lastCheck": "上次检查",
@@ -522,6 +608,13 @@
 				"advanced": {
 					"description": "高级用例的可选设置",
 					"option": {
+						"method": {
+							"label": "请求方法",
+							"description": {
+								"GET": "GET 获取包含正文在内的完整响应，完全支持高级匹配。",
+								"HEAD": "HEAD 仅获取响应头，以减轻目标的负载。支持状态码匹配，但由于没有正文，不支持高级匹配。"
+							}
+						},
 						"advancedMatching": {
 							"label": "使用高级匹配"
 						},
@@ -537,6 +630,10 @@
 							"equal": "相等",
 							"include": "包含",
 							"regex": "正则表达式"
+						},
+						"customUpCodes": {
+							"label": "接受的状态码",
+							"description": "添加任何也应视为成功的非 2xx 状态码。"
 						}
 					},
 					"title": "高级设置"
@@ -570,6 +667,9 @@
 					"title": "检查频率"
 				},
 				"general": {
+					"url": {
+						"alert": "之后的检查将使用新的 URL。此监控的历史数据会保留，但这些数据是从旧 URL 收集的。"
+					},
 					"option": {
 						"host": {
 							"label": "主机",
@@ -586,6 +686,24 @@
 						"url": {
 							"label": "URL",
 							"placeholder": "https://www.google.com"
+						},
+						"proxyMode": {
+							"label": "代理",
+							"value": {
+								"inheritDirect": "默认（直接连接）",
+								"inheritGlobal": "默认（{{name}}）",
+								"none": "从不使用代理",
+								"custom": "自定义代理"
+							},
+							"description": {
+								"inheritDirect": "未配置全局代理，将直接连接。如果之后配置了全局代理，此监控将使用它。",
+								"inheritGlobal": "使用全局代理设置",
+								"none": "即使之后启用了全局代理，也始终直接连接。",
+								"custom": "通过指定代理转发此监控的检查请求。将覆盖全局代理"
+							}
+						},
+						"proxy": {
+							"label": "代理服务器"
 						},
 						"game": {
 							"label": "丢包监控网址",
@@ -672,6 +790,10 @@
 				"notifications": {
 					"description": "选择您要使用的通知渠道",
 					"title": "通知"
+				},
+				"tags": {
+					"description": "选择要应用于此监控的标签",
+					"title": "标签"
 				},
 				"type": {
 					"description": "选择要执行的检查类型",
@@ -906,6 +1028,7 @@
 					"disk": "磁盘使用率",
 					"netBytesRecv": "{{name}} - 接收字节",
 					"netBytesSent": "{{name}} - 发送字节",
+					"loopbackOnlyNotice": "Capture 只能看到容器的网络接口，且这些接口都没有承载真实流量。当 Capture 运行在只能观察自身网络命名空间的容器中时，这是正常现象——名称类似主机的接口（eth0、ens3）是容器的虚拟接口，而不是主机的接口。请直接在主机上运行 Capture 以查看真实的网络活动。",
 					"temp": "温度"
 				}
 			},
@@ -958,6 +1081,37 @@
 				"description": "跟踪服务器性能、识别瓶颈，通过实时基础设施监控确保可靠性。"
 			}
 		},
+		"tags": {
+			"header": {
+				"title": "标签",
+				"description": "使用标签整理您的监控"
+			},
+			"fallback": {
+				"title": "暂无标签",
+				"description": "使用标签整理您的监控。创建标签并将其分配给监控后，您就可以在整个应用中按该标签筛选，并在此处查看标签详情。",
+				"actionButton": "创建标签"
+			},
+			"table": {
+				"headers": {
+					"color": "颜色",
+					"appearance": "外观"
+				}
+			},
+			"form": {
+				"name": {
+					"title": "标签名称",
+					"description": "为您的标签选择一个名称",
+					"optionName": "标签名称",
+					"placeholder": "例如：分组 1"
+				},
+				"color": {
+					"title": "标签颜色",
+					"description": "为您的标签选择一种颜色",
+					"optionName": "标签颜色",
+					"placeholder": "例如：#13715B"
+				}
+			}
+		},
 		"logs": {
 			"fallback": {
 				"title": "暂无日志",
@@ -971,6 +1125,8 @@
 			"logLevelSelect": {
 				"label": "日志级别"
 			},
+			"workers": "工作进程",
+			"workersExplainers": "显示工作进程。工作进程 ID 已截断，悬停可查看完整 ID",
 			"jobQueue": "作业队列",
 			"jobQueueExplainer": "<highlight>高亮的行</highlight>是当前正在被工作进程处理的作业。",
 			"failedJobs": "失败作业",
@@ -991,6 +1147,26 @@
 					"totalHeapSize": "总堆大小",
 					"osMemoryLimit": "操作系统内存限制"
 				},
+				"mongoDBStats": {
+					"readyState": "就绪状态",
+					"readsPerSecond": "读取/秒",
+					"insertsPerSecond": "插入/秒",
+					"updatesPerSecond": "更新/秒",
+					"deletesPerSecond": "删除/秒",
+					"writesPerSecond": "总写入/秒",
+					"host": "主机",
+					"port": "端口",
+					"dbName": "数据库名称",
+					"storageSize": "存储大小"
+				},
+				"mongoDBCollectionStats": {
+					"documents": "文档数：{{count}}",
+					"bucketCount": "桶数量：{{count}}",
+					"storageSize": "存储大小：{{size}}",
+					"indexSize": "索引大小：{{size}}",
+					"totalSize": "总大小：{{size}}",
+					"dbUsageTooltip": "占数据库存储的 {{percentage}}%"
+				},
 				"gauges": {
 					"heapAllocation": "堆分配",
 					"heapUsage": "堆使用率",
@@ -1010,17 +1186,32 @@
 					"memoryCpu": {
 						"title": "内存与 CPU",
 						"description": "进程如何使用其分配的内存和主机 CPU。"
+					},
+					"mongoDBStats": {
+						"title": "MongoDB 统计",
+						"description": "MongoDB 指标快照"
+					},
+					"mongoDBCollectionStats": {
+						"title": "MongoDB 集合统计",
+						"description": "MongoDB 集合的统计信息"
 					}
 				}
 			},
 			"table": {
 				"headers": {
+					"host": "主机",
+					"processId": "进程 ID",
+					"workerId": "工作进程 ID",
+					"workerMode": "工作进程模式",
+					"lastSeenAt": "最后活动时间",
 					"timestamp": "时间戳",
 					"level": "级别",
 					"service": "服务",
 					"monitorId": "监控 ID",
 					"runCount": "运行次数",
 					"failCount": "失败次数",
+					"nextScheduledAt": "下次运行时间",
+					"lockedBy": "锁定者",
 					"lastFinishedAt": "上次完成于",
 					"lastFailedAt": "上次失败于",
 					"failReason": "失败原因",
@@ -1147,7 +1338,22 @@
 				"type": {
 					"description": "选择要创建的通知渠道类型。",
 					"optionType": "类型",
-					"title": "渠道类型"
+					"title": "渠道类型",
+					"value": {
+						"email": "邮件",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"signalgrid": "Signalgrid",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "Telegram 配置",
@@ -1165,6 +1371,14 @@
 					"optionUserKey": "用户密钥",
 					"placeholderUserKey": "输入用户密钥"
 				},
+				"signalgrid": {
+					"title": "Signalgrid 配置",
+					"description": "配置 Signalgrid 以在您的设备上接收推送通知。",
+					"optionClientKey": "客户端密钥",
+					"placeholderClientKey": "您的 Signalgrid 客户端密钥",
+					"optionChannel": "频道",
+					"placeholderChannel": "您的 Signalgrid 频道"
+				},
 				"twilio": {
 					"title": "Twilio 配置",
 					"description": "输入 Twilio 帐户凭据以发送短信。",
@@ -1176,6 +1390,14 @@
 					"placeholderFromNumber": "+1234567890",
 					"optionToNumber": "接收号码",
 					"placeholderToNumber": "+1234567890"
+				},
+				"ntfy": {
+					"title": "ntfy 配置",
+					"description": "配置用于推送通知的 ntfy 服务器和主题。",
+					"optionServerUrl": "服务器 URL",
+					"placeholderServerUrl": "https://ntfy.sh",
+					"optionTopic": "主题",
+					"placeholderTopic": "checkmate-alerts"
 				}
 			},
 			"table": {
@@ -1232,7 +1454,8 @@
 				"integrations": "集成",
 				"tags": "标签",
 				"proxies": "代理",
-				"data": "数据"
+				"data": "数据",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1266,6 +1489,22 @@
 							"label": "图表类型",
 							"histogram": "柱状图",
 							"heatmap": "热力图"
+						}
+					}
+				},
+				"globalProxy": {
+					"title": "全局代理",
+					"description": "默认通过代理转发监控检查请求。适用于代理设置为“默认”的所有 HTTP 监控；设置为“从不使用代理”或自定义代理的监控不受影响。",
+					"option": {
+						"enabled": {
+							"label": "使用全局代理"
+						},
+						"proxy": {
+							"label": "选择全局代理"
+						},
+						"empty": {
+							"text": "尚未配置任何代理。",
+							"link": "请先创建一个"
 						}
 					}
 				},
@@ -1427,7 +1666,159 @@
 				},
 				"importExportMonitors": {
 					"title": "导入/导出监控",
-					"description": "将监控数据导入或导出为 JSON 文件，用于备份或迁移。"
+					"description": "将监控数据导入或导出为 JSON 文件，用于备份或迁移。",
+					"backupNotice": "此 JSON 文件仅包含您的监控，并非完整备份。如需备份或还原 Checkmate 数据，请使用 Checkmate Connect。",
+					"connectTabLink": "打开 Checkmate Connect 选项卡",
+					"connectSiteLink": "访问 Checkmate Connect 网站"
+				},
+				"connect": {
+					"superadminOnly": "只有超级管理员可以注册此服务器、更改远程访问、运行或还原备份，以及移除其注册。如果您的角色最近有变更，请退出后重新登录。",
+					"clickToConfirm": "再次点击以确认",
+					"status": {
+						"title": "状态",
+						"description": "此安装实例的连接状态。",
+						"enrolled": "已注册",
+						"notEnrolled": "未注册",
+						"connected": "隧道已连接",
+						"disconnected": "隧道已断开",
+						"connecting": "隧道连接中",
+						"remoteAccessOff": "远程访问已关闭",
+						"agentId": "代理 ID",
+						"lastConnected": "上次连接"
+					},
+					"enroll": {
+						"title": "注册安装实例",
+						"description": "粘贴 Checkmate Connect 控制台中的凭据块。凭据以加密形式存储在此安装实例的数据库中，仅在向 Checkmate Connect 进行身份验证时才会发送出去。",
+						"button": "注册"
+					},
+					"remoteAccess": {
+						"title": "远程访问",
+						"description": "保持一条出站隧道处于打开状态，以便您通过 Connect 地址访问此安装实例。不会开放任何入站端口。"
+					},
+					"tooltips": {
+						"enroll": "将此服务器连接到您的账户",
+						"unenroll": "断开此服务器与 Connect 的连接",
+						"generateKey": "创建用于解锁备份的密钥",
+						"lostKey": "使用新密钥重新开始",
+						"runFull": "立即备份整个数据库",
+						"runConfig": "备份除检查历史外的所有内容",
+						"importKey": "使用原服务器上的密钥",
+						"useKey": "用您的备份验证此密钥",
+						"replaceKey": "切换到另一个恢复密钥",
+						"restore": "用此备份替换此服务器的数据"
+					},
+					"backup": {
+						"title": "云备份",
+						"description": "此安装实例数据库的加密备份，上传至 Checkmate Connect。数据在上传前于本地加密，云端只存储密文。",
+						"needsKey": "请在下方设置恢复密钥以开始备份。",
+						"generateKey": "生成恢复密钥",
+						"existingBackups": "此账户已有云备份。请输入原服务器上的恢复密钥以还原这些备份。",
+						"lostKey": "我丢失了密钥",
+						"lostKeyWarning": "没有原密钥，就无法还原现有的云备份。这些备份会在您使用新密钥完成首次备份后保留 30 天，如果您找回了原密钥，可以切换回去。",
+						"importKey": "我已有恢复密钥",
+						"importKeyHelp": "粘贴原服务器上的 64 个字符的密钥。Checkmate 会解密您的一个云备份来验证密钥，然后再保存。",
+						"replaceKey": "使用其他恢复密钥",
+						"replaceKeyHelp": "粘贴您要改用的 64 个字符的密钥。Checkmate 会解密您的云备份来验证密钥；如果都无法打开，则保留当前密钥。",
+						"replaceKeyWarning": "切换后，使用当前密钥创建的备份将无法还原。",
+						"importKeyConfirm": "使用此密钥",
+						"verifyOutcome": {
+							"ok": "恢复密钥已保存",
+							"wrong-key": "此密钥无法解密您的云备份",
+							"no-backups": "没有可用于验证此密钥的云备份",
+							"failed": "无法验证密钥：{{error}}"
+						},
+						"keyTitle": "恢复密钥",
+						"keyWarning": "请将此密钥存放在远离此服务器的安全位置。它只会显示一次。如果丢失，您的云备份将无法还原，任何人都无法帮您找回。",
+						"keyCopy": "复制密钥",
+						"keyLabel": "您的恢复密钥",
+						"keyContinue": "我已保存",
+						"keyDone": "我已存好密钥",
+						"keyShowAgain": "再次显示密钥",
+						"keyVerifyHelp": "打开您保存密钥的位置并粘贴到此处，以确认您有一份可用的副本。",
+						"keyPlaceholder": "恢复密钥",
+						"keyAcknowledge": "我了解，如果丢失此密钥，将无法还原我的云备份。",
+						"keyMismatch": "与您的恢复密钥不匹配。请再次显示密钥并重新保存一份。",
+						"keyAckRequired": "请勾选此框以确认您已了解。",
+						"toolsMissing": "云备份需要 mongodump 和 mongorestore，但在此服务器上未找到。",
+						"toolsMac": "在 macOS 上运行：brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "下载适用于 Linux 的 MongoDB Database Tools",
+						"toolsPath": "如果它们安装在其他位置，请设置 CONNECT_MONGODUMP_BIN 和 CONNECT_MONGORESTORE_BIN。找到工具后，此消息会在一分钟内消失。",
+						"runFull": "立即备份",
+						"runConfig": "仅备份配置",
+						"kind": {
+							"full": "完整数据库",
+							"config": "仅配置"
+						},
+						"progress": {
+							"idle": "空闲",
+							"finished": {
+								"backup": {
+									"ok": "备份已完成",
+									"failed": "备份失败"
+								},
+								"restore": {
+									"ok": "还原已完成",
+									"failed": "还原失败"
+								},
+								"verify": {
+									"ok": "恢复密钥已保存",
+									"failed": "密钥验证失败"
+								}
+							},
+							"queued": {
+								"backup": "备份任务已加入队列",
+								"restore": "还原任务已加入队列"
+							},
+							"checking": "正在验证您的密钥…",
+							"restore": {
+								"downloading": "第 1 步，共 3 步：正在下载备份",
+								"decrypting": "第 2 步，共 3 步：正在解密备份",
+								"restoring": "第 3 步，共 3 步：正在还原数据库"
+							},
+							"verify": {
+								"downloading": "正在验证密钥：正在下载第 {{attempt}} 个备份，共 {{attempts}} 个",
+								"decrypting": "正在验证密钥：正在解密第 {{attempt}} 个备份，共 {{attempts}} 个"
+							},
+							"backup": {
+								"dumping": "第 1 步，共 3 步：正在读取并加密数据库",
+								"uploading": "第 2 步，共 3 步：正在上传加密备份",
+								"saving": "第 3 步，共 3 步：正在将备份保存到您的账户"
+							}
+						},
+						"progressWithPercent": "{{step}}（{{percent}}%）",
+						"progressWithSize": "{{step}}（{{size}}）",
+						"lastBackupSucceeded": "上次备份（{{date}}）：成功",
+						"lastBackupSucceededSize": "上次备份（{{date}}）：成功 · {{size}}",
+						"lastBackupFailed": "上次备份（{{date}}）：失败 — {{error}}",
+						"lastRestoreSucceeded": "上次还原（{{date}}）：成功",
+						"lastRestoreFailed": "上次还原（{{date}}）：失败 — {{error}}",
+						"restore": {
+							"title": "还原备份",
+							"description": "下载所选备份，在此服务器上验证并解密，然后替换当前数据库。",
+							"empty": "暂无已验证的云备份。",
+							"button": "还原",
+							"confirmTitle": "还原 {{date}} 的备份（{{kind}}）？",
+							"confirmBody": "此操作将替换当前数据库，且无法撤销。用户账户也会被替换，因此之后请使用备份中的账户登录。",
+							"differentKey": "不同的密钥",
+							"expires": "将于 {{date}} 后移除"
+						}
+					},
+					"schedule": {
+						"title": "计划备份",
+						"description": "自动运行加密云备份。开启后会立即开始第一次备份；如果计划备份到期时另一个备份或还原正在运行，则会跳过，等待下一个周期。",
+						"interval": "备份频率",
+						"kind": "备份类型"
+					},
+					"recoveryKey": {
+						"title": "恢复密钥",
+						"description": "在此服务器上加密您的云备份。它从不离开此服务器，没有它，您的备份将无法还原。",
+						"set": "此服务器已设置恢复密钥。"
+					},
+					"unenroll": {
+						"title": "移除注册",
+						"description": "断开此安装实例与 Checkmate Connect 的连接，并删除本地凭据。本地监控不受影响。",
+						"button": "移除注册"
+					}
 				},
 				"about": {
 					"title": "关于",
@@ -1456,6 +1847,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "状态页已成功删除",
+			"rangeSelectorAria": "历史范围",
+			"rangeExceedsRetention": "检查历史保留期限设置为 {{days}} 天。延长保留期限可获取更多数据。",
+			"range": {
+				"latest": "最新",
+				"30d": "30 天",
+				"60d": "60 天",
+				"90d": "90 天"
+			},
 			"fallback": {
 				"title": "暂无状态页面",
 				"actionButton": "创建状态页！",
@@ -1483,6 +1882,9 @@
 					"avg": "平均 {{value}}",
 					"downTooltip": "宕机",
 					"heatmapAria": "响应时间热图",
+					"dayAria": "{{date}}，正常运行率 {{uptime}}",
+					"dayUptime": "正常运行率：{{uptime}}（{{upChecks}}/{{totalChecks}} 次检查）",
+					"dayAvgResponse": "平均响应：{{value}}",
 					"max": "最大 {{value}}"
 				},
 				"status": {
@@ -1494,6 +1896,10 @@
 					"up": "运行中"
 				},
 				"incidents": {
+					"modalTitle": "{{date}} 的事件",
+					"loading": "加载中...",
+					"noIncidents": "当天没有报告的事件。",
+					"ongoing": "进行中",
 					"errorLoading": "无法加载事件。"
 				}
 			},
@@ -1552,6 +1958,11 @@
 						"url": {
 							"label": "您的状态页地址",
 							"placeholder": "my-status-page"
+						},
+						"customDomain": {
+							"label": "自定义域名",
+							"placeholder": "status.example.com",
+							"helper": "可选。将 DNS 记录指向此 Checkmate 实例，即可在您自己的域名下提供状态页。"
 						}
 					}
 				},
@@ -1618,6 +2029,10 @@
 							"description": "衬线标题和细分隔线。独特而平静。",
 							"name": "编辑风格"
 						},
+						"minimal": {
+							"name": "极简",
+							"description": "扁平、专注、紧凑，只保留必要内容。"
+						},
 						"modern": {
 							"description": "SaaS级品质，带有脉动状态点和柔和褪色卡片。",
 							"name": "现代"
@@ -1634,11 +2049,24 @@
 					"dark": "仅深色",
 					"label": "主题模式",
 					"light": "仅浅色"
+				},
+				"customCSS": {
+					"title": "自定义 CSS",
+					"description": "添加自定义 CSS 以微调公开状态页的外观。",
+					"option": {
+						"customCSS": {
+							"label": "自定义 CSS",
+							"placeholder": "footer { display: none; }"
+						}
+					}
 				}
 			},
 			"header": {
 				"title": "状态页面",
 				"description": "发布公开页面，向客户和利益相关者展示实时运行情况和事件历史。"
+			},
+			"preview": {
+				"title": "状态页预览"
 			},
 			"editorial": {
 				"allUp": "所有系统运行正常。",
@@ -1652,11 +2080,13 @@
 			"filters": {
 				"search": {
 					"placeholder": "搜索监控..."
-				}
+				},
+				"activeTags": "已选标签"
 			},
 			"table": {
 				"headers": {
-					"responseTime": "响应时间"
+					"responseTime": "响应时间",
+					"uptime": "正常运行率 %"
 				}
 			},
 			"fallback": {

@@ -82,13 +82,13 @@ Checkmate は 1000 以上のアクティブなモニターでストレステス�
 
 インストール手順は [Checkmate ドキュメントポータル](https://checkmate.so/docs) を参照してください。
 
-代わりに、[Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](../../charts/helm/checkmate/INSTALLATION.md)、[Sive Host](https://sive.host)（南アフリカ）、[Cloudzy](https://cloudzy.com/marketplace/checkmate)、[Pikapods](https://www.pikapods.com/) を使って Checkmate インスタンスをすばやく立ち上げることもできます。サーバーインフラを監視したい場合は、[Capture エージェント](https://github.com/bluewave-labs/capture) が必要です。Capture リポジトリにもインストール手順が記載されています。
+代わりに、[Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm)、[Sive Host](https://sive.host)（南アフリカ）、[Cloudzy](https://cloudzy.com/marketplace/checkmate)、[Pikapods](https://www.pikapods.com/) を使って Checkmate インスタンスをすばやく立ち上げることもできます。サーバーインフラを監視したい場合は、[Capture エージェント](https://checkmate.so/docs/infrastructure/installing-capture) が必要です。Capture リポジトリにもインストール手順が記載されています。
 
 ### カスタム CA の利用
 
-プライベート認証局（Smallstep など）が発行した証明書で内部 HTTPS エンドポイントを監視する必要がある場合は、Docker 設定のオプションを記載した [カスタム CA 信頼ガイド](../custom-ca-trust.md) をご覧ください。
+プライベート認証局（Smallstep など）が発行した証明書で内部 HTTPS エンドポイントを監視する必要がある場合は、Docker 設定のオプションを記載した [カスタム CA 信頼ガイド](https://checkmate.so/docs/settings/custom-ca-trust) をご覧ください。
 
-その他のドキュメントは [docs ディレクトリ](../) を参照してください。
+その他のドキュメントは [Checkmate ドキュメントポータル](https://checkmate.so/docs) を参照してください。
 
 <a id="performance"></a>
 ## パフォーマンス
@@ -184,7 +184,7 @@ Checkmate は 1000 以上のアクティブなモニターでストレステス�
 コントリビュートの方法:
 
 0. このリポジトリにスターを付ける :)
-1. [コントリビューションガイド](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md) を読む。初参加の方には `good-first-issue` タグの確認をおすすめします。
+1. [コントリビューションガイド](https://checkmate.so/docs/getting-started/contributing) を読む。初参加の方には `good-first-issue` タグの確認をおすすめします。
 2. アーキテクチャを深く知りたい場合は、[Checkmate の詳細構成](https://deepwiki.com/bluewave-labs/Checkmate) を読む。
 3. バグを発見したと思ったら issue を開く。
 4. はじめての方は `good-first-issue` を探す。

@@ -85,13 +85,13 @@ Pokyny k použití najdete [zde](https://checkmate.so/docs).
 
 Pokyny k instalaci najdete v [dokumentačním portálu Checkmate](https://checkmate.so/docs).
 
-Případně můžete použít [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Jižní Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) nebo [Pikapods](https://www.pikapods.com/) pro rychlé spuštění instance Checkmate. Pokud chcete monitorovat infrastrukturu serverů, budete potřebovat [agenta Capture](https://github.com/bluewave-labs/capture). Repozitář Capture obsahuje také pokyny k instalaci.
+Případně můžete použít [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Jižní Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) nebo [Pikapods](https://www.pikapods.com/) pro rychlé spuštění instance Checkmate. Pokud chcete monitorovat infrastrukturu serverů, budete potřebovat [agenta Capture](https://checkmate.so/docs/infrastructure/installing-capture). Repozitář Capture obsahuje také pokyny k instalaci.
 
 ### Použití vlastní CA
 
-Pokud potřebujete monitorovat interní HTTPS endpointy s certifikáty od soukromých certifikačních autorit (jako je Smallstep), přečtěte si naši [příručku pro důvěřování vlastním CA](../custom-ca-trust.md) pro možnosti konfigurace Dockeru.
+Pokud potřebujete monitorovat interní HTTPS endpointy s certifikáty od soukromých certifikačních autorit (jako je Smallstep), přečtěte si naši [příručku pro důvěřování vlastním CA](https://checkmate.so/docs/settings/custom-ca-trust) pro možnosti konfigurace Dockeru.
 
-Další dokumentaci najdete v [adresáři docs](../).
+Další dokumentaci najdete na [portálu dokumentace Checkmate](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Výkon
@@ -187,7 +187,7 @@ Náš repozitář mají označený zaměstnanci společností **Google, Microsof
 Jak přispět:
 
 0. Dejte tomuto repozitáři hvězdičku :)
-1. Přečtěte si [pokyny pro přispěvatele](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). Začátečníkům doporučujeme prohlédnout si štítek `good-first-issue`.
+1. Přečtěte si [pokyny pro přispěvatele](https://checkmate.so/docs/getting-started/contributing). Začátečníkům doporučujeme prohlédnout si štítek `good-first-issue`.
 2. Pokud chcete proniknout do architektury, přečtěte si podrobnou strukturu [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate).
 3. Otevřete issue, pokud se domníváte, že jste narazili na chybu.
 4. Pokud jste nováček, podívejte se po `good-first-issue`.

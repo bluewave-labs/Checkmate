@@ -32,6 +32,8 @@
 			"pause": "Tạm dừng",
 			"resume": "Tiếp tục",
 			"save": "Lưu",
+			"next": "Tiếp",
+			"back": "Quay lại",
 			"sendInvite": "Gửi lời mời",
 			"test": "Kiểm tra",
 			"testNotifications": "Kiểm tra thông báo",
@@ -47,19 +49,37 @@
 			"exportToJSON": "Xuất ra JSON",
 			"importFromJSON": "Nhập từ JSON",
 			"clearFilters": "Xóa bộ lọc",
-			"removeUser": "Xóa người dùng"
+			"removeUser": "Xóa người dùng",
+			"removeItem": "Xóa {{item}}"
 		},
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Thời gian phản hồi trung bình",
+				"cpuUsage": "Sử dụng CPU",
 				"downtime": "Thời gian ngừng hoạt động",
 				"high": "Cao",
 				"low": "Thấp",
+				"memoryUsage": "Sử dụng bộ nhớ",
+				"responseTime": "Thời gian phản hồi",
+				"timingPhases": "Các giai đoạn thời gian",
+				"totalResponseTime": "Tổng thời gian phản hồi",
 				"uptime": "Thời gian hoạt động"
 			},
 			"histogram": {
 				"avg": "TB: {{value}}",
-				"max": "Tối đa: {{value}}"
+				"max": "Tối đa: {{value}}",
+				"responseTime": "Thời gian phản hồi: {{value}}",
+				"total": "Tổng: {{value}}",
+				"avgCpuUsage": "Sử dụng CPU trung bình: {{value}}",
+				"avgMemoryUsage": "Sử dụng bộ nhớ trung bình: {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "Yêu cầu",
+				"firstByte": "Byte đầu tiên",
+				"download": "Tải xuống"
 			}
 		},
 		"dialogs": {
@@ -74,10 +94,17 @@
 			"na": "N/A",
 			"resolved": "Đã giải quyết",
 			"responseTime": "Thời gian phản hồi",
+			"state": "Trạng thái",
+			"uptime": "Thời gian hoạt động",
+			"health": "Sức khỏe",
+			"restarts": "Số lần khởi động lại",
 			"idle": "Không hoạt động",
 			"running": "Đang chạy"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "Nhập để tìm kiếm"
+			},
 			"role": {
 				"option": {
 					"role": {
@@ -120,7 +147,8 @@
 				"url": "Url",
 				"interval": "Khoảng thời gian",
 				"active": "Đang hoạt động",
-				"responseTime": "Thời gian phản hồi"
+				"responseTime": "Thời gian phản hồi",
+				"tags": "Thẻ"
 			}
 		},
 		"statusCode": {
@@ -254,6 +282,63 @@
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "Proxy",
+				"description": "Quản lý các máy chủ proxy dùng để định tuyến lưu lượng giám sát HTTP."
+			},
+			"fallback": {
+				"title": "Chưa có proxy nào",
+				"description": "Định tuyến các lần kiểm tra của trình giám sát HTTP qua máy chủ proxy. Sau khi tạo proxy, bạn có thể chọn nó cho từng trình giám sát hoặc đặt nó làm mặc định toàn cục trong Cài đặt.",
+				"actionButton": "Tạo proxy"
+			},
+			"form": {
+				"name": {
+					"title": "Tên proxy",
+					"description": "Tên dễ nhớ để nhận biết proxy này",
+					"optionName": "Tên proxy",
+					"placeholder": "Proxy của tôi"
+				},
+				"server": {
+					"title": "Máy chủ proxy",
+					"description": "Địa chỉ có thể truy cập máy chủ proxy. Đặt giao thức mà Checkmate dùng để kết nối, tên máy chủ hoặc địa chỉ IP và cổng mà proxy lắng nghe.",
+					"option": {
+						"protocol": {
+							"label": "Giao thức"
+						},
+						"host": {
+							"label": "Tên máy chủ / Địa chỉ IP",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "Cổng"
+						}
+					}
+				},
+				"auth": {
+					"title": "Xác thực",
+					"description": "Không bắt buộc. Chỉ cần thiết nếu máy chủ proxy yêu cầu xác thực cơ bản.",
+					"option": {
+						"username": {
+							"label": "Tên người dùng",
+							"placeholder": "Tên người dùng proxy",
+							"labelSet": "Tên người dùng đã được đặt. Nhấn \"Đặt lại\" để thay đổi."
+						},
+						"password": {
+							"label": "Mật khẩu",
+							"labelSet": "Mật khẩu đã được đặt. Nhấn \"Đặt lại\" để thay đổi."
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "Giao thức",
+					"host": "Máy chủ",
+					"port": "Cổng"
+				}
+			}
+		},
 		"notFound": {
 			"title": "Ôi không! Bạn đã làm rơi sushi!",
 			"subtitle": "Either the URL doesn’t exist, or you don’t have access to it."
@@ -475,7 +560,9 @@
 				},
 				"statBoxes": {
 					"activeFor": "Hoạt động từ",
+					"checkingEvery": "Kiểm tra mỗi {{interval}}",
 					"certificateExpiry": "Hạn chứng chỉ",
+					"domainExpiry": "Hạn tên miền",
 					"lastCheck": "Lần kiểm tra cuối",
 					"lastResponseTime": "Thời gian phản hồi cuối",
 					"serviceIsDown": "Dịch vụ đang ngừng hoạt động"
@@ -521,6 +608,13 @@
 				"advanced": {
 					"description": "Cài đặt tùy chọn cho các trường hợp sử dụng nâng cao",
 					"option": {
+						"method": {
+							"label": "Phương thức yêu cầu",
+							"description": {
+								"GET": "GET lấy toàn bộ phản hồi bao gồm cả nội dung. Hỗ trợ đầy đủ đối sánh nâng cao.",
+								"HEAD": "HEAD chỉ lấy tiêu đề phản hồi để giảm tải cho máy chủ đích. Hỗ trợ đối sánh mã trạng thái nhưng không hỗ trợ đối sánh nâng cao vì không có nội dung."
+							}
+						},
 						"advancedMatching": {
 							"label": "Sử dụng đối sánh nâng cao"
 						},
@@ -536,6 +630,10 @@
 							"equal": "Bằng",
 							"include": "Bao gồm",
 							"regex": "Regex"
+						},
+						"customUpCodes": {
+							"label": "Mã trạng thái được chấp nhận",
+							"description": "Thêm các mã không phải 2xx cũng được coi là thành công."
 						}
 					},
 					"title": "Cài đặt nâng cao"
@@ -569,6 +667,9 @@
 					"title": "Tần suất kiểm tra"
 				},
 				"general": {
+					"url": {
+						"alert": "Các lần kiểm tra sau sẽ dùng URL mới. Dữ liệu lịch sử của trình giám sát này vẫn được giữ lại, nhưng được thu thập từ URL cũ."
+					},
 					"option": {
 						"host": {
 							"label": "Máy chủ",
@@ -585,6 +686,24 @@
 						"url": {
 							"label": "URL",
 							"placeholder": "https://www.google.com"
+						},
+						"proxyMode": {
+							"label": "Proxy",
+							"value": {
+								"inheritDirect": "Mặc định (kết nối trực tiếp)",
+								"inheritGlobal": "Mặc định ({{name}})",
+								"none": "Không bao giờ dùng proxy",
+								"custom": "Proxy tùy chỉnh"
+							},
+							"description": {
+								"inheritDirect": "Chưa cấu hình proxy toàn cục, kết nối trực tiếp. Nếu sau này proxy toàn cục được cấu hình, trình giám sát này sẽ sử dụng nó.",
+								"inheritGlobal": "Sử dụng cài đặt proxy toàn cục",
+								"none": "Luôn kết nối trực tiếp ngay cả khi proxy toàn cục được bật sau này.",
+								"custom": "Định tuyến các lần kiểm tra của trình giám sát này qua một proxy cụ thể. Ghi đè proxy toàn cục"
+							}
+						},
+						"proxy": {
+							"label": "Máy chủ proxy"
 						},
 						"game": {
 							"label": "Chọn trò chơi",
@@ -671,6 +790,10 @@
 				"notifications": {
 					"description": "Chọn các kênh thông báo bạn muốn sử dụng",
 					"title": "Thông báo"
+				},
+				"tags": {
+					"description": "Chọn các thẻ bạn muốn áp dụng cho trình giám sát này",
+					"title": "Thẻ"
 				},
 				"type": {
 					"description": "Chọn loại kiểm tra để thực hiện",
@@ -905,6 +1028,7 @@
 					"disk": "Sử dụng ổ đĩa",
 					"netBytesRecv": "{{name}} - Byte nhận",
 					"netBytesSent": "{{name}} - Byte gửi",
+					"loopbackOnlyNotice": "Capture chỉ thấy các giao diện mạng của container và không giao diện nào có lưu lượng thực. Điều này là bình thường khi Capture chạy bên trong container chỉ có thể quan sát không gian tên mạng của chính nó — các giao diện có tên giống máy chủ (eth0, ens3) là giao diện ảo của container, không phải của máy chủ. Hãy chạy Capture trực tiếp trên máy chủ để xem hoạt động mạng thực.",
 					"temp": "Nhiệt độ"
 				}
 			},
@@ -957,6 +1081,37 @@
 				"description": "Theo dõi hiệu suất máy chủ, xác định nút thắt cổ chai và đảm bảo độ tin cậy với giám sát hạ tầng theo thời gian thực."
 			}
 		},
+		"tags": {
+			"header": {
+				"title": "Thẻ",
+				"description": "Sắp xếp các trình giám sát của bạn bằng thẻ"
+			},
+			"fallback": {
+				"title": "Chưa có thẻ nào",
+				"description": "Sắp xếp các trình giám sát của bạn bằng thẻ. Sau khi tạo thẻ và gán nó cho một trình giám sát, bạn có thể lọc theo thẻ đó trong toàn bộ ứng dụng và xem chi tiết thẻ tại đây.",
+				"actionButton": "Tạo thẻ"
+			},
+			"table": {
+				"headers": {
+					"color": "Màu",
+					"appearance": "Giao diện"
+				}
+			},
+			"form": {
+				"name": {
+					"title": "Tên thẻ",
+					"description": "Chọn tên cho thẻ của bạn",
+					"optionName": "Tên thẻ",
+					"placeholder": "VD: Nhóm 1"
+				},
+				"color": {
+					"title": "Màu thẻ",
+					"description": "Chọn màu cho thẻ của bạn",
+					"optionName": "Màu thẻ",
+					"placeholder": "VD: #13715B"
+				}
+			}
+		},
 		"logs": {
 			"fallback": {
 				"title": "Chưa có nhật ký",
@@ -970,6 +1125,8 @@
 			"logLevelSelect": {
 				"label": "Mức nhật ký"
 			},
+			"workers": "Worker",
+			"workersExplainers": "Hiển thị các tiến trình worker. ID worker được rút gọn, di chuột để xem ID đầy đủ",
 			"jobQueue": "Hàng đợi công việc",
 			"jobQueueExplainer": "<highlight>Các hàng được làm nổi bật</highlight> là các công việc hiện đang được worker xử lý.",
 			"failedJobs": "Công việc thất bại",
@@ -990,6 +1147,26 @@
 					"totalHeapSize": "Tổng kích thước heap",
 					"osMemoryLimit": "Giới hạn bộ nhớ hệ điều hành"
 				},
+				"mongoDBStats": {
+					"readyState": "Trạng thái sẵn sàng",
+					"readsPerSecond": "Lượt đọc/giây",
+					"insertsPerSecond": "Lượt chèn/giây",
+					"updatesPerSecond": "Lượt cập nhật/giây",
+					"deletesPerSecond": "Lượt xóa/giây",
+					"writesPerSecond": "Tổng lượt ghi/giây",
+					"host": "Máy chủ",
+					"port": "Cổng",
+					"dbName": "Tên cơ sở dữ liệu",
+					"storageSize": "Dung lượng lưu trữ"
+				},
+				"mongoDBCollectionStats": {
+					"documents": "Tài liệu: {{count}}",
+					"bucketCount": "Số bucket: {{count}}",
+					"storageSize": "Dung lượng lưu trữ: {{size}}",
+					"indexSize": "Kích thước chỉ mục: {{size}}",
+					"totalSize": "Tổng kích thước: {{size}}",
+					"dbUsageTooltip": "{{percentage}}% dung lượng lưu trữ CSDL"
+				},
 				"gauges": {
 					"heapAllocation": "Cấp phát heap",
 					"heapUsage": "Sử dụng heap",
@@ -1009,17 +1186,32 @@
 					"memoryCpu": {
 						"title": "Bộ nhớ & CPU",
 						"description": "Cách tiến trình sử dụng bộ nhớ được cấp phát và CPU của máy chủ."
+					},
+					"mongoDBStats": {
+						"title": "Thống kê MongoDB",
+						"description": "Ảnh chụp nhanh các chỉ số MongoDB"
+					},
+					"mongoDBCollectionStats": {
+						"title": "Thống kê collection MongoDB",
+						"description": "Thống kê cho các collection MongoDB"
 					}
 				}
 			},
 			"table": {
 				"headers": {
+					"host": "Máy chủ",
+					"processId": "ID tiến trình",
+					"workerId": "ID worker",
+					"workerMode": "Chế độ worker",
+					"lastSeenAt": "Thấy lần cuối lúc",
 					"timestamp": "Thời gian",
 					"level": "Mức",
 					"service": "Dịch vụ",
 					"monitorId": "ID trình giám sát",
 					"runCount": "Số lần chạy",
 					"failCount": "Số lần lỗi",
+					"nextScheduledAt": "Lần chạy tiếp theo",
+					"lockedBy": "Bị khóa bởi",
 					"lastFinishedAt": "Hoàn thành lần cuối lúc",
 					"lastFailedAt": "Lỗi lần cuối lúc",
 					"failReason": "Lý do lỗi",
@@ -1146,7 +1338,22 @@
 				"type": {
 					"description": "Chọn loại kênh thông báo để tạo.",
 					"optionType": "Loại",
-					"title": "Loại kênh"
+					"title": "Loại kênh",
+					"value": {
+						"email": "Email",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"signalgrid": "Signalgrid",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "Cấu hình Telegram",
@@ -1164,6 +1371,14 @@
 					"optionUserKey": "Khóa người dùng",
 					"placeholderUserKey": "Nhập khóa người dùng"
 				},
+				"signalgrid": {
+					"title": "Cấu hình Signalgrid",
+					"description": "Cấu hình Signalgrid để nhận thông báo đẩy trên thiết bị của bạn.",
+					"optionClientKey": "Khóa client",
+					"placeholderClientKey": "Khóa client Signalgrid của bạn",
+					"optionChannel": "Kênh",
+					"placeholderChannel": "Kênh Signalgrid của bạn"
+				},
 				"twilio": {
 					"title": "Cấu hình Twilio",
 					"description": "Nhập thông tin xác thực tài khoản Twilio để gửi SMS.",
@@ -1175,6 +1390,14 @@
 					"placeholderFromNumber": "+1234567890",
 					"optionToNumber": "Số nhận",
 					"placeholderToNumber": "+1234567890"
+				},
+				"ntfy": {
+					"title": "Cấu hình ntfy",
+					"description": "Cấu hình máy chủ và chủ đề ntfy cho thông báo đẩy.",
+					"optionServerUrl": "URL máy chủ",
+					"placeholderServerUrl": "https://ntfy.sh",
+					"optionTopic": "Chủ đề",
+					"placeholderTopic": "checkmate-alerts"
 				}
 			},
 			"table": {
@@ -1231,7 +1454,8 @@
 				"integrations": "Tích hợp",
 				"tags": "Thẻ",
 				"proxies": "Proxy",
-				"data": "Dữ liệu"
+				"data": "Dữ liệu",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1265,6 +1489,22 @@
 							"label": "Loại biểu đồ",
 							"histogram": "Biểu đồ cột",
 							"heatmap": "Bản đồ nhiệt"
+						}
+					}
+				},
+				"globalProxy": {
+					"title": "Proxy toàn cục",
+					"description": "Mặc định định tuyến các lần kiểm tra giám sát qua proxy. Áp dụng cho tất cả trình giám sát HTTP có cài đặt proxy là \"Mặc định\"; các trình giám sát được đặt thành \"Không bao giờ dùng proxy\" hoặc proxy tùy chỉnh không bị ảnh hưởng.",
+					"option": {
+						"enabled": {
+							"label": "Sử dụng proxy toàn cục"
+						},
+						"proxy": {
+							"label": "Chọn proxy toàn cục"
+						},
+						"empty": {
+							"text": "Chưa cấu hình proxy nào.",
+							"link": "Hãy tạo một proxy trước"
 						}
 					}
 				},
@@ -1426,7 +1666,159 @@
 				},
 				"importExportMonitors": {
 					"title": "Nhập / Xuất trình giám sát",
-					"description": "Nhập hoặc xuất dữ liệu trình giám sát dưới dạng tệp JSON để sao lưu hoặc chuyển giao."
+					"description": "Nhập hoặc xuất dữ liệu trình giám sát dưới dạng tệp JSON để sao lưu hoặc chuyển giao.",
+					"backupNotice": "Tệp JSON này chỉ chứa các trình giám sát của bạn nên không phải là bản sao lưu đầy đủ. Để sao lưu hoặc khôi phục dữ liệu Checkmate, hãy dùng Checkmate Connect.",
+					"connectTabLink": "Mở thẻ Checkmate Connect",
+					"connectSiteLink": "Truy cập trang web Checkmate Connect"
+				},
+				"connect": {
+					"superadminOnly": "Chỉ quản trị viên cấp cao mới có thể đăng ký máy chủ này, thay đổi truy cập từ xa, chạy hoặc khôi phục bản sao lưu, hay gỡ đăng ký. Hãy đăng xuất rồi đăng nhập lại nếu vai trò của bạn vừa thay đổi.",
+					"clickToConfirm": "Nhấn lần nữa để xác nhận",
+					"status": {
+						"title": "Trạng thái",
+						"description": "Trạng thái kết nối của bản cài đặt này.",
+						"enrolled": "Đã đăng ký",
+						"notEnrolled": "Chưa đăng ký",
+						"connected": "Đường hầm đã kết nối",
+						"disconnected": "Đường hầm đã ngắt",
+						"connecting": "Đường hầm đang kết nối",
+						"remoteAccessOff": "Truy cập từ xa đã tắt",
+						"agentId": "ID tác tử",
+						"lastConnected": "Kết nối lần cuối"
+					},
+					"enroll": {
+						"title": "Đăng ký bản cài đặt",
+						"description": "Dán khối thông tin xác thực từ bảng điều khiển Checkmate Connect của bạn. Thông tin xác thực được mã hóa và lưu trong cơ sở dữ liệu của bản cài đặt này, chỉ được gửi đi khi xác thực với Checkmate Connect.",
+						"button": "Đăng ký"
+					},
+					"remoteAccess": {
+						"title": "Truy cập từ xa",
+						"description": "Giữ một đường hầm đi ra luôn mở để bạn có thể truy cập bản cài đặt này từ địa chỉ Connect của mình. Không mở cổng đi vào nào."
+					},
+					"tooltips": {
+						"enroll": "Kết nối máy chủ này với tài khoản của bạn",
+						"unenroll": "Ngắt kết nối máy chủ này khỏi Connect",
+						"generateKey": "Tạo khóa để mở các bản sao lưu",
+						"lostKey": "Bắt đầu lại với khóa mới",
+						"runFull": "Sao lưu toàn bộ cơ sở dữ liệu ngay",
+						"runConfig": "Sao lưu mọi thứ trừ lịch sử kiểm tra",
+						"importKey": "Dùng khóa từ máy chủ ban đầu",
+						"useKey": "Kiểm tra khóa này với các bản sao lưu",
+						"replaceKey": "Chuyển sang khóa khôi phục khác",
+						"restore": "Thay dữ liệu của máy chủ này bằng bản sao lưu này"
+					},
+					"backup": {
+						"title": "Sao lưu đám mây",
+						"description": "Các bản sao lưu được mã hóa của cơ sở dữ liệu bản cài đặt này, tải lên Checkmate Connect. Dữ liệu được mã hóa tại đây trước khi tải lên; đám mây chỉ lưu bản mã.",
+						"needsKey": "Thiết lập khóa khôi phục bên dưới để bắt đầu sao lưu.",
+						"generateKey": "Tạo khóa khôi phục",
+						"existingBackups": "Tài khoản này đã có bản sao lưu đám mây. Nhập khóa khôi phục từ máy chủ ban đầu để khôi phục chúng.",
+						"lostKey": "Tôi bị mất khóa",
+						"lostKeyWarning": "Không thể khôi phục các bản sao lưu đám mây hiện có nếu thiếu khóa ban đầu. Chúng được giữ 30 ngày kể từ bản sao lưu đầu tiên với khóa mới, nên bạn có thể chuyển lại nếu tìm thấy khóa cũ.",
+						"importKey": "Tôi đã có khóa khôi phục",
+						"importKeyHelp": "Dán khóa 64 ký tự từ máy chủ ban đầu. Checkmate giải mã một bản sao lưu đám mây để kiểm tra khóa trước khi lưu.",
+						"replaceKey": "Dùng khóa khôi phục khác",
+						"replaceKeyHelp": "Dán khóa 64 ký tự bạn muốn dùng thay thế. Checkmate giải mã các bản sao lưu đám mây để kiểm tra khóa, và giữ khóa hiện tại nếu không mở được bản nào.",
+						"replaceKeyWarning": "Sau khi chuyển, các bản sao lưu tạo bằng khóa hiện tại sẽ không thể khôi phục.",
+						"importKeyConfirm": "Dùng khóa này",
+						"verifyOutcome": {
+							"ok": "Đã lưu khóa khôi phục",
+							"wrong-key": "Khóa này không giải mã được các bản sao lưu đám mây của bạn",
+							"no-backups": "Không có bản sao lưu đám mây nào để kiểm tra khóa này",
+							"failed": "Không thể kiểm tra khóa: {{error}}"
+						},
+						"keyTitle": "Khóa khôi phục",
+						"keyWarning": "Hãy cất khóa này ở nơi an toàn, tách biệt khỏi máy chủ này. Khóa chỉ hiển thị một lần. Nếu làm mất, bạn sẽ không thể khôi phục các bản sao lưu đám mây và không ai có thể lấy lại khóa giúp bạn.",
+						"keyCopy": "Sao chép khóa",
+						"keyLabel": "Khóa khôi phục của bạn",
+						"keyContinue": "Tôi đã lưu",
+						"keyDone": "Tôi đã cất giữ khóa",
+						"keyShowAgain": "Hiển thị lại khóa",
+						"keyVerifyHelp": "Mở nơi bạn đã lưu khóa và dán vào đây để xác nhận bạn có một bản sao dùng được.",
+						"keyPlaceholder": "Khóa khôi phục",
+						"keyAcknowledge": "Tôi hiểu rằng nếu làm mất khóa này, tôi sẽ không thể khôi phục các bản sao lưu đám mây.",
+						"keyMismatch": "Không khớp với khóa khôi phục của bạn. Hãy hiển thị lại khóa và lưu một bản sao mới.",
+						"keyAckRequired": "Đánh dấu vào ô để xác nhận bạn đã hiểu.",
+						"toolsMissing": "Sao lưu đám mây cần mongodump và mongorestore, nhưng không tìm thấy chúng trên máy chủ này.",
+						"toolsMac": "Trên macOS, chạy: brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "Tải MongoDB Database Tools cho Linux",
+						"toolsPath": "Nếu chúng được cài ở nơi khác, hãy đặt CONNECT_MONGODUMP_BIN và CONNECT_MONGORESTORE_BIN. Thông báo này sẽ biến mất trong vòng một phút sau khi tìm thấy công cụ.",
+						"runFull": "Sao lưu ngay",
+						"runConfig": "Chỉ sao lưu cấu hình",
+						"kind": {
+							"full": "Toàn bộ cơ sở dữ liệu",
+							"config": "Chỉ cấu hình"
+						},
+						"progress": {
+							"idle": "Không hoạt động",
+							"finished": {
+								"backup": {
+									"ok": "Sao lưu hoàn tất",
+									"failed": "Sao lưu thất bại"
+								},
+								"restore": {
+									"ok": "Khôi phục hoàn tất",
+									"failed": "Khôi phục thất bại"
+								},
+								"verify": {
+									"ok": "Đã lưu khóa khôi phục",
+									"failed": "Kiểm tra khóa thất bại"
+								}
+							},
+							"queued": {
+								"backup": "Đã đưa tác vụ sao lưu vào hàng đợi",
+								"restore": "Đã đưa tác vụ khôi phục vào hàng đợi"
+							},
+							"checking": "Đang kiểm tra khóa của bạn…",
+							"restore": {
+								"downloading": "Bước 1/3: đang tải bản sao lưu",
+								"decrypting": "Bước 2/3: đang giải mã bản sao lưu",
+								"restoring": "Bước 3/3: đang khôi phục cơ sở dữ liệu"
+							},
+							"verify": {
+								"downloading": "Đang kiểm tra khóa: đang tải bản sao lưu {{attempt}}/{{attempts}}",
+								"decrypting": "Đang kiểm tra khóa: đang giải mã bản sao lưu {{attempt}}/{{attempts}}"
+							},
+							"backup": {
+								"dumping": "Bước 1/3: đang đọc và mã hóa cơ sở dữ liệu",
+								"uploading": "Bước 2/3: đang tải lên bản sao lưu đã mã hóa",
+								"saving": "Bước 3/3: đang lưu bản sao lưu vào tài khoản của bạn"
+							}
+						},
+						"progressWithPercent": "{{step}} ({{percent}}%)",
+						"progressWithSize": "{{step}} ({{size}})",
+						"lastBackupSucceeded": "Lần sao lưu gần nhất ({{date}}): thành công",
+						"lastBackupSucceededSize": "Lần sao lưu gần nhất ({{date}}): thành công · {{size}}",
+						"lastBackupFailed": "Lần sao lưu gần nhất ({{date}}): thất bại — {{error}}",
+						"lastRestoreSucceeded": "Lần khôi phục gần nhất ({{date}}): thành công",
+						"lastRestoreFailed": "Lần khôi phục gần nhất ({{date}}): thất bại — {{error}}",
+						"restore": {
+							"title": "Khôi phục bản sao lưu",
+							"description": "Tải bản sao lưu đã chọn, xác minh và giải mã trên máy chủ này, rồi thay thế cơ sở dữ liệu hiện tại.",
+							"empty": "Chưa có bản sao lưu đám mây nào đã được xác minh.",
+							"button": "Khôi phục",
+							"confirmTitle": "Khôi phục bản sao lưu từ {{date}} ({{kind}})?",
+							"confirmBody": "Thao tác này thay thế cơ sở dữ liệu hiện tại và không thể hoàn tác. Tài khoản người dùng cũng bị thay thế, vì vậy sau đó hãy đăng nhập bằng một tài khoản có trong bản sao lưu.",
+							"differentKey": "Khóa khác",
+							"expires": "Bị xóa sau {{date}}"
+						}
+					},
+					"schedule": {
+						"title": "Sao lưu theo lịch",
+						"description": "Tự động chạy sao lưu đám mây được mã hóa. Bản đầu tiên bắt đầu ngay khi bạn bật tính năng này; nếu đến lịch mà đang có sao lưu hoặc khôi phục khác chạy, lần đó sẽ bị bỏ qua cho đến chu kỳ tiếp theo.",
+						"interval": "Sao lưu mỗi",
+						"kind": "Loại sao lưu"
+					},
+					"recoveryKey": {
+						"title": "Khóa khôi phục",
+						"description": "Mã hóa các bản sao lưu đám mây trên máy chủ này. Khóa không bao giờ rời khỏi máy chủ này, và nếu thiếu nó thì không thể khôi phục các bản sao lưu.",
+						"set": "Máy chủ này đã có khóa khôi phục."
+					},
+					"unenroll": {
+						"title": "Gỡ đăng ký",
+						"description": "Ngắt kết nối bản cài đặt này khỏi Checkmate Connect và xóa thông tin xác thực cục bộ. Việc giám sát cục bộ không bị ảnh hưởng.",
+						"button": "Gỡ đăng ký"
+					}
 				},
 				"about": {
 					"title": "Giới thiệu",
@@ -1455,6 +1847,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "Đã xóa trang trạng thái thành công",
+			"rangeSelectorAria": "Khoảng thời gian lịch sử",
+			"rangeExceedsRetention": "Thời gian lưu giữ lịch sử kiểm tra được đặt là {{days}} ngày. Tăng thời gian lưu giữ để có thêm dữ liệu.",
+			"range": {
+				"latest": "Mới nhất",
+				"30d": "30 ngày",
+				"60d": "60 ngày",
+				"90d": "90 ngày"
+			},
 			"fallback": {
 				"title": "Chưa có trang trạng thái",
 				"actionButton": "Tạo trang trạng thái!",
@@ -1482,6 +1882,9 @@
 					"avg": "TB {{value}}",
 					"downTooltip": "Ngừng hoạt động",
 					"heatmapAria": "Bản đồ nhiệt thời gian phản hồi",
+					"dayAria": "{{date}}, thời gian hoạt động {{uptime}}",
+					"dayUptime": "Thời gian hoạt động: {{uptime}} ({{upChecks}}/{{totalChecks}} lần kiểm tra)",
+					"dayAvgResponse": "Phản hồi TB: {{value}}",
 					"max": "tối đa {{value}}"
 				},
 				"status": {
@@ -1493,6 +1896,10 @@
 					"up": "Hoạt động"
 				},
 				"incidents": {
+					"modalTitle": "Sự cố ngày {{date}}",
+					"loading": "Đang tải...",
+					"noIncidents": "Không có sự cố nào được báo cáo trong ngày này.",
+					"ongoing": "Đang diễn ra",
 					"errorLoading": "Không thể tải sự cố."
 				}
 			},
@@ -1551,6 +1958,11 @@
 						"url": {
 							"label": "Địa chỉ trang trạng thái",
 							"placeholder": "my-status-page"
+						},
+						"customDomain": {
+							"label": "Tên miền tùy chỉnh",
+							"placeholder": "status.example.com",
+							"helper": "Không bắt buộc. Trỏ bản ghi DNS về phiên bản Checkmate này để phục vụ trang trạng thái tại tên miền của riêng bạn."
 						}
 					}
 				},
@@ -1617,6 +2029,10 @@
 							"description": "Tiêu đề serif và dải phân cách mỏng. Đặc biệt và tĩnh lặng.",
 							"name": "Biên tập"
 						},
+						"minimal": {
+							"name": "Tối giản",
+							"description": "Phẳng, tập trung và gọn gàng, chỉ với những gì thiết yếu."
+						},
 						"modern": {
 							"description": "Chất lượng SaaS với chấm trạng thái nhấp nháy và thẻ mờ dần nhẹ nhàng.",
 							"name": "Hiện đại"
@@ -1633,11 +2049,24 @@
 					"dark": "Chỉ tối",
 					"label": "Chế độ chủ đề",
 					"light": "Chỉ sáng"
+				},
+				"customCSS": {
+					"title": "CSS tùy chỉnh",
+					"description": "Thêm CSS tùy chỉnh để tinh chỉnh giao diện trang trạng thái công khai của bạn.",
+					"option": {
+						"customCSS": {
+							"label": "CSS tùy chỉnh",
+							"placeholder": "footer { display: none; }"
+						}
+					}
 				}
 			},
 			"header": {
 				"title": "Trang trạng thái",
 				"description": "Công bố các trang công khai cho khách hàng và các bên liên quan thấy thời gian hoạt động theo thời gian thực và lịch sử sự cố."
+			},
+			"preview": {
+				"title": "Xem trước trang trạng thái"
 			},
 			"editorial": {
 				"allUp": "Tất cả các hệ thống đang hoạt động bình thường.",
@@ -1651,11 +2080,13 @@
 			"filters": {
 				"search": {
 					"placeholder": "Tìm kiếm trình giám sát..."
-				}
+				},
+				"activeTags": "Thẻ đang chọn"
 			},
 			"table": {
 				"headers": {
-					"responseTime": "Thời gian phản hồi"
+					"responseTime": "Thời gian phản hồi",
+					"uptime": "Thời gian hoạt động %"
 				}
 			},
 			"fallback": {

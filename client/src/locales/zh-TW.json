@@ -32,6 +32,8 @@
 			"pause": "暫停",
 			"resume": "恢復",
 			"save": "儲存",
+			"next": "下一步",
+			"back": "返回",
 			"sendInvite": "發送邀請",
 			"test": "測試",
 			"testNotifications": "測試通知",
@@ -47,19 +49,37 @@
 			"exportToJSON": "匯出為 JSON",
 			"importFromJSON": "從 JSON 匯入",
 			"clearFilters": "清除篩選條件",
-			"removeUser": "移除使用者"
+			"removeUser": "移除使用者",
+			"removeItem": "移除 {{item}}"
 		},
 		"charts": {
 			"labels": {
 				"averageResponseTime": "平均回應時間",
+				"cpuUsage": "CPU 使用率",
 				"downtime": "停機時間",
 				"high": "高",
 				"low": "低",
+				"memoryUsage": "記憶體使用率",
+				"responseTime": "回應時間",
+				"timingPhases": "耗時階段",
+				"totalResponseTime": "總回應時間",
 				"uptime": "正常運行時間"
 			},
 			"histogram": {
 				"avg": "平均：{{value}}",
-				"max": "最大：{{value}}"
+				"max": "最大：{{value}}",
+				"responseTime": "回應時間：{{value}}",
+				"total": "總計：{{value}}",
+				"avgCpuUsage": "平均 CPU 使用率：{{value}}",
+				"avgMemoryUsage": "平均記憶體使用率：{{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "請求",
+				"firstByte": "第一個位元組",
+				"download": "下載"
 			}
 		},
 		"dialogs": {
@@ -74,10 +94,17 @@
 			"na": "N/A",
 			"resolved": "已解決",
 			"responseTime": "回應時間",
+			"state": "狀態",
+			"uptime": "正常運行時間",
+			"health": "健康狀態",
+			"restarts": "重新啟動次數",
 			"idle": "閒置",
 			"running": "執行中"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "輸入以搜尋"
+			},
 			"role": {
 				"option": {
 					"role": {
@@ -120,7 +147,8 @@
 				"url": "URL",
 				"interval": "間隔",
 				"active": "啟用中",
-				"responseTime": "回應時間"
+				"responseTime": "回應時間",
+				"tags": "標籤"
 			}
 		},
 		"statusCode": {
@@ -254,6 +282,63 @@
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "代理伺服器",
+				"description": "管理用於轉送 HTTP 監控流量的代理伺服器。"
+			},
+			"fallback": {
+				"title": "尚無代理伺服器",
+				"description": "透過代理伺服器轉送 HTTP 監控的檢查。建立代理伺服器後，您可以在個別監控中選擇它，或在設定中將其設為全域預設值。",
+				"actionButton": "建立代理伺服器"
+			},
+			"form": {
+				"name": {
+					"title": "代理伺服器名稱",
+					"description": "用來識別此代理伺服器的易記名稱",
+					"optionName": "代理伺服器名稱",
+					"placeholder": "我的代理伺服器"
+				},
+				"server": {
+					"title": "代理伺服器",
+					"description": "代理伺服器的連線位置。設定 Checkmate 連線時使用的通訊協定、主機名稱或 IP 位址，以及它監聽的連接埠。",
+					"option": {
+						"protocol": {
+							"label": "通訊協定"
+						},
+						"host": {
+							"label": "主機名稱 / IP 位址",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "連接埠"
+						}
+					}
+				},
+				"auth": {
+					"title": "驗證",
+					"description": "選填。僅在代理伺服器需要基本驗證時才需填寫。",
+					"option": {
+						"username": {
+							"label": "使用者名稱",
+							"placeholder": "代理伺服器使用者名稱",
+							"labelSet": "使用者名稱已設定。點選「重設」即可變更。"
+						},
+						"password": {
+							"label": "密碼",
+							"labelSet": "密碼已設定。點選「重設」即可變更。"
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "通訊協定",
+					"host": "主機",
+					"port": "連接埠"
+				}
+			}
+		},
 		"notFound": {
 			"title": "哎呀！您的壽司掉了！",
 			"subtitle": "該 URL 不存在，或您沒有存取權限。"
@@ -475,7 +560,9 @@
 				},
 				"statBoxes": {
 					"activeFor": "已啟用",
+					"checkingEvery": "每 {{interval}} 檢查一次",
 					"certificateExpiry": "憑證到期",
+					"domainExpiry": "網域到期",
 					"lastCheck": "最後檢查",
 					"lastResponseTime": "最後回應時間",
 					"serviceIsDown": "服務已停止"
@@ -521,6 +608,13 @@
 				"advanced": {
 					"description": "進階使用案例的選用設定",
 					"option": {
+						"method": {
+							"label": "請求方法",
+							"description": {
+								"GET": "GET 會取得包含本文在內的完整回應，完全支援進階配對。",
+								"HEAD": "HEAD 只取得回應標頭，以減輕目標的負載。支援狀態碼配對，但因為沒有本文，不支援進階配對。"
+							}
+						},
 						"advancedMatching": {
 							"label": "使用進階配對"
 						},
@@ -536,6 +630,10 @@
 							"equal": "等於",
 							"include": "包含",
 							"regex": "正規表達式"
+						},
+						"customUpCodes": {
+							"label": "接受的狀態碼",
+							"description": "新增任何也應視為成功的非 2xx 狀態碼。"
 						}
 					},
 					"title": "進階設定"
@@ -569,6 +667,9 @@
 					"title": "檢查頻率"
 				},
 				"general": {
+					"url": {
+						"alert": "之後的檢查將使用新的 URL。此監控的歷史資料會保留，但這些資料是從舊 URL 收集的。"
+					},
 					"option": {
 						"host": {
 							"label": "主機",
@@ -585,6 +686,24 @@
 						"url": {
 							"label": "URL",
 							"placeholder": "https://www.google.com"
+						},
+						"proxyMode": {
+							"label": "代理伺服器",
+							"value": {
+								"inheritDirect": "預設（直接連線）",
+								"inheritGlobal": "預設（{{name}}）",
+								"none": "永不使用代理伺服器",
+								"custom": "自訂代理伺服器"
+							},
+							"description": {
+								"inheritDirect": "尚未設定全域代理伺服器，將直接連線。若之後設定了全域代理伺服器，此監控將會使用它。",
+								"inheritGlobal": "使用全域代理伺服器設定",
+								"none": "即使之後啟用了全域代理伺服器，也一律直接連線。",
+								"custom": "透過指定的代理伺服器轉送此監控的檢查。會覆寫全域代理伺服器"
+							}
+						},
+						"proxy": {
+							"label": "代理伺服器"
 						},
 						"game": {
 							"label": "選擇遊戲",
@@ -671,6 +790,10 @@
 				"notifications": {
 					"description": "選擇您要使用的通知頻道",
 					"title": "通知"
+				},
+				"tags": {
+					"description": "選擇要套用到此監控的標籤",
+					"title": "標籤"
 				},
 				"type": {
 					"description": "選擇要執行的檢查類型",
@@ -905,6 +1028,7 @@
 					"disk": "磁碟使用率",
 					"netBytesRecv": "{{name}} - 接收位元組",
 					"netBytesSent": "{{name}} - 發送位元組",
+					"loopbackOnlyNotice": "Capture 只看得到容器的網路介面，而且這些介面都沒有承載實際流量。當 Capture 在只能觀察自身網路命名空間的容器中執行時，這是正常現象——名稱類似主機的介面（eth0、ens3）是容器的虛擬介面，而非主機的介面。請直接在主機上執行 Capture 以查看實際的網路活動。",
 					"temp": "溫度"
 				}
 			},
@@ -957,6 +1081,37 @@
 				"description": "追蹤伺服器效能、找出瓶頸，透過即時基礎設施監控確保可靠性。"
 			}
 		},
+		"tags": {
+			"header": {
+				"title": "標籤",
+				"description": "使用標籤整理您的監控"
+			},
+			"fallback": {
+				"title": "尚無標籤",
+				"description": "使用標籤整理您的監控。建立標籤並指派給監控後，您就能在整個應用程式中依該標籤篩選，並在此查看標籤詳細資訊。",
+				"actionButton": "建立標籤"
+			},
+			"table": {
+				"headers": {
+					"color": "顏色",
+					"appearance": "外觀"
+				}
+			},
+			"form": {
+				"name": {
+					"title": "標籤名稱",
+					"description": "為您的標籤選擇名稱",
+					"optionName": "標籤名稱",
+					"placeholder": "例如：群組 1"
+				},
+				"color": {
+					"title": "標籤顏色",
+					"description": "為您的標籤選擇顏色",
+					"optionName": "標籤顏色",
+					"placeholder": "例如：#13715B"
+				}
+			}
+		},
 		"logs": {
 			"fallback": {
 				"title": "尚無日誌",
@@ -970,6 +1125,8 @@
 			"logLevelSelect": {
 				"label": "日誌等級"
 			},
+			"workers": "背景工作程序",
+			"workersExplainers": "顯示背景工作程序。工作程序 ID 已截斷，將游標移至上方可查看完整 ID",
 			"jobQueue": "工作佇列",
 			"jobQueueExplainer": "<highlight>反白的列</highlight>是目前正由工作程序處理的工作。",
 			"failedJobs": "失敗的工作",
@@ -990,6 +1147,26 @@
 					"totalHeapSize": "堆積總大小",
 					"osMemoryLimit": "作業系統記憶體限制"
 				},
+				"mongoDBStats": {
+					"readyState": "就緒狀態",
+					"readsPerSecond": "讀取/秒",
+					"insertsPerSecond": "插入/秒",
+					"updatesPerSecond": "更新/秒",
+					"deletesPerSecond": "刪除/秒",
+					"writesPerSecond": "總寫入/秒",
+					"host": "主機",
+					"port": "連接埠",
+					"dbName": "資料庫名稱",
+					"storageSize": "儲存空間大小"
+				},
+				"mongoDBCollectionStats": {
+					"documents": "文件數：{{count}}",
+					"bucketCount": "儲存桶數：{{count}}",
+					"storageSize": "儲存空間大小：{{size}}",
+					"indexSize": "索引大小：{{size}}",
+					"totalSize": "總大小：{{size}}",
+					"dbUsageTooltip": "佔資料庫儲存空間的 {{percentage}}%"
+				},
 				"gauges": {
 					"heapAllocation": "堆積配置",
 					"heapUsage": "堆積使用率",
@@ -1009,17 +1186,32 @@
 					"memoryCpu": {
 						"title": "記憶體與 CPU",
 						"description": "程序如何使用其分配的記憶體和主機 CPU。"
+					},
+					"mongoDBStats": {
+						"title": "MongoDB 統計資料",
+						"description": "MongoDB 指標快照"
+					},
+					"mongoDBCollectionStats": {
+						"title": "MongoDB 集合統計資料",
+						"description": "MongoDB 集合的統計資料"
 					}
 				}
 			},
 			"table": {
 				"headers": {
+					"host": "主機",
+					"processId": "處理程序 ID",
+					"workerId": "工作程序 ID",
+					"workerMode": "工作程序模式",
+					"lastSeenAt": "最後活動時間",
 					"timestamp": "時間戳",
 					"level": "等級",
 					"service": "服務",
 					"monitorId": "監控 ID",
 					"runCount": "執行次數",
 					"failCount": "失敗次數",
+					"nextScheduledAt": "下次執行時間",
+					"lockedBy": "鎖定者",
 					"lastFinishedAt": "最後完成於",
 					"lastFailedAt": "最後失敗於",
 					"failReason": "失敗原因",
@@ -1146,7 +1338,22 @@
 				"type": {
 					"description": "選擇要建立的通知頻道類型。",
 					"optionType": "類型",
-					"title": "頻道類型"
+					"title": "頻道類型",
+					"value": {
+						"email": "電子郵件",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"signalgrid": "Signalgrid",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "Telegram 設定",
@@ -1164,6 +1371,14 @@
 					"optionUserKey": "使用者金鑰",
 					"placeholderUserKey": "輸入使用者金鑰"
 				},
+				"signalgrid": {
+					"title": "Signalgrid 設定",
+					"description": "設定 Signalgrid 以在您的裝置上接收推播通知。",
+					"optionClientKey": "用戶端金鑰",
+					"placeholderClientKey": "您的 Signalgrid 用戶端金鑰",
+					"optionChannel": "頻道",
+					"placeholderChannel": "您的 Signalgrid 頻道"
+				},
 				"twilio": {
 					"title": "Twilio 設定",
 					"description": "輸入 Twilio 帳戶憑證以傳送簡訊。",
@@ -1175,6 +1390,14 @@
 					"placeholderFromNumber": "+1234567890",
 					"optionToNumber": "接收號碼",
 					"placeholderToNumber": "+1234567890"
+				},
+				"ntfy": {
+					"title": "ntfy 設定",
+					"description": "設定用於推播通知的 ntfy 伺服器和主題。",
+					"optionServerUrl": "伺服器 URL",
+					"placeholderServerUrl": "https://ntfy.sh",
+					"optionTopic": "主題",
+					"placeholderTopic": "checkmate-alerts"
 				}
 			},
 			"table": {
@@ -1231,7 +1454,8 @@
 				"integrations": "整合",
 				"tags": "標籤",
 				"proxies": "代理",
-				"data": "資料"
+				"data": "資料",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1265,6 +1489,22 @@
 							"label": "圖表類型",
 							"histogram": "直方圖",
 							"heatmap": "熱力圖"
+						}
+					}
+				},
+				"globalProxy": {
+					"title": "全域代理伺服器",
+					"description": "預設透過代理伺服器轉送監控檢查。適用於代理伺服器設定為「預設」的所有 HTTP 監控；設定為「永不使用代理伺服器」或自訂代理伺服器的監控不受影響。",
+					"option": {
+						"enabled": {
+							"label": "使用全域代理伺服器"
+						},
+						"proxy": {
+							"label": "選擇全域代理伺服器"
+						},
+						"empty": {
+							"text": "尚未設定任何代理伺服器。",
+							"link": "請先建立一個"
 						}
 					}
 				},
@@ -1426,7 +1666,159 @@
 				},
 				"importExportMonitors": {
 					"title": "匯入/匯出監控",
-					"description": "將監控資料匯入或匯出為 JSON 檔案以進行備份或轉移。"
+					"description": "將監控資料匯入或匯出為 JSON 檔案以進行備份或轉移。",
+					"backupNotice": "此 JSON 檔案僅包含您的監控，並非完整備份。如需備份或還原 Checkmate 資料，請使用 Checkmate Connect。",
+					"connectTabLink": "開啟 Checkmate Connect 分頁",
+					"connectSiteLink": "前往 Checkmate Connect 網站"
+				},
+				"connect": {
+					"superadminOnly": "只有超級管理員可以註冊此伺服器、變更遠端存取、執行或還原備份，以及移除其註冊。如果您的角色最近有變更，請登出後重新登入。",
+					"clickToConfirm": "再按一次以確認",
+					"status": {
+						"title": "狀態",
+						"description": "此安裝的連線狀態。",
+						"enrolled": "已註冊",
+						"notEnrolled": "未註冊",
+						"connected": "通道已連線",
+						"disconnected": "通道已中斷",
+						"connecting": "通道連線中",
+						"remoteAccessOff": "遠端存取已關閉",
+						"agentId": "代理程式 ID",
+						"lastConnected": "上次連線"
+					},
+					"enroll": {
+						"title": "註冊此安裝",
+						"description": "貼上 Checkmate Connect 主控台中的憑證區塊。憑證會加密儲存在此安裝的資料庫中，只有在向 Checkmate Connect 進行驗證時才會傳送出去。",
+						"button": "註冊"
+					},
+					"remoteAccess": {
+						"title": "遠端存取",
+						"description": "保持一條對外通道開啟，讓您可以透過 Connect 位址存取此安裝。不會開放任何對內連接埠。"
+					},
+					"tooltips": {
+						"enroll": "將此伺服器連結到您的帳戶",
+						"unenroll": "中斷此伺服器與 Connect 的連結",
+						"generateKey": "建立用來解鎖備份的金鑰",
+						"lostKey": "使用新金鑰重新開始",
+						"runFull": "立即備份整個資料庫",
+						"runConfig": "備份檢查歷史以外的所有內容",
+						"importKey": "使用原伺服器上的金鑰",
+						"useKey": "以您的備份驗證此金鑰",
+						"replaceKey": "改用另一組復原金鑰",
+						"restore": "以此備份取代此伺服器的資料"
+					},
+					"backup": {
+						"title": "雲端備份",
+						"description": "此安裝資料庫的加密備份，上傳至 Checkmate Connect。資料在上傳前於本機加密，雲端只會儲存密文。",
+						"needsKey": "請在下方設定復原金鑰以開始備份。",
+						"generateKey": "產生復原金鑰",
+						"existingBackups": "此帳戶已有雲端備份。請輸入原伺服器上的復原金鑰以還原這些備份。",
+						"lostKey": "我遺失了金鑰",
+						"lostKeyWarning": "沒有原金鑰，就無法還原現有的雲端備份。這些備份會在您以新金鑰完成首次備份後保留 30 天，若您找回原金鑰，可以切換回去。",
+						"importKey": "我已有復原金鑰",
+						"importKeyHelp": "貼上原伺服器上的 64 個字元金鑰。Checkmate 會解密您的其中一個雲端備份來驗證金鑰，然後才儲存。",
+						"replaceKey": "使用其他復原金鑰",
+						"replaceKeyHelp": "貼上您要改用的 64 個字元金鑰。Checkmate 會解密您的雲端備份來驗證金鑰；若都無法開啟，則保留目前的金鑰。",
+						"replaceKeyWarning": "切換後，以目前金鑰建立的備份將無法還原。",
+						"importKeyConfirm": "使用此金鑰",
+						"verifyOutcome": {
+							"ok": "復原金鑰已儲存",
+							"wrong-key": "此金鑰無法解密您的雲端備份",
+							"no-backups": "沒有可用來驗證此金鑰的雲端備份",
+							"failed": "無法驗證金鑰：{{error}}"
+						},
+						"keyTitle": "復原金鑰",
+						"keyWarning": "請將此金鑰存放在遠離此伺服器的安全位置。它只會顯示一次。若遺失，您的雲端備份將無法還原，也沒有人能幫您找回。",
+						"keyCopy": "複製金鑰",
+						"keyLabel": "您的復原金鑰",
+						"keyContinue": "我已儲存",
+						"keyDone": "我已妥善保存金鑰",
+						"keyShowAgain": "再次顯示金鑰",
+						"keyVerifyHelp": "開啟您儲存金鑰的位置並貼到此處，以確認您有一份可用的副本。",
+						"keyPlaceholder": "復原金鑰",
+						"keyAcknowledge": "我了解，若遺失此金鑰，將無法還原我的雲端備份。",
+						"keyMismatch": "與您的復原金鑰不符。請再次顯示金鑰並重新儲存一份。",
+						"keyAckRequired": "請勾選此方塊以確認您已了解。",
+						"toolsMissing": "雲端備份需要 mongodump 和 mongorestore，但在此伺服器上找不到。",
+						"toolsMac": "在 macOS 上執行：brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "下載適用於 Linux 的 MongoDB Database Tools",
+						"toolsPath": "若它們安裝在其他位置，請設定 CONNECT_MONGODUMP_BIN 和 CONNECT_MONGORESTORE_BIN。找到工具後，此訊息會在一分鐘內消失。",
+						"runFull": "立即備份",
+						"runConfig": "僅備份設定",
+						"kind": {
+							"full": "完整資料庫",
+							"config": "僅設定"
+						},
+						"progress": {
+							"idle": "閒置",
+							"finished": {
+								"backup": {
+									"ok": "備份已完成",
+									"failed": "備份失敗"
+								},
+								"restore": {
+									"ok": "還原已完成",
+									"failed": "還原失敗"
+								},
+								"verify": {
+									"ok": "復原金鑰已儲存",
+									"failed": "金鑰驗證失敗"
+								}
+							},
+							"queued": {
+								"backup": "備份工作已加入佇列",
+								"restore": "還原工作已加入佇列"
+							},
+							"checking": "正在驗證您的金鑰…",
+							"restore": {
+								"downloading": "第 1 步，共 3 步：正在下載備份",
+								"decrypting": "第 2 步，共 3 步：正在解密備份",
+								"restoring": "第 3 步，共 3 步：正在還原資料庫"
+							},
+							"verify": {
+								"downloading": "正在驗證金鑰：正在下載第 {{attempt}} 個備份，共 {{attempts}} 個",
+								"decrypting": "正在驗證金鑰：正在解密第 {{attempt}} 個備份，共 {{attempts}} 個"
+							},
+							"backup": {
+								"dumping": "第 1 步，共 3 步：正在讀取並加密資料庫",
+								"uploading": "第 2 步，共 3 步：正在上傳加密備份",
+								"saving": "第 3 步，共 3 步：正在將備份儲存到您的帳戶"
+							}
+						},
+						"progressWithPercent": "{{step}}（{{percent}}%）",
+						"progressWithSize": "{{step}}（{{size}}）",
+						"lastBackupSucceeded": "上次備份（{{date}}）：成功",
+						"lastBackupSucceededSize": "上次備份（{{date}}）：成功 · {{size}}",
+						"lastBackupFailed": "上次備份（{{date}}）：失敗 — {{error}}",
+						"lastRestoreSucceeded": "上次還原（{{date}}）：成功",
+						"lastRestoreFailed": "上次還原（{{date}}）：失敗 — {{error}}",
+						"restore": {
+							"title": "還原備份",
+							"description": "下載所選的備份，在此伺服器上驗證並解密，然後取代目前的資料庫。",
+							"empty": "尚無已驗證的雲端備份。",
+							"button": "還原",
+							"confirmTitle": "要還原 {{date}} 的備份（{{kind}}）嗎？",
+							"confirmBody": "此操作會取代目前的資料庫，且無法復原。使用者帳戶也會被取代，因此之後請使用備份中的帳戶登入。",
+							"differentKey": "不同的金鑰",
+							"expires": "將於 {{date}} 後移除"
+						}
+					},
+					"schedule": {
+						"title": "排程備份",
+						"description": "自動執行加密雲端備份。開啟後會立即開始第一次備份；若排程備份到期時另一個備份或還原正在執行，則會略過，等待下一個週期。",
+						"interval": "備份頻率",
+						"kind": "備份類型"
+					},
+					"recoveryKey": {
+						"title": "復原金鑰",
+						"description": "在此伺服器上加密您的雲端備份。它絕不會離開此伺服器，沒有它，您的備份將無法還原。",
+						"set": "此伺服器已設定復原金鑰。"
+					},
+					"unenroll": {
+						"title": "移除註冊",
+						"description": "中斷此安裝與 Checkmate Connect 的連結，並刪除本機憑證。本機監控不受影響。",
+						"button": "移除註冊"
+					}
 				},
 				"about": {
 					"title": "關於",
@@ -1455,6 +1847,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "狀態頁面已成功刪除",
+			"rangeSelectorAria": "歷史範圍",
+			"rangeExceedsRetention": "檢查歷史保留期間設定為 {{days}} 天。延長保留期間可取得更多資料。",
+			"range": {
+				"latest": "最新",
+				"30d": "30 天",
+				"60d": "60 天",
+				"90d": "90 天"
+			},
 			"fallback": {
 				"title": "尚無狀態頁面",
 				"actionButton": "建立狀態頁面！",
@@ -1482,6 +1882,9 @@
 					"avg": "平均 {{value}}",
 					"downTooltip": "停機",
 					"heatmapAria": "回應時間熱圖",
+					"dayAria": "{{date}}，正常運行率 {{uptime}}",
+					"dayUptime": "正常運行率：{{uptime}}（{{upChecks}}/{{totalChecks}} 次檢查）",
+					"dayAvgResponse": "平均回應：{{value}}",
 					"max": "最大 {{value}}"
 				},
 				"status": {
@@ -1493,6 +1896,10 @@
 					"up": "運行中"
 				},
 				"incidents": {
+					"modalTitle": "{{date}} 的事件",
+					"loading": "載入中...",
+					"noIncidents": "當天沒有回報的事件。",
+					"ongoing": "進行中",
 					"errorLoading": "無法載入事件。"
 				}
 			},
@@ -1551,6 +1958,11 @@
 						"url": {
 							"label": "您的狀態頁面地址",
 							"placeholder": "my-status-page"
+						},
+						"customDomain": {
+							"label": "自訂網域",
+							"placeholder": "status.example.com",
+							"helper": "選填。將 DNS 記錄指向此 Checkmate 執行個體，即可在您自己的網域上提供狀態頁面。"
 						}
 					}
 				},
@@ -1617,6 +2029,10 @@
 							"description": "襯線標題和細分隔線。獨特而平靜。",
 							"name": "編輯風格"
 						},
+						"minimal": {
+							"name": "極簡",
+							"description": "扁平、專注且精簡，只保留必要內容。"
+						},
 						"modern": {
 							"description": "SaaS級品質，帶有脈動狀態點和柔和淡出的卡片。",
 							"name": "現代"
@@ -1633,11 +2049,24 @@
 					"dark": "僅深色",
 					"label": "主題模式",
 					"light": "僅淺色"
+				},
+				"customCSS": {
+					"title": "自訂 CSS",
+					"description": "新增自訂 CSS 以微調公開狀態頁面的外觀。",
+					"option": {
+						"customCSS": {
+							"label": "自訂 CSS",
+							"placeholder": "footer { display: none; }"
+						}
+					}
 				}
 			},
 			"header": {
 				"title": "狀態頁面",
 				"description": "發佈公開頁面，向客戶和利害關係人顯示即時的運行狀態與事件歷史。"
+			},
+			"preview": {
+				"title": "狀態頁面預覽"
 			},
 			"editorial": {
 				"allUp": "所有系統運作正常。",
@@ -1651,11 +2080,13 @@
 			"filters": {
 				"search": {
 					"placeholder": "搜尋監控..."
-				}
+				},
+				"activeTags": "已選標籤"
 			},
 			"table": {
 				"headers": {
-					"responseTime": "回應時間"
+					"responseTime": "回應時間",
+					"uptime": "正常運行率 %"
 				}
 			},
 			"fallback": {

@@ -32,6 +32,8 @@
 			"pause": "Pausieren",
 			"resume": "Fortsetzen",
 			"save": "Speichern",
+			"next": "Weiter",
+			"back": "Zurück",
 			"sendInvite": "Einladung senden",
 			"test": "Testen",
 			"testNotifications": "Benachrichtigungen testen",
@@ -47,19 +49,37 @@
 			"exportToJSON": "Als JSON exportieren",
 			"importFromJSON": "Aus JSON importieren",
 			"clearFilters": "Filter zurücksetzen",
-			"removeUser": "Benutzer entfernen"
+			"removeUser": "Benutzer entfernen",
+			"removeItem": "{{item}} entfernen"
 		},
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Durchschnittliche Antwortzeit",
+				"cpuUsage": "CPU-Auslastung",
 				"downtime": "Ausfallzeit",
 				"high": "hoch",
 				"low": "niedrig",
+				"memoryUsage": "Speicherauslastung",
+				"responseTime": "Antwortzeit",
+				"timingPhases": "Timing-Phasen",
+				"totalResponseTime": "Gesamte Antwortzeit",
 				"uptime": "Verfügbarkeit"
 			},
 			"histogram": {
 				"avg": "Durchschn.: {{value}}",
-				"max": "Max.: {{value}}"
+				"max": "Max.: {{value}}",
+				"responseTime": "Antwortzeit: {{value}}",
+				"total": "Gesamt: {{value}}",
+				"avgCpuUsage": "Durchschnittliche CPU-Auslastung: {{value}}",
+				"avgMemoryUsage": "Durchschnittliche Speicherauslastung: {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "Anfrage",
+				"firstByte": "Erstes Byte",
+				"download": "Download"
 			}
 		},
 		"dialogs": {
@@ -74,10 +94,17 @@
 			"na": "N/A",
 			"resolved": "Gelöst",
 			"responseTime": "Antwortzeit",
+			"state": "Status",
+			"uptime": "Betriebszeit",
+			"health": "Zustand",
+			"restarts": "Neustarts",
 			"idle": "Untätig",
 			"running": "Läuft"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "Zum Suchen tippen"
+			},
 			"role": {
 				"option": {
 					"role": {
@@ -120,7 +147,8 @@
 				"url": "URL",
 				"interval": "Intervall",
 				"active": "Aktiv",
-				"responseTime": "Antwortzeit"
+				"responseTime": "Antwortzeit",
+				"tags": "Tags"
 			}
 		},
 		"statusCode": {
@@ -254,6 +282,63 @@
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "Proxys",
+				"description": "Verwalten Sie Ihre Proxyserver für die Weiterleitung des HTTP-Monitoring-Datenverkehrs."
+			},
+			"fallback": {
+				"title": "Noch keine Proxys",
+				"description": "Leiten Sie die Checks von HTTP-Monitoren über einen Proxyserver. Sobald Sie einen Proxy erstellt haben, können Sie ihn bei einzelnen Monitoren auswählen oder in den Einstellungen als globalen Standard festlegen.",
+				"actionButton": "Proxy erstellen"
+			},
+			"form": {
+				"name": {
+					"title": "Proxy-Name",
+					"description": "Ein aussagekräftiger Name zur Identifizierung dieses Proxys",
+					"optionName": "Proxy-Name",
+					"placeholder": "Mein Proxy"
+				},
+				"server": {
+					"title": "Proxyserver",
+					"description": "Wo der Proxyserver erreichbar ist. Legen Sie das Protokoll fest, mit dem Checkmate sich verbindet, sowie Hostname oder IP-Adresse und den Port, auf dem er lauscht.",
+					"option": {
+						"protocol": {
+							"label": "Protokoll"
+						},
+						"host": {
+							"label": "Hostname / IP-Adresse",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "Port"
+						}
+					}
+				},
+				"auth": {
+					"title": "Authentifizierung",
+					"description": "Optional. Nur erforderlich, wenn der Proxyserver eine Basic-Authentifizierung verlangt.",
+					"option": {
+						"username": {
+							"label": "Benutzername",
+							"placeholder": "Proxy-Benutzername",
+							"labelSet": "Benutzername ist festgelegt. Klicken Sie auf Zurücksetzen, um ihn zu ändern."
+						},
+						"password": {
+							"label": "Passwort",
+							"labelSet": "Passwort ist festgelegt. Klicken Sie auf Zurücksetzen, um es zu ändern."
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "Protokoll",
+					"host": "Host",
+					"port": "Port"
+				}
+			}
+		},
 		"notFound": {
 			"title": "Oh nein! Sie haben Ihr Sushi fallen lassen!",
 			"subtitle": "Entweder existiert die URL nicht oder Sie haben keinen Zugriff darauf."
@@ -477,6 +562,7 @@
 					"activeFor": "Aktiv seit",
 					"checkingEvery": "Check alle {{interval}}",
 					"certificateExpiry": "Zertifikatablauf",
+					"domainExpiry": "Domainablauf",
 					"lastCheck": "Letzter Check",
 					"lastResponseTime": "Letzte Antwortzeit",
 					"serviceIsDown": "Dienst ist nicht erreichbar"
@@ -522,6 +608,13 @@
 				"advanced": {
 					"description": "Optionale Einstellungen für erweiterte Anwendungsfälle",
 					"option": {
+						"method": {
+							"label": "Anfragemethode",
+							"description": {
+								"GET": "GET ruft die vollständige Antwort einschließlich des Bodys ab. Erweiterter Abgleich wird vollständig unterstützt",
+								"HEAD": "HEAD ruft nur die Antwort-Header ab, um die Last auf dem Ziel zu verringern. Unterstützt den Abgleich von Statuscodes, aber keinen erweiterten Abgleich, da kein Body vorhanden ist."
+							}
+						},
 						"advancedMatching": {
 							"label": "Erweiterten Abgleich verwenden"
 						},
@@ -537,6 +630,10 @@
 							"equal": "Gleich",
 							"include": "Enthält",
 							"regex": "Regex"
+						},
+						"customUpCodes": {
+							"label": "Akzeptierte Statuscodes",
+							"description": "Fügen Sie Nicht-2xx-Codes hinzu, die ebenfalls als erfolgreich gelten sollen."
 						}
 					},
 					"title": "Erweiterte Einstellungen"
@@ -570,6 +667,9 @@
 					"title": "Prüffrequenz"
 				},
 				"general": {
+					"url": {
+						"alert": "Künftige Checks verwenden die neue URL. Die bisherigen Daten dieses Monitors bleiben erhalten, wurden aber über die alte URL erfasst."
+					},
 					"option": {
 						"host": {
 							"label": "Host",
@@ -586,6 +686,24 @@
 						"url": {
 							"label": "URL",
 							"placeholder": "https://www.google.com"
+						},
+						"proxyMode": {
+							"label": "Proxy",
+							"value": {
+								"inheritDirect": "Standard (direkte Verbindung)",
+								"inheritGlobal": "Standard ({{name}})",
+								"none": "Nie einen Proxy verwenden",
+								"custom": "Benutzerdefinierter Proxy"
+							},
+							"description": {
+								"inheritDirect": "Kein globaler Proxy konfiguriert, Verbindung erfolgt direkt. Wird später ein globaler Proxy konfiguriert, verwendet dieser Monitor ihn.",
+								"inheritGlobal": "Globale Proxy-Einstellung verwenden",
+								"none": "Verbindet sich immer direkt, auch wenn später ein globaler Proxy aktiviert wird.",
+								"custom": "Leitet die Checks dieses Monitors über einen bestimmten Proxy. Überschreibt den globalen Proxy"
+							}
+						},
+						"proxy": {
+							"label": "Proxyserver"
 						},
 						"game": {
 							"label": "Zu überwachende URL",
@@ -672,6 +790,10 @@
 				"notifications": {
 					"description": "Wählen Sie die Benachrichtigungskanäle aus, die Sie verwenden möchten",
 					"title": "Benachrichtigungen"
+				},
+				"tags": {
+					"description": "Wählen Sie die Tags aus, die Sie diesem Monitor zuweisen möchten",
+					"title": "Tags"
 				},
 				"type": {
 					"description": "Wählen Sie die Art der durchzuführenden Prüfung",
@@ -906,6 +1028,7 @@
 					"disk": "Festplattenauslastung",
 					"netBytesRecv": "{{name}} - Empfangene Bytes",
 					"netBytesSent": "{{name}} - Gesendete Bytes",
+					"loopbackOnlyNotice": "Capture sieht nur Container-Netzwerkschnittstellen, und keine davon überträgt echten Datenverkehr. Das ist normal, wenn Capture in einem Container läuft, der nur seinen eigenen Netzwerk-Namespace sehen kann — Schnittstellen mit hostähnlichen Namen (eth0, ens3) sind die virtuellen Schnittstellen des Containers, nicht die des Hosts. Führen Sie Capture direkt auf dem Host aus, um die echte Netzwerkaktivität zu sehen.",
 					"temp": "CPU-Temperatur"
 				}
 			},
@@ -958,6 +1081,37 @@
 				"description": "Verfolgen Sie die Serverleistung, identifizieren Sie Engpässe und gewährleisten Sie Zuverlässigkeit mit Echtzeit-Infrastrukturüberwachung."
 			}
 		},
+		"tags": {
+			"header": {
+				"title": "Tags",
+				"description": "Organisieren Sie Ihre Monitore mit Tags"
+			},
+			"fallback": {
+				"title": "Noch keine Tags",
+				"description": "Organisieren Sie Ihre Monitore mit Tags. Sobald Sie ein Tag erstellt und einem Monitor zugewiesen haben, können Sie in der gesamten App nach diesem Tag filtern und hier die Tag-Details sehen.",
+				"actionButton": "Tag erstellen"
+			},
+			"table": {
+				"headers": {
+					"color": "Farbe",
+					"appearance": "Erscheinungsbild"
+				}
+			},
+			"form": {
+				"name": {
+					"title": "Tag-Name",
+					"description": "Wählen Sie einen Namen für Ihr Tag",
+					"optionName": "Tag-Name",
+					"placeholder": "z. B. Gruppe 1"
+				},
+				"color": {
+					"title": "Tag-Farbe",
+					"description": "Wählen Sie eine Farbe für Ihr Tag",
+					"optionName": "Tag-Farbe",
+					"placeholder": "z. B. #13715B"
+				}
+			}
+		},
 		"logs": {
 			"fallback": {
 				"title": "Noch keine Protokolle",
@@ -971,6 +1125,8 @@
 			"logLevelSelect": {
 				"label": "Log-Level"
 			},
+			"workers": "Worker",
+			"workersExplainers": "Zeigt die Worker-Prozesse. Worker-IDs sind gekürzt, bewegen Sie den Mauszeiger darüber, um die vollständige ID zu sehen",
 			"jobQueue": "Job-Warteschlange",
 			"jobQueueExplainer": "<highlight>Hervorgehobene Zeilen</highlight> sind Jobs, die derzeit von einem Worker verarbeitet werden.",
 			"failedJobs": "Fehlgeschlagene Jobs",
@@ -991,6 +1147,26 @@
 					"totalHeapSize": "Gesamte Heap-Größe",
 					"osMemoryLimit": "OS-Speicherlimit"
 				},
+				"mongoDBStats": {
+					"readyState": "Verbindungsstatus",
+					"readsPerSecond": "Lesevorgänge/s",
+					"insertsPerSecond": "Einfügungen/s",
+					"updatesPerSecond": "Aktualisierungen/s",
+					"deletesPerSecond": "Löschungen/s",
+					"writesPerSecond": "Schreibvorgänge gesamt/s",
+					"host": "Host",
+					"port": "Port",
+					"dbName": "Datenbankname",
+					"storageSize": "Speichergröße"
+				},
+				"mongoDBCollectionStats": {
+					"documents": "Dokumente: {{count}}",
+					"bucketCount": "Bucket-Anzahl: {{count}}",
+					"storageSize": "Speichergröße: {{size}}",
+					"indexSize": "Indexgröße: {{size}}",
+					"totalSize": "Gesamtgröße: {{size}}",
+					"dbUsageTooltip": "{{percentage}} % des DB-Speichers"
+				},
 				"gauges": {
 					"heapAllocation": "Heap-Zuweisung",
 					"heapUsage": "Heap-Nutzung",
@@ -1010,17 +1186,32 @@
 					"memoryCpu": {
 						"title": "Speicher & CPU",
 						"description": "Wie der Prozess seinen zugewiesenen Speicher und die Host-CPU nutzt."
+					},
+					"mongoDBStats": {
+						"title": "MongoDB-Statistiken",
+						"description": "Momentaufnahme der MongoDB-Metriken"
+					},
+					"mongoDBCollectionStats": {
+						"title": "MongoDB-Collection-Statistiken",
+						"description": "Statistiken der MongoDB-Collections"
 					}
 				}
 			},
 			"table": {
 				"headers": {
+					"host": "Host",
+					"processId": "Prozess-ID",
+					"workerId": "Worker-ID",
+					"workerMode": "Worker-Modus",
+					"lastSeenAt": "Zuletzt gesehen am",
 					"timestamp": "Zeitstempel",
 					"level": "Stufe",
 					"service": "Dienst",
 					"monitorId": "Monitor-ID",
 					"runCount": "Ausführungen",
 					"failCount": "Fehlerzahl",
+					"nextScheduledAt": "Nächste Ausführung am",
+					"lockedBy": "Gesperrt von",
 					"lastFinishedAt": "Zuletzt abgeschlossen am",
 					"lastFailedAt": "Letzter Fehler am",
 					"failReason": "Fehlergrund",
@@ -1147,7 +1338,22 @@
 				"type": {
 					"description": "Wählen Sie den Typ des zu erstellenden Benachrichtigungskanals.",
 					"optionType": "Typ",
-					"title": "Kanaltyp"
+					"title": "Kanaltyp",
+					"value": {
+						"email": "E-Mail",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"signalgrid": "Signalgrid",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "Telegram-Konfiguration",
@@ -1165,6 +1371,14 @@
 					"optionUserKey": "Benutzerschlüssel",
 					"placeholderUserKey": "Benutzerschlüssel eingeben"
 				},
+				"signalgrid": {
+					"title": "Signalgrid-Konfiguration",
+					"description": "Konfigurieren Sie Signalgrid, um Push-Benachrichtigungen auf Ihren Geräten zu erhalten.",
+					"optionClientKey": "Client-Schlüssel",
+					"placeholderClientKey": "Ihr Signalgrid-Client-Schlüssel",
+					"optionChannel": "Kanal",
+					"placeholderChannel": "Ihr Signalgrid-Kanal"
+				},
 				"twilio": {
 					"title": "Twilio-Konfiguration",
 					"description": "Geben Sie Ihre Twilio-Kontoanmeldeinformationen ein, um SMS zu senden.",
@@ -1176,6 +1390,14 @@
 					"placeholderFromNumber": "+1234567890",
 					"optionToNumber": "Empfängernummer",
 					"placeholderToNumber": "+1234567890"
+				},
+				"ntfy": {
+					"title": "ntfy-Konfiguration",
+					"description": "Konfigurieren Sie einen ntfy-Server und ein Topic für Push-Benachrichtigungen.",
+					"optionServerUrl": "Server-URL",
+					"placeholderServerUrl": "https://ntfy.sh",
+					"optionTopic": "Topic",
+					"placeholderTopic": "checkmate-alerts"
 				}
 			},
 			"table": {
@@ -1232,7 +1454,8 @@
 				"integrations": "Integrationen",
 				"tags": "Tags",
 				"proxies": "Proxys",
-				"data": "Daten"
+				"data": "Daten",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1266,6 +1489,22 @@
 							"label": "Diagrammtyp",
 							"histogram": "Histogramm",
 							"heatmap": "Heatmap"
+						}
+					}
+				},
+				"globalProxy": {
+					"title": "Globaler Proxy",
+					"description": "Leitet Monitoring-Checks standardmäßig über einen Proxy. Gilt für alle HTTP-Monitore mit der Proxy-Einstellung \"Standard\"; Monitore mit \"Nie einen Proxy verwenden\" oder einem benutzerdefinierten Proxy sind nicht betroffen.",
+					"option": {
+						"enabled": {
+							"label": "Globalen Proxy verwenden"
+						},
+						"proxy": {
+							"label": "Globalen Proxy auswählen"
+						},
+						"empty": {
+							"text": "Noch keine Proxys konfiguriert.",
+							"link": "Erstellen Sie zuerst einen"
 						}
 					}
 				},
@@ -1427,7 +1666,159 @@
 				},
 				"importExportMonitors": {
 					"title": "Monitore importieren / exportieren",
-					"description": "Importieren oder exportieren Sie Ihre Monitor-Daten als JSON-Datei zur Sicherung oder Übertragung."
+					"description": "Importieren oder exportieren Sie Ihre Monitor-Daten als JSON-Datei zur Sicherung oder Übertragung.",
+					"backupNotice": "Diese JSON-Datei enthält nur Ihre Monitore und ist daher keine vollständige Sicherung. Um Ihre Checkmate-Daten zu sichern oder wiederherzustellen, verwenden Sie Checkmate Connect.",
+					"connectTabLink": "Tab Checkmate Connect öffnen",
+					"connectSiteLink": "Website von Checkmate Connect besuchen"
+				},
+				"connect": {
+					"superadminOnly": "Nur ein Superadmin kann diesen Server registrieren, den Fernzugriff ändern, Sicherungen ausführen oder wiederherstellen oder die Registrierung entfernen. Melden Sie sich ab und wieder an, wenn sich Ihre Rolle kürzlich geändert hat.",
+					"clickToConfirm": "Zum Bestätigen erneut klicken",
+					"status": {
+						"title": "Status",
+						"description": "Verbindungsstatus dieser Installation.",
+						"enrolled": "Registriert",
+						"notEnrolled": "Nicht registriert",
+						"connected": "Tunnel verbunden",
+						"disconnected": "Tunnel getrennt",
+						"connecting": "Tunnel wird verbunden",
+						"remoteAccessOff": "Fernzugriff aus",
+						"agentId": "Agent-ID",
+						"lastConnected": "Zuletzt verbunden"
+					},
+					"enroll": {
+						"title": "Installation registrieren",
+						"description": "Fügen Sie den Zugangsdatenblock aus Ihrem Checkmate Connect-Dashboard ein. Die Zugangsdaten werden verschlüsselt in der Datenbank dieser Installation gespeichert und verlassen sie nur zur Authentifizierung bei Checkmate Connect.",
+						"button": "Registrieren"
+					},
+					"remoteAccess": {
+						"title": "Fernzugriff",
+						"description": "Hält einen ausgehenden Tunnel offen, damit Sie diese Installation über Ihre Connect-Adresse erreichen. Es werden keine eingehenden Ports geöffnet."
+					},
+					"tooltips": {
+						"enroll": "Diesen Server mit Ihrem Konto verbinden",
+						"unenroll": "Diesen Server von Connect trennen",
+						"generateKey": "Schlüssel erstellen, der Ihre Sicherungen entsperrt",
+						"lostKey": "Mit einem neuen Schlüssel neu beginnen",
+						"runFull": "Jetzt die gesamte Datenbank sichern",
+						"runConfig": "Alles außer dem Prüfverlauf sichern",
+						"importKey": "Schlüssel Ihres ursprünglichen Servers verwenden",
+						"useKey": "Diesen Schlüssel mit Ihren Sicherungen prüfen",
+						"replaceKey": "Zu einem anderen Wiederherstellungsschlüssel wechseln",
+						"restore": "Daten dieses Servers durch diese Sicherung ersetzen"
+					},
+					"backup": {
+						"title": "Cloud-Sicherungen",
+						"description": "Verschlüsselte Sicherungen der Datenbank dieser Installation, hochgeladen zu Checkmate Connect. Die Daten werden vor dem Hochladen hier verschlüsselt; in der Cloud wird nur Chiffretext gespeichert.",
+						"needsKey": "Richten Sie unten einen Wiederherstellungsschlüssel ein, um mit der Sicherung zu beginnen.",
+						"generateKey": "Wiederherstellungsschlüssel erstellen",
+						"existingBackups": "Für dieses Konto gibt es bereits Cloud-Sicherungen. Geben Sie den Wiederherstellungsschlüssel Ihres ursprünglichen Servers ein, um sie wiederherzustellen.",
+						"lostKey": "Ich habe meinen Schlüssel verloren",
+						"lostKeyWarning": "Ihre vorhandenen Cloud-Sicherungen können ohne den ursprünglichen Schlüssel nicht wiederhergestellt werden. Sie werden nach Ihrer ersten Sicherung mit einem neuen Schlüssel noch 30 Tage aufbewahrt, sodass Sie zurückwechseln können, falls Sie den ursprünglichen finden.",
+						"importKey": "Ich habe bereits einen Wiederherstellungsschlüssel",
+						"importKeyHelp": "Fügen Sie den 64-stelligen Schlüssel Ihres ursprünglichen Servers ein. Checkmate entschlüsselt eine Ihrer Cloud-Sicherungen, um den Schlüssel vor dem Speichern zu prüfen.",
+						"replaceKey": "Anderen Wiederherstellungsschlüssel verwenden",
+						"replaceKeyHelp": "Fügen Sie den 64-stelligen Schlüssel ein, den Sie stattdessen verwenden möchten. Checkmate entschlüsselt Ihre Cloud-Sicherungen, um den Schlüssel zu prüfen, und behält Ihren aktuellen Schlüssel, wenn sich keine davon öffnen lässt.",
+						"replaceKeyWarning": "Mit Ihrem aktuellen Schlüssel erstellte Sicherungen können nach dem Wechsel nicht wiederhergestellt werden.",
+						"importKeyConfirm": "Diesen Schlüssel verwenden",
+						"verifyOutcome": {
+							"ok": "Wiederherstellungsschlüssel gespeichert",
+							"wrong-key": "Dieser Schlüssel entschlüsselt Ihre Cloud-Sicherungen nicht",
+							"no-backups": "Keine Cloud-Sicherungen, mit denen dieser Schlüssel geprüft werden kann",
+							"failed": "Der Schlüssel konnte nicht geprüft werden: {{error}}"
+						},
+						"keyTitle": "Wiederherstellungsschlüssel",
+						"keyWarning": "Bewahren Sie diesen Schlüssel an einem sicheren Ort getrennt von diesem Server auf. Er wird nur einmal angezeigt. Wenn Sie ihn verlieren, können Ihre Cloud-Sicherungen nicht wiederhergestellt werden, und niemand kann ihn für Sie wiederherstellen.",
+						"keyCopy": "Schlüssel kopieren",
+						"keyLabel": "Ihr Wiederherstellungsschlüssel",
+						"keyContinue": "Ich habe ihn gespeichert",
+						"keyDone": "Ich habe den Schlüssel aufbewahrt",
+						"keyShowAgain": "Schlüssel erneut anzeigen",
+						"keyVerifyHelp": "Öffnen Sie den Ort, an dem Sie den Schlüssel gespeichert haben, und fügen Sie ihn hier ein, um zu bestätigen, dass Sie eine funktionierende Kopie haben.",
+						"keyPlaceholder": "Wiederherstellungsschlüssel",
+						"keyAcknowledge": "Mir ist bewusst, dass ich meine Cloud-Sicherungen nicht wiederherstellen kann, wenn ich diesen Schlüssel verliere.",
+						"keyMismatch": "Das stimmt nicht mit Ihrem Wiederherstellungsschlüssel überein. Zeigen Sie den Schlüssel erneut an und speichern Sie eine neue Kopie.",
+						"keyAckRequired": "Aktivieren Sie das Kontrollkästchen, um zu bestätigen, dass Sie dies verstanden haben.",
+						"toolsMissing": "Cloud-Sicherungen benötigen mongodump und mongorestore, die auf diesem Server nicht gefunden wurden.",
+						"toolsMac": "Unter macOS ausführen: brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "MongoDB Database Tools für Linux herunterladen",
+						"toolsPath": "Wenn sie an einem anderen Ort installiert sind, setzen Sie CONNECT_MONGODUMP_BIN und CONNECT_MONGORESTORE_BIN. Diese Meldung verschwindet innerhalb einer Minute, nachdem die Tools gefunden wurden.",
+						"runFull": "Jetzt sichern",
+						"runConfig": "Nur Konfiguration sichern",
+						"kind": {
+							"full": "Gesamte Datenbank",
+							"config": "Nur Konfiguration"
+						},
+						"progress": {
+							"idle": "Inaktiv",
+							"finished": {
+								"backup": {
+									"ok": "Sicherung abgeschlossen",
+									"failed": "Sicherung fehlgeschlagen"
+								},
+								"restore": {
+									"ok": "Wiederherstellung abgeschlossen",
+									"failed": "Wiederherstellung fehlgeschlagen"
+								},
+								"verify": {
+									"ok": "Wiederherstellungsschlüssel gespeichert",
+									"failed": "Schlüsselprüfung fehlgeschlagen"
+								}
+							},
+							"queued": {
+								"backup": "Sicherungsauftrag in Warteschlange",
+								"restore": "Wiederherstellungsauftrag in Warteschlange"
+							},
+							"checking": "Ihr Schlüssel wird geprüft…",
+							"restore": {
+								"downloading": "Schritt 1 von 3: Sicherung wird heruntergeladen",
+								"decrypting": "Schritt 2 von 3: Sicherung wird entschlüsselt",
+								"restoring": "Schritt 3 von 3: Ihre Datenbank wird wiederhergestellt"
+							},
+							"verify": {
+								"downloading": "Schlüssel wird geprüft: Sicherung {{attempt}} von {{attempts}} wird heruntergeladen",
+								"decrypting": "Schlüssel wird geprüft: Sicherung {{attempt}} von {{attempts}} wird entschlüsselt"
+							},
+							"backup": {
+								"dumping": "Schritt 1 von 3: Ihre Datenbank wird gelesen und verschlüsselt",
+								"uploading": "Schritt 2 von 3: verschlüsselte Sicherung wird hochgeladen",
+								"saving": "Schritt 3 von 3: Sicherung wird in Ihrem Konto gespeichert"
+							}
+						},
+						"progressWithPercent": "{{step}} ({{percent}} %)",
+						"progressWithSize": "{{step}} ({{size}})",
+						"lastBackupSucceeded": "Letzte Sicherung ({{date}}): erfolgreich",
+						"lastBackupSucceededSize": "Letzte Sicherung ({{date}}): erfolgreich · {{size}}",
+						"lastBackupFailed": "Letzte Sicherung ({{date}}): fehlgeschlagen — {{error}}",
+						"lastRestoreSucceeded": "Letzte Wiederherstellung ({{date}}): erfolgreich",
+						"lastRestoreFailed": "Letzte Wiederherstellung ({{date}}): fehlgeschlagen — {{error}}",
+						"restore": {
+							"title": "Sicherung wiederherstellen",
+							"description": "Lädt die ausgewählte Sicherung herunter, prüft und entschlüsselt sie auf diesem Server und ersetzt dann die aktuelle Datenbank.",
+							"empty": "Noch keine geprüften Cloud-Sicherungen.",
+							"button": "Wiederherstellen",
+							"confirmTitle": "Sicherung vom {{date}} ({{kind}}) wiederherstellen?",
+							"confirmBody": "Dadurch wird die aktuelle Datenbank ersetzt. Dies kann nicht rückgängig gemacht werden. Auch Benutzerkonten werden ersetzt, melden Sie sich danach also mit einem Konto aus der Sicherung an.",
+							"differentKey": "Anderer Schlüssel",
+							"expires": "Wird nach dem {{date}} entfernt"
+						}
+					},
+					"schedule": {
+						"title": "Geplante Sicherungen",
+						"description": "Führt automatisch eine verschlüsselte Cloud-Sicherung aus. Die erste startet, sobald Sie dies aktivieren. Eine geplante Sicherung, die fällig wird, während eine andere Sicherung oder Wiederherstellung läuft, wird bis zum nächsten Intervall übersprungen.",
+						"interval": "Sichern alle",
+						"kind": "Sicherungstyp"
+					},
+					"recoveryKey": {
+						"title": "Wiederherstellungsschlüssel",
+						"description": "Verschlüsselt Ihre Cloud-Sicherungen auf diesem Server. Er verlässt diesen Server nie, und ohne ihn können Ihre Sicherungen nicht wiederhergestellt werden.",
+						"set": "Auf diesem Server ist ein Wiederherstellungsschlüssel festgelegt."
+					},
+					"unenroll": {
+						"title": "Registrierung entfernen",
+						"description": "Trennt diese Installation von Checkmate Connect und löscht die lokalen Zugangsdaten. Die lokale Überwachung ist nicht betroffen.",
+						"button": "Registrierung entfernen"
+					}
 				},
 				"about": {
 					"title": "Über",
@@ -1456,6 +1847,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "Statusseite erfolgreich gelöscht",
+			"rangeSelectorAria": "Verlaufszeitraum",
+			"rangeExceedsRetention": "Die Aufbewahrung des Check-Verlaufs ist auf {{days}} Tage eingestellt. Erhöhen Sie die Aufbewahrungsdauer für mehr Daten.",
+			"range": {
+				"latest": "Aktuell",
+				"30d": "30 Tage",
+				"60d": "60 Tage",
+				"90d": "90 Tage"
+			},
 			"fallback": {
 				"title": "Noch keine Statusseiten",
 				"actionButton": "Statusseite erstellen!",
@@ -1483,6 +1882,9 @@
 					"avg": "Ø {{value}}",
 					"downTooltip": "Ausgefallen",
 					"heatmapAria": "Heatmap der Antwortzeit",
+					"dayAria": "{{date}}, {{uptime}} Verfügbarkeit",
+					"dayUptime": "Verfügbarkeit: {{uptime}} ({{upChecks}}/{{totalChecks}} Checks)",
+					"dayAvgResponse": "Ø Antwortzeit: {{value}}",
 					"max": "max. {{value}}"
 				},
 				"status": {
@@ -1494,6 +1896,10 @@
 					"up": "Betriebsbereit"
 				},
 				"incidents": {
+					"modalTitle": "Vorfälle am {{date}}",
+					"loading": "Wird geladen...",
+					"noIncidents": "Für diesen Tag wurden keine Vorfälle gemeldet.",
+					"ongoing": "Andauernd",
 					"errorLoading": "Vorfälle konnten nicht geladen werden."
 				}
 			},
@@ -1552,6 +1958,11 @@
 						"url": {
 							"label": "Ihre Statusseiten-Adresse",
 							"placeholder": "my-status-page"
+						},
+						"customDomain": {
+							"label": "Eigene Domain",
+							"placeholder": "status.example.com",
+							"helper": "Optional. Richten Sie einen DNS-Eintrag auf diese Checkmate-Instanz, um die Statusseite unter Ihrer eigenen Domain bereitzustellen."
 						}
 					}
 				},
@@ -1618,6 +2029,10 @@
 							"description": "Serifenüberschriften und feine Trennlinien. Markant und ruhig.",
 							"name": "Redaktionell"
 						},
+						"minimal": {
+							"name": "Minimal",
+							"description": "Flach, fokussiert und kompakt – nur das Wesentliche."
+						},
 						"modern": {
 							"description": "SaaS-Niveau mit pulsierendem Statuspunkt und sanft verblassenden Karten.",
 							"name": "Modern"
@@ -1634,11 +2049,24 @@
 					"dark": "Nur dunkel",
 					"label": "Theme-Modus",
 					"light": "Nur hell"
+				},
+				"customCSS": {
+					"title": "Benutzerdefiniertes CSS",
+					"description": "Fügen Sie benutzerdefiniertes CSS hinzu, um das Aussehen Ihrer öffentlichen Statusseite anzupassen.",
+					"option": {
+						"customCSS": {
+							"label": "Benutzerdefiniertes CSS",
+							"placeholder": "footer { display: none; }"
+						}
+					}
 				}
 			},
 			"header": {
 				"title": "Statusseiten",
 				"description": "Veröffentlichen Sie öffentliche Seiten, die Kunden und Stakeholdern Echtzeit-Verfügbarkeit und Vorfallsverlauf zeigen."
+			},
+			"preview": {
+				"title": "Statusseiten-Vorschau"
 			},
 			"editorial": {
 				"allUp": "Alle Systeme funktionieren normal.",
@@ -1652,11 +2080,13 @@
 			"filters": {
 				"search": {
 					"placeholder": "Monitore suchen..."
-				}
+				},
+				"activeTags": "Aktive Tags"
 			},
 			"table": {
 				"headers": {
-					"responseTime": "Antwortzeit"
+					"responseTime": "Antwortzeit",
+					"uptime": "Verfügbarkeit %"
 				}
 			},
 			"fallback": {
