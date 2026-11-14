@@ -567,6 +567,14 @@
 					"resumed_other": "{{count}} monitors resumed",
 					"partialFailure": "{{successCount}} monitors updated, but {{failedCount}} failed to sync with the job queue"
 				},
+				"bulkDelete": {
+					"title_one": "Delete {{count}} monitor?",
+					"title_other": "Delete {{count}} monitors?",
+					"deleted_one": "{{count}} monitor deleted",
+					"deleted_other": "{{count}} monitors deleted",
+					"partialFailure": "{{successCount}} monitors deleted, but cleanup failed for {{failedCount}}",
+					"hidden": "Hidden by the current search or filter"
+				},
 				"statBoxes": {
 					"activeFor": "Active for",
 					"checkingEvery": "Checking every {{interval}}",

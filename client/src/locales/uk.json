@@ -509,6 +509,14 @@
 					"alreadyRunning_one": "Вибраний монітор уже запущено",
 					"alreadyRunning_other": "Всі вибрані монітори уже запущено",
 					"partialFailure": "Оновлено {{successCount}} моніторів, але {{failedCount}} не вдалося синхронізувати з чергою завдань"
+				},
+				"bulkDelete": {
+					"title_one": "Видалити {{count}} монітор?",
+					"title_other": "Видалити {{count}} моніторів?",
+					"deleted_one": "{{count}} монітор видалено",
+					"deleted_other": "{{count}} моніторів видалено",
+					"partialFailure": "Видалено {{successCount}} моніторів, але очищення не вдалося для {{failedCount}}",
+					"hidden": "Приховано поточним пошуком або фільтром"
 				}
 			}
 		},

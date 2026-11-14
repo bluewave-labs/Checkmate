@@ -484,6 +484,14 @@
 					"resumed_other": "{{count}} monitor ripresi",
 					"partialFailure": "{{successCount}} monitor aggiornati, ma {{failedCount}} non sono riusciti a sincronizzarsi con la coda dei job"
 				},
+				"bulkDelete": {
+					"title_one": "Eliminare {{count}} monitor?",
+					"title_other": "Eliminare {{count}} monitor?",
+					"deleted_one": "{{count}} monitor eliminato",
+					"deleted_other": "{{count}} monitor eliminati",
+					"partialFailure": "{{successCount}} monitor eliminati, ma la pulizia non è riuscita per {{failedCount}}",
+					"hidden": "Nascosto dalla ricerca o dal filtro attuale"
+				},
 				"statBoxes": {
 					"activeFor": "Attivo da",
 					"certificateExpiry": "Scadenza certificato",

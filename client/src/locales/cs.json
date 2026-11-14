@@ -509,6 +509,14 @@
 					"alreadyRunning_one": "Vybraný monitor již běží",
 					"alreadyRunning_other": "Všechny vybrané monitory již běží",
 					"partialFailure": "Bylo aktualizováno {{successCount}} monitorů, ale u {{failedCount}} se nezdařila synchronizace s frontou úloh"
+				},
+				"bulkDelete": {
+					"title_one": "Smazat {{count}} monitor?",
+					"title_other": "Smazat {{count}} monitorů?",
+					"deleted_one": "Smazán {{count}} monitor",
+					"deleted_other": "Smazáno {{count}} monitorů",
+					"partialFailure": "Smazáno {{successCount}} monitorů, ale čištění selhalo u {{failedCount}}",
+					"hidden": "Skryto aktuálním hledáním nebo filtrem"
 				}
 			}
 		},

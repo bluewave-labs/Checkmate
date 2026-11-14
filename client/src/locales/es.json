@@ -509,6 +509,14 @@
 					"alreadyRunning_one": "El monitor seleccionado ya se está ejecutando",
 					"alreadyRunning_other": "Todos los monitores seleccionados ya se están ejecutando",
 					"partialFailure": "Se actualizaron {{successCount}} monitores, pero {{failedCount}} fallaron al sincronizarse con la cola de trabajos"
+				},
+				"bulkDelete": {
+					"title_one": "¿Eliminar {{count}} monitor?",
+					"title_other": "¿Eliminar {{count}} monitores?",
+					"deleted_one": "{{count}} monitor eliminado",
+					"deleted_other": "{{count}} monitores eliminados",
+					"partialFailure": "Se eliminaron {{successCount}} monitores, pero la limpieza falló para {{failedCount}}",
+					"hidden": "Oculto por la búsqueda o el filtro actual"
 				}
 			}
 		},

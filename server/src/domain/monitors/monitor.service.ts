@@ -127,6 +127,7 @@ export interface IMonitorService {
 
 	// delete
 	deleteMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
+	bulkDeleteMonitors(args: { teamId: string; monitorIds: string[] }): Promise<{ deletedCount: number; failedCount: number }>;
 	deleteAllMonitors(args: { teamId: string }): Promise<number>;
 
 	// notifications
@@ -740,6 +741,36 @@ export class MonitorService implements IMonitorService {
 		await this.deleteMonitorChildren(monitor, teamId);
 		await this.scheduler.deleteJob(monitor);
 		return monitor;
+	};
+
+	bulkDeleteMonitors = async ({
+		teamId,
+		monitorIds,
+	}: {
+		teamId: string;
+		monitorIds: string[];
+	}): Promise<{ deletedCount: number; failedCount: number }> => {
+		const monitors = await this.monitorsRepository.deleteByIds(monitorIds, teamId);
+
+		const results = await Promise.allSettled(
+			monitors.map(async (monitor) => {
+				await this.deleteMonitorChildren(monitor, teamId);
+				await this.scheduler.deleteJob(monitor);
+			})
+		);
+
+		let failedCount = 0;
+		results.forEach((result, index) => {
+			if (result.status === "rejected") {
+				failedCount++;
+				this.logger.error(
+					{ err: result.reason, monitorId: monitors[index]?.id || "unknown" },
+					"Failed to clean up job or associated records for monitor during bulk delete"
+				);
+			}
+		});
+
+		return { deletedCount: monitors.length, failedCount };
 	};
 
 	deleteAllMonitors = async ({ teamId }: { teamId: string }): Promise<number> => {

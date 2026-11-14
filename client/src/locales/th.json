@@ -509,6 +509,14 @@
 					"alreadyRunning_one": "จอภาพที่เลือกกำลังทำงานอยู่แล้ว",
 					"alreadyRunning_other": "จอภาพที่เลือกทั้งหมดกำลังทำงานอยู่แล้ว",
 					"partialFailure": "อัปเดตมอนิเตอร์ {{successCount}} รายการแล้ว แต่ {{failedCount}} รายการไม่สามารถซิงค์กับคิวงานได้"
+				},
+				"bulkDelete": {
+					"title_one": "ลบมอนิเตอร์ {{count}} รายการ?",
+					"title_other": "ลบมอนิเตอร์ {{count}} รายการ?",
+					"deleted_one": "ลบมอนิเตอร์ {{count}} รายการแล้ว",
+					"deleted_other": "ลบมอนิเตอร์ {{count}} รายการแล้ว",
+					"partialFailure": "ลบมอนิเตอร์ {{successCount}} รายการแล้ว แต่การล้างข้อมูลล้มเหลว {{failedCount}} รายการ",
+					"hidden": "ถูกซ่อนโดยการค้นหาหรือตัวกรองปัจจุบัน"
 				}
 			}
 		},

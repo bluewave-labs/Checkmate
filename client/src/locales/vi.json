@@ -509,6 +509,14 @@
 					"alreadyRunning_one": "Màn hình đã chọn đã đang chạy",
 					"alreadyRunning_other": "Tất cả các màn hình đã chọn đã đang chạy",
 					"partialFailure": "Đã cập nhật {{successCount}} trình giám sát, nhưng {{failedCount}} trình giám sát không thể đồng bộ hóa với hàng đợi công việc"
+				},
+				"bulkDelete": {
+					"title_one": "Xóa {{count}} trình giám sát?",
+					"title_other": "Xóa {{count}} trình giám sát?",
+					"deleted_one": "Đã xóa {{count}} trình giám sát",
+					"deleted_other": "Đã xóa {{count}} trình giám sát",
+					"partialFailure": "Đã xóa {{successCount}} trình giám sát, nhưng dọn dẹp thất bại cho {{failedCount}}",
+					"hidden": "Bị ẩn bởi tìm kiếm hoặc bộ lọc hiện tại"
 				}
 			}
 		},

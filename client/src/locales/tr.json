@@ -509,6 +509,14 @@
 					"alreadyRunning_one": "Seçili monitör zaten çalışıyor",
 					"alreadyRunning_other": "Seçili tüm monitörler zaten çalışıyor",
 					"partialFailure": "{{successCount}} monitör güncellendi, ancak {{failedCount}} tanesi iş kuyruğuyla senkronize edilemedi"
+				},
+				"bulkDelete": {
+					"title_one": "{{count}} monitör silinsin mi?",
+					"title_other": "{{count}} monitör silinsin mi?",
+					"deleted_one": "{{count}} monitör silindi",
+					"deleted_other": "{{count}} monitör silindi",
+					"partialFailure": "{{successCount}} monitör silindi, ancak {{failedCount}} için temizleme başarısız oldu",
+					"hidden": "Mevcut arama veya filtre nedeniyle gizli"
 				}
 			}
 		},

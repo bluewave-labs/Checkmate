@@ -509,6 +509,14 @@
 					"resumed_one": "{{count}} monitor reprès",
 					"resumed_other": "{{count}} monitors represos",
 					"partialFailure": "S'han actualitzat {{successCount}} monitors, però {{failedCount}} han fallat en sincronitzar-se amb la cua de tasques"
+				},
+				"bulkDelete": {
+					"title_one": "Voleu eliminar {{count}} monitor?",
+					"title_other": "Voleu eliminar {{count}} monitors?",
+					"deleted_one": "S'ha eliminat {{count}} monitor",
+					"deleted_other": "S'han eliminat {{count}} monitors",
+					"partialFailure": "S'han eliminat {{successCount}} monitors, però la neteja ha fallat per a {{failedCount}}",
+					"hidden": "Amagat per la cerca o el filtre actual"
 				}
 			}
 		},

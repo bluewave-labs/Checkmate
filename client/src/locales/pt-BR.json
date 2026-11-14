@@ -567,6 +567,14 @@
 					"resumed_other": "{{count}} monitores retomados",
 					"partialFailure": "{{successCount}} monitores atualizados, mas {{failedCount}} falharam ao sincronizar com a fila de trabalhos"
 				},
+				"bulkDelete": {
+					"title_one": "Excluir {{count}} monitor?",
+					"title_other": "Excluir {{count}} monitores?",
+					"deleted_one": "{{count}} monitor excluído",
+					"deleted_other": "{{count}} monitores excluídos",
+					"partialFailure": "{{successCount}} monitores excluídos, mas a limpeza falhou para {{failedCount}}",
+					"hidden": "Oculto pela pesquisa ou filtro atual"
+				},
 				"statBoxes": {
 					"activeFor": "Ativo há",
 					"certificateExpiry": "Validade do certificado",

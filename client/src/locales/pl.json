@@ -480,6 +480,14 @@
 					"resumed_one": "{{count}} monitor(ów) wznowiony",
 					"resumed_other": "Wznowiono {{count}} monitor(ów)"
 				},
+				"bulkDelete": {
+					"title_one": "Usunąć {{count}} monitor?",
+					"title_other": "Usunąć {{count}} monitorów?",
+					"deleted_one": "Usunięto {{count}} monitor",
+					"deleted_other": "Usunięto {{count}} monitorów",
+					"partialFailure": "Usunięto {{successCount}} monitorów, ale czyszczenie nie powiodło się dla {{failedCount}}",
+					"hidden": "Ukryty przez bieżące wyszukiwanie lub filtr"
+				},
 				"monitorTypes": {
 					"optionDns": "DNS",
 					"optionHeartbeat": "Heartbeat",

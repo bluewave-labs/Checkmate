@@ -510,6 +510,14 @@
 					"alreadyRunning_one": "Der ausgewählte Monitor wird bereits ausgeführt",
 					"alreadyRunning_other": "Alle ausgewählten Monitore werden bereits ausgeführt",
 					"partialFailure": "{{successCount}} Monitore aktualisiert, aber {{failedCount}} konnten nicht mit der Job-Warteschlange synchronisiert werden"
+				},
+				"bulkDelete": {
+					"title_one": "{{count}} Monitor löschen?",
+					"title_other": "{{count}} Monitore löschen?",
+					"deleted_one": "{{count}} Monitor gelöscht",
+					"deleted_other": "{{count}} Monitore gelöscht",
+					"partialFailure": "{{successCount}} Monitore gelöscht, aber die Bereinigung ist für {{failedCount}} fehlgeschlagen",
+					"hidden": "Durch die aktuelle Suche oder den Filter ausgeblendet"
 				}
 			}
 		},
