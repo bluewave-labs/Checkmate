@@ -569,6 +569,7 @@
 				},
 				"statBoxes": {
 					"activeFor": "Ativo há",
+					"checkingEvery": "Verificando a cada {{interval}}",
 					"certificateExpiry": "Validade do certificado",
 					"domainExpiry": "Validade do domínio",
 					"lastCheck": "Última verificação",
@@ -664,6 +665,9 @@
 					"title": "Frequência de verificação"
 				},
 				"general": {
+					"url": {
+						"alert": "As próximas verificações usarão a nova URL. Os dados históricos deste monitor são mantidos, mas foram coletados da URL antiga."
+					},
 					"option": {
 						"dockerHost": {
 							"label": "Host Docker",
@@ -1954,6 +1958,13 @@
 				"uptime": {
 					"title": "Uptime",
 					"responseTime": "Tempo de resposta"
+				},
+				"incidents": {
+					"modalTitle": "Incidentes de {{date}}",
+					"loading": "Carregando...",
+					"noIncidents": "Nenhum incidente registrado neste dia.",
+					"ongoing": "Em andamento",
+					"errorLoading": "Falha ao carregar os incidentes."
 				}
 			},
 			"statusBar": {

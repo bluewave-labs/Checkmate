@@ -32,6 +32,8 @@
 			"pause": "Pausar",
 			"resume": "Reprendre",
 			"save": "Desar",
+			"next": "Següent",
+			"back": "Enrere",
 			"sendInvite": "Enviar convit",
 			"test": "Provar",
 			"testNotifications": "Provar notificacions",
@@ -47,19 +49,37 @@
 			"exportToJSON": "Exportar a JSON",
 			"importFromJSON": "Importar des de JSON",
 			"clearFilters": "Netejar filtres",
-			"removeUser": "Eliminar usuari"
+			"removeUser": "Eliminar usuari",
+			"removeItem": "Treu {{item}}"
 		},
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Temps de resposta mitjà",
+				"cpuUsage": "Ús de CPU",
 				"downtime": "Temps d'inactivitat",
 				"high": "Alt",
 				"low": "Baix",
+				"memoryUsage": "Ús de memòria",
+				"responseTime": "Temps de resposta",
+				"timingPhases": "Fases de la sol·licitud",
+				"totalResponseTime": "Temps de resposta total",
 				"uptime": "Temps en línia"
 			},
 			"histogram": {
 				"avg": "Mitjana: {{value}}",
-				"max": "Màx: {{value}}"
+				"max": "Màx: {{value}}",
+				"responseTime": "Temps de resposta: {{value}}",
+				"total": "Total: {{value}}",
+				"avgCpuUsage": "Ús mitjà de CPU: {{value}}",
+				"avgMemoryUsage": "Ús mitjà de memòria: {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "Sol·licitud",
+				"firstByte": "Primer byte",
+				"download": "Baixada"
 			}
 		},
 		"dialogs": {
@@ -74,10 +94,17 @@
 			"na": "N/D",
 			"resolved": "Resolt",
 			"responseTime": "Temps de resposta",
+			"state": "Estat",
+			"uptime": "Temps en funcionament",
+			"health": "Salut",
+			"restarts": "Reinicis",
 			"idle": "Inactiu",
 			"running": "En execució"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "Escriu per cercar"
+			},
 			"role": {
 				"option": {
 					"role": {
@@ -120,7 +147,8 @@
 				"url": "URL",
 				"interval": "Interval",
 				"active": "Actiu",
-				"responseTime": "Temps de resposta"
+				"responseTime": "Temps de resposta",
+				"tags": "Etiquetes"
 			}
 		},
 		"statusCode": {
@@ -250,6 +278,63 @@
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "Proxies",
+				"description": "Gestiona els teus servidors proxy per encaminar el trànsit de monitoratge HTTP."
+			},
+			"fallback": {
+				"title": "Encara no hi ha cap proxy",
+				"description": "Encamina les comprovacions dels monitors HTTP a través d'un servidor proxy. Un cop creat un proxy, el pots seleccionar en monitors concrets o definir-lo com a predeterminat global a Configuració.",
+				"actionButton": "Crear un proxy"
+			},
+			"form": {
+				"name": {
+					"title": "Nom del proxy",
+					"description": "Un nom descriptiu per identificar aquest proxy",
+					"optionName": "Nom del proxy",
+					"placeholder": "El meu proxy"
+				},
+				"server": {
+					"title": "Servidor proxy",
+					"description": "On es pot accedir al servidor proxy. Indica el protocol que fa servir Checkmate per connectar-s'hi, el seu nom d'host o adreça IP i el port on escolta.",
+					"option": {
+						"protocol": {
+							"label": "Protocol"
+						},
+						"host": {
+							"label": "Nom d'host / adreça IP",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "Port"
+						}
+					}
+				},
+				"auth": {
+					"title": "Autenticació",
+					"description": "Opcional. Només cal si el servidor proxy requereix autenticació bàsica.",
+					"option": {
+						"username": {
+							"label": "Nom d'usuari",
+							"placeholder": "Usuari del proxy",
+							"labelSet": "El nom d'usuari està definit. Fes clic a Restablir per canviar-lo."
+						},
+						"password": {
+							"label": "Contrasenya",
+							"labelSet": "La contrasenya està definida. Fes clic a Restablir per canviar-la."
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "Protocol",
+					"host": "Host",
+					"port": "Port"
+				}
+			}
+		},
 		"notFound": {
 			"title": "Oh no! Has deixat caure el teu sushi!",
 			"subtitle": "O bé la URL no existeix, o bé no tens accés."
@@ -471,7 +556,9 @@
 				},
 				"statBoxes": {
 					"activeFor": "Actiu des de",
+					"checkingEvery": "Comprovació cada {{interval}}",
 					"certificateExpiry": "Caducitat del certificat",
+					"domainExpiry": "Caducitat del domini",
 					"lastCheck": "Última comprovació",
 					"lastResponseTime": "Últim temps de resposta",
 					"serviceIsDown": "El servei és caigut"
@@ -517,6 +604,13 @@
 				"advanced": {
 					"description": "Configuració opcional per a casos d'ús avançats",
 					"option": {
+						"method": {
+							"label": "Mètode de sol·licitud",
+							"description": {
+								"GET": "GET obté la resposta completa, inclòs el cos. Admet completament la coincidència avançada",
+								"HEAD": "HEAD només obté les capçaleres de la resposta per reduir la càrrega a la destinació. Admet la coincidència per codi d'estat, però no la coincidència avançada, ja que no hi ha cos."
+							}
+						},
 						"advancedMatching": {
 							"label": "Usar coincidència avançada"
 						},
@@ -532,6 +626,10 @@
 							"equal": "Igual",
 							"include": "Inclou",
 							"regex": "Regex"
+						},
+						"customUpCodes": {
+							"label": "Codis d'estat acceptats",
+							"description": "Afegeix els codis que no siguin 2xx i que també s'hagin de considerar correctes."
 						}
 					},
 					"title": "Configuració avançada"
@@ -565,6 +663,9 @@
 					"title": "Freqüència de comprovació"
 				},
 				"general": {
+					"url": {
+						"alert": "Les properes comprovacions faran servir la nova URL. Les dades històriques d'aquest monitor es conserven, però es van recollir amb la URL anterior."
+					},
 					"option": {
 						"host": {
 							"label": "Host",
@@ -581,6 +682,24 @@
 						"url": {
 							"label": "URL",
 							"placeholder": "https://www.google.com"
+						},
+						"proxyMode": {
+							"label": "Proxy",
+							"value": {
+								"inheritDirect": "Predeterminat (connexió directa)",
+								"inheritGlobal": "Predeterminat ({{name}})",
+								"none": "No fer servir mai un proxy",
+								"custom": "Proxy personalitzat"
+							},
+							"description": {
+								"inheritDirect": "No hi ha cap proxy global configurat, es connecta directament. Si més endavant es configura un proxy global, aquest monitor el farà servir.",
+								"inheritGlobal": "Fes servir la configuració de proxy global",
+								"none": "Sempre es connecta directament, encara que més endavant s'activi un proxy global.",
+								"custom": "Encamina les comprovacions d'aquest monitor a través d'un proxy concret. Substitueix el proxy global"
+							}
+						},
+						"proxy": {
+							"label": "Servidor proxy"
 						},
 						"game": {
 							"label": "Escull el joc",
@@ -667,6 +786,10 @@
 				"notifications": {
 					"description": "Selecciona els canals de notificació que vols usar",
 					"title": "Notificacions"
+				},
+				"tags": {
+					"description": "Selecciona les etiquetes que vols aplicar a aquest monitor",
+					"title": "Etiquetes"
 				},
 				"type": {
 					"description": "Selecciona el tipus de comprovació a realitzar",
@@ -901,6 +1024,7 @@
 					"disk": "Ús de disc",
 					"netBytesRecv": "{{name}} - Bytes rebuts",
 					"netBytesSent": "{{name}} - Bytes enviats",
+					"loopbackOnlyNotice": "Capture només veu interfícies de xarxa del contenidor i cap no transporta trànsit real. És normal quan Capture s'executa dins d'un contenidor que només pot observar el seu propi espai de noms de xarxa — les interfícies amb noms de tipus host (eth0, ens3) són les interfícies virtuals del contenidor, no les de l'amfitrió. Executa Capture directament a l'amfitrió per veure l'activitat de xarxa real.",
 					"temp": "Temperatura"
 				}
 			},
@@ -953,6 +1077,37 @@
 				"description": "Fes un seguiment del rendiment del servidor, identifica colls d'ampolla i garanteix la fiabilitat amb monitoratge d'infraestructura en temps real."
 			}
 		},
+		"tags": {
+			"header": {
+				"title": "Etiquetes",
+				"description": "Organitza els teus monitors amb etiquetes"
+			},
+			"fallback": {
+				"title": "Encara no hi ha etiquetes",
+				"description": "Organitza els teus monitors amb etiquetes. Un cop creïs una etiqueta i l'assignis a un monitor, podràs filtrar-hi a tota l'aplicació i veure'n els detalls aquí.",
+				"actionButton": "Crear una etiqueta"
+			},
+			"table": {
+				"headers": {
+					"color": "Color",
+					"appearance": "Aparença"
+				}
+			},
+			"form": {
+				"name": {
+					"title": "Nom de l'etiqueta",
+					"description": "Tria un nom per a l'etiqueta",
+					"optionName": "Nom de l'etiqueta",
+					"placeholder": "p. ex. Grup 1"
+				},
+				"color": {
+					"title": "Color de l'etiqueta",
+					"description": "Tria un color per a l'etiqueta",
+					"optionName": "Color de l'etiqueta",
+					"placeholder": "p. ex. #13715B"
+				}
+			}
+		},
 		"logs": {
 			"fallback": {
 				"title": "Encara no hi ha registres",
@@ -970,6 +1125,8 @@
 			"logLevelSelect": {
 				"label": "Nivell de registre"
 			},
+			"workers": "Treballadors",
+			"workersExplainers": "Mostra els processos treballadors. Els ID dels treballadors estan truncats; passa el cursor per sobre per veure l'ID complet",
 			"jobQueue": "Cua de feines",
 			"jobQueueExplainer": "<highlight>Les files ressaltades</highlight> són feines que s'estan processant per un treballador.",
 			"failedJobs": "Feines fallides",
@@ -991,6 +1148,14 @@
 					"memoryCpu": {
 						"title": "Memòria i CPU",
 						"description": "Com el procés usa la seva memòria assignada i la CPU de l'amfitrió."
+					},
+					"mongoDBStats": {
+						"title": "Estadístiques de MongoDB",
+						"description": "Instantània de les mètriques de MongoDB"
+					},
+					"mongoDBCollectionStats": {
+						"title": "Estadístiques de col·leccions de MongoDB",
+						"description": "Estadístiques de les col·leccions de MongoDB"
 					}
 				},
 				"stats": {
@@ -999,6 +1164,26 @@
 					"usedHeapSize": "Mida del heap usat",
 					"totalHeapSize": "Mida total del heap",
 					"osMemoryLimit": "Límit de memòria del SO"
+				},
+				"mongoDBStats": {
+					"readyState": "Estat de connexió",
+					"readsPerSecond": "Lectures/s",
+					"insertsPerSecond": "Insercions/s",
+					"updatesPerSecond": "Actualitzacions/s",
+					"deletesPerSecond": "Eliminacions/s",
+					"writesPerSecond": "Escriptures totals/s",
+					"host": "Host",
+					"port": "Port",
+					"dbName": "Nom de la base de dades",
+					"storageSize": "Mida d'emmagatzematge"
+				},
+				"mongoDBCollectionStats": {
+					"documents": "Documents: {{count}}",
+					"bucketCount": "Nombre de buckets: {{count}}",
+					"storageSize": "Mida d'emmagatzematge: {{size}}",
+					"indexSize": "Mida dels índexs: {{size}}",
+					"totalSize": "Mida total: {{size}}",
+					"dbUsageTooltip": "{{percentage}} % de l'emmagatzematge de la BD"
 				},
 				"gauges": {
 					"heapAllocation": "Assignació de heap",
@@ -1014,12 +1199,19 @@
 			},
 			"table": {
 				"headers": {
+					"host": "Host",
+					"processId": "ID del procés",
+					"workerId": "ID del treballador",
+					"workerMode": "Mode del treballador",
+					"lastSeenAt": "Vist per última vegada",
 					"timestamp": "Marca de temps",
 					"level": "Nivell",
 					"service": "Servei",
 					"monitorId": "ID del monitor",
 					"runCount": "Recompte d'execucions",
 					"failCount": "Recompte",
+					"nextScheduledAt": "Propera execució",
+					"lockedBy": "Bloquejat per",
 					"lastFinishedAt": "Darrera finalització",
 					"lastFailedAt": "Darrera fallada",
 					"failReason": "Motiu de la fallada",
@@ -1142,7 +1334,22 @@
 				"type": {
 					"description": "Selecciona el tipus de canal de notificació a crear.",
 					"optionType": "Tipus",
-					"title": "Tipus de canal"
+					"title": "Tipus de canal",
+					"value": {
+						"email": "Correu electrònic",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"signalgrid": "Signalgrid",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "Configuració de Telegram",
@@ -1160,6 +1367,14 @@
 					"optionUserKey": "Clau d'usuari",
 					"placeholderUserKey": "uQiRzpo4DXghDmr9QzzfQu27cmVRsG"
 				},
+				"signalgrid": {
+					"title": "Configuració de Signalgrid",
+					"description": "Configura Signalgrid per rebre notificacions push als teus dispositius.",
+					"optionClientKey": "Clau del client",
+					"placeholderClientKey": "La teva clau de client de Signalgrid",
+					"optionChannel": "Canal",
+					"placeholderChannel": "El teu canal de Signalgrid"
+				},
 				"twilio": {
 					"title": "Configuració de SMS de Twilio",
 					"description": "Configura Twilio per enviar notificacions SMS a un número de telèfon.",
@@ -1171,6 +1386,14 @@
 					"placeholderFromNumber": "+34931234567",
 					"optionToNumber": "Número de destinació (receptor)",
 					"placeholderToNumber": "+34939876543"
+				},
+				"ntfy": {
+					"title": "Configuració de ntfy",
+					"description": "Configura un servidor i un tema de ntfy per a les notificacions push.",
+					"optionServerUrl": "URL del servidor",
+					"placeholderServerUrl": "https://ntfy.sh",
+					"optionTopic": "Tema",
+					"placeholderTopic": "checkmate-alerts"
 				}
 			},
 			"table": {
@@ -1260,6 +1483,22 @@
 							"label": "Tipus de gràfic",
 							"histogram": "Histograma",
 							"heatmap": "Mapa de calor"
+						}
+					}
+				},
+				"globalProxy": {
+					"title": "Proxy global",
+					"description": "Encamina per defecte les comprovacions de monitoratge a través d'un proxy. S'aplica a tots els monitors HTTP amb la configuració de proxy \"Predeterminat\"; els monitors configurats amb \"No fer servir mai un proxy\" o amb un proxy personalitzat no es veuen afectats.",
+					"option": {
+						"enabled": {
+							"label": "Fes servir el proxy global"
+						},
+						"proxy": {
+							"label": "Tria un proxy global"
+						},
+						"empty": {
+							"text": "Encara no hi ha cap proxy configurat.",
+							"link": "Crea'n un primer"
 						}
 					}
 				},
@@ -1602,6 +1841,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "Pàgina d'estat eliminada correctament",
+			"rangeSelectorAria": "Interval de l'historial",
+			"rangeExceedsRetention": "La retenció de l'historial de comprovacions està definida en {{days}} dies. Augmenta la retenció per obtenir més dades.",
+			"range": {
+				"latest": "Recent",
+				"30d": "30 dies",
+				"60d": "60 dies",
+				"90d": "90 dies"
+			},
 			"fallback": {
 				"title": "Encara no hi ha pàgines d'estat",
 				"description": "Publica una pàgina pública que mostri el temps en línia en temps real i l'historial d'incidents als teus clients i parts interessades.",
@@ -1623,7 +1870,10 @@
 					"avg": "mitj {{value}}",
 					"max": "màx {{value}}",
 					"downTooltip": "Caigut",
-					"heatmapAria": "Mapa de calor del temps de resposta"
+					"heatmapAria": "Mapa de calor del temps de resposta",
+					"dayAria": "{{date}}, {{uptime}} de temps en línia",
+					"dayUptime": "Temps en línia: {{uptime}} ({{upChecks}}/{{totalChecks}} comprovacions)",
+					"dayAvgResponse": "Resposta mitjana: {{value}}"
 				},
 				"infrastructure": {
 					"title": "Infraestructura",
@@ -1640,6 +1890,10 @@
 					"responseTime": "Temps de resposta"
 				},
 				"incidents": {
+					"modalTitle": "Incidents del {{date}}",
+					"loading": "S'està carregant...",
+					"noIncidents": "No s'han registrat incidents aquest dia.",
+					"ongoing": "En curs",
 					"errorLoading": "No s'han pogut carregar les incidències."
 				}
 			},
@@ -1705,6 +1959,11 @@
 						"url": {
 							"label": "L'adreça de la teva pàgina d'estat",
 							"placeholder": "la-meva-pagina-destat"
+						},
+						"customDomain": {
+							"label": "Domini personalitzat",
+							"placeholder": "status.example.com",
+							"helper": "Opcional. Apunta un registre DNS a aquesta instància de Checkmate per servir la pàgina d'estat al teu propi domini."
 						}
 					}
 				},
@@ -1761,6 +2020,10 @@
 						"editorial": {
 							"name": "Editorial",
 							"description": "Capçaleres amb serifa i separadors de línia fina. Distintiu i tranquil."
+						},
+						"minimal": {
+							"name": "Minimalista",
+							"description": "Pla, centrat i compacte, només amb l'essencial."
 						}
 					}
 				},
@@ -1769,6 +2032,16 @@
 					"auto": "Automàtic (segueix el dispositiu del visitant)",
 					"light": "Només clar",
 					"dark": "Només fosc"
+				},
+				"customCSS": {
+					"title": "CSS personalitzat",
+					"description": "Afegeix CSS personalitzat per ajustar l'aspecte de la teva pàgina d'estat pública.",
+					"option": {
+						"customCSS": {
+							"label": "CSS personalitzat",
+							"placeholder": "footer { display: none; }"
+						}
+					}
 				},
 				"features": {
 					"title": "Funcionalitats",
@@ -1792,17 +2065,22 @@
 			"header": {
 				"title": "Pàgines d'estat",
 				"description": "Publica pàgines públiques que mostrin el temps en línia en temps real i l'historial d'incidents als teus clients i parts interessades."
+			},
+			"preview": {
+				"title": "Previsualització de la pàgina d'estat"
 			}
 		},
 		"uptime": {
 			"filters": {
 				"search": {
 					"placeholder": "Cerca monitors..."
-				}
+				},
+				"activeTags": "Etiquetes actives"
 			},
 			"table": {
 				"headers": {
-					"responseTime": "Temps de resposta"
+					"responseTime": "Temps de resposta",
+					"uptime": "Temps en línia %"
 				}
 			},
 			"fallback": {

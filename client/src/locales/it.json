@@ -60,19 +60,37 @@
 			"exportToJSON": "Esporta in JSON",
 			"importFromJSON": "Importa da JSON",
 			"clearFilters": "Cancella filtri",
-			"removeUser": "Rimuovi utente"
+			"removeUser": "Rimuovi utente",
+			"removeItem": "Rimuovi {{item}}"
 		},
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Tempo di risposta medio",
+				"cpuUsage": "Utilizzo CPU",
 				"downtime": "Downtime",
 				"high": "Alto",
 				"low": "Basso",
+				"memoryUsage": "Utilizzo memoria",
+				"responseTime": "Tempo di risposta",
+				"timingPhases": "Fasi della richiesta",
+				"totalResponseTime": "Tempo di risposta totale",
 				"uptime": "Uptime"
 			},
 			"histogram": {
 				"avg": "Media: {{value}}",
-				"max": "Max: {{value}}"
+				"max": "Max: {{value}}",
+				"responseTime": "Tempo di risposta: {{value}}",
+				"total": "Totale: {{value}}",
+				"avgCpuUsage": "Utilizzo medio CPU: {{value}}",
+				"avgMemoryUsage": "Utilizzo medio memoria: {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "Richiesta",
+				"firstByte": "Primo byte",
+				"download": "Download"
 			}
 		},
 		"dialogs": {
@@ -88,9 +106,16 @@
 			"idle": "Inattivo",
 			"na": "N/A",
 			"resolved": "Risolto",
-			"responseTime": "Tempo di risposta"
+			"responseTime": "Tempo di risposta",
+			"state": "Stato",
+			"uptime": "Uptime",
+			"health": "Salute",
+			"restarts": "Riavvii"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "Digita per cercare"
+			},
 			"role": {
 				"option": {
 					"role": {
@@ -254,6 +279,63 @@
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "Proxy",
+				"description": "Gestisci i tuoi server proxy per instradare il traffico di monitoraggio HTTP."
+			},
+			"fallback": {
+				"title": "Nessun proxy",
+				"description": "Instrada le verifiche dei monitor HTTP attraverso un server proxy. Dopo aver creato un proxy, puoi selezionarlo sui singoli monitor o impostarlo come predefinito globale nelle Impostazioni.",
+				"actionButton": "Crea un proxy"
+			},
+			"form": {
+				"name": {
+					"title": "Nome proxy",
+					"description": "Un nome descrittivo per identificare questo proxy",
+					"optionName": "Nome proxy",
+					"placeholder": "Il mio proxy"
+				},
+				"server": {
+					"title": "Server proxy",
+					"description": "Dove è raggiungibile il server proxy. Imposta il protocollo che Checkmate usa per connettersi, il suo hostname o indirizzo IP e la porta su cui è in ascolto.",
+					"option": {
+						"protocol": {
+							"label": "Protocollo"
+						},
+						"host": {
+							"label": "Hostname / indirizzo IP",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "Porta"
+						}
+					}
+				},
+				"auth": {
+					"title": "Autenticazione",
+					"description": "Facoltativo. Necessario solo se il server proxy richiede l'autenticazione di base.",
+					"option": {
+						"username": {
+							"label": "Nome utente",
+							"placeholder": "Nome utente del proxy",
+							"labelSet": "Il nome utente è impostato. Fai clic su Reimposta per modificarlo."
+						},
+						"password": {
+							"label": "Password",
+							"labelSet": "La password è impostata. Fai clic su Reimposta per modificarla."
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "Protocollo",
+					"host": "Host",
+					"port": "Porta"
+				}
+			}
+		},
 		"notFound": {
 			"title": "Oh no! Hai fatto cadere il tuo sushi!",
 			"subtitle": "L'URL non esiste, oppure non hai accesso."
@@ -486,7 +568,9 @@
 				},
 				"statBoxes": {
 					"activeFor": "Attivo da",
+					"checkingEvery": "Verifica ogni {{interval}}",
 					"certificateExpiry": "Scadenza certificato",
+					"domainExpiry": "Scadenza dominio",
 					"lastCheck": "Ultima verifica",
 					"lastResponseTime": "Ultimo tempo di risposta",
 					"serviceIsDown": "Servizio non attivo"
@@ -580,6 +664,9 @@
 					"title": "Frequenza di verifica"
 				},
 				"general": {
+					"url": {
+						"alert": "Le verifiche future useranno il nuovo URL. I dati storici di questo monitor vengono conservati, ma sono stati raccolti dal vecchio URL."
+					},
 					"option": {
 						"host": {
 							"label": "Host",
@@ -596,6 +683,24 @@
 						"url": {
 							"label": "URL",
 							"placeholder": "https://www.google.com"
+						},
+						"proxyMode": {
+							"label": "Proxy",
+							"value": {
+								"inheritDirect": "Predefinito (connessione diretta)",
+								"inheritGlobal": "Predefinito ({{name}})",
+								"none": "Non usare mai un proxy",
+								"custom": "Proxy personalizzato"
+							},
+							"description": {
+								"inheritDirect": "Nessun proxy globale configurato, la connessione è diretta. Se in seguito viene configurato un proxy globale, questo monitor lo userà.",
+								"inheritGlobal": "Usa l'impostazione del proxy globale",
+								"none": "Si connette sempre direttamente, anche se in seguito viene abilitato un proxy globale.",
+								"custom": "Instrada le verifiche di questo monitor attraverso un proxy specifico. Sostituisce il proxy globale"
+							}
+						},
+						"proxy": {
+							"label": "Server proxy"
 						},
 						"game": {
 							"label": "Scegli gioco",
@@ -1230,7 +1335,22 @@
 				"type": {
 					"description": "Seleziona il tipo di canale di notifica da creare.",
 					"optionType": "Tipo",
-					"title": "Tipo di canale"
+					"title": "Tipo di canale",
+					"value": {
+						"email": "Email",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"signalgrid": "Signalgrid",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "Configurazione Telegram",
@@ -1247,6 +1367,14 @@
 					"placeholderAppToken": "azGDORePK8gMaC0QOYAMyEEuzJnyUi",
 					"optionUserKey": "Chiave utente",
 					"placeholderUserKey": "uQiRzpo4DXghDmr9QzzfQu27cmVRsG"
+				},
+				"signalgrid": {
+					"title": "Configurazione Signalgrid",
+					"description": "Configura Signalgrid per ricevere notifiche push sui tuoi dispositivi.",
+					"optionClientKey": "Chiave client",
+					"placeholderClientKey": "La tua chiave client Signalgrid",
+					"optionChannel": "Canale",
+					"placeholderChannel": "Il tuo canale Signalgrid"
 				},
 				"twilio": {
 					"title": "Configurazione SMS Twilio",
@@ -1356,6 +1484,22 @@
 							"label": "Tipo di grafico",
 							"histogram": "Istogramma",
 							"heatmap": "Heatmap"
+						}
+					}
+				},
+				"globalProxy": {
+					"title": "Proxy globale",
+					"description": "Instrada per impostazione predefinita le verifiche di monitoraggio attraverso un proxy. Si applica a tutti i monitor HTTP con impostazione proxy \"Predefinito\"; i monitor impostati su \"Non usare mai un proxy\" o su un proxy personalizzato non sono interessati.",
+					"option": {
+						"enabled": {
+							"label": "Usa proxy globale"
+						},
+						"proxy": {
+							"label": "Scegli un proxy globale"
+						},
+						"empty": {
+							"text": "Nessun proxy ancora configurato.",
+							"link": "Creane prima uno"
 						}
 					}
 				},
@@ -1698,6 +1842,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "Pagina di stato eliminata correttamente",
+			"rangeSelectorAria": "Intervallo cronologia",
+			"rangeExceedsRetention": "La conservazione della cronologia delle verifiche è impostata a {{days}} giorni. Aumenta la conservazione per avere più dati.",
+			"range": {
+				"latest": "Recente",
+				"30d": "30 giorni",
+				"60d": "60 giorni",
+				"90d": "90 giorni"
+			},
 			"fallback": {
 				"title": "Nessuna pagina di stato ancora",
 				"description": "Pubblica una pagina pubblica che mostra l'uptime in tempo reale e la cronologia degli incidenti ai tuoi clienti e stakeholder.",
@@ -1719,7 +1871,10 @@
 					"avg": "media {{value}}",
 					"max": "max {{value}}",
 					"downTooltip": "Non attivo",
-					"heatmapAria": "Heatmap del tempo di risposta"
+					"heatmapAria": "Heatmap del tempo di risposta",
+					"dayAria": "{{date}}, uptime {{uptime}}",
+					"dayUptime": "Uptime: {{uptime}} ({{upChecks}}/{{totalChecks}} verifiche)",
+					"dayAvgResponse": "Risposta media: {{value}}"
 				},
 				"infrastructure": {
 					"title": "Infrastruttura",
@@ -1736,6 +1891,10 @@
 					"responseTime": "Tempo di risposta"
 				},
 				"incidents": {
+					"modalTitle": "Incidenti del {{date}}",
+					"loading": "Caricamento...",
+					"noIncidents": "Nessun incidente segnalato per questo giorno.",
+					"ongoing": "In corso",
 					"errorLoading": "Impossibile caricare gli incidenti."
 				}
 			},

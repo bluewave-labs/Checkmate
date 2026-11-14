@@ -32,6 +32,8 @@
 			"pause": "Keskeytä",
 			"resume": "Jatka",
 			"save": "Tallenna",
+			"next": "Seuraava",
+			"back": "Takaisin",
 			"sendInvite": "Lähetä kutsu",
 			"test": "Testaa",
 			"testNotifications": "Testaa ilmoitukset",
@@ -47,19 +49,37 @@
 			"exportToJSON": "Vie JSON-muotoon",
 			"importFromJSON": "Tuo JSON-muodosta",
 			"clearFilters": "Tyhjennä suodattimet",
-			"removeUser": "Poista käyttäjä"
+			"removeUser": "Poista käyttäjä",
+			"removeItem": "Poista: {{item}}"
 		},
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Keskimääräinen vasteaika",
+				"cpuUsage": "CPU-käyttö",
 				"downtime": "Käyttökatko",
 				"high": "Korkea",
 				"low": "Matala",
+				"memoryUsage": "Muistin käyttö",
+				"responseTime": "Vasteaika",
+				"timingPhases": "Pyynnön vaiheet",
+				"totalResponseTime": "Kokonaisvasteaika",
 				"uptime": "Käytettävyys"
 			},
 			"histogram": {
 				"avg": "Keskim.: {{value}}",
-				"max": "Maks.: {{value}}"
+				"max": "Maks.: {{value}}",
+				"responseTime": "Vasteaika: {{value}}",
+				"total": "Yhteensä: {{value}}",
+				"avgCpuUsage": "Keskimääräinen CPU-käyttö: {{value}}",
+				"avgMemoryUsage": "Keskimääräinen muistin käyttö: {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "Pyyntö",
+				"firstByte": "Ensimmäinen tavu",
+				"download": "Lataus"
 			}
 		},
 		"dialogs": {
@@ -74,10 +94,17 @@
 			"na": "Ei saatavilla",
 			"resolved": "Ratkaistu",
 			"responseTime": "Vasteaika",
+			"state": "Tila",
+			"uptime": "Käyntiaika",
+			"health": "Kunto",
+			"restarts": "Uudelleenkäynnistykset",
 			"idle": "Toimeton",
 			"running": "Käynnissä"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "Kirjoita hakeaksesi"
+			},
 			"role": {
 				"option": {
 					"role": {
@@ -120,7 +147,8 @@
 				"url": "Osoite",
 				"interval": "Aikaväli",
 				"active": "Aktiivinen",
-				"responseTime": "Vasteaika"
+				"responseTime": "Vasteaika",
+				"tags": "Tunnisteet"
 			}
 		},
 		"statusCode": {
@@ -250,6 +278,63 @@
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "Välityspalvelimet",
+				"description": "Hallitse välityspalvelimia, joiden kautta HTTP-valvontaliikenne reititetään."
+			},
+			"fallback": {
+				"title": "Ei vielä välityspalvelimia",
+				"description": "Reititä HTTP-monitorien tarkistukset välityspalvelimen kautta. Kun olet luonut välityspalvelimen, voit valita sen yksittäisille monitoreille tai asettaa sen yleiseksi oletukseksi asetuksissa.",
+				"actionButton": "Luo välityspalvelin"
+			},
+			"form": {
+				"name": {
+					"title": "Välityspalvelimen nimi",
+					"description": "Helposti tunnistettava nimi tälle välityspalvelimelle",
+					"optionName": "Välityspalvelimen nimi",
+					"placeholder": "Oma välityspalvelin"
+				},
+				"server": {
+					"title": "Välityspalvelimen osoite",
+					"description": "Missä välityspalvelin on tavoitettavissa. Määritä protokolla, jolla Checkmate yhdistää siihen, sen isäntänimi tai IP-osoite sekä portti, jota se kuuntelee.",
+					"option": {
+						"protocol": {
+							"label": "Protokolla"
+						},
+						"host": {
+							"label": "Isäntänimi / IP-osoite",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "Portti"
+						}
+					}
+				},
+				"auth": {
+					"title": "Todennus",
+					"description": "Valinnainen. Tarvitaan vain, jos välityspalvelin vaatii perustodennuksen.",
+					"option": {
+						"username": {
+							"label": "Käyttäjänimi",
+							"placeholder": "Välityspalvelimen käyttäjänimi",
+							"labelSet": "Käyttäjänimi on asetettu. Vaihda se napsauttamalla \"Palauta\"."
+						},
+						"password": {
+							"label": "Salasana",
+							"labelSet": "Salasana on asetettu. Vaihda se napsauttamalla \"Palauta\"."
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "Protokolla",
+					"host": "Isäntä",
+					"port": "Portti"
+				}
+			}
+		},
 		"notFound": {
 			"title": "Voi ei! Sushisi putosi!",
 			"subtitle": "Joko URL-osoitetta ei ole olemassa tai sinulla ei ole pääsyä siihen."
@@ -471,7 +556,9 @@
 				},
 				"statBoxes": {
 					"activeFor": "Aktiivinen",
+					"checkingEvery": "Tarkistusväli: {{interval}}",
 					"certificateExpiry": "Varmenteen vanheneminen",
+					"domainExpiry": "Verkkotunnuksen vanheneminen",
 					"lastCheck": "Viimeisin tarkistus",
 					"lastResponseTime": "Viimeisin vasteaika",
 					"serviceIsDown": "Palvelu ei ole käytettävissä"
@@ -517,6 +604,13 @@
 				"advanced": {
 					"description": "Valinnaisia asetuksia edistyneille käyttötapauksille",
 					"option": {
+						"method": {
+							"label": "Pyyntömetodi",
+							"description": {
+								"GET": "GET hakee koko vastauksen rungon kanssa. Edistynyt vastaavuus on täysin tuettu",
+								"HEAD": "HEAD hakee vain vastauksen otsakkeet, mikä vähentää kohteen kuormitusta. Tukee tilakoodin vertailua mutta ei edistynyttä vastaavuutta, koska runkoa ei ole."
+							}
+						},
 						"advancedMatching": {
 							"label": "Käytä edistynyttä vastaavuutta"
 						},
@@ -532,6 +626,10 @@
 							"equal": "Yhtä suuri",
 							"include": "Sisältää",
 							"regex": "Säännöllinen lauseke"
+						},
+						"customUpCodes": {
+							"label": "Hyväksytyt tilakoodit",
+							"description": "Lisää muut kuin 2xx-koodit, jotka katsotaan myös onnistuneiksi."
 						}
 					},
 					"title": "Lisäasetukset"
@@ -565,6 +663,9 @@
 					"title": "Tarkistusväli"
 				},
 				"general": {
+					"url": {
+						"alert": "Tulevat tarkistukset käyttävät uutta URL-osoitetta. Tämän monitorin historiatiedot säilytetään, mutta ne on kerätty vanhasta URL-osoitteesta."
+					},
 					"option": {
 						"host": {
 							"label": "Isäntä",
@@ -581,6 +682,24 @@
 						"url": {
 							"label": "URL",
 							"placeholder": "https://www.google.com"
+						},
+						"proxyMode": {
+							"label": "Välityspalvelin",
+							"value": {
+								"inheritDirect": "Oletus (suora yhteys)",
+								"inheritGlobal": "Oletus ({{name}})",
+								"none": "Älä koskaan käytä välityspalvelinta",
+								"custom": "Mukautettu välityspalvelin"
+							},
+							"description": {
+								"inheritDirect": "Yleistä välityspalvelinta ei ole määritetty, yhteys muodostetaan suoraan. Jos yleinen välityspalvelin määritetään myöhemmin, tämä monitori käyttää sitä.",
+								"inheritGlobal": "Käytä yleistä välityspalvelinasetusta",
+								"none": "Yhdistää aina suoraan, vaikka yleinen välityspalvelin otettaisiin myöhemmin käyttöön.",
+								"custom": "Reititä tämän monitorin tarkistukset tietyn välityspalvelimen kautta. Ohittaa yleisen välityspalvelimen"
+							}
+						},
+						"proxy": {
+							"label": "Välityspalvelin"
 						},
 						"game": {
 							"label": "Valitse peli",
@@ -667,6 +786,10 @@
 				"notifications": {
 					"description": "Valitse ilmoituskanavat, joita haluat käyttää",
 					"title": "Ilmoitukset"
+				},
+				"tags": {
+					"description": "Valitse tunnisteet, jotka haluat liittää tähän monitoriin",
+					"title": "Tunnisteet"
 				},
 				"type": {
 					"description": "Valitse suoritettavan tarkistuksen tyyppi",
@@ -901,6 +1024,7 @@
 					"disk": "Levyn käyttö",
 					"netBytesRecv": "{{name}} - tavua vastaanotettu",
 					"netBytesSent": "{{name}} - tavua lähetetty",
+					"loopbackOnlyNotice": "Capture näkee vain säiliön verkkoliitännät, eikä mikään niistä välitä todellista liikennettä. Tämä on normaalia, kun Capture toimii säiliön sisällä, joka näkee vain oman verkkonimiavaruutensa — isäntää muistuttavilla nimillä (eth0, ens3) olevat liitännät ovat säiliön virtuaaliliitäntöjä, eivät isännän. Suorita Capture suoraan isännässä nähdäksesi todellisen verkkoliikenteen.",
 					"temp": "Lämpö"
 				}
 			},
@@ -953,6 +1077,37 @@
 				"description": "Seuraa palvelinten suorituskykyä, tunnista pullonkauloja ja varmista luotettavuus reaaliaikaisella valvonnalla."
 			}
 		},
+		"tags": {
+			"header": {
+				"title": "Tunnisteet",
+				"description": "Järjestä monitorisi tunnisteilla"
+			},
+			"fallback": {
+				"title": "Ei vielä tunnisteita",
+				"description": "Järjestä monitorisi tunnisteilla. Kun luot tunnisteen ja liität sen monitoriin, voit suodattaa sen mukaan koko sovelluksessa ja nähdä tunnisteen tiedot täällä.",
+				"actionButton": "Luo tunniste"
+			},
+			"table": {
+				"headers": {
+					"color": "Väri",
+					"appearance": "Ulkoasu"
+				}
+			},
+			"form": {
+				"name": {
+					"title": "Tunnisteen nimi",
+					"description": "Valitse tunnisteelle nimi",
+					"optionName": "Tunnisteen nimi",
+					"placeholder": "esim. Ryhmä 1"
+				},
+				"color": {
+					"title": "Tunnisteen väri",
+					"description": "Valitse tunnisteelle väri",
+					"optionName": "Tunnisteen väri",
+					"placeholder": "esim. #13715B"
+				}
+			}
+		},
 		"logs": {
 			"fallback": {
 				"title": "Ei vielä lokeja",
@@ -966,6 +1121,8 @@
 			"logLevelSelect": {
 				"label": "Lokitaso"
 			},
+			"workers": "Työntekijät",
+			"workersExplainers": "Näyttää työntekijäprosessit. Työntekijöiden ID:t on lyhennetty, näet koko ID:n viemällä osoittimen sen päälle",
 			"jobQueue": "Työnojono",
 			"jobQueueExplainer": "<highlight>Korostetut rivit</highlight> ovat työt, joita työntekijä käsittelee parhaillaan.",
 			"failedJobs": "Epäonnistuneet työt",
@@ -986,6 +1143,26 @@
 					"totalHeapSize": "Keon kokonaiskoko",
 					"osMemoryLimit": "Käyttöjärjestelmän muistiraja"
 				},
+				"mongoDBStats": {
+					"readyState": "Valmiustila",
+					"readsPerSecond": "Luvut/s",
+					"insertsPerSecond": "Lisäykset/s",
+					"updatesPerSecond": "Päivitykset/s",
+					"deletesPerSecond": "Poistot/s",
+					"writesPerSecond": "Kirjoitukset yhteensä/s",
+					"host": "Isäntä",
+					"port": "Portti",
+					"dbName": "Tietokannan nimi",
+					"storageSize": "Tallennustilan koko"
+				},
+				"mongoDBCollectionStats": {
+					"documents": "Dokumentit: {{count}}",
+					"bucketCount": "Bucketien määrä: {{count}}",
+					"storageSize": "Tallennustilan koko: {{size}}",
+					"indexSize": "Indeksin koko: {{size}}",
+					"totalSize": "Kokonaiskoko: {{size}}",
+					"dbUsageTooltip": "{{percentage}} % tietokannan tallennustilasta"
+				},
 				"gauges": {
 					"heapAllocation": "Keon varaus",
 					"heapUsage": "Keon käyttö",
@@ -1005,17 +1182,32 @@
 					"memoryCpu": {
 						"title": "Muisti ja CPU",
 						"description": "Miten prosessi käyttää sille varattua muistia ja isännän CPU:ta."
+					},
+					"mongoDBStats": {
+						"title": "MongoDB-tilastot",
+						"description": "Tilannekuva MongoDB:n mittareista"
+					},
+					"mongoDBCollectionStats": {
+						"title": "MongoDB-kokoelmien tilastot",
+						"description": "Tilastot MongoDB-kokoelmista"
 					}
 				}
 			},
 			"table": {
 				"headers": {
+					"host": "Isäntä",
+					"processId": "Prosessi-ID",
+					"workerId": "Työntekijä-ID",
+					"workerMode": "Työntekijätila",
+					"lastSeenAt": "Viimeksi nähty",
 					"timestamp": "Aikaleima",
 					"level": "Taso",
 					"service": "Palvelu",
 					"monitorId": "Monitorin tunnus",
 					"runCount": "Suorituskerrat",
 					"failCount": "Epäonnistumiskerrat",
+					"nextScheduledAt": "Seuraava suoritus",
+					"lockedBy": "Lukitsija",
 					"lastFinishedAt": "Viimeisin valmistuminen",
 					"lastFailedAt": "Viimeisin epäonnistuminen",
 					"failReason": "Epäonnistumisen syy",
@@ -1142,7 +1334,22 @@
 				"type": {
 					"description": "Valitse luotavan ilmoituskanavan tyyppi.",
 					"optionType": "Tyyppi",
-					"title": "Kanavan tyyppi"
+					"title": "Kanavan tyyppi",
+					"value": {
+						"email": "Sähköposti",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"signalgrid": "Signalgrid",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "Telegram-määritykset",
@@ -1160,6 +1367,14 @@
 					"optionUserKey": "Käyttäjäavain",
 					"placeholderUserKey": "Anna käyttäjäavain"
 				},
+				"signalgrid": {
+					"title": "Signalgrid-määritys",
+					"description": "Määritä Signalgrid vastaanottamaan push-ilmoituksia laitteillesi.",
+					"optionClientKey": "Asiakasavain",
+					"placeholderClientKey": "Signalgrid-asiakasavaimesi",
+					"optionChannel": "Kanava",
+					"placeholderChannel": "Signalgrid-kanavasi"
+				},
 				"twilio": {
 					"title": "Twilio-määritys",
 					"description": "Anna Twilio-tilin tunnistetiedot tekstiviestien lähettämistä varten.",
@@ -1171,6 +1386,14 @@
 					"placeholderFromNumber": "+1234567890",
 					"optionToNumber": "Vastaanottajan numero",
 					"placeholderToNumber": "+1234567890"
+				},
+				"ntfy": {
+					"title": "ntfy-määritys",
+					"description": "Määritä ntfy-palvelin ja aihe push-ilmoituksia varten.",
+					"optionServerUrl": "Palvelimen URL",
+					"placeholderServerUrl": "https://ntfy.sh",
+					"optionTopic": "Aihe",
+					"placeholderTopic": "checkmate-alerts"
 				}
 			},
 			"table": {
@@ -1260,6 +1483,22 @@
 							"label": "Kaaviotyyppi",
 							"histogram": "Histogrammi",
 							"heatmap": "Lämpökartta"
+						}
+					}
+				},
+				"globalProxy": {
+					"title": "Yleinen välityspalvelin",
+					"description": "Reititä valvontatarkistukset oletuksena välityspalvelimen kautta. Koskee kaikkia HTTP-monitoreja, joiden välityspalvelinasetus on \"Oletus\"; monitorit, joiden asetus on \"Älä koskaan käytä välityspalvelinta\" tai mukautettu välityspalvelin, eivät muutu.",
+					"option": {
+						"enabled": {
+							"label": "Käytä yleistä välityspalvelinta"
+						},
+						"proxy": {
+							"label": "Valitse yleinen välityspalvelin"
+						},
+						"empty": {
+							"text": "Välityspalvelimia ei ole vielä määritetty.",
+							"link": "Luo ensin välityspalvelin"
 						}
 					}
 				},
@@ -1602,6 +1841,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "Tilasivu poistettu onnistuneesti",
+			"rangeSelectorAria": "Historian aikaväli",
+			"rangeExceedsRetention": "Tarkistushistorian säilytysaika on {{days}} vrk. Pidennä säilytysaikaa nähdäksesi enemmän tietoja.",
+			"range": {
+				"latest": "Viimeisin",
+				"30d": "30 päivää",
+				"60d": "60 päivää",
+				"90d": "90 päivää"
+			},
 			"fallback": {
 				"title": "Ei vielä tilasivuja",
 				"actionButton": "Luo tilasivu!",
@@ -1629,6 +1876,9 @@
 					"avg": "ka {{value}}",
 					"downTooltip": "Alhaalla",
 					"heatmapAria": "Vasteajan lämpökartta",
+					"dayAria": "{{date}}, käytettävyys {{uptime}}",
+					"dayUptime": "Käytettävyys: {{uptime}} (tarkistukset: {{upChecks}}/{{totalChecks}})",
+					"dayAvgResponse": "Keskim. vaste: {{value}}",
 					"max": "max {{value}}"
 				},
 				"status": {
@@ -1640,6 +1890,10 @@
 					"up": "Toiminnassa"
 				},
 				"incidents": {
+					"modalTitle": "Häiriöt: {{date}}",
+					"loading": "Ladataan...",
+					"noIncidents": "Tälle päivälle ei ole raportoitu häiriöitä.",
+					"ongoing": "Käynnissä",
 					"errorLoading": "Häiriöiden lataaminen epäonnistui."
 				}
 			},
@@ -1698,6 +1952,11 @@
 						"url": {
 							"label": "Tilasivusi osoite",
 							"placeholder": "my-status-page"
+						},
+						"customDomain": {
+							"label": "Mukautettu verkkotunnus",
+							"placeholder": "status.example.com",
+							"helper": "Valinnainen. Osoita DNS-tietue tähän Checkmate-instanssiin, niin tilasivu näkyy omassa verkkotunnuksessasi."
 						}
 					}
 				},
@@ -1764,6 +2023,10 @@
 							"description": "Antiikvaotsikot ja ohuet erottimet. Erottuva ja rauhallinen.",
 							"name": "Toimituksellinen"
 						},
+						"minimal": {
+							"name": "Minimaalinen",
+							"description": "Tasainen, keskittynyt ja tiivis, vain olennaiset asiat."
+						},
 						"modern": {
 							"description": "SaaS-tasoa sykkivällä tilapisteellä ja pehmeästi haalistuvilla korteilla.",
 							"name": "Moderni"
@@ -1780,11 +2043,24 @@
 					"dark": "Vain tumma",
 					"label": "Teematila",
 					"light": "Vain vaalea"
+				},
+				"customCSS": {
+					"title": "Mukautettu CSS",
+					"description": "Lisää mukautettua CSS:ää julkisen tilasivusi ulkoasun hienosäätöön.",
+					"option": {
+						"customCSS": {
+							"label": "Mukautettu CSS",
+							"placeholder": "footer { display: none; }"
+						}
+					}
 				}
 			},
 			"header": {
 				"title": "Tilasivut",
 				"description": "Julkaise julkisia sivuja, jotka näyttävät asiakkaille ja sidosryhmille reaaliaikaisen käytettävyyden ja tapaushistorian."
+			},
+			"preview": {
+				"title": "Tilasivun esikatselu"
 			},
 			"editorial": {
 				"allUp": "Kaikki järjestelmät toimivat normaalisti.",
@@ -1798,11 +2074,13 @@
 			"filters": {
 				"search": {
 					"placeholder": "Hae monitoreja..."
-				}
+				},
+				"activeTags": "Aktiiviset tunnisteet"
 			},
 			"table": {
 				"headers": {
-					"responseTime": "Vasteaika"
+					"responseTime": "Vasteaika",
+					"uptime": "Käytettävyys %"
 				}
 			},
 			"fallback": {

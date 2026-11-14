@@ -41,6 +41,7 @@
 			"pause": "Wstrzymaj",
 			"removeMonitors": "Usuń monitory",
 			"removeUser": "Usuń użytkownika",
+			"removeItem": "Usuń: {{item}}",
 			"reset": "Zresetuj",
 			"resetPassword": "Zresetuj hasło",
 			"resume": "Wznów",
@@ -54,13 +55,30 @@
 		"charts": {
 			"histogram": {
 				"avg": "Średnia: {{value}}",
-				"max": "Maks: {{value}}"
+				"max": "Maks: {{value}}",
+				"responseTime": "Czas odpowiedzi: {{value}}",
+				"total": "Łącznie: {{value}}",
+				"avgCpuUsage": "Średnie użycie CPU: {{value}}",
+				"avgMemoryUsage": "Średnie użycie pamięci: {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "Żądanie",
+				"firstByte": "Pierwszy bajt",
+				"download": "Pobieranie"
 			},
 			"labels": {
 				"averageResponseTime": "Średni czas odpowiedzi",
+				"cpuUsage": "Użycie CPU",
 				"downtime": "Czas przestoju",
 				"high": "Wysoki",
 				"low": "Niski",
+				"memoryUsage": "Użycie pamięci",
+				"responseTime": "Czas odpowiedzi",
+				"timingPhases": "Etapy żądania",
+				"totalResponseTime": "Całkowity czas odpowiedzi",
 				"uptime": "Czas pracy"
 			}
 		},
@@ -71,6 +89,9 @@
 			}
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "Zacznij pisać, aby wyszukać"
+			},
 			"email": {
 				"option": {
 					"email": {
@@ -106,6 +127,10 @@
 			"paused": "Wstrzymano",
 			"resolved": "Rozwiązano",
 			"responseTime": "Czas reakcji",
+			"state": "Stan",
+			"uptime": "Czas działania",
+			"health": "Kondycja",
+			"restarts": "Restarty",
 			"running": "Uruchomiony"
 		},
 		"statusCode": {
@@ -254,6 +279,63 @@
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "Proxy",
+				"description": "Zarządzaj serwerami proxy do kierowania ruchu monitorowania HTTP."
+			},
+			"fallback": {
+				"title": "Brak jeszcze serwerów proxy",
+				"description": "Kieruj kontrole monitorów HTTP przez serwer proxy. Po utworzeniu proxy możesz wybrać je dla poszczególnych monitorów lub ustawić jako globalne domyślne w Ustawieniach.",
+				"actionButton": "Utwórz proxy"
+			},
+			"form": {
+				"name": {
+					"title": "Nazwa proxy",
+					"description": "Przyjazna nazwa identyfikująca to proxy",
+					"optionName": "Nazwa proxy",
+					"placeholder": "Moje proxy"
+				},
+				"server": {
+					"title": "Serwer proxy",
+					"description": "Gdzie serwer proxy jest dostępny. Ustaw protokół, którego Checkmate używa do połączenia z nim, jego nazwę hosta lub adres IP oraz port, na którym nasłuchuje.",
+					"option": {
+						"protocol": {
+							"label": "Protokół"
+						},
+						"host": {
+							"label": "Nazwa hosta / adres IP",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "Port"
+						}
+					}
+				},
+				"auth": {
+					"title": "Uwierzytelnianie",
+					"description": "Opcjonalne. Potrzebne tylko wtedy, gdy serwer proxy wymaga uwierzytelniania podstawowego.",
+					"option": {
+						"username": {
+							"label": "Nazwa użytkownika",
+							"placeholder": "Nazwa użytkownika proxy",
+							"labelSet": "Nazwa użytkownika jest ustawiona. Kliknij „Zresetuj”, aby ją zmienić."
+						},
+						"password": {
+							"label": "Hasło",
+							"labelSet": "Hasło jest ustawione. Kliknij „Zresetuj”, aby je zmienić."
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "Protokół",
+					"host": "Host",
+					"port": "Port"
+				}
+			}
+		},
 		"account": {
 			"form": {
 				"currentPassword": {
@@ -495,7 +577,9 @@
 				},
 				"statBoxes": {
 					"activeFor": "Aktywne przez",
+					"checkingEvery": "Interwał kontroli: {{interval}}",
 					"certificateExpiry": "Wygaśnięcie certyfikatu",
+					"domainExpiry": "Wygaśnięcie domeny",
 					"lastCheck": "Ostatnia kontrola",
 					"lastResponseTime": "Ostatni czas odpowiedzi",
 					"serviceIsDown": "Usługa nie działa"
@@ -576,6 +660,9 @@
 					"title": "Częstotliwość sprawdzania"
 				},
 				"general": {
+					"url": {
+						"alert": "Przyszłe kontrole będą używać nowego adresu URL. Dane historyczne tego monitora zostaną zachowane, ale zostały zebrane ze starego adresu URL."
+					},
 					"description": {
 						"dns": "Monitoruj, czy określony serwer DNS odpowiada.",
 						"heartbeat": "Dodaj czytelną nazwę wyświetlaną, która pojawi się na pulpicie. Adres URL pingu pojawi się na stronie szczegółów monitora po zapisaniu.",
@@ -641,6 +728,24 @@
 						"url": {
 							"label": "URL",
 							"placeholder": "https://www.google.com"
+						},
+						"proxyMode": {
+							"label": "Proxy",
+							"value": {
+								"inheritDirect": "Domyślne (połączenie bezpośrednie)",
+								"inheritGlobal": "Domyślne ({{name}})",
+								"none": "Nigdy nie używaj proxy",
+								"custom": "Własne proxy"
+							},
+							"description": {
+								"inheritDirect": "Nie skonfigurowano globalnego proxy, połączenie jest bezpośrednie. Jeśli globalne proxy zostanie skonfigurowane później, ten monitor będzie z niego korzystać.",
+								"inheritGlobal": "Użyj globalnego ustawienia proxy",
+								"none": "Zawsze łączy się bezpośrednio, nawet jeśli globalne proxy zostanie później włączone.",
+								"custom": "Kieruj kontrole tego monitora przez określone proxy. Zastępuje globalne proxy"
+							}
+						},
+						"proxy": {
+							"label": "Serwer proxy"
 						},
 						"wsUrl": {
 							"label": "WebSocket URL",
@@ -1208,6 +1313,14 @@
 					"placeholderUserKey": "uQiRzpo4DXghDmr9QzzfQu27cmVRsG",
 					"title": "Konfiguracja Pushover"
 				},
+				"signalgrid": {
+					"title": "Konfiguracja Signalgrid",
+					"description": "Skonfiguruj Signalgrid, aby otrzymywać powiadomienia push na swoich urządzeniach.",
+					"optionClientKey": "Klucz klienta",
+					"placeholderClientKey": "Twój klucz klienta Signalgrid",
+					"optionChannel": "Kanał",
+					"placeholderChannel": "Twój kanał Signalgrid"
+				},
 				"roomId": {
 					"optionRoomId": "Identyfikator pokoju",
 					"placeholder": "!abcdefg:matrix.org"
@@ -1235,7 +1348,22 @@
 				"type": {
 					"description": "Wybierz typ kanału powiadomień do utworzenia.",
 					"optionType": "Typ",
-					"title": "Typ kanału"
+					"title": "Typ kanału",
+					"value": {
+						"email": "E-mail",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"signalgrid": "Signalgrid",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				}
 			},
 			"header": {
@@ -1635,6 +1763,22 @@
 					},
 					"title": "Wygląd"
 				},
+				"globalProxy": {
+					"title": "Globalne proxy",
+					"description": "Domyślnie kieruj kontrole monitorowania przez proxy. Dotyczy wszystkich monitorów HTTP z ustawieniem proxy „Domyślne”; monitory ustawione na „Nigdy nie używaj proxy” lub własne proxy pozostają bez zmian.",
+					"option": {
+						"enabled": {
+							"label": "Użyj globalnego proxy"
+						},
+						"proxy": {
+							"label": "Wybierz globalne proxy"
+						},
+						"empty": {
+							"text": "Nie skonfigurowano jeszcze żadnych proxy.",
+							"link": "Najpierw utwórz proxy"
+						}
+					}
+				},
 				"url": {
 					"description": "Wyświetl adres IP lub URL monitora na publicznej stronie Status. Jeśli opcja jest wyłączona, wyświetlana będzie tylko nazwa monitora, aby chronić poufne informacje.",
 					"option": {
@@ -1667,6 +1811,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "Strona statusu została pomyślnie usunięta",
+			"rangeSelectorAria": "Zakres historii",
+			"rangeExceedsRetention": "Okres przechowywania historii kontroli (dni): {{days}}. Wydłuż go, aby zobaczyć więcej danych.",
+			"range": {
+				"latest": "Najnowsze",
+				"30d": "30 dni",
+				"60d": "60 dni",
+				"90d": "90 dni"
+			},
 			"details": {
 				"empty": {
 					"addMonitor": "Dodaj monitor, aby rozpocząć",
@@ -1818,6 +1970,9 @@
 					"avg": "śr. {{value}}",
 					"downTooltip": "Niedostępny",
 					"heatmapAria": "Heatmapa czasu odpowiedzi",
+					"dayAria": "{{date}}, czas działania {{uptime}}",
+					"dayUptime": "Czas działania: {{uptime}} (kontrole: {{upChecks}}/{{totalChecks}})",
+					"dayAvgResponse": "Śr. odpowiedź: {{value}}",
 					"max": "maks. {{value}}"
 				},
 				"chartTypeHeatmap": "Heatmapa",
@@ -1846,6 +2001,10 @@
 					"title": "Czas pracy"
 				},
 				"incidents": {
+					"modalTitle": "Incydenty: {{date}}",
+					"loading": "Wczytywanie...",
+					"noIncidents": "Brak zgłoszonych incydentów w tym dniu.",
+					"ongoing": "Trwa",
 					"errorLoading": "Nie udało się załadować incydentów."
 				}
 			},
