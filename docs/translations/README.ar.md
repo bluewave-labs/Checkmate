@@ -87,13 +87,13 @@
 
 اطّلع على تعليمات التثبيت في [بوابة وثائق Checkmate](https://checkmate.so/docs).
 
-بدلاً من ذلك، يمكنك استخدام [Coolify](https://coolify.io/)، أو [Elestio](https://elest.io/open-source/checkmate)، أو [K8s](../../charts/helm/checkmate/INSTALLATION.md)، أو [Sive Host](https://sive.host) (جنوب أفريقيا)، أو [Cloudzy](https://cloudzy.com/marketplace/checkmate)، أو [Pikapods](https://www.pikapods.com/) لتشغيل نسخة من Checkmate بسرعة. إن أردت مراقبة البنية التحتية لخوادمك، ستحتاج إلى [وكيل Capture](https://github.com/bluewave-labs/capture). يحتوي مستودع Capture أيضًا على تعليمات التثبيت.
+بدلاً من ذلك، يمكنك استخدام [Coolify](https://coolify.io/)، أو [Elestio](https://elest.io/open-source/checkmate)، أو [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm)، أو [Sive Host](https://sive.host) (جنوب أفريقيا)، أو [Cloudzy](https://cloudzy.com/marketplace/checkmate)، أو [Pikapods](https://www.pikapods.com/) لتشغيل نسخة من Checkmate بسرعة. إن أردت مراقبة البنية التحتية لخوادمك، ستحتاج إلى [وكيل Capture](https://checkmate.so/docs/infrastructure/installing-capture). يحتوي مستودع Capture أيضًا على تعليمات التثبيت.
 
 ### استخدام شهادة CA مخصصة
 
-إذا كنت بحاجة لمراقبة نقاط نهاية HTTPS داخلية بشهادات صادرة عن سلطات شهادات خاصة (مثل Smallstep)، راجع [دليل الثقة بشهادات CA المخصصة](../custom-ca-trust.md) لخيارات إعداد Docker.
+إذا كنت بحاجة لمراقبة نقاط نهاية HTTPS داخلية بشهادات صادرة عن سلطات شهادات خاصة (مثل Smallstep)، راجع [دليل الثقة بشهادات CA المخصصة](https://checkmate.so/docs/settings/custom-ca-trust) لخيارات إعداد Docker.
 
-للمزيد من الوثائق، راجع [مجلد docs](../).
+للمزيد من الوثائق، راجع [بوابة وثائق Checkmate](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## الأداء
@@ -189,7 +189,7 @@
 كيف يمكنك المساهمة:
 
 0. ضع نجمة على هذا المستودع :)
-1. راجع [دليل المساهمين](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). يُشجَّع المبتدئون على تفقد وسم `good-first-issue`.
+1. راجع [دليل المساهمين](https://checkmate.so/docs/getting-started/contributing). يُشجَّع المبتدئون على تفقد وسم `good-first-issue`.
 2. اقرأ بنية [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate) المفصّلة إذا أردت التعمق في المعمارية.
 3. افتح issue إذا كنت تعتقد أنك واجهت مشكلة.
 4. إذا كنت قادمًا جديدًا، فابحث عن وسوم `good-first-issue`.

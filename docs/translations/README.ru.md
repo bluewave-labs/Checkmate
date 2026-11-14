@@ -82,13 +82,13 @@ Checkmate прошёл нагрузочное тестирование с 1000+ 
 
 Инструкции по установке смотрите на [портале документации Checkmate](https://checkmate.so/docs).
 
-В качестве альтернативы вы можете использовать [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (ЮАР), [Cloudzy](https://cloudzy.com/marketplace/checkmate) или [Pikapods](https://www.pikapods.com/), чтобы быстро поднять инстанс Checkmate. Если вы хотите мониторить серверную инфраструктуру, потребуется агент [Capture](https://github.com/bluewave-labs/capture). В репозитории Capture также есть инструкции по установке.
+В качестве альтернативы вы можете использовать [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (ЮАР), [Cloudzy](https://cloudzy.com/marketplace/checkmate) или [Pikapods](https://www.pikapods.com/), чтобы быстро поднять инстанс Checkmate. Если вы хотите мониторить серверную инфраструктуру, потребуется агент [Capture](https://checkmate.so/docs/infrastructure/installing-capture). В репозитории Capture также есть инструкции по установке.
 
 ### Использование собственного УЦ
 
-Если нужно мониторить внутренние HTTPS-эндпоинты с сертификатами от приватных УЦ (например, Smallstep), смотрите наше [руководство по доверию собственным УЦ](../custom-ca-trust.md) с параметрами конфигурации Docker.
+Если нужно мониторить внутренние HTTPS-эндпоинты с сертификатами от приватных УЦ (например, Smallstep), смотрите наше [руководство по доверию собственным УЦ](https://checkmate.so/docs/settings/custom-ca-trust) с параметрами конфигурации Docker.
 
-Дополнительная документация — в [каталоге docs](../).
+Дополнительная документация — на [портале документации Checkmate](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Производительность
@@ -184,7 +184,7 @@ Checkmate прошёл нагрузочное тестирование с 1000+ 
 Как внести вклад:
 
 0. Поставьте звезду этому репозиторию :)
-1. Прочтите [руководство контрибьютора](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). Новичкам советуем посмотреть метку `good-first-issue`.
+1. Прочтите [руководство контрибьютора](https://checkmate.so/docs/getting-started/contributing). Новичкам советуем посмотреть метку `good-first-issue`.
 2. Если хотите глубже погрузиться в архитектуру — прочтите подробное описание [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate).
 3. Откройте issue, если столкнулись с багом.
 4. Если вы новичок — ищите `good-first-issue`.

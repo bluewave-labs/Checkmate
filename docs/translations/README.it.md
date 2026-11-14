@@ -82,13 +82,13 @@ Le istruzioni per l'uso sono disponibili [qui](https://checkmate.so/docs).
 
 Consulta le istruzioni di installazione nel [portale della documentazione di Checkmate](https://checkmate.so/docs). 
 
-In alternativa, puoi usare [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Sudafrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate) o [Pikapods](https://www.pikapods.com/) per creare rapidamente un'istanza di Checkmate. Se desideri monitorare l'infrastruttura dei tuoi server, ti servirà l'[agente Capture](https://github.com/bluewave-labs/capture). Anche il repository di Capture contiene le istruzioni di installazione.
+In alternativa, puoi usare [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Sudafrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate) o [Pikapods](https://www.pikapods.com/) per creare rapidamente un'istanza di Checkmate. Se desideri monitorare l'infrastruttura dei tuoi server, ti servirà l'[agente Capture](https://checkmate.so/docs/infrastructure/installing-capture). Anche il repository di Capture contiene le istruzioni di installazione.
 
 ### Usare una CA personalizzata
 
-Se hai bisogno di monitorare endpoint HTTPS interni con certificati emessi da Autorità di Certificazione (CA) private (come Smallstep), consulta la nostra [Guida all'attendibilità delle CA personalizzate](../custom-ca-trust.md) per le opzioni di configurazione di Docker.
+Se hai bisogno di monitorare endpoint HTTPS interni con certificati emessi da Autorità di Certificazione (CA) private (come Smallstep), consulta la nostra [Guida all'attendibilità delle CA personalizzate](https://checkmate.so/docs/settings/custom-ca-trust) per le opzioni di configurazione di Docker.
 
-Per ulteriore documentazione, consulta la [cartella docs](../).
+Per ulteriore documentazione, consulta il [portale di documentazione di Checkmate](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Prestazioni
@@ -184,7 +184,7 @@ Il nostro repository ha ricevuto una stella da dipendenti di **Google, Microsoft
 Ecco come puoi contribuire:
 
 0. Metti una stella a questo repository :)
-1. Consulta la [guida per i contributori](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). Chi è alle prime armi è incoraggiato a controllare il tag `good-first-issue`.
+1. Consulta la [guida per i contributori](https://checkmate.so/docs/getting-started/contributing). Chi è alle prime armi è incoraggiato a controllare il tag `good-first-issue`.
 2. Leggi una descrizione dettagliata della struttura di [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate) se vuoi approfondire l'architettura.
 3. Apri una issue se pensi di aver trovato un bug.
 4. Se sei un nuovo arrivato, dai un'occhiata alle good-first-issue.

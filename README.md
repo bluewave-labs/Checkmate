@@ -121,7 +121,7 @@ You can also run Checkmate on any of these platforms:
     <td align="center" width="120"><a href="https://coolify.io/"><img src="https://checkmate.so/img/brands/hosts/coolify.png" height="28" alt="Coolify"><br><sub><b>Coolify</b></sub></a></td>
     <td align="center" width="120"><a href="https://elest.io/open-source/checkmate"><img src="https://checkmate.so/img/brands/hosts/elestio.png" height="28" alt="Elestio"><br><sub><b>Elestio</b></sub></a></td>
     <td align="center" width="120"><a href="https://easypanel.io/templates/checkmate"><img src="https://checkmate.so/img/brands/hosts/easypanel.svg" height="28" alt="Easypanel"><br><sub><b>Easypanel</b></sub></a></td>
-    <td align="center" width="120"><a href="./charts/helm/checkmate/INSTALLATION.md"><img src="https://checkmate.so/img/brands/hosts/kubernetes.svg" height="28" alt="Kubernetes"><br><sub><b>Kubernetes</b></sub></a></td>
+    <td align="center" width="120"><a href="https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm"><img src="https://checkmate.so/img/brands/hosts/kubernetes.svg" height="28" alt="Kubernetes"><br><sub><b>Kubernetes</b></sub></a></td>
   </tr>
   <tr>
     <td align="center" width="120"><a href="https://railyard.run/templates/checkmate"><img src="https://checkmate.so/img/brands/hosts/railyard.svg" height="28" alt="Railyard"><br><sub><b>Railyard</b></sub></a></td>
@@ -172,7 +172,7 @@ The web client needs no configuration by default: it calls the API on the same o
 
 See full installation instructions in the [Checkmate documentation portal](https://checkmate.so/docs). 
 
-Alternatively, any of the [1-click installation options](#installation) listed above can spin up a Checkmate instance quickly. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
+Alternatively, any of the [1-click installation options](#installation) listed above can spin up a Checkmate instance quickly. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://checkmate.so/docs/infrastructure/installing-capture). Capture repository also contains the installation instructions.
 
 <a id="telemetry"></a>
 ### Telemetry
@@ -195,7 +195,7 @@ To opt out, set `TELEMETRY_ENABLED=false` on every server container and restart.
 
 ### Using a Custom CA
 
-If you need to monitor internal HTTPS endpoints with certificates from private Certificate Authorities (like Smallstep), see our [Custom CA Trust Guide](./docs/custom-ca-trust.md) for Docker configuration options.
+If you need to monitor internal HTTPS endpoints with certificates from private Certificate Authorities (like Smallstep), see our [Custom CA Trust Guide](https://checkmate.so/docs/settings/custom-ca-trust) for Docker configuration options.
 
 ### Docker monitors
 
@@ -230,7 +230,7 @@ services:
 
 TLS Docker monitors require `ENCRYPTION_KEY` to be set on the server (see [Configuration](#configuration)). Saving one without it fails with an error telling you so. If the key is ever removed or rotated incorrectly, affected checks fail with a decryption error until it is restored.
 
-If the daemon's certificate is signed by a private CA that you also want the rest of Checkmate to trust, see the [Custom CA Trust Guide](./docs/custom-ca-trust.md); for Docker monitors alone, the **CA certificate** field is enough.
+If the daemon's certificate is signed by a private CA that you also want the rest of Checkmate to trust, see the [Custom CA Trust Guide](https://checkmate.so/docs/settings/custom-ca-trust); for Docker monitors alone, the **CA certificate** field is enough.
 
 ### Securing the Docker daemon with TLS
 
@@ -307,7 +307,9 @@ docker --tlsverify --tlscacert=ca.pem --tlscert=cert.pem --tlskey=key.pem \
   -H=docker.example.com:2376 version
 ```
 
-### Heartbeat monitors
+### Heartbeat monitors (Upcoming)
+
+> **Upcoming:** not part of v3.13.1 or earlier. It ships in the next release.
 
 A heartbeat monitor is passive: your job pings Checkmate when it runs, and the monitor goes down if no ping arrives within its alert window. Use it for cron jobs, backups and scheduled tasks.
 
@@ -347,7 +349,9 @@ curl -fsS -m 10 --retry 3 "https://<checkmate-host>/api/v1/heartbeat/<pingKey>/n
 curl -fsS "https://<checkmate-host>/api/v1/heartbeat/<pingKey>/nightly-backup?create=true&interval=3600000"
 ```
 
-### Checkmate Connect remote access
+### Checkmate Connect remote access (Upcoming)
+
+> **Upcoming:** not part of v3.13.1 or earlier. It ships in the next release.
 
 Remote access keeps an outbound tunnel open from this server to Checkmate Connect, so you can reach the installation from its Connect address without opening inbound ports. A superadmin turns it on in **Settings → Checkmate Connect** after enrolling.
 
@@ -370,7 +374,9 @@ rm server/public
 
 This deletes only the link, not `client/dist`. Leave off the trailing slash: `rm server/public/` would target the linked directory instead of the link.
 
-### Checkmate Connect backups
+### Checkmate Connect backups (Upcoming)
+
+> **Upcoming:** not part of v3.13.1 or earlier. It ships in the next release.
 
 Cloud backups copy this installation's database to Checkmate Connect. Each backup is encrypted on this server before upload, so Connect only stores ciphertext.
 
@@ -382,7 +388,7 @@ Cloud backups copy this installation's database to Checkmate Connect. Each backu
 - **Restore.** A superadmin picks a backup under **Restore a backup** in **Settings → Checkmate Connect** and confirms it. Checkmate downloads it, checks its size and checksum, decrypts it with the recovery key and replaces the current data with it, on whichever process runs jobs. User accounts are replaced too, so log in with an account from the backup afterwards. A backup can be restored into a database with a different name. Restoring a backup made by an older version of Checkmate brings back that version's migration record; restart Checkmate afterwards so the newer migrations run on the restored data.
 - **Moving to a new server.** Enroll the new server with Checkmate Connect, then choose **I already have a recovery key** under **Recovery key** and enter the key from the original server. Checkmate decrypts one of your cloud backups to check the key before saving it, then lists the backups you can restore.
 
-For more documentation, see the [docs directory](./docs/).
+For more documentation, see the [Checkmate documentation portal](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Performance
@@ -410,15 +416,17 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 
 - Completely open source, deployable on your servers or home devices (e.g Raspberry Pi 5)
 - Several monitoring options: HTTP (with SSL certificate expiry), Ping, Port, DNS, Docker, gRPC, WebSocket, Game server
-- Heartbeat monitors for cron jobs, backups and other scheduled tasks
+- Heartbeat monitors for cron jobs, backups and other scheduled tasks (Upcoming)
 - Page speed monitoring
 - Infrastructure monitoring (memory, disk usage, CPU performance, network etc) - requires [Capture](https://github.com/bluewave-labs/capture) agent
   - Selective disk monitoring with mountpoint selection
 - Incidents at a glance
+- Dashboard with monitor status, uptime, currently down monitors, job queue and server health cards that you can rearrange and hide (Upcoming)
 - Status pages with 5 beautiful themes
 - E-mail, Webhooks, Discord, Slack, PagerDuty, Matrix, Rocket.Chat, Microsoft Teams, Telegram, Pushover, ntfy, SignalGrid, Twilio (SMS) notifications
 - Scheduled maintenance
 - JSON query monitoring
+- Checkmate Connect: remote access without opening inbound ports, and encrypted cloud backups with scheduled runs and restore (Upcoming)
 - Multi-language support for Arabic, Catalan, Chinese (Simplified), Chinese (Traditional, Taiwan), Czech, English, Finnish, French, German, Italian, Japanese, Polish, Portuguese (Brazil), Russian, Spanish, Thai, Turkish, Ukrainian, and Vietnamese
 
 
@@ -479,7 +487,7 @@ Our repo is starred by employees from **Google, Microsoft, Intel, Cisco, Tencent
 Here's how you can contribute:
 
 0. Star this repo :)
-1. Check [Contributor's guideline](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). First timers are encouraged to check `good-first-issue` tag.
+1. Check [Contributor's guideline](https://checkmate.so/docs/getting-started/contributing). First timers are encouraged to check `good-first-issue` tag.
 2. Read a detailed structure of [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate) if you would like to deep dive into the architecture.
 3. Open an issue if you believe you've encountered a bug.
 4. Check for good-first-issue's if you are a newcomer.
