@@ -1225,7 +1225,8 @@
 				"monitoring": "Giám sát",
 				"email": "Email",
 				"integrations": "Tích hợp",
-				"data": "Dữ liệu"
+				"data": "Dữ liệu",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1420,7 +1421,159 @@
 				},
 				"importExportMonitors": {
 					"title": "Nhập / Xuất trình giám sát",
-					"description": "Nhập hoặc xuất dữ liệu trình giám sát dưới dạng tệp JSON để sao lưu hoặc chuyển giao."
+					"description": "Nhập hoặc xuất dữ liệu trình giám sát dưới dạng tệp JSON để sao lưu hoặc chuyển giao.",
+					"backupNotice": "Tệp JSON này chỉ chứa các trình giám sát của bạn nên không phải là bản sao lưu đầy đủ. Để sao lưu hoặc khôi phục dữ liệu Checkmate, hãy dùng Checkmate Connect.",
+					"connectTabLink": "Mở thẻ Checkmate Connect",
+					"connectSiteLink": "Truy cập trang web Checkmate Connect"
+				},
+				"connect": {
+					"superadminOnly": "Chỉ quản trị viên cấp cao mới có thể đăng ký máy chủ này, thay đổi truy cập từ xa, chạy hoặc khôi phục bản sao lưu, hay gỡ đăng ký. Hãy đăng xuất rồi đăng nhập lại nếu vai trò của bạn vừa thay đổi.",
+					"clickToConfirm": "Nhấn lần nữa để xác nhận",
+					"status": {
+						"title": "Trạng thái",
+						"description": "Trạng thái kết nối của bản cài đặt này.",
+						"enrolled": "Đã đăng ký",
+						"notEnrolled": "Chưa đăng ký",
+						"connected": "Đường hầm đã kết nối",
+						"disconnected": "Đường hầm đã ngắt",
+						"connecting": "Đường hầm đang kết nối",
+						"remoteAccessOff": "Truy cập từ xa đã tắt",
+						"agentId": "ID tác tử",
+						"lastConnected": "Kết nối lần cuối"
+					},
+					"enroll": {
+						"title": "Đăng ký bản cài đặt",
+						"description": "Dán khối thông tin xác thực từ bảng điều khiển Checkmate Connect của bạn. Thông tin xác thực được mã hóa và lưu trong cơ sở dữ liệu của bản cài đặt này, chỉ được gửi đi khi xác thực với Checkmate Connect.",
+						"button": "Đăng ký"
+					},
+					"remoteAccess": {
+						"title": "Truy cập từ xa",
+						"description": "Giữ một đường hầm đi ra luôn mở để bạn có thể truy cập bản cài đặt này từ địa chỉ Connect của mình. Không mở cổng đi vào nào."
+					},
+					"tooltips": {
+						"enroll": "Kết nối máy chủ này với tài khoản của bạn",
+						"unenroll": "Ngắt kết nối máy chủ này khỏi Connect",
+						"generateKey": "Tạo khóa để mở các bản sao lưu",
+						"lostKey": "Bắt đầu lại với khóa mới",
+						"runFull": "Sao lưu toàn bộ cơ sở dữ liệu ngay",
+						"runConfig": "Sao lưu mọi thứ trừ lịch sử kiểm tra",
+						"importKey": "Dùng khóa từ máy chủ ban đầu",
+						"useKey": "Kiểm tra khóa này với các bản sao lưu",
+						"replaceKey": "Chuyển sang khóa khôi phục khác",
+						"restore": "Thay dữ liệu của máy chủ này bằng bản sao lưu này"
+					},
+					"backup": {
+						"title": "Sao lưu đám mây",
+						"description": "Các bản sao lưu được mã hóa của cơ sở dữ liệu bản cài đặt này, tải lên Checkmate Connect. Dữ liệu được mã hóa tại đây trước khi tải lên; đám mây chỉ lưu bản mã.",
+						"needsKey": "Thiết lập khóa khôi phục bên dưới để bắt đầu sao lưu.",
+						"generateKey": "Tạo khóa khôi phục",
+						"existingBackups": "Tài khoản này đã có bản sao lưu đám mây. Nhập khóa khôi phục từ máy chủ ban đầu để khôi phục chúng.",
+						"lostKey": "Tôi bị mất khóa",
+						"lostKeyWarning": "Không thể khôi phục các bản sao lưu đám mây hiện có nếu thiếu khóa ban đầu. Chúng được giữ 30 ngày kể từ bản sao lưu đầu tiên với khóa mới, nên bạn có thể chuyển lại nếu tìm thấy khóa cũ.",
+						"importKey": "Tôi đã có khóa khôi phục",
+						"importKeyHelp": "Dán khóa 64 ký tự từ máy chủ ban đầu. Checkmate giải mã một bản sao lưu đám mây để kiểm tra khóa trước khi lưu.",
+						"replaceKey": "Dùng khóa khôi phục khác",
+						"replaceKeyHelp": "Dán khóa 64 ký tự bạn muốn dùng thay thế. Checkmate giải mã các bản sao lưu đám mây để kiểm tra khóa, và giữ khóa hiện tại nếu không mở được bản nào.",
+						"replaceKeyWarning": "Sau khi chuyển, các bản sao lưu tạo bằng khóa hiện tại sẽ không thể khôi phục.",
+						"importKeyConfirm": "Dùng khóa này",
+						"verifyOutcome": {
+							"ok": "Đã lưu khóa khôi phục",
+							"wrong-key": "Khóa này không giải mã được các bản sao lưu đám mây của bạn",
+							"no-backups": "Không có bản sao lưu đám mây nào để kiểm tra khóa này",
+							"failed": "Không thể kiểm tra khóa: {{error}}"
+						},
+						"keyTitle": "Khóa khôi phục",
+						"keyWarning": "Hãy cất khóa này ở nơi an toàn, tách biệt khỏi máy chủ này. Khóa chỉ hiển thị một lần. Nếu làm mất, bạn sẽ không thể khôi phục các bản sao lưu đám mây và không ai có thể lấy lại khóa giúp bạn.",
+						"keyCopy": "Sao chép khóa",
+						"keyLabel": "Khóa khôi phục của bạn",
+						"keyContinue": "Tôi đã lưu",
+						"keyDone": "Tôi đã cất giữ khóa",
+						"keyShowAgain": "Hiển thị lại khóa",
+						"keyVerifyHelp": "Mở nơi bạn đã lưu khóa và dán vào đây để xác nhận bạn có một bản sao dùng được.",
+						"keyPlaceholder": "Khóa khôi phục",
+						"keyAcknowledge": "Tôi hiểu rằng nếu làm mất khóa này, tôi sẽ không thể khôi phục các bản sao lưu đám mây.",
+						"keyMismatch": "Không khớp với khóa khôi phục của bạn. Hãy hiển thị lại khóa và lưu một bản sao mới.",
+						"keyAckRequired": "Đánh dấu vào ô để xác nhận bạn đã hiểu.",
+						"toolsMissing": "Sao lưu đám mây cần mongodump và mongorestore, nhưng không tìm thấy chúng trên máy chủ này.",
+						"toolsMac": "Trên macOS, chạy: brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "Tải MongoDB Database Tools cho Linux",
+						"toolsPath": "Nếu chúng được cài ở nơi khác, hãy đặt CONNECT_MONGODUMP_BIN và CONNECT_MONGORESTORE_BIN. Thông báo này sẽ biến mất trong vòng một phút sau khi tìm thấy công cụ.",
+						"runFull": "Sao lưu ngay",
+						"runConfig": "Chỉ sao lưu cấu hình",
+						"kind": {
+							"full": "Toàn bộ cơ sở dữ liệu",
+							"config": "Chỉ cấu hình"
+						},
+						"progress": {
+							"idle": "Không hoạt động",
+							"finished": {
+								"backup": {
+									"ok": "Sao lưu hoàn tất",
+									"failed": "Sao lưu thất bại"
+								},
+								"restore": {
+									"ok": "Khôi phục hoàn tất",
+									"failed": "Khôi phục thất bại"
+								},
+								"verify": {
+									"ok": "Đã lưu khóa khôi phục",
+									"failed": "Kiểm tra khóa thất bại"
+								}
+							},
+							"queued": {
+								"backup": "Đã đưa tác vụ sao lưu vào hàng đợi",
+								"restore": "Đã đưa tác vụ khôi phục vào hàng đợi"
+							},
+							"checking": "Đang kiểm tra khóa của bạn…",
+							"restore": {
+								"downloading": "Bước 1/3: đang tải bản sao lưu",
+								"decrypting": "Bước 2/3: đang giải mã bản sao lưu",
+								"restoring": "Bước 3/3: đang khôi phục cơ sở dữ liệu"
+							},
+							"verify": {
+								"downloading": "Đang kiểm tra khóa: đang tải bản sao lưu {{attempt}}/{{attempts}}",
+								"decrypting": "Đang kiểm tra khóa: đang giải mã bản sao lưu {{attempt}}/{{attempts}}"
+							},
+							"backup": {
+								"dumping": "Bước 1/3: đang đọc và mã hóa cơ sở dữ liệu",
+								"uploading": "Bước 2/3: đang tải lên bản sao lưu đã mã hóa",
+								"saving": "Bước 3/3: đang lưu bản sao lưu vào tài khoản của bạn"
+							}
+						},
+						"progressWithPercent": "{{step}} ({{percent}}%)",
+						"progressWithSize": "{{step}} ({{size}})",
+						"lastBackupSucceeded": "Lần sao lưu gần nhất ({{date}}): thành công",
+						"lastBackupSucceededSize": "Lần sao lưu gần nhất ({{date}}): thành công · {{size}}",
+						"lastBackupFailed": "Lần sao lưu gần nhất ({{date}}): thất bại — {{error}}",
+						"lastRestoreSucceeded": "Lần khôi phục gần nhất ({{date}}): thành công",
+						"lastRestoreFailed": "Lần khôi phục gần nhất ({{date}}): thất bại — {{error}}",
+						"restore": {
+							"title": "Khôi phục bản sao lưu",
+							"description": "Tải bản sao lưu đã chọn, xác minh và giải mã trên máy chủ này, rồi thay thế cơ sở dữ liệu hiện tại.",
+							"empty": "Chưa có bản sao lưu đám mây nào đã được xác minh.",
+							"button": "Khôi phục",
+							"confirmTitle": "Khôi phục bản sao lưu từ {{date}} ({{kind}})?",
+							"confirmBody": "Thao tác này thay thế cơ sở dữ liệu hiện tại và không thể hoàn tác. Tài khoản người dùng cũng bị thay thế, vì vậy sau đó hãy đăng nhập bằng một tài khoản có trong bản sao lưu.",
+							"differentKey": "Khóa khác",
+							"expires": "Bị xóa sau {{date}}"
+						}
+					},
+					"schedule": {
+						"title": "Sao lưu theo lịch",
+						"description": "Tự động chạy sao lưu đám mây được mã hóa. Bản đầu tiên bắt đầu ngay khi bạn bật tính năng này; nếu đến lịch mà đang có sao lưu hoặc khôi phục khác chạy, lần đó sẽ bị bỏ qua cho đến chu kỳ tiếp theo.",
+						"interval": "Sao lưu mỗi",
+						"kind": "Loại sao lưu"
+					},
+					"recoveryKey": {
+						"title": "Khóa khôi phục",
+						"description": "Mã hóa các bản sao lưu đám mây trên máy chủ này. Khóa không bao giờ rời khỏi máy chủ này, và nếu thiếu nó thì không thể khôi phục các bản sao lưu.",
+						"set": "Máy chủ này đã có khóa khôi phục."
+					},
+					"unenroll": {
+						"title": "Gỡ đăng ký",
+						"description": "Ngắt kết nối bản cài đặt này khỏi Checkmate Connect và xóa thông tin xác thực cục bộ. Việc giám sát cục bộ không bị ảnh hưởng.",
+						"button": "Gỡ đăng ký"
+					}
 				},
 				"about": {
 					"title": "Giới thiệu",

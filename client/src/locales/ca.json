@@ -1225,7 +1225,8 @@
 				"monitoring": "Monitoratge",
 				"email": "Correu electrònic",
 				"integrations": "Integracions",
-				"data": "Dades"
+				"data": "Dades",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1420,7 +1421,159 @@
 				},
 				"importExportMonitors": {
 					"title": "Importar / Exportar monitors",
-					"description": "Importa o exporta les dades dels teus monitors com a fitxer JSON per a còpia de seguretat o transferència."
+					"description": "Importa o exporta les dades dels teus monitors com a fitxer JSON per a còpia de seguretat o transferència.",
+					"backupNotice": "Aquest fitxer JSON només conté els teus monitors, així que no és una còpia de seguretat completa. Per fer una còpia de seguretat de les teves dades de Checkmate o restaurar-les, utilitza Checkmate Connect.",
+					"connectTabLink": "Obre la pestanya Checkmate Connect",
+					"connectSiteLink": "Visita el lloc web de Checkmate Connect"
+				},
+				"connect": {
+					"superadminOnly": "Només un superadmin pot registrar aquest servidor, canviar l'accés remot, executar o restaurar còpies de seguretat o eliminar-ne el registre. Tanca la sessió i torna a iniciar-la si el teu rol ha canviat fa poc.",
+					"clickToConfirm": "Fes clic de nou per confirmar",
+					"status": {
+						"title": "Estat",
+						"description": "Estat de connexió d'aquesta instal·lació.",
+						"enrolled": "Registrada",
+						"notEnrolled": "No registrada",
+						"connected": "Túnel connectat",
+						"disconnected": "Túnel desconnectat",
+						"connecting": "Connectant el túnel",
+						"remoteAccessOff": "Accés remot desactivat",
+						"agentId": "ID de l'agent",
+						"lastConnected": "Darrera connexió"
+					},
+					"enroll": {
+						"title": "Registra la instal·lació",
+						"description": "Enganxa el bloc de credencials del teu tauler de Checkmate Connect. La credencial es desa xifrada a la base de dades d'aquesta instal·lació i només en surt per autenticar-se amb Checkmate Connect.",
+						"button": "Registra"
+					},
+					"remoteAccess": {
+						"title": "Accés remot",
+						"description": "Manté obert un túnel sortint perquè puguis accedir a aquesta instal·lació des de la teva adreça de Connect. No s'obre cap port entrant."
+					},
+					"tooltips": {
+						"enroll": "Connecta aquest servidor al teu compte",
+						"unenroll": "Desconnecta aquest servidor de Connect",
+						"generateKey": "Crea la clau que desbloqueja les teves còpies de seguretat",
+						"lostKey": "Torna a començar amb una clau nova",
+						"runFull": "Fes ara una còpia de tota la base de dades",
+						"runConfig": "Copia-ho tot excepte l'historial de comprovacions",
+						"importKey": "Utilitza la clau del teu servidor original",
+						"useKey": "Prova aquesta clau amb les teves còpies de seguretat",
+						"replaceKey": "Canvia a una altra clau de recuperació",
+						"restore": "Substitueix les dades d'aquest servidor per aquesta còpia"
+					},
+					"backup": {
+						"title": "Còpies de seguretat al núvol",
+						"description": "Còpies de seguretat xifrades de la base de dades d'aquesta instal·lació, pujades a Checkmate Connect. Les dades es xifren aquí abans de pujar-les; el núvol només emmagatzema text xifrat.",
+						"needsKey": "Configura una clau de recuperació a continuació per començar a fer còpies de seguretat.",
+						"generateKey": "Genera una clau de recuperació",
+						"existingBackups": "Aquest compte ja té còpies de seguretat al núvol. Introdueix la clau de recuperació del teu servidor original per restaurar-les.",
+						"lostKey": "He perdut la clau",
+						"lostKeyWarning": "Les teves còpies de seguretat al núvol existents no es poden restaurar sense la clau original. Es conserven 30 dies després de la teva primera còpia amb una clau nova, perquè puguis tornar enrere si trobes l'original.",
+						"importKey": "Ja tinc una clau de recuperació",
+						"importKeyHelp": "Enganxa la clau de 64 caràcters del teu servidor original. Checkmate desxifra una de les teves còpies de seguretat al núvol per comprovar la clau abans de desar-la.",
+						"replaceKey": "Utilitza una altra clau de recuperació",
+						"replaceKeyHelp": "Enganxa la clau de 64 caràcters que vols utilitzar en lloc de l'actual. Checkmate desxifra les teves còpies de seguretat al núvol per comprovar la clau i manté l'actual si no se n'obre cap.",
+						"replaceKeyWarning": "Les còpies de seguretat fetes amb la clau actual no es podran restaurar després del canvi.",
+						"importKeyConfirm": "Utilitza aquesta clau",
+						"verifyOutcome": {
+							"ok": "Clau de recuperació desada",
+							"wrong-key": "Aquesta clau no desxifra les teves còpies de seguretat al núvol",
+							"no-backups": "No hi ha còpies de seguretat al núvol amb què comprovar aquesta clau",
+							"failed": "No s'ha pogut comprovar la clau: {{error}}"
+						},
+						"keyTitle": "Clau de recuperació",
+						"keyWarning": "Desa aquesta clau en un lloc segur, fora d'aquest servidor. Només es mostra una vegada. Si la perds, les teves còpies de seguretat al núvol no es podran restaurar i ningú no la podrà recuperar per tu.",
+						"keyCopy": "Copia la clau",
+						"keyLabel": "La teva clau de recuperació",
+						"keyContinue": "L'he desada",
+						"keyDone": "He desat la clau",
+						"keyShowAgain": "Torna a mostrar la clau",
+						"keyVerifyHelp": "Obre el lloc on has desat la clau i enganxa-la aquí per confirmar que en tens una còpia vàlida.",
+						"keyPlaceholder": "Clau de recuperació",
+						"keyAcknowledge": "Entenc que, si perdo aquesta clau, no podré restaurar les meves còpies de seguretat al núvol.",
+						"keyMismatch": "No coincideix amb la teva clau de recuperació. Torna a mostrar la clau i desa'n una còpia nova.",
+						"keyAckRequired": "Marca la casella per confirmar que ho entens.",
+						"toolsMissing": "Les còpies de seguretat al núvol necessiten mongodump i mongorestore, que no s'han trobat en aquest servidor.",
+						"toolsMac": "A macOS, executa: brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "Baixa MongoDB Database Tools per a Linux",
+						"toolsPath": "Si estan instal·lades en un altre lloc, defineix CONNECT_MONGODUMP_BIN i CONNECT_MONGORESTORE_BIN. Aquest missatge desapareix en menys d'un minut quan es troben les eines.",
+						"runFull": "Fes una còpia ara",
+						"runConfig": "Copia només la configuració",
+						"kind": {
+							"full": "Base de dades completa",
+							"config": "Només configuració"
+						},
+						"progress": {
+							"idle": "Inactiu",
+							"finished": {
+								"backup": {
+									"ok": "Còpia de seguretat completada",
+									"failed": "La còpia de seguretat ha fallat"
+								},
+								"restore": {
+									"ok": "Restauració completada",
+									"failed": "La restauració ha fallat"
+								},
+								"verify": {
+									"ok": "Clau de recuperació desada",
+									"failed": "La comprovació de la clau ha fallat"
+								}
+							},
+							"queued": {
+								"backup": "Tasca de còpia de seguretat a la cua",
+								"restore": "Tasca de restauració a la cua"
+							},
+							"checking": "Comprovant la teva clau…",
+							"restore": {
+								"downloading": "Pas 1 de 3: baixant la còpia de seguretat",
+								"decrypting": "Pas 2 de 3: desxifrant la còpia de seguretat",
+								"restoring": "Pas 3 de 3: restaurant la teva base de dades"
+							},
+							"verify": {
+								"downloading": "Comprovant la teva clau: baixant la còpia {{attempt}} de {{attempts}}",
+								"decrypting": "Comprovant la teva clau: desxifrant la còpia {{attempt}} de {{attempts}}"
+							},
+							"backup": {
+								"dumping": "Pas 1 de 3: llegint i xifrant la teva base de dades",
+								"uploading": "Pas 2 de 3: pujant la còpia de seguretat xifrada",
+								"saving": "Pas 3 de 3: desant la còpia de seguretat al teu compte"
+							}
+						},
+						"progressWithPercent": "{{step}} ({{percent}} %)",
+						"progressWithSize": "{{step}} ({{size}})",
+						"lastBackupSucceeded": "Darrera còpia de seguretat ({{date}}): correcta",
+						"lastBackupSucceededSize": "Darrera còpia de seguretat ({{date}}): correcta · {{size}}",
+						"lastBackupFailed": "Darrera còpia de seguretat ({{date}}): ha fallat — {{error}}",
+						"lastRestoreSucceeded": "Darrera restauració ({{date}}): correcta",
+						"lastRestoreFailed": "Darrera restauració ({{date}}): ha fallat — {{error}}",
+						"restore": {
+							"title": "Restaura una còpia de seguretat",
+							"description": "Baixa la còpia de seguretat seleccionada, la verifica i la desxifra en aquest servidor i, després, substitueix la base de dades actual.",
+							"empty": "Encara no hi ha còpies de seguretat verificades al núvol.",
+							"button": "Restaura",
+							"confirmTitle": "Vols restaurar la còpia de seguretat del {{date}} ({{kind}})?",
+							"confirmBody": "Això substitueix la base de dades actual i no es pot desfer. També se substitueixen els comptes d'usuari, així que després inicia la sessió amb un compte de la còpia de seguretat.",
+							"differentKey": "Una altra clau",
+							"expires": "S'elimina després del {{date}}"
+						}
+					},
+					"schedule": {
+						"title": "Còpies de seguretat programades",
+						"description": "Executa automàticament una còpia de seguretat xifrada al núvol. La primera comença tan bon punt activis aquesta opció, i una còpia programada que venç mentre s'executa una altra còpia o restauració s'omet fins al següent interval.",
+						"interval": "Fes una còpia cada",
+						"kind": "Tipus de còpia de seguretat"
+					},
+					"recoveryKey": {
+						"title": "Clau de recuperació",
+						"description": "Xifra les teves còpies de seguretat al núvol en aquest servidor. Mai no surt d'aquest servidor i, sense ella, les teves còpies de seguretat no es poden restaurar.",
+						"set": "Hi ha una clau de recuperació definida en aquest servidor."
+					},
+					"unenroll": {
+						"title": "Elimina el registre",
+						"description": "Desconnecta aquesta instal·lació de Checkmate Connect i elimina la credencial local. El monitoratge local no es veu afectat.",
+						"button": "Elimina el registre"
+					}
 				},
 				"about": {
 					"title": "Quant a",
