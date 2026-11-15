@@ -7,6 +7,7 @@ import {
 } from "@/Types/StatusPage";
 import type { Monitor } from "@/Types/Monitor";
 import { resolveTimezone } from "@/Utils/TimeUtils";
+import { UTC_TIMEZONE } from "@/Utils/timezoneOptions";
 
 interface UseStatusPageFormOptions {
 	data?: StatusPage | null;
@@ -32,7 +33,9 @@ export const useStatusPageForm = ({
 			companyName: data?.companyName || "",
 			url: data?.url || generateDefaultUrl(),
 			customDomain: data?.customDomain ?? null,
-			timezone: resolveTimezone(data?.timezone),
+			// New pages start in the browser's timezone. A saved page without one is served in
+			// UTC, so show that rather than the browser's zone, which was never saved
+			timezone: data ? data.timezone?.trim() || UTC_TIMEZONE : resolveTimezone(),
 			type: data?.type || ["uptime"],
 			color: data?.color || "#13715B",
 			monitors: data?.monitors || [],
