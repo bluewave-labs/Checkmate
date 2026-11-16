@@ -127,6 +127,7 @@ Neváhejte se ptát nebo sdílet své nápady — moc rádi vás slyšíme!
 - Notifikace přes e-mail, webhooky, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - Plánovaná údržba
 - Monitorování pomocí JSON dotazů
+- [Checkmate Connect](https://checkmate.so/docs/connect) (volitelné): vzdálený přístup bez otevírání příchozích portů, šifrované cloudové zálohy s plánováním a obnovou a hlídač, který vám pošle e-mail, když se server přestane hlásit
 - Vícejazyčná podpora pro arabštinu, čínštinu (zjednodušenou), čínštinu (tradiční, Tchaj-wan), češtinu, angličtinu, finštinu, francouzštinu, němčinu, japonštinu, portugalštinu (Brazílie), ruštinu, španělštinu, thajštinu, turečtinu, ukrajinštinu a vietnamštinu
 
 

@@ -127,6 +127,7 @@ Nếu bạn có câu hỏi, góp ý hoặc bình luận, có một vài tuỳ ch
 - Thông báo qua e-mail, webhook, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - Bảo trì theo lịch
 - Giám sát qua truy vấn JSON
+- [Checkmate Connect](https://checkmate.so/docs/connect) (tùy chọn): truy cập từ xa mà không cần mở cổng vào, sao lưu đám mây được mã hóa với lịch chạy và khôi phục, cùng một watchdog gửi email cho bạn khi máy chủ ngừng báo cáo
 - Hỗ trợ đa ngôn ngữ: Ả Rập, Trung Quốc (giản thể), Trung Quốc (phồn thể, Đài Loan), Séc, Anh, Phần Lan, Pháp, Đức, Nhật, Bồ Đào Nha (Brazil), Nga, Tây Ban Nha, Thái, Thổ Nhĩ Kỳ, Ukraine và Việt Nam
 
 

@@ -124,6 +124,7 @@ Sinta-se à vontade para perguntar ou compartilhar suas ideias — adoramos ouvi
 - Notificações por e-mail, webhooks, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - Manutenção agendada
 - Monitoramento por consulta JSON
+- [Checkmate Connect](https://checkmate.so/docs/connect) (opcional): acesso remoto sem abrir portas de entrada, backups criptografados na nuvem com execuções agendadas e restauração, e um watchdog que avisa por e-mail quando seu servidor para de se reportar
 - Suporte a múltiplos idiomas: árabe, chinês (simplificado), chinês (tradicional, Taiwan), tcheco, inglês, finlandês, francês, alemão, japonês, português (Brasil), russo, espanhol, tailandês, turco, ucraniano e vietnamita
 
 

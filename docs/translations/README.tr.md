@@ -124,6 +124,7 @@ Soru sormaktan ya da fikirlerinizi paylaşmaktan çekinmeyin — sizi dinlemekte
 - E-posta, webhook, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS) bildirimleri
 - Planlı bakım
 - JSON sorgu izleme
+- [Checkmate Connect](https://checkmate.so/docs/connect) (isteğe bağlı): gelen port açmadan uzaktan erişim, zamanlanmış çalıştırma ve geri yükleme destekli şifreli bulut yedekleri ve sunucunuz rapor vermeyi bıraktığında size e-posta gönderen bir bekçi
 - Çoklu dil desteği: Arapça, Çince (Basitleştirilmiş), Çince (Geleneksel, Tayvan), Çekçe, İngilizce, Fince, Fransızca, Almanca, Japonca, Portekizce (Brezilya), Rusça, İspanyolca, Tayca, Türkçe, Ukraynaca ve Vietnamca
 
 

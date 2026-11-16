@@ -124,6 +124,7 @@ Checkmate 已在 1000+ 個活躍監控項目下進行過壓力測試,未發生�
 - 透過電子郵件、Webhook、Discord、Slack、PagerDuty、Matrix、Microsoft Teams、Telegram、Pushover、Twilio (SMS) 傳送通知
 - 排程維護
 - JSON 查詢監控
+- [Checkmate Connect](https://checkmate.so/docs/connect)（選用）：無需開放入站連接埠即可遠端存取，支援排程執行與還原的加密雲端備份，以及在伺服器停止回報時寄送電子郵件通知的看門狗
 - 多語言支援:阿拉伯文、簡體中文、繁體中文(台灣)、捷克文、英文、芬蘭文、法文、德文、日文、葡萄牙文(巴西)、俄文、西班牙文、泰文、土耳其文、烏克蘭文與越南文
 
 
