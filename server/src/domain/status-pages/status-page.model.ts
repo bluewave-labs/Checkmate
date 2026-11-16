@@ -3,6 +3,7 @@ import type { StatusPage } from "@/domain/status-pages/status-page.type.js";
 import {
 	DEFAULT_STATUS_PAGE_THEME,
 	DEFAULT_STATUS_PAGE_THEME_MODE,
+	DEFAULT_STATUS_PAGE_TIMEZONE,
 	StatusPageThemeModes,
 	StatusPageThemes,
 	StatusPageTypes,
@@ -77,6 +78,8 @@ const StatusPageSchema = new Schema<StatusPageDocument>(
 		},
 		timezone: {
 			type: String,
+			required: true,
+			default: DEFAULT_STATUS_PAGE_TIMEZONE,
 		},
 		color: {
 			type: String,
