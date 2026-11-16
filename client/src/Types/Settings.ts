@@ -43,3 +43,8 @@ export interface AppSettingsResponse {
 	} | null;
 	settings: Settings;
 }
+
+export interface AppVersionInfo {
+	latest: string | null;
+	updateAvailable: boolean;
+}

@@ -8,11 +8,13 @@ import { IEmailService } from "@/service/emailService.js";
 import { IProxiesService } from "@/domain/proxies/proxy.service.js";
 import { Settings } from "@/domain/app-settings/app-settings.type.js";
 import { appSettingsErrors } from "@/domain/app-settings/app-settings.errors.js";
+import { IAppVersionService } from "@/domain/app-version/app-version.service.js";
 
 const SERVICE_NAME = "SettingsController";
 
 export interface ISettingsController {
 	getAppSettings: RequestHandler;
+	getVersionInfo: RequestHandler;
 	updateAppSettings: RequestHandler;
 	sendTestEmail: RequestHandler;
 }
@@ -23,10 +25,17 @@ class SettingsController implements ISettingsController {
 	private settingsService: ISettingsService;
 	private emailService: IEmailService;
 	private proxiesService: IProxiesService;
-	constructor(settingsService: ISettingsService, emailService: IEmailService, proxiesService: IProxiesService) {
+	private appVersionService: IAppVersionService;
+	constructor(
+		settingsService: ISettingsService,
+		emailService: IEmailService,
+		proxiesService: IProxiesService,
+		appVersionService: IAppVersionService
+	) {
 		this.settingsService = settingsService;
 		this.emailService = emailService;
 		this.proxiesService = proxiesService;
+		this.appVersionService = appVersionService;
 	}
 
 	buildAppSettings = async (dbSettings: Settings) => {
@@ -59,6 +68,11 @@ class SettingsController implements ISettingsController {
 		const dbSettings = await this.settingsService.getDBSettings();
 		const data = await this.buildAppSettings(dbSettings);
 		res.json({ success: true, msg: "App settings fetched successfully", data });
+	};
+
+	getVersionInfo: Handler = async (req, res) => {
+		const data = await this.appVersionService.getVersionInfo();
+		res.json({ success: true, msg: "Got version info", data });
 	};
 
 	updateAppSettings: Handler = async (req, res) => {

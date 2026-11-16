@@ -69,10 +69,20 @@ export const StatusLabel = ({ status, sx }: { status: MonitorStatus; sx?: SxProp
 	);
 };
 
-export const ValueLabel = ({ value, text }: { value: ValueType; text: string }) => {
+export const ValueLabel = ({
+	value,
+	text,
+	preserveCase = false,
+}: {
+	value: ValueType;
+	text: string;
+	preserveCase?: boolean;
+}) => {
 	const theme = useTheme();
 	const palette = getValuePalette(value);
-	const transformedText = text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+	const transformedText = preserveCase
+		? text
+		: text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 
 	return (
 		<BaseBox

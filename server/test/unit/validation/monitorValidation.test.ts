@@ -872,3 +872,97 @@ describe("monitorValidation — docker alert switches", () => {
 		});
 	});
 });
+
+describe("monitorValidation — heartbeat", () => {
+	const heartbeatBody = { name: "Nightly backup", type: "heartbeat" as const, interval: 3600000 };
+	const createBody = { ...heartbeatBody, heartbeatSlug: "nightly-backup" };
+	const badSlugs = ["Nightly", "nightly_backup", "-backup", "backup-", "night--backup", "a".repeat(65)];
+
+	const issuePaths = (result: { success: boolean; error?: { issues: { path: PropertyKey[] }[] } }) =>
+		(result.error?.issues ?? []).map((issue) => issue.path.join("."));
+
+	const importOne = (monitor: Record<string, unknown>) => importMonitorsBodyValidation.safeParse({ monitors: [monitor] });
+
+	describe("createMonitorBodyValidation", () => {
+		it("accepts a heartbeat without a url and defaults it to empty", () => {
+			const parsed = createMonitorBodyValidation.parse(createBody);
+
+			expect(parsed.url).toBe("");
+		});
+
+		it("requires a slug on a heartbeat", () => {
+			expect(issuePaths(createMonitorBodyValidation.safeParse(heartbeatBody))).toContain("heartbeatSlug");
+			expect(issuePaths(createMonitorBodyValidation.safeParse({ ...heartbeatBody, heartbeatSlug: "" }))).toContain("heartbeatSlug");
+		});
+
+		it("does not require a slug for other types", () => {
+			expect(issuePaths(createMonitorBodyValidation.safeParse({ name: "Site", type: "http", url: "https://example.com" }))).not.toContain(
+				"heartbeatSlug"
+			);
+		});
+
+		it.each(badSlugs)("rejects the slug %j", (heartbeatSlug) => {
+			expect(issuePaths(createMonitorBodyValidation.safeParse({ ...heartbeatBody, heartbeatSlug }))).toContain("heartbeatSlug");
+		});
+
+		it("still requires a url for other types", () => {
+			expect(issuePaths(createMonitorBodyValidation.safeParse({ name: "Site", type: "http" }))).toContain("url");
+			expect(issuePaths(createMonitorBodyValidation.safeParse({ name: "Site", type: "http", url: " " }))).toContain("url");
+		});
+
+		it("rejects geo checks and a custom proxy on a heartbeat", () => {
+			expect(issuePaths(createMonitorBodyValidation.safeParse({ ...createBody, geoCheckEnabled: true }))).toContain("geoCheckEnabled");
+			expect(issuePaths(createMonitorBodyValidation.safeParse({ ...createBody, proxyMode: "custom" }))).toContain("proxyMode");
+		});
+	});
+
+	describe("editMonitorBodyValidation", () => {
+		it("accepts a partial edit that leaves the url out", () => {
+			expect(editMonitorBodyValidation.safeParse({ type: "http", name: "x" }).success).toBe(true);
+		});
+
+		it("rejects an edit that sends an empty url for a non-heartbeat type", () => {
+			expect(issuePaths(editMonitorBodyValidation.safeParse({ type: "http", url: "" }))).toContain("url");
+		});
+
+		it("rejects geo checks and a custom proxy on a heartbeat", () => {
+			expect(issuePaths(editMonitorBodyValidation.safeParse({ type: "heartbeat", geoCheckEnabled: true }))).toContain("geoCheckEnabled");
+			expect(issuePaths(editMonitorBodyValidation.safeParse({ type: "heartbeat", proxyMode: "custom" }))).toContain("proxyMode");
+		});
+
+		it("accepts an edit that leaves the slug out", () => {
+			expect(editMonitorBodyValidation.safeParse({ type: "heartbeat", name: "x" }).success).toBe(true);
+		});
+
+		it.each(badSlugs)("rejects the slug %j", (heartbeatSlug) => {
+			expect(issuePaths(editMonitorBodyValidation.safeParse({ type: "heartbeat", heartbeatSlug }))).toContain("heartbeatSlug");
+		});
+	});
+
+	describe("importMonitorsBodyValidation", () => {
+		it("accepts a heartbeat without a url and defaults it to empty", () => {
+			const parsed = importMonitorsBodyValidation.parse({ monitors: [heartbeatBody] });
+
+			expect(parsed.monitors[0].url).toBe("");
+		});
+
+		it("still requires a url for other types", () => {
+			expect(issuePaths(importOne({ name: "Site", type: "http" }))).toContain("monitors.0.url");
+			expect(issuePaths(importOne({ name: "Site", type: "http", url: " " }))).toContain("monitors.0.url");
+		});
+
+		it("rejects geo checks and a custom proxy on a heartbeat", () => {
+			expect(issuePaths(importOne({ ...heartbeatBody, geoCheckEnabled: true }))).toContain("monitors.0.geoCheckEnabled");
+			expect(issuePaths(importOne({ ...heartbeatBody, proxyMode: "custom" }))).toContain("monitors.0.proxyMode");
+		});
+
+		it("accepts a heartbeat without a slug, since import derives one from the name", () => {
+			expect(importOne(heartbeatBody).success).toBe(true);
+		});
+
+		it("keeps a valid slug and rejects a malformed one", () => {
+			expect(importMonitorsBodyValidation.parse({ monitors: [createBody] }).monitors[0]).toMatchObject({ heartbeatSlug: "nightly-backup" });
+			expect(issuePaths(importOne({ ...heartbeatBody, heartbeatSlug: "Not_A_Slug" }))).toContain("monitors.0.heartbeatSlug");
+		});
+	});
+});

@@ -82,13 +82,13 @@ Checkmate 已在 1000+ 個活躍監控項目下進行過壓力測試,未發生�
 
 安裝說明請參閱 [Checkmate 文件入口](https://checkmate.so/docs)。
 
-你也可以使用 [Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](../../charts/helm/checkmate/INSTALLATION.md)、[Sive Host](https://sive.host)(南非)、[Cloudzy](https://cloudzy.com/marketplace/checkmate) 或 [Pikapods](https://www.pikapods.com/) 來快速啟動一個 Checkmate 實例。若要監控伺服器基礎架構,需要 [Capture 代理程式](https://github.com/bluewave-labs/capture),Capture 儲存庫中也提供了安裝說明。
+你也可以使用 [Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm)、[Sive Host](https://sive.host)(南非)、[Cloudzy](https://cloudzy.com/marketplace/checkmate) 或 [Pikapods](https://www.pikapods.com/) 來快速啟動一個 Checkmate 實例。若要監控伺服器基礎架構,需要 [Capture 代理程式](https://checkmate.so/docs/infrastructure/installing-capture),Capture 儲存庫中也提供了安裝說明。
 
 ### 使用自訂 CA
 
-如果你需要使用私有 CA(例如 Smallstep)發行的憑證來監控內部 HTTPS 端點,請參考我們的 [自訂 CA 信任指南](../custom-ca-trust.md),其中介紹了 Docker 的設定選項。
+如果你需要使用私有 CA(例如 Smallstep)發行的憑證來監控內部 HTTPS 端點,請參考我們的 [自訂 CA 信任指南](https://checkmate.so/docs/settings/custom-ca-trust),其中介紹了 Docker 的設定選項。
 
-更多文件請參閱 [docs 目錄](../)。
+更多文件請參閱 [Checkmate 文件入口網站](https://checkmate.so/docs)。
 
 <a id="performance"></a>
 ## 效能
@@ -114,7 +114,7 @@ Checkmate 已在 1000+ 個活躍監控項目下進行過壓力測試,未發生�
 <a id="features"></a>
 ## 功能
 
-- 完全開源,可部署到自己的伺服器或家用裝置(例如 Raspberry Pi 4 / 5)
+- 完全開源,可部署到自己的伺服器或家用裝置(例如 Raspberry Pi 5)
 - 多種監控選項:可用性、Docker、Ping、SSL、連接埠、遊戲伺服器
 - 頁面速度監控
 - 基礎架構監控(記憶體、磁碟使用量、CPU 效能、網路等) — 需要 [Capture](https://github.com/bluewave-labs/capture) 代理程式
@@ -184,7 +184,7 @@ Checkmate 已在 1000+ 個活躍監控項目下進行過壓力測試,未發生�
 如何貢獻:
 
 0. 給本儲存庫點亮 ⭐ :)
-1. 閱讀 [貢獻者指南](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md)。新手建議先查看 `good-first-issue` 標籤。
+1. 閱讀 [貢獻者指南](https://checkmate.so/docs/getting-started/contributing)。新手建議先查看 `good-first-issue` 標籤。
 2. 如果想深入了解架構,請閱讀 [Checkmate 的詳細結構介紹](https://deepwiki.com/bluewave-labs/Checkmate)。
 3. 若你認為遇到了 bug,請開啟一個 issue。
 4. 如果你是新手,建議從 `good-first-issue` 開始。

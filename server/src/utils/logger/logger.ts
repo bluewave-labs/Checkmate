@@ -6,6 +6,7 @@ import type { RequestHandler } from "express";
 import { randomUUID } from "node:crypto";
 import { pinoHttp } from "pino-http";
 import type { LogLevel } from "@/domain/app-settings/app-settings.type.js";
+import { IncomingMessage } from "node:http";
 
 // Keys the logger writes itself; a field with the same name would be written twice
 type ReservedLogKey = "message" | "level" | "timestamp" | "service";
@@ -55,7 +56,10 @@ const SECRET_KEYS = [
 	"systemEmailPassword",
 	"pagespeedApiKey",
 	"dockerTlsKey",
+	"heartbeatKey",
+	"heartbeatKeyHash",
 	"token",
+	"recoveryKey",
 ];
 const REDACT_PATHS = SECRET_KEYS.flatMap((key) => [key, `*.${key}`, `*.*.${key}`]);
 
@@ -66,6 +70,10 @@ const ERROR_KEYS = new Set(["type", "message", "stack", "code", "errno", "syscal
 const URL_PATTERN = /\b(https?:\/\/)(?:[^\s/?#@]+@)?([^\s/?#@]+)([^\s"'<>)]*)/gi;
 const maskUrls = (text: string): string =>
 	text.replace(URL_PATTERN, (_match, scheme: string, host: string, rest: string) => `${scheme}${host}${rest ? "/[Redacted]" : ""}`);
+
+// The first segment after /heartbeat/ is the team ping key; the slug stays visible
+const HEARTBEAT_KEY_PATTERN = /(\/api\/v1\/heartbeat\/)[^/?#]+/;
+export const redactRequestPath = (url: string): string => url.replace(HEARTBEAT_KEY_PATTERN, "$1[Redacted]");
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
 
@@ -91,13 +99,15 @@ export const serializeError = (error: unknown): unknown => {
 	return pickErrorKeys(pino.stdSerializers.errWithCause(error as unknown as Error) as unknown as Record<string, unknown>);
 };
 
+type LoggerOptions = { stdout?: NodeJS.WritableStream };
+
 class Logger implements ILogger {
 	private pino: PinoLogger;
 	private logCache: LogEntry[] = [];
 
 	// A child wraps a pino child and shares the parent's cache, so getLogs() is the same on every logger.
 	// Its lines still reach the cache: pino children write to the root logger's multistream.
-	constructor(parent?: { pino: PinoLogger; logCache: LogEntry[] }) {
+	constructor(parent?: { pino: PinoLogger; logCache: LogEntry[] }, { stdout = process.stdout }: LoggerOptions = {}) {
 		if (parent) {
 			this.pino = parent.pino;
 			this.logCache = parent.logCache;
@@ -115,6 +125,16 @@ class Logger implements ILogger {
 			},
 		};
 
+		let stdoutOpen = true;
+		stdout.on("error", () => {
+			stdoutOpen = false;
+		});
+		const stdoutStream = {
+			write: (line: string) => {
+				if (stdoutOpen) stdout.write(line);
+			},
+		};
+
 		this.pino = pino(
 			{
 				level: "info",
@@ -127,10 +147,10 @@ class Logger implements ILogger {
 				base: undefined, // omit pid and hostname
 				serializers: { err: serializeError },
 				redact: { paths: REDACT_PATHS, censor: "[Redacted]" },
-				mixin: () => logContext.getStore() ?? {},
+				mixin: () => ({ ...logContext.getStore() }),
 			},
 			pino.multistream([
-				{ stream: process.stdout, level: "debug" },
+				{ stream: stdoutStream, level: "debug" },
 				{ stream: cacheStream, level: "debug" },
 			])
 		);
@@ -182,9 +202,10 @@ class Logger implements ILogger {
 			},
 			// Names unique to request lines, so the pretty-print ignore list and the cache filter can't catch app fields
 			customAttributeKeys: { req: "httpRequest", res: "httpResponse", responseTime: "httpDurationMs" },
-			customSuccessMessage: (req, res, responseTime) => `${req.method} ${req.url} ${res.statusCode} ${Math.round(responseTime)}ms`,
+			customSuccessMessage: (req, res, responseTime) =>
+				`${req.method} ${redactRequestPath((req as IncomingMessage & { originalUrl?: string }).originalUrl ?? req.url ?? "")} ${res.statusCode} ${Math.round(responseTime)}ms`,
 			serializers: {
-				req: (req) => ({ id: req.id, method: req.method, url: req.url }), // no headers, no body
+				req: (req) => ({ id: req.id, method: req.method, url: redactRequestPath(req.url) }),
 				res: (res) => ({ statusCode: res.statusCode }), // the default also logs response headers
 				err: serializeError, // pino-http ignores the logger's serializer
 			},

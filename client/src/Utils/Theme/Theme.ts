@@ -194,6 +194,11 @@ export const theme = (mode: string, palette: any) =>
 					disableTouchRipple: true,
 					disableFocusRipple: true,
 				},
+				styleOverrides: {
+					root: {
+						fontSize: typographyLevels.base,
+					},
+				},
 			},
 
 			MuiFormLabel: {
@@ -224,12 +229,17 @@ export const theme = (mode: string, palette: any) =>
 						height: "100%",
 					},
 					root: ({ theme }) => ({
+						backgroundColor: theme.palette.background.paper,
+						"&.MuiInputBase-root:has(.MuiSelect-select)": {
+							cursor: "pointer",
+						},
 						"& .MuiSelect-select": {
 							paddingTop: 0,
 							paddingBottom: 0,
 							display: "flex",
 							alignItems: "center",
 							minHeight: "unset",
+							alignSelf: "stretch",
 						},
 						"& .MuiOutlinedInput-notchedOutline": {
 							borderColor: theme.palette.divider,

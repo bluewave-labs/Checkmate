@@ -4,12 +4,16 @@ import type { Server } from "http";
 import { Mongoose } from "mongoose";
 import { IJobScheduler } from "@/worker/worker.interface.js";
 import { IHealthServer } from "@/worker/worker.health-server.js";
+import { IConnectService } from "@/domain/connect/connect.service.js";
+
+const SHUTDOWN_TIMEOUT_MS = 30_000; // Must be longer than DRAIN_TIMEOUT set in worker.db.queue
 
 type ShutdownTargets = {
 	worker: IJobScheduler;
 	db: IDb<Mongoose>;
 	logger: ILogger;
 	healthServer?: IHealthServer;
+	connectService?: IConnectService;
 };
 export const initShutdownListener = (server: Server | null, shutdownTargets: ShutdownTargets) => {
 	const SERVICE_NAME = "Server";
@@ -22,9 +26,13 @@ export const initShutdownListener = (server: Server | null, shutdownTargets: Shu
 			return;
 		}
 		isShuttingDown = true;
+
+		setTimeout(() => process.exit(exitCode || 1), SHUTDOWN_TIMEOUT_MS).unref();
+
 		log.info("Attempting graceful shutdown");
 
 		try {
+			shutdownTargets.connectService?.stop();
 			server?.close();
 			await shutdownTargets.worker.drain();
 			await shutdownTargets.worker.shutdown();
@@ -37,15 +45,23 @@ export const initShutdownListener = (server: Server | null, shutdownTargets: Shu
 			process.exit(1);
 		}
 	};
-	process.on("SIGUSR2", () => shutdown(0));
-	process.on("SIGINT", () => shutdown(0));
-	process.on("SIGTERM", () => shutdown(0));
+
+	const onSignal = () => {
+		if (isShuttingDown) process.exit(1);
+		void shutdown(0);
+	};
+
+	process.on("SIGUSR2", onSignal);
+	process.on("SIGINT", onSignal);
+	process.on("SIGTERM", onSignal);
 
 	process.on("unhandledRejection", (reason: unknown) => {
+		if (isShuttingDown) return;
 		log.error({ err: reason }, "Unhandled promise rejection");
 		shutdown(1);
 	});
 	process.on("uncaughtException", (error: Error) => {
+		if (isShuttingDown) return;
 		log.error({ err: error }, "Uncaught exception");
 		shutdown(1);
 	});

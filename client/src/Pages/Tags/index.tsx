@@ -45,6 +45,7 @@ const TagsPage = () => {
 			loading={isLoading || isValidating}
 			error={!!error}
 			totalCount={tags?.length ?? 0}
+			showActionButton={isAdmin}
 			actionButtonText={t("pages.tags.fallback.actionButton")}
 			actionLink="/tags/create"
 		>

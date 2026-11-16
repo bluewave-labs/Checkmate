@@ -12,11 +12,13 @@ import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
 import { ILogger } from "@/utils/logger/logger.js";
 import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
 import { ITelemetryService } from "@/domain/telemetry/telemetry.service.js";
+import { IConnectHeartbeatService } from "@/domain/connect/connect-heartbeat.service.js";
 
 export interface IWorkerHelper {
 	getCleanupOrphanedJob(): () => Promise<void>;
 	getCleanupRetentionJob(): () => Promise<void>;
 	getTelemetryJob(): () => Promise<void>;
+	getConnectHeartbeatJob(): () => Promise<void>;
 }
 
 export class WorkerHelper implements IWorkerHelper {
@@ -34,6 +36,7 @@ export class WorkerHelper implements IWorkerHelper {
 	private geoChecksRepository: IGeoChecksRepository;
 	private dockerLogsRepository: IDockerLogsRepository;
 	private telemetryService: ITelemetryService;
+	private connectHeartbeatService: IConnectHeartbeatService;
 
 	constructor(
 		logger: ILogger,
@@ -47,7 +50,8 @@ export class WorkerHelper implements IWorkerHelper {
 		incidentsRepository: IIncidentsRepository,
 		geoChecksRepository: IGeoChecksRepository,
 		dockerLogsRepository: IDockerLogsRepository,
-		telemetryService: ITelemetryService
+		telemetryService: ITelemetryService,
+		connectHeartbeatService: IConnectHeartbeatService
 	) {
 		this.logger = logger.child({ service: SERVICE_NAME });
 		this.checkService = checkService;
@@ -61,11 +65,18 @@ export class WorkerHelper implements IWorkerHelper {
 		this.geoChecksRepository = geoChecksRepository;
 		this.dockerLogsRepository = dockerLogsRepository;
 		this.telemetryService = telemetryService;
+		this.connectHeartbeatService = connectHeartbeatService;
 	}
 
 	getTelemetryJob = () => {
 		return async () => {
 			await this.telemetryService.handleJob();
+		};
+	};
+
+	getConnectHeartbeatJob = () => {
+		return async () => {
+			await this.connectHeartbeatService.handleJob();
 		};
 	};
 

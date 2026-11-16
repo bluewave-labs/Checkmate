@@ -1,0 +1,132 @@
+export const ConnectBackupKinds = ["full", "config"] as const;
+export type ConnectBackupKind = (typeof ConnectBackupKinds)[number];
+export const ConnectScheduleIntervals = [24, 72, 168] as const;
+export type ConnectScheduleInterval = (typeof ConnectScheduleIntervals)[number];
+export type ConnectOperationState = "queued" | "running";
+export type ConnectOperation = "backup" | "restore" | "verify";
+export type ConnectProgressStage =
+	| "dumping"
+	| "uploading"
+	| "saving"
+	| "downloading"
+	| "decrypting"
+	| "restoring";
+export type ConnectVerifyOutcome = "ok" | "wrong-key" | "no-backups" | "failed";
+export type ConnectBackupToolName = "mongodump" | "mongorestore";
+
+export interface ConnectTunnelStatus {
+	connected: boolean;
+	lastConnectedAt: string | null;
+	lastError: string | null;
+	closeCode: number | null;
+}
+
+export interface ConnectStatus {
+	enrolled: boolean;
+	agentId: string | null;
+	connectUrl: string | null;
+	apiUrl: string | null;
+	agentVersion: string;
+	remoteAccess: { enabled: boolean };
+	tunnel: ConnectTunnelStatus;
+	backup: { recoveryKeySet: boolean; schedule: ConnectSchedule };
+}
+
+export interface ConnectSchedule {
+	enabled: boolean;
+	intervalHours: ConnectScheduleInterval;
+	kind: ConnectBackupKind;
+}
+
+export interface ConnectEnrollBody {
+	connectUrl: string;
+	agentId: string;
+	token: string;
+	apiUrl?: string;
+}
+
+export interface ConnectRemoteAccessBody {
+	enabled: boolean;
+}
+
+export interface ConnectBackupResult {
+	ok: boolean;
+	at: string;
+	kind: ConnectBackupKind | null;
+	sizeBytes: number | null;
+	sha256: string | null;
+	backupId: string | null;
+	durationMs: number | null;
+	error: string | null;
+}
+
+export interface ConnectVerifyResult {
+	outcome: ConnectVerifyOutcome;
+	at: string;
+	error: string | null;
+}
+
+export interface ConnectProgress {
+	operation: ConnectOperation;
+	stage: ConnectProgressStage;
+	percent: number | null;
+	bytes: number | null;
+	attempt: number | null;
+	attempts: number | null;
+}
+
+export interface ConnectOperationStatus {
+	type: ConnectOperation;
+	state: ConnectOperationState;
+	requestedAt: string;
+}
+
+export interface ConnectBackupStatus {
+	operation: ConnectOperationStatus | null;
+	progress: ConnectProgress | null;
+	lastBackup: ConnectBackupResult | null;
+	lastRestore: ConnectBackupResult | null;
+	lastVerify: ConnectVerifyResult | null;
+	missingTools: ConnectBackupToolName[];
+}
+
+export interface ConnectBackupListEntry {
+	id: string;
+	kind: string;
+	sizeBytes: number;
+	status: string;
+	createdAt: string;
+	keyId: string | null;
+	expiresAt: string | null;
+	restorable: boolean;
+}
+
+export interface ConnectBackupList {
+	backups: ConnectBackupListEntry[];
+}
+
+export interface ConnectRecoveryKey {
+	recoveryKey: string;
+	format: string;
+}
+
+export interface ConnectQueued {
+	queued: true;
+}
+
+export interface ConnectGenerateKeyBody {
+	discardExisting: boolean;
+}
+
+export interface ConnectRunBackupBody {
+	kind: ConnectBackupKind;
+}
+
+export interface ConnectImportKeyBody {
+	recoveryKey: string;
+	replaceExisting: boolean;
+}
+
+export interface ConnectRestoreBody {
+	backupId: string;
+}

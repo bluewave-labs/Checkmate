@@ -6,6 +6,7 @@ import type {
 	MonitorTypeCount,
 	CheckSnapshot,
 	MonitorScheduleFields,
+	DashboardByTeamIdResult,
 } from "@/domain/monitors/monitor.type.js";
 
 export interface TeamQueryConfig {
@@ -34,6 +35,10 @@ export interface IMonitorsRepository {
 	findById(monitorId: string, teamId: string): Promise<Monitor>;
 	// for workers, don't need all details
 	findByIdLean(monitorId: string): Promise<Monitor | null>;
+	// Lookup by slug for heartbeat pings, scoped to the team that owns the ping key
+	findHeartbeatBySlug(teamId: string, slug: string): Promise<Monitor | null>;
+	// Which of these slugs heartbeat monitors in the team already use
+	findExistingHeartbeatSlugs(teamId: string, slugs: string[]): Promise<string[]>;
 
 	// collection fetch
 	findAllForScheduling(): Promise<MonitorScheduleFields[]>;
@@ -53,6 +58,7 @@ export interface IMonitorsRepository {
 		maxRecentChecks: number,
 		statusPatch?: Partial<Monitor>
 	): Promise<Monitor>;
+
 	togglePauseById(monitorId: string, teamId: string): Promise<Monitor>;
 	bulkTogglePause(monitorIds: string[], teamId: string, pause: boolean): Promise<Monitor[]>;
 	// delete
@@ -71,6 +77,7 @@ export interface IMonitorsRepository {
 
 	// other
 	findMonitorsSummaryByTeamId(teamId: string, config?: SummaryConfig): Promise<MonitorsSummary>;
+	findDashboardByTeamId(teamId: string, config?: Pick<TeamQueryConfig, "limit" | "order">): Promise<DashboardByTeamIdResult>;
 	removeNotificationFromMonitors(notificationId: string): Promise<void>;
 	removeTagFromMonitors(tagId: string): Promise<void>;
 	updateNotifications(teamId: string, monitorIds: string[], notificationIds: string[], action: "add" | "remove" | "set"): Promise<number>;

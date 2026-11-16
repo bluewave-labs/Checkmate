@@ -97,25 +97,19 @@ class MongoJobsRepository implements IJobsRepository {
 			nextScheduledAt = now + intervalMs + Math.floor(Math.random() * intervalMs);
 		}
 
-		const res = await JobModel.updateOne(
-			{
-				_id: id,
-				lockedBy: this.workerId, // Only the worker that claimed can record success
-			},
+		const res = await JobModel.updateOne({ _id: id, lockedBy: this.workerId }, [
 			{
 				$set: {
-					nextScheduledAt,
-					lockedBy: null, // Remove lock
+					nextScheduledAt: { $max: ["$nextScheduledAt", nextScheduledAt] },
+					lockedBy: null,
 					lockedUntil: null,
 					lastFinishedAt: now,
 					failCount: 0,
 					lastFailReason: null,
+					runCount: { $add: ["$runCount", 1] },
 				},
-				$inc: {
-					runCount: 1, // Increment run count
-				},
-			}
-		);
+			},
+		]);
 		return res.modifiedCount === 1;
 	};
 
@@ -123,25 +117,27 @@ class MongoJobsRepository implements IJobsRepository {
 		const res = await JobModel.updateOne(
 			{
 				_id: id,
-				lockedBy: this.workerId, // Only the worker that claimed can record success
+				lockedBy: this.workerId, // Only the worker that claimed can record failure
 			},
-			{
-				$set: {
-					nextScheduledAt: now + BACKOFF_MS,
-					lockedBy: null, // Remove lock
-					lockedUntil: null,
-					lastFinishedAt: now, // a failed run still finished used in getMetrics for failedAt timestamp
-					lastFailReason: error instanceof Error ? error.message : String(error),
+			[
+				{
+					$set: {
+						nextScheduledAt: { $max: ["$nextScheduledAt", now + BACKOFF_MS] },
+						lockedBy: null, // Remove lock
+						lockedUntil: null,
+						lastFinishedAt: now, // a failed run still finished used in getMetrics for failedAt timestamp
+						lastFailReason: {
+							$literal: error instanceof Error ? error.message : String(error),
+						},
+						failCount: { $add: ["$failCount", 1] }, // Increment fail count
+					},
 				},
-				$inc: {
-					failCount: 1, // Increment fail count
-				},
-			}
+			]
 		);
 		return res.modifiedCount === 1;
 	};
 
-	recordOneShot = async (id: string, now: number) => {
+	recordOneShot = async (id: string, scheduledRunAt: number, now: number) => {
 		const res = await JobModel.updateOne(
 			{
 				_id: id,
@@ -150,9 +146,25 @@ class MongoJobsRepository implements IJobsRepository {
 			[
 				{
 					$set: {
-						// Re-arm if more checks were pushed while this run held the lease; otherwise park
 						nextScheduledAt: {
-							$cond: [{ $gt: [{ $size: { $ifNull: ["$pendingChecks", []] } }, 0] }, now, PARKED],
+							$switch: {
+								branches: [
+									// Checks were pushed while this run held the lease: run again now
+									{
+										case: {
+											$gt: [{ $size: { $ifNull: ["$pendingChecks", []] } }, 0],
+										},
+										then: now,
+									},
+									// The job was re-armed during the run, keep it
+									{
+										case: { $ne: ["$nextScheduledAt", scheduledRunAt] },
+										then: "$nextScheduledAt",
+									},
+								],
+								// Otherwise park until something re-arms it
+								default: PARKED,
+							},
 						},
 						lockedBy: null, // Remove lock
 						lockedUntil: null,
@@ -241,7 +253,7 @@ class MongoJobsRepository implements IJobsRepository {
 		return res.acknowledged;
 	};
 
-	upsertCleanupJob = async (job: JobSeed) => {
+	upsertJobAndSchedule = async (job: JobSeed) => {
 		const res = await JobModel.updateOne(
 			{ _id: job.id },
 			{
@@ -276,6 +288,22 @@ class MongoJobsRepository implements IJobsRepository {
 		return res.modifiedCount === 1;
 	};
 
+	updateHeartbeatScheduleById = async (refId: string, intervalMs: number): Promise<boolean> => {
+		const res = await JobModel.updateOne({ refId, type: "check" }, [
+			{
+				$set: {
+					// nextScheduledAt - oldInterval is the last scheduled run.
+					// Reset the deadline by adding the new intervalMs
+					nextScheduledAt: {
+						$add: [{ $subtract: ["$nextScheduledAt", "$intervalMs"] }, intervalMs],
+					},
+					intervalMs,
+				},
+			},
+		]);
+		return res.modifiedCount === 1;
+	};
+
 	markMonitorsDue = async (monitorIds: string[], now: number) => {
 		if (monitorIds.length === 0) return 0;
 		const res = await JobModel.updateMany({ refId: { $in: monitorIds }, type: { $in: ["check", "geo-check"] } }, [
@@ -288,6 +316,27 @@ class MongoJobsRepository implements IJobsRepository {
 				},
 			},
 		]);
+		return res.modifiedCount;
+	};
+
+	rescheduleChecks = async (monitorIds: string[], now: number) => {
+		if (monitorIds.length === 0) return 0;
+		const res = await JobModel.updateMany({ refId: { $in: monitorIds }, type: "check" }, [
+			{ $set: { nextScheduledAt: { $add: [now, "$intervalMs"] } } },
+		]);
+		return res.modifiedCount;
+	};
+
+	rescheduleOverdueChecks = async (monitorIds: string[], now: number): Promise<number> => {
+		if (monitorIds.length === 0) return 0;
+		const res = await JobModel.updateMany(
+			{
+				refId: { $in: monitorIds },
+				type: "check",
+				nextScheduledAt: { $lte: now },
+			},
+			[{ $set: { nextScheduledAt: { $add: [now, "$intervalMs"] } } }]
+		);
 		return res.modifiedCount;
 	};
 
@@ -317,6 +366,13 @@ class MongoJobsRepository implements IJobsRepository {
 		return docs.map(this.toEntity);
 	};
 
+	findCheckJob = async (monitorId: string) => {
+		const doc = await JobModel.findOne({
+			_id: jobId("check", monitorId),
+		}).lean<JobDocument>();
+		return doc ? this.toEntity(doc) : null;
+	};
+
 	findPage = async ({ page = 0, rowsPerPage = 0 }: JobPageQuery) => {
 		const count = await JobModel.countDocuments();
 		const query = JobModel.find().sort({ nextScheduledAt: 1 });
@@ -328,6 +384,13 @@ class MongoJobsRepository implements IJobsRepository {
 	findAll = async () => {
 		const docs = await JobModel.find().lean<JobDocument[]>();
 		return docs.map(this.toEntity);
+	};
+
+	findGlobalJob = async (type: JobType) => {
+		const doc = await JobModel.findOne({
+			_id: jobId(type, null),
+		}).lean<JobDocument>();
+		return doc ? this.toEntity(doc) : null;
 	};
 
 	countDueBacklog = async (now: number) => {

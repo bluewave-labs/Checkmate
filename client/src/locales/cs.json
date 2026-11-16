@@ -32,6 +32,8 @@
 			"pause": "Pozastavit",
 			"resume": "Obnovit",
 			"save": "Uložit",
+			"next": "Další",
+			"back": "Zpět",
 			"sendInvite": "Odeslat pozvánku",
 			"test": "Test",
 			"testNotifications": "Testovat oznámení",
@@ -47,19 +49,37 @@
 			"exportToJSON": "Exportovat do JSON",
 			"importFromJSON": "Importovat z JSON",
 			"clearFilters": "Vymazat filtry",
-			"removeUser": "Odebrat uživatele"
+			"removeUser": "Odebrat uživatele",
+			"removeItem": "Odebrat: {{item}}"
 		},
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Průměrná doba odezvy",
+				"cpuUsage": "Využití CPU",
 				"downtime": "Výpadek",
 				"high": "Vysoké",
 				"low": "Nízké",
+				"memoryUsage": "Využití paměti",
+				"responseTime": "Doba odezvy",
+				"timingPhases": "Fáze požadavku",
+				"totalResponseTime": "Celková doba odezvy",
 				"uptime": "Dostupnost"
 			},
 			"histogram": {
 				"avg": "Prům.: {{value}}",
-				"max": "Max: {{value}}"
+				"max": "Max: {{value}}",
+				"responseTime": "Doba odezvy: {{value}}",
+				"total": "Celkem: {{value}}",
+				"avgCpuUsage": "Průměrné využití CPU: {{value}}",
+				"avgMemoryUsage": "Průměrné využití paměti: {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "Požadavek",
+				"firstByte": "První bajt",
+				"download": "Stahování"
 			}
 		},
 		"dialogs": {
@@ -74,10 +94,17 @@
 			"na": "N/A",
 			"resolved": "Vyřešeno",
 			"responseTime": "Doba odezvy",
+			"state": "Stav",
+			"uptime": "Doba běhu",
+			"health": "Stav zdraví",
+			"restarts": "Restarty",
 			"idle": "Nečinný",
 			"running": "Spuštěno"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "Začněte psát pro vyhledávání"
+			},
 			"role": {
 				"option": {
 					"role": {
@@ -120,7 +147,8 @@
 				"url": "URL",
 				"interval": "Interval",
 				"active": "Aktivní",
-				"responseTime": "Doba odezvy"
+				"responseTime": "Doba odezvy",
+				"tags": "Štítky"
 			}
 		},
 		"statusCode": {
@@ -133,6 +161,11 @@
 				"tls": "Selhal handshake TLS nebo SSL (problém s certifikátem nebo šifrováním).",
 				"unknown": "Z cíle nebyla obdržena žádná odpověď HTTP."
 			}
+		},
+		"copy": {
+			"copy": "Kopírovat do schránky",
+			"copied": "Zkopírováno do schránky",
+			"copyFailed": "Kopírování se nezdařilo. Označte text a zkopírujte ho ručně."
 		}
 	},
 	"components": {
@@ -221,6 +254,10 @@
 					"user": "Uživatel",
 					"demoUser": "Demo uživatel"
 				}
+			},
+			"toggle": {
+				"collapse": "Sbalit postranní panel",
+				"expand": "Rozbalit postranní panel"
 			}
 		},
 		"starPrompt": {
@@ -233,10 +270,133 @@
 				"discussions": "Diskuze",
 				"docs": "Dokumentace",
 				"changelog": "Seznam změn"
+			},
+			"update": {
+				"available": "{{version}} k dispozici",
+				"tooltip": "Je k dispozici novější verze Checkmate. Zobrazit poznámky k vydání."
+			}
+		},
+		"whatsNew": {
+			"eyebrow": "Novinky v Checkmate {{version}}",
+			"stepCount": "{{current}} z {{total}}",
+			"goToStep": "Přejít na krok {{step}}",
+			"skip": "Přeskočit",
+			"done": "Hotovo",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "Superadmin zaregistruje tento server v sekci {{settings}}.",
+			"connectAskSuperadmin": "Požádejte superadmina, aby to nastavil v sekci {{settings}}.",
+			"connectCta": "Nastavit Checkmate Connect",
+			"steps": {
+				"dashboard": {
+					"title": "Nástěnka je vaše nová úvodní stránka",
+					"description": "Checkmate se otevírá na nástěnce, která ukazuje stav monitorů, které z nich nefungují a dostupnost každého z nich. Administrátoři vidí také frontu úloh a diagnostiku Checkmate. Karty seřadíte libovolně pomocí volby {{arrange}}. Nepotřebné karty skryjete pomocí volby {{editCards}}."
+				},
+				"heartbeat": {
+					"title": "Heartbeat monitory pro plánované úlohy",
+					"description": "Úlohy cron, zálohy a skripty posílají Checkmate ping při každém spuštění. Pokud v okně upozornění žádný ping nedorazí, monitor se označí jako nefunkční a odešlou se vaše oznámení."
+				},
+				"remoteAccess": {
+					"title": "Otevřete Checkmate odkudkoli bez otevírání portů",
+					"description": "S Checkmate Connect udržuje tento server otevřený odchozí tunel. Připojíte se k němu přes jeho adresu Connect bez otevírání příchozích portů a bez nastavování VPN."
+				},
+				"backups": {
+					"title": "Naplánujte šifrované zálohy do cloudu",
+					"description": "Zálohujte do Checkmate Connect každé 1, 3 nebo 7 dní, buď celou databázi, nebo jen konfiguraci. Tento server data před nahráním zašifruje. Zálohu obnovíte v sekci {{settings}}."
+				},
+				"intervals": {
+					"title": "Kontrolujte monitory každou hodinu nebo jednou denně",
+					"description": "Monitor teď může běžet každé 1, 2, 6 nebo 12 hodin, případně jednou denně. Pokud požadovaný interval v seznamu není, zadejte ho. Dlouhé intervaly se hodí pro monitory, které nepotřebují kontrolu každou minutu, například PageSpeed."
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "Noční záloha",
+					"subtitle": "{{type}} · okno upozornění {{window}}",
+					"downTitle": "{{name}} nefunguje",
+					"pingNotReceived": "Ping nepřijat"
+				},
+				"remote": {
+					"network": "Vaše síť",
+					"server": "Server Checkmate",
+					"tunnel": "Odchozí tunel",
+					"noInbound": "Žádné otevřené příchozí porty",
+					"laptop": "Váš notebook"
+				},
+				"backup": {
+					"encrypted": "Zašifrováno zde před nahráním. Cloud ukládá jen šifrovaný text.",
+					"database": "Databáze",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "Vytvořit monitor",
+					"checksInADay": "Kontroly za den",
+					"checksPerDay_one": "{{formatted}} kontrola denně",
+					"checksPerDay_few": "{{formatted}} kontroly denně",
+					"checksPerDay_many": "{{formatted}} kontroly denně",
+					"checksPerDay_other": "{{formatted}} kontrol denně",
+					"nextCheck": "Další kontrola za {{interval}}"
+				}
 			}
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "Proxy",
+				"description": "Spravujte proxy servery pro směrování provozu HTTP monitorů."
+			},
+			"fallback": {
+				"title": "Zatím žádné proxy",
+				"description": "Směrujte kontroly HTTP monitorů přes proxy server. Jakmile proxy vytvoříte, můžete ji vybrat u jednotlivých monitorů nebo ji nastavit jako globální výchozí v Nastavení.",
+				"actionButton": "Vytvořit proxy"
+			},
+			"form": {
+				"name": {
+					"title": "Název proxy",
+					"description": "Výstižný název pro identifikaci této proxy",
+					"optionName": "Název proxy",
+					"placeholder": "Moje proxy"
+				},
+				"server": {
+					"title": "Proxy server",
+					"description": "Kde je proxy server dostupný. Nastavte protokol, kterým se k němu Checkmate připojuje, jeho název hostitele nebo IP adresu a port, na kterém naslouchá.",
+					"option": {
+						"protocol": {
+							"label": "Protokol"
+						},
+						"host": {
+							"label": "Název hostitele / IP adresa",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "Port"
+						}
+					}
+				},
+				"auth": {
+					"title": "Ověření",
+					"description": "Volitelné. Potřeba pouze tehdy, pokud proxy server vyžaduje základní ověření.",
+					"option": {
+						"username": {
+							"label": "Uživatelské jméno",
+							"placeholder": "Uživatelské jméno proxy",
+							"labelSet": "Uživatelské jméno je nastaveno. Pro změnu klikněte na „Resetovat“."
+						},
+						"password": {
+							"label": "Heslo",
+							"labelSet": "Heslo je nastaveno. Pro změnu klikněte na „Resetovat“."
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "Protokol",
+					"host": "Hostitel",
+					"port": "Port"
+				}
+			}
+		},
 		"notFound": {
 			"title": "Ale ne! Upustili jste své sushi!",
 			"subtitle": "Buď tato URL neexistuje, nebo k ní nemáte přístup."
@@ -458,7 +618,9 @@
 				},
 				"statBoxes": {
 					"activeFor": "Aktivní po dobu",
+					"checkingEvery": "Interval kontroly: {{interval}}",
 					"certificateExpiry": "Expirace certifikátu",
+					"domainExpiry": "Expirace domény",
 					"lastCheck": "Poslední kontrola",
 					"lastResponseTime": "Poslední doba odezvy",
 					"serviceIsDown": "Služba je nedostupná"
@@ -483,7 +645,8 @@
 					"optionHardware": "Infrastruktura",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "Heartbeat"
 				},
 				"bulkPause": {
 					"paused_one": "{{count}} monitor pozastaven",
@@ -503,6 +666,13 @@
 				"advanced": {
 					"description": "Volitelná nastavení pro pokročilé použití",
 					"option": {
+						"method": {
+							"label": "Metoda požadavku",
+							"description": {
+								"GET": "GET načte celou odpověď včetně těla. Pokročilé porovnávání je plně podporováno",
+								"HEAD": "HEAD načte pouze hlavičky odpovědi, což snižuje zátěž cíle. Podporuje porovnávání stavových kódů, ale ne pokročilé porovnávání, protože odpověď nemá tělo."
+							}
+						},
 						"advancedMatching": {
 							"label": "Použít pokročilé porovnávání"
 						},
@@ -518,12 +688,17 @@
 							"equal": "Rovná se",
 							"include": "Obsahuje",
 							"regex": "Regulární výraz"
+						},
+						"customUpCodes": {
+							"label": "Přijímané stavové kódy",
+							"description": "Přidejte kódy mimo 2xx, které se mají také považovat za úspěšné."
 						}
 					},
 					"title": "Pokročilá nastavení"
 				},
 				"frequency": {
 					"description": "Jak často chcete kontrolovat stav tohoto monitoru?",
+					"customHint": "Není v seznamu? Zadejte libovolné číslo a vyberte sekundy, minuty, hodiny nebo dny.",
 					"option": {
 						"frequency": {
 							"label": "Frekvence kontroly",
@@ -541,9 +716,18 @@
 							}
 						}
 					},
+					"heartbeat": {
+						"title": "Okno upozornění",
+						"description": "Jak dlouho čekat na ping, než bude monitor označen jako nedostupný?",
+						"label": "Upozornit, pokud nepřijde ping do",
+						"hint": "Zvolte plán úlohy s rezervou, např. 65 minut pro úlohu spouštěnou každou hodinu."
+					},
 					"title": "Frekvence kontroly"
 				},
 				"general": {
+					"url": {
+						"alert": "Budoucí kontroly budou používat novou URL. Historická data tohoto monitoru zůstanou zachována, byla však shromážděna ze staré URL."
+					},
 					"option": {
 						"host": {
 							"label": "Hostitel",
@@ -560,6 +744,24 @@
 						"url": {
 							"label": "URL",
 							"placeholder": "https://www.google.com"
+						},
+						"proxyMode": {
+							"label": "Proxy",
+							"value": {
+								"inheritDirect": "Výchozí (přímé připojení)",
+								"inheritGlobal": "Výchozí ({{name}})",
+								"none": "Nikdy nepoužívat proxy",
+								"custom": "Vlastní proxy"
+							},
+							"description": {
+								"inheritDirect": "Není nastavena žádná globální proxy, připojení je přímé. Pokud bude globální proxy nastavena později, tento monitor ji použije.",
+								"inheritGlobal": "Použít globální nastavení proxy",
+								"none": "Vždy se připojuje přímo, i když bude později povolena globální proxy.",
+								"custom": "Směrovat kontroly tohoto monitoru přes konkrétní proxy. Přepíše globální proxy"
+							}
+						},
+						"proxy": {
+							"label": "Proxy server"
 						},
 						"game": {
 							"label": "Vybrat hru",
@@ -617,8 +819,10 @@
 						"grpc": "Zadejte název hostitele a port gRPC serveru, volitelně zadejte název služby pro kontrolu stavu a přidejte zobrazovaný název.",
 						"websocket": "Zadejte WebSocket URL ke sledování (např. wss://example.com/socket) a přidejte zobrazovaný název.",
 						"hardware": "Sledujte využití CPU, paměti, disku a teplotu vaší infrastruktury. URL endpointu Capture musí obsahovat celou cestu /api/v1/metrics (např. http://192.168.1.10:5001/api/v1/metrics). Do autorizačního klíče vložte pouze řetězec tokenu — nezahrnujte 'Bearer'.",
-						"dns": "Sledujte, zda konkrétní DNS server odpovídá."
-					}
+						"dns": "Sledujte, zda konkrétní DNS server odpovídá.",
+						"heartbeat": "Přidejte srozumitelný zobrazovaný název, který se objeví na nástěnce. URL pro ping se po uložení zobrazí na stránce s detaily monitoru."
+					},
+					"heartbeatAutoCreate": "Úlohy mohou heartbeat monitory vytvářet i samy: přidejte <code>?create=true</code> do URL pingu."
 				},
 				"ignoreTls": {
 					"description": "Nastavte ověřování TLS/SSL certifikátů pro HTTPS připojení.",
@@ -645,6 +849,10 @@
 					"description": "Vyberte kanály pro oznámení, které chcete použít",
 					"title": "Oznámení"
 				},
+				"tags": {
+					"description": "Vyberte štítky, které chcete použít pro tento monitor",
+					"title": "Štítky"
+				},
 				"type": {
 					"description": "Vyberte typ kontroly, která se má provádět",
 					"optionDockerDescription": "Použijte Docker ke sledování, zda je kontejner spuštěn.",
@@ -655,7 +863,8 @@
 					"optionPingDescription": "Použijte ICMP Ping ke sledování, zda je server online.",
 					"optionPortDescription": "Sledujte, zda je konkrétní port na serveru otevřen.",
 					"title": "Typ",
-					"optionDnsDescription": "Sledujte, zda konkrétní DNS server odpovídá."
+					"optionDnsDescription": "Sledujte, zda konkrétní DNS server odpovídá.",
+					"optionHeartbeatDescription": "Dostávejte upozornění, když se úloha cron nebo naplánovaná úloha přestane hlásit."
 				},
 				"thresholds": {
 					"title": "Prahové hodnoty upozornění",
@@ -758,6 +967,11 @@
 							"description": "Přeskočí ověření certifikátu daemonu, takže certifikát CA se stane volitelným. Klientský certifikát a klíč jsou i tak vyžadovány, protože je daemon ověřuje."
 						}
 					}
+				},
+				"heartbeatSlug": {
+					"label": "Slug",
+					"hint": "Identifikuje tento monitor v URL pingu. Malá písmena, číslice a pomlčky.",
+					"editAlert": "Změna slugu změní URL pingu. Úlohy, které používají současnou URL, přestanou fungovat."
 				}
 			}
 		},
@@ -872,6 +1086,7 @@
 					"disk": "Využití disku",
 					"netBytesRecv": "{{name}} - přijaté bajty",
 					"netBytesSent": "{{name}} - odeslané bajty",
+					"loopbackOnlyNotice": "Capture vidí pouze síťová rozhraní kontejneru a žádné z nich nepřenáší skutečný provoz. To je normální, když Capture běží uvnitř kontejneru, který vidí pouze svůj vlastní síťový jmenný prostor — rozhraní s názvy jako na hostiteli (eth0, ens3) jsou virtuální rozhraní kontejneru, ne hostitele. Chcete-li vidět skutečnou síťovou aktivitu, spusťte Capture přímo na hostiteli.",
 					"temp": "Teplota"
 				}
 			},
@@ -924,6 +1139,37 @@
 				"description": "Sledujte výkon serverů, identifikujte úzká místa a zajistěte spolehlivost pomocí monitoringu infrastruktury v reálném čase."
 			}
 		},
+		"tags": {
+			"header": {
+				"title": "Štítky",
+				"description": "Uspořádejte své monitory pomocí štítků"
+			},
+			"fallback": {
+				"title": "Zatím žádné štítky",
+				"description": "Uspořádejte své monitory pomocí štítků. Jakmile vytvoříte štítek a přiřadíte ho k monitoru, budete podle něj moci filtrovat v celé aplikaci a zobrazit zde jeho podrobnosti.",
+				"actionButton": "Vytvořit štítek"
+			},
+			"table": {
+				"headers": {
+					"color": "Barva",
+					"appearance": "Vzhled"
+				}
+			},
+			"form": {
+				"name": {
+					"title": "Název štítku",
+					"description": "Zvolte název štítku",
+					"optionName": "Název štítku",
+					"placeholder": "např. Skupina 1"
+				},
+				"color": {
+					"title": "Barva štítku",
+					"description": "Zvolte barvu štítku",
+					"optionName": "Barva štítku",
+					"placeholder": "např. #13715B"
+				}
+			}
+		},
 		"logs": {
 			"fallback": {
 				"title": "Zatím žádné protokoly",
@@ -937,6 +1183,8 @@
 			"logLevelSelect": {
 				"label": "Úroveň logování"
 			},
+			"workers": "Workery",
+			"workersExplainers": "Zobrazuje procesy workerů. ID workerů jsou zkrácená, pro celé ID najeďte myší",
 			"jobQueue": "Fronta úloh",
 			"jobQueueExplainer": "<highlight>Zvýrazněné řádky</highlight> jsou úlohy, které právě zpracovává worker.",
 			"failedJobs": "Neúspěšné úlohy",
@@ -957,6 +1205,26 @@
 					"totalHeapSize": "Celková velikost haldy",
 					"osMemoryLimit": "Limit paměti OS"
 				},
+				"mongoDBStats": {
+					"readyState": "Stav připravenosti",
+					"readsPerSecond": "Čtení/s",
+					"insertsPerSecond": "Vložení/s",
+					"updatesPerSecond": "Aktualizace/s",
+					"deletesPerSecond": "Smazání/s",
+					"writesPerSecond": "Celkem zápisů/s",
+					"host": "Hostitel",
+					"port": "Port",
+					"dbName": "Název databáze",
+					"storageSize": "Velikost úložiště"
+				},
+				"mongoDBCollectionStats": {
+					"documents": "Dokumenty: {{count}}",
+					"bucketCount": "Počet bucketů: {{count}}",
+					"storageSize": "Velikost úložiště: {{size}}",
+					"indexSize": "Velikost indexů: {{size}}",
+					"totalSize": "Celková velikost: {{size}}",
+					"dbUsageTooltip": "{{percentage}} % úložiště DB"
+				},
 				"gauges": {
 					"heapAllocation": "Alokace haldy",
 					"heapUsage": "Využití haldy",
@@ -976,17 +1244,32 @@
 					"memoryCpu": {
 						"title": "Paměť a CPU",
 						"description": "Jak proces využívá přidělenou paměť a CPU hostitele."
+					},
+					"mongoDBStats": {
+						"title": "Statistiky MongoDB",
+						"description": "Snímek metrik MongoDB"
+					},
+					"mongoDBCollectionStats": {
+						"title": "Statistiky kolekcí MongoDB",
+						"description": "Statistiky kolekcí MongoDB"
 					}
 				}
 			},
 			"table": {
 				"headers": {
+					"host": "Hostitel",
+					"processId": "ID procesu",
+					"workerId": "ID workeru",
+					"workerMode": "Režim workeru",
+					"lastSeenAt": "Naposledy viděn",
 					"timestamp": "Časové razítko",
 					"level": "Úroveň",
 					"service": "Služba",
 					"monitorId": "ID monitoru",
 					"runCount": "Počet spuštění",
 					"failCount": "Počet selhání",
+					"nextScheduledAt": "Další spuštění",
+					"lockedBy": "Zámek drží",
 					"lastFinishedAt": "Naposledy dokončeno",
 					"lastFailedAt": "Poslední selhání",
 					"failReason": "Důvod selhání",
@@ -1113,7 +1396,22 @@
 				"type": {
 					"description": "Vyberte typ kanálu oznámení, který chcete vytvořit.",
 					"optionType": "Typ",
-					"title": "Typ kanálu"
+					"title": "Typ kanálu",
+					"value": {
+						"email": "E-mail",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"signalgrid": "Signalgrid",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "Konfigurace Telegramu",
@@ -1131,6 +1429,14 @@
 					"optionUserKey": "Uživatelský klíč",
 					"placeholderUserKey": "Zadejte uživatelský klíč"
 				},
+				"signalgrid": {
+					"title": "Konfigurace Signalgrid",
+					"description": "Nakonfigurujte Signalgrid pro příjem push oznámení na vašich zařízeních.",
+					"optionClientKey": "Klientský klíč",
+					"placeholderClientKey": "Váš klientský klíč Signalgrid",
+					"optionChannel": "Kanál",
+					"placeholderChannel": "Váš kanál Signalgrid"
+				},
 				"twilio": {
 					"title": "Konfigurace Twilio",
 					"description": "Zadejte přihlašovací údaje účtu Twilio pro odesílání SMS.",
@@ -1142,6 +1448,14 @@
 					"placeholderFromNumber": "+1234567890",
 					"optionToNumber": "Na číslo",
 					"placeholderToNumber": "+1234567890"
+				},
+				"ntfy": {
+					"title": "Konfigurace ntfy",
+					"description": "Nakonfigurujte server ntfy a téma pro push oznámení.",
+					"optionServerUrl": "URL serveru",
+					"placeholderServerUrl": "https://ntfy.sh",
+					"optionTopic": "Téma",
+					"placeholderTopic": "checkmate-alerts"
 				}
 			},
 			"table": {
@@ -1196,7 +1510,8 @@
 				"monitoring": "Monitorování",
 				"email": "E-mail",
 				"integrations": "Integrace",
-				"data": "Data"
+				"data": "Data",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1230,6 +1545,22 @@
 							"label": "Typ grafu",
 							"histogram": "Histogram",
 							"heatmap": "Heatmapa"
+						}
+					}
+				},
+				"globalProxy": {
+					"title": "Globální proxy",
+					"description": "Ve výchozím nastavení směrovat kontroly přes proxy. Platí pro všechny HTTP monitory s nastavením proxy „Výchozí“; monitory s nastavením „Nikdy nepoužívat proxy“ nebo s vlastní proxy nejsou ovlivněny.",
+					"option": {
+						"enabled": {
+							"label": "Použít globální proxy"
+						},
+						"proxy": {
+							"label": "Vyberte globální proxy"
+						},
+						"empty": {
+							"text": "Zatím nejsou nastaveny žádné proxy.",
+							"link": "Nejprve nějakou vytvořte"
 						}
 					}
 				},
@@ -1391,7 +1722,159 @@
 				},
 				"importExportMonitors": {
 					"title": "Import / Export monitorů",
-					"description": "Importujte nebo exportujte data monitorů jako JSON soubor pro zálohu nebo přenos."
+					"description": "Importujte nebo exportujte data monitorů jako JSON soubor pro zálohu nebo přenos.",
+					"backupNotice": "Tento soubor JSON obsahuje pouze vaše monitory, takže nejde o úplnou zálohu. K zálohování nebo obnovení dat Checkmate použijte Checkmate Connect.",
+					"connectTabLink": "Otevřít kartu Checkmate Connect",
+					"connectSiteLink": "Navštívit web Checkmate Connect"
+				},
+				"connect": {
+					"superadminOnly": "Tento server může zaregistrovat, měnit vzdálený přístup, spouštět či obnovovat zálohy nebo zrušit jeho registraci pouze superadministrátor. Pokud se vaše role nedávno změnila, odhlaste se a znovu se přihlaste.",
+					"clickToConfirm": "Klikněte znovu pro potvrzení",
+					"status": {
+						"title": "Stav",
+						"description": "Stav připojení této instalace.",
+						"enrolled": "Zaregistrováno",
+						"notEnrolled": "Nezaregistrováno",
+						"connected": "Tunel připojen",
+						"disconnected": "Tunel odpojen",
+						"connecting": "Tunel se připojuje",
+						"remoteAccessOff": "Vzdálený přístup vypnut",
+						"agentId": "ID agenta",
+						"lastConnected": "Naposledy připojeno"
+					},
+					"enroll": {
+						"title": "Zaregistrovat instalaci",
+						"description": "Vložte blok přihlašovacích údajů z panelu Checkmate Connect. Údaje jsou uloženy šifrovaně v databázi této instalace a opouštějí ji pouze kvůli ověření u Checkmate Connect.",
+						"button": "Zaregistrovat"
+					},
+					"remoteAccess": {
+						"title": "Vzdálený přístup",
+						"description": "Udržuje otevřený odchozí tunel, abyste se k této instalaci dostali přes svou adresu Connect. Žádné příchozí porty se neotevírají."
+					},
+					"tooltips": {
+						"enroll": "Připojit tento server k vašemu účtu",
+						"unenroll": "Odpojit tento server od Connect",
+						"generateKey": "Vytvořit klíč, který odemyká vaše zálohy",
+						"lostKey": "Začít znovu s novým klíčem",
+						"runFull": "Zálohovat celou databázi hned",
+						"runConfig": "Zálohovat vše kromě historie kontrol",
+						"importKey": "Použít klíč z původního serveru",
+						"useKey": "Ověřit tento klíč na vašich zálohách",
+						"replaceKey": "Přepnout na jiný klíč pro obnovení",
+						"restore": "Nahradit data tohoto serveru touto zálohou"
+					},
+					"backup": {
+						"title": "Cloudové zálohy",
+						"description": "Šifrované zálohy databáze této instalace nahrávané do Checkmate Connect. Data se šifrují zde ještě před nahráním; cloud ukládá pouze šifrovaná data.",
+						"needsKey": "Pro zahájení zálohování níže nastavte klíč pro obnovení.",
+						"generateKey": "Vygenerovat klíč pro obnovení",
+						"existingBackups": "Tento účet už má cloudové zálohy. Pro jejich obnovení zadejte klíč pro obnovení z původního serveru.",
+						"lostKey": "Můj klíč se ztratil",
+						"lostKeyWarning": "Vaše stávající cloudové zálohy nelze bez původního klíče obnovit. Uchovávají se 30 dní od první zálohy s novým klíčem, takže se k nim můžete vrátit, pokud původní klíč najdete.",
+						"importKey": "Už mám klíč pro obnovení",
+						"importKeyHelp": "Vložte 64znakový klíč z původního serveru. Checkmate před uložením klíče dešifruje jednu z vašich cloudových záloh, aby jej ověřil.",
+						"replaceKey": "Použít jiný klíč pro obnovení",
+						"replaceKeyHelp": "Vložte 64znakový klíč, který chcete použít místo stávajícího. Checkmate dešifruje vaše cloudové zálohy, aby klíč ověřil, a pokud nejde otevřít žádná z nich, ponechá stávající klíč.",
+						"replaceKeyWarning": "Zálohy vytvořené stávajícím klíčem po přepnutí nepůjde obnovit.",
+						"importKeyConfirm": "Použít tento klíč",
+						"verifyOutcome": {
+							"ok": "Klíč pro obnovení uložen",
+							"wrong-key": "Tento klíč nedešifruje vaše cloudové zálohy",
+							"no-backups": "Žádné cloudové zálohy, na kterých by šlo klíč ověřit",
+							"failed": "Klíč nebylo možné ověřit: {{error}}"
+						},
+						"keyTitle": "Klíč pro obnovení",
+						"keyWarning": "Uložte tento klíč na bezpečné místo mimo tento server. Zobrazí se pouze jednou. Pokud ho ztratíte, cloudové zálohy nepůjde obnovit a nikdo vám ho nedokáže obnovit.",
+						"keyCopy": "Kopírovat klíč",
+						"keyLabel": "Váš klíč pro obnovení",
+						"keyContinue": "Mám ho uložený",
+						"keyDone": "Klíč mám uložený",
+						"keyShowAgain": "Zobrazit klíč znovu",
+						"keyVerifyHelp": "Otevřete místo, kam jste klíč uložili, a vložte ho sem, abyste potvrdili, že máte funkční kopii.",
+						"keyPlaceholder": "Klíč pro obnovení",
+						"keyAcknowledge": "Beru na vědomí, že pokud tento klíč ztratím, nebudu moci obnovit své cloudové zálohy.",
+						"keyMismatch": "Neodpovídá vašemu klíči pro obnovení. Zobrazte klíč znovu a uložte si novou kopii.",
+						"keyAckRequired": "Zaškrtnutím políčka potvrďte, že rozumíte.",
+						"toolsMissing": "Cloudové zálohy vyžadují mongodump a mongorestore, které na tomto serveru nebyly nalezeny.",
+						"toolsMac": "V macOS spusťte: brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "Stáhnout MongoDB Database Tools pro Linux",
+						"toolsPath": "Pokud jsou nainstalované jinde, nastavte CONNECT_MONGODUMP_BIN a CONNECT_MONGORESTORE_BIN. Tato zpráva zmizí do minuty po nalezení nástrojů.",
+						"runFull": "Zálohovat nyní",
+						"runConfig": "Zálohovat pouze konfiguraci",
+						"kind": {
+							"full": "Celá databáze",
+							"config": "Pouze konfigurace"
+						},
+						"progress": {
+							"idle": "Nečinné",
+							"finished": {
+								"backup": {
+									"ok": "Záloha dokončena",
+									"failed": "Záloha selhala"
+								},
+								"restore": {
+									"ok": "Obnovení dokončeno",
+									"failed": "Obnovení selhalo"
+								},
+								"verify": {
+									"ok": "Klíč pro obnovení uložen",
+									"failed": "Ověření klíče selhalo"
+								}
+							},
+							"queued": {
+								"backup": "Úloha zálohy zařazena do fronty",
+								"restore": "Úloha obnovení zařazena do fronty"
+							},
+							"checking": "Ověřování klíče…",
+							"restore": {
+								"downloading": "Krok 1 ze 3: stahování zálohy",
+								"decrypting": "Krok 2 ze 3: dešifrování zálohy",
+								"restoring": "Krok 3 ze 3: obnovování databáze"
+							},
+							"verify": {
+								"downloading": "Ověřování klíče: stahování zálohy {{attempt}}/{{attempts}}",
+								"decrypting": "Ověřování klíče: dešifrování zálohy {{attempt}}/{{attempts}}"
+							},
+							"backup": {
+								"dumping": "Krok 1 ze 3: čtení a šifrování databáze",
+								"uploading": "Krok 2 ze 3: nahrávání šifrované zálohy",
+								"saving": "Krok 3 ze 3: ukládání zálohy do vašeho účtu"
+							}
+						},
+						"progressWithPercent": "{{step}} ({{percent}} %)",
+						"progressWithSize": "{{step}} ({{size}})",
+						"lastBackupSucceeded": "Poslední záloha ({{date}}): úspěšná",
+						"lastBackupSucceededSize": "Poslední záloha ({{date}}): úspěšná · {{size}}",
+						"lastBackupFailed": "Poslední záloha ({{date}}): neúspěšná — {{error}}",
+						"lastRestoreSucceeded": "Poslední obnovení ({{date}}): úspěšné",
+						"lastRestoreFailed": "Poslední obnovení ({{date}}): neúspěšné — {{error}}",
+						"restore": {
+							"title": "Obnovit zálohu",
+							"description": "Stáhne vybranou zálohu, ověří a dešifruje ji na tomto serveru a poté nahradí aktuální databázi.",
+							"empty": "Zatím žádné ověřené cloudové zálohy.",
+							"button": "Obnovit",
+							"confirmTitle": "Obnovit zálohu ({{kind}}, datum: {{date}})?",
+							"confirmBody": "Tímto se nahradí aktuální databáze a nelze to vrátit zpět. Nahrazeny budou i uživatelské účty, takže se poté přihlaste účtem ze zálohy.",
+							"differentKey": "Jiný klíč",
+							"expires": "Odstranění po: {{date}}"
+						}
+					},
+					"schedule": {
+						"title": "Plánované zálohy",
+						"description": "Automaticky spouští šifrovanou cloudovou zálohu. První se spustí hned po zapnutí a plánovaná záloha, na kterou přijde řada během jiné zálohy nebo obnovení, se přeskočí až do dalšího intervalu.",
+						"interval": "Zálohovat každých",
+						"kind": "Typ zálohy"
+					},
+					"recoveryKey": {
+						"title": "Klíč pro obnovení",
+						"description": "Šifruje vaše cloudové zálohy na tomto serveru. Nikdy tento server neopouští a bez něj nelze zálohy obnovit.",
+						"set": "Na tomto serveru je nastaven klíč pro obnovení."
+					},
+					"unenroll": {
+						"title": "Zrušit registraci",
+						"description": "Odpojí tuto instalaci od Checkmate Connect a smaže místní přihlašovací údaje. Místní monitorování není ovlivněno.",
+						"button": "Zrušit registraci"
+					}
 				},
 				"about": {
 					"title": "O aplikaci",
@@ -1399,6 +1882,18 @@
 				},
 				"validation": {
 					"errorMessage": "Opravte prosím následující chyby validace:"
+				},
+				"heartbeatKey": {
+					"title": "Klíč pro ping heartbeatu",
+					"description": "Klíč pro pingování heartbeat monitorů.",
+					"noKey": "Zatím žádný klíč. Vygenerujte ho, abyste mohli začít posílat heartbeat pingy.",
+					"keySet": "Klíč je nastaven. Obnovte ho a získáte nový klíč, který si můžete zkopírovat.",
+					"generate": "Vygenerovat klíč",
+					"rotate": "Obnovit klíč",
+					"rotateConfirmTitle": "Obnovit klíč pro ping heartbeatu?",
+					"rotateConfirmBody": "Současný klíč okamžitě přestane fungovat. Je nutné aktualizovat všechny úlohy, které pingují heartbeat monitor v tomto týmu.",
+					"keyLabel": "Klíč pro ping",
+					"copyNow": "Zkopírujte si klíč hned. Znovu se nezobrazí."
 				}
 			},
 			"header": {
@@ -1408,6 +1903,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "Stavová stránka byla úspěšně smazána",
+			"rangeSelectorAria": "Rozsah historie",
+			"rangeExceedsRetention": "Doba uchovávání historie kontrol (ve dnech): {{days}}. Pro více dat dobu uchovávání prodlužte.",
+			"range": {
+				"latest": "Nejnovější",
+				"30d": "30 dní",
+				"60d": "60 dní",
+				"90d": "90 dní"
+			},
 			"fallback": {
 				"title": "Zatím žádné stavové stránky",
 				"actionButton": "Vytvořte stavovou stránku!",
@@ -1435,6 +1938,9 @@
 					"avg": "průměr {{value}}",
 					"downTooltip": "Mimo provoz",
 					"heatmapAria": "Tepelná mapa doby odezvy",
+					"dayAria": "{{date}}, dostupnost {{uptime}}",
+					"dayUptime": "Dostupnost: {{uptime}} (kontroly: {{upChecks}}/{{totalChecks}})",
+					"dayAvgResponse": "Prům. odezva: {{value}}",
 					"max": "max {{value}}"
 				},
 				"status": {
@@ -1446,6 +1952,10 @@
 					"up": "V provozu"
 				},
 				"incidents": {
+					"modalTitle": "Incidenty: {{date}}",
+					"loading": "Načítání...",
+					"noIncidents": "Pro tento den nebyly hlášeny žádné incidenty.",
+					"ongoing": "Probíhá",
 					"errorLoading": "Nepodařilo se načíst incidenty."
 				}
 			},
@@ -1504,6 +2014,11 @@
 						"url": {
 							"label": "Adresa vaší stavové stránky",
 							"placeholder": "moje-stavova-stranka"
+						},
+						"customDomain": {
+							"label": "Vlastní doména",
+							"placeholder": "status.example.com",
+							"helper": "Volitelné. Nasměrujte záznam DNS na tuto instanci Checkmate, aby se stavová stránka zobrazovala na vaší vlastní doméně."
 						}
 					}
 				},
@@ -1570,6 +2085,10 @@
 							"description": "Patkové nadpisy a tenké oddělovače. Odlišný a klidný.",
 							"name": "Redakční"
 						},
+						"minimal": {
+							"name": "Minimalistický",
+							"description": "Plochý, soustředěný a kompaktní, jen to podstatné."
+						},
 						"modern": {
 							"description": "Úroveň SaaS s pulzující stavovou tečkou a jemně mizejícími kartami.",
 							"name": "Moderní"
@@ -1586,11 +2105,24 @@
 					"dark": "Pouze tmavý",
 					"label": "Režim motivu",
 					"light": "Pouze světlý"
+				},
+				"customCSS": {
+					"title": "Vlastní CSS",
+					"description": "Přidejte vlastní CSS pro doladění vzhledu vaší veřejné stavové stránky.",
+					"option": {
+						"customCSS": {
+							"label": "Vlastní CSS",
+							"placeholder": "footer { display: none; }"
+						}
+					}
 				}
 			},
 			"header": {
 				"title": "Stavové stránky",
 				"description": "Publikujte veřejné stránky, které zákazníkům a zúčastněným stranám zobrazují dostupnost v reálném čase a historii incidentů."
+			},
+			"preview": {
+				"title": "Náhled stavové stránky"
 			},
 			"editorial": {
 				"allUp": "Všechny systémy fungují normálně.",
@@ -1604,11 +2136,13 @@
 			"filters": {
 				"search": {
 					"placeholder": "Hledat monitory..."
-				}
+				},
+				"activeTags": "Aktivní štítky"
 			},
 			"table": {
 				"headers": {
-					"responseTime": "Doba odezvy"
+					"responseTime": "Doba odezvy",
+					"uptime": "Dostupnost %"
 				}
 			},
 			"fallback": {
@@ -1619,6 +2153,33 @@
 			"header": {
 				"title": "Monitory dostupnosti",
 				"description": "Sledujte HTTP koncové body, pingy, kontejnery a porty — buďte upozorněni v okamžiku, kdy něco vypadne."
+			},
+			"details": {
+				"heartbeat": {
+					"title": "Heartbeat URL",
+					"description": "Nechte úlohu při každém spuštění zavolat tuto URL. Pokud během okna upozornění nepřijde žádný požadavek, monitor přejde do stavu nedostupný.",
+					"pingUrl": "URL pro ping",
+					"examplesTitle": "Způsoby odeslání pingu",
+					"examplesDescription": "Vyberte ten, který se hodí k vaší úloze. Každý příklad je samostatný příkaz, takže potřebujete jen jeden.",
+					"examples": {
+						"post": "Ping při úspěchu",
+						"cron": "Ping po úspěšném dokončení úlohy cron",
+						"exitCode": "Nahlásit návratový kód úlohy (0 znamená dostupný, cokoli jiného nedostupný)",
+						"fail": "Nahlásit selhání",
+						"duration": "Nahlásit návratový kód a dobu trvání úlohy"
+					},
+					"options": {
+						"title": "Sestavení URL pro ping",
+						"description": "Na konec URL pro ping přidejte kteroukoli z těchto částí:",
+						"fail": "zaznamená selhání",
+						"exitCode": "zaznamená návratový kód: 0 je v provozu, cokoli jiného je mimo provoz",
+						"duration": "zaznamená, jak dlouho úloha běžela, v milisekundách",
+						"msg": "připojí ke kontrole zprávu",
+						"combine": "Použijte /fail nebo návratový kód, ne obojí. Parametry dotazu fungují s jakoukoli URL a lze je spojit pomocí &, například /1?duration=5000&msg=disk%20full."
+					},
+					"keyHint": "Nahraďte <pingKey> klíčem pro ping vašeho týmu.",
+					"keyLink": "Spravujte ho v Nastavení → Monitorování"
+				}
 			}
 		},
 		"docker": {
@@ -1698,13 +2259,32 @@
 				"monitorStatus": "Stav monitorů",
 				"currentlyDown": "Aktuálně nedostupné",
 				"uptime": "Dostupnost monitorů",
-				"monitorsByType": "Monitory podle typu"
+				"monitorsByType": "Monitory podle typu",
+				"diagnostic": "Diagnostika Checkmate",
+				"queue": "Fronta"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Přepnout řazení"
 			},
 			"currentlyDown": {
 				"empty": "Momentálně není žádný monitor nedostupný."
+			},
+			"diagnostic": {
+				"version": "Verze",
+				"updateAvailable": "{{version}} k dispozici",
+				"heapUsage": "Využití haldy",
+				"cpuUsage": "Využití CPU",
+				"eventLoopDelay": "Zpoždění smyčky událostí",
+				"dbSize": "Velikost databáze",
+				"dbOperations": "Operace databáze",
+				"dbOperationsSummary": "{{reads}} čtení/s · {{writes}} zápisů/s"
+			},
+			"queue": {
+				"jobs": "Úlohy",
+				"activeJobs": "Aktivní úlohy",
+				"failingJobs": "Selhávající úlohy",
+				"workers": "Workery",
+				"overdueChecks": "Opožděné kontroly"
 			},
 			"header": {
 				"title": "Přehled",
@@ -1718,6 +2298,12 @@
 					"uptime": "Dostupnost"
 				},
 				"done": "Hotovo"
+			},
+			"arrange": {
+				"start": "Uspořádat",
+				"done": "Hotovo",
+				"reset": "Obnovit pořadí",
+				"handle": "Přetažením přesunete {{card}}"
 			}
 		}
 	}

@@ -161,6 +161,11 @@
 				"responseTime": "Response time",
 				"tags": "Tags"
 			}
+		},
+		"copy": {
+			"copy": "Copy to clipboard",
+			"copied": "Copied to clipboard",
+			"copyFailed": "Could not copy. Select the text and copy it manually."
 		}
 	},
 	"components": {
@@ -170,6 +175,10 @@
 				"discussions": "Discussions",
 				"docs": "Documentation",
 				"changelog": "Changelog"
+			},
+			"update": {
+				"available": "{{version}} available",
+				"tooltip": "A newer version of Checkmate is available. View the release notes."
 			}
 		},
 		"imageUpload": {
@@ -259,11 +268,75 @@
 					"user": "User",
 					"demoUser": "Demo user"
 				}
+			},
+			"toggle": {
+				"collapse": "Collapse sidebar",
+				"expand": "Expand sidebar"
 			}
 		},
 		"starPrompt": {
 			"title": "Star Checkmate",
 			"description": "See the latest releases and help grow the community on GitHub"
+		},
+		"whatsNew": {
+			"eyebrow": "New in Checkmate {{version}}",
+			"stepCount": "{{current}} of {{total}}",
+			"goToStep": "Go to step {{step}}",
+			"skip": "Skip",
+			"done": "Done",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "A superadmin enrolls this server in {{settings}}.",
+			"connectAskSuperadmin": "Ask a superadmin to set it up in {{settings}}.",
+			"connectCta": "Set up Checkmate Connect",
+			"steps": {
+				"dashboard": {
+					"title": "The dashboard is your new home page",
+					"description": "Checkmate opens on a dashboard that shows monitor status, which monitors are down and the uptime of each one. Admins also see the job queue and Checkmate diagnostics. Drag cards into any order with {{arrange}}. Hide the ones you don't need with {{editCards}}."
+				},
+				"heartbeat": {
+					"title": "Heartbeat monitors for scheduled jobs",
+					"description": "Cron jobs, backups and scripts ping Checkmate each time they run. If no ping arrives within the alert window, the monitor goes down and your notifications fire."
+				},
+				"remoteAccess": {
+					"title": "Open Checkmate from anywhere without opening ports",
+					"description": "With Checkmate Connect, this server keeps an outbound tunnel open, so you can reach it from its Connect address without opening inbound ports or setting up a VPN."
+				},
+				"backups": {
+					"title": "Schedule encrypted backups to the cloud",
+					"description": "Back up to Checkmate Connect every 1, 3 or 7 days, either the full database or the configuration only. This server encrypts the data before it uploads. You can restore a backup from {{settings}}."
+				},
+				"intervals": {
+					"title": "Check monitors hourly or once a day",
+					"description": "A monitor can now run every 1, 2, 6 or 12 hours, or once a day. If the interval you want isn't in the list, type it in. Long intervals suit monitors that don't need a check every minute, such as PageSpeed."
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "Nightly backup",
+					"subtitle": "{{type}} · alert window {{window}}",
+					"downTitle": "{{name}} is down",
+					"pingNotReceived": "Ping not received"
+				},
+				"remote": {
+					"network": "Your network",
+					"server": "Checkmate server",
+					"tunnel": "Outbound tunnel",
+					"noInbound": "No inbound ports open",
+					"laptop": "Your laptop"
+				},
+				"backup": {
+					"encrypted": "Encrypted here before upload. The cloud only stores ciphertext.",
+					"database": "Database",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "Create monitor",
+					"checksInADay": "Checks in a day",
+					"checksPerDay_one": "{{formatted}} check a day",
+					"checksPerDay_other": "{{formatted}} checks a day",
+					"nextCheck": "Next check in {{interval}}"
+				}
+			}
 		}
 	},
 	"pages": {
@@ -583,7 +656,8 @@
 					"optionHardware": "Infrastructure",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "Heartbeat"
 				}
 			}
 		},
@@ -624,6 +698,7 @@
 				},
 				"frequency": {
 					"description": "How often do you want to check the status of this monitor?",
+					"customHint": "Not in the list? Type any number, then pick seconds, minutes, hours or days.",
 					"option": {
 						"frequency": {
 							"label": "Check frequency",
@@ -640,6 +715,12 @@
 								"twoMinutes": "2 minutes"
 							}
 						}
+					},
+					"heartbeat": {
+						"title": "Alert window",
+						"description": "How long to wait for a ping before marking this monitor down?",
+						"label": "Alert if no ping for",
+						"hint": "Pick your job's schedule plus some slack, e.g. 65 minutes for an hourly job."
 					},
 					"title": "Check frequency"
 				},
@@ -732,14 +813,16 @@
 						"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.  Set an optional proxy server to connect through.",
 						"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
 						"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
-						"docker": "Enter a Docker socket such as unix:///var/run/docker.sock, a remote daemon such as tcp://host:2376 with TLS client certificates, or a Capture endpoint ending in /metrics/docker with its authorization secret. Every container on the host is monitored.",
+						"docker": "Enter a Docker socket such as unix:///var/run/docker.sock, a remote daemon such as tcp://host:2376 with TLS client certificates, or a Capture Docker endpoint such as http://<capture-host>:59232/api/v1/metrics/docker. This is different from the hardware endpoint /api/v1/metric. Enter the Capture authorization secret as well (paste only the token, not 'Bearer'). Every container on the host is monitored.",
 						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type. Some games require enabling server queries in their config file — check your game server's documentation. See the <gamedigLink>supported games list</gamedigLink> for protocol details.",
 						"pagespeed": "Track page load performance, Core Web Vitals, and optimization scores for your website.",
 						"grpc": "Enter the hostname and port of the gRPC server, optionally specify a service name for the health check, and add a display name.",
 						"websocket": "Enter the WebSocket URL to monitor (e.g., wss://example.com/socket) and add a display name.",
 						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure. The Capture endpoint URL must include the full path /api/v1/metrics (e.g. http://192.168.1.10:5001/api/v1/metrics). For the authorization secret, paste only the token string — don't include 'Bearer'.",
-						"dns": "Monitor if a specific DNS server is responding."
-					}
+						"dns": "Monitor if a specific DNS server is responding.",
+						"heartbeat": "Add a clear display name that appears on the dashboard. The ping URL is shown on the monitor's details page after you save."
+					},
+					"heartbeatAutoCreate": "Jobs can also create heartbeat monitors themselves: add <code>?create=true</code> to the ping URL."
 				},
 				"ignoreTls": {
 					"description": "Configure TLS/SSL certificate validation for HTTPS connections.",
@@ -780,6 +863,7 @@
 					"optionPingDescription": "Use ICMP Ping to monitor if a server is online.",
 					"optionPortDescription": "Monitor if a specific port on a server is open.",
 					"optionDnsDescription": "Monitor if a specific DNS server is responding.",
+					"optionHeartbeatDescription": "Get alerted when a cron job or scheduled task stops checking in.",
 					"title": "Type"
 				},
 				"thresholds": {
@@ -883,6 +967,11 @@
 							"description": "Skips verifying the daemon's certificate, so the CA certificate becomes optional. The client certificate and key are still required because the daemon verifies them."
 						}
 					}
+				},
+				"heartbeatSlug": {
+					"label": "Slug",
+					"hint": "Identifies this monitor in the ping URL. Lowercase letters, numbers and hyphens.",
+					"editAlert": "Changing the slug changes the ping URL. Jobs using the current URL stop working."
 				}
 			}
 		},
@@ -1489,7 +1578,8 @@
 				"monitoring": "Monitoring",
 				"email": "Email",
 				"integrations": "Integrations",
-				"data": "Data"
+				"data": "Data",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1700,7 +1790,159 @@
 				},
 				"importExportMonitors": {
 					"title": "Import / Export monitors",
-					"description": "Import or export your monitors data as a JSON file for backup or transfer."
+					"description": "Import or export your monitors data as a JSON file for backup or transfer.",
+					"backupNotice": "This JSON file only contains your monitors, so it isn't a full backup. To back up or restore your Checkmate data, use Checkmate Connect.",
+					"connectTabLink": "Open the Checkmate Connect tab",
+					"connectSiteLink": "Visit the Checkmate Connect website"
+				},
+				"connect": {
+					"superadminOnly": "Only a superadmin can enroll this server, change remote access, run or restore backups, or remove its enrollment. Sign out and back in if your role changed recently.",
+					"clickToConfirm": "Click again to confirm",
+					"status": {
+						"title": "Status",
+						"description": "Connection state of this installation.",
+						"enrolled": "Enrolled",
+						"notEnrolled": "Not enrolled",
+						"connected": "Tunnel connected",
+						"disconnected": "Tunnel disconnected",
+						"connecting": "Tunnel connecting",
+						"remoteAccessOff": "Remote access off",
+						"agentId": "Agent ID",
+						"lastConnected": "Last connected"
+					},
+					"enroll": {
+						"title": "Enroll installation",
+						"description": "Paste the credential block from your Checkmate Connect dashboard. The credential is stored encrypted in this installation's database and only leaves it to authenticate with Checkmate Connect.",
+						"button": "Enroll"
+					},
+					"remoteAccess": {
+						"title": "Remote access",
+						"description": "Keep an outbound tunnel open so you can reach this installation from your Connect address. No inbound ports are opened."
+					},
+					"tooltips": {
+						"enroll": "Connect this server to your account",
+						"unenroll": "Disconnect this server from Connect",
+						"generateKey": "Create the key that unlocks your backups",
+						"lostKey": "Start again with a new key",
+						"runFull": "Back up the whole database now",
+						"runConfig": "Back up everything except check history",
+						"importKey": "Use the key from your original server",
+						"useKey": "Check this key against your backups",
+						"replaceKey": "Switch to another recovery key",
+						"restore": "Replace this server's data with this backup"
+					},
+					"backup": {
+						"title": "Cloud backups",
+						"description": "Encrypted backups of this installation's database, uploaded to Checkmate Connect. Data is encrypted here before upload; the cloud only ever stores ciphertext.",
+						"needsKey": "Set up a recovery key below to start backing up.",
+						"generateKey": "Generate recovery key",
+						"existingBackups": "This account already has cloud backups. Enter the recovery key from your original server to restore them.",
+						"lostKey": "I lost my key",
+						"lostKeyWarning": "Your existing cloud backups can't be restored without the original key. They're kept for 30 days after your first backup with a new key, so you can switch back if you find the original.",
+						"importKey": "I already have a recovery key",
+						"importKeyHelp": "Paste the 64-character key from your original server. Checkmate decrypts one of your cloud backups to check the key before saving it.",
+						"replaceKey": "Use a different recovery key",
+						"replaceKeyHelp": "Paste the 64-character key you want to use instead. Checkmate decrypts your cloud backups to check the key, and keeps your current key if none of them open.",
+						"replaceKeyWarning": "Backups made with your current key can't be restored after you switch.",
+						"importKeyConfirm": "Use this key",
+						"verifyOutcome": {
+							"ok": "Recovery key saved",
+							"wrong-key": "This key does not decrypt your cloud backups",
+							"no-backups": "No cloud backups to check this key against",
+							"failed": "The key couldn't be checked: {{error}}"
+						},
+						"keyTitle": "Recovery key",
+						"keyWarning": "Store this key somewhere safe, away from this server. It is shown only once. If you lose it, your cloud backups can't be restored and nobody can recover it for you.",
+						"keyCopy": "Copy key",
+						"keyLabel": "Your recovery key",
+						"keyContinue": "I have saved it",
+						"keyDone": "I have stored the key",
+						"keyShowAgain": "Show the key again",
+						"keyVerifyHelp": "Open the place you saved the key and paste it here to confirm you have a working copy.",
+						"keyPlaceholder": "Recovery key",
+						"keyAcknowledge": "I understand that if I lose this key, I can't restore my cloud backups.",
+						"keyMismatch": "That doesn't match your recovery key. Show the key again and save a new copy.",
+						"keyAckRequired": "Tick the box to confirm you understand.",
+						"toolsMissing": "Cloud backups need mongodump and mongorestore, which weren't found on this server.",
+						"toolsMac": "On macOS, run: brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "Download MongoDB Database Tools for Linux",
+						"toolsPath": "If they're installed elsewhere, set CONNECT_MONGODUMP_BIN and CONNECT_MONGORESTORE_BIN. This message clears within a minute of the tools being found.",
+						"runFull": "Back up now",
+						"runConfig": "Back up configuration only",
+						"kind": {
+							"full": "Full database",
+							"config": "Configuration only"
+						},
+						"progress": {
+							"idle": "Idle",
+							"finished": {
+								"backup": {
+									"ok": "Backup completed",
+									"failed": "Backup failed"
+								},
+								"restore": {
+									"ok": "Restore completed",
+									"failed": "Restore failed"
+								},
+								"verify": {
+									"ok": "Recovery key saved",
+									"failed": "Key check failed"
+								}
+							},
+							"queued": {
+								"backup": "Backup job enqueued",
+								"restore": "Restore job enqueued"
+							},
+							"checking": "Checking your key…",
+							"restore": {
+								"downloading": "Step 1 of 3: downloading the backup",
+								"decrypting": "Step 2 of 3: decrypting the backup",
+								"restoring": "Step 3 of 3: restoring your database"
+							},
+							"verify": {
+								"downloading": "Checking your key: downloading backup {{attempt}} of {{attempts}}",
+								"decrypting": "Checking your key: decrypting backup {{attempt}} of {{attempts}}"
+							},
+							"backup": {
+								"dumping": "Step 1 of 3: reading and encrypting your database",
+								"uploading": "Step 2 of 3: uploading the encrypted backup",
+								"saving": "Step 3 of 3: saving the backup to your account"
+							}
+						},
+						"progressWithPercent": "{{step}} ({{percent}}%)",
+						"progressWithSize": "{{step}} ({{size}})",
+						"lastBackupSucceeded": "Last backup ({{date}}): succeeded",
+						"lastBackupSucceededSize": "Last backup ({{date}}): succeeded · {{size}}",
+						"lastBackupFailed": "Last backup ({{date}}): failed — {{error}}",
+						"lastRestoreSucceeded": "Last restore ({{date}}): succeeded",
+						"lastRestoreFailed": "Last restore ({{date}}): failed — {{error}}",
+						"restore": {
+							"title": "Restore a backup",
+							"description": "Downloads the selected backup, verifies and decrypts it on this server, then replaces the current database.",
+							"empty": "No verified cloud backups yet.",
+							"button": "Restore",
+							"confirmTitle": "Restore the backup from {{date}} ({{kind}})?",
+							"confirmBody": "This replaces the current database and cannot be undone. User accounts are replaced too, so log in with an account from the backup afterwards.",
+							"differentKey": "Different key",
+							"expires": "Removed after {{date}}"
+						}
+					},
+					"schedule": {
+						"title": "Scheduled backups",
+						"description": "Run an encrypted cloud backup automatically. The first one starts as soon as you turn this on, and a scheduled backup that comes due while another backup or restore is running is skipped until the next interval.",
+						"interval": "Back up every",
+						"kind": "Backup type"
+					},
+					"recoveryKey": {
+						"title": "Recovery key",
+						"description": "Encrypts your cloud backups on this server. It never leaves this server, and without it your backups can't be restored.",
+						"set": "A recovery key is set on this server."
+					},
+					"unenroll": {
+						"title": "Remove enrollment",
+						"description": "Disconnects this installation from Checkmate Connect and deletes the local credential. Local monitoring is not affected.",
+						"button": "Remove enrollment"
+					}
 				},
 				"about": {
 					"title": "About",
@@ -1708,6 +1950,18 @@
 				},
 				"validation": {
 					"errorMessage": "Please fix the following validation errors:"
+				},
+				"heartbeatKey": {
+					"title": "Heartbeat ping key",
+					"description": "Key used to ping heartbeat monitors.",
+					"noKey": "No key yet. Generate one to start sending heartbeat pings.",
+					"keySet": "A key is set. Rotate it to get a new key you can copy.",
+					"generate": "Generate key",
+					"rotate": "Rotate key",
+					"rotateConfirmTitle": "Rotate the heartbeat ping key?",
+					"rotateConfirmBody": "The current key stops working immediately. Every job that pings a heartbeat monitor in this team must be updated.",
+					"keyLabel": "Ping key",
+					"copyNow": "Copy this key now. It won't be shown again."
 				}
 			},
 			"header": {
@@ -1967,6 +2221,33 @@
 			"header": {
 				"title": "Uptime monitors",
 				"description": "Watch HTTP endpoints, pings, containers, and ports — and get alerted the moment something goes down."
+			},
+			"details": {
+				"heartbeat": {
+					"title": "Heartbeat URL",
+					"description": "Have your job request this URL every time it runs. If no request arrives within the alert window, the monitor goes down.",
+					"pingUrl": "Ping URL",
+					"examplesTitle": "Ways to send a ping",
+					"examplesDescription": "Pick the one that fits your job. Each example is a complete command, so you only need one.",
+					"examples": {
+						"post": "Ping on success",
+						"cron": "Ping after a cron job succeeds",
+						"exitCode": "Report the job's exit code (0 is up, anything else is down)",
+						"fail": "Report a failure",
+						"duration": "Report the exit code and how long the job took"
+					},
+					"options": {
+						"title": "Building the ping URL",
+						"description": "Add any of these to the end of the ping URL:",
+						"fail": "records a failure",
+						"exitCode": "records an exit code: 0 is up, anything else is down",
+						"duration": "records how long the job ran, in milliseconds",
+						"msg": "attaches a message to the check",
+						"combine": "Use /fail or an exit code, not both. Query parameters work on any URL and can be joined with &, for example /1?duration=5000&msg=disk%20full."
+					},
+					"keyHint": "Replace <pingKey> with your team's ping key.",
+					"keyLink": "Manage it in Settings → Monitoring"
+				}
 			}
 		},
 		"dashboard": {
@@ -1978,13 +2259,32 @@
 				"monitorStatus": "Monitor status",
 				"currentlyDown": "Currently down",
 				"uptime": "Monitor uptime",
-				"monitorsByType": "Monitors by type"
+				"monitorsByType": "Monitors by type",
+				"diagnostic": "Checkmate diagnostics",
+				"queue": "Queue"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Toggle sort order"
 			},
 			"currentlyDown": {
 				"empty": "No monitors are down at this moment."
+			},
+			"diagnostic": {
+				"version": "Version",
+				"updateAvailable": "{{version}} available",
+				"heapUsage": "Heap usage",
+				"cpuUsage": "CPU usage",
+				"eventLoopDelay": "Event loop delay",
+				"dbSize": "Database size",
+				"dbOperations": "Database operations",
+				"dbOperationsSummary": "{{reads}} reads/s · {{writes}} writes/s"
+			},
+			"queue": {
+				"jobs": "Jobs",
+				"activeJobs": "Active jobs",
+				"failingJobs": "Failing jobs",
+				"workers": "Workers",
+				"overdueChecks": "Overdue checks"
 			},
 			"header": {
 				"title": "Dashboard",
@@ -1998,6 +2298,12 @@
 					"uptime": "Uptime"
 				},
 				"done": "Done"
+			},
+			"arrange": {
+				"start": "Arrange",
+				"done": "Done",
+				"reset": "Reset order",
+				"handle": "Drag to move {{card}}"
 			}
 		}
 	}

@@ -2,6 +2,7 @@ import { type Monitor } from "@/domain/monitors/monitor.type.js";
 import type {
 	MonitorType,
 	MonitorsWithChecksByTeamIdResult,
+	DashboardByTeamIdResult,
 	UptimeDetailsResult,
 	HardwareDetailsResult,
 	PageSpeedDetailsResult,
@@ -31,10 +32,11 @@ import { AppError, internalError } from "@/utils/AppError.js";
 import type { ImportedMonitor } from "@/api/validation/monitorValidation.js";
 import { ILogger } from "@/utils/logger/logger.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
-import { DateRange } from "@/types/query.js";
+import { DateRange, type SortOrder } from "@/types/query.js";
 import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
 import { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import { isCaptureDockerUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
+import { toHeartbeatSlug } from "@/utils/heartbeatSlug.js";
 import { monitorErrors } from "@/domain/monitors/monitor.errors.js";
 
 const SERVICE_NAME = "MonitorService";
@@ -115,6 +117,7 @@ export interface IMonitorService {
 		field?: string;
 		order?: "asc" | "desc";
 	}): Promise<MonitorsWithChecksByTeamIdResult>;
+	getDashboardByTeamId(args: { teamId: string; limit?: number; order?: SortOrder }): Promise<DashboardByTeamIdResult>;
 	getAllGames(): GamesMap;
 
 	// update
@@ -187,7 +190,18 @@ export class MonitorService implements IMonitorService {
 		this.encryptionService = encryptionService;
 	}
 
+	private applyHeartbeatDefaults = (body: Partial<Monitor>) => {
+		if (body.type !== "heartbeat") {
+			delete body.heartbeatSlug; // Not needed for non-heartbeat
+			return;
+		}
+		body.url = "";
+		body.geoCheckEnabled = false;
+		body.proxyMode = "none";
+	};
+
 	createMonitor = async (teamId: string, userId: string, body: Monitor): Promise<Monitor> => {
+		this.applyHeartbeatDefaults(body); // Set defaults for heartbeat monitors, does nothing otherwise
 		// proxyId is only needed in custom mode
 		if (body.proxyMode !== "custom") {
 			delete body.proxyId;
@@ -209,6 +223,7 @@ export class MonitorService implements IMonitorService {
 	};
 
 	createMonitors = async (monitors: Array<Monitor>): Promise<Monitor[] | null> => {
+		monitors.forEach((monitor) => this.applyHeartbeatDefaults(monitor));
 		const createdMonitors = await this.monitorsRepository.createMonitors(monitors);
 		if (!createdMonitors || createdMonitors.length === 0) {
 			throw new AppError(internalError, { message: "Failed to create monitors", service: SERVICE_NAME });
@@ -583,11 +598,27 @@ export class MonitorService implements IMonitorService {
 		return { summary: summary ?? null, count, monitors: monitorsWithChecks };
 	};
 
+	getDashboardByTeamId = async ({
+		teamId,
+		limit,
+		order,
+	}: {
+		teamId: string;
+		limit?: number;
+		order?: SortOrder;
+	}): Promise<DashboardByTeamIdResult> => {
+		return await this.monitorsRepository.findDashboardByTeamId(teamId, { limit, order });
+	};
+
 	getAllGames = (): GamesMap => {
 		return this.games;
 	};
 
 	editMonitor = async ({ teamId, monitorId, body }: { teamId: string; monitorId: string; body: Partial<Monitor> }) => {
+		if (body.heartbeatSlug !== undefined) {
+			const stored = await this.monitorsRepository.findById(monitorId, teamId);
+			if (stored.type !== "heartbeat") delete body.heartbeatSlug;
+		}
 		// Moving off custom mode orphans the stored proxyId. Unset it so the stale reference doesn't block deleting that proxy
 		const unsetProxyId = body.proxyMode !== undefined && body.proxyMode !== "custom";
 		if (unsetProxyId) {
@@ -605,6 +636,7 @@ export class MonitorService implements IMonitorService {
 			}
 		}
 		await this.normalizeCaptureDocker(body, monitorId, teamId);
+		delete body.type; // Monitor types are fixed at creation
 		const editedMonitor = await this.monitorsRepository.updateById(monitorId, teamId, body, { unsetProxyId });
 		await this.scheduler.updateJob(editedMonitor);
 		return editedMonitor;
@@ -758,6 +790,31 @@ export class MonitorService implements IMonitorService {
 			updatedAt: "",
 			lastEvaluatedAt: 0,
 		}));
+
+		// Reject duplicate slugs up front
+		const heartbeats = cleanedMonitors.filter((monitor) => monitor.type === "heartbeat");
+		for (const monitor of heartbeats) {
+			if (!monitor.heartbeatSlug) {
+				monitor.heartbeatSlug = toHeartbeatSlug(monitor.name);
+			}
+		}
+
+		const slugs = heartbeats.map((monitor) => monitor.heartbeatSlug as string);
+		const duplicateInFile = slugs.find((slug, index) => slugs.indexOf(slug) !== index);
+		if (duplicateInFile) {
+			throw new AppError(monitorErrors.heartbeatSlugTaken, {
+				message: `Slug "${duplicateInFile}" appears more than once in the import`,
+				service: SERVICE_NAME,
+			});
+		}
+
+		const existing = await this.monitorsRepository.findExistingHeartbeatSlugs(teamId, slugs);
+		if (existing.length) {
+			throw new AppError(monitorErrors.heartbeatSlugTaken, {
+				message: `Slugs already in use: ${existing.join(", ")}`,
+				service: SERVICE_NAME,
+			});
+		}
 
 		const createdMonitors = await this.createMonitors(cleanedMonitors);
 

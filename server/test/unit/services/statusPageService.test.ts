@@ -19,6 +19,7 @@ const makeStatusPage = (overrides?: Partial<StatusPage>): StatusPage =>
 		userId: "user-1",
 		url: "my-status-page",
 		companyName: "Test Co",
+		timezone: "UTC",
 		monitors: ["mon-1"],
 		theme: "modern",
 		themeMode: "dark",
@@ -353,7 +354,7 @@ describe("StatusPageService", () => {
 		});
 
 		describe("range", () => {
-			it("omits range-mode fields and never queries buckets for the default (latest) range", async () => {
+			it("includes the page timezone but omits other range-mode fields and never queries buckets for the default (latest) range", async () => {
 				const { service, checksRepo, monitorsRepo } = createService();
 
 				const implicitLatest = await service.getPublicStatusPagePayload(publishedPage());
@@ -361,12 +362,21 @@ describe("StatusPageService", () => {
 
 				for (const payload of [implicitLatest, explicitLatest]) {
 					expect(payload).not.toHaveProperty("range");
-					expect(payload).not.toHaveProperty("bucketTimezone");
+					expect(payload.bucketTimezone).toBe("UTC");
 					expect(payload).not.toHaveProperty("checkTTLDays");
 					expect(payload.monitors[0]).not.toHaveProperty("dailyChecks");
 				}
 				expect(checksRepo.getDailyStatusBuckets).not.toHaveBeenCalled();
 				expect(monitorsRepo.findByIds).toHaveBeenCalledWith(["mon-1"], { recentChecks: "all" });
+			});
+
+			it("returns the page's configured timezone for the latest range so tooltips are not rendered in UTC", async () => {
+				const { service } = createService();
+				const page = makeStatusPage({ isPublished: true, timezone: "Asia/Shanghai" });
+
+				const payload = await service.getPublicStatusPagePayload(page, "latest");
+
+				expect(payload.bucketTimezone).toBe("Asia/Shanghai");
 			});
 
 			it("attaches dailyChecks, passes the repo-trimmed recentChecks through, and echoes range metadata for a day range", async () => {
@@ -394,13 +404,13 @@ describe("StatusPageService", () => {
 				}
 			});
 
-			it("falls back to Etc/UTC when the page has no timezone and defaults dailyChecks to empty", async () => {
+			it("buckets in the page timezone and defaults dailyChecks to empty", async () => {
 				const { service, checksRepo } = createService();
 
 				const payload = await service.getPublicStatusPagePayload(publishedPage(), "60d");
 
-				expect(checksRepo.getDailyStatusBuckets).toHaveBeenCalledWith(["mon-1"], 60, "Etc/UTC");
-				expect(payload.bucketTimezone).toBe("Etc/UTC");
+				expect(checksRepo.getDailyStatusBuckets).toHaveBeenCalledWith(["mon-1"], 60, "UTC");
+				expect(payload.bucketTimezone).toBe("UTC");
 				expect(payload.monitors[0].dailyChecks).toEqual([]);
 			});
 		});

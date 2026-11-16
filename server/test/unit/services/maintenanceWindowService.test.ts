@@ -33,6 +33,7 @@ const createMonitorsRepo = () =>
 const createJobsRepo = () =>
 	({
 		markMonitorsDue: jest.fn().mockResolvedValue(0),
+		rescheduleOverdueChecks: jest.fn().mockResolvedValue(0),
 	}) as unknown as jest.Mocked<IJobsRepository>;
 
 const createWorker = () =>
@@ -284,6 +285,23 @@ describe("MaintenanceWindowService", () => {
 			// ...and the idle loops are woken so the re-armed jobs run promptly
 			expect(worker.wake).toHaveBeenCalledWith("check");
 			expect(worker.wake).toHaveBeenCalledWith("geo-check");
+		});
+
+		it("keeps heartbeat deadlines on exit, re-arming only an overdue one instead of making it due", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.deleteById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1", "hb-1"] }));
+			const monitorsRepository = createMonitorsRepo();
+			(monitorsRepository.findByIds as jest.Mock).mockResolvedValue([
+				{ id: "mon-1", teamId: "team-1", type: "http" },
+				{ id: "hb-1", teamId: "team-1", type: "heartbeat" },
+			]);
+			const { service, jobsRepository } = createService({ maintenanceWindowsRepository, monitorsRepository });
+
+			await service.deleteMaintenanceWindow({ id: "mw-1", teamId: "team-1" });
+
+			// Making a heartbeat row due means "ping missed", so it must never reach markMonitorsDue
+			expect(jobsRepository.markMonitorsDue).toHaveBeenCalledWith(["mon-1"], expect.any(Number));
+			expect(jobsRepository.rescheduleOverdueChecks).toHaveBeenCalledWith(["hb-1"], expect.any(Number));
 		});
 
 		it("does not wake the loops when no monitor leaves maintenance", async () => {

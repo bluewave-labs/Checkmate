@@ -29,7 +29,7 @@ export interface IJobsRepository {
 	// Record failure, release lease, bump fail count, record reason, reset nextScheduledAt for retry
 	recordFailure(id: string, error: unknown, now: number): Promise<boolean>;
 
-	recordOneShot(id: string, now: number): Promise<boolean>;
+	recordOneShot(id: string, scheduledRunAt: number, now: number): Promise<boolean>;
 
 	// ********************
 	// Hand off to evaluator // This is accomplished pushing newly inserted Check IDs onto the evaluation row
@@ -46,8 +46,8 @@ export interface IJobsRepository {
 	// Create jobs. Takes a JobSeed
 	upsertJob(job: JobSeed): Promise<boolean>;
 
-	// Creates cleanup jobs, these are executed immediately so need their own method
-	upsertCleanupJob(job: JobSeed): Promise<boolean>;
+	// Create or update a job and overwrite its schedule, so an existing row is due again at nextScheduledAt
+	upsertJobAndSchedule(job: JobSeed): Promise<boolean>;
 
 	// Pause/Resume
 	setActiveById(refId: string, isActive: boolean): Promise<boolean>;
@@ -55,8 +55,17 @@ export interface IJobsRepository {
 	// Edit job schedule
 	updateScheduleById(refId: string, type: JobType, intervalMs: number | null): Promise<boolean>;
 
+	// Update heartbeat jobs
+	updateHeartbeatScheduleById(refId: string, intervalMs: number): Promise<boolean>;
+
 	// Re-arm the check/geo-check rows.  Add jitter to prevent herd
 	markMonitorsDue(monitorIds: string[], now: number): Promise<number>;
+
+	// Push check rows out by their own interval for heartbeat monitors.  This is the dead man's switch
+	rescheduleChecks(monitorIds: string[], now: number): Promise<number>;
+
+	// Re arm only check rows already due
+	rescheduleOverdueChecks(monitorIds: string[], now: number): Promise<number>;
 
 	// Delete, drop all rows
 	deleteById(refId: string): Promise<boolean>;
@@ -67,11 +76,16 @@ export interface IJobsRepository {
 	// Global rows (refId null) are addressed by their canonical _id, see jobId
 	deleteGlobalJob(type: JobType): Promise<boolean>;
 
+	findGlobalJob(type: JobType): Promise<Job | null>;
+
 	// Delete jobs that reference monitors that no longer exist
 	deleteByMonitorIdsNotIn(monitorIds: string[]): Promise<number>;
 
 	// Get job
 	findById(refId: string): Promise<Job[]>;
+
+	// Find check job by monitor id, used for heartbeat
+	findCheckJob(monitorId: string): Promise<Job | null>;
 
 	// ********************
 	// Observability

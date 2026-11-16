@@ -45,6 +45,7 @@ const NotificationsPage = () => {
 			loading={isLoading || isValidating}
 			error={!!error}
 			totalCount={notifications?.length ?? 0}
+			showActionButton={isAdmin}
 			actionButtonText={t("pages.notifications.fallback.actionButton")}
 			actionLink="/notifications/create"
 		>

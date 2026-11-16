@@ -15,6 +15,7 @@ const HEARTBEAT_MS = WORKER_STALE_MS / 3; // Worker can miss two beats without b
 const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const TELEMETRY_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const TELEMETRY_FIRST_RUN_JITTER_MS = 60 * 60 * 1000;
+const CONNECT_HEARTBEAT_INTERVAL_MS = 60 * 1000;
 
 export class JobScheduler implements IJobScheduler {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -39,6 +40,7 @@ export class JobScheduler implements IJobScheduler {
 	protected ticking: Partial<Record<JobType, boolean>> = {}; // Whether a loop is mid tick
 	protected tickFns = new Map<JobType, () => void>(); // Store tick fns so we can run them immediately on wake
 	protected timers = new Map<JobType | "heartbeat", NodeJS.Timeout>();
+	protected afterHeartbeat: (() => Promise<void>) | null = null;
 
 	// Per job type poll intervals.  These back off on idle and reset on work or wake()
 	protected pollMs: Record<JobType, number> = {
@@ -48,14 +50,24 @@ export class JobScheduler implements IJobScheduler {
 		"cleanup-orphaned": POLL_MS,
 		"cleanup-retention": POLL_MS,
 		telemetry: POLL_MS,
+		"connect-heartbeat": POLL_MS,
+		"connect-operation": POLL_MS,
+		"connect-backup": POLL_MS,
 	};
+
+	// Figures out when a job should first be run
+	private initialRunScheduledAt = (monitor: MonitorScheduleFields, now: number, immediate: boolean): number => {
+		if (monitor.type === "heartbeat") return now + monitor.interval;
+		return immediate ? now : now + Math.floor(Math.random() * monitor.interval);
+	};
+
 	// Helpers, builds job seeds. immediate=true runs on the next tick; otherwise jitter spreads the herd.
 	protected toCheckJob = (monitor: MonitorScheduleFields, now: number, immediate = false): JobSeed => ({
 		id: jobId("check", monitor.id),
 		type: "check",
 		refId: monitor.id,
 		isActive: monitor.isActive,
-		nextScheduledAt: immediate ? now : now + Math.floor(Math.random() * monitor.interval), // Avoid herd
+		nextScheduledAt: this.initialRunScheduledAt(monitor, now, immediate),
 		intervalMs: monitor.interval,
 	});
 
@@ -84,6 +96,33 @@ export class JobScheduler implements IJobScheduler {
 		intervalMs: TELEMETRY_INTERVAL_MS,
 	});
 
+	protected toConnectHeartbeatJob = (now: number): JobSeed => ({
+		id: jobId("connect-heartbeat", null),
+		type: "connect-heartbeat",
+		refId: null,
+		isActive: true,
+		nextScheduledAt: now,
+		intervalMs: CONNECT_HEARTBEAT_INTERVAL_MS,
+	});
+
+	protected toGlobalOneShotJob = (type: JobType, now: number): JobSeed => ({
+		id: jobId(type, null),
+		type,
+		refId: null,
+		isActive: true,
+		nextScheduledAt: now,
+		intervalMs: null,
+	});
+
+	protected toGlobalRecurringJob = (type: JobType, intervalMs: number, nextScheduledAt: number): JobSeed => ({
+		id: jobId(type, null),
+		type,
+		refId: null,
+		isActive: true,
+		nextScheduledAt,
+		intervalMs,
+	});
+
 	private toSummary = (job: Job): WorkerJobSummary => ({
 		monitorId: job.refId ?? job.id,
 		monitorType: job.type,
@@ -110,15 +149,29 @@ export class JobScheduler implements IJobScheduler {
 	addJob = async (_monitorId: string, monitor: Monitor) => {
 		const now = Date.now();
 		await this.jobsRepository.upsertJob(this.toCheckJob(monitor, now, true));
-		this.wake("check");
+		if (monitor.type !== "heartbeat") this.wake("check");
 		if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) {
 			await this.jobsRepository.upsertJob(this.toGeoCheckJob(monitor, now, true));
 			this.wake("geo-check");
 		}
 	};
 
+	addGlobalJob = async (type: JobType): Promise<void> => {
+		await this.jobsRepository.upsertJobAndSchedule(this.toGlobalOneShotJob(type, Date.now()));
+		this.wake(type);
+	};
+
+	addRecurringGlobalJob = async (type: JobType, intervalMs: number): Promise<void> => {
+		await this.jobsRepository.upsertJob(this.toGlobalRecurringJob(type, intervalMs, Date.now()));
+		this.wake(type);
+	};
+
 	deleteJob = async (monitor: Monitor) => {
 		await this.jobsRepository.deleteById(monitor.id);
+	};
+
+	deleteRecurringGlobalJob = async (type: JobType): Promise<void> => {
+		await this.jobsRepository.deleteGlobalJob(type);
 	};
 
 	pauseJob = async (monitor: Monitor) => {
@@ -126,13 +179,22 @@ export class JobScheduler implements IJobScheduler {
 	};
 
 	resumeJob = async (monitor: Monitor) => {
+		if (monitor.type === "heartbeat") {
+			await this.jobsRepository.rescheduleOverdueChecks([monitor.id], Date.now());
+			await this.jobsRepository.setActiveById(monitor.id, true);
+			return;
+		}
 		await this.jobsRepository.setActiveById(monitor.id, true); // a paused job's nextScheduledAt is now in the past, so it's due immediately
 		this.wake("check");
 		if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) this.wake("geo-check");
 	};
 
 	updateJob = async (monitor: Monitor) => {
-		await this.jobsRepository.updateScheduleById(monitor.id, "check", monitor.interval);
+		if (monitor.type === "heartbeat") {
+			await this.jobsRepository.updateHeartbeatScheduleById(monitor.id, monitor.interval);
+		} else {
+			await this.jobsRepository.updateScheduleById(monitor.id, "check", monitor.interval);
+		}
 		if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) {
 			await this.jobsRepository.upsertJob(this.toGeoCheckJob(monitor, Date.now(), true)); // a newly enabled geo check should run right away
 			this.wake("geo-check");
@@ -141,11 +203,24 @@ export class JobScheduler implements IJobScheduler {
 		}
 	};
 
+	updateRecurringGlobalJob = async (type: JobType, intervalMs: number, nextScheduledAt: number): Promise<void> => {
+		await this.jobsRepository.upsertJobAndSchedule(this.toGlobalRecurringJob(type, intervalMs, nextScheduledAt));
+		this.wake(type);
+	};
+
+	isGlobalJobRunning = async (type: JobType): Promise<boolean> => {
+		const job = await this.jobsRepository.findGlobalJob(type);
+		return job !== null && job.lockedUntil !== null && job.lockedUntil > Date.now();
+	};
+
 	getMetrics = async (): Promise<WorkerMetrics> => {
-		const rows = await this.jobsRepository.findAll();
-		const recent = await this.queueWorkersRepository.findRecent(WORKER_STALE_MS);
-		const workers = recent.filter((worker) => worker.processesJobs);
 		const now = Date.now();
+		const [rows, recent, dueBacklog] = await Promise.all([
+			this.jobsRepository.findAll(),
+			this.queueWorkersRepository.findRecent(WORKER_STALE_MS),
+			this.jobsRepository.countDueBacklog(now),
+		]);
+		const workers = recent.filter((worker) => worker.processesJobs);
 		return rows.reduce<WorkerMetrics>(
 			(acc, job) => {
 				acc.jobs++;
@@ -172,6 +247,7 @@ export class JobScheduler implements IJobScheduler {
 				jobsWithFailures: [],
 				totalRuns: 0,
 				totalFailures: 0,
+				dueBacklog,
 				workers,
 			}
 		);
@@ -201,18 +277,23 @@ export class JobScheduler implements IJobScheduler {
 	}
 
 	// Seed queue
-	protected reconcile = async () => {
+	reconcile = async () => {
 		const now = Date.now();
 		const monitors = await this.monitorsRepository.findAllForScheduling();
+		const heartbeatIds: string[] = [];
 		for (const monitor of monitors) {
 			await this.jobsRepository.upsertJob(this.toCheckJob(monitor, now));
+			if (monitor.type === "heartbeat") heartbeatIds.push(monitor.id);
 			if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) {
 				await this.jobsRepository.upsertJob(this.toGeoCheckJob(monitor, now));
 			}
 		}
+
+		await this.jobsRepository.rescheduleOverdueChecks(heartbeatIds, now);
+
 		// Both cleanup jobs run immediately on every startup, then once a day
-		await this.jobsRepository.upsertCleanupJob(this.toCleanupJob("cleanup-orphaned", now));
-		await this.jobsRepository.upsertCleanupJob(this.toCleanupJob("cleanup-retention", now));
+		await this.jobsRepository.upsertJobAndSchedule(this.toCleanupJob("cleanup-orphaned", now));
+		await this.jobsRepository.upsertJobAndSchedule(this.toCleanupJob("cleanup-retention", now));
 
 		if (this.telemetryEnabled) {
 			await this.jobsRepository.upsertJob(this.toTelemetryJob(now));
@@ -220,6 +301,7 @@ export class JobScheduler implements IJobScheduler {
 		} else {
 			await this.jobsRepository.deleteGlobalJob("telemetry");
 		}
+		await this.jobsRepository.upsertJob(this.toConnectHeartbeatJob(now));
 	};
 
 	// Register worker
@@ -230,6 +312,7 @@ export class JobScheduler implements IJobScheduler {
 				this.logger.warn({ err: error }, "Heartbeat failed");
 			});
 			await this.heartbeatInFlight;
+			if (this.afterHeartbeat) await this.afterHeartbeat();
 		} catch (error: unknown) {
 			this.logger.warn({ err: error }, "Heartbeat failed");
 		}

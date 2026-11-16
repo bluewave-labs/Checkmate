@@ -32,6 +32,8 @@
 			"pause": "Pause",
 			"resume": "Reprendre",
 			"save": "Enregistrer",
+			"next": "Suivant",
+			"back": "Retour",
 			"sendInvite": "Envoyer l'invitation",
 			"test": "Tester",
 			"testNotifications": "Tester les notifications",
@@ -47,19 +49,37 @@
 			"exportToJSON": "Exporter en JSON",
 			"importFromJSON": "Importer depuis JSON",
 			"clearFilters": "Effacer les filtres",
-			"removeUser": "Supprimer l'utilisateur"
+			"removeUser": "Supprimer l'utilisateur",
+			"removeItem": "Retirer {{item}}"
 		},
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Temps de réponse moyen",
+				"cpuUsage": "Utilisation du CPU",
 				"downtime": "Temps d'arrêt",
 				"high": "haut",
 				"low": "bas",
+				"memoryUsage": "Utilisation de la mémoire",
+				"responseTime": "Temps de réponse",
+				"timingPhases": "Phases de la requête",
+				"totalResponseTime": "Temps de réponse total",
 				"uptime": "Disponibilité"
 			},
 			"histogram": {
 				"avg": "Moy : {{value}}",
-				"max": "Max : {{value}}"
+				"max": "Max : {{value}}",
+				"responseTime": "Temps de réponse : {{value}}",
+				"total": "Total : {{value}}",
+				"avgCpuUsage": "Utilisation moyenne du CPU : {{value}}",
+				"avgMemoryUsage": "Utilisation moyenne de la mémoire : {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "Requête",
+				"firstByte": "Premier octet",
+				"download": "Téléchargement"
 			}
 		},
 		"dialogs": {
@@ -74,10 +94,17 @@
 			"na": "N/A",
 			"resolved": "Résolu",
 			"responseTime": "Temps de réponse",
+			"state": "État",
+			"uptime": "Temps de fonctionnement",
+			"health": "Santé",
+			"restarts": "Redémarrages",
 			"idle": "Inactif",
 			"running": "En cours d'exécution"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "Tapez pour rechercher"
+			},
 			"role": {
 				"option": {
 					"role": {
@@ -120,7 +147,8 @@
 				"url": "URL",
 				"interval": "Intervalle",
 				"active": "Actif",
-				"responseTime": "Temps de réponse"
+				"responseTime": "Temps de réponse",
+				"tags": "Étiquettes"
 			}
 		},
 		"statusCode": {
@@ -133,6 +161,11 @@
 				"tls": "Échec de la négociation TLS ou SSL (problème de certificat ou de chiffrement).",
 				"unknown": "Aucune réponse HTTP reçue de la cible."
 			}
+		},
+		"copy": {
+			"copy": "Copier dans le presse-papiers",
+			"copied": "Copié dans le presse-papiers",
+			"copyFailed": "Copie impossible. Sélectionnez le texte et copiez-le manuellement."
 		}
 	},
 	"components": {
@@ -221,6 +254,10 @@
 					"user": "Utilisateur",
 					"demoUser": "Utilisateur de démonstration"
 				}
+			},
+			"toggle": {
+				"collapse": "Réduire la barre latérale",
+				"expand": "Développer la barre latérale"
 			}
 		},
 		"starPrompt": {
@@ -233,10 +270,132 @@
 				"discussions": "Discussions",
 				"docs": "Documentation",
 				"changelog": "Journal des modifications"
+			},
+			"update": {
+				"available": "{{version}} disponible",
+				"tooltip": "Une version plus récente de Checkmate est disponible. Voir les notes de version."
+			}
+		},
+		"whatsNew": {
+			"eyebrow": "Nouveau dans Checkmate {{version}}",
+			"stepCount": "{{current}} sur {{total}}",
+			"goToStep": "Aller à l'étape {{step}}",
+			"skip": "Passer",
+			"done": "Terminé",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "Un superadmin inscrit ce serveur dans {{settings}}.",
+			"connectAskSuperadmin": "Demandez à un superadmin de le configurer dans {{settings}}.",
+			"connectCta": "Configurer Checkmate Connect",
+			"steps": {
+				"dashboard": {
+					"title": "Le tableau de bord est votre nouvelle page d'accueil",
+					"description": "Checkmate s'ouvre sur un tableau de bord qui affiche l'état des moniteurs, ceux qui sont hors service et la disponibilité de chacun. Les admins voient aussi la file des tâches et les diagnostics de Checkmate. Placez les cartes dans l'ordre voulu avec {{arrange}}. Masquez celles dont vous n'avez pas besoin avec {{editCards}}."
+				},
+				"heartbeat": {
+					"title": "Des moniteurs heartbeat pour les tâches planifiées",
+					"description": "Les tâches cron, sauvegardes et scripts envoient un ping à Checkmate à chaque exécution. Si aucun ping n'arrive pendant la fenêtre d'alerte, le moniteur passe hors service et vos notifications partent."
+				},
+				"remoteAccess": {
+					"title": "Ouvrez Checkmate de partout sans ouvrir de ports",
+					"description": "Avec Checkmate Connect, ce serveur garde un tunnel sortant ouvert. Vous l'atteignez depuis son adresse Connect sans ouvrir de ports entrants ni configurer de VPN."
+				},
+				"backups": {
+					"title": "Planifiez des sauvegardes chiffrées dans le cloud",
+					"description": "Sauvegardez vers Checkmate Connect tous les 1, 3 ou 7 jours, soit la base de données complète, soit la configuration seule. Ce serveur chiffre les données avant l'envoi. Vous pouvez restaurer une sauvegarde depuis {{settings}}."
+				},
+				"intervals": {
+					"title": "Vérifiez les moniteurs toutes les heures ou une fois par jour",
+					"description": "Un moniteur peut désormais s'exécuter toutes les 1, 2, 6 ou 12 heures, ou une fois par jour. Si l'intervalle voulu n'est pas dans la liste, saisissez-le. Les longs intervalles conviennent aux moniteurs qui n'ont pas besoin d'une vérification chaque minute, comme PageSpeed."
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "Sauvegarde nocturne",
+					"subtitle": "{{type}} · fenêtre d'alerte {{window}}",
+					"downTitle": "{{name}} est hors service",
+					"pingNotReceived": "Ping non reçu"
+				},
+				"remote": {
+					"network": "Votre réseau",
+					"server": "Serveur Checkmate",
+					"tunnel": "Tunnel sortant",
+					"noInbound": "Aucun port entrant ouvert",
+					"laptop": "Votre ordinateur portable"
+				},
+				"backup": {
+					"encrypted": "Chiffré ici avant l'envoi. Le cloud ne stocke que du texte chiffré.",
+					"database": "Base de données",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "Créer un moniteur",
+					"checksInADay": "Vérifications par jour",
+					"checksPerDay_one": "{{formatted}} vérification par jour",
+					"checksPerDay_many": "{{formatted}} vérifications par jour",
+					"checksPerDay_other": "{{formatted}} vérifications par jour",
+					"nextCheck": "Prochaine vérification dans {{interval}}"
+				}
 			}
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "Proxys",
+				"description": "Gérez vos serveurs proxy pour acheminer le trafic de surveillance HTTP."
+			},
+			"fallback": {
+				"title": "Aucun proxy pour le moment",
+				"description": "Acheminez les vérifications des moniteurs HTTP via un serveur proxy. Une fois un proxy créé, vous pouvez le sélectionner sur des moniteurs individuels ou le définir comme proxy global par défaut dans les Paramètres.",
+				"actionButton": "Créer un proxy"
+			},
+			"form": {
+				"name": {
+					"title": "Nom du proxy",
+					"description": "Un nom convivial pour identifier ce proxy",
+					"optionName": "Nom du proxy",
+					"placeholder": "Mon proxy"
+				},
+				"server": {
+					"title": "Serveur proxy",
+					"description": "L'adresse à laquelle le serveur proxy est joignable. Définissez le protocole utilisé par Checkmate pour s'y connecter, son nom d'hôte ou son adresse IP, et le port sur lequel il écoute.",
+					"option": {
+						"protocol": {
+							"label": "Protocole"
+						},
+						"host": {
+							"label": "Nom d'hôte / adresse IP",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "Port"
+						}
+					}
+				},
+				"auth": {
+					"title": "Authentification",
+					"description": "Facultatif. Nécessaire uniquement si le serveur proxy exige une authentification basique.",
+					"option": {
+						"username": {
+							"label": "Nom d'utilisateur",
+							"placeholder": "Nom d'utilisateur du proxy",
+							"labelSet": "Le nom d'utilisateur est défini. Cliquez sur Réinitialiser pour le modifier."
+						},
+						"password": {
+							"label": "Mot de passe",
+							"labelSet": "Le mot de passe est défini. Cliquez sur Réinitialiser pour le modifier."
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "Protocole",
+					"host": "Hôte",
+					"port": "Port"
+				}
+			}
+		},
 		"notFound": {
 			"title": "Oh non ! Vous avez fait tomber vos sushis !",
 			"subtitle": "Soit l'URL n'existe pas, soit vous n'y avez pas accès."
@@ -458,7 +617,9 @@
 				},
 				"statBoxes": {
 					"activeFor": "Actif depuis",
+					"checkingEvery": "Intervalle de vérification : {{interval}}",
 					"certificateExpiry": "Expiration du certificat",
+					"domainExpiry": "Expiration du domaine",
 					"lastCheck": "Dernière vérification",
 					"lastResponseTime": "Dernier temps de réponse",
 					"serviceIsDown": "Le service est indisponible"
@@ -483,7 +644,8 @@
 					"optionHardware": "Infrastructure",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionHeartbeat": "Heartbeat"
 				},
 				"bulkPause": {
 					"paused_one": "{{count}} moniteur en pause",
@@ -503,6 +665,13 @@
 				"advanced": {
 					"description": "Paramètres optionnels pour les cas d'utilisation avancés",
 					"option": {
+						"method": {
+							"label": "Méthode de requête",
+							"description": {
+								"GET": "GET récupère la réponse complète, corps compris. La correspondance avancée est entièrement prise en charge",
+								"HEAD": "HEAD ne récupère que les en-têtes de la réponse afin de réduire la charge sur la cible. Prend en charge la correspondance des codes de statut, mais pas la correspondance avancée, car il n'y a pas de corps."
+							}
+						},
 						"advancedMatching": {
 							"label": "Utiliser la correspondance avancée"
 						},
@@ -518,12 +687,17 @@
 							"equal": "Égal",
 							"include": "Inclure",
 							"regex": "Regex"
+						},
+						"customUpCodes": {
+							"label": "Codes de statut acceptés",
+							"description": "Ajoutez les codes hors 2xx qui doivent également être considérés comme réussis."
 						}
 					},
 					"title": "Paramètres avancés"
 				},
 				"frequency": {
 					"description": "À quelle fréquence souhaitez-vous vérifier le statut de ce moniteur ?",
+					"customHint": "Pas dans la liste ? Saisissez un nombre, puis choisissez secondes, minutes, heures ou jours.",
 					"option": {
 						"frequency": {
 							"label": "Fréquence de vérification",
@@ -541,9 +715,18 @@
 							}
 						}
 					},
+					"heartbeat": {
+						"title": "Fenêtre d'alerte",
+						"description": "Combien de temps attendre un ping avant de considérer ce moniteur comme hors service ?",
+						"label": "Alerter si aucun ping pendant",
+						"hint": "Choisissez la planification de votre tâche plus une marge, par ex. 65 minutes pour une tâche horaire."
+					},
 					"title": "Fréquence de vérification"
 				},
 				"general": {
+					"url": {
+						"alert": "Les prochaines vérifications utiliseront la nouvelle URL. L'historique de ce moniteur est conservé, mais il a été collecté à partir de l'ancienne URL."
+					},
 					"option": {
 						"host": {
 							"label": "Hôte",
@@ -560,6 +743,24 @@
 						"url": {
 							"label": "URL",
 							"placeholder": "https://www.google.com"
+						},
+						"proxyMode": {
+							"label": "Proxy",
+							"value": {
+								"inheritDirect": "Par défaut (connexion directe)",
+								"inheritGlobal": "Par défaut ({{name}})",
+								"none": "Ne jamais utiliser de proxy",
+								"custom": "Proxy personnalisé"
+							},
+							"description": {
+								"inheritDirect": "Aucun proxy global n'est configuré, la connexion est directe. Si un proxy global est configuré ultérieurement, ce moniteur l'utilisera.",
+								"inheritGlobal": "Utiliser le paramètre de proxy global",
+								"none": "Se connecte toujours directement, même si un proxy global est activé ultérieurement.",
+								"custom": "Acheminer les vérifications de ce moniteur via un proxy spécifique. Remplace le proxy global"
+							}
+						},
+						"proxy": {
+							"label": "Serveur proxy"
 						},
 						"game": {
 							"label": "Choisir un jeu",
@@ -617,8 +818,10 @@
 						"grpc": "Saisissez le nom d'hôte et le port du serveur gRPC, spécifiez éventuellement un nom de service pour le bilan de santé, et ajoutez un nom d'affichage.",
 						"websocket": "Saisissez l'URL WebSocket à surveiller (ex. wss://example.com/socket) et ajoutez un nom d'affichage.",
 						"hardware": "Surveillez l'utilisation du processeur, de la mémoire, du disque et la température de votre infrastructure. L'URL du point de terminaison Capture doit inclure le chemin complet /api/v1/metrics (par ex. http://192.168.1.10:5001/api/v1/metrics). Pour le secret d'autorisation, collez uniquement la chaîne du jeton — n'incluez pas 'Bearer'.",
-						"dns": "Surveillez si un serveur DNS spécifique répond."
-					}
+						"dns": "Surveillez si un serveur DNS spécifique répond.",
+						"heartbeat": "Ajoutez un nom d'affichage clair qui apparaît sur le tableau de bord. L'URL de ping s'affiche sur la page de détails du moniteur après l'enregistrement."
+					},
+					"heartbeatAutoCreate": "Les tâches peuvent aussi créer elles-mêmes des moniteurs heartbeat : ajoutez <code>?create=true</code> à l'URL de ping."
 				},
 				"ignoreTls": {
 					"description": "Configurez la validation des certificats TLS/SSL pour les connexions HTTPS.",
@@ -645,6 +848,10 @@
 					"description": "Sélectionnez les canaux de notification que vous souhaitez utiliser",
 					"title": "Notifications"
 				},
+				"tags": {
+					"description": "Sélectionnez les étiquettes à appliquer à ce moniteur",
+					"title": "Étiquettes"
+				},
 				"type": {
 					"description": "Sélectionnez le type de vérification à effectuer",
 					"optionDockerDescription": "Utilisez Docker pour surveiller si un conteneur est en cours d'exécution.",
@@ -655,7 +862,8 @@
 					"optionPingDescription": "Utilisez le Ping ICMP pour surveiller si un serveur est en ligne.",
 					"optionPortDescription": "Surveillez si un port spécifique sur un serveur est ouvert.",
 					"title": "Type",
-					"optionDnsDescription": "Surveillez si un serveur DNS spécifique répond."
+					"optionDnsDescription": "Surveillez si un serveur DNS spécifique répond.",
+					"optionHeartbeatDescription": "Soyez alerté lorsqu'une tâche cron ou planifiée cesse de se signaler."
 				},
 				"thresholds": {
 					"title": "Seuils d'alerte",
@@ -758,6 +966,11 @@
 							"description": "Ignore la vérification du certificat du démon, ce qui rend le certificat d'autorité optionnel. Le certificat et la clé client restent obligatoires car le démon les vérifie."
 						}
 					}
+				},
+				"heartbeatSlug": {
+					"label": "Slug",
+					"hint": "Identifie ce moniteur dans l'URL de ping. Lettres minuscules, chiffres et tirets.",
+					"editAlert": "Modifier le slug modifie l'URL de ping. Les tâches qui utilisent l'URL actuelle cesseront de fonctionner."
 				}
 			}
 		},
@@ -872,6 +1085,7 @@
 					"disk": "Utilisation disque",
 					"netBytesRecv": "{{name}} - Octets reçus",
 					"netBytesSent": "{{name}} - Octets envoyés",
+					"loopbackOnlyNotice": "Capture ne voit que les interfaces réseau du conteneur, et aucune ne transporte de trafic réel. C'est normal lorsque Capture s'exécute dans un conteneur qui ne peut observer que son propre espace de noms réseau — les interfaces portant des noms de type hôte (eth0, ens3) sont les interfaces virtuelles du conteneur, et non celles de l'hôte. Exécutez Capture directement sur l'hôte pour voir l'activité réseau réelle.",
 					"temp": "Temp."
 				}
 			},
@@ -924,6 +1138,37 @@
 				"description": "Suivez les performances des serveurs, identifiez les goulots d'étranglement et garantissez la fiabilité avec une surveillance en temps réel."
 			}
 		},
+		"tags": {
+			"header": {
+				"title": "Étiquettes",
+				"description": "Organisez vos moniteurs avec des étiquettes"
+			},
+			"fallback": {
+				"title": "Aucune étiquette pour le moment",
+				"description": "Organisez vos moniteurs avec des étiquettes. Une fois une étiquette créée et attribuée à un moniteur, vous pourrez filtrer par cette étiquette dans toute l'application et en consulter les détails ici.",
+				"actionButton": "Créer une étiquette"
+			},
+			"table": {
+				"headers": {
+					"color": "Couleur",
+					"appearance": "Apparence"
+				}
+			},
+			"form": {
+				"name": {
+					"title": "Nom de l'étiquette",
+					"description": "Choisissez un nom pour votre étiquette",
+					"optionName": "Nom de l'étiquette",
+					"placeholder": "ex. Groupe 1"
+				},
+				"color": {
+					"title": "Couleur de l'étiquette",
+					"description": "Choisissez une couleur pour votre étiquette",
+					"optionName": "Couleur de l'étiquette",
+					"placeholder": "ex. #13715B"
+				}
+			}
+		},
 		"logs": {
 			"fallback": {
 				"title": "Aucun journal pour le moment",
@@ -937,6 +1182,8 @@
 			"logLevelSelect": {
 				"label": "Niveau de log"
 			},
+			"workers": "Workers",
+			"workersExplainers": "Affiche les processus workers. Les ID de worker sont tronqués, survolez-les pour voir l'ID complet",
 			"jobQueue": "File d'attente des tâches",
 			"jobQueueExplainer": "<highlight>Les lignes mises en évidence</highlight> sont les tâches actuellement traitées par un worker.",
 			"failedJobs": "Tâches échouées",
@@ -957,6 +1204,26 @@
 					"totalHeapSize": "Taille totale du tas",
 					"osMemoryLimit": "Limite mémoire de l'OS"
 				},
+				"mongoDBStats": {
+					"readyState": "État de connexion",
+					"readsPerSecond": "Lectures/s",
+					"insertsPerSecond": "Insertions/s",
+					"updatesPerSecond": "Mises à jour/s",
+					"deletesPerSecond": "Suppressions/s",
+					"writesPerSecond": "Écritures totales/s",
+					"host": "Hôte",
+					"port": "Port",
+					"dbName": "Nom de la base de données",
+					"storageSize": "Taille de stockage"
+				},
+				"mongoDBCollectionStats": {
+					"documents": "Documents : {{count}}",
+					"bucketCount": "Nombre de buckets : {{count}}",
+					"storageSize": "Taille de stockage : {{size}}",
+					"indexSize": "Taille des index : {{size}}",
+					"totalSize": "Taille totale : {{size}}",
+					"dbUsageTooltip": "{{percentage}} % du stockage de la base"
+				},
 				"gauges": {
 					"heapAllocation": "Allocation du tas",
 					"heapUsage": "Utilisation du tas",
@@ -976,17 +1243,32 @@
 					"memoryCpu": {
 						"title": "Mémoire et CPU",
 						"description": "Comment le processus utilise sa mémoire allouée et le CPU de l'hôte."
+					},
+					"mongoDBStats": {
+						"title": "Statistiques MongoDB",
+						"description": "Instantané des métriques MongoDB"
+					},
+					"mongoDBCollectionStats": {
+						"title": "Statistiques des collections MongoDB",
+						"description": "Statistiques pour les collections MongoDB"
 					}
 				}
 			},
 			"table": {
 				"headers": {
+					"host": "Hôte",
+					"processId": "ID du processus",
+					"workerId": "ID du worker",
+					"workerMode": "Mode du worker",
+					"lastSeenAt": "Vu pour la dernière fois",
 					"timestamp": "Horodatage",
 					"level": "Niveau",
 					"service": "Service",
 					"monitorId": "ID du moniteur",
 					"runCount": "Nombre d'exécutions",
 					"failCount": "Nombre d'échecs",
+					"nextScheduledAt": "Prochaine exécution",
+					"lockedBy": "Verrouillé par",
 					"lastFinishedAt": "Dernière fin",
 					"lastFailedAt": "Dernier échec",
 					"failReason": "Raison de l'échec",
@@ -1113,7 +1395,22 @@
 				"type": {
 					"description": "Sélectionnez le type de canal de notification à créer.",
 					"optionType": "Type",
-					"title": "Type de canal"
+					"title": "Type de canal",
+					"value": {
+						"email": "E-mail",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"signalgrid": "Signalgrid",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "Configuration Telegram",
@@ -1131,6 +1428,14 @@
 					"optionUserKey": "Clé utilisateur",
 					"placeholderUserKey": "Entrez la clé utilisateur"
 				},
+				"signalgrid": {
+					"title": "Configuration Signalgrid",
+					"description": "Configurez Signalgrid pour recevoir des notifications push sur vos appareils.",
+					"optionClientKey": "Clé client",
+					"placeholderClientKey": "Votre clé client Signalgrid",
+					"optionChannel": "Canal",
+					"placeholderChannel": "Votre canal Signalgrid"
+				},
 				"twilio": {
 					"title": "Configuration Twilio",
 					"description": "Entrez les identifiants de votre compte Twilio pour envoyer des SMS.",
@@ -1142,6 +1447,14 @@
 					"placeholderFromNumber": "+1234567890",
 					"optionToNumber": "Numéro de destination",
 					"placeholderToNumber": "+1234567890"
+				},
+				"ntfy": {
+					"title": "Configuration ntfy",
+					"description": "Configurez un serveur ntfy et un sujet pour les notifications push.",
+					"optionServerUrl": "URL du serveur",
+					"placeholderServerUrl": "https://ntfy.sh",
+					"optionTopic": "Sujet",
+					"placeholderTopic": "checkmate-alerts"
 				}
 			},
 			"table": {
@@ -1196,7 +1509,8 @@
 				"monitoring": "Surveillance",
 				"email": "E-mail",
 				"integrations": "Intégrations",
-				"data": "Données"
+				"data": "Données",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1230,6 +1544,22 @@
 							"label": "Type de graphique",
 							"histogram": "Histogramme",
 							"heatmap": "Carte thermique"
+						}
+					}
+				},
+				"globalProxy": {
+					"title": "Proxy global",
+					"description": "Achemine par défaut les vérifications via un proxy. S'applique à tous les moniteurs HTTP dont le paramètre de proxy est « Par défaut » ; les moniteurs réglés sur « Ne jamais utiliser de proxy » ou sur un proxy personnalisé ne sont pas concernés.",
+					"option": {
+						"enabled": {
+							"label": "Utiliser le proxy global"
+						},
+						"proxy": {
+							"label": "Choisir un proxy global"
+						},
+						"empty": {
+							"text": "Aucun proxy configuré pour le moment.",
+							"link": "Créez-en un d'abord"
 						}
 					}
 				},
@@ -1391,7 +1721,159 @@
 				},
 				"importExportMonitors": {
 					"title": "Importer / Exporter les moniteurs",
-					"description": "Importez ou exportez vos données de moniteurs sous forme de fichier JSON pour sauvegarde ou transfert."
+					"description": "Importez ou exportez vos données de moniteurs sous forme de fichier JSON pour sauvegarde ou transfert.",
+					"backupNotice": "Ce fichier JSON ne contient que vos moniteurs : ce n'est donc pas une sauvegarde complète. Pour sauvegarder ou restaurer vos données Checkmate, utilisez Checkmate Connect.",
+					"connectTabLink": "Ouvrir l'onglet Checkmate Connect",
+					"connectSiteLink": "Visiter le site de Checkmate Connect"
+				},
+				"connect": {
+					"superadminOnly": "Seul un superadmin peut inscrire ce serveur, modifier l'accès à distance, lancer ou restaurer des sauvegardes, ou supprimer son inscription. Déconnectez-vous puis reconnectez-vous si votre rôle a changé récemment.",
+					"clickToConfirm": "Cliquez à nouveau pour confirmer",
+					"status": {
+						"title": "Statut",
+						"description": "État de connexion de cette installation.",
+						"enrolled": "Inscrit",
+						"notEnrolled": "Non inscrit",
+						"connected": "Tunnel connecté",
+						"disconnected": "Tunnel déconnecté",
+						"connecting": "Connexion du tunnel en cours",
+						"remoteAccessOff": "Accès à distance désactivé",
+						"agentId": "ID de l'agent",
+						"lastConnected": "Dernière connexion"
+					},
+					"enroll": {
+						"title": "Inscrire l'installation",
+						"description": "Collez le bloc d'identifiants de votre tableau de bord Checkmate Connect. Les identifiants sont stockés chiffrés dans la base de données de cette installation et n'en sortent que pour s'authentifier auprès de Checkmate Connect.",
+						"button": "Inscrire"
+					},
+					"remoteAccess": {
+						"title": "Accès à distance",
+						"description": "Maintient un tunnel sortant ouvert pour que vous puissiez accéder à cette installation depuis votre adresse Connect. Aucun port entrant n'est ouvert."
+					},
+					"tooltips": {
+						"enroll": "Connecter ce serveur à votre compte",
+						"unenroll": "Déconnecter ce serveur de Connect",
+						"generateKey": "Créer la clé qui déverrouille vos sauvegardes",
+						"lostKey": "Recommencer avec une nouvelle clé",
+						"runFull": "Sauvegarder toute la base de données maintenant",
+						"runConfig": "Tout sauvegarder sauf l'historique des vérifications",
+						"importKey": "Utiliser la clé de votre serveur d'origine",
+						"useKey": "Tester cette clé sur vos sauvegardes",
+						"replaceKey": "Passer à une autre clé de récupération",
+						"restore": "Remplacer les données de ce serveur par cette sauvegarde"
+					},
+					"backup": {
+						"title": "Sauvegardes cloud",
+						"description": "Sauvegardes chiffrées de la base de données de cette installation, envoyées vers Checkmate Connect. Les données sont chiffrées ici avant l'envoi ; le cloud ne stocke jamais que du texte chiffré.",
+						"needsKey": "Configurez une clé de récupération ci-dessous pour commencer les sauvegardes.",
+						"generateKey": "Générer une clé de récupération",
+						"existingBackups": "Ce compte possède déjà des sauvegardes cloud. Saisissez la clé de récupération de votre serveur d'origine pour les restaurer.",
+						"lostKey": "J'ai perdu ma clé",
+						"lostKeyWarning": "Vos sauvegardes cloud existantes ne peuvent pas être restaurées sans la clé d'origine. Elles sont conservées 30 jours après votre première sauvegarde avec une nouvelle clé, afin que vous puissiez revenir en arrière si vous retrouvez l'originale.",
+						"importKey": "J'ai déjà une clé de récupération",
+						"importKeyHelp": "Collez la clé de 64 caractères de votre serveur d'origine. Checkmate déchiffre l'une de vos sauvegardes cloud pour vérifier la clé avant de l'enregistrer.",
+						"replaceKey": "Utiliser une autre clé de récupération",
+						"replaceKeyHelp": "Collez la clé de 64 caractères que vous souhaitez utiliser à la place. Checkmate déchiffre vos sauvegardes cloud pour vérifier la clé et conserve votre clé actuelle si aucune ne s'ouvre.",
+						"replaceKeyWarning": "Les sauvegardes créées avec votre clé actuelle ne pourront plus être restaurées après le changement.",
+						"importKeyConfirm": "Utiliser cette clé",
+						"verifyOutcome": {
+							"ok": "Clé de récupération enregistrée",
+							"wrong-key": "Cette clé ne déchiffre pas vos sauvegardes cloud",
+							"no-backups": "Aucune sauvegarde cloud sur laquelle vérifier cette clé",
+							"failed": "Impossible de vérifier la clé : {{error}}"
+						},
+						"keyTitle": "Clé de récupération",
+						"keyWarning": "Conservez cette clé en lieu sûr, à l'écart de ce serveur. Elle n'est affichée qu'une seule fois. Si vous la perdez, vos sauvegardes cloud ne pourront pas être restaurées et personne ne pourra la récupérer pour vous.",
+						"keyCopy": "Copier la clé",
+						"keyLabel": "Votre clé de récupération",
+						"keyContinue": "Je l'ai enregistrée",
+						"keyDone": "J'ai conservé la clé",
+						"keyShowAgain": "Afficher à nouveau la clé",
+						"keyVerifyHelp": "Ouvrez l'endroit où vous avez enregistré la clé et collez-la ici pour confirmer que vous en avez une copie valide.",
+						"keyPlaceholder": "Clé de récupération",
+						"keyAcknowledge": "Je comprends que si je perds cette clé, je ne pourrai pas restaurer mes sauvegardes cloud.",
+						"keyMismatch": "Cela ne correspond pas à votre clé de récupération. Affichez à nouveau la clé et enregistrez-en une nouvelle copie.",
+						"keyAckRequired": "Cochez la case pour confirmer que vous avez compris.",
+						"toolsMissing": "Les sauvegardes cloud nécessitent mongodump et mongorestore, introuvables sur ce serveur.",
+						"toolsMac": "Sous macOS, exécutez : brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "Télécharger MongoDB Database Tools pour Linux",
+						"toolsPath": "S'ils sont installés ailleurs, définissez CONNECT_MONGODUMP_BIN et CONNECT_MONGORESTORE_BIN. Ce message disparaît dans la minute qui suit la détection des outils.",
+						"runFull": "Sauvegarder maintenant",
+						"runConfig": "Sauvegarder la configuration uniquement",
+						"kind": {
+							"full": "Base de données complète",
+							"config": "Configuration uniquement"
+						},
+						"progress": {
+							"idle": "Inactif",
+							"finished": {
+								"backup": {
+									"ok": "Sauvegarde terminée",
+									"failed": "Échec de la sauvegarde"
+								},
+								"restore": {
+									"ok": "Restauration terminée",
+									"failed": "Échec de la restauration"
+								},
+								"verify": {
+									"ok": "Clé de récupération enregistrée",
+									"failed": "Échec de la vérification de la clé"
+								}
+							},
+							"queued": {
+								"backup": "Tâche de sauvegarde en file d'attente",
+								"restore": "Tâche de restauration en file d'attente"
+							},
+							"checking": "Vérification de votre clé…",
+							"restore": {
+								"downloading": "Étape 1 sur 3 : téléchargement de la sauvegarde",
+								"decrypting": "Étape 2 sur 3 : déchiffrement de la sauvegarde",
+								"restoring": "Étape 3 sur 3 : restauration de votre base de données"
+							},
+							"verify": {
+								"downloading": "Vérification de votre clé : téléchargement de la sauvegarde {{attempt}} sur {{attempts}}",
+								"decrypting": "Vérification de votre clé : déchiffrement de la sauvegarde {{attempt}} sur {{attempts}}"
+							},
+							"backup": {
+								"dumping": "Étape 1 sur 3 : lecture et chiffrement de votre base de données",
+								"uploading": "Étape 2 sur 3 : envoi de la sauvegarde chiffrée",
+								"saving": "Étape 3 sur 3 : enregistrement de la sauvegarde dans votre compte"
+							}
+						},
+						"progressWithPercent": "{{step}} ({{percent}} %)",
+						"progressWithSize": "{{step}} ({{size}})",
+						"lastBackupSucceeded": "Dernière sauvegarde ({{date}}) : réussie",
+						"lastBackupSucceededSize": "Dernière sauvegarde ({{date}}) : réussie · {{size}}",
+						"lastBackupFailed": "Dernière sauvegarde ({{date}}) : échec — {{error}}",
+						"lastRestoreSucceeded": "Dernière restauration ({{date}}) : réussie",
+						"lastRestoreFailed": "Dernière restauration ({{date}}) : échec — {{error}}",
+						"restore": {
+							"title": "Restaurer une sauvegarde",
+							"description": "Télécharge la sauvegarde sélectionnée, la vérifie et la déchiffre sur ce serveur, puis remplace la base de données actuelle.",
+							"empty": "Aucune sauvegarde cloud vérifiée pour l'instant.",
+							"button": "Restaurer",
+							"confirmTitle": "Restaurer la sauvegarde du {{date}} ({{kind}}) ?",
+							"confirmBody": "Cette opération remplace la base de données actuelle et est irréversible. Les comptes utilisateur sont également remplacés : connectez-vous ensuite avec un compte présent dans la sauvegarde.",
+							"differentKey": "Clé différente",
+							"expires": "Supprimée après le {{date}}"
+						}
+					},
+					"schedule": {
+						"title": "Sauvegardes planifiées",
+						"description": "Lance automatiquement une sauvegarde cloud chiffrée. La première démarre dès que vous activez cette option, et une sauvegarde planifiée qui arrive à échéance pendant qu'une autre sauvegarde ou restauration est en cours est ignorée jusqu'à l'intervalle suivant.",
+						"interval": "Sauvegarder toutes les",
+						"kind": "Type de sauvegarde"
+					},
+					"recoveryKey": {
+						"title": "Clé de récupération",
+						"description": "Chiffre vos sauvegardes cloud sur ce serveur. Elle ne quitte jamais ce serveur et, sans elle, vos sauvegardes ne peuvent pas être restaurées.",
+						"set": "Une clé de récupération est définie sur ce serveur."
+					},
+					"unenroll": {
+						"title": "Supprimer l'inscription",
+						"description": "Déconnecte cette installation de Checkmate Connect et supprime les identifiants locaux. La surveillance locale n'est pas affectée.",
+						"button": "Supprimer l'inscription"
+					}
 				},
 				"about": {
 					"title": "À propos",
@@ -1399,6 +1881,18 @@
 				},
 				"validation": {
 					"errorMessage": "Veuillez corriger les erreurs de validation suivantes :"
+				},
+				"heartbeatKey": {
+					"title": "Clé de ping heartbeat",
+					"description": "Clé utilisée pour envoyer des pings aux moniteurs heartbeat.",
+					"noKey": "Aucune clé pour l'instant. Générez-en une pour commencer à envoyer des pings heartbeat.",
+					"keySet": "Une clé est définie. Renouvelez-la pour obtenir une nouvelle clé à copier.",
+					"generate": "Générer une clé",
+					"rotate": "Renouveler la clé",
+					"rotateConfirmTitle": "Renouveler la clé de ping heartbeat ?",
+					"rotateConfirmBody": "La clé actuelle cesse de fonctionner immédiatement. Chaque tâche qui envoie un ping à un moniteur heartbeat de cette équipe doit être mise à jour.",
+					"keyLabel": "Clé de ping",
+					"copyNow": "Copiez cette clé maintenant. Elle ne sera plus affichée."
 				}
 			},
 			"header": {
@@ -1408,6 +1902,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "Page de statut supprimée avec succès",
+			"rangeSelectorAria": "Période de l'historique",
+			"rangeExceedsRetention": "La conservation de l'historique des vérifications est fixée à {{days}} jours. Augmentez la durée de conservation pour obtenir plus de données.",
+			"range": {
+				"latest": "Récent",
+				"30d": "30 jours",
+				"60d": "60 jours",
+				"90d": "90 jours"
+			},
 			"fallback": {
 				"title": "Aucune page de statut",
 				"actionButton": "Créer une page de statut !",
@@ -1435,6 +1937,9 @@
 					"avg": "moy {{value}}",
 					"downTooltip": "Hors service",
 					"heatmapAria": "Carte thermique des temps de réponse",
+					"dayAria": "{{date}}, {{uptime}} de disponibilité",
+					"dayUptime": "Disponibilité : {{uptime}} ({{upChecks}}/{{totalChecks}} vérifications)",
+					"dayAvgResponse": "Réponse moy. : {{value}}",
 					"max": "max {{value}}"
 				},
 				"status": {
@@ -1446,6 +1951,10 @@
 					"up": "Opérationnel"
 				},
 				"incidents": {
+					"modalTitle": "Incidents du {{date}}",
+					"loading": "Chargement...",
+					"noIncidents": "Aucun incident signalé pour ce jour.",
+					"ongoing": "En cours",
 					"errorLoading": "Échec du chargement des incidents."
 				}
 			},
@@ -1504,6 +2013,11 @@
 						"url": {
 							"label": "Adresse de votre page de statut",
 							"placeholder": "ma-page-de-statut"
+						},
+						"customDomain": {
+							"label": "Domaine personnalisé",
+							"placeholder": "status.example.com",
+							"helper": "Facultatif. Faites pointer un enregistrement DNS vers cette instance Checkmate pour servir la page de statut sur votre propre domaine."
 						}
 					}
 				},
@@ -1570,6 +2084,10 @@
 							"description": "Titres avec serif et séparateurs fins. Distinctif et calme.",
 							"name": "Éditorial"
 						},
+						"minimal": {
+							"name": "Minimal",
+							"description": "Épuré, ciblé et compact, avec uniquement l'essentiel."
+						},
 						"modern": {
 							"description": "Qualité SaaS avec un point de statut pulsant et des cartes qui s'estompent doucement.",
 							"name": "Moderne"
@@ -1586,11 +2104,24 @@
 					"dark": "Sombre uniquement",
 					"label": "Mode de thème",
 					"light": "Clair uniquement"
+				},
+				"customCSS": {
+					"title": "CSS personnalisé",
+					"description": "Ajoutez du CSS personnalisé pour affiner l'apparence de votre page de statut publique.",
+					"option": {
+						"customCSS": {
+							"label": "CSS personnalisé",
+							"placeholder": "footer { display: none; }"
+						}
+					}
 				}
 			},
 			"header": {
 				"title": "Pages de statut",
 				"description": "Publiez des pages publiques montrant à vos clients et parties prenantes la disponibilité en temps réel et l'historique des incidents."
+			},
+			"preview": {
+				"title": "Aperçu de la page de statut"
 			},
 			"editorial": {
 				"allUp": "Tous les systèmes fonctionnent normalement.",
@@ -1604,11 +2135,13 @@
 			"filters": {
 				"search": {
 					"placeholder": "Rechercher des moniteurs..."
-				}
+				},
+				"activeTags": "Étiquettes actives"
 			},
 			"table": {
 				"headers": {
-					"responseTime": "Temps de réponse"
+					"responseTime": "Temps de réponse",
+					"uptime": "Disponibilité %"
 				}
 			},
 			"fallback": {
@@ -1619,6 +2152,33 @@
 			"header": {
 				"title": "Moniteurs de disponibilité",
 				"description": "Surveillez les points de terminaison HTTP, les pings, les conteneurs et les ports — soyez alerté dès qu'une panne survient."
+			},
+			"details": {
+				"heartbeat": {
+					"title": "URL de heartbeat",
+					"description": "Faites appeler cette URL par votre tâche à chaque exécution. Si aucune requête n'arrive pendant la fenêtre d'alerte, le moniteur passe hors service.",
+					"pingUrl": "URL de ping",
+					"examplesTitle": "Façons d'envoyer un ping",
+					"examplesDescription": "Choisissez celle qui convient à votre tâche. Chaque exemple est une commande complète, une seule suffit.",
+					"examples": {
+						"post": "Ping en cas de succès",
+						"cron": "Ping après la réussite d'une tâche cron",
+						"exitCode": "Signaler le code de sortie de la tâche (0 = en service, toute autre valeur = hors service)",
+						"fail": "Signaler un échec",
+						"duration": "Indiquer le code de sortie et la durée de la tâche"
+					},
+					"options": {
+						"title": "Construire l'URL de ping",
+						"description": "Ajoutez l'un de ces éléments à la fin de l'URL de ping :",
+						"fail": "enregistre un échec",
+						"exitCode": "enregistre un code de sortie : 0 signifie opérationnel, toute autre valeur signifie hors service",
+						"duration": "enregistre la durée d'exécution de la tâche, en millisecondes",
+						"msg": "joint un message à la vérification",
+						"combine": "Utilisez /fail ou un code de sortie, pas les deux. Les paramètres de requête fonctionnent avec n'importe quelle URL et se combinent avec &, par exemple /1?duration=5000&msg=disk%20full."
+					},
+					"keyHint": "Remplacez <pingKey> par la clé de ping de votre équipe.",
+					"keyLink": "Gérez-la dans Paramètres → Surveillance"
+				}
 			}
 		},
 		"docker": {
@@ -1698,13 +2258,32 @@
 				"monitorStatus": "État des moniteurs",
 				"currentlyDown": "Actuellement hors service",
 				"uptime": "Disponibilité des moniteurs",
-				"monitorsByType": "Moniteurs par type"
+				"monitorsByType": "Moniteurs par type",
+				"diagnostic": "Diagnostic de Checkmate",
+				"queue": "File d'attente"
 			},
 			"uptimeCard": {
 				"toggleSortOrder": "Inverser l'ordre de tri"
 			},
 			"currentlyDown": {
 				"empty": "Aucun moniteur n'est hors service pour le moment."
+			},
+			"diagnostic": {
+				"version": "Version",
+				"updateAvailable": "{{version}} disponible",
+				"heapUsage": "Utilisation du tas",
+				"cpuUsage": "Utilisation du CPU",
+				"eventLoopDelay": "Délai de la boucle d'événements",
+				"dbSize": "Taille de la base de données",
+				"dbOperations": "Opérations de la base de données",
+				"dbOperationsSummary": "{{reads}} lectures/s · {{writes}} écritures/s"
+			},
+			"queue": {
+				"jobs": "Tâches",
+				"activeJobs": "Tâches actives",
+				"failingJobs": "Tâches en échec",
+				"workers": "Workers",
+				"overdueChecks": "Vérifications en retard"
 			},
 			"header": {
 				"title": "Tableau de bord",
@@ -1718,6 +2297,12 @@
 					"uptime": "Disponibilité"
 				},
 				"done": "Terminé"
+			},
+			"arrange": {
+				"start": "Réorganiser",
+				"done": "Terminé",
+				"reset": "Réinitialiser l'ordre",
+				"handle": "Faites glisser pour déplacer {{card}}"
 			}
 		}
 	}

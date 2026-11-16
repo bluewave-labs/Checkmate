@@ -28,15 +28,17 @@
 ![](https://img.shields.io/github/languages/top/bluewave-labs/checkmate)
 ![](https://img.shields.io/github/issues/bluewave-labs/checkmate)
 ![](https://img.shields.io/github/issues-pr/bluewave-labs/checkmate)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/bluewave-labs/checkmate)
 
 <h1 align="center"><a href="https://bluewavelabs.ca" target="_blank">Checkmate</a></h1>
 
-<p align="center"><strong>An open source uptime and infrastructure monitoring application</strong>
+<p align="center"><strong>An open source uptime and infrastructure monitoring application</strong></p>
 
-[![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
+<p align="center">
+  <a href="https://www.pikapods.com/pods?run=checkmate"><img src="https://www.pikapods.com/static/run-button.svg" alt="Run on PikaPods"></a>
+</p>
 
-<img width="1461" height="853" alt="image" src="https://github.com/user-attachments/assets/d5ee1a4e-9db9-47cc-ad47-e1ba88a9d796" />
+<p align="center">
+<img width="1680" height="955" alt="image" src="https://github.com/user-attachments/assets/1ed9ab90-8a05-4a10-83e8-19ced72f43d5" />
 </p>
 <br>
 
@@ -45,7 +47,24 @@ This repository contains both the frontend and the backend of Checkmate, an open
 
 Checkmate also has an agent, called [Capture](https://github.com/bluewave-labs/capture), to retrieve data from remote servers. While Capture is not required to run Checkmate, it provides additional insights about your servers' CPU, RAM, disk, and temperature status. Capture can run on Linux, Windows, Mac, Raspberry Pi, or any device that can run Go.
 
-Checkmate has been stress-tested with 1000+ active monitors without any particular issues or performance bottlenecks.
+
+<table>
+<tr>
+<td>
+
+## 🚀 Proven at scale
+
+**Checkmate** is used in production to monitor **1,600+ servers** on a single deployment. 
+
+✅ No reported performance bottlenecks  
+✅ No significant operational issues
+
+Checkmate also scales horizontally for more than 5000 servers: you can run dedicated [worker nodes](https://checkmate.so/docs/getting-started/distributed-workers) that share the check load through MongoDB.
+
+</td>
+</tr>
+</table>
+
 
 ## 📚 Table of contents
 
@@ -74,8 +93,8 @@ The username is demouser@demo.com and the password is Demouser1! (just a note th
 Usage instructions can be found [here](https://checkmate.so/docs). 
 
 ## Prerequisites
-- [Docker](https://www.docker.com/) installed
-- [Git](https://git-scm.com/) installed
+- [Docker](https://www.docker.com/) with Docker Compose installed
+- [Git](https://git-scm.com/) only if you want to build the image yourself
 
 <a id="installation"></a>
 ## Installation
@@ -91,8 +110,29 @@ JWT_SECRET="$(openssl rand -hex 32)" docker compose up -d
 
 Then open http://localhost:52345. If the app is reached at another origin (domain or LAN IP), set `CLIENT_HOST` accordingly. To build the image yourself, run `docker build -f docker/Dockerfile -t checkmate .` from a checkout. For TLS, put any reverse proxy (Caddy, Traefik, nginx) in front of port 52345.
 
-There are also 1-click installation options like [Repocloud](https://repocloud.io/details/Checkmate),
-[Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [Easypanel](https://easypanel.io/templates/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (South Africa), [Cloudzy](https://cloudzy.com/marketplace/checkmate) or [Pethost](https://pethost.dev/templates/checkmate/). Note that the Helm chart has not yet been migrated to the all-in-one image: it still deploys the legacy `checkmate-client`, `checkmate-backend` and `checkmate-mongo` images, pinned at v3.8.1.
+### Install with one click
+
+You can also run Checkmate on any of these platforms:
+
+<table>
+  <tr>
+    <td align="center" width="120"><a href="https://repocloud.io/details/Checkmate"><img src="https://checkmate.so/img/brands/hosts/repocloud.png" height="28" alt="RepoCloud"><br><sub><b>RepoCloud</b></sub></a></td>
+    <td align="center" width="120"><a href="https://www.pikapods.com/pods?run=checkmate"><img src="https://checkmate.so/img/brands/hosts/pikapods.png" height="28" alt="PikaPods"><br><sub><b>PikaPods</b></sub></a></td>
+    <td align="center" width="120"><a href="https://coolify.io/"><img src="https://checkmate.so/img/brands/hosts/coolify.png" height="28" alt="Coolify"><br><sub><b>Coolify</b></sub></a></td>
+    <td align="center" width="120"><a href="https://elest.io/open-source/checkmate"><img src="https://checkmate.so/img/brands/hosts/elestio.png" height="28" alt="Elestio"><br><sub><b>Elestio</b></sub></a></td>
+    <td align="center" width="120"><a href="https://easypanel.io/templates/checkmate"><img src="https://checkmate.so/img/brands/hosts/easypanel.svg" height="28" alt="Easypanel"><br><sub><b>Easypanel</b></sub></a></td>
+    <td align="center" width="120"><a href="https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm"><img src="https://checkmate.so/img/brands/hosts/kubernetes.svg" height="28" alt="Kubernetes"><br><sub><b>Kubernetes</b></sub></a></td>
+  </tr>
+  <tr>
+    <td align="center" width="120"><a href="https://railyard.run/templates/checkmate"><img src="https://checkmate.so/img/brands/hosts/railyard.svg" height="28" alt="Railyard"><br><sub><b>Railyard</b></sub></a></td>
+    <td align="center" width="120"><a href="https://sive.host"><img src="https://checkmate.so/img/brands/hosts/sivehost.png" height="28" alt="Sive Host"><br><sub><b>Sive Host</b></sub></a></td>
+    <td align="center" width="120"><a href="https://cloudzy.com/marketplace/checkmate"><img src="https://checkmate.so/img/brands/hosts/cloudzy.svg" height="28" alt="Cloudzy"><br><sub><b>Cloudzy</b></sub></a></td>
+    <td align="center" width="120"><a href="https://pethost.dev/templates/checkmate/"><img src="https://checkmate.so/img/brands/hosts/pethost.svg" height="28" alt="Pethost"><br><sub><b>Pethost</b></sub></a></td>
+    <td align="center" width="120"><a href="https://xcloud.host/checkmate-hosting/"><img src="https://checkmate.so/img/brands/hosts/xcloud.png" height="28" alt="xCloud"><br><sub><b>xCloud</b></sub></a></td>
+  </tr>
+</table>
+
+Note that the Helm chart has not yet been migrated to the all-in-one image: it still deploys the legacy `checkmate-client`, `checkmate-backend` and `checkmate-mongo` images, pinned at v3.8.1.
 
 
 ### Configuration
@@ -104,7 +144,7 @@ The image is configured entirely through environment variables on the server con
 | `DB_CONNECTION_STRING` | Yes | MongoDB connection string, e.g. `mongodb://mongodb:27017/uptime_db` |
 | `JWT_SECRET` | Yes | Secret used to sign auth tokens; generate one with `openssl rand -hex 32` |
 | `CLIENT_HOST` | Yes | The URL users reach the app at, e.g. `https://checkmate.example.com`; used for CORS and for links in notifications and emails |
-| `ENCRYPTION_KEY` | No | Encrypts stored Docker TLS client keys at rest; generate one with `openssl rand -base64 32`. Comma-separated list: the first key encrypts, every key decrypts. Must be identical on the API and every worker. To rotate without downtime, deploy `OLD_KEY,NEW_KEY` everywhere, then `NEW_KEY,OLD_KEY` everywhere, wait for the worker to re-encrypt every row, then drop `OLD_KEY`. |
+| `ENCRYPTION_KEY` | No | Encrypts stored secrets at rest: Docker TLS client keys and the Checkmate Connect credential. Required to use TLS Docker monitors or to enroll with Checkmate Connect. Generate one with `openssl rand -base64 32`. Comma-separated list: the first key encrypts, every key decrypts. Must be identical on the API and every worker. To rotate without downtime, deploy `OLD_KEY,NEW_KEY` everywhere, then `NEW_KEY,OLD_KEY` everywhere, wait for the worker to re-encrypt every row, then drop `OLD_KEY`. |
 | `PORT` | No | Port the API and web client are served on (default `52345`) |
 | `HEALTH_PORT` | No | Port for the `/livez`, `/readyz` and `/metrics` endpoints, served by any process that runs the job worker (default `52346`) |
 | `NODE_ENV` | No | `development`, `production` or `test` (default `development`). `development` disables the general API rate limiter; set `production` on real deployments |
@@ -115,6 +155,10 @@ The image is configured entirely through environment variables on the server con
 | `STATUS_PAGE_THEMES_ENABLED` | No | `true` (default) or `false`. When `false`, status pages ignore theme settings and always render the default theme |
 | `TELEMETRY_ENABLED` | No | `true` (default) or `false`. Set `false` to stop sending the daily anonymous usage heartbeat; see [Telemetry](#telemetry) |
 | `TELEMETRY_URL` | No | Where the heartbeat is sent. Only needed to point it at your own collector |
+| `CONNECT_ALLOWED_HOSTS` | No | Comma-separated hostnames this server may enroll with Checkmate Connect against; an entry starting with `.` matches its subdomains (`.example.com` matches `connect.example.com`). Defaults to the official Checkmate Connect hosts; only needed if you run your own Connect service |
+| `CONNECT_API_URL` | No | Overrides the Checkmate Connect API base URL used for cloud backups. When set, Checkmate also accepts any `http(s)` storage URL the Connect API returns. Only needed if you run your own Connect service |
+| `CONNECT_MONGODUMP_BIN` | No | Path to `mongodump`, used for Checkmate Connect cloud backups. Defaults to `mongodump` on `PATH`; the Docker image includes it |
+| `CONNECT_MONGORESTORE_BIN` | No | Path to `mongorestore`, used for Checkmate Connect cloud backups. Defaults to `mongorestore` on `PATH`; the Docker image includes it |
 
 The web client needs no configuration by default: it calls the API on the same origin it was served from (`/api/v1`). For setups where the defaults don't apply — for example, the API is reached through a different origin than the page — the server renders overrides into the client at runtime via these optional variables:
 
@@ -128,7 +172,7 @@ The web client needs no configuration by default: it calls the API on the same o
 
 See full installation instructions in the [Checkmate documentation portal](https://checkmate.so/docs). 
 
-Alternatively, any of the [1-click installation options](#installation) listed above can spin up a Checkmate instance quickly. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
+Alternatively, any of the [1-click installation options](#installation) listed above can spin up a Checkmate instance quickly. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://checkmate.so/docs/infrastructure/installing-capture). Capture repository also contains the installation instructions.
 
 <a id="telemetry"></a>
 ### Telemetry
@@ -151,7 +195,7 @@ To opt out, set `TELEMETRY_ENABLED=false` on every server container and restart.
 
 ### Using a Custom CA
 
-If you need to monitor internal HTTPS endpoints with certificates from private Certificate Authorities (like Smallstep), see our [Custom CA Trust Guide](./docs/custom-ca-trust.md) for Docker configuration options.
+If you need to monitor internal HTTPS endpoints with certificates from private Certificate Authorities (like Smallstep), see our [Custom CA Trust Guide](https://checkmate.so/docs/settings/custom-ca-trust) for Docker configuration options.
 
 ### Docker monitors
 
@@ -186,7 +230,7 @@ services:
 
 TLS Docker monitors require `ENCRYPTION_KEY` to be set on the server (see [Configuration](#configuration)). Saving one without it fails with an error telling you so. If the key is ever removed or rotated incorrectly, affected checks fail with a decryption error until it is restored.
 
-If the daemon's certificate is signed by a private CA that you also want the rest of Checkmate to trust, see the [Custom CA Trust Guide](./docs/custom-ca-trust.md); for Docker monitors alone, the **CA certificate** field is enough.
+If the daemon's certificate is signed by a private CA that you also want the rest of Checkmate to trust, see the [Custom CA Trust Guide](https://checkmate.so/docs/settings/custom-ca-trust); for Docker monitors alone, the **CA certificate** field is enough.
 
 ### Securing the Docker daemon with TLS
 
@@ -263,7 +307,88 @@ docker --tlsverify --tlscacert=ca.pem --tlscert=cert.pem --tlskey=key.pem \
   -H=docker.example.com:2376 version
 ```
 
-For more documentation, see the [docs directory](./docs/).
+### Heartbeat monitors (Upcoming)
+
+> **Upcoming:** not part of v3.13.1 or earlier. It ships in the next release.
+
+A heartbeat monitor is passive: your job pings Checkmate when it runs, and the monitor goes down if no ping arrives within its alert window. Use it for cron jobs, backups and scheduled tasks.
+
+Each ping URL combines the team's ping key with the monitor's slug:
+
+```
+https://<checkmate-host>/api/v1/heartbeat/<pingKey>/<slug>
+```
+
+- **Ping key**: one per team. Generate or rotate it in **Settings → Monitoring**. It is shown once, so copy it when it appears; rotating replaces it and the old key stops working.
+- **Slug**: set when you create the monitor, for example `nightly-backup`. Lowercase letters, numbers and single hyphens.
+
+| Route | Records |
+|---|---|
+| `GET` or `POST /<pingKey>/<slug>` | an up check |
+| `GET` or `POST /<pingKey>/<slug>/fail` | a down check |
+| `GET` or `POST /<pingKey>/<slug>/<exitCode>` | up for `0`, down for anything else |
+
+Optional query parameters, on any route:
+
+| Parameter | Effect |
+|---|---|
+| `duration=<ms>` | How long the run took, stored as the check's response time |
+| `msg=<text>` | A message stored on the check |
+| `create=true` | Creates the monitor if the slug doesn't exist yet (see below) |
+| `interval=<ms>` | Alert window for a monitor created by `create=true` (default 1 day) |
+
+```bash
+# Report the exit code and how long the job took
+START=$(date +%s); /path/to/job.sh; CODE=$?
+curl -fsS -m 10 --retry 3 "https://<checkmate-host>/api/v1/heartbeat/<pingKey>/nightly-backup/$CODE?duration=$((($(date +%s) - START) * 1000))"
+```
+
+**Creating monitors from a job.** Add `create=true` and a ping to an unknown slug creates the heartbeat monitor, then records the ping. Later pings reuse it. The new monitor is named after the slug, owned by the admin who generated the ping key, and has no notifications until you add them in the UI. Requests with `create=true` are limited to 20 per hour per ping key, including pings to monitors that already exist, so remove the flag after the first run for jobs that ping more often than every 3 minutes. Without `create=true`, an unknown slug returns `404`, so a typo never creates a monitor silently.
+
+```bash
+curl -fsS "https://<checkmate-host>/api/v1/heartbeat/<pingKey>/nightly-backup?create=true&interval=3600000"
+```
+
+### Checkmate Connect remote access (Upcoming)
+
+> **Upcoming:** not part of v3.13.1 or earlier. It ships in the next release.
+
+Remote access keeps an outbound tunnel open from this server to Checkmate Connect, so you can reach the installation from its Connect address without opening inbound ports. A superadmin turns it on in **Settings → Checkmate Connect** after enrolling.
+
+The tunnel forwards every request to this server's own `PORT`. The web UI loads over the Connect address only when this server serves it, which the default Docker image does. If you serve the client separately, for example from its own nginx or origin, only the API is reachable through Connect.
+
+**Development.** `npm run dev` serves the client from Vite, so the API server has no UI to return and the Connect address answers `404`. To test remote access with the UI, have the server serve a production build of the client. From the repository root:
+
+```bash
+ln -s ../client/dist server/public
+cd client && npx vite build --watch
+```
+
+`vite build --watch` rebuilds `client/dist` on every save; reload the Connect address to pick up changes. Both `server/public` and `client/dist` are gitignored.
+
+To go back to the normal dev setup, stop `vite build --watch` and remove the link from the repository root:
+
+```bash
+rm server/public
+```
+
+This deletes only the link, not `client/dist`. Leave off the trailing slash: `rm server/public/` would target the linked directory instead of the link.
+
+### Checkmate Connect backups (Upcoming)
+
+> **Upcoming:** not part of v3.13.1 or earlier. It ships in the next release.
+
+Cloud backups copy this installation's database to Checkmate Connect. Each backup is encrypted on this server before upload, so Connect only stores ciphertext.
+
+- **Recovery key.** A superadmin generates it once in **Settings → Checkmate Connect**. It is shown only once and stored on this server encrypted with `ENCRYPTION_KEY`. No backup can be restored without it, so keep a copy somewhere other than this server.
+- **What's backed up.** Only data you created: monitors and their check history, incidents, status pages, notifications, maintenance windows, users, teams and settings, plus the record of applied data migrations. Queue and worker state is never backed up; after a restore, the job queue is rebuilt from the restored monitors. A configuration backup also leaves out check history (`checks`, `monitorstats`, `geochecks`, `dockerlogs`).
+- **Runs on the job queue.** "Back up now" queues the backup and whichever process runs jobs picks it up. With `QUEUE_PRIMARY_PROCESSES=false` and no worker running, it waits until a worker starts.
+- **Scheduled backups.** A superadmin can turn them on in **Settings → Checkmate Connect** under **Scheduled backups** and choose how often (every 1, 3 or 7 days) and whether each backup is full or configuration only. The first scheduled backup starts as soon as they're turned on. Each one is queued like "Back up now", so exactly one process runs it; one that comes due while another backup, restore or key check is in progress is skipped until the next interval. Restarting Checkmate doesn't trigger an extra backup. Scheduled backups count towards your plan's backup versions like manual ones.
+- **Tools.** Backups need `mongodump` and `mongorestore` from the MongoDB Database Tools on the processes that run jobs. The Docker image includes them. On a source install, install them and, if they aren't on `PATH`, set `CONNECT_MONGODUMP_BIN` and `CONNECT_MONGORESTORE_BIN`. The settings page shows the install steps until at least one job-processing process finds them.
+- **Restore.** A superadmin picks a backup under **Restore a backup** in **Settings → Checkmate Connect** and confirms it. Checkmate downloads it, checks its size and checksum, decrypts it with the recovery key and replaces the current data with it, on whichever process runs jobs. User accounts are replaced too, so log in with an account from the backup afterwards. A backup can be restored into a database with a different name. Restoring a backup made by an older version of Checkmate brings back that version's migration record; restart Checkmate afterwards so the newer migrations run on the restored data.
+- **Moving to a new server.** Enroll the new server with Checkmate Connect, then choose **I already have a recovery key** under **Recovery key** and enter the key from the original server. Checkmate decrypts one of your cloud backups to check the key before saving it, then lists the backups you can restore.
+
+For more documentation, see the [Checkmate documentation portal](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Performance
@@ -289,16 +414,19 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 <a id="features"></a>
 ## Features
 
-- Completely open source, deployable on your servers or home devices (e.g Raspberry Pi 4 or 5)
+- Completely open source, deployable on your servers or home devices (e.g Raspberry Pi 5)
 - Several monitoring options: HTTP (with SSL certificate expiry), Ping, Port, DNS, Docker, gRPC, WebSocket, Game server
+- Heartbeat monitors for cron jobs, backups and other scheduled tasks (Upcoming)
 - Page speed monitoring
 - Infrastructure monitoring (memory, disk usage, CPU performance, network etc) - requires [Capture](https://github.com/bluewave-labs/capture) agent
   - Selective disk monitoring with mountpoint selection
 - Incidents at a glance
+- Dashboard with monitor status, uptime, currently down monitors, job queue and server health cards that you can rearrange and hide (Upcoming)
 - Status pages with 5 beautiful themes
 - E-mail, Webhooks, Discord, Slack, PagerDuty, Matrix, Rocket.Chat, Microsoft Teams, Telegram, Pushover, ntfy, SignalGrid, Twilio (SMS) notifications
 - Scheduled maintenance
 - JSON query monitoring
+- Checkmate Connect: remote access without opening inbound ports, and encrypted cloud backups with scheduled runs and restore (Upcoming)
 - Multi-language support for Arabic, Catalan, Chinese (Simplified), Chinese (Traditional, Taiwan), Czech, English, Finnish, French, German, Italian, Japanese, Polish, Portuguese (Brazil), Russian, Spanish, Thai, Turkish, Ukrainian, and Vietnamese
 
 
@@ -307,7 +435,7 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 1. A monitor executes a check (HTTP / ping / port / hardware via Capture agent)
 2. The result is stored (success/failure + response time)
 3. Recent check results are evaluated against the monitor's configured status change threshold
-4. If the monitor's status change threshold is met and the current status is not equal to the previous status, the monitor's state changes (e.g. `initializing`, `up`, `down`, `breached`)
+4. If the monitor's status change threshold is met and the current status is not equal to the previous status, the monitor's state changes (e.g. `up`, `down`, `breached`). New monitors start as `initializing`; monitors inside a maintenance window are set to `maintenance` and are not checked
 5. Upon a state change: an incident is either created or resolved, depending on the monitor's current status
 6. Notifications are triggered based on configuration
 
@@ -352,14 +480,14 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 
 We are [Alex](http://github.com/ajhollid) (team lead), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Malena](https://github.com/malenacaroline) and [Mert](https://github.com/mertssmnoglu) helping individuals and businesses monitor their infra and servers.
 
-We pride ourselves on building strong connections with contributors at every level. Despite being a young project, Checkmate has already earned almost 11K stars and attracted 150+ contributors from around the globe.
+We pride ourselves on building strong connections with contributors at every level. Despite being a young project, Checkmate has already earned more than 11K stars and attracted 150+ contributors from around the globe.
 
 Our repo is starred by employees from **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes and NEC**, so don’t hold back — jump in, contribute and learn with us!
 
 Here's how you can contribute:
 
 0. Star this repo :)
-1. Check [Contributor's guideline](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). First timers are encouraged to check `good-first-issue` tag.
+1. Check [Contributor's guideline](https://checkmate.so/docs/getting-started/contributing). First timers are encouraged to check `good-first-issue` tag.
 2. Read a detailed structure of [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate) if you would like to deep dive into the architecture.
 3. Open an issue if you believe you've encountered a bug.
 4. Check for good-first-issue's if you are a newcomer.

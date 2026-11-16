@@ -6,12 +6,15 @@ import { isDockerSocketUrl } from "@/utils/dockerHost.js";
 
 import type { z } from "zod";
 import type {
+	dashboardByTeamIdResultSchema,
+	dashboardMonitorSchema,
 	dockerContainerDetailsResultSchema,
 	dockerDetailsResultSchema,
 	gameSchema,
 	gamesMapSchema,
 	hardwareDetailsResultSchema,
 	monitorSchema,
+	monitorTypeCountSchema,
 	monitorsSummarySchema,
 	monitorsWithChecksByTeamIdResultSchema,
 	pageSpeedDetailsResultSchema,
@@ -44,7 +47,20 @@ export const HttpStatusCodes = [
 export const HttpStatusCodeSet = new Set(HttpStatusCodes);
 export type HttpStatusCode = number;
 
-export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"] as const;
+export const MonitorTypes = [
+	"http",
+	"ping",
+	"pagespeed",
+	"hardware",
+	"docker",
+	"port",
+	"game",
+	"grpc",
+	"websocket",
+	"dns",
+	"heartbeat",
+	"unknown",
+] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
 export const PageSpeedStrategies = ["desktop", "mobile"] as const;
@@ -57,7 +73,16 @@ export const supportsGeoCheck = (type: MonitorType): boolean => GeoCheckSupporte
 export const ProxyModes = ["inherit", "none", "custom"] as const;
 export type ProxyMode = (typeof ProxyModes)[number];
 
-export const UptimeDetailsSupportedTypes = ["http", "ping", "port", "game", "grpc", "websocket", "dns"] as const satisfies readonly MonitorType[];
+export const UptimeDetailsSupportedTypes = [
+	"http",
+	"ping",
+	"port",
+	"game",
+	"grpc",
+	"websocket",
+	"dns",
+	"heartbeat",
+] as const satisfies readonly MonitorType[];
 export type UptimeDetailsSupportedType = (typeof UptimeDetailsSupportedTypes)[number];
 export const supportsUptimeDetails = (type: MonitorType): type is UptimeDetailsSupportedType => UptimeDetailsSupportedTypes.some((t) => t === type);
 
@@ -65,6 +90,11 @@ export const HardwareMetricKeys = ["cpu", "memory", "disk", "temp"] as const;
 export type HardwareMetricKey = (typeof HardwareMetricKeys)[number];
 export type HardwareBreaches = Record<HardwareMetricKey, boolean>;
 export type HardwareCounters = Record<HardwareMetricKey, number>;
+
+export const HEARTBEAT_STATUS_WINDOW = {
+	statusWindowSize: 1,
+	statusWindowThreshold: 100,
+} as const;
 
 const MonitorPaths: Record<MonitorType, string> = {
 	http: "uptime",
@@ -74,6 +104,7 @@ const MonitorPaths: Record<MonitorType, string> = {
 	grpc: "uptime",
 	websocket: "uptime",
 	dns: "uptime",
+	heartbeat: "uptime",
 	unknown: "uptime",
 	docker: "docker/host",
 	hardware: "infrastructure",
@@ -119,11 +150,14 @@ export const HttpMethods = ["GET", "HEAD"] as const;
 export type HttpMethod = (typeof HttpMethods)[number];
 
 export const MAX_RECENT_CHECKS = 50;
+export const DASHBOARD_DEFAULT_LIMIT = 5;
 
 export type Monitor = z.infer<typeof monitorSchema>;
 export type MonitorsSummary = z.infer<typeof monitorsSummarySchema>;
-export type MonitorTypeCount = { type: MonitorType; count: number }[];
+export type MonitorTypeCount = z.infer<typeof monitorTypeCountSchema>[];
 export type MonitorsWithChecksByTeamIdResult = z.infer<typeof monitorsWithChecksByTeamIdResultSchema>;
+export type DashboardMonitor = z.infer<typeof dashboardMonitorSchema>;
+export type DashboardByTeamIdResult = z.infer<typeof dashboardByTeamIdResultSchema>;
 export type UptimeDetailsResult = z.infer<typeof uptimeDetailsResultSchema>;
 export type HardwareDetailsResult = z.infer<typeof hardwareDetailsResultSchema>;
 export type DockerDetailsResult = z.infer<typeof dockerDetailsResultSchema>;

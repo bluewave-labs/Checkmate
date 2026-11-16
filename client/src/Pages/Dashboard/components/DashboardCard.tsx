@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
@@ -8,10 +9,16 @@ import { typographyLevels } from "@/Utils/Theme/Palette";
 interface DashboardCardProps {
 	title: string;
 	topRight?: React.ReactNode;
-	children: React.ReactNode;
+	children?: React.ReactNode;
+	isLoading?: boolean;
 }
 
-export const DashboardCard = ({ title, topRight, children }: DashboardCardProps) => {
+export const DashboardCard = ({
+	title,
+	topRight,
+	children,
+	isLoading = false,
+}: DashboardCardProps) => {
 	const theme = useTheme();
 
 	return (
@@ -48,7 +55,20 @@ export const DashboardCard = ({ title, topRight, children }: DashboardCardProps)
 					</Typography>
 				)}
 			</Stack>
-			{children}
+			{isLoading ? (
+				<Stack
+					flex={1}
+					alignItems="center"
+					justifyContent="center"
+				>
+					<CircularProgress
+						color="primary"
+						size={28}
+					/>
+				</Stack>
+			) : (
+				children
+			)}
 		</Box>
 	);
 };

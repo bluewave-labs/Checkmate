@@ -31,8 +31,14 @@ const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 const createScheduler = (overrides?: { queueMode?: QueueMode; telemetryEnabled?: boolean; mocks?: Record<string, any> }) => {
 	const jobsRepository = {
 		upsertJob: jest.fn<any>().mockResolvedValue(true),
-		upsertCleanupJob: jest.fn<any>().mockResolvedValue(true),
+		upsertJobAndSchedule: jest.fn<any>().mockResolvedValue(true),
+		rescheduleOverdueChecks: jest.fn<any>().mockResolvedValue(0),
 		deleteGlobalJob: jest.fn<any>().mockResolvedValue(true),
+		setActiveById: jest.fn<any>().mockResolvedValue(true),
+		updateScheduleById: jest.fn<any>().mockResolvedValue(true),
+		updateHeartbeatScheduleById: jest.fn<any>().mockResolvedValue(true),
+		deleteByIdAndType: jest.fn<any>().mockResolvedValue(true),
+		findGlobalJob: jest.fn<any>().mockResolvedValue(null),
 	};
 	const queueWorkersRepository = {
 		upsert: jest.fn<any>().mockResolvedValue(undefined),
@@ -81,7 +87,7 @@ describe("JobScheduler", () => {
 
 			const seededTypes = mocks.jobsRepository.upsertJob.mock.calls.map((c: any[]) => c[0].type);
 			expect(seededTypes).toContain("check");
-			const cleanupTypes = mocks.jobsRepository.upsertCleanupJob.mock.calls.map((c: any[]) => c[0].type);
+			const cleanupTypes = mocks.jobsRepository.upsertJobAndSchedule.mock.calls.map((c: any[]) => c[0].type);
 			expect(cleanupTypes).toContain("cleanup-orphaned");
 			expect(cleanupTypes).toContain("cleanup-retention");
 		});
@@ -107,7 +113,22 @@ describe("JobScheduler", () => {
 			expect(mocks.queueWorkersRepository.upsert).toHaveBeenCalledWith("worker-1", "worker", false);
 			expect(mocks.monitorsRepository.findAllForScheduling).not.toHaveBeenCalled();
 			expect(mocks.jobsRepository.upsertJob).not.toHaveBeenCalled();
-			expect(mocks.jobsRepository.upsertCleanupJob).not.toHaveBeenCalled();
+			expect(mocks.jobsRepository.upsertJobAndSchedule).not.toHaveBeenCalled();
+		});
+
+		it("reconcile can be called directly on a worker, and seeds the rows", async () => {
+			const { scheduler, mocks } = createScheduler({
+				queueMode: "worker",
+				mocks: { monitorsRepository: { findAllForScheduling: jest.fn<any>().mockResolvedValue([makeMonitor()]) } },
+			});
+
+			await scheduler.reconcile();
+
+			const seededTypes = mocks.jobsRepository.upsertJob.mock.calls.map((c: any[]) => c[0].type);
+			expect(seededTypes).toContain("check");
+			const cleanupTypes = mocks.jobsRepository.upsertJobAndSchedule.mock.calls.map((c: any[]) => c[0].type);
+			expect(cleanupTypes).toContain("cleanup-orphaned");
+			expect(cleanupTypes).toContain("cleanup-retention");
 		});
 
 		it("primary mode seeds the telemetry row when telemetry is enabled", async () => {
@@ -133,6 +154,19 @@ describe("JobScheduler", () => {
 			expect(mocks.jobsRepository.deleteGlobalJob).toHaveBeenCalledWith("telemetry");
 		});
 
+		it.each([true, false])("primary mode always seeds the Connect heartbeat row (telemetry %s)", async (telemetryEnabled) => {
+			const before = Date.now();
+			const { scheduler, mocks } = createScheduler({ queueMode: "primary", telemetryEnabled });
+			await scheduler.init();
+
+			const heartbeatCall = mocks.jobsRepository.upsertJob.mock.calls.find((c: any[]) => c[0].type === "connect-heartbeat");
+			expect(heartbeatCall).toBeDefined();
+			const seed = heartbeatCall![0] as any;
+			expect(seed).toMatchObject({ id: "connect-heartbeat", refId: null, isActive: true, intervalMs: 60 * 1000 });
+			expect(seed.nextScheduledAt).toBeGreaterThanOrEqual(before);
+			expect(seed.nextScheduledAt).toBeLessThanOrEqual(Date.now());
+		});
+
 		it("worker mode never touches the telemetry row", async () => {
 			const { scheduler, mocks } = createScheduler({ queueMode: "worker", telemetryEnabled: true });
 			await scheduler.init();
@@ -149,6 +183,18 @@ describe("JobScheduler", () => {
 			await scheduler.shutdown();
 			expect((scheduler as any).timers.has("heartbeat")).toBe(false);
 			expect(mocks.queueWorkersRepository.deleteById).toHaveBeenCalledWith("worker-1");
+		});
+
+		it("primary mode re-arms only heartbeat rows that went overdue while down", async () => {
+			const monitors = [makeMonitor({ id: "hb1", type: "heartbeat" }), makeMonitor({ id: "m1" }), makeMonitor({ id: "hb2", type: "heartbeat" })];
+			const { scheduler, mocks } = createScheduler({
+				queueMode: "primary",
+				mocks: { monitorsRepository: { findAllForScheduling: jest.fn<any>().mockResolvedValue(monitors) } },
+			});
+			await scheduler.init();
+
+			expect(mocks.jobsRepository.rescheduleOverdueChecks).toHaveBeenCalledTimes(1);
+			expect(mocks.jobsRepository.rescheduleOverdueChecks).toHaveBeenCalledWith(["hb1", "hb2"], Date.now());
 		});
 	});
 
@@ -188,6 +234,83 @@ describe("JobScheduler", () => {
 					intervalMs: 75000,
 				})
 			);
+		});
+	});
+
+	// Heartbeat rows are dead man's switches: the deadline is one interval out, and nothing
+	// should make the row due early, or the switch fires before the job has had a chance to ping.
+	describe("heartbeat scheduling", () => {
+		const NOW = 1_000_000;
+
+		beforeEach(() => {
+			jest.useFakeTimers({ now: NOW });
+		});
+
+		afterEach(() => {
+			jest.useRealTimers();
+		});
+
+		it("addJob seeds a heartbeat row one interval out and does not wake the check loop", async () => {
+			const { scheduler, mocks } = createScheduler();
+			const wake = jest.spyOn(scheduler, "wake");
+
+			await scheduler.addJob("hb1", makeMonitor({ id: "hb1", type: "heartbeat", interval: 120000 }));
+
+			expect(mocks.jobsRepository.upsertJob).toHaveBeenCalledWith(expect.objectContaining({ id: "check:hb1", nextScheduledAt: NOW + 120000 }));
+			expect(wake).not.toHaveBeenCalled();
+		});
+
+		it("addJob seeds a probe row due now and wakes the check loop", async () => {
+			const { scheduler, mocks } = createScheduler();
+			const wake = jest.spyOn(scheduler, "wake");
+
+			await scheduler.addJob("m1", makeMonitor());
+
+			expect(mocks.jobsRepository.upsertJob).toHaveBeenCalledWith(expect.objectContaining({ id: "check:m1", nextScheduledAt: NOW }));
+			expect(wake).toHaveBeenCalledWith("check");
+		});
+
+		it("resumeJob re-arms an overdue heartbeat row before activating it, without waking", async () => {
+			const { scheduler, mocks } = createScheduler();
+			const wake = jest.spyOn(scheduler, "wake");
+
+			await scheduler.resumeJob(makeMonitor({ id: "hb1", type: "heartbeat" }));
+
+			const { rescheduleOverdueChecks, setActiveById } = mocks.jobsRepository;
+			expect(rescheduleOverdueChecks).toHaveBeenCalledWith(["hb1"], NOW);
+			expect(setActiveById).toHaveBeenCalledWith("hb1", true);
+			// Activating first would leave an active, overdue row for a worker to claim
+			expect(rescheduleOverdueChecks.mock.invocationCallOrder[0]).toBeLessThan(setActiveById.mock.invocationCallOrder[0]);
+			expect(wake).not.toHaveBeenCalled();
+		});
+
+		it("resumeJob activates a probe row and wakes the check loop without re-arming", async () => {
+			const { scheduler, mocks } = createScheduler();
+			const wake = jest.spyOn(scheduler, "wake");
+
+			await scheduler.resumeJob(makeMonitor());
+
+			expect(mocks.jobsRepository.setActiveById).toHaveBeenCalledWith("m1", true);
+			expect(mocks.jobsRepository.rescheduleOverdueChecks).not.toHaveBeenCalled();
+			expect(wake).toHaveBeenCalledWith("check");
+		});
+
+		it("updateJob shifts a heartbeat deadline with the interval instead of only changing the interval", async () => {
+			const { scheduler, mocks } = createScheduler();
+
+			await scheduler.updateJob(makeMonitor({ id: "hb1", type: "heartbeat", interval: 120000 }));
+
+			expect(mocks.jobsRepository.updateHeartbeatScheduleById).toHaveBeenCalledWith("hb1", 120000);
+			expect(mocks.jobsRepository.updateScheduleById).not.toHaveBeenCalled();
+		});
+
+		it("updateJob changes only the interval on a probe row", async () => {
+			const { scheduler, mocks } = createScheduler();
+
+			await scheduler.updateJob(makeMonitor({ interval: 120000 }));
+
+			expect(mocks.jobsRepository.updateScheduleById).toHaveBeenCalledWith("m1", "check", 120000);
+			expect(mocks.jobsRepository.updateHeartbeatScheduleById).not.toHaveBeenCalled();
 		});
 	});
 
@@ -236,6 +359,97 @@ describe("JobScheduler", () => {
 			await (scheduler as any).heartbeat();
 
 			expect(mocks.queueWorkersRepository.upsert).not.toHaveBeenCalled();
+		});
+	});
+
+	describe("global jobs", () => {
+		it("addGlobalJob arms a one-shot global row due now and overwrites its schedule", async () => {
+			const { scheduler, mocks } = createScheduler();
+			const before = Date.now();
+
+			await scheduler.addGlobalJob("connect-operation");
+
+			expect(mocks.jobsRepository.upsertJobAndSchedule).toHaveBeenCalledTimes(1);
+			const [seed] = mocks.jobsRepository.upsertJobAndSchedule.mock.calls[0] as [any];
+			expect(seed).toMatchObject({ id: "connect-operation", type: "connect-operation", refId: null, isActive: true, intervalMs: null });
+			expect(seed.nextScheduledAt).toBeGreaterThanOrEqual(before);
+			expect(seed.nextScheduledAt).toBeLessThanOrEqual(Date.now());
+			expect(mocks.jobsRepository.upsertJob).not.toHaveBeenCalled();
+		});
+
+		it("addRecurringGlobalJob inserts a recurring row due now without moving an existing one", async () => {
+			const { scheduler, mocks } = createScheduler();
+			const before = Date.now();
+
+			await scheduler.addRecurringGlobalJob("connect-backup", 86_400_000);
+
+			expect(mocks.jobsRepository.upsertJob).toHaveBeenCalledTimes(1);
+			const [seed] = mocks.jobsRepository.upsertJob.mock.calls[0] as [any];
+			expect(seed).toMatchObject({ id: "connect-backup", type: "connect-backup", refId: null, isActive: true, intervalMs: 86_400_000 });
+			expect(seed.nextScheduledAt).toBeGreaterThanOrEqual(before);
+			expect(seed.nextScheduledAt).toBeLessThanOrEqual(Date.now());
+			expect(mocks.jobsRepository.upsertJobAndSchedule).not.toHaveBeenCalled();
+		});
+
+		it("updateRecurringGlobalJob overwrites the interval and the next run", async () => {
+			const { scheduler, mocks } = createScheduler();
+
+			await scheduler.updateRecurringGlobalJob("connect-backup", 259_200_000, 1_000_000);
+
+			expect(mocks.jobsRepository.upsertJobAndSchedule).toHaveBeenCalledWith({
+				id: "connect-backup",
+				type: "connect-backup",
+				refId: null,
+				isActive: true,
+				nextScheduledAt: 1_000_000,
+				intervalMs: 259_200_000,
+			});
+			expect(mocks.jobsRepository.upsertJob).not.toHaveBeenCalled();
+		});
+
+		it("deleteRecurringGlobalJob deletes the row", async () => {
+			const { scheduler, mocks } = createScheduler();
+
+			await scheduler.deleteRecurringGlobalJob("connect-backup");
+
+			expect(mocks.jobsRepository.deleteGlobalJob).toHaveBeenCalledWith("connect-backup");
+		});
+
+		it.each([
+			["addRecurringGlobalJob", (scheduler: JobScheduler) => scheduler.addRecurringGlobalJob("connect-backup", 86_400_000)],
+			["updateRecurringGlobalJob", (scheduler: JobScheduler) => scheduler.updateRecurringGlobalJob("connect-backup", 86_400_000, 1_000_000)],
+		])("%s wakes the job's loop", async (_label, run) => {
+			const { scheduler } = createScheduler();
+			const wake = jest.spyOn(scheduler, "wake");
+
+			await run(scheduler);
+
+			expect(wake).toHaveBeenCalledWith("connect-backup");
+		});
+
+		it.each([
+			["the row is missing", null, false],
+			["the row is unlocked", { lockedUntil: null }, false],
+			["the lock has expired", { lockedUntil: Date.now() - 1_000 }, false],
+			["the lock is live", { lockedUntil: Date.now() + 60_000 }, true],
+		])("isGlobalJobRunning is right when %s", async (_label, row, expected) => {
+			const findGlobalJob = jest.fn<any>().mockResolvedValue(row);
+			const { scheduler, mocks } = createScheduler({ mocks: { jobsRepository: { ...createScheduler().mocks.jobsRepository, findGlobalJob } } });
+
+			await expect(scheduler.isGlobalJobRunning("connect-operation")).resolves.toBe(expected);
+			expect(mocks.jobsRepository.findGlobalJob).toHaveBeenCalledWith("connect-operation");
+		});
+
+		it("reconcile does not seed a connect operation row", async () => {
+			const { scheduler, mocks } = createScheduler({ queueMode: "primary" });
+
+			await scheduler.init();
+			await scheduler.shutdown();
+
+			const seeded = [...mocks.jobsRepository.upsertJob.mock.calls, ...mocks.jobsRepository.upsertJobAndSchedule.mock.calls].map(
+				([seed]: any[]) => seed.id
+			);
+			expect(seeded).not.toContain("connect-operation");
 		});
 	});
 });

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useEffect } from "react";
 import { logger } from "@/Utils/logger";
 import { ALL_HTTP_STATUS_CODES } from "@/Utils/statusCode";
@@ -19,6 +19,7 @@ import {
 	BasePage,
 	ColoredLabel,
 	ConfigBox,
+	NoticeBanner,
 	StepProgress,
 } from "@/Components/design-elements";
 import { Button, Dialog } from "@/Components/inputs";
@@ -39,6 +40,7 @@ import {
 	PageSpeedStrategies,
 	DnsRecordTypes,
 	MonitorIntervalOptions,
+	HeartbeatIntervalOptions,
 	MIN_MONITOR_INTERVAL_MS,
 	DefaultMonitorMatchMethod,
 	MonitorMatchMethods,
@@ -69,6 +71,7 @@ import { FormSliderField } from "@/Components/inputs/forms/FormSliderField";
 import { FormSwitchField } from "@/Components/inputs/forms/FormSwitchField";
 import type { ProxyResponse } from "@/Types/Proxy";
 import { formatDuration } from "@/Utils/TimeUtils";
+import { toHeartbeatSlug } from "@/Utils/heartbeat";
 
 const httpMethodOptions = HttpMethods.map((method) => ({
 	value: method,
@@ -288,6 +291,21 @@ const getGeneralSettingsConfig = (
 			showDnsServer: true,
 			showDnsRecordType: true,
 		},
+		heartbeat: {
+			urlLabel: "",
+			urlPlaceholder: "",
+			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
+			showUrl: false,
+			showProxy: false,
+			showPort: false,
+			showGameSelect: false,
+			showSecret: false,
+			showGrpcServiceName: false,
+			showIgnoreTls: false,
+			showStrategy: false,
+			showDnsServer: false,
+			showDnsRecordType: false,
+		},
 	};
 	return configs[type] || configs.http;
 };
@@ -358,6 +376,21 @@ const CreateMonitorPage = () => {
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
 	const watchGeoCheckEnabled = watch("geoCheckEnabled") as boolean;
 	const watchedInterval = watch("interval");
+	const isHeartbeat = watchedType === "heartbeat";
+	const watchedName = watch("name") as string;
+	const watchedSlug = watch("heartbeatSlug") as string | undefined;
+
+	// Create mode: the slug follows the name until the user edits it to something else
+	const autoSlugRef = useRef("");
+	useEffect(() => {
+		if (!isHeartbeat || isEditMode) return;
+		const current = watchedSlug ?? "";
+		if (current !== "" && current !== autoSlugRef.current) return;
+		const next = watchedName?.trim() ? toHeartbeatSlug(watchedName) : "";
+		autoSlugRef.current = next;
+		if (next !== current)
+			setValue("heartbeatSlug", next, { shouldValidate: next !== "" });
+	}, [isHeartbeat, isEditMode, watchedName, watchedSlug, setValue]);
 
 	// Steps without an advanced section drop it, so the last step is the form's.
 	const totalSteps = monitorStepCount(watchedType);
@@ -435,7 +468,9 @@ const CreateMonitorPage = () => {
 		}
 
 		if (result?.success) {
-			if (pageType === "pagespeed") {
+			if (!isEditMode && data.type === "heartbeat") {
+				navigate(`/uptime/${result.data.id}`);
+			} else if (pageType === "pagespeed") {
 				navigate("/pagespeed");
 			} else if (pageType === "hardware") {
 				navigate("/infrastructure");
@@ -523,7 +558,10 @@ const CreateMonitorPage = () => {
 	);
 
 	const intervalOptions = useMemo(() => {
-		const options = MonitorIntervalOptions.map(({ value }) =>
+		const presets: readonly { value: number }[] = isHeartbeat
+			? HeartbeatIntervalOptions
+			: MonitorIntervalOptions;
+		const options = presets.map(({ value }) =>
 			toIntervalOption(value, i18n.resolvedLanguage)
 		);
 		if (
@@ -533,7 +571,7 @@ const CreateMonitorPage = () => {
 			options.push(toIntervalOption(watchedInterval, i18n.resolvedLanguage));
 		}
 		return options;
-	}, [watchedInterval, i18n.resolvedLanguage]);
+	}, [isHeartbeat, watchedInterval, i18n.resolvedLanguage]);
 
 	const matchMethodOptions = useMemo(
 		() =>
@@ -635,6 +673,24 @@ const CreateMonitorPage = () => {
 								}}
 							/>
 						}
+						leftContent={
+							isHeartbeat && (
+								<NoticeBanner>
+									<Trans
+										i18nKey="pages.createMonitor.form.general.heartbeatAutoCreate"
+										components={{
+											code: (
+												<Box
+													component="code"
+													fontFamily={theme.typography.fontFamilyMonospace}
+													whiteSpace="nowrap"
+												/>
+											),
+										}}
+									/>
+								</NoticeBanner>
+							)
+						}
 						rightContent={
 							<Stack spacing={theme.spacing(LAYOUT.MD)}>
 								<FormTextField
@@ -642,6 +698,24 @@ const CreateMonitorPage = () => {
 									fieldLabel={t("pages.createMonitor.form.general.option.name.label")}
 									placeholder={generalSettingsConfig.namePlaceholder}
 								/>
+								{isHeartbeat && (
+									<FormTextField
+										name="heartbeatSlug"
+										fieldLabel={t("pages.createMonitor.form.heartbeatSlug.label")}
+										placeholder="nightly-backup"
+										helperText={t("pages.createMonitor.form.heartbeatSlug.hint")}
+									/>
+								)}
+								{isHeartbeat &&
+									isEditMode &&
+									"heartbeatSlug" in formState.dirtyFields && (
+										<Alert
+											severity="warning"
+											sx={{ alignItems: "center" }}
+										>
+											{t("pages.createMonitor.form.heartbeatSlug.editAlert")}
+										</Alert>
+									)}
 								{/* URL/Host/Container field - not shown for hardware */}
 								{generalSettingsConfig.showUrl && (
 									<FormTextField
@@ -824,21 +898,49 @@ const CreateMonitorPage = () => {
 				)}
 				{showStep(1) && (
 					<ConfigBox
-						title={t("pages.createMonitor.form.frequency.title")}
-						subtitle={t("pages.createMonitor.form.frequency.description")}
+						title={t(
+							isHeartbeat
+								? "pages.createMonitor.form.frequency.heartbeat.title"
+								: "pages.createMonitor.form.frequency.title"
+						)}
+						subtitle={t(
+							isHeartbeat
+								? "pages.createMonitor.form.frequency.heartbeat.description"
+								: "pages.createMonitor.form.frequency.description"
+						)}
 						rightContent={
-							<FormAutocompleteField
-								name="interval"
-								fieldLabel={t(
-									"pages.createMonitor.form.frequency.option.frequency.label"
+							<Stack spacing={theme.spacing(LAYOUT.MD)}>
+								<FormAutocompleteField
+									name="interval"
+									fieldLabel={t(
+										isHeartbeat
+											? "pages.createMonitor.form.frequency.heartbeat.label"
+											: "pages.createMonitor.form.frequency.option.frequency.label"
+									)}
+									options={intervalOptions}
+									filterOptions={(options, { inputValue }) =>
+										filterIntervalOptions(options, inputValue, i18n.resolvedLanguage)
+									}
+									getOptionDisabled={(option) => option.id < MIN_MONITOR_INTERVAL_MS}
+									disableClearable
+								/>
+								<Typography
+									component="span"
+									color={theme.palette.text.secondary}
+									sx={{ opacity: 0.8 }}
+								>
+									{t("pages.createMonitor.form.frequency.customHint")}
+								</Typography>
+								{isHeartbeat && (
+									<Typography
+										component="span"
+										color={theme.palette.text.secondary}
+										sx={{ opacity: 0.8 }}
+									>
+										{t("pages.createMonitor.form.frequency.heartbeat.hint")}
+									</Typography>
 								)}
-								options={intervalOptions}
-								filterOptions={(options, { inputValue }) =>
-									filterIntervalOptions(options, inputValue, i18n.resolvedLanguage)
-								}
-								getOptionDisabled={(option) => option.id < MIN_MONITOR_INTERVAL_MS}
-								disableClearable
-							/>
+							</Stack>
 						}
 					/>
 				)}
@@ -897,7 +999,7 @@ const CreateMonitorPage = () => {
 						}
 					/>
 				)}
-				{showStep(1) && (
+				{showStep(1) && !isHeartbeat && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.incidents.title")}
 						subtitle={t("pages.createMonitor.form.incidents.description")}

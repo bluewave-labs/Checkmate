@@ -11,27 +11,41 @@ import {
 	Wrench,
 	ScrollText,
 	Settings,
-	HelpCircle,
-	MessageCircle,
-	Code,
 	User,
 	Lock,
 	Users,
 	Tag,
 	Waypoints,
 	Container,
-	// LayoutDashboard,
+	LayoutDashboard,
 } from "lucide-react";
-export const getMenu = (t: Function) => {
-	return [
+import type { TFunction } from "i18next";
+import type { NavData } from "@/Components/sidebar/NavItem";
+import type { UserRole } from "@/Types/User";
+
+export interface SidebarMenuItem extends NavData {
+	path: string;
+	roles?: UserRole[];
+}
+
+export interface SidebarMenuGroup {
+	group: string;
+	items: SidebarMenuItem[];
+}
+
+const isVisible = (item: SidebarMenuItem, userRoles: UserRole[]) =>
+	!item.roles || item.roles.some((role) => userRoles.includes(role));
+
+export const getMenu = (t: TFunction, userRoles: UserRole[]): SidebarMenuGroup[] => {
+	const menu: SidebarMenuGroup[] = [
 		{
 			group: t("components.sidebar.menu.groups.monitoring"),
 			items: [
-				// {
-				// 	name: t("components.sidebar.menu.dashboard"),
-				// 	path: "dashboard",
-				// 	icon: <Icon icon={LayoutDashboard} />,
-				// },
+				{
+					name: t("components.sidebar.menu.dashboard"),
+					path: "dashboard",
+					icon: <Icon icon={LayoutDashboard} />,
+				},
 				{
 					name: t("components.sidebar.menu.uptime"),
 					path: "uptime",
@@ -91,6 +105,7 @@ export const getMenu = (t: Function) => {
 					name: t("components.sidebar.menu.logs"),
 					path: "logs",
 					icon: <Icon icon={ScrollText} />,
+					roles: ["admin", "superadmin"],
 				},
 			],
 		},
@@ -106,6 +121,7 @@ export const getMenu = (t: Function) => {
 					name: t("components.sidebar.menu.proxies"),
 					path: "proxies",
 					icon: <Icon icon={Waypoints} />,
+					roles: ["admin", "superadmin"],
 				},
 				{
 					name: t("components.sidebar.menu.settings"),
@@ -115,35 +131,17 @@ export const getMenu = (t: Function) => {
 			],
 		},
 	];
+	return menu.map((group) => ({
+		...group,
+		items: group.items.filter((item) => isVisible(item, userRoles)),
+	}));
 };
 
-export const getBottomMenu = (t: Function) => {
-	return [
-		{
-			name: t("components.sidebar.bottomMenu.support"),
-			path: "support",
-			icon: <Icon icon={HelpCircle} />,
-		},
-		{
-			name: t("components.sidebar.bottomMenu.discussions"),
-			path: "discussions",
-			icon: <Icon icon={MessageCircle} />,
-		},
-		{
-			name: t("components.sidebar.bottomMenu.docs"),
-			path: "docs",
-			icon: <Icon icon={FileText} />,
-		},
-		{
-			name: t("components.sidebar.bottomMenu.changelog"),
-			path: "changelog",
-			icon: <Icon icon={Code} />,
-		},
-	];
-};
-
-export const getAccountMenu = (t: Function) => {
-	return [
+export const getAccountMenu = (
+	t: TFunction,
+	userRoles: UserRole[]
+): SidebarMenuItem[] => {
+	const menu: SidebarMenuItem[] = [
 		{
 			name: t("components.sidebar.accountMenu.profile"),
 			path: "account/profile",
@@ -153,11 +151,14 @@ export const getAccountMenu = (t: Function) => {
 			name: t("components.sidebar.accountMenu.password"),
 			path: "account/password",
 			icon: <Icon icon={Lock} />,
+			roles: ["user", "admin", "superadmin"],
 		},
 		{
 			name: t("components.sidebar.accountMenu.team"),
 			path: "account/team",
 			icon: <Icon icon={Users} />,
+			roles: ["admin", "superadmin"],
 		},
 	];
+	return menu.filter((item) => isVisible(item, userRoles));
 };

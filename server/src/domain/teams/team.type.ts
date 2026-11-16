@@ -3,4 +3,6 @@ export interface Team {
 	email: string;
 	createdAt: string;
 	updatedAt: string;
+	heartbeatKeyHash?: string;
+	heartbeatKeyCreatedBy?: string;
 }

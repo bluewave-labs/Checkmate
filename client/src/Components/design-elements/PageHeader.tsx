@@ -7,6 +7,9 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { ChevronLeft, HelpCircle, FileText, Code } from "lucide-react";
 import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import { useAppVersion } from "@/Hooks/useAppVersion";
+import { PulseDot } from "@/Components/design-elements/PulseDot";
+import { formatVersion } from "@/Utils/FormatUtils";
 
 import type { ReactNode } from "react";
 
@@ -31,6 +34,9 @@ export const PageHeader = ({
 }: PageHeaderProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
+	const { versionInfo } = useAppVersion();
+	const showUpdate = Boolean(versionInfo?.updateAvailable && versionInfo.latest);
+	const latestLabel = versionInfo?.latest && formatVersion(versionInfo.latest);
 
 	const linkItems: { key: keyof typeof EXTERNAL_LINKS; icon: ReactNode }[] = [
 		{
@@ -128,6 +134,40 @@ export const PageHeader = ({
 					flexShrink: 0,
 				}}
 			>
+				{showUpdate && (
+					<Tooltip title={t("components.pageHeader.update.tooltip")}>
+						<Box
+							component="a"
+							href={EXTERNAL_LINKS.changelog}
+							target="_blank"
+							rel="noopener noreferrer"
+							display="inline-flex"
+							alignItems="center"
+							height={INPUT_BASE_HEIGHT}
+							gap={theme.spacing(1)}
+							pl={theme.spacing(3)}
+							pr={theme.spacing(5)}
+							borderRight={`1px solid ${theme.palette.divider}`}
+							color={theme.palette.text.primary}
+							fontSize={13}
+							sx={{
+								textDecoration: "none",
+								whiteSpace: "nowrap",
+								"&:hover": {
+									backgroundColor: theme.palette.action.hover,
+								},
+							}}
+						>
+							<PulseDot
+								color={theme.palette.success.main}
+								size={9}
+							/>
+							{t("components.pageHeader.update.available", {
+								version: latestLabel,
+							})}
+						</Box>
+					</Tooltip>
+				)}
 				{linkItems.map((item, idx) => (
 					<Tooltip
 						key={item.key}

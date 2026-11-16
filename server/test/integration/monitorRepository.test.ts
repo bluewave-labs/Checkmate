@@ -2,7 +2,10 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from "@jest/glo
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { MonitorModel } from "../../src/domain/monitors/monitor.model.ts";
+import { MonitorStatsModel } from "../../src/domain/monitor-stats/monitor-stats.model.ts";
 import MongoMonitorsRepository from "../../src/domain/monitors/monitor.repository.mongo.ts";
+import { monitorErrors } from "../../src/domain/monitors/monitor.errors.ts";
+import type { Monitor } from "../../src/domain/monitors/monitor.type.ts";
 
 let mongod: MongoMemoryServer;
 
@@ -19,6 +22,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
 	await MonitorModel.deleteMany({});
+	await MonitorStatsModel.deleteMany({});
 });
 
 const seedMonitor = (teamId: mongoose.Types.ObjectId, name: string, tags: mongoose.Types.ObjectId[]) =>
@@ -215,6 +219,216 @@ describe("MongoMonitorsRepository", () => {
 			expect(after?.dockerTlsCert).toBe("cert");
 			expect(after?.dockerTlsKeySet).toBe(true);
 			expect(after?.name).toBe("docker");
+		});
+	});
+
+	describe("heartbeat slugs", () => {
+		const seedHeartbeatMonitor = (teamId: mongoose.Types.ObjectId, heartbeatSlug: string) =>
+			MonitorModel.create({
+				userId: new mongoose.Types.ObjectId(),
+				teamId,
+				name: heartbeatSlug,
+				type: "heartbeat",
+				heartbeatSlug,
+			});
+
+		const heartbeatBody = (heartbeatSlug: string) =>
+			({ name: heartbeatSlug, type: "heartbeat", interval: 60_000, heartbeatSlug }) as unknown as Monitor;
+
+		it("findHeartbeatBySlug finds the team's heartbeat monitor", async () => {
+			const repo = new MongoMonitorsRepository();
+			const teamId = new mongoose.Types.ObjectId();
+			const doc = await seedHeartbeatMonitor(teamId, "backup");
+
+			await expect(repo.findHeartbeatBySlug(teamId.toString(), "backup")).resolves.toMatchObject({ id: doc._id.toString(), heartbeatSlug: "backup" });
+		});
+
+		it("findHeartbeatBySlug returns null for another team, an unknown slug and a non-heartbeat monitor", async () => {
+			const repo = new MongoMonitorsRepository();
+			const teamId = new mongoose.Types.ObjectId();
+			await seedHeartbeatMonitor(teamId, "backup");
+			await MonitorModel.create({
+				userId: new mongoose.Types.ObjectId(),
+				teamId,
+				name: "site",
+				type: "http",
+				url: "https://example.com",
+				heartbeatSlug: "site",
+			});
+
+			await expect(repo.findHeartbeatBySlug(new mongoose.Types.ObjectId().toString(), "backup")).resolves.toBeNull();
+			await expect(repo.findHeartbeatBySlug(teamId.toString(), "missing")).resolves.toBeNull();
+			await expect(repo.findHeartbeatBySlug(teamId.toString(), "site")).resolves.toBeNull();
+		});
+
+		it("rejects a duplicate slug in one team on create", async () => {
+			const repo = new MongoMonitorsRepository();
+			const teamId = new mongoose.Types.ObjectId();
+			await seedHeartbeatMonitor(teamId, "backup");
+
+			await expect(repo.create(heartbeatBody("backup"), teamId.toString(), new mongoose.Types.ObjectId().toString())).rejects.toMatchObject({
+				definition: monitorErrors.heartbeatSlugTaken,
+			});
+		});
+
+		it("allows the same slug in two teams", async () => {
+			const repo = new MongoMonitorsRepository();
+			await seedHeartbeatMonitor(new mongoose.Types.ObjectId(), "backup");
+
+			await expect(
+				repo.create(heartbeatBody("backup"), new mongoose.Types.ObjectId().toString(), new mongoose.Types.ObjectId().toString())
+			).resolves.toMatchObject({
+				heartbeatSlug: "backup",
+			});
+		});
+
+		it("rejects changing a slug to one the team already uses", async () => {
+			const repo = new MongoMonitorsRepository();
+			const teamId = new mongoose.Types.ObjectId();
+			await seedHeartbeatMonitor(teamId, "backup");
+			const other = await seedHeartbeatMonitor(teamId, "vacuum");
+
+			await expect(repo.updateById(other._id.toString(), teamId.toString(), { heartbeatSlug: "backup" })).rejects.toMatchObject({
+				definition: monitorErrors.heartbeatSlugTaken,
+			});
+		});
+
+		it("findExistingHeartbeatSlugs returns only the slugs the team already uses", async () => {
+			const repo = new MongoMonitorsRepository();
+			const teamId = new mongoose.Types.ObjectId();
+			await seedHeartbeatMonitor(teamId, "a");
+			await seedHeartbeatMonitor(teamId, "c");
+			await seedHeartbeatMonitor(new mongoose.Types.ObjectId(), "b");
+
+			const existing = await repo.findExistingHeartbeatSlugs(teamId.toString(), ["a", "b", "c"]);
+
+			expect(existing.sort()).toEqual(["a", "c"]);
+			await expect(repo.findExistingHeartbeatSlugs(teamId.toString(), [])).resolves.toEqual([]);
+		});
+	});
+
+	describe("url validation", () => {
+		// Edits post the whole form, so a heartbeat edit always carries url: ""
+		it("updates a heartbeat monitor whose url is empty", async () => {
+			const repo = new MongoMonitorsRepository();
+			const doc = await MonitorModel.create({
+				userId: new mongoose.Types.ObjectId(),
+				teamId: new mongoose.Types.ObjectId(),
+				name: "cron",
+				type: "heartbeat",
+			});
+
+			const updated = await repo.updateById(doc._id.toString(), doc.teamId.toString(), { name: "renamed", url: "" });
+
+			expect(updated.name).toBe("renamed");
+			expect(updated.url).toBe("");
+		});
+
+		it("still requires a url when creating a non-heartbeat monitor", async () => {
+			await expect(
+				MonitorModel.create({
+					userId: new mongoose.Types.ObjectId(),
+					teamId: new mongoose.Types.ObjectId(),
+					name: "site",
+					type: "http",
+				})
+			).rejects.toThrow(/url/);
+		});
+	});
+
+	describe("findDashboardByTeamId", () => {
+		const seedDashboardMonitor = async (teamId: mongoose.Types.ObjectId, name: string, type: string, status: string, uptimePercentage?: number) => {
+			const monitor = await MonitorModel.create({ userId: new mongoose.Types.ObjectId(), teamId, name, type, status, url: "https://example.com" });
+			if (uptimePercentage !== undefined) {
+				await MonitorStatsModel.create({ monitorId: monitor._id, uptimePercentage, lastCheckTimestamp: 1790265600000 });
+			}
+			return monitor;
+		};
+
+		const seedTeam = async () => {
+			const teamId = new mongoose.Types.ObjectId();
+			await seedDashboardMonitor(teamId, "up-high", "http", "up", 0.99);
+			await seedDashboardMonitor(teamId, "up-low", "http", "up", 0.5);
+			await seedDashboardMonitor(teamId, "down-b", "ping", "down", 0.1);
+			await seedDashboardMonitor(teamId, "down-a", "http", "down", 0);
+			await seedDashboardMonitor(teamId, "paused", "hardware", "paused", 0.7);
+			await seedDashboardMonitor(teamId, "no-stats", "http", "up");
+			await seedDashboardMonitor(new mongoose.Types.ObjectId(), "other-team", "http", "down", 0);
+			return teamId.toString();
+		};
+
+		it("returns summary and type counts scoped to the team", async () => {
+			const repo = new MongoMonitorsRepository();
+			const teamId = await seedTeam();
+
+			const result = await repo.findDashboardByTeamId(teamId);
+
+			expect(result.summary).toEqual({
+				totalMonitors: 6,
+				upMonitors: 3,
+				downMonitors: 2,
+				pausedMonitors: 1,
+				initializingMonitors: 0,
+				maintenanceMonitors: 0,
+				breachedMonitors: 0,
+			});
+			expect(result.byType).toEqual([
+				{ type: "http", count: 4 },
+				{ type: "hardware", count: 1 },
+				{ type: "ping", count: 1 },
+			]);
+		});
+
+		it("returns down monitors as dashboard monitors, capped by limit", async () => {
+			const repo = new MongoMonitorsRepository();
+			const teamId = await seedTeam();
+
+			const all = await repo.findDashboardByTeamId(teamId);
+			const limited = await repo.findDashboardByTeamId(teamId, { limit: 1 });
+
+			expect(all.down.map((monitor) => monitor.name)).toEqual(["down-a", "down-b"]);
+			expect(all.down[0]).toEqual({
+				id: expect.any(String),
+				name: "down-a",
+				url: "https://example.com",
+				type: "http",
+				status: "down",
+				uptimePercentage: 0,
+				lastCheckTimestamp: 1790265600000,
+			});
+			expect(limited.down.map((monitor) => monitor.name)).toEqual(["down-a"]);
+		});
+
+		it("ranks eligible monitors by uptime in the requested order, capped by limit", async () => {
+			const repo = new MongoMonitorsRepository();
+			const teamId = await seedTeam();
+
+			const ascending = await repo.findDashboardByTeamId(teamId, { order: "asc" });
+			const descending = await repo.findDashboardByTeamId(teamId, { order: "desc", limit: 2 });
+
+			expect(ascending.uptime.map((monitor) => monitor.name)).toEqual(["down-a", "down-b", "up-low", "up-high"]);
+			expect(descending.uptime.map((monitor) => monitor.name)).toEqual(["up-high", "up-low"]);
+		});
+
+		it("omits uptimePercentage for monitors with no stats instead of reporting 0%", async () => {
+			const repo = new MongoMonitorsRepository();
+			const teamId = new mongoose.Types.ObjectId();
+			await seedDashboardMonitor(teamId, "down-no-stats", "http", "down");
+
+			const result = await repo.findDashboardByTeamId(teamId.toString());
+
+			expect(result.down).toHaveLength(1);
+			expect(result.down[0].uptimePercentage).toBeUndefined();
+			expect(result.uptime).toEqual([]);
+		});
+
+		it("returns a zeroed summary and empty lists for a team with no monitors", async () => {
+			const repo = new MongoMonitorsRepository();
+
+			const result = await repo.findDashboardByTeamId(new mongoose.Types.ObjectId().toString());
+
+			expect(result.summary.totalMonitors).toBe(0);
+			expect(result).toMatchObject({ byType: [], down: [], uptime: [] });
 		});
 	});
 });

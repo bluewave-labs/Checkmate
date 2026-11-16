@@ -18,6 +18,7 @@ export const workerMetricsSchema = z
 		jobsWithFailures: z.array(workerJobFailureSchema),
 		totalRuns: z.number(),
 		totalFailures: z.number(),
+		dueBacklog: z.number().meta({ description: "Active check jobs that are due but not claimed by any worker" }),
 		workers: z.array(queueWorkerSchema),
 	})
 	.meta({ id: "WorkerMetrics" });

@@ -181,6 +181,18 @@ describe("MongoJobsRepository", () => {
 			expect(await repo.recordSuccess("missing", NOW, 60_000, NOW)).toBe(false);
 		});
 
+		it("never moves a deadline earlier that a heartbeat ping pushed out during the run ($max)", async () => {
+			const pushed = NOW + 10 * 60_000;
+			await seedJob({ lockedBy: ownedBy(repo), lockedUntil: NOW + LOCK_MS, nextScheduledAt: pushed });
+
+			const ok = await repo.recordSuccess("check:mon-1", NOW, 60_000, NOW + 1_000);
+
+			expect(ok).toBe(true);
+			const row = await readRow("check:mon-1");
+			expect(row?.nextScheduledAt).toBe(pushed);
+			expect(row?.lockedBy).toBeNull();
+		});
+
 		it("does not release a lock owned by another worker (fenced no-op)", async () => {
 			// A worker whose lease expired and was reclaimed must not clobber the new owner's lock.
 			await seedJob({ lockedBy: "other-worker", lockedUntil: NOW + LOCK_MS, runCount: 7, failCount: 2, lastFailReason: "timeout" });
@@ -219,7 +231,7 @@ describe("MongoJobsRepository", () => {
 				lastFailReason: "connection refused",
 			});
 
-			const ok = await repo.recordOneShot("check:mon-1", NOW + 1_000);
+			const ok = await repo.recordOneShot("check:mon-1", NOW, NOW + 1_000);
 
 			expect(ok).toBe(true);
 			const row = await readRow("check:mon-1");
@@ -235,7 +247,7 @@ describe("MongoJobsRepository", () => {
 		it("does not touch a lock owned by another worker (fenced no-op)", async () => {
 			await seedJob({ intervalMs: null, lockedBy: "other-worker", lockedUntil: NOW + LOCK_MS, failCount: 2, lastFailReason: "timeout" });
 
-			expect(await repo.recordOneShot("check:mon-1", NOW + 1_000)).toBe(false);
+			expect(await repo.recordOneShot("check:mon-1", NOW, NOW + 1_000)).toBe(false);
 			const row = await readRow("check:mon-1");
 			expect(row?.nextScheduledAt).toBe(NOW); // not parked
 			expect(row?.lockedBy).toBe("other-worker");
@@ -253,11 +265,38 @@ describe("MongoJobsRepository", () => {
 				pendingChecks: pending("c-late"), // arrived mid-run, not yet pulled
 			});
 
-			expect(await repo.recordOneShot("evaluate:mon-1", NOW + 1_000)).toBe(true);
+			expect(await repo.recordOneShot("evaluate:mon-1", NOW, NOW + 1_000)).toBe(true);
 			const row = await readRow("evaluate:mon-1");
 			expect(row?.nextScheduledAt).toBe(NOW + 1_000); // due now, not PARKED
 			expect(row?.lockedBy).toBeNull();
 			expect(row?.runCount).toBe(1);
+		});
+
+		it("keeps a row that was re-armed while the run held the lease", async () => {
+			await seedJob({ intervalMs: null, nextScheduledAt: NOW + 5_000, lockedBy: ownedBy(repo), lockedUntil: NOW + LOCK_MS });
+
+			expect(await repo.recordOneShot("check:mon-1", NOW, NOW + 1_000)).toBe(true);
+			const row = await readRow("check:mon-1");
+			expect(row?.nextScheduledAt).toBe(NOW + 5_000);
+			expect(row?.lockedBy).toBeNull();
+			expect(row?.lockedUntil).toBeNull();
+			expect(row?.runCount).toBe(1);
+		});
+
+		it("re-arms for pending checks even when the row was also re-armed", async () => {
+			await seedJob({
+				_id: "evaluate:mon-1",
+				type: "evaluate",
+				intervalMs: null,
+				nextScheduledAt: NOW + 5_000,
+				lockedBy: ownedBy(repo),
+				lockedUntil: NOW + LOCK_MS,
+				pendingChecks: pending("c-late"),
+			});
+
+			await repo.recordOneShot("evaluate:mon-1", NOW, NOW + 1_000);
+
+			expect((await readRow("evaluate:mon-1"))?.nextScheduledAt).toBe(NOW + 1_000);
 		});
 	});
 
@@ -342,6 +381,18 @@ describe("MongoJobsRepository", () => {
 
 		it("returns false for an unknown id", async () => {
 			expect(await repo.recordFailure("missing", new Error("x"), NOW)).toBe(false);
+		});
+
+		it("never moves a deadline earlier that a heartbeat ping pushed out during the run ($max)", async () => {
+			const pushed = NOW + BACKOFF_MS + 10 * 60_000;
+			await seedJob({ lockedBy: ownedBy(repo), lockedUntil: NOW + LOCK_MS, nextScheduledAt: pushed });
+
+			const ok = await repo.recordFailure("check:mon-1", new Error("boom"), NOW);
+
+			expect(ok).toBe(true);
+			const row = await readRow("check:mon-1");
+			expect(row?.nextScheduledAt).toBe(pushed);
+			expect(row?.failCount).toBe(1);
 		});
 	});
 
@@ -517,7 +568,7 @@ describe("MongoJobsRepository", () => {
 			expect(row?.runCount).toBe(7);
 		});
 
-		it("upsertCleanupJob resets nextScheduledAt on an existing row so it is due again on restart", async () => {
+		it("upsertJobAndSchedule resets nextScheduledAt on an existing row so it is due again on restart", async () => {
 			const job: Job = {
 				id: "cleanup-orphaned",
 				type: "cleanup-orphaned",
@@ -533,13 +584,13 @@ describe("MongoJobsRepository", () => {
 				lastFinishedAt: null,
 				lastFailReason: null,
 			};
-			await repo.upsertCleanupJob(job);
+			await repo.upsertJobAndSchedule(job);
 
 			// row has already advanced a day into the future after a previous run
 			await JobModel.updateOne({ _id: "cleanup-orphaned" }, { $set: { nextScheduledAt: NOW + 86_400_000, runCount: 3 } });
 
 			// a restart reconcile re-upserts and pulls it due now
-			await repo.upsertCleanupJob({ ...job, nextScheduledAt: NOW + 1_000 });
+			await repo.upsertJobAndSchedule({ ...job, nextScheduledAt: NOW + 1_000 });
 
 			const row = await readRow("cleanup-orphaned");
 			expect(row?.nextScheduledAt).toBe(NOW + 1_000); // schedule reset ($set)
@@ -603,6 +654,74 @@ describe("MongoJobsRepository", () => {
 
 			expect(modified).toBe(0);
 			expect((await readRow("check:mon-1"))?.nextScheduledAt).toBe(NOW);
+		});
+
+		it("rescheduleOverdueChecks re-arms a past-due check row and leaves future and geo rows alone", async () => {
+			const armAt = NOW + 10_000;
+			await seedJob({ _id: "check:mon-1", refId: "mon-1", type: "check", intervalMs: 60_000, nextScheduledAt: NOW }); // overdue
+			await seedJob({ _id: "check:mon-2", refId: "mon-2", type: "check", intervalMs: 60_000, nextScheduledAt: armAt + 5_000 }); // still ahead
+			await seedJob({ _id: "geo:mon-1", refId: "mon-1", type: "geo-check", intervalMs: 60_000, nextScheduledAt: NOW }); // overdue, wrong type
+
+			const modified = await repo.rescheduleOverdueChecks(["mon-1", "mon-2"], armAt);
+
+			expect(modified).toBe(1);
+			expect((await readRow("check:mon-1"))?.nextScheduledAt).toBe(armAt + 60_000);
+			expect((await readRow("check:mon-2"))?.nextScheduledAt).toBe(armAt + 5_000);
+			expect((await readRow("geo:mon-1"))?.nextScheduledAt).toBe(NOW);
+		});
+
+		it("rescheduleOverdueChecks re-arms a paused row so resume never activates an overdue deadline", async () => {
+			await seedJob({ _id: "check:mon-1", refId: "mon-1", type: "check", isActive: false, intervalMs: 60_000, nextScheduledAt: NOW });
+
+			const modified = await repo.rescheduleOverdueChecks(["mon-1"], NOW + 10_000);
+
+			expect(modified).toBe(1);
+			const row = await readRow("check:mon-1");
+			expect(row?.nextScheduledAt).toBe(NOW + 70_000);
+			expect(row?.isActive).toBe(false); // activation is the caller's job
+		});
+
+		it("rescheduleOverdueChecks is a no-op for an empty monitor list", async () => {
+			await seedJob({ _id: "check:mon-1", refId: "mon-1", type: "check", nextScheduledAt: NOW });
+
+			const modified = await repo.rescheduleOverdueChecks([], NOW + 10_000);
+
+			expect(modified).toBe(0);
+			expect((await readRow("check:mon-1"))?.nextScheduledAt).toBe(NOW);
+		});
+
+		it("updateHeartbeatScheduleById keeps the deadline anchored to the last ping when the interval grows", async () => {
+			const lastPing = NOW;
+			await seedJob({ _id: "check:mon-1", refId: "mon-1", type: "check", intervalMs: 3_600_000, nextScheduledAt: lastPing + 3_600_000 });
+			await seedJob({ _id: "geo:mon-1", refId: "mon-1", type: "geo-check", intervalMs: 3_600_000, nextScheduledAt: NOW });
+
+			await repo.updateHeartbeatScheduleById("mon-1", 7_200_000);
+
+			const row = await readRow("check:mon-1");
+			expect(row?.intervalMs).toBe(7_200_000);
+			expect(row?.nextScheduledAt).toBe(lastPing + 7_200_000);
+			const geo = await readRow("geo:mon-1");
+			expect(geo?.intervalMs).toBe(3_600_000); // untouched
+			expect(geo?.nextScheduledAt).toBe(NOW);
+		});
+
+		it("updateHeartbeatScheduleById pulls the deadline in when the interval shrinks", async () => {
+			const lastPing = NOW;
+			await seedJob({ _id: "check:mon-1", refId: "mon-1", type: "check", intervalMs: 7_200_000, nextScheduledAt: lastPing + 7_200_000 });
+
+			await repo.updateHeartbeatScheduleById("mon-1", 3_600_000);
+
+			expect((await readRow("check:mon-1"))?.nextScheduledAt).toBe(lastPing + 3_600_000);
+		});
+
+		it("updateHeartbeatScheduleById leaves the row unchanged when the interval is the same", async () => {
+			await seedJob({ _id: "check:mon-1", refId: "mon-1", type: "check", intervalMs: 60_000, nextScheduledAt: NOW + 60_000 });
+
+			await repo.updateHeartbeatScheduleById("mon-1", 60_000);
+
+			const row = await readRow("check:mon-1");
+			expect(row?.intervalMs).toBe(60_000);
+			expect(row?.nextScheduledAt).toBe(NOW + 60_000);
 		});
 
 		it("deleteById drops every row for the monitor", async () => {
@@ -718,6 +837,25 @@ describe("MongoJobsRepository", () => {
 			expect(await readRow("telemetry")).toBeNull();
 			expect(await readRow("cleanup-orphaned")).not.toBeNull();
 			expect(await repo.deleteGlobalJob("telemetry")).toBe(false);
+		});
+
+		it("findGlobalJob returns the global row of a type", async () => {
+			await seedJob({
+				_id: "connect-operation",
+				type: "connect-operation" as JobType,
+				refId: null,
+				intervalMs: null,
+				lockedBy: "w",
+				lockedUntil: NOW + LOCK_MS,
+			});
+
+			const job = await repo.findGlobalJob("connect-operation");
+
+			expect(job).toMatchObject({ id: "connect-operation", type: "connect-operation", refId: null, lockedUntil: NOW + LOCK_MS });
+		});
+
+		it("findGlobalJob returns null when there is no row", async () => {
+			await expect(repo.findGlobalJob("connect-operation")).resolves.toBeNull();
 		});
 	});
 });

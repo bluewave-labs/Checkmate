@@ -1,18 +1,22 @@
 import { setRowsPerPage, setTableSort, type TableName } from "@/Features/UI/uiSlice";
 import { useDelete, useGet } from "@/Hooks/UseApi";
 import { useBulkMonitorActions } from "@/Hooks/useBulkMonitorActions";
-import useDebounce from "@/Hooks/useDebounce";
 import type { RootState } from "@/store";
 import {
 	type MonitorsWithChecksResponse,
+	MonitorStateFilters,
+	MonitorStatusFilters,
 	SelectableMonitorTypes,
+	type MonitorStateFilter,
+	type MonitorStatusFilter,
 	type Monitor,
 	type MonitorType,
 } from "@/Types/Monitor";
 import type { Tag } from "@/Types/Tag";
 import type { SortOrder } from "@/Types/Query";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 
 interface MonitorListConfig {
 	types: MonitorType[] | "selectable";
@@ -23,6 +27,13 @@ interface MonitorListConfig {
 	initialSortField?: string; // default ""
 }
 
+type ParamChanges = Record<string, string | string[] | undefined>;
+
+const SEARCH_DEBOUNCE_MS = 300;
+
+const pickAllowed = <T extends string>(allowed: readonly T[], value: string | null) =>
+	allowed.find((option) => option === value);
+
 export const useMonitorListController = (config: MonitorListConfig) => {
 	const dispatch = useDispatch();
 	const tableState = useSelector(
@@ -32,15 +43,103 @@ export const useMonitorListController = (config: MonitorListConfig) => {
 	const sortField = tableState?.sortField ?? config.initialSortField ?? "";
 	const sortOrder = tableState?.sortOrder ?? "asc";
 
-	// Filter states
-	const [selectedTypes, setSelectedTypes] = useState<MonitorType[]>([]);
-	const [selectedStatus, setSelectedStatus] = useState<string>("");
-	const [selectedState, setSelectedState] = useState<string>("");
-	const [selectedTags, setSelectedTags] = useState<string[]>([]);
-	const [page, setPage] = useState<number>(0);
-	const [search, setSearch] = useState<string>("");
+	const [searchParams, setSearchParams] = useSearchParams();
+	const { data: tags, error: tagsError } = useGet<Tag[]>("/tags/team");
+	const selectedTypes = useMemo<MonitorType[]>(
+		() =>
+			config.types === "selectable"
+				? searchParams
+						.getAll("type")
+						.flatMap((type) => pickAllowed(SelectableMonitorTypes, type) ?? [])
+				: [],
+		[config.types, searchParams]
+	);
+	const selectedStatus: MonitorStatusFilter | "" =
+		pickAllowed(MonitorStatusFilters, searchParams.get("status")) ?? "";
+	const selectedState: MonitorStateFilter | "" =
+		pickAllowed(MonitorStateFilters, searchParams.get("state")) ?? "";
+	const urlTags = useMemo(() => searchParams.getAll("tags"), [searchParams]);
+	const selectedTags = useMemo(
+		() => urlTags.filter((id) => tags?.some((tag) => tag.id === id)),
+		[urlTags, tags]
+	);
+	const isTagsPending = urlTags.length > 0 && !tags && !tagsError;
+	const urlPage = Number(searchParams.get("page"));
+	const page = Number.isInteger(urlPage) && urlPage > 1 ? urlPage - 1 : 0;
+	const urlSearch = searchParams.get("search") ?? "";
+	const [search, setSearchInput] = useState<string>(urlSearch);
 	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
-	const debouncedSearch = useDebounce<string>(search, 300);
+
+	const updateParams = useCallback(
+		(changes: ParamChanges) => {
+			setSearchParams(
+				(prev) => {
+					const next = new URLSearchParams(prev);
+					Object.entries(changes).forEach(([key, value]) => {
+						next.delete(key);
+						[value ?? []]
+							.flat()
+							.filter(Boolean)
+							.forEach((item) => next.append(key, item));
+					});
+					return next;
+				},
+				{ replace: true }
+			);
+		},
+		[setSearchParams]
+	);
+
+	const updateFilters = useCallback(
+		(changes: ParamChanges) => updateParams({ ...changes, page: undefined }),
+		[updateParams]
+	);
+
+	const setSelectedTypes = useCallback(
+		(types: MonitorType[]) => updateFilters({ type: types }),
+		[updateFilters]
+	);
+
+	const setSelectedStatus = useCallback(
+		(status: MonitorStatusFilter) => updateFilters({ status }),
+		[updateFilters]
+	);
+
+	const setSelectedState = useCallback(
+		(state: MonitorStateFilter) => updateFilters({ state }),
+		[updateFilters]
+	);
+
+	const setSelectedTags = useCallback(
+		(tags: string[]) => updateFilters({ tags }),
+		[updateFilters]
+	);
+
+	const setPage = useCallback(
+		(next: number) => updateParams({ page: next > 0 ? String(next + 1) : undefined }),
+		[updateParams]
+	);
+
+	const searchTimer = useRef<ReturnType<typeof setTimeout>>();
+	const latestUpdateFilters = useRef(updateFilters);
+
+	useEffect(() => {
+		latestUpdateFilters.current = updateFilters;
+	}, [updateFilters]);
+
+	useEffect(() => {
+		setSearchInput(urlSearch);
+		return () => clearTimeout(searchTimer.current);
+	}, [urlSearch]);
+
+	const setSearch = useCallback((value: string) => {
+		setSearchInput(value);
+		clearTimeout(searchTimer.current);
+		searchTimer.current = setTimeout(
+			() => latestUpdateFilters.current({ search: value }),
+			SEARCH_DEBOUNCE_MS
+		);
+	}, []);
 
 	// Convert filter selections to API filter values
 	// Status: pass "up"/"down" directly to the API
@@ -64,8 +163,8 @@ export const useMonitorListController = (config: MonitorListConfig) => {
 		[toFilterActive, "isActive"],
 	]);
 	const activeFilter = [...filterLookup].find(([key]) => key !== undefined);
-	const field = activeFilter?.[1] || (debouncedSearch ? "name" : sortField || undefined);
-	const filter = activeFilter?.[0] || debouncedSearch || undefined;
+	const field = activeFilter?.[1] || (urlSearch ? "name" : sortField || undefined);
+	const filter = activeFilter?.[0] || urlSearch || undefined;
 
 	const effectiveTypes = useMemo(() => {
 		return config.types === "selectable"
@@ -77,6 +176,7 @@ export const useMonitorListController = (config: MonitorListConfig) => {
 
 	// Fetching
 	const monitorsWithChecksUrl = useMemo(() => {
+		if (isTagsPending) return null;
 		const params = new URLSearchParams();
 		effectiveTypes.forEach((type) => params.append("type", type));
 		selectedTags.forEach((tag) => params.append("tags", tag));
@@ -88,6 +188,7 @@ export const useMonitorListController = (config: MonitorListConfig) => {
 		if (sortOrder) params.append("order", sortOrder);
 		return `/monitors/team/with-checks?${params.toString()}`;
 	}, [
+		isTagsPending,
 		effectiveTypes,
 		selectedTags,
 		page,
@@ -108,7 +209,6 @@ export const useMonitorListController = (config: MonitorListConfig) => {
 		{},
 		{ refreshInterval: config.refreshInterval, keepPreviousData: true }
 	);
-	const { data: tags } = useGet<Tag[]>("/tags/team");
 
 	const bulk = useBulkMonitorActions(refetch, page);
 
@@ -124,12 +224,16 @@ export const useMonitorListController = (config: MonitorListConfig) => {
 
 	// Handle filters
 	const handleClearFilters = useCallback(() => {
-		setSelectedTypes([]);
-		setSelectedStatus("");
-		setSelectedState("");
-		setSelectedTags([]);
-		setSearch("");
-	}, []);
+		clearTimeout(searchTimer.current);
+		setSearchInput("");
+		updateFilters({
+			type: undefined,
+			status: undefined,
+			state: undefined,
+			tags: undefined,
+			search: undefined,
+		});
+	}, [updateFilters]);
 
 	const handleSetRowsPerPage = (value: number) => {
 		dispatch(setRowsPerPage({ value, table: config.rowsPerPageTable }));
@@ -147,7 +251,7 @@ export const useMonitorListController = (config: MonitorListConfig) => {
 		selectedStatus ||
 		selectedState ||
 		selectedTags.length > 0 ||
-		search
+		urlSearch
 	);
 
 	// Show empty state only when there are truly no monitors (not just filtered out)
@@ -170,7 +274,7 @@ export const useMonitorListController = (config: MonitorListConfig) => {
 		summary,
 		count,
 		tags,
-		isLoading,
+		isLoading: isLoading || isTagsPending,
 		error,
 		refetch,
 		effectiveTotalCount,

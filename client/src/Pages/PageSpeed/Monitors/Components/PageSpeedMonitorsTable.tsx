@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
-import { usePatch } from "@/Hooks/UseApi";
+import { usePost } from "@/Hooks/UseApi";
 
 import type { Monitor, MonitorWithChecks } from "@/Types/Monitor";
 import type { Tag } from "@/Types/Tag";
@@ -57,11 +57,7 @@ export const PageSpeedMonitorsTable = ({
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const navigate = useNavigate();
-	const {
-		patch,
-		// loading: isPatching,
-		// error: postError,
-	} = usePatch<any, Monitor>();
+	const { post } = usePost<Record<string, never>, Monitor>();
 
 	const handlePageChange = (
 		_e: React.MouseEvent<HTMLButtonElement> | null,
@@ -112,25 +108,20 @@ export const PageSpeedMonitorsTable = ({
 			{
 				id: 4,
 				label: t("pages.common.monitors.actions.configure"),
+				adminOnly: true,
 				action: () => {
 					navigate(`/pagespeed/configure/${monitor.id}`);
 				},
 			},
-			// {
-			//   id: 5,
-			//   label: "Clone",
-			//   action: () => {
-
-			//   },
-			// },
 			{
 				id: 6,
 				label:
 					monitor.isActive === false
 						? t("common.buttons.resume")
 						: t("common.buttons.pause"),
+				adminOnly: true,
 				action: async () => {
-					await patch(`/monitors/${monitor.id}/active`);
+					await post(`/monitors/pause/${monitor.id}`, {});
 					refetch();
 				},
 				closeMenu: true,
@@ -142,6 +133,7 @@ export const PageSpeedMonitorsTable = ({
 						{t("common.buttons.delete")}
 					</Typography>
 				),
+				adminOnly: true,
 				action: () => {
 					setSelectedMonitor(monitor);
 				},

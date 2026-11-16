@@ -38,6 +38,7 @@ const MaintenanceWindowPage = () => {
 			description={t("pages.maintenanceWindow.fallback.description")}
 			loading={isLoading}
 			error={!!error}
+			showActionButton={isAdmin}
 			actionButtonText={t("pages.maintenanceWindow.fallback.actionButton")}
 			actionLink="/maintenance/create"
 		>
