@@ -127,6 +127,7 @@ Kysy rohkeasti tai jaa ideoitasi — kuulemme sinusta mielellämme!
 - Ilmoitukset sähköpostitse, webhookeilla, Discordilla, Slackilla, PagerDutylla, Matrixilla, Microsoft Teamsilla, Telegramilla, Pushoverilla ja Twiliolla (SMS)
 - Ajastettu huolto
 - JSON-kyselyihin perustuva valvonta
+- [Checkmate Connect](https://checkmate.so/docs/connect) (valinnainen): etäkäyttö ilman saapuvien porttien avaamista, salatut pilvivarmuuskopiot ajastuksella ja palautuksella sekä vahtikoira, joka lähettää sähköpostia, kun palvelimesi lakkaa raportoimasta
 - Monikielinen tuki: arabia, kiina (yksinkertaistettu), kiina (perinteinen, Taiwan), tšekki, englanti, suomi, ranska, saksa, japani, portugali (Brasilia), venäjä, espanja, thai, turkki, ukraina ja vietnam
 
 

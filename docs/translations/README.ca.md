@@ -127,6 +127,7 @@ No dubtis a preguntar o compartir les teves idees — ens encantarà tenir notí
 - Notificacions per correu electrònic, webhooks, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - Manteniment programat
 - Monitorització mitjançant consultes JSON
+- [Checkmate Connect](https://checkmate.so/docs/connect) (opcional): accés remot sense obrir ports d'entrada, còpies de seguretat xifrades al núvol amb execucions programades i restauració, i un vigilant que t'avisa per correu quan el servidor deixa d'informar
 - Suport multilingüe per a àrab, xinès (simplificat), xinès (tradicional, Taiwan), txec, anglès, finès, francès, alemany, japonès, portuguès (Brasil), rus, espanyol, tailandès, turc, ucraïnès i vietnamita
 
 

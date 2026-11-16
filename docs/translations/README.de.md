@@ -124,6 +124,7 @@ Frag einfach drauflos oder teile deine Ideen — wir freuen uns auf dein Feedbac
 - Benachrichtigungen per E-Mail, Webhooks, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - Geplante Wartungen
 - JSON-Abfrage-Monitoring
+- [Checkmate Connect](https://checkmate.so/docs/connect) (optional): Fernzugriff ohne eingehende Ports zu öffnen, verschlüsselte Cloud-Backups mit Zeitplan und Wiederherstellung sowie ein Watchdog, der dich per E-Mail benachrichtigt, wenn sich dein Server nicht mehr meldet
 - Mehrsprachige Unterstützung für Arabisch, Chinesisch (Vereinfacht), Chinesisch (Traditionell, Taiwan), Tschechisch, Englisch, Finnisch, Französisch, Deutsch, Japanisch, Portugiesisch (Brasilien), Russisch, Spanisch, Thailändisch, Türkisch, Ukrainisch und Vietnamesisch
 
 

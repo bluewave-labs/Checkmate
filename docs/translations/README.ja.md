@@ -124,6 +124,7 @@ Checkmate は 1000 以上のアクティブなモニターでストレステス�
 - メール、Webhook、Discord、Slack、PagerDuty、Matrix、Microsoft Teams、Telegram、Pushover、Twilio (SMS) による通知
 - メンテナンスのスケジューリング
 - JSON クエリ監視
+- [Checkmate Connect](https://checkmate.so/docs/connect)（任意）：受信ポートを開かずにリモートアクセス、スケジュール実行と復元に対応した暗号化クラウドバックアップ、サーバーからの報告が途絶えるとメールで通知するウォッチドッグ
 - 多言語対応: アラビア語、中国語（簡体字）、中国語（繁体字・台湾）、チェコ語、英語、フィンランド語、フランス語、ドイツ語、日本語、ポルトガル語（ブラジル）、ロシア語、スペイン語、タイ語、トルコ語、ウクライナ語、ベトナム語
 
 

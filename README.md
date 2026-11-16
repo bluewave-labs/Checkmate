@@ -71,6 +71,7 @@ Checkmate also scales horizontally for more than 5000 servers: you can run dedic
 - [📦 Demo](#demo)  
 - [🔗 User's guide](#users-guide)  
 - [🛠️ Installation](#installation)
+- [☁️ Checkmate Connect](#checkmate-connect)
 - [🚀 Performance](#performance)  
 - [💚 Questions & Ideas](#questions--ideas)  
 - [🧩 Features](#features)  
@@ -307,9 +308,7 @@ docker --tlsverify --tlscacert=ca.pem --tlscert=cert.pem --tlskey=key.pem \
   -H=docker.example.com:2376 version
 ```
 
-### Heartbeat monitors (Upcoming)
-
-> **Upcoming:** not part of v3.13.1 or earlier. It ships in the next release.
+### Heartbeat monitors
 
 A heartbeat monitor is passive: your job pings Checkmate when it runs, and the monitor goes down if no ping arrives within its alert window. Use it for cron jobs, backups and scheduled tasks.
 
@@ -349,9 +348,20 @@ curl -fsS -m 10 --retry 3 "https://<checkmate-host>/api/v1/heartbeat/<pingKey>/n
 curl -fsS "https://<checkmate-host>/api/v1/heartbeat/<pingKey>/nightly-backup?create=true&interval=3600000"
 ```
 
-### Checkmate Connect remote access (Upcoming)
+<a id="checkmate-connect"></a>
+### Checkmate Connect
 
-> **Upcoming:** not part of v3.13.1 or earlier. It ships in the next release.
+[Checkmate Connect](https://checkmateconnect.io) is an optional cloud service for self-hosted Checkmate, available from v4.0.0. It adds remote access to your installation without opening inbound ports, encrypted cloud backups with restore, and a watchdog that emails you when your server stops reporting. Checkmate runs fully without it. Connect is free during its beta.
+
+To enroll a server:
+
+1. Set `ENCRYPTION_KEY` on the server and every worker (see [Configuration](#configuration)). Enrolling requires it.
+2. [Create a Connect account](https://connect.checkmate.so/sign-up) and add your server in the Connect dashboard. Copy the credential block it shows; it is shown only once.
+3. As a superadmin, open **Settings → Checkmate Connect** in Checkmate and paste the block under **Enroll installation**.
+
+Full guide: [checkmate.so/docs/connect](https://checkmate.so/docs/connect). The sections below cover the server-side details.
+
+### Checkmate Connect remote access
 
 Remote access keeps an outbound tunnel open from this server to Checkmate Connect, so you can reach the installation from its Connect address without opening inbound ports. A superadmin turns it on in **Settings → Checkmate Connect** after enrolling.
 
@@ -374,9 +384,7 @@ rm server/public
 
 This deletes only the link, not `client/dist`. Leave off the trailing slash: `rm server/public/` would target the linked directory instead of the link.
 
-### Checkmate Connect backups (Upcoming)
-
-> **Upcoming:** not part of v3.13.1 or earlier. It ships in the next release.
+### Checkmate Connect backups
 
 Cloud backups copy this installation's database to Checkmate Connect. Each backup is encrypted on this server before upload, so Connect only stores ciphertext.
 
@@ -416,17 +424,17 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 
 - Completely open source, deployable on your servers or home devices (e.g Raspberry Pi 5)
 - Several monitoring options: HTTP (with SSL certificate expiry), Ping, Port, DNS, Docker, gRPC, WebSocket, Game server
-- Heartbeat monitors for cron jobs, backups and other scheduled tasks (Upcoming)
+- Heartbeat monitors for cron jobs, backups and other scheduled tasks
 - Page speed monitoring
 - Infrastructure monitoring (memory, disk usage, CPU performance, network etc) - requires [Capture](https://github.com/bluewave-labs/capture) agent
   - Selective disk monitoring with mountpoint selection
 - Incidents at a glance
-- Dashboard with monitor status, uptime, currently down monitors, job queue and server health cards that you can rearrange and hide (Upcoming)
+- Dashboard with monitor status, uptime, currently down monitors, job queue and server health cards that you can rearrange and hide
 - Status pages with 5 beautiful themes
 - E-mail, Webhooks, Discord, Slack, PagerDuty, Matrix, Rocket.Chat, Microsoft Teams, Telegram, Pushover, ntfy, SignalGrid, Twilio (SMS) notifications
 - Scheduled maintenance
 - JSON query monitoring
-- Checkmate Connect: remote access without opening inbound ports, and encrypted cloud backups with scheduled runs and restore (Upcoming)
+- [Checkmate Connect](https://checkmate.so/docs/connect) (optional): remote access without opening inbound ports, encrypted cloud backups with scheduled runs and restore, and a watchdog that emails you when your server stops reporting
 - Multi-language support for Arabic, Catalan, Chinese (Simplified), Chinese (Traditional, Taiwan), Czech, English, Finnish, French, German, Italian, Japanese, Polish, Portuguese (Brazil), Russian, Spanish, Thai, Turkish, Ukrainian, and Vietnamese
 
 
