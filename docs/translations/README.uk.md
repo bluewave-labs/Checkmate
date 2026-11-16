@@ -85,7 +85,7 @@ Checkmate пройшов навантажувальне тестування з 
 
 Інструкції зі встановлення дивіться у [порталі документації Checkmate](https://checkmate.so/docs).
 
-Альтернативно, для швидкого розгортання Checkmate можна скористатися [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Південна Африка), [Cloudzy](https://cloudzy.com/marketplace/checkmate) або [Pikapods](https://www.pikapods.com/). Якщо хочете моніторити серверну інфраструктуру, знадобиться агент [Capture](https://checkmate.so/docs/infrastructure/installing-capture). У репозиторії Capture також є інструкції зі встановлення.
+Альтернативно, для швидкого розгортання Checkmate можна скористатися [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Південна Африка), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate) або [Pikapods](https://www.pikapods.com/). Якщо хочете моніторити серверну інфраструктуру, знадобиться агент [Capture](https://checkmate.so/docs/infrastructure/installing-capture). У репозиторії Capture також є інструкції зі встановлення.
 
 ### Використання власного УЦ
 
