@@ -17,7 +17,7 @@ export const StatusPageThemeModes = ["auto", "light", "dark"] as const;
 export type StatusPageThemeMode = (typeof StatusPageThemeModes)[number];
 export const DEFAULT_STATUS_PAGE_THEME_MODE: StatusPageThemeMode = "auto";
 
-export const DEFAULT_STATUS_PAGE_TIMEZONE = "Etc/UTC";
+export const DEFAULT_STATUS_PAGE_TIMEZONE = "UTC";
 
 export const StatusPageDayRanges = ["30d", "60d", "90d"] as const;
 export type StatusPageDayRange = (typeof StatusPageDayRanges)[number];

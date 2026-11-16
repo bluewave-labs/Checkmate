@@ -10,7 +10,7 @@ export async function backfillStatusPageTimezone(logger: ILogger): Promise<void>
 		log.info("Starting status page timezone backfill");
 
 		const result = await StatusPageModel.updateMany(
-			{ $or: [{ timezone: { $exists: false } }, { timezone: null }, { timezone: "" }] },
+			{ $or: [{ timezone: { $exists: false } }, { timezone: null }, { timezone: "" }, { timezone: "Etc/UTC" }] },
 			{ $set: { timezone: DEFAULT_STATUS_PAGE_TIMEZONE } }
 		);
 

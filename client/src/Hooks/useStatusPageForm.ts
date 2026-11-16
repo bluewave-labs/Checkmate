@@ -6,12 +6,17 @@ import {
 	DEFAULT_STATUS_PAGE_THEME_MODE,
 } from "@/Types/StatusPage";
 import type { Monitor } from "@/Types/Monitor";
-import { resolveTimezone } from "@/Utils/TimeUtils";
+import { SYSTEM_TIMEZONE, toCanonicalTimezone } from "@/Utils/TimeUtils";
+import { timezoneOptions } from "@/Utils/timezoneOptions";
 
 interface UseStatusPageFormOptions {
 	data?: StatusPage | null;
 	monitors?: Monitor[] | null;
 }
+
+const defaultTimezone = timezoneOptions.some((tz) => tz.id === SYSTEM_TIMEZONE)
+	? SYSTEM_TIMEZONE
+	: "UTC";
 
 const generateDefaultUrl = () => Math.floor(Math.random() * 1000000).toString();
 
@@ -32,7 +37,9 @@ export const useStatusPageForm = ({
 			companyName: data?.companyName || "",
 			url: data?.url || generateDefaultUrl(),
 			customDomain: data?.customDomain ?? null,
-			timezone: data?.timezone ?? resolveTimezone(),
+			timezone: data
+				? (toCanonicalTimezone(data.timezone) ?? data.timezone)
+				: defaultTimezone,
 			type: data?.type || ["uptime"],
 			color: data?.color || "#13715B",
 			monitors: data?.monitors || [],
