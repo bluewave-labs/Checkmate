@@ -38,6 +38,7 @@ export const SplitBox = ({
 			</Box>
 			<Box
 				flex={1}
+				minWidth={0}
 				padding={theme.spacing(LAYOUT.XXL)}
 			>
 				{right}

@@ -18,6 +18,7 @@ import { isCaptureDockerUrl, isDockerSocketUrl, isDockerTlsUrl } from "@/utils/d
 import { X509Certificate } from "node:crypto";
 import { keyMatchesCertificate, parseCertificates, parsePrivateKey } from "@/utils/pem.js";
 import { monitorResponseSchema } from "@/domain/monitors/monitor.schema.js";
+import { HEARTBEAT_SLUG_MAX_LENGTH, HEARTBEAT_SLUG_PATTERN } from "@/domain/heartbeat/heartbeat.type.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
@@ -59,6 +60,11 @@ export const getMonitorsWithChecksQueryValidation = z.object({
 	type: z.union([z.enum(MonitorTypes), z.array(z.enum(MonitorTypes))]).optional(),
 	tags: z.union([z.string(), z.array(z.string())]).optional(),
 	explain: booleanCoercion.optional(),
+});
+
+export const getDashboardByTeamIdQueryValidation = z.object({
+	limit: z.coerce.number().int().min(1).max(100).optional(),
+	order: z.enum(SortOrders).optional(),
 });
 
 export const getCertificateParamValidation = z.object({
@@ -140,6 +146,40 @@ const refineCaptureSecret = (data: { type?: string; url?: string; secret?: strin
 	if (!data.secret?.trim()) ctx.addIssue({ code: "custom", path: ["secret"], message: "Capture API secret is required" });
 };
 
+// Edit is a partial update, so only reject a url that is sent empty
+const refineUrlRequired = (mode: "create" | "edit") => (data: { type?: string; url?: string }, ctx: z.RefinementCtx) => {
+	if (data.type === undefined || data.type === "heartbeat") return;
+	if (mode === "edit" && data.url === undefined) return;
+	if (!data.url?.trim()) ctx.addIssue({ code: "custom", path: ["url"], message: "URL is required" });
+};
+
+const refineHeartbeat = (data: { type?: string; geoCheckEnabled?: boolean; proxyMode?: string }, ctx: z.RefinementCtx) => {
+	if (data.type !== "heartbeat") return;
+	if (data.geoCheckEnabled)
+		ctx.addIssue({
+			code: "custom",
+			path: ["geoCheckEnabled"],
+			message: "Geo checks are not supported for heartbeat monitors",
+		});
+	if (data.proxyMode === "custom")
+		ctx.addIssue({
+			code: "custom",
+			path: ["proxyMode"],
+			message: "Proxies are not supported for heartbeat monitors",
+		});
+};
+
+const refineHeartbeatSlugRequired = (data: { type?: string; heartbeatSlug?: string }, ctx: z.RefinementCtx) => {
+	if (data.type !== "heartbeat") return;
+	if (!data.heartbeatSlug) {
+		ctx.addIssue({
+			code: "custom",
+			path: ["heartbeatSlug"],
+			message: "A slug is required for heartbeat monitors",
+		});
+	}
+};
+
 type DockerTlsFields = {
 	type?: string;
 	url?: string;
@@ -191,7 +231,7 @@ export const createMonitorBodyValidation = z
 		type: z.enum(MonitorTypes, "Invalid monitor type"),
 		statusWindowSize: z.number().min(1).max(20).default(5),
 		statusWindowThreshold: z.number().min(1).max(100).default(60),
-		url: z.string().min(1, "URL is required"),
+		url: z.string().default(""),
 		ignoreTlsErrors: z.boolean().default(false),
 		proxyMode: z.enum(ProxyModes).default("inherit"),
 		proxyId: proxyIdValidation,
@@ -227,6 +267,11 @@ export const createMonitorBodyValidation = z
 		dockerTlsKey: z.union([z.string(), z.literal("")]).optional(),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
+		heartbeatSlug: z
+			.string()
+			.max(HEARTBEAT_SLUG_MAX_LENGTH)
+			.regex(HEARTBEAT_SLUG_PATTERN, "Use lowercase letters, numbers and single hyphens")
+			.optional(),
 	})
 	.superRefine(refineDnsHostname)
 	.superRefine(refineStrategyType)
@@ -235,7 +280,10 @@ export const createMonitorBodyValidation = z
 	.superRefine(refineProxySelection)
 	.superRefine(refineDockerUrl)
 	.superRefine(refineCaptureSecret)
-	.superRefine(refineDockerTls("create"));
+	.superRefine(refineDockerTls("create"))
+	.superRefine(refineUrlRequired("create"))
+	.superRefine(refineHeartbeat)
+	.superRefine(refineHeartbeatSlugRequired);
 
 export const editMonitorBodyValidation = z
 	.object({
@@ -279,6 +327,11 @@ export const editMonitorBodyValidation = z
 		dockerTlsKey: z.union([z.string(), z.literal("")]).optional(),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
+		heartbeatSlug: z
+			.string()
+			.max(HEARTBEAT_SLUG_MAX_LENGTH)
+			.regex(HEARTBEAT_SLUG_PATTERN, "Use lowercase letters, numbers and single hyphens")
+			.optional(),
 	})
 	.superRefine(refineDnsHostname)
 	.superRefine(refineStrategyType)
@@ -286,7 +339,9 @@ export const editMonitorBodyValidation = z
 	.superRefine(refineRegexPattern)
 	.superRefine(refineProxySelection)
 	.superRefine(refineDockerUrl)
-	.superRefine(refineDockerTls("edit"));
+	.superRefine(refineDockerTls("edit"))
+	.superRefine(refineUrlRequired("edit"))
+	.superRefine(refineHeartbeat);
 
 export const pauseMonitorParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -328,7 +383,7 @@ const importedMonitorSchema = z
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
 		matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
 		method: z.enum(HttpMethods).optional().default("GET"),
-		url: z.string().min(1, "URL is required"),
+		url: z.string().default(""),
 		port: z.number().optional(),
 		isActive: z.boolean().default(true),
 		interval: z.number().default(60000),
@@ -358,6 +413,11 @@ const importedMonitorSchema = z
 		dockerAlertOnUnhealthy: z.boolean().default(false),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
+		heartbeatSlug: z
+			.string()
+			.max(HEARTBEAT_SLUG_MAX_LENGTH)
+			.regex(HEARTBEAT_SLUG_PATTERN, "Use lowercase letters, numbers and single hyphens")
+			.optional(),
 		createdAt: z.string().optional(),
 		updatedAt: z.string().optional(),
 	})
@@ -367,7 +427,9 @@ const importedMonitorSchema = z
 	.superRefine(refineRegexPattern)
 	.superRefine(refineProxySelection)
 	.superRefine(refineDockerUrl)
-	.superRefine(refineCaptureSecret);
+	.superRefine(refineCaptureSecret)
+	.superRefine(refineUrlRequired("create"))
+	.superRefine(refineHeartbeat);
 
 export const importMonitorsBodyValidation = z.object({
 	monitors: z.array(importedMonitorSchema).min(1, "At least one monitor is required"),

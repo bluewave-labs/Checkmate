@@ -25,6 +25,7 @@ export type QueueMetrics = {
 	jobsWithFailures: QueueJobFailure[];
 	totalRuns: number;
 	totalFailures: number;
+	dueBacklog: number; // active check jobs that are due but not claimed by any worker
 	workers: QueueWorker[];
 };
 

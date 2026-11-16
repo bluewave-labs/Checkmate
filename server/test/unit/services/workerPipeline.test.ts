@@ -6,6 +6,7 @@ import type { Check } from "../../../src/domain/checks/check.type.ts";
 import type { StatusChangeResult } from "../../../src/types/network.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import { NETWORK_ERROR } from "../../../src/types/network.ts";
+import { HeartbeatProvider } from "../../../src/service/networkProviders/HeartbeatProvider.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -87,6 +88,7 @@ const createPipeline = (overrides?: Record<string, any>) => {
 		jobsRepository: {
 			upsertEvaluate: jest.fn<any>().mockResolvedValue(true),
 			pullEvaluated: jest.fn<any>().mockResolvedValue(true),
+			findCheckJob: jest.fn<any>().mockResolvedValue(null),
 		},
 		checkService: {
 			toCheck: jest.fn<any>().mockReturnValue({ id: "check-1" }),
@@ -136,6 +138,57 @@ describe("WorkerPipeline", () => {
 			await pipeline.handleCheck(makeJob());
 
 			expect(deps.providerRegistry.probe).not.toHaveBeenCalled();
+		});
+
+		// Heartbeat: the claim can race a ping that pushed the row out; only a stale fire may record a miss
+		describe("heartbeat stale-fire guard", () => {
+			const heartbeat = makeMonitor({ type: "heartbeat" });
+			const heartbeatProvider = new HeartbeatProvider();
+			const setupHeartbeat = (current: Job | null) =>
+				createPipeline({
+					monitorsRepository: { findByIdLean: jest.fn<any>().mockResolvedValue(heartbeat), updateById: jest.fn<any>().mockResolvedValue({}) },
+					jobsRepository: {
+						upsertEvaluate: jest.fn<any>().mockResolvedValue(true),
+						pullEvaluated: jest.fn<any>().mockResolvedValue(true),
+						findCheckJob: jest.fn<any>().mockResolvedValue(current),
+					},
+					providerRegistry: { probe: jest.fn<any>((monitor: Monitor) => heartbeatProvider.handle(monitor)) },
+				});
+
+			it("skips the run when a ping pushed the row out after the claim", async () => {
+				const { pipeline, deps } = setupHeartbeat(makeJob({ nextScheduledAt: 61_000 }));
+
+				await pipeline.handleCheck(makeJob({ nextScheduledAt: 1000 }));
+
+				expect(deps.jobsRepository.findCheckJob).toHaveBeenCalledWith("m1");
+				expect(deps.providerRegistry.probe).not.toHaveBeenCalled();
+				expect(deps.bufferService.addToBuffer).not.toHaveBeenCalled();
+			});
+
+			it("records a missed ping when the row was not pushed out", async () => {
+				const { pipeline, deps } = setupHeartbeat(makeJob({ nextScheduledAt: 1000 }));
+
+				await pipeline.handleCheck(makeJob({ nextScheduledAt: 1000 }));
+
+				expect(deps.checkService.toCheck).toHaveBeenCalledWith(expect.objectContaining({ status: false, code: 408, message: "Ping not received" }));
+				expect(deps.bufferService.addToBuffer).toHaveBeenCalledWith({ id: "check-1" });
+			});
+
+			it("runs when the row is gone, since nothing pushed it out", async () => {
+				const { pipeline, deps } = setupHeartbeat(null);
+
+				await pipeline.handleCheck(makeJob());
+
+				expect(deps.providerRegistry.probe).toHaveBeenCalled();
+			});
+
+			it("does not read the job row for other monitor types", async () => {
+				const { pipeline, deps } = createPipeline();
+
+				await pipeline.handleCheck(makeJob());
+
+				expect(deps.jobsRepository.findCheckJob).not.toHaveBeenCalled();
+			});
 		});
 	});
 

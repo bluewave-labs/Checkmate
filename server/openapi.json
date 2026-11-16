@@ -75,6 +75,14 @@
 		{
 			"name": "egress",
 			"description": "The instance's outbound connectivity self-check state."
+		},
+		{
+			"name": "heartbeat",
+			"description": "Unauthenticated ping endpoints for heartbeat (dead man's switch) monitors, addressed by token."
+		},
+		{
+			"name": "connect",
+			"description": "Checkmate Connect enrollment, remote access and cloud backups for this installation (admin to view, superadmin to change)."
 		}
 	],
 	"components": {
@@ -186,6 +194,9 @@
 					"checkTTL": {
 						"type": "number"
 					},
+					"whatsNewSeen": {
+						"type": "string"
+					},
 					"createdAt": {
 						"type": "string"
 					},
@@ -224,7 +235,7 @@
 							},
 							"type": {
 								"type": "string",
-								"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+								"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 							}
 						},
 						"required": ["monitorId", "teamId", "type"]
@@ -782,7 +793,8 @@
 						"type": "object",
 						"properties": {
 							"usagePercentage": {
-								"type": "number"
+								"type": "number",
+								"description": "Process CPU usage as a fraction of one core (0.25 = 25%)"
 							}
 						},
 						"required": ["usagePercentage"]
@@ -900,7 +912,7 @@
 					},
 					"type": {
 						"type": "string",
-						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 					},
 					"location": {
 						"type": "object",
@@ -1204,7 +1216,7 @@
 					},
 					"type": {
 						"type": "string",
-						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 					},
 					"ignoreTlsErrors": {
 						"type": "boolean"
@@ -1271,6 +1283,9 @@
 						}
 					},
 					"secret": {
+						"type": "string"
+					},
+					"heartbeatSlug": {
 						"type": "string"
 					},
 					"cpuAlertThreshold": {
@@ -1776,6 +1791,127 @@
 					}
 				},
 				"required": ["id", "monitorIds", "teamId", "active", "name", "duration", "durationUnit", "repeat", "start", "end", "createdAt", "updatedAt"]
+			},
+			"MonitorsDashboard": {
+				"type": "object",
+				"properties": {
+					"summary": {
+						"type": "object",
+						"properties": {
+							"totalMonitors": {
+								"type": "number"
+							},
+							"upMonitors": {
+								"type": "number"
+							},
+							"downMonitors": {
+								"type": "number"
+							},
+							"pausedMonitors": {
+								"type": "number"
+							},
+							"initializingMonitors": {
+								"type": "number"
+							},
+							"maintenanceMonitors": {
+								"type": "number"
+							},
+							"breachedMonitors": {
+								"type": "number"
+							}
+						},
+						"required": [
+							"totalMonitors",
+							"upMonitors",
+							"downMonitors",
+							"pausedMonitors",
+							"initializingMonitors",
+							"maintenanceMonitors",
+							"breachedMonitors"
+						]
+					},
+					"byType": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"type": {
+									"type": "string",
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
+								},
+								"count": {
+									"type": "number"
+								}
+							},
+							"required": ["type", "count"]
+						}
+					},
+					"down": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"id": {
+									"type": "string"
+								},
+								"name": {
+									"type": "string"
+								},
+								"url": {
+									"type": "string"
+								},
+								"type": {
+									"type": "string",
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
+								},
+								"status": {
+									"type": "string",
+									"enum": ["up", "down", "paused", "initializing", "maintenance", "breached"]
+								},
+								"uptimePercentage": {
+									"type": "number"
+								},
+								"lastCheckTimestamp": {
+									"type": "number"
+								}
+							},
+							"required": ["id", "name", "url", "type", "status"]
+						}
+					},
+					"uptime": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"id": {
+									"type": "string"
+								},
+								"name": {
+									"type": "string"
+								},
+								"url": {
+									"type": "string"
+								},
+								"type": {
+									"type": "string",
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
+								},
+								"status": {
+									"type": "string",
+									"enum": ["up", "down", "paused", "initializing", "maintenance", "breached"]
+								},
+								"uptimePercentage": {
+									"type": "number"
+								},
+								"lastCheckTimestamp": {
+									"type": "number"
+								}
+							},
+							"required": ["id", "name", "url", "type", "status"]
+						}
+					}
+				},
+				"required": ["summary", "byType", "down", "uptime"]
 			},
 			"UptimeDetails": {
 				"type": "object",
@@ -3234,6 +3370,10 @@
 					"totalFailures": {
 						"type": "number"
 					},
+					"dueBacklog": {
+						"type": "number",
+						"description": "Active check jobs that are due but not claimed by any worker"
+					},
 					"workers": {
 						"type": "array",
 						"items": {
@@ -3241,7 +3381,7 @@
 						}
 					}
 				},
-				"required": ["jobs", "activeJobs", "failingJobs", "jobsWithFailures", "totalRuns", "totalFailures", "workers"]
+				"required": ["jobs", "activeJobs", "failingJobs", "jobsWithFailures", "totalRuns", "totalFailures", "dueBacklog", "workers"]
 			},
 			"QueueWorker": {
 				"type": "object",
@@ -3300,6 +3440,23 @@
 							}
 						},
 						"required": ["status", "checkedAt", "degradedSince", "lastProbeResults"]
+					},
+					"connectTools": {
+						"type": "object",
+						"properties": {
+							"missing": {
+								"type": "array",
+								"items": {
+									"type": "string",
+									"enum": ["mongodump", "mongorestore"]
+								}
+							},
+							"checkedAt": {
+								"type": "number",
+								"description": "Epoch ms of the check behind this result"
+							}
+						},
+						"required": ["missing", "checkedAt"]
 					}
 				},
 				"required": ["workerId", "mode", "processesJobs", "lastSeenAt"]
@@ -3447,6 +3604,19 @@
 				},
 				"required": ["pagespeedKeySet", "emailPasswordSet", "globalProxy", "settings"]
 			},
+			"AppVersion": {
+				"type": "object",
+				"properties": {
+					"latest": {
+						"type": "string",
+						"nullable": true
+					},
+					"updateAvailable": {
+						"type": "boolean"
+					}
+				},
+				"required": ["latest", "updateAvailable"]
+			},
 			"StatusPage": {
 				"type": "object",
 				"properties": {
@@ -3553,6 +3723,7 @@
 					"companyName",
 					"url",
 					"customDomain",
+					"timezone",
 					"color",
 					"monitors",
 					"subMonitors",
@@ -3588,7 +3759,7 @@
 								},
 								"type": {
 									"type": "string",
-									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 								},
 								"status": {
 									"type": "string",
@@ -4002,6 +4173,336 @@
 					}
 				},
 				"required": ["enabled", "status", "degradedSince", "degradedWorkers", "totalWorkers"]
+			},
+			"HeartbeatResponse": {
+				"type": "object",
+				"properties": {
+					"received": {
+						"type": "boolean"
+					}
+				},
+				"required": ["received"]
+			},
+			"HeartbeatKeyStatus": {
+				"type": "object",
+				"properties": {
+					"hasKey": {
+						"type": "boolean"
+					}
+				},
+				"required": ["hasKey"]
+			},
+			"HeartbeatKey": {
+				"type": "object",
+				"properties": {
+					"heartbeatKey": {
+						"type": "string"
+					}
+				},
+				"required": ["heartbeatKey"]
+			},
+			"ConnectStatus": {
+				"type": "object",
+				"properties": {
+					"enrolled": {
+						"type": "boolean"
+					},
+					"agentId": {
+						"type": "string",
+						"nullable": true
+					},
+					"connectUrl": {
+						"type": "string",
+						"nullable": true
+					},
+					"apiUrl": {
+						"type": "string",
+						"nullable": true
+					},
+					"agentVersion": {
+						"type": "string"
+					},
+					"remoteAccess": {
+						"type": "object",
+						"properties": {
+							"enabled": {
+								"type": "boolean"
+							}
+						},
+						"required": ["enabled"]
+					},
+					"tunnel": {
+						"$ref": "#/components/schemas/ConnectTunnelStatus"
+					},
+					"backup": {
+						"type": "object",
+						"properties": {
+							"recoveryKeySet": {
+								"type": "boolean"
+							},
+							"schedule": {
+								"type": "object",
+								"properties": {
+									"enabled": {
+										"type": "boolean"
+									},
+									"intervalHours": {
+										"type": "number",
+										"enum": [24, 72, 168]
+									},
+									"kind": {
+										"type": "string",
+										"enum": ["full", "config"]
+									}
+								},
+								"required": ["enabled", "intervalHours", "kind"]
+							}
+						},
+						"required": ["recoveryKeySet", "schedule"]
+					}
+				},
+				"required": ["enrolled", "agentId", "connectUrl", "apiUrl", "agentVersion", "remoteAccess", "tunnel", "backup"]
+			},
+			"ConnectTunnelStatus": {
+				"type": "object",
+				"properties": {
+					"connected": {
+						"type": "boolean"
+					},
+					"lastConnectedAt": {
+						"type": "string",
+						"nullable": true
+					},
+					"lastError": {
+						"type": "string",
+						"nullable": true
+					},
+					"closeCode": {
+						"type": "number",
+						"nullable": true
+					}
+				},
+				"required": ["connected", "lastConnectedAt", "lastError", "closeCode"]
+			},
+			"ConnectBackupStatus": {
+				"type": "object",
+				"properties": {
+					"operation": {
+						"type": "object",
+						"nullable": true,
+						"properties": {
+							"type": {
+								"type": "string",
+								"enum": ["backup", "restore", "verify"]
+							},
+							"state": {
+								"type": "string",
+								"enum": ["queued", "running"]
+							},
+							"requestedAt": {
+								"type": "string"
+							}
+						},
+						"required": ["type", "state", "requestedAt"]
+					},
+					"progress": {
+						"type": "object",
+						"nullable": true,
+						"properties": {
+							"operation": {
+								"type": "string",
+								"enum": ["backup", "restore", "verify"]
+							},
+							"stage": {
+								"type": "string",
+								"enum": ["dumping", "uploading", "saving", "downloading", "decrypting", "restoring"]
+							},
+							"percent": {
+								"type": "number",
+								"nullable": true
+							},
+							"bytes": {
+								"type": "number",
+								"nullable": true
+							},
+							"attempt": {
+								"type": "number",
+								"nullable": true
+							},
+							"attempts": {
+								"type": "number",
+								"nullable": true
+							}
+						},
+						"required": ["operation", "stage", "percent", "bytes", "attempt", "attempts"]
+					},
+					"lastBackup": {
+						"type": "object",
+						"nullable": true,
+						"properties": {
+							"ok": {
+								"type": "boolean"
+							},
+							"at": {
+								"type": "string"
+							},
+							"kind": {
+								"type": "string",
+								"nullable": true,
+								"enum": ["full", "config", null]
+							},
+							"sizeBytes": {
+								"type": "number",
+								"nullable": true
+							},
+							"sha256": {
+								"type": "string",
+								"nullable": true
+							},
+							"backupId": {
+								"type": "string",
+								"nullable": true
+							},
+							"durationMs": {
+								"type": "number",
+								"nullable": true
+							},
+							"error": {
+								"type": "string",
+								"nullable": true
+							}
+						},
+						"required": ["ok", "at", "kind", "sizeBytes", "sha256", "backupId", "durationMs", "error"]
+					},
+					"lastRestore": {
+						"type": "object",
+						"nullable": true,
+						"properties": {
+							"ok": {
+								"type": "boolean"
+							},
+							"at": {
+								"type": "string"
+							},
+							"kind": {
+								"type": "string",
+								"nullable": true,
+								"enum": ["full", "config", null]
+							},
+							"sizeBytes": {
+								"type": "number",
+								"nullable": true
+							},
+							"sha256": {
+								"type": "string",
+								"nullable": true
+							},
+							"backupId": {
+								"type": "string",
+								"nullable": true
+							},
+							"durationMs": {
+								"type": "number",
+								"nullable": true
+							},
+							"error": {
+								"type": "string",
+								"nullable": true
+							}
+						},
+						"required": ["ok", "at", "kind", "sizeBytes", "sha256", "backupId", "durationMs", "error"]
+					},
+					"lastVerify": {
+						"type": "object",
+						"nullable": true,
+						"properties": {
+							"outcome": {
+								"type": "string",
+								"enum": ["ok", "wrong-key", "no-backups", "failed"]
+							},
+							"at": {
+								"type": "string"
+							},
+							"error": {
+								"type": "string",
+								"nullable": true
+							}
+						},
+						"required": ["outcome", "at", "error"]
+					},
+					"missingTools": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"enum": ["mongodump", "mongorestore"]
+						}
+					}
+				},
+				"required": ["operation", "progress", "lastBackup", "lastRestore", "lastVerify", "missingTools"]
+			},
+			"ConnectBackupList": {
+				"type": "object",
+				"properties": {
+					"backups": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"id": {
+									"type": "string"
+								},
+								"kind": {
+									"type": "string"
+								},
+								"sizeBytes": {
+									"type": "number"
+								},
+								"status": {
+									"type": "string"
+								},
+								"createdAt": {
+									"type": "string"
+								},
+								"keyId": {
+									"type": "string",
+									"nullable": true
+								},
+								"expiresAt": {
+									"type": "string",
+									"nullable": true
+								},
+								"restorable": {
+									"type": "boolean"
+								}
+							},
+							"required": ["id", "kind", "sizeBytes", "status", "createdAt", "keyId", "expiresAt", "restorable"]
+						}
+					}
+				},
+				"required": ["backups"]
+			},
+			"ConnectRecoveryKey": {
+				"type": "object",
+				"properties": {
+					"recoveryKey": {
+						"type": "string"
+					},
+					"format": {
+						"type": "string",
+						"enum": ["CMKB1"]
+					}
+				},
+				"required": ["recoveryKey", "format"]
+			},
+			"ConnectQueued": {
+				"type": "object",
+				"properties": {
+					"queued": {
+						"type": "boolean",
+						"enum": [true]
+					}
+				},
+				"required": ["queued"]
 			}
 		},
 		"parameters": {}
@@ -4072,6 +4573,16 @@
 					},
 					"401": {
 						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -4246,6 +4757,16 @@
 							}
 						}
 					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Tag not found",
 						"content": {
@@ -4361,6 +4882,16 @@
 							}
 						}
 					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Tag not found",
 						"content": {
@@ -4449,6 +4980,16 @@
 					},
 					"401": {
 						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5830,6 +6371,11 @@
 									"deleteProfileImage": {
 										"type": "boolean"
 									},
+									"whatsNewSeen": {
+										"type": "string",
+										"minLength": 1,
+										"maxLength": 64
+									},
 									"profileImage": {
 										"type": "string",
 										"format": "binary"
@@ -6404,7 +6950,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 						},
 						"required": false,
 						"name": "type",
@@ -6799,7 +7345,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 						},
 						"required": false,
 						"name": "type",
@@ -8526,13 +9072,13 @@
 							"anyOf": [
 								{
 									"type": "string",
-									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 								},
 								{
 									"type": "array",
 									"items": {
 										"type": "string",
-										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 									}
 								}
 							]
@@ -8724,13 +9270,13 @@
 							"anyOf": [
 								{
 									"type": "string",
-									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 								},
 								{
 									"type": "array",
 									"items": {
 										"type": "string",
-										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 									}
 								}
 							]
@@ -8881,6 +9427,103 @@
 				}
 			}
 		},
+		"/monitors/team/dashboard": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Get aggregate dashboard data for the caller's team",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "integer",
+							"minimum": 1,
+							"maximum": 100
+						},
+						"required": false,
+						"name": "limit",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["asc", "desc"]
+						},
+						"required": false,
+						"name": "order",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/MonitorsDashboard"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/monitors/uptime/details/{monitorId}": {
 			"get": {
 				"tags": ["monitors"],
@@ -8955,7 +9598,7 @@
 						}
 					},
 					"404": {
-						"description": "Monitor not found, or monitor stats not found",
+						"description": "Monitor not found",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -9062,7 +9705,7 @@
 						}
 					},
 					"404": {
-						"description": "Monitor not found, or monitor stats not found",
+						"description": "Monitor not found",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -9169,7 +9812,7 @@
 						}
 					},
 					"404": {
-						"description": "Monitor not found, or monitor stats not found",
+						"description": "Monitor not found",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -9276,7 +9919,7 @@
 						}
 					},
 					"404": {
-						"description": "Monitor not found, or monitor stats not found",
+						"description": "Monitor not found",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -10358,7 +11001,7 @@
 									},
 									"type": {
 										"type": "string",
-										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 									},
 									"statusWindowSize": {
 										"type": "number",
@@ -10374,7 +11017,7 @@
 									},
 									"url": {
 										"type": "string",
-										"minLength": 1
+										"default": ""
 									},
 									"ignoreTlsErrors": {
 										"type": "boolean",
@@ -10584,9 +11227,14 @@
 									"dnsRecordType": {
 										"type": "string",
 										"enum": ["A", "AAAA", "CNAME", "MX", "TXT", "NS"]
+									},
+									"heartbeatSlug": {
+										"type": "string",
+										"maxLength": 64,
+										"pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
 									}
 								},
-								"required": ["name", "type", "url"]
+								"required": ["name", "type"]
 							}
 						}
 					}
@@ -10637,6 +11285,16 @@
 					},
 					"403": {
 						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "A heartbeat monitor with this slug already exists",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -10988,7 +11646,20 @@
 												},
 												"type": {
 													"type": "string",
-													"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+													"enum": [
+														"http",
+														"ping",
+														"pagespeed",
+														"hardware",
+														"docker",
+														"port",
+														"game",
+														"grpc",
+														"websocket",
+														"dns",
+														"heartbeat",
+														"unknown"
+													]
 												},
 												"ignoreTlsErrors": {
 													"type": "boolean",
@@ -11047,7 +11718,7 @@
 												},
 												"url": {
 													"type": "string",
-													"minLength": 1
+													"default": ""
 												},
 												"port": {
 													"type": "number"
@@ -11202,6 +11873,11 @@
 													"type": "string",
 													"enum": ["A", "AAAA", "CNAME", "MX", "TXT", "NS"]
 												},
+												"heartbeatSlug": {
+													"type": "string",
+													"maxLength": 64,
+													"pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+												},
 												"createdAt": {
 													"type": "string"
 												},
@@ -11209,7 +11885,7 @@
 													"type": "string"
 												}
 											},
-											"required": ["name", "type", "url"]
+											"required": ["name", "type"]
 										},
 										"minItems": 1
 									}
@@ -11277,6 +11953,16 @@
 					},
 					"403": {
 						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "A heartbeat monitor with this slug already exists",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -11534,7 +12220,7 @@
 									},
 									"type": {
 										"type": "string",
-										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "heartbeat", "unknown"]
 									},
 									"url": {
 										"type": "string"
@@ -11764,6 +12450,11 @@
 									"dnsRecordType": {
 										"type": "string",
 										"enum": ["A", "AAAA", "CNAME", "MX", "TXT", "NS"]
+									},
+									"heartbeatSlug": {
+										"type": "string",
+										"maxLength": 64,
+										"pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
 									}
 								}
 							}
@@ -11826,6 +12517,16 @@
 					},
 					"404": {
 						"description": "Monitor not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "A heartbeat monitor with this slug already exists",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -12749,6 +13450,16 @@
 							}
 						}
 					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"409": {
 						"description": "A proxy with that name already exists",
 						"content": {
@@ -12905,6 +13616,16 @@
 							}
 						}
 					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"429": {
 						"description": "Too many requests",
 						"content": {
@@ -12984,6 +13705,16 @@
 					},
 					"401": {
 						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -13080,6 +13811,16 @@
 					},
 					"401": {
 						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -13226,6 +13967,16 @@
 					},
 					"401": {
 						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -13966,6 +14717,72 @@
 					},
 					"422": {
 						"description": "Referenced proxy does not exist",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/settings/version": {
+			"get": {
+				"tags": ["settings"],
+				"summary": "Get the latest published release and whether an update is available",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/AppVersion"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -15340,6 +16157,2171 @@
 					},
 					"401": {
 						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/heartbeat/{pingKey}/{slug}": {
+			"get": {
+				"tags": ["heartbeat"],
+				"summary": "Record a successful heartbeat",
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 16,
+							"maxLength": 64
+						},
+						"required": true,
+						"name": "pingKey",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 64,
+							"pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+						},
+						"required": true,
+						"name": "slug",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 500
+						},
+						"required": false,
+						"name": "msg",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 604800000
+						},
+						"required": false,
+						"name": "duration",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "boolean"
+						},
+						"required": false,
+						"name": "create",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"minimum": 10000,
+							"maximum": 2678400000
+						},
+						"required": false,
+						"name": "interval",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HeartbeatResponse"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "No heartbeat monitor for this key and slug",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["heartbeat"],
+				"summary": "Record a successful heartbeat",
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 16,
+							"maxLength": 64
+						},
+						"required": true,
+						"name": "pingKey",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 64,
+							"pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+						},
+						"required": true,
+						"name": "slug",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 500
+						},
+						"required": false,
+						"name": "msg",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 604800000
+						},
+						"required": false,
+						"name": "duration",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "boolean"
+						},
+						"required": false,
+						"name": "create",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"minimum": 10000,
+							"maximum": 2678400000
+						},
+						"required": false,
+						"name": "interval",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HeartbeatResponse"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "No heartbeat monitor for this key and slug",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/heartbeat/{pingKey}/{slug}/fail": {
+			"get": {
+				"tags": ["heartbeat"],
+				"summary": "Record a failed run",
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 16,
+							"maxLength": 64
+						},
+						"required": true,
+						"name": "pingKey",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 64,
+							"pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+						},
+						"required": true,
+						"name": "slug",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 500
+						},
+						"required": false,
+						"name": "msg",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 604800000
+						},
+						"required": false,
+						"name": "duration",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "boolean"
+						},
+						"required": false,
+						"name": "create",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"minimum": 10000,
+							"maximum": 2678400000
+						},
+						"required": false,
+						"name": "interval",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HeartbeatResponse"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "No heartbeat monitor for this key and slug",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["heartbeat"],
+				"summary": "Record a failed run",
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 16,
+							"maxLength": 64
+						},
+						"required": true,
+						"name": "pingKey",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 64,
+							"pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+						},
+						"required": true,
+						"name": "slug",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 500
+						},
+						"required": false,
+						"name": "msg",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 604800000
+						},
+						"required": false,
+						"name": "duration",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "boolean"
+						},
+						"required": false,
+						"name": "create",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"minimum": 10000,
+							"maximum": 2678400000
+						},
+						"required": false,
+						"name": "interval",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HeartbeatResponse"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "No heartbeat monitor for this key and slug",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/heartbeat/{pingKey}/{slug}/{exitCode}": {
+			"get": {
+				"tags": ["heartbeat"],
+				"summary": "Record a run by exit code",
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 16,
+							"maxLength": 64
+						},
+						"required": true,
+						"name": "pingKey",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 64,
+							"pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+						},
+						"required": true,
+						"name": "slug",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 255
+						},
+						"required": false,
+						"name": "exitCode",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 500
+						},
+						"required": false,
+						"name": "msg",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 604800000
+						},
+						"required": false,
+						"name": "duration",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "boolean"
+						},
+						"required": false,
+						"name": "create",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"minimum": 10000,
+							"maximum": 2678400000
+						},
+						"required": false,
+						"name": "interval",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HeartbeatResponse"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "No heartbeat monitor for this key and slug",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["heartbeat"],
+				"summary": "Record a run by exit code",
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 16,
+							"maxLength": 64
+						},
+						"required": true,
+						"name": "pingKey",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 64,
+							"pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+						},
+						"required": true,
+						"name": "slug",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 255
+						},
+						"required": false,
+						"name": "exitCode",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"maxLength": 500
+						},
+						"required": false,
+						"name": "msg",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"nullable": true,
+							"minimum": 0,
+							"maximum": 604800000
+						},
+						"required": false,
+						"name": "duration",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "boolean"
+						},
+						"required": false,
+						"name": "create",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"minimum": 10000,
+							"maximum": 2678400000
+						},
+						"required": false,
+						"name": "interval",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HeartbeatResponse"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "No heartbeat monitor for this key and slug",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/teams/heartbeat-key": {
+			"get": {
+				"tags": ["teams"],
+				"summary": "Whether the caller's team has a heartbeat ping key (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HeartbeatKeyStatus"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["teams"],
+				"summary": "Generate or rotate the team's heartbeat ping key; the key is returned once (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HeartbeatKey"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Team not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/status": {
+			"get": {
+				"tags": ["connect"],
+				"summary": "Get this installation's Checkmate Connect enrollment status (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectStatus"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/enroll": {
+			"post": {
+				"tags": ["connect"],
+				"summary": "Enroll this installation with Checkmate Connect using a credential block (superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"connectUrl": {
+										"type": "string",
+										"pattern": "^wss:\\/\\/[a-z0-9.-]+\\/api\\/tunnel$"
+									},
+									"agentId": {
+										"type": "string",
+										"pattern": "^[a-z0-9-]{1,64}$"
+									},
+									"token": {
+										"type": "string",
+										"pattern": "^cmk_[a-f0-9]{48}$"
+									},
+									"apiUrl": {
+										"type": "string",
+										"nullable": true,
+										"pattern": "^https:\\/\\/[a-z0-9.-]+$",
+										"default": null
+									}
+								},
+								"required": ["connectUrl", "agentId", "token"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectStatus"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request, or connect host not allowed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Checkmate Connect needs ENCRYPTION_KEY set on the server",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/unenroll": {
+			"post": {
+				"tags": ["connect"],
+				"summary": "Remove this installation's Checkmate Connect enrollment (superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectStatus"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/remote-access": {
+			"post": {
+				"tags": ["connect"],
+				"summary": "Turn Checkmate Connect remote access on or off (superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"enabled": {
+										"type": "boolean"
+									}
+								},
+								"required": ["enabled"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectStatus"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "This installation is not enrolled with Checkmate Connect",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Connect state is not available. If this continues, check ENCRYPTION_KEY and the server logs",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/backup/status": {
+			"get": {
+				"tags": ["connect"],
+				"summary": "Get the state of this installation's Checkmate Connect cloud backups (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectBackupStatus"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/backup/list": {
+			"get": {
+				"tags": ["connect"],
+				"summary": "List this installation's Checkmate Connect cloud backups (admin/superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectBackupList"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "This installation is not enrolled with Checkmate Connect",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"502": {
+						"description": "Checkmate Connect could not be reached",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Connect state is not available. If this continues, check ENCRYPTION_KEY and the server logs",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/backup/recovery-key": {
+			"post": {
+				"tags": ["connect"],
+				"summary": "Generate the recovery key that encrypts cloud backups; it is returned only once (superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"discardExisting": {
+										"type": "boolean",
+										"default": false
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectRecoveryKey"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "This installation is not enrolled with Checkmate Connect, or recovery key already set, or cloud backups already exist. Enter the recovery key from your original server",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Checkmate Connect needs ENCRYPTION_KEY set on the server",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"502": {
+						"description": "Checkmate Connect could not be reached",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Connect state is not available. If this continues, check ENCRYPTION_KEY and the server logs",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/backup/run": {
+			"post": {
+				"tags": ["connect"],
+				"summary": "Queue an encrypted Checkmate Connect cloud backup (superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"kind": {
+										"type": "string",
+										"enum": ["full", "config"],
+										"default": "full"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectQueued"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "This installation is not enrolled with Checkmate Connect, or no recovery key set, or a backup or restore is already running",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/backup/recovery-key/import": {
+			"post": {
+				"tags": ["connect"],
+				"summary": "Check a recovery key against the cloud backups and save it if one decrypts (superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"recoveryKey": {
+										"type": "string",
+										"pattern": "^[a-fA-F0-9]{64}$"
+									},
+									"replaceExisting": {
+										"type": "boolean",
+										"default": false
+									}
+								},
+								"required": ["recoveryKey"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectQueued"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "This installation is not enrolled with Checkmate Connect, or recovery key already set, or this is already your recovery key, or a backup or restore is already running",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Checkmate Connect needs ENCRYPTION_KEY set on the server",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Connect state is not available. If this continues, check ENCRYPTION_KEY and the server logs",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/backup/restore": {
+			"post": {
+				"tags": ["connect"],
+				"summary": "Queue a restore of a Checkmate Connect cloud backup; it replaces the current database (superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"backupId": {
+										"type": "string",
+										"pattern": "^[0-9a-f-]{36}$"
+									}
+								},
+								"required": ["backupId"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectQueued"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "This installation is not enrolled with Checkmate Connect, or restores need the original recovery key, or a backup or restore is already running",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/connect/backup/schedule": {
+			"post": {
+				"tags": ["connect"],
+				"summary": "Turn scheduled Checkmate Connect backups on or off and set their interval and kind (superadmin)",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"enabled": {
+										"type": "boolean"
+									},
+									"intervalHours": {
+										"type": "number",
+										"enum": [24, 72, 168],
+										"default": 24
+									},
+									"kind": {
+										"type": "string",
+										"enum": ["full", "config"],
+										"default": "full"
+									}
+								},
+								"required": ["enabled"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/ConnectStatus"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "This installation is not enrolled with Checkmate Connect, or no recovery key set",
 						"content": {
 							"application/json": {
 								"schema": {

@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import { DetailGauge } from "@/Components/design-elements";
 
-import { getPercentage, formatPercentageFromWhole, PLACEHOLDER } from "@/Utils/FormatUtils";
+import { formatPercentage, getPercentage, PLACEHOLDER } from "@/Utils/FormatUtils";
 import prettyBytes from "pretty-bytes";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material";
@@ -10,7 +10,6 @@ import type { Diagnostics } from "@/Types/Diagnostics";
 interface StatGaugesProps {
 	diagnostics: Diagnostics | null;
 }
-
 
 export const StatGauges = ({ diagnostics }: StatGaugesProps) => {
 	const theme = useTheme();
@@ -34,9 +33,11 @@ export const StatGauges = ({ diagnostics }: StatGaugesProps) => {
 				diagnostics.v8HeapStats?.totalHeapSizeBytes
 			)
 		: 0;
-	const cpuUsage = diagnostics?.cpuUsage?.usagePercentage ?? 0;
+	// Server returns a fraction; the gauges below work in 0–100.
+	const cpuUsage = (diagnostics?.cpuUsage?.usagePercentage ?? 0) * 100;
 
-	const fmt = (n: number) => (diagnostics ? formatPercentageFromWhole(n) : PLACEHOLDER);
+	const fmt = (n: number) =>
+		diagnostics ? formatPercentage(n, { isFraction: false }) : PLACEHOLDER;
 	const bytes = (n: number | undefined) =>
 		diagnostics ? prettyBytes(n ?? 0) : PLACEHOLDER;
 

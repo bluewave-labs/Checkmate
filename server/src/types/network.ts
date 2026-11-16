@@ -175,6 +175,7 @@ export interface MonitorPayloadMap {
 	grpc: GrpcStatusPayload;
 	websocket: WebSocketStatusPayload;
 	dns: DNSStatusPayload;
+	heartbeat: null;
 	unknown: unknown;
 }
 

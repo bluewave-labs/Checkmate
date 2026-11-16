@@ -17,7 +17,7 @@ export const statusPageSchema = z
 		companyName: z.string(),
 		url: z.string(),
 		customDomain: z.string().nullable(),
-		timezone: z.string().optional(),
+		timezone: z.string(),
 		color: z.string(),
 		monitors: z.array(z.string()),
 		subMonitors: z.array(z.string()),
@@ -88,7 +88,8 @@ const publicStatusPagePayloadExample = {
 	],
 };
 
-// range, bucketTimezone and checkTTLDays are present only when range !== "latest".
+// range and checkTTLDays are present only when range !== "latest"; bucketTimezone is always
+// present so public pages can render check times in the page's configured timezone.
 export const publicStatusPagePayloadSchema = z
 	.object({
 		statusPage: statusPageSchema,

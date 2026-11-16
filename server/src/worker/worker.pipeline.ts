@@ -4,7 +4,7 @@ import { Check } from "@/domain/checks/check.type.js";
 import { IDockerLogsService } from "@/domain/docker/docker-log.service.js";
 import { IEgressService, isHttpStatusCode } from "@/domain/egress/egress.service.js";
 import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
-import { PendingCheck } from "@/domain/jobs/job.type.js";
+import { Job, PendingCheck } from "@/domain/jobs/job.type.js";
 import { IMaintenanceWindowsRepository } from "@/domain/maintenance-windows/maintenance-window.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { isEgressAttributable, Monitor } from "@/domain/monitors/monitor.type.js";
@@ -66,10 +66,21 @@ export class WorkerPipeline implements IWorkerPipeline {
 	// Stage 1: Check job. Probe the host and buffer the result.
 	// ****************************************************************
 
-	handleCheck: JobHandler = async (job) => {
+	private wasPushedBack = async (monitorId: string, claimedAt: number): Promise<boolean> => {
+		const current = await this.deps.jobsRepository.findCheckJob(monitorId);
+		return current !== null && current.nextScheduledAt > claimedAt;
+	};
+
+	handleCheck: JobHandler = async (job: Job) => {
 		if (!job.refId) return;
 		const monitor = await this.deps.monitorsRepository.findByIdLean(job.refId);
 		if (!monitor) return;
+		if (monitor.type === "heartbeat") {
+			const pushedBack = await this.wasPushedBack(job.refId, job.nextScheduledAt);
+			if (pushedBack) {
+				return;
+			}
+		}
 		await this.produce(monitor);
 	};
 

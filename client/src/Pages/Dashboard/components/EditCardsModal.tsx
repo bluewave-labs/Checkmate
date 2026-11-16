@@ -6,10 +6,11 @@ import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { Checkbox, Dialog } from "@/Components/inputs";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { type DashboardCardKey, dashboardCardKeys } from "@/Types/Dashboard";
+import type { DashboardCardKey } from "@/Types/Dashboard";
 
 interface EditCardsModalProps {
 	open: boolean;
+	cardKeys: readonly DashboardCardKey[];
 	visibleCards: Set<DashboardCardKey>;
 	onClose: () => void;
 	onSave: (visibleCards: Set<DashboardCardKey>) => void;
@@ -17,6 +18,7 @@ interface EditCardsModalProps {
 
 export const EditCardsModal = ({
 	open,
+	cardKeys,
 	visibleCards,
 	onClose,
 	onSave,
@@ -46,10 +48,10 @@ export const EditCardsModal = ({
 
 	const sortedCardKeys = useMemo(
 		() =>
-			[...dashboardCardKeys].sort((a, b) =>
+			[...cardKeys].sort((a, b) =>
 				t(`pages.dashboard.cards.${a}`).localeCompare(t(`pages.dashboard.cards.${b}`))
 			),
-		[t]
+		[cardKeys, t]
 	);
 
 	return (

@@ -12,4 +12,5 @@ export const monitorErrors = {
 	dockerTlsKeyRequired: { status: 422, description: "A TLS Docker host needs a key" },
 	captureSecretRequired: { status: 422, description: "A hardware monitor needs a Capture API secret" },
 	encryptionKeyMissing: { status: 422, description: "Docker TLS credentials need ENCRYPTION_KEY set on the server" },
+	heartbeatSlugTaken: { status: 409, description: "A heartbeat monitor with this slug already exists" },
 } satisfies Record<string, ErrorDefinition>;

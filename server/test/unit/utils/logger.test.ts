@@ -1,24 +1,33 @@
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import express from "express";
 import got from "got";
+import { EventEmitter } from "node:events";
 import http from "node:http";
 import type { AddressInfo } from "node:net";
 import Logger from "../../../src/utils/logger/logger.ts";
 import { AppError } from "../../../src/utils/AppError.ts";
 import { logContext } from "../../../src/utils/logger/logContext.ts";
+import { sanitizeQuery } from "../../../src/api/middleware/sanitization.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 
-// Captures what the logger writes to stdout. pino's multistream calls process.stdout.write per line.
-const setup = (level = "debug") => {
+// A fake stdout that collects each line pino's multistream writes
+const createStdout = () => {
 	const lines: string[] = [];
-	jest.spyOn(process.stdout, "write").mockImplementation((chunk: string | Uint8Array) => {
-		lines.push(chunk.toString());
-		return true;
+	const stdout = Object.assign(new EventEmitter(), {
+		write: jest.fn((chunk: string | Uint8Array) => {
+			lines.push(chunk.toString());
+			return true;
+		}),
 	});
-	const logger = new Logger();
+	return { stdout, lines };
+};
+
+const setup = (level = "debug") => {
+	const { stdout, lines } = createStdout();
+	const logger = new Logger(undefined, { stdout: stdout as unknown as NodeJS.WritableStream });
 	logger.setLogLevel(level);
 	const parsed = () => lines.map((line) => JSON.parse(line) as Record<string, unknown>);
-	return { logger, lines, parsed };
+	return { logger, stdout, lines, parsed };
 };
 
 afterEach(() => {
@@ -169,9 +178,29 @@ describe("Logger.httpMiddleware", () => {
 		const { logger, parsed } = setup();
 		const app = express();
 		app.use(logger.httpMiddleware());
+		app.use(sanitizeQuery()); // makes req.query an own property, which a deep clone of the request can't copy
 		app.use((req, _res, next) => logContext.run({ reqId: String(req.id) }, next));
 		app.get("/api/v1/ok", (_req, res) => {
 			logger.info("handler line");
+			res.json({ ok: true });
+		});
+		// Logs fields, responds, then logs again once pino-http has written its request line (like a fire-and-forget email)
+		let afterResponse: Promise<void> = Promise.resolve();
+		app.get("/api/v1/deferred", (_req, res) => {
+			logger.info({ userId: "u1" }, "fields line");
+			logger.info("plain line");
+			res.on("finish", () => {
+				afterResponse = new Promise((resolve, reject) => {
+					setImmediate(() => {
+						try {
+							logger.warn({ err: new Error("smtp down") }, "after response line");
+							resolve();
+						} catch (error) {
+							reject(error);
+						}
+					});
+				});
+			});
 			res.json({ ok: true });
 		});
 		app.get("/api/v1/health", (_req, res) => {
@@ -180,6 +209,12 @@ describe("Logger.httpMiddleware", () => {
 		app.get("/static.js", (_req, res) => {
 			res.send("// js");
 		});
+		app.use(
+			"/api/v1/heartbeat",
+			express.Router().get("/:pingKey/:slug", (_req, res) => {
+				res.json({ ok: true });
+			})
+		);
 		const server = app.listen(0);
 		await new Promise((resolve) => server.once("listening", resolve));
 		const base = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
@@ -191,7 +226,7 @@ describe("Logger.httpMiddleware", () => {
 		};
 		const close = () => new Promise((resolve) => server.close(resolve));
 		const requestLines = () => parsed().filter((line) => "httpRequest" in line);
-		return { logger, parsed, request, requestLines, close };
+		return { logger, parsed, request, requestLines, close, afterResponse: () => afterResponse };
 	};
 
 	it("returns a generated X-Request-Id and logs the same id", async () => {
@@ -236,6 +271,19 @@ describe("Logger.httpMiddleware", () => {
 		}
 	});
 
+	it("redacts the heartbeat ping key from the request line and message, keeping the slug", async () => {
+		const { request, requestLines, close } = await setupApp();
+		try {
+			await request("/api/v1/heartbeat/secret-key/backup");
+
+			const [line] = requestLines();
+			expect(JSON.stringify(line)).not.toContain("secret-key");
+			expect(line?.message).toMatch(/^GET \/api\/v1\/heartbeat\/\[Redacted\]\/backup 200/);
+		} finally {
+			await close();
+		}
+	});
+
 	it("logs no request headers and no response headers", async () => {
 		const { request, requestLines, close } = await setupApp();
 		try {
@@ -268,6 +316,35 @@ describe("Logger.httpMiddleware", () => {
 
 			const handlerLine = parsed().find((line) => line.message === "handler line");
 			expect(handlerLine?.reqId).toBe(response.headers.get("x-request-id"));
+		} finally {
+			await close();
+		}
+	});
+
+	it("does not carry one line's fields into the next line of the same request", async () => {
+		const { request, parsed, close } = await setupApp();
+		try {
+			const response = await request("/api/v1/deferred");
+
+			const plainLine = parsed().find((line) => line.message === "plain line");
+			expect(plainLine?.reqId).toBe(response.headers.get("x-request-id"));
+			expect(plainLine).not.toHaveProperty("userId");
+		} finally {
+			await close();
+		}
+	});
+
+	it("logs after the response without throwing or picking up the request line's fields", async () => {
+		const { request, parsed, close, afterResponse } = await setupApp();
+		try {
+			const response = await request("/api/v1/deferred");
+			await afterResponse();
+
+			const line = parsed().find((entry) => entry.message === "after response line");
+			expect(line?.reqId).toBe(response.headers.get("x-request-id"));
+			expect(line).not.toHaveProperty("httpResponse");
+			expect(line).not.toHaveProperty("httpDurationMs");
+			expect(line).not.toHaveProperty("userId");
 		} finally {
 			await close();
 		}
@@ -535,5 +612,44 @@ describe("reserved field names", () => {
 		logger.info({ monitorId: "m1", details: { message: "nested is fine" } }, "ok");
 
 		expect(parsed()[0]).toMatchObject({ monitorId: "m1", details: { message: "nested is fine" }, message: "ok" });
+	});
+});
+
+describe("Logger stdout errors", () => {
+	const epipe = () => Object.assign(new Error("write EPIPE"), { code: "EPIPE" });
+
+	it("stops writing to stdout after it errors, without throwing", () => {
+		const { logger, stdout } = setup();
+		logger.info("before");
+
+		stdout.emit("error", epipe());
+
+		expect(() => logger.info("after")).not.toThrow();
+		expect(stdout.write).toHaveBeenCalledTimes(1);
+	});
+
+	it("keeps caching lines after stdout errors, including from children", () => {
+		const { logger, stdout } = setup();
+		logger.info("before");
+
+		stdout.emit("error", epipe());
+		logger.child({ service: "Child" }).warn("after");
+
+		expect(logger.getLogs().map((entry) => entry.message)).toEqual(["before", "after"]);
+	});
+
+	it("handles the error itself, so it never becomes an uncaught exception", () => {
+		const { stdout } = setup();
+
+		expect(stdout.listenerCount("error")).toBe(1);
+		expect(() => stdout.emit("error", epipe())).not.toThrow();
+	});
+
+	it("attaches no stdout listener for child loggers", () => {
+		const { logger, stdout } = setup();
+
+		logger.child({ service: "A" }).child({ service: "B" });
+
+		expect(stdout.listenerCount("error")).toBe(1);
 	});
 });

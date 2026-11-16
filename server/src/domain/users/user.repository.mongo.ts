@@ -34,6 +34,7 @@ class MongoUsersRepository implements IUsersRepository {
 			role: doc.role ?? [],
 			teamId: toStringId(doc.teamId),
 			checkTTL: doc.checkTTL ?? undefined,
+			whatsNewSeen: doc.whatsNewSeen ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
@@ -127,6 +128,16 @@ class MongoUsersRepository implements IUsersRepository {
 			throw new AppError(userErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(deletedUser);
+	};
+
+	findIdInTeam = async (userId: string, teamId: string): Promise<string | null> => {
+		const user = await UserModel.findOne({ _id: userId, teamId }, { _id: 1 }).lean();
+		return user ? toStringId(user._id) : null;
+	};
+
+	findSuperAdminIdByTeamId = async (teamId: string): Promise<string | null> => {
+		const user = await UserModel.findOne({ teamId, role: "superadmin" }, { _id: 1 }).lean();
+		return user ? toStringId(user._id) : null;
 	};
 
 	findSuperAdmin = async () => {

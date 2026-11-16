@@ -4,18 +4,23 @@ import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
 import { Settings } from "lucide-react";
 import { useTheme } from "@mui/material/styles";
+import { useIsAdmin } from "@/Hooks/useIsAdmin";
 
 export type ActionMenuItem = {
 	id: number | string;
 	label: React.ReactNode;
 	action: Function;
 	closeMenu?: boolean;
+	adminOnly?: boolean;
 };
 
 export const ActionsMenu = ({ items }: { items: ActionMenuItem[] }) => {
+	const isAdmin = useIsAdmin();
 	const theme = useTheme();
 	const [anchorEl, setAnchorEl] = useState<null | any>(null);
 	const open = Boolean(anchorEl);
+
+	const visibleItems = items.filter((item) => !item.adminOnly || isAdmin);
 
 	const handleClick = (e: React.MouseEvent<any>) => {
 		e.stopPropagation();
@@ -47,7 +52,7 @@ export const ActionsMenu = ({ items }: { items: ActionMenuItem[] }) => {
 				open={open}
 				onClose={handleClose}
 			>
-				{items.map((item) => (
+				{visibleItems.map((item) => (
 					<MenuItem
 						key={item.id}
 						onClick={(e: React.MouseEvent<HTMLLIElement>) => {

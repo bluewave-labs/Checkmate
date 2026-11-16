@@ -15,6 +15,8 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Pause, Play } from "lucide-react";
 
+const SEARCH_FIELD_WIDTH = 320;
+
 interface MonitorListPageProps {
 	headerKey: string;
 	page: string;
@@ -57,6 +59,7 @@ export const MonitorListPage = ({
 			error={controller.error || extraError}
 			totalCount={controller.effectiveTotalCount}
 			page={page}
+			showActionButton={isAdmin}
 			actionLink={actionLink}
 			priorityFallback={priorityFallback}
 		>
@@ -96,6 +99,7 @@ export const MonitorListPage = ({
 					onChange={(event) => {
 						controller.setSearch(event.target.value);
 					}}
+					sx={{ width: isSmall ? "100%" : SEARCH_FIELD_WIDTH }}
 				/>
 			</Stack>
 			{controller.selectedTags.length > 0 && (
@@ -121,7 +125,7 @@ export const MonitorListPage = ({
 					})}
 				</Stack>
 			)}
-			{bulkActions && !isLoading && (
+			{isAdmin && bulkActions && !isLoading && (
 				<BulkActionsBar
 					selectedCount={controller.selectedRows.length}
 					onCancel={controller.handleCancelSelection}

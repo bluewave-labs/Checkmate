@@ -34,12 +34,10 @@ class MongoMonitorStatsRepository implements IMonitorStatsRepository {
 		return this.toEntity(created);
 	};
 
-	findByMonitorId = async (monitorId: string): Promise<MonitorStats> => {
+	// Stats are created when a monitor's first check is evaluated, so a new monitor has none yet
+	findByMonitorId = async (monitorId: string): Promise<MonitorStats | null> => {
 		const monitorStats = await MonitorStatsModel.findOne({ monitorId: new mongoose.Types.ObjectId(monitorId) });
-		if (!monitorStats) {
-			throw new AppError(monitorStatsErrors.notFound, { service: SERVICE_NAME });
-		}
-		return this.toEntity(monitorStats);
+		return monitorStats ? this.toEntity(monitorStats) : null;
 	};
 
 	updateByMonitorId = async (monitorId: string, result: CheckResultInput): Promise<MonitorStats> => {

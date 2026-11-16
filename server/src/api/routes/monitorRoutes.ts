@@ -6,6 +6,7 @@ import {
 	getMonitorByIdQueryValidation,
 	getMonitorsByTeamIdQueryValidation,
 	getMonitorsWithChecksQueryValidation,
+	getDashboardByTeamIdQueryValidation,
 	getCertificateParamValidation,
 	getDomainParamValidation,
 	createMonitorBodyValidation,
@@ -34,6 +35,7 @@ import { updateNotificationsValidation } from "@/api/validation/notificationVali
 import { dockerLogPageSchema } from "@/domain/docker/docker-log.schema.js";
 import { groupedGeoCheckResultSchema } from "@/domain/geo-checks/geo-check.schema.js";
 import {
+	dashboardByTeamIdResultSchema,
 	dockerContainerDetailsResultSchema,
 	dockerDetailsResultSchema,
 	gamesMapSchema,
@@ -44,7 +46,6 @@ import {
 	uptimeDetailsResultSchema,
 } from "@/domain/monitors/monitor.schema.js";
 import { monitorErrors } from "@/domain/monitors/monitor.errors.js";
-import { monitorStatsErrors } from "@/domain/monitor-stats/monitor-stats.errors.js";
 
 export const monitorRoutes: RouteTable<IMonitorController> = {
 	prefix: "/monitors",
@@ -69,10 +70,18 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 		},
 		{
 			method: "get",
+			path: "/team/dashboard",
+			handler: "getDashboardByTeamId",
+			summary: "Get aggregate dashboard data for the caller's team",
+			query: getDashboardByTeamIdQueryValidation,
+			response: dashboardByTeamIdResultSchema,
+		},
+		{
+			method: "get",
 			path: "/uptime/details/:monitorId",
 			handler: "getUptimeDetailsById",
 			summary: "Get uptime details for a monitor",
-			errors: [monitorErrors.notUptimeMonitor, monitorErrors.notFound, monitorStatsErrors.notFound],
+			errors: [monitorErrors.notUptimeMonitor, monitorErrors.notFound],
 			params: getUptimeDetailsByIdParamValidation,
 			query: getUptimeDetailsByIdQueryValidation,
 			response: uptimeDetailsResultSchema,
@@ -82,7 +91,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			path: "/hardware/details/:monitorId",
 			handler: "getHardwareDetailsById",
 			summary: "Get hardware metrics detail for a monitor",
-			errors: [monitorErrors.notHardwareMonitor, monitorErrors.notFound, monitorStatsErrors.notFound],
+			errors: [monitorErrors.notHardwareMonitor, monitorErrors.notFound],
 			params: getHardwareDetailsByIdParamValidation,
 			query: getHardwareDetailsByIdQueryValidation,
 			response: hardwareDetailsResultSchema,
@@ -92,7 +101,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			path: "/pagespeed/details/:monitorId",
 			handler: "getPageSpeedDetailsById",
 			summary: "Get PageSpeed detail for a monitor",
-			errors: [monitorErrors.notPageSpeedMonitor, monitorErrors.notFound, monitorStatsErrors.notFound],
+			errors: [monitorErrors.notPageSpeedMonitor, monitorErrors.notFound],
 			params: getHardwareDetailsByIdParamValidation,
 			query: getHardwareDetailsByIdQueryValidation,
 			response: pageSpeedDetailsResultSchema,
@@ -102,7 +111,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			path: "/docker/details/:monitorId",
 			handler: "getDockerDetailsById",
 			summary: "Get Docker host details for a monitor",
-			errors: [monitorErrors.notDockerMonitor, monitorErrors.notFound, monitorStatsErrors.notFound],
+			errors: [monitorErrors.notDockerMonitor, monitorErrors.notFound],
 			params: getDockerDetailsByIdParamValidation,
 			query: getDockerDetailsByIdQueryValidation,
 			response: dockerDetailsResultSchema,
@@ -190,7 +199,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			path: "/",
 			handler: "createMonitor",
 			summary: "Create a new monitor (admin/superadmin)",
-			errors: [monitorErrors.encryptionKeyMissing],
+			errors: [monitorErrors.encryptionKeyMissing, monitorErrors.heartbeatSlugTaken],
 			roles: ["admin", "superadmin"],
 			body: createMonitorBodyValidation,
 			response: monitorResponseSchema,
@@ -225,6 +234,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			path: "/import/json",
 			handler: "importMonitorsFromJSON",
 			summary: "Import monitors from JSON (admin/superadmin)",
+			errors: [monitorErrors.heartbeatSlugTaken],
 			roles: ["admin", "superadmin"],
 			body: importMonitorsBodyValidation,
 			response: importMonitorsResponseSchema,
@@ -250,7 +260,13 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			path: "/:monitorId",
 			handler: "editMonitor",
 			summary: "Edit a monitor (admin/superadmin)",
-			errors: [monitorErrors.notFound, monitorErrors.dockerTlsKeyRequired, monitorErrors.captureSecretRequired, monitorErrors.encryptionKeyMissing],
+			errors: [
+				monitorErrors.notFound,
+				monitorErrors.dockerTlsKeyRequired,
+				monitorErrors.captureSecretRequired,
+				monitorErrors.encryptionKeyMissing,
+				monitorErrors.heartbeatSlugTaken,
+			],
 			roles: ["admin", "superadmin"],
 			params: getMonitorByIdParamValidation,
 			body: editMonitorBodyValidation,

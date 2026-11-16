@@ -10,6 +10,7 @@ import {
 	type DockerLog,
 	type DockerLogLine,
 } from "@/Types/Check";
+import type { Theme } from "@mui/material";
 
 export const getNextMonitorSort = (
 	field: string,
@@ -34,6 +35,7 @@ export const getMonitorPath = (type: MonitorType): string => {
 		docker: "docker/host",
 		hardware: "infrastructure",
 		pagespeed: "pagespeed",
+		heartbeat: "uptime",
 	};
 	return pathMap[type];
 };
@@ -113,7 +115,13 @@ export const getUptimePercentageColor = (uptimePercentage: number): PaletteKey =
 	}
 };
 
-export const getInfraGaugeColor = (val: number, theme: any) => {
+export const getSeverityColor = (
+	val: number,
+	theme: Theme,
+	{ isFraction = true }: { isFraction?: boolean } = {}
+) => {
+	if (isFraction) val *= 100;
+
 	if (val < 50) {
 		return theme.palette.success.main;
 	} else if (val < 80) {

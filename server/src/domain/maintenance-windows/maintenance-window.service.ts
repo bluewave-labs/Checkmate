@@ -78,8 +78,17 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		const toInitializing = monitorIds.filter((monitorId) => !stillCovered.has(monitorId));
 		if (toInitializing.length > 0) {
 			await this.monitorsRepository.updateByIds(toInitializing, teamId, { status: "initializing" }, ["paused"]);
+
+			const monitors = await this.monitorsRepository.findByIds(toInitializing, {
+				recentChecks: "none",
+			});
+			const heartbeatIds = monitors.filter((m) => m.type === "heartbeat").map((m) => m.id);
+			const probeIds = toInitializing.filter((id) => !heartbeatIds.includes(id));
+
 			// Rearm jobs to run soon (now + jitter to avoid herding)
-			await this.jobsRepository.markMonitorsDue(toInitializing, now.getTime());
+			await this.jobsRepository.markMonitorsDue(probeIds, now.getTime());
+			await this.jobsRepository.rescheduleOverdueChecks(heartbeatIds, now.getTime());
+
 			// Wake the (possibly idle, backed-off) loops so the rearmed jobs run promptly instead of waiting up to POLL_MAX_MS
 			this.scheduler.wake("check");
 			this.scheduler.wake("geo-check");

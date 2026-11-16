@@ -172,7 +172,7 @@ const StatusPageView = () => {
 					config={themeConfig}
 					range={range}
 					onRangeChange={onRangeChange}
-					bucketTimezone={data.bucketTimezone ?? "Etc/UTC"}
+					bucketTimezone={data.bucketTimezone ?? "UTC"}
 					checkTTLDays={data.checkTTLDays}
 				/>
 			</StatusPageThemeProvider>

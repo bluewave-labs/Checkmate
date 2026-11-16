@@ -17,7 +17,8 @@ import { AuthFooter } from "@/Components/sidebar/Authfooter";
 import { useNavigate, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useTheme, useMediaQuery } from "@mui/material";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "@/Types/state";
 import { setCollapsed } from "@/Features/UI/uiSlice";
 
 const URL_MAP: Record<string, string> = {
@@ -35,8 +36,9 @@ export const Sidebar = () => {
 	const { width, transition, transitionTiming, collapsed } = useSidebar();
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
-	const menu = getMenu(t);
-	const accountMenu = getAccountMenu(t);
+	const userRoles = useSelector((state: RootState) => state.auth.user?.role) ?? [];
+	const menu = getMenu(t, userRoles);
+	const accountMenu = getAccountMenu(t, userRoles);
 
 	useEffect(() => {
 		dispatch(setCollapsed({ collapsed: isSmall }));
@@ -70,7 +72,6 @@ export const Sidebar = () => {
 				maxHeight={"100vh"}
 				paddingTop={theme.spacing(LAYOUT.SM)}
 				paddingBottom={theme.spacing(LAYOUT.SM)}
-				gap={theme.spacing(LAYOUT.SM)}
 				borderRight={`1px solid ${theme.palette.divider}`}
 				width={width}
 				bgcolor={theme.palette.background.paper}
@@ -80,18 +81,26 @@ export const Sidebar = () => {
 					zIndex: 1000,
 				}}
 			>
+				<Logo
+					pt={theme.spacing(LAYOUT.MD)}
+					pb={theme.spacing(LAYOUT.MD)}
+					px={theme.spacing(LAYOUT.SM)}
+				/>
 				<List
 					component="nav"
 					disablePadding
 					sx={{
 						px: theme.spacing(LAYOUT.SM),
 						flex: 1,
+						overflowY: "auto",
+						scrollbarWidth: "none",
+						overscrollBehaviorY: "contain",
+						"&:hover": {
+							scrollbarWidth: "thin",
+							scrollbarColor: `${theme.palette.scrollbar.thumb} transparent`,
+						},
 					}}
 				>
-					<Logo
-						pt={theme.spacing(LAYOUT.MD)}
-						pb={theme.spacing(LAYOUT.MD)}
-					/>
 					{menu.map((group) => (
 						<Box key={group.group}>
 							<Box
@@ -103,7 +112,7 @@ export const Sidebar = () => {
 									component="div"
 									color={theme.palette.text.disabled}
 									fontSize={typographyLevels.s}
-									paddingLeft={theme.spacing(5)}
+									paddingLeft={theme.spacing(LAYOUT.XS)}
 									paddingTop={theme.spacing(LAYOUT.SM)}
 									paddingBottom={theme.spacing(LAYOUT.XXS)}
 									whiteSpace="nowrap"
@@ -141,7 +150,12 @@ export const Sidebar = () => {
 				</List>
 				<StarPrompt />
 
-				<Divider sx={{ borderColor: theme.palette.divider }} />
+				<Divider
+					sx={{
+						borderColor: theme.palette.divider,
+						marginBottom: theme.spacing(LAYOUT.SM),
+					}}
+				/>
 
 				<AuthFooter
 					collapsed={collapsed}

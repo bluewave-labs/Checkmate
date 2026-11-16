@@ -49,7 +49,8 @@ export class DiagnosticService implements IDiagnosticService {
 		const timingPeriod = 1000; // measured in ms
 		await new Promise((resolve) => setTimeout(resolve, timingPeriod));
 		const endUsage = process.cpuUsage(startUsage);
-		return ((endUsage.user + endUsage.system) / 1000 / timingPeriod) * 100;
+		// Fraction of one core (0.25 = 25%)
+		return (endUsage.user + endUsage.system) / 1000 / timingPeriod;
 	};
 
 	private getMongoOpsPerSecond = async (): Promise<MongoOpsPerSecond | null> => {

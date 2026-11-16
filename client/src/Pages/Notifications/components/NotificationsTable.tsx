@@ -5,6 +5,7 @@ import type { Header } from "@/Components/design-elements/Table";
 import { Table } from "@/Components/design-elements";
 import { Pagination } from "@/Components/design-elements/Table";
 import { useClientPagination } from "@/Hooks/useClientPagination";
+import { useIsAdmin } from "@/Hooks/useIsAdmin";
 
 import type { Notification } from "@/Types/Notification";
 import { useNavigate } from "react-router";
@@ -22,6 +23,7 @@ export const NotificationsTable = ({
 }: NotificationsTableProps) => {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
+	const isAdmin = useIsAdmin();
 	const theme = useTheme();
 	const { pagedRows, paginationProps } = useClientPagination(notifications);
 
@@ -99,7 +101,7 @@ export const NotificationsTable = ({
 				},
 			},
 		];
-		return headers;
+		return isAdmin ? headers : headers.filter((header) => header.id !== "actions");
 	};
 
 	return (
@@ -107,9 +109,13 @@ export const NotificationsTable = ({
 			<Table
 				headers={getHeaders()}
 				data={pagedRows}
-				onRowClick={(row) => {
-					navigate(`/notifications/configure/${row.id}`);
-				}}
+				onRowClick={
+					isAdmin
+						? (row) => {
+								navigate(`/notifications/configure/${row.id}`);
+							}
+						: undefined
+				}
 			/>
 			{notifications.length > 0 && <Pagination {...paginationProps} />}
 		</>

@@ -6,6 +6,9 @@ export interface IUsersRepository {
 	findByEmail(email: string): Promise<User>;
 	findById(id: string): Promise<UserResponse>;
 	findAll(): Promise<UserResponse[]>;
+	// Returns the id only if the user exists and belongs to the team
+	findIdInTeam(userId: string, teamId: string): Promise<string | null>;
+	findSuperAdminIdByTeamId(teamId: string): Promise<string | null>;
 	// update
 	updateById(id: string, patch: Partial<User>, file?: Express.Multer.File | null): Promise<UserResponse>;
 	// delete

@@ -17,7 +17,7 @@ export const BGBox = ({ children, sx }: StatusBoxProps) => {
 	return (
 		<BaseBox
 			sx={{
-				backgroundColor: theme.palette.background.default,
+				backgroundColor: theme.palette.background.paper,
 				overflow: "hidden",
 				position: "relative",
 				flex: 1,

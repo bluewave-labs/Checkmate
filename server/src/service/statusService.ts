@@ -3,6 +3,7 @@ import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interf
 import type { Check, CheckDiskInfo } from "@/domain/checks/check.type.js";
 import {
 	HardwareMetricKeys,
+	HEARTBEAT_STATUS_WINDOW,
 	MonitorStatuses,
 	type HardwareBreaches,
 	type HardwareCounters,
@@ -143,6 +144,8 @@ export class StatusService implements IStatusService {
 		try {
 			const { status } = check;
 
+			const { statusWindowSize, statusWindowThreshold } = monitor.type === "heartbeat" ? HEARTBEAT_STATUS_WINDOW : monitor;
+
 			// Update running stats
 			await this.tryUpdateRunningStats(check, monitor);
 
@@ -152,7 +155,7 @@ export class StatusService implements IStatusService {
 			// Project the window as it will look after updating DB
 			// This is done because we need the updated status window to compute new status, but we don't
 			// want an an extra DB write just to get the window.
-			const projectedWindow = [...(monitor.statusWindow || []), check.status].slice(-monitor.statusWindowSize);
+			const projectedWindow = [...(monitor.statusWindow || []), check.status].slice(-statusWindowSize);
 
 			// Build the status patch — computed against the projected window
 			const patch: Partial<Monitor> = {};
@@ -171,10 +174,10 @@ export class StatusService implements IStatusService {
 
 			let thresholdBreaches: HardwareBreaches | undefined;
 
-			if (projectedWindow.length >= monitor.statusWindowSize) {
+			if (projectedWindow.length >= statusWindowSize) {
 				// First evaluate reachability status changes, which apply to all monitor types
 				// and take precedence over hardware breaches.
-				const reachabilityResult = this.computeReachability(newStatus, projectedWindow, monitor.statusWindowThreshold);
+				const reachabilityResult = this.computeReachability(newStatus, projectedWindow, statusWindowThreshold);
 				if (reachabilityResult.transitioned) {
 					newStatus = reachabilityResult.nextStatus;
 					statusChanged = true;
@@ -232,7 +235,7 @@ export class StatusService implements IStatusService {
 				monitor.teamId,
 				check.status,
 				checkSnapshot,
-				monitor.statusWindowSize,
+				statusWindowSize,
 				MAX_RECENT_CHECKS,
 				patch
 			);

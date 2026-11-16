@@ -34,7 +34,7 @@ export const RoleProtectedRoute = ({ roles, children }: RoleProtectedRouteProps)
 		children
 	) : (
 		<Navigate
-			to="/uptime"
+			to="/dashboard"
 			replace
 		/>
 	);

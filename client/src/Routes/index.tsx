@@ -8,8 +8,8 @@ import AuthRegister from "@/Pages/Auth/Register";
 import AuthForgotPassword from "@/Pages/Auth/Recovery";
 import AuthSetNewPassword from "@/Pages/Auth/SetNewPassword";
 
-// Dashboard (disabled until the page is ready for release)
-// import Dashboard from "@/Pages/Dashboard";
+// Dashboard
+import Dashboard from "@/Pages/Dashboard";
 
 // Uptime
 import Uptime from "@/Pages/Uptime/Monitors";
@@ -93,12 +93,12 @@ const Routes = () => {
 			>
 				<Route
 					path="/"
-					element={<Navigate to="/uptime" />}
+					element={<Navigate to="/dashboard" />}
 				/>
-				{/* <Route
+				<Route
 					path="dashboard"
 					element={<Dashboard />}
-				/> */}
+				/>
 				<Route
 					path="/uptime"
 					element={<Uptime />}
@@ -108,7 +108,11 @@ const Routes = () => {
 
 				<Route
 					path="/uptime/create"
-					element={<CreateMonitor />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateMonitor />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="/uptime/:monitorId/"
@@ -116,7 +120,11 @@ const Routes = () => {
 				/>
 				<Route
 					path="/uptime/configure/:monitorId/"
-					element={<CreateMonitor />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateMonitor />
+						</RoleProtectedRoute>
+					}
 				/>
 
 				<Route
@@ -125,7 +133,11 @@ const Routes = () => {
 				/>
 				<Route
 					path="pagespeed/create"
-					element={<CreateMonitor />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateMonitor />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="pagespeed/:monitorId"
@@ -133,7 +145,11 @@ const Routes = () => {
 				/>
 				<Route
 					path="pagespeed/configure/:monitorId"
-					element={<CreateMonitor />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateMonitor />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="infrastructure"
@@ -141,11 +157,19 @@ const Routes = () => {
 				/>
 				<Route
 					path="infrastructure/create"
-					element={<CreateMonitor />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateMonitor />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="/infrastructure/configure/:monitorId"
-					element={<CreateMonitor />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateMonitor />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="infrastructure/:monitorId"
@@ -157,11 +181,19 @@ const Routes = () => {
 				/>
 				<Route
 					path="docker/create"
-					element={<CreateMonitor />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateMonitor />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="/docker/configure/:monitorId"
-					element={<CreateMonitor />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateMonitor />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="docker/host/:monitorId/container/:containerName"
@@ -192,12 +224,20 @@ const Routes = () => {
 
 				<Route
 					path="status/create"
-					element={<CreateStatus />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateStatus />
+						</RoleProtectedRoute>
+					}
 				/>
 
 				<Route
 					path="status/configure/:url"
-					element={<CreateStatus />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateStatus />
+						</RoleProtectedRoute>
+					}
 				/>
 
 				<Route
@@ -206,12 +246,20 @@ const Routes = () => {
 				/>
 				<Route
 					path="notifications/create"
-					element={<CreateNotifications />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateNotifications />
+						</RoleProtectedRoute>
+					}
 				/>
 
 				<Route
 					path="notifications/configure/:notificationId"
-					element={<CreateNotifications />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateNotifications />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="tags"
@@ -219,24 +267,44 @@ const Routes = () => {
 				/>
 				<Route
 					path="tags/create"
-					element={<CreateTags />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateTags />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="tags/configure/:tagId"
-					element={<CreateTags />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateTags />
+						</RoleProtectedRoute>
+					}
 				/>
 
 				<Route
 					path="proxies"
-					element={<Proxies />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<Proxies />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="proxies/create"
-					element={<CreateProxies />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateProxies />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="proxies/configure/:proxyId"
-					element={<CreateProxies />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateProxies />
+						</RoleProtectedRoute>
+					}
 				/>
 
 				<Route
@@ -245,7 +313,11 @@ const Routes = () => {
 				/>
 				<Route
 					path="/maintenance/create/:maintenanceWindowId?"
-					element={<CreateNewMaintenanceWindow />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<CreateNewMaintenanceWindow />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="settings"
@@ -258,11 +330,19 @@ const Routes = () => {
 				/>
 				<Route
 					path="account/password"
-					element={<Account open={"password"} />}
+					element={
+						<RoleProtectedRoute roles={["user", "admin", "superadmin"]}>
+							<Account open={"password"} />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="account/team"
-					element={<Account open={"team"} />}
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<Account open={"team"} />
+						</RoleProtectedRoute>
+					}
 				/>
 				<Route
 					path="account/team/:userId"

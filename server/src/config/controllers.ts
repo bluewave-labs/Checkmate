@@ -14,6 +14,9 @@ import DiagnosticController from "../api/controllers/diagnosticController.js";
 import IncidentController from "../api/controllers/incidentController.js";
 import ProxyController from "@/api/controllers/proxyController.js";
 import EgressController from "@/api/controllers/egressController.js";
+import HeartbeatController from "@/api/controllers/heartbeatController.js";
+import TeamController from "@/api/controllers/teamController.js";
+import ConnectController from "@/api/controllers/connectController.js";
 import { ApiServices } from "@/config/services.api.js";
 
 export interface InitializedControllers {
@@ -33,12 +36,20 @@ export interface InitializedControllers {
 	incidentController: IncidentController;
 	proxyController: ProxyController;
 	egressController: EgressController;
+	heartbeatController: HeartbeatController;
+	teamController: TeamController;
+	connectController: ConnectController;
 }
 export const initializeControllers = (apiServices: ApiServices): InitializedControllers => {
 	return {
 		authController: new AuthController(apiServices.userService),
 		monitorController: new MonitorController(apiServices.monitorService, apiServices.notificationsService),
-		settingsController: new SettingsController(apiServices.settingsService, apiServices.emailService, apiServices.proxiesService),
+		settingsController: new SettingsController(
+			apiServices.settingsService,
+			apiServices.emailService,
+			apiServices.proxiesService,
+			apiServices.appVersionService
+		),
 		checkController: new CheckController(apiServices.checkService),
 		geoCheckController: new GeoCheckController(apiServices.geoChecksService),
 		inviteController: new InviteController(apiServices.inviteService),
@@ -52,5 +63,8 @@ export const initializeControllers = (apiServices: ApiServices): InitializedCont
 		incidentController: new IncidentController(apiServices.incidentService),
 		proxyController: new ProxyController(apiServices.proxiesService),
 		egressController: new EgressController(apiServices.egressStateService),
+		heartbeatController: new HeartbeatController(apiServices.heartbeatService),
+		teamController: new TeamController(apiServices.teamService),
+		connectController: new ConnectController(apiServices.connectService),
 	};
 };

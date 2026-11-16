@@ -87,6 +87,16 @@ describe("handleErrors", () => {
 		);
 	});
 
+	it("redacts the heartbeat ping key from the logged request and keeps the slug", () => {
+		const localLogger = createMockLogger();
+		const req = { method: "GET", originalUrl: "/api/v1/heartbeat/secret-key/backup/fail" } as Request;
+		handleErrors(localLogger)(new Error("boom"), req, makeRes(), (() => {}) as NextFunction);
+		expect(localLogger.error).toHaveBeenCalledWith(
+			expect.objectContaining({ request: "GET /api/v1/heartbeat/[Redacted]/backup/fail" }),
+			"Request failed"
+		);
+	});
+
 	it("keeps existing details alongside the request", () => {
 		const localLogger = createMockLogger();
 		const req = { method: "POST", originalUrl: "/api/v1/monitors" } as Request;
