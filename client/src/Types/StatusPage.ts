@@ -57,7 +57,7 @@ export interface StatusPage {
 	companyName: string;
 	url: string;
 	customDomain?: string | null;
-	timezone?: string;
+	timezone: string;
 	color: string;
 	monitors: string[];
 	subMonitors: string[];

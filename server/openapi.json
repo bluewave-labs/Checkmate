@@ -3723,6 +3723,7 @@
 					"companyName",
 					"url",
 					"customDomain",
+					"timezone",
 					"color",
 					"monitors",
 					"subMonitors",

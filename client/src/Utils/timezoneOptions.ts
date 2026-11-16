@@ -7,7 +7,10 @@ export interface TimezoneOption {
 
 // timezones.json uses Mongo-style _id; remap once at module load to the
 // { id, name } shape AutoComplete expects.
-export const timezoneOptions: TimezoneOption[] = timezones.map((tz) => ({
-	id: tz._id,
-	name: tz.name,
-}));
+export const timezoneOptions: TimezoneOption[] = [
+	{ id: "Etc/UTC", name: "UTC" },
+	...timezones.map((tz) => ({
+		id: tz._id,
+		name: tz.name,
+	})),
+];

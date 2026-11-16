@@ -19,6 +19,7 @@ const makeStatusPage = (overrides?: Partial<StatusPage>): StatusPage =>
 		userId: "user-1",
 		url: "my-status-page",
 		companyName: "Test Co",
+		timezone: "Etc/UTC",
 		monitors: ["mon-1"],
 		theme: "modern",
 		themeMode: "dark",
@@ -403,7 +404,7 @@ describe("StatusPageService", () => {
 				}
 			});
 
-			it("falls back to Etc/UTC when the page has no timezone and defaults dailyChecks to empty", async () => {
+			it("buckets in the page timezone and defaults dailyChecks to empty", async () => {
 				const { service, checksRepo } = createService();
 
 				const payload = await service.getPublicStatusPagePayload(publishedPage(), "60d");
