@@ -163,7 +163,7 @@ export const IntervalScene = ({ time }: { time: number }) => {
 					height="40"
 				>
 					<Typography
-						fontSize={typographyLevels.xs}
+						fontSize={typographyLevels.s}
 						lineHeight={1.4}
 						color={p.muted}
 					>

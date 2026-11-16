@@ -1,9 +1,34 @@
 import { createTheme } from "@mui/material";
 import { lightPalette, darkPalette, typographyLevels } from "@/Utils/Theme/Palette";
 
-import type { Theme } from "@mui/material/styles";
+import type { PaletteMode, PaletteOptions, Theme } from "@mui/material/styles";
 import type {} from "@mui/material/styles";
 import { SCROLLBAR_SIZE } from "@/Utils/Theme/constants";
+
+interface NeutralPalette {
+	raised: string;
+	hairline: string;
+	border: string;
+	borderHover: string;
+	rowDivider: string;
+	icon: string;
+	tertiary: string;
+	subdued: string;
+	hoverGreen: string;
+	selectedGreen: string;
+	tooltip: string;
+}
+
+interface ChartPalette {
+	phases: {
+		dns: string;
+		tcp: string;
+		tls: string;
+		request: string;
+		firstByte: string;
+		download: string;
+	};
+}
 
 declare module "@mui/material/styles" {
 	interface TypographyVariants {
@@ -20,34 +45,18 @@ declare module "@mui/material/styles" {
 		selectedHover: string;
 	}
 	interface Palette {
+		neutral: NeutralPalette;
 		sidebar: { accent: string };
 		scrollbar: { track: string; thumb: string };
 		rowStatus: { running: string; paused: string };
-		chart: {
-			phases: {
-				dns: string;
-				tcp: string;
-				tls: string;
-				request: string;
-				firstByte: string;
-				download: string;
-			};
-		};
+		chart: ChartPalette;
 	}
 	interface PaletteOptions {
+		neutral?: NeutralPalette;
 		sidebar?: { accent: string };
 		scrollbar?: { track: string; thumb: string };
 		rowStatus?: { running: string; paused: string };
-		chart?: {
-			phases: {
-				dns: string;
-				tcp: string;
-				tls: string;
-				request: string;
-				firstByte: string;
-				download: string;
-			};
-		};
+		chart?: ChartPalette;
 	}
 }
 
@@ -67,7 +76,7 @@ const fontFamilyMonospace =
 const shadow =
 	"0px 4px 24px -4px rgba(16, 24, 40, 0.08), 0px 3px 3px -3px rgba(16, 24, 40, 0.03)";
 
-export const theme = (mode: string, palette: any) =>
+export const theme = (mode: PaletteMode, palette: PaletteOptions) =>
 	createTheme({
 		breakpoints: {
 			values: {
@@ -89,27 +98,18 @@ export const theme = (mode: string, palette: any) =>
 			fontSize: typographyLevels.base,
 			h1: {
 				fontSize: typographyLevels.xxl,
-				fontWeight: 700,
-				letterSpacing: "-0.015em",
-			},
-			h2: {
-				fontSize: typographyLevels.l,
 				fontWeight: 600,
-				letterSpacing: "-0.01em",
+				lineHeight: 1.3,
+				letterSpacing: "-0.02em",
 			},
-			body1: {
-				fontSize: typographyLevels.m,
-				fontWeight: 400,
-			},
-			body2: {
-				fontSize: typographyLevels.s,
-				fontWeight: 400,
-			},
+			h2: { fontSize: typographyLevels.l, fontWeight: 600, lineHeight: 1.4 },
+			body1: { fontSize: typographyLevels.m, fontWeight: 400, lineHeight: 1.5 },
+			body2: { fontSize: typographyLevels.sm, fontWeight: 400, lineHeight: 1.5 },
 			eyebrow: {
-				fontSize: 13,
+				fontSize: typographyLevels.s,
 				fontWeight: 500,
 				textTransform: "uppercase",
-				letterSpacing: "0.08em",
+				letterSpacing: "0.07em",
 				lineHeight: 1.4,
 			},
 		},
