@@ -82,7 +82,7 @@ Checkmate は 1000 以上のアクティブなモニターでストレステス�
 
 インストール手順は [Checkmate ドキュメントポータル](https://checkmate.so/docs) を参照してください。
 
-代わりに、[Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm)、[Sive Host](https://sive.host)（南アフリカ）、[Cloudzy](https://cloudzy.com/marketplace/checkmate)、[Pikapods](https://www.pikapods.com/) を使って Checkmate インスタンスをすばやく立ち上げることもできます。サーバーインフラを監視したい場合は、[Capture エージェント](https://checkmate.so/docs/infrastructure/installing-capture) が必要です。Capture リポジトリにもインストール手順が記載されています。
+代わりに、[Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm)、[Sive Host](https://sive.host)（南アフリカ）、[Cloudzy](https://cloudzy.com/marketplace/checkmate)、[Ryvord](https://ryvord.com/run/checkmate)、[Pikapods](https://www.pikapods.com/) を使って Checkmate インスタンスをすばやく立ち上げることもできます。サーバーインフラを監視したい場合は、[Capture エージェント](https://checkmate.so/docs/infrastructure/installing-capture) が必要です。Capture リポジトリにもインストール手順が記載されています。
 
 ### カスタム CA の利用
 

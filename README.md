@@ -130,6 +130,7 @@ You can also run Checkmate on any of these platforms:
     <td align="center" width="120"><a href="https://cloudzy.com/marketplace/checkmate"><img src="https://checkmate.so/img/brands/hosts/cloudzy.svg" height="28" alt="Cloudzy"><br><sub><b>Cloudzy</b></sub></a></td>
     <td align="center" width="120"><a href="https://pethost.dev/templates/checkmate/"><img src="https://checkmate.so/img/brands/hosts/pethost.svg" height="28" alt="Pethost"><br><sub><b>Pethost</b></sub></a></td>
     <td align="center" width="120"><a href="https://xcloud.host/checkmate-hosting/"><img src="https://checkmate.so/img/brands/hosts/xcloud.png" height="28" alt="xCloud"><br><sub><b>xCloud</b></sub></a></td>
+    <td align="center" width="120"><a href="https://ryvord.com/run/checkmate"><img src="https://checkmate.so/img/brands/hosts/ryvord.svg" height="28" alt="Ryvord"><br><sub><b>Ryvord</b></sub></a></td>
   </tr>
 </table>
 
