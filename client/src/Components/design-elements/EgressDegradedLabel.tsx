@@ -18,7 +18,7 @@ export const EgressDegradedLabel = ({
 		<Typography
 			component="span"
 			color={theme.palette.warning.main}
-			fontSize={typographyLevels.xs}
+			fontSize={typographyLevels.s}
 		>
 			{t("pages.checks.table.egressDegraded")}
 		</Typography>
