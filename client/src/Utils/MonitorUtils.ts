@@ -1,7 +1,7 @@
 import type { MonitorStatus, MonitorType } from "@/Types/Monitor";
 import type { SortOrder } from "@/Types/Query";
 import type { PaletteKey } from "@/Utils/Theme/Theme";
-import type { ValueType } from "@/Components/design-elements/StatusLabel";
+import type { SignalKey } from "@/Utils/Theme/Palette";
 import {
 	DockerLogStreams,
 	type DockerContainerMount,
@@ -53,21 +53,24 @@ export const getStatusPalette = (status: MonitorStatus): PaletteKey => {
 	return "warning";
 };
 
+const STATUS_SIGNAL: Record<MonitorStatus, SignalKey> = {
+	up: "success",
+	down: "error",
+	breached: "error",
+	paused: "neutral",
+	maintenance: "neutral",
+	initializing: "info",
+};
+
+export const getStatusSignal = (status: MonitorStatus): SignalKey =>
+	STATUS_SIGNAL[status] ?? "info";
+
 export const getDockerPalette = (dockerState: DockerContainerState): PaletteKey => {
 	if (dockerState === "created") return "success";
 	if (dockerState === "running") return "success";
 	if (dockerState === "dead") return "error";
 	if (dockerState === "exited") return "error";
 	return "warning";
-};
-
-export const getValuePalette = (value: ValueType): PaletteKey => {
-	const paletteMap: Record<ValueType, PaletteKey> = {
-		positive: "success",
-		negative: "error",
-		neutral: "warning",
-	};
-	return paletteMap[value];
 };
 
 export const getDockerStatePalette = (state: DockerContainerState): PaletteKey => {
