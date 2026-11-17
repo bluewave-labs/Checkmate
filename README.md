@@ -135,8 +135,6 @@ You can also run Checkmate on any of these platforms:
   </tr>
 </table>
 
-ZopDay deploys only the Checkmate image, so it needs your own MongoDB: set `DB_CONNECTION_STRING`, `JWT_SECRET` and `CLIENT_HOST` on its deploy screen.
-
 Note that the Helm chart has not yet been migrated to the all-in-one image: it still deploys the legacy `checkmate-client`, `checkmate-backend` and `checkmate-mongo` images, pinned at v3.8.1.
 
 
