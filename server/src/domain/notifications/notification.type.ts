@@ -57,7 +57,15 @@ export interface AlertDiscordPayload {
  */
 
 export type NotificationType =
-	"monitor_down" | "monitor_up" | "threshold_breach" | "threshold_resolved" | "container_breach" | "container_resolved" | "test";
+	| "monitor_down"
+	| "monitor_up"
+	| "threshold_breach"
+	| "threshold_resolved"
+	| "container_breach"
+	| "container_resolved"
+	| "storage_breach"
+	| "storage_resolved"
+	| "test";
 
 export type NotificationSeverity = "critical" | "warning" | "info" | "success";
 

@@ -1,5 +1,6 @@
 import { HardwareBreaches, Monitor } from "@/domain/monitors/monitor.type.js";
 import { Check } from "@/domain/checks/check.type.js";
+import type { StorageBreach } from "@/domain/storage/storage-alert.js";
 import { Job, JobType } from "@/domain/jobs/job.type.js";
 import type { QueueMode } from "@/domain/app-settings/app-settings.type.js";
 import type { z } from "zod";
@@ -8,12 +9,25 @@ import type { workerJobFailureSchema, workerJobsPageSchema, workerJobSummarySche
 export type JobHandler = (job: Job) => Promise<void>;
 export type JobHandlers = Record<JobType, JobHandler>;
 
-export const MonitorTransitions = ["status_down", "status_up", "threshold_breach", "threshold_resolved"] as const;
+// storage_breach / storage_resolved can fire without a status change: a new storage alert while the monitor is already
+// breached, or storage clearing while a hardware threshold keeps it breached.
+export const MonitorTransitions = [
+	"status_down",
+	"status_up",
+	"threshold_breach",
+	"threshold_resolved",
+	"storage_breach",
+	"storage_resolved",
+] as const;
 export type MonitorTransition = (typeof MonitorTransitions)[number];
 
 export interface MonitorActionDecision {
 	transition: MonitorTransition | null;
 	thresholdBreaches?: HardwareBreaches;
+	// storage_breach only: every active storage alert, new ones included
+	storageBreaches?: StorageBreach[];
+	// storage_breach only: the alerts that opened on this check
+	openedStorageBreaches?: StorageBreach[];
 }
 
 export type MonitorEvaluation = {

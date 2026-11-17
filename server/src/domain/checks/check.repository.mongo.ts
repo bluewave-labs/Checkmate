@@ -5,14 +5,19 @@ import type {
 	CheckCaptureInfo,
 	CheckCpuInfo,
 	CheckDiskInfo,
+	CheckDrive,
 	CheckErrorInfo,
 	CheckHostInfo,
 	CheckMemoryInfo,
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
+	CheckRaidArray,
 	CheckTimings,
 	DockerContainerStats,
+	DriveHistory,
 	HardwareCheckStats,
+	LatestDrives,
+	LatestRaid,
 } from "@/domain/checks/check.type.js";
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
 import { CheckModel, type CheckDocument } from "@/domain/checks/check.model.js";
@@ -35,8 +40,51 @@ import {
 	getDockerUpChecks,
 } from "@/domain/checks/check.docker.aggregation.js";
 import { PendingCheck } from "@/domain/jobs/job.type.js";
+import { getDriveHistory, getLastKnownDriveCheck, getLatestDrivesCheck, getLatestRaidCheck } from "@/domain/checks/check.storage.aggregations.js";
 
 const SERVICE_NAME = "ChecksRepository";
+
+const toRaidArray = (array: CheckRaidArray): CheckRaidArray => ({
+	device: array.device ?? "",
+	level: array.level ?? "",
+	state: array.state ?? "",
+	raid_disks: array.raid_disks ?? null,
+	degraded_disks: array.degraded_disks ?? null,
+	sync_action: array.sync_action ?? null,
+	sync_progress: array.sync_progress ?? null,
+	members: (array.members ?? []).map((member) => ({ device: member.device ?? "", state: member.state ?? "" })),
+});
+
+// Null counters stay null ("not reported"); strings default to "" as Capture sends them
+const toDrive = (drive: CheckDrive): CheckDrive => ({
+	device: drive.device ?? "",
+	type: drive.type ?? "",
+	protocol: drive.protocol ?? "",
+	status: drive.status,
+	model_name: drive.model_name ?? "",
+	serial_number: drive.serial_number ?? "",
+	firmware_version: drive.firmware_version ?? "",
+	capacity_bytes: drive.capacity_bytes ?? null,
+	warnings: drive.warnings ?? [],
+	reallocated_sectors: drive.reallocated_sectors ?? null,
+	pending_sectors: drive.pending_sectors ?? null,
+	offline_uncorrectable: drive.offline_uncorrectable ?? null,
+	media_errors: drive.media_errors ?? null,
+	smart_overall_health_self_assessment_test_result: drive.smart_overall_health_self_assessment_test_result ?? "",
+	temperature: drive.temperature ?? "",
+	power_on_hours: drive.power_on_hours ?? "",
+	power_cycles: drive.power_cycles ?? "",
+	unsafe_shutdowns: drive.unsafe_shutdowns ?? "",
+	percentage_used: drive.percentage_used ?? "",
+	available_spare: drive.available_spare ?? "",
+	available_spare_threshold: drive.available_spare_threshold ?? "",
+	critical_warning: drive.critical_warning ?? "",
+	data_units_read: drive.data_units_read ?? "",
+	data_units_written: drive.data_units_written ?? "",
+	host_read_commands: drive.host_read_commands ?? "",
+	host_write_commands: drive.host_write_commands ?? "",
+	controller_busy_time: drive.controller_busy_time ?? "",
+});
 
 class MongoChecksRepository implements IChecksRepository {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -181,6 +229,9 @@ class MongoChecksRepository implements IChecksRepository {
 			audits: mapAudits(doc.audits),
 			containers: doc.containers,
 			containerSummary: doc.containerSummary,
+			// Absent stays absent: no raid means older Capture or a failed check, no drives means SMART was not fetched
+			raid: doc.raid?.map(toRaidArray),
+			drives: doc.drives?.map(toDrive),
 			egressStatus: doc.egressStatus,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
@@ -319,6 +370,35 @@ class MongoChecksRepository implements IChecksRepository {
 			return this.findDockerDateRangeChecks(monitorObjectId, start, end, dateString);
 		}
 		return this.findUptimeDateRangeChecks(options?.type ?? "http", monitorObjectId, start, end, dateString);
+	};
+
+	findLatestRaid = async (monitorId: string): Promise<LatestRaid | null> => {
+		const doc = await getLatestRaidCheck(monitorId);
+		if (!doc?.raid) return null;
+		return { arrays: doc.raid.map(toRaidArray), checkedAt: toDateString(doc.createdAt) };
+	};
+
+	findLatestDrives = async (monitorId: string): Promise<LatestDrives | null> => {
+		const doc = await getLatestDrivesCheck(monitorId);
+		if (!doc?.drives) return null;
+		return {
+			drives: doc.drives.map(toDrive),
+			errors: (doc.errors ?? []).map((error) => ({ metric: error?.metric ?? [], err: error?.err ?? "" })),
+			checkedAt: toDateString(doc.createdAt),
+		};
+	};
+
+	findLastKnownDrive = async (monitorId: string, device: string): Promise<{ drive: CheckDrive; checkedAt: string } | null> => {
+		const doc = await getLastKnownDriveCheck(monitorId, device);
+		const drive = doc?.drives?.find((entry) => entry.device === device && entry.serial_number);
+		if (!doc || !drive) return null;
+		return { drive: toDrive(drive), checkedAt: toDateString(doc.createdAt) };
+	};
+
+	findDriveHistory = async (monitorId: string, dateRange: DateRange): Promise<DriveHistory[]> => {
+		const dates = { start: getDateForRange(dateRange), end: new Date() };
+		const rows = await getDriveHistory(monitorId, dates, getDateFormat(dateRange));
+		return rows.map((row) => ({ serial_number: row._id, points: row.points }));
 	};
 
 	findDockerContainerChecks = async (

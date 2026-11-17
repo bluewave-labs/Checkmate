@@ -10,13 +10,14 @@ import {
 	type Monitor,
 	type MonitorStatus,
 } from "@/domain/monitors/monitor.type.js";
-import type { StatusChangeResult } from "@/types/network.js";
+import type { StatusChangeResult, StorageChange, ThresholdChange } from "@/types/network.js";
 import { AppError, internalError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger/logger.js";
 import type { HardwareStatusMetrics } from "@/types/network.js";
 import { MAX_RECENT_CHECKS } from "@/domain/monitors/monitor.type.js";
 import { toCheckSnapshot } from "@/domain/checks/check.snapshot.js";
 import { findContainerBreaches } from "@/domain/docker/docker-alert.js";
+import { findOpenedStorageBreaches, nextStorageBreaches } from "@/domain/storage/storage-alert.js";
 
 const SERVICE_NAME = "StatusService";
 const HARDWARE_ALERT_COUNTER_START = 5;
@@ -73,13 +74,16 @@ export class StatusService implements IStatusService {
 		metrics: HardwareStatusMetrics;
 		thresholds: { cpu: number; memory: number; disk: number; temp: number };
 		counters: HardwareCounters;
+		thresholdBreached: boolean;
+		storageBreaching: boolean;
 	}): {
 		nextStatus: MonitorStatus;
 		transitioned: boolean;
 		breaches: HardwareBreaches;
 		nextCounters: HardwareCounters;
+		thresholdBreached: boolean;
 	} => {
-		const { metrics, thresholds, counters, currentStatus, reachabilityDown } = params;
+		const { metrics, thresholds, counters, currentStatus, reachabilityDown, storageBreaching } = params;
 
 		const cpuUsage = metrics.cpu?.usage_percent ?? -1;
 		const memoryUsage = metrics.memory?.usage_percent ?? -1;
@@ -100,27 +104,32 @@ export class StatusService implements IStatusService {
 			nextCounters[key] = breaches[key] ? Math.max(0, counters[key] - 1) : HARDWARE_ALERT_COUNTER_START;
 		}
 
+		// Threshold state is tracked on its own, apart from storage alerts, so each can open and clear while the other
+		// keeps the monitor breached. It trips when a counter reaches zero and clears once every metric is normal.
+		// A counter can only reach zero via the decrement path, which only runs when that metric is currently
+		// breaching — so anyCounterZero already implies anyBreached.
+		const anyCounterZero = HardwareMetricKeys.some((k) => nextCounters[k] === 0);
+		const allNormal = HardwareMetricKeys.every((k) => !breaches[k]);
+		const thresholdBreached = anyCounterZero || (params.thresholdBreached && !allNormal);
+
 		// Status transition: reachability "down" takes precedence; hardware can only drive
 		// transitions into "breached" and back out to "up". Any other case leaves status untouched.
+		// Storage alerts have no counter: they keep the monitor breached for as long as they are active.
 		let nextStatus: MonitorStatus = currentStatus;
 		let transitioned = false;
 
 		if (!reachabilityDown) {
-			// A counter can only reach zero via the decrement path, which only runs when that
-			// metric is currently breaching — so anyCounterZero already implies anyBreached.
-			const anyCounterZero = HardwareMetricKeys.some((k) => nextCounters[k] === 0);
-			const allNormal = HardwareMetricKeys.every((k) => !breaches[k]);
-
-			if (anyCounterZero && currentStatus !== "breached") {
+			const breaching = thresholdBreached || storageBreaching;
+			if (breaching && currentStatus !== "breached") {
 				nextStatus = "breached";
 				transitioned = true;
-			} else if (allNormal && currentStatus === "breached") {
+			} else if (!breaching && currentStatus === "breached") {
 				nextStatus = "up";
 				transitioned = true;
 			}
 		}
 
-		return { nextStatus, transitioned, breaches, nextCounters };
+		return { nextStatus, transitioned, breaches, nextCounters, thresholdBreached };
 	};
 
 	private computeDockerStatus = (params: { currentStatus: MonitorStatus; reachabilityDown: boolean; breaching: boolean }) => {
@@ -173,6 +182,8 @@ export class StatusService implements IStatusService {
 			}
 
 			let thresholdBreaches: HardwareBreaches | undefined;
+			let storage: StorageChange | undefined;
+			let threshold: ThresholdChange | undefined;
 
 			if (projectedWindow.length >= statusWindowSize) {
 				// First evaluate reachability status changes, which apply to all monitor types
@@ -183,8 +194,20 @@ export class StatusService implements IStatusService {
 					statusChanged = true;
 				}
 
-				// Evaluate hardware threshold breaches
+				// Evaluate hardware threshold breaches and storage alerts
 				if (monitor.type === "hardware") {
+					const previousStorage = monitor.storageBreaches ?? [];
+					const storageBreaches = nextStorageBreaches(monitor, previousStorage, check.raid, check.drives);
+					storage = {
+						breaches: storageBreaches,
+						opened: findOpenedStorageBreaches(previousStorage, storageBreaches),
+						cleared: previousStorage.length > 0 && storageBreaches.length === 0,
+					};
+					patch.storageBreaches = storageBreaches;
+
+					// Monitors from before thresholdBreached existed were only ever breached by a threshold
+					const previousThresholdBreached = monitor.thresholdBreached ?? (monitor.status === "breached" && previousStorage.length === 0);
+
 					const hardware = this.computeHardwareStatus({
 						currentStatus: newStatus,
 						reachabilityDown: newStatus === "down",
@@ -201,7 +224,14 @@ export class StatusService implements IStatusService {
 							disk: monitor.diskAlertCounter,
 							temp: monitor.tempAlertCounter,
 						},
+						thresholdBreached: previousThresholdBreached,
+						storageBreaching: storageBreaches.length > 0,
 					});
+					threshold = {
+						opened: hardware.thresholdBreached && !previousThresholdBreached,
+						cleared: previousThresholdBreached && !hardware.thresholdBreached,
+					};
+					patch.thresholdBreached = hardware.thresholdBreached;
 
 					patch.cpuAlertCounter = hardware.nextCounters.cpu;
 					patch.memoryAlertCounter = hardware.nextCounters.memory;
@@ -227,6 +257,12 @@ export class StatusService implements IStatusService {
 					}
 				}
 				patch.status = newStatus;
+			} else if (monitor.type === "hardware" && monitor.status !== "breached") {
+				// Drives are read only every SMART_INTERVAL_MS, often on a check before the window is full (a new monitor's
+				// first check). Keep what that reading found so the first evaluation sees it: the monitor then turns breached,
+				// which reports every active storage alert. A breached monitor keeps its alerts as they are, so a problem
+				// that opens while its window refills is still reported as new.
+				patch.storageBreaches = nextStorageBreaches(monitor, monitor.storageBreaches ?? [], check.raid, check.drives);
 			}
 
 			// Single atomic write: push arrays + set status/counters
@@ -245,6 +281,8 @@ export class StatusService implements IStatusService {
 				statusChanged,
 				prevStatus,
 				thresholdBreaches,
+				storage,
+				threshold,
 			};
 		} catch (error: unknown) {
 			throw new AppError(internalError, {

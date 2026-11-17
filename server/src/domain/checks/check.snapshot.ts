@@ -5,11 +5,13 @@ import type {
 	CheckDiskInfo,
 	CheckHostInfo,
 	CheckMemoryInfo,
+	CheckRaidArray,
 	CheckSnapshot,
 	SnapshotCpuInfo,
 	SnapshotDiskInfo,
 	SnapshotHostInfo,
 	SnapshotMemoryInfo,
+	SnapshotRaidArray,
 } from "@/domain/checks/check.type.js";
 import { DockerContainerSummary } from "@/domain/docker/docker.type.js";
 import { toDateString } from "@/utils/mongoMappers.js";
@@ -23,6 +25,8 @@ export type CheckSnapshotSource = Pick<
 	memory?: CheckMemoryInfo;
 	disk?: CheckDiskInfo[];
 	host?: CheckHostInfo;
+	// Full arrays on a check, slim ones when re-reading a stored snapshot
+	raid?: (CheckRaidArray | SnapshotRaidArray)[];
 	audits?: CheckAudits;
 	containerSummary?: DockerContainerSummary;
 };
@@ -49,6 +53,7 @@ const mapDisk = (disk?: CheckDiskInfo[]): SnapshotDiskInfo[] | undefined =>
 		?.filter((entry) => entry != null)
 		.map((entry) => ({
 			device: entry.device,
+			mountpoint: entry.mountpoint,
 			total_bytes: entry.total_bytes,
 			used_bytes: entry.used_bytes,
 			usage_percent: entry.usage_percent,
@@ -60,6 +65,17 @@ const mapHost = (host?: CheckHostInfo): SnapshotHostInfo | undefined =>
 		platform: host.platform,
 		pretty_name: host.pretty_name,
 	};
+
+const mapRaid = (raid?: (CheckRaidArray | SnapshotRaidArray)[]): SnapshotRaidArray[] | undefined =>
+	raid
+		?.filter((entry) => entry != null)
+		.map((entry) => ({
+			device: entry.device,
+			state: entry.state,
+			degraded_disks: entry.degraded_disks,
+			sync_action: entry.sync_action,
+			sync_progress: entry.sync_progress,
+		}));
 
 const mapAudits = (audits?: CheckAudits): CheckAudits | undefined =>
 	audits && {
@@ -84,6 +100,7 @@ export const toCheckSnapshot = (source: CheckSnapshotSource): CheckSnapshot => (
 	memory: mapMemory(source.memory),
 	disk: mapDisk(source.disk),
 	host: mapHost(source.host),
+	raid: mapRaid(source.raid),
 	accessibility: source.accessibility,
 	bestPractices: source.bestPractices,
 	seo: source.seo,

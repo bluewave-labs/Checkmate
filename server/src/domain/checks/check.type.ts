@@ -5,11 +5,14 @@ import type {
 	checkCaptureInfoSchema,
 	checkCpuInfoSchema,
 	checkDiskInfoSchema,
+	checkDriveSchema,
 	checkErrorInfoSchema,
 	checkHostInfoSchema,
 	checkMemoryInfoSchema,
 	checkMetadataSchema,
 	checkNetworkInterfaceInfoSchema,
+	checkRaidArraySchema,
+	checkRaidMemberSchema,
 	checkSchema,
 	checkSnapshotSchema,
 	checksPageSchema,
@@ -20,17 +23,38 @@ import type {
 	dockerContainerStatsSchema,
 	dockerStatsBucketSchema,
 	dockerStatsSchema,
+	driveHistorySchema,
 	groupedCheckSchema,
 	groupedUptimeCheckSchema,
 	hardwareCheckStatsSchema,
 	hardwareDiskStatsSchema,
 	hardwareNetStatsSchema,
 	hardwareStatsSchema,
+	latestDrivesSchema,
+	latestRaidSchema,
 	lighthouseAuditSchema,
 	pageSpeedGroupedCheckSchema,
 } from "@/domain/checks/check.schema.js";
 
 export const CHECK_TTL_SENTINEL = 366;
+
+// Per-drive SMART status as reported by Capture: ok (values present), standby (asleep, not woken, no identity or
+// values), unsupported (no SMART, e.g. virtual disks), error (could not read; the reason is in the response errors).
+export const SmartDriveStatuses = ["ok", "standby", "unsupported", "error"] as const;
+export type SmartDriveStatus = (typeof SmartDriveStatuses)[number];
+
+// Closed set derived from smartctl's exit status bits. It does not say which attribute crossed a threshold.
+export const SmartWarnings = [
+	"disk_failing",
+	"prefail_attribute_at_threshold",
+	"attribute_was_at_threshold",
+	"error_log_has_errors",
+	"self_test_log_has_errors",
+] as const;
+export type SmartWarning = (typeof SmartWarnings)[number];
+
+// Error metrics Capture and the SMART fetch use; they tell SMART errors apart from the main metrics' errors on a check.
+export const SmartErrorMetrics = ["smart", "smartctl"] as const;
 export type CheckTimings = z.infer<typeof checkTimingsSchema>;
 export type CheckMetadata = z.infer<typeof checkMetadataSchema>;
 export type CheckCpuInfo = z.infer<typeof checkCpuInfoSchema>;
@@ -39,6 +63,9 @@ export type CheckHostInfo = z.infer<typeof checkHostInfoSchema>;
 export type CheckCaptureInfo = z.infer<typeof checkCaptureInfoSchema>;
 export type CheckDiskInfo = z.infer<typeof checkDiskInfoSchema>;
 export type CheckErrorInfo = z.infer<typeof checkErrorInfoSchema>;
+export type CheckRaidMember = z.infer<typeof checkRaidMemberSchema>;
+export type CheckRaidArray = z.infer<typeof checkRaidArraySchema>;
+export type CheckDrive = z.infer<typeof checkDriveSchema>;
 export type CheckNetworkInterfaceInfo = z.infer<typeof checkNetworkInterfaceInfoSchema>;
 export type CheckAudits = z.infer<typeof checkAuditsSchema>;
 export type ILighthouseAudit = z.infer<typeof lighthouseAuditSchema>;
@@ -51,6 +78,7 @@ export type SnapshotCpuInfo = NonNullable<CheckSnapshot["cpu"]>;
 export type SnapshotMemoryInfo = NonNullable<CheckSnapshot["memory"]>;
 export type SnapshotDiskInfo = NonNullable<CheckSnapshot["disk"]>[number];
 export type SnapshotHostInfo = NonNullable<CheckSnapshot["host"]>;
+export type SnapshotRaidArray = NonNullable<CheckSnapshot["raid"]>[number];
 
 export type GroupedCheck = z.infer<typeof groupedCheckSchema>;
 export type GroupedUptimeCheck = z.infer<typeof groupedUptimeCheckSchema>;
@@ -59,6 +87,9 @@ export type HardwareDiskStats = z.infer<typeof hardwareDiskStatsSchema>;
 export type HardwareNetStats = z.infer<typeof hardwareNetStatsSchema>;
 export type HardwareCheckStats = z.infer<typeof hardwareCheckStatsSchema>;
 export type HardwareStats = z.infer<typeof hardwareStatsSchema>;
+export type LatestRaid = z.infer<typeof latestRaidSchema>;
+export type LatestDrives = z.infer<typeof latestDrivesSchema>;
+export type DriveHistory = z.infer<typeof driveHistorySchema>;
 export type DailyCheckBucket = z.infer<typeof dailyCheckBucketSchema>;
 export type DockerStatsBucket = z.infer<typeof dockerStatsBucketSchema>;
 export type DockerStats = z.infer<typeof dockerStatsSchema>;

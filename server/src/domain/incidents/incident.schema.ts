@@ -1,5 +1,14 @@
 import { z } from "zod";
-import { IncidentResolutionTypes } from "./incident.type.js";
+import { IncidentCauses, IncidentResolutionTypes } from "./incident.type.js";
+import { storageBreachSchema } from "@/domain/storage/storage.schema.js";
+
+// A storage alert that opened while the incident was active: the incident's own storage alert, or one that joined an
+// incident already open for another reason. Lets a drive's page list the incidents about it.
+export const incidentStorageEventSchema = storageBreachSchema
+	.extend({
+		at: z.string().meta({ example: "2026-11-09T21:14:00.000Z" }),
+	})
+	.meta({ id: "IncidentStorageEvent" });
 
 export const incidentSchema = z
 	.object({
@@ -11,6 +20,13 @@ export const incidentSchema = z
 		status: z.boolean().meta({ example: true, description: "true = resolved, false = ongoing" }),
 		message: z.string().nullable().meta({ example: "HTTP 503 from origin" }),
 		statusCode: z.number().nullable().meta({ example: 503 }),
+		cause: z.enum(IncidentCauses).nullable().meta({
+			example: "down",
+			description: "What opened the incident: the monitor going down, a hardware threshold, or a storage alert. Null on older incidents",
+		}),
+		storageEvents: z.array(incidentStorageEventSchema).meta({
+			description: "Storage alerts (array or drive) that opened during the incident, oldest first. Empty for other incidents",
+		}),
 		resolutionType: z.enum(IncidentResolutionTypes).nullable().meta({ example: "automatic" }),
 		resolvedBy: z.string().nullable(),
 		resolvedByEmail: z.string().nullable(),
@@ -31,6 +47,15 @@ export const publicIncidentSchema = incidentSchema.pick({
 	statusCode: true,
 	createdAt: true,
 });
+
+// One storage event with the state of its incident, for a drive's incident list
+export const storageIncidentEventSchema = incidentStorageEventSchema
+	.extend({
+		incidentId: z.string().meta({ example: "65f1c2a4d8b9e0123456789c" }),
+		incidentActive: z.boolean().meta({ example: true }),
+		incidentEndTime: z.string().nullable().meta({ example: null }),
+	})
+	.meta({ id: "StorageIncidentEvent" });
 
 export const incidentSummaryTopMonitorSchema = z.object({
 	monitorId: z.string().meta({ example: "65f1c2a4d8b9e0123456789a" }),

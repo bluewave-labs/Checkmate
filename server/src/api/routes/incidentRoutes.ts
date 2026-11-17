@@ -3,10 +3,12 @@ import { RouteTable } from "@/api/routes/defineRoutes.js";
 import {
 	getIncidentsByTeamQueryValidation,
 	getIncidentSummaryQueryValidation,
+	getStorageIncidentEventsQueryValidation,
 	incidentIdParamValidation,
 	resolveIncidentBodyValidation,
 	incidentListResponseSchema,
 	incidentDetailResponseSchema,
+	storageIncidentEventsResponseSchema,
 } from "@/api/validation/incidentValidation.js";
 
 import { incidentSchema, incidentSummarySchema } from "@/domain/incidents/incident.schema.js";
@@ -34,6 +36,14 @@ export const incidentRoutes: RouteTable<IIncidentController> = {
 			summary: "Incident summary for the caller's team",
 			query: getIncidentSummaryQueryValidation,
 			response: incidentSummarySchema,
+		},
+		{
+			method: "get",
+			path: "/team/storage",
+			handler: "getStorageIncidentEvents",
+			summary: "Storage alerts logged on a hardware monitor's incidents, for the given drives and arrays",
+			query: getStorageIncidentEventsQueryValidation,
+			response: storageIncidentEventsResponseSchema,
 		},
 		{
 			method: "get",
