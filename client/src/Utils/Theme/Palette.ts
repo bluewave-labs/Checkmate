@@ -29,6 +29,7 @@ export const colors = {
 	gray800: "#24242A",
 	rowDividerDark: "#2A2F2D",
 	blue500: "#2A78D6",
+	blue700: "#2D6F99",
 	gray700: "#313131",
 	ink800: "#33453F",
 	blue400: "#3987E5",
@@ -39,13 +40,18 @@ export const colors = {
 	brandGreenLight: "#4DAF94",
 	ink600: "#5C6D69",
 	ink500: "#6B7C78",
+	blue300: "#7FB8DE",
 	ink400: "#8C9893",
+	blue200: "#8CC8EE",
 	warningText: "#9A4D05",
 	ink300: "#A3AFAC",
+	green200: "#A6DDB9",
 	inkDark600: "#B3BCB7",
 	errorText: "#B91C1C",
+	blue100: "#BFE0F5",
 	rule300: "#C3C9C8",
 	yellow600: "#C98500",
+	rule250: "#C9D1CF",
 	magenta400: "#D55181",
 	rule200: "#D8DCDB",
 	orange700: "#D95926",
@@ -53,20 +59,35 @@ export const colors = {
 	errorMain: "#DC2626",
 	successBg: "#DCF2E4",
 	warningDark: "#E0A458",
+	blue50: "#E3F2FC",
 	rule100: "#E6E9E8",
 	magenta300: "#E87BA4",
 	errorDark: "#E8837A",
 	orange600: "#EB6834",
 	inkDark900: "#ECEFED",
 	yellow500: "#EDA100",
+	surface200: "#EEF1F0",
 	gray200: "#EFEFEF",
 	green50: "#EFFAF6",
 	warningMain: "#F28C18",
 	surface100: "#F3F6F5",
+	red200: "#F5B5B5",
+	green25: "#F7FBF9",
+	orange200: "#F8C98F",
 	surface50: "#FAFAFA",
+	red100: "#FDE2E2",
 	warningBg: "#FDEBD5",
 	orange500: "#FFA500",
 };
+
+export const SignalKeys = ["success", "error", "warning", "neutral", "info"] as const;
+export type SignalKey = (typeof SignalKeys)[number];
+export type SignalTone = { bg: string; text: string; border: string; mark: string };
+
+export const toSignalKey = (palette: string): SignalKey =>
+	(SignalKeys as readonly string[]).includes(palette)
+		? (palette as SignalKey)
+		: "neutral";
 
 export const lightPalette = {
 	primary: {
@@ -108,6 +129,10 @@ export const lightPalette = {
 		dark: colors.warningText,
 		contrastText: "#FFFFFF",
 	},
+	info: {
+		main: colors.blue700,
+		contrastText: "#FFFFFF",
+	},
 	neutral: {
 		raised: colors.surface100,
 		hairline: colors.rule200,
@@ -120,6 +145,39 @@ export const lightPalette = {
 		hoverGreen: colors.green50,
 		selectedGreen: colors.green100,
 		tooltip: colors.ink900,
+		sortedCell: colors.green25,
+	},
+	signal: {
+		success: {
+			bg: colors.successBg,
+			text: colors.successText,
+			border: colors.green200,
+			mark: colors.successMain,
+		},
+		error: {
+			bg: colors.red100,
+			text: colors.errorText,
+			border: colors.red200,
+			mark: colors.errorMain,
+		},
+		warning: {
+			bg: colors.warningBg,
+			text: colors.warningText,
+			border: colors.orange200,
+			mark: colors.warningMain,
+		},
+		neutral: {
+			bg: colors.surface200,
+			text: colors.ink700,
+			border: colors.rule250,
+			mark: colors.rule250,
+		},
+		info: {
+			bg: colors.blue50,
+			text: colors.blue700,
+			border: colors.blue100,
+			mark: colors.blue200,
+		},
 	},
 	sidebar: {
 		accent: colors.brandGreen,
@@ -177,6 +235,9 @@ export const darkPalette = {
 	warning: {
 		main: colors.warningDark,
 	},
+	info: {
+		main: colors.blue300,
+	},
 	neutral: {
 		raised: colors.gray800,
 		hairline: colors.ruleDark,
@@ -189,6 +250,39 @@ export const darkPalette = {
 		hoverGreen: alpha(colors.brandGreenLight, 0.07),
 		selectedGreen: alpha(colors.brandGreenLight, 0.14),
 		tooltip: colors.gray700,
+		sortedCell: alpha(colors.brandGreenLight, 0.04),
+	},
+	signal: {
+		success: {
+			bg: alpha(colors.successDark, 0.14),
+			text: colors.successDark,
+			border: alpha(colors.successDark, 0.35),
+			mark: colors.successDark,
+		},
+		error: {
+			bg: alpha(colors.errorDark, 0.14),
+			text: colors.errorDark,
+			border: alpha(colors.errorDark, 0.35),
+			mark: colors.errorDark,
+		},
+		warning: {
+			bg: alpha(colors.warningDark, 0.14),
+			text: colors.warningDark,
+			border: alpha(colors.warningDark, 0.35),
+			mark: colors.warningDark,
+		},
+		neutral: {
+			bg: alpha("#FFFFFF", 0.06),
+			text: colors.inkDark600,
+			border: colors.ruleDark,
+			mark: colors.inkDark600,
+		},
+		info: {
+			bg: alpha(colors.blue300, 0.14),
+			text: colors.blue300,
+			border: alpha(colors.blue300, 0.35),
+			mark: colors.blue300,
+		},
 	},
 	sidebar: {
 		accent: colors.brandGreenLight,

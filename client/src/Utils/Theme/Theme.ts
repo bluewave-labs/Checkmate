@@ -1,5 +1,11 @@
 import { createTheme } from "@mui/material";
-import { lightPalette, darkPalette, typographyLevels } from "@/Utils/Theme/Palette";
+import {
+	lightPalette,
+	darkPalette,
+	typographyLevels,
+	type SignalKey,
+	type SignalTone,
+} from "@/Utils/Theme/Palette";
 
 import type { PaletteMode, PaletteOptions, Theme } from "@mui/material/styles";
 import type {} from "@mui/material/styles";
@@ -17,6 +23,7 @@ interface NeutralPalette {
 	hoverGreen: string;
 	selectedGreen: string;
 	tooltip: string;
+	sortedCell: string;
 }
 
 interface ChartPalette {
@@ -46,6 +53,7 @@ declare module "@mui/material/styles" {
 	}
 	interface Palette {
 		neutral: NeutralPalette;
+		signal: Record<SignalKey, SignalTone>;
 		sidebar: { accent: string };
 		scrollbar: { track: string; thumb: string };
 		rowStatus: { running: string; paused: string };
@@ -53,6 +61,7 @@ declare module "@mui/material/styles" {
 	}
 	interface PaletteOptions {
 		neutral?: NeutralPalette;
+		signal?: Record<SignalKey, SignalTone>;
 		sidebar?: { accent: string };
 		scrollbar?: { track: string; thumb: string };
 		rowStatus?: { running: string; paused: string };

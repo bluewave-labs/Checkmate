@@ -22,6 +22,9 @@ export const LAYOUT = {
 
 export const INPUT_BASE_HEIGHT = 30;
 export const SCROLLBAR_SIZE = 8;
+export const BADGE_HEIGHT = 24;
+export const TAG_HEIGHT = 22;
+export const STATUS_DOT_SIZE = 6;
 export const HOVER = {
 	DARKEN: 0.06, // This is a coefficient for darkening function
 	ROW: 0.025, // Overlay alpha for hoverable rows and cards
