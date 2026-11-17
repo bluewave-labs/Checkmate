@@ -85,7 +85,7 @@ Có thể tìm thấy hướng dẫn sử dụng [tại đây](https://checkmate
 
 Xem hướng dẫn cài đặt trong [cổng tài liệu của Checkmate](https://checkmate.so/docs).
 
-Hoặc bạn có thể dùng [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Nam Phi), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate) hoặc [Pikapods](https://www.pikapods.com/) để dựng nhanh một instance Checkmate. Nếu muốn giám sát hạ tầng máy chủ, bạn sẽ cần [agent Capture](https://checkmate.so/docs/infrastructure/installing-capture). Kho Capture cũng chứa hướng dẫn cài đặt.
+Hoặc bạn có thể dùng [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Nam Phi), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate), [ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate) (cần MongoDB riêng của bạn) hoặc [Pikapods](https://www.pikapods.com/) để dựng nhanh một instance Checkmate. Nếu muốn giám sát hạ tầng máy chủ, bạn sẽ cần [agent Capture](https://checkmate.so/docs/infrastructure/installing-capture). Kho Capture cũng chứa hướng dẫn cài đặt.
 
 ### Sử dụng CA tuỳ chỉnh
 

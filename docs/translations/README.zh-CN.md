@@ -82,7 +82,7 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 
 请参阅 [Checkmate 文档门户](https://checkmate.so/docs)中的安装说明。
 
-你也可以使用 [Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm)、[Sive Host](https://sive.host)（南非）、[Cloudzy](https://cloudzy.com/marketplace/checkmate)、[Ryvord](https://ryvord.com/run/checkmate) 或 [Pikapods](https://www.pikapods.com/) 快速启动一个 Checkmate 实例。如果想监控服务器基础设施，你需要 [Capture 代理](https://checkmate.so/docs/infrastructure/installing-capture)，Capture 仓库中也提供了安装说明。
+你也可以使用 [Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm)、[Sive Host](https://sive.host)（南非）、[Cloudzy](https://cloudzy.com/marketplace/checkmate)、[Ryvord](https://ryvord.com/run/checkmate)、[ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate)（需要自备 MongoDB） 或 [Pikapods](https://www.pikapods.com/) 快速启动一个 Checkmate 实例。如果想监控服务器基础设施，你需要 [Capture 代理](https://checkmate.so/docs/infrastructure/installing-capture)，Capture 仓库中也提供了安装说明。
 
 ### 使用自定义 CA
 

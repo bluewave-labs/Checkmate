@@ -131,9 +131,11 @@ You can also run Checkmate on any of these platforms:
     <td align="center" width="120"><a href="https://pethost.dev/templates/checkmate/"><img src="https://checkmate.so/img/brands/hosts/pethost.svg" height="28" alt="Pethost"><br><sub><b>Pethost</b></sub></a></td>
     <td align="center" width="120"><a href="https://xcloud.host/checkmate-hosting/"><img src="https://checkmate.so/img/brands/hosts/xcloud.png" height="28" alt="xCloud"><br><sub><b>xCloud</b></sub></a></td>
     <td align="center" width="120"><a href="https://ryvord.com/run/checkmate"><img src="https://checkmate.so/img/brands/hosts/ryvord.svg" height="28" alt="Ryvord"><br><sub><b>Ryvord</b></sub></a></td>
-    <td align="center" width="120"><a href="https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate"><img src="https://zop.dev/deploytozopday-inkhard.svg" height="28" alt="ZopDay"><br><sub><b>ZopDay</b></sub></a></td>
+    <td align="center" width="120"><a href="https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate"><img src="https://checkmate.so/img/brands/hosts/zopday.svg" height="28" alt="ZopDay"><br><sub><b>ZopDay</b></sub></a></td>
   </tr>
 </table>
+
+ZopDay deploys only the Checkmate image, so it needs your own MongoDB: set `DB_CONNECTION_STRING`, `JWT_SECRET` and `CLIENT_HOST` on its deploy screen.
 
 Note that the Helm chart has not yet been migrated to the all-in-one image: it still deploys the legacy `checkmate-client`, `checkmate-backend` and `checkmate-mongo` images, pinned at v3.8.1.
 
