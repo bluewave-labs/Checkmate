@@ -11,7 +11,7 @@ import { Fragment, useId } from "react";
 import { XTick } from "@/Components/monitors/charts/XTick";
 
 import { useTheme } from "@mui/material/styles";
-import type { HardwareCheckStats } from "@/Types/Monitor";
+import type { DriveHistoryPoint, HardwareCheckStats } from "@/Types/Monitor";
 import { AREA_COLORS, createGradient } from "@/Components/monitors/charts/ChartUtils";
 
 export const HistogramInfrastructure = ({
@@ -35,7 +35,8 @@ export const HistogramInfrastructure = ({
 	title: string;
 	type: string;
 	idx: number | null;
-	checks: HardwareCheckStats[];
+	// Hardware buckets, or one drive's SMART history on the drive detail page
+	checks: HardwareCheckStats[] | DriveHistoryPoint[];
 	xKey: string;
 	yDomain?: number[];
 	dataKeys: string[];
@@ -54,7 +55,7 @@ export const HistogramInfrastructure = ({
 	let avgTemps: { bucketDate: string; avg_temp: number | null }[] = [];
 	let tempYDomain: number[] = [];
 	if (type === "temp") {
-		avgTemps = data.map((check) => {
+		avgTemps = (data as HardwareCheckStats[]).map((check) => {
 			const temps = check.avgTemperature || [];
 			if (temps.length === 0) return { bucketDate: check.bucketDate, avg_temp: null };
 			const totalTemp = temps.reduce((sum, temp) => sum + (temp || 0), 0);

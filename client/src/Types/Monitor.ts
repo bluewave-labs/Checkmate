@@ -6,6 +6,9 @@ import type {
 	DockerContainerInfo,
 	DockerContainerSummary,
 	DockerLog,
+	CheckDrive,
+	CheckErrorInfo,
+	CheckRaidArray,
 } from "@/Types/Check";
 import type { PageSpeedGroupedCheck } from "@/Types/Check";
 import type { GeoContinent } from "@/Types/GeoCheck";
@@ -311,10 +314,47 @@ export interface HardwareStats {
 	checks: HardwareCheckStats[];
 }
 
+// Storage health on the hardware details response (mirrors latestRaidSchema, latestDrivesSchema and
+// driveHistorySchema in server/src/domain/checks/check.schema.ts).
+export interface LatestRaid {
+	arrays: CheckRaidArray[];
+	checkedAt: string;
+}
+
+export interface LatestDrive extends CheckDrive {
+	// Set on standby drives whose identity and values come from an earlier reading.
+	lastKnownAt?: string;
+}
+
+export interface LatestDrives {
+	drives: LatestDrive[];
+	errors: CheckErrorInfo[];
+	checkedAt: string;
+}
+
+// Counters are the bucket maximum, temperature the bucket average in Celsius; null when not reported.
+export interface DriveHistoryPoint {
+	bucketDate: string;
+	reallocated_sectors: number | null;
+	pending_sectors: number | null;
+	offline_uncorrectable: number | null;
+	media_errors: number | null;
+	temperature: number | null;
+}
+
+export interface DriveHistory {
+	serial_number: string;
+	points: DriveHistoryPoint[];
+}
+
 export interface HardwareDetailsResponse {
 	monitor: Monitor;
 	stats: HardwareStats;
 	monitorStats: MonitorStats | null;
+	// Null when no recent check carries the data (Capture without RAID or per-drive SMART support).
+	raid: LatestRaid | null;
+	drives: LatestDrives | null;
+	driveHistory: DriveHistory[];
 }
 
 export interface DockerStatsBucket {

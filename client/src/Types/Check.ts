@@ -121,6 +121,75 @@ export interface CheckTimings {
 	};
 }
 
+// Mirrors checkRaidMemberSchema / checkRaidArraySchema in server/src/domain/checks/check.schema.ts.
+// States are raw kernel md values, so they stay open strings.
+export interface CheckRaidMember {
+	device: string;
+	// Comma-separated md flags, e.g. "in_sync", "faulty,blocked". Match with includes, not equality.
+	state: string;
+}
+
+export interface CheckRaidArray {
+	device: string;
+	level: string;
+	state: string;
+	raid_disks?: number | null;
+	degraded_disks?: number | null;
+	sync_action?: string | null;
+	sync_progress?: number | null;
+	members: CheckRaidMember[];
+}
+
+export type SnapshotRaidArray = Pick<
+	CheckRaidArray,
+	"device" | "state" | "degraded_disks" | "sync_action" | "sync_progress"
+>;
+
+// Mirrors SmartDriveStatuses / SmartWarnings in server/src/domain/checks/check.type.ts.
+export const SmartDriveStatuses = ["ok", "standby", "unsupported", "error"] as const;
+export type SmartDriveStatus = (typeof SmartDriveStatuses)[number];
+
+export const SmartWarnings = [
+	"disk_failing",
+	"prefail_attribute_at_threshold",
+	"attribute_was_at_threshold",
+	"error_log_has_errors",
+	"self_test_log_has_errors",
+] as const;
+export type SmartWarning = (typeof SmartWarnings)[number];
+
+// Mirrors checkDriveSchema. Null counters mean "not reported", never 0. String fields keep Capture's
+// legacy format ("38 Celsius", "3%", decimal strings, "" when absent).
+export interface CheckDrive {
+	device: string;
+	type: string;
+	protocol: string;
+	status: SmartDriveStatus;
+	model_name: string;
+	serial_number: string;
+	firmware_version: string;
+	capacity_bytes?: number | null;
+	warnings: SmartWarning[];
+	reallocated_sectors?: number | null;
+	pending_sectors?: number | null;
+	offline_uncorrectable?: number | null;
+	media_errors?: number | null;
+	smart_overall_health_self_assessment_test_result: string;
+	temperature: string;
+	power_on_hours: string;
+	power_cycles: string;
+	unsafe_shutdowns: string;
+	percentage_used: string;
+	available_spare: string;
+	available_spare_threshold: string;
+	critical_warning: string;
+	data_units_read: string;
+	data_units_written: string;
+	host_read_commands: string;
+	host_write_commands: string;
+	controller_busy_time: string;
+}
+
 // Mirrors DockerContainerSummary in server/src/types/network.ts.
 export interface DockerContainerSummary {
 	total: number;
@@ -220,6 +289,8 @@ export interface Check {
 	errors?: CheckErrorInfo[];
 	capture?: CheckCaptureInfo;
 	containerSummary?: DockerContainerSummary;
+	raid?: CheckRaidArray[];
+	drives?: CheckDrive[];
 	net?: CheckNetworkInterfaceInfo[];
 	accessibility?: number;
 	bestPractices?: number;
@@ -354,7 +425,7 @@ export type SnapshotMemoryInfo = Pick<
 >;
 export type SnapshotDiskInfo = Pick<
 	CheckDiskInfo,
-	"device" | "total_bytes" | "used_bytes" | "usage_percent"
+	"device" | "mountpoint" | "total_bytes" | "used_bytes" | "usage_percent"
 >;
 export type SnapshotHostInfo = Pick<CheckHostInfo, "os" | "platform" | "pretty_name">;
 
@@ -377,6 +448,7 @@ export type CheckSnapshot = Pick<
 	disk?: SnapshotDiskInfo[];
 	host?: SnapshotHostInfo;
 	containerSummary?: DockerContainerSummary;
+	raid?: SnapshotRaidArray[];
 };
 export interface HasResponseTime {
 	responseTime: number;
