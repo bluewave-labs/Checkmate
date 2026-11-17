@@ -1,11 +1,10 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
 import { BaseBox } from "@/Components/design-elements";
 import { useTranslation } from "react-i18next";
 import type { SxProps } from "@mui/material";
 
-import { alpha, useTheme } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 
 type StatusBoxProps = React.PropsWithChildren<{
 	children: React.ReactNode;
@@ -18,32 +17,11 @@ export const BGBox = ({ children, sx }: StatusBoxProps) => {
 		<BaseBox
 			sx={{
 				backgroundColor: theme.palette.background.paper,
-				overflow: "hidden",
-				position: "relative",
 				flex: 1,
 				padding: theme.spacing(6),
 				...sx,
 			}}
 		>
-			<Box
-				position="absolute"
-				top={0}
-				left={0}
-				right={0}
-				bottom={0}
-				sx={{
-					pointerEvents: "none",
-					backgroundImage: `
-						linear-gradient(${alpha(theme.palette.divider, 0.4)} 1px, transparent 1px),
-						linear-gradient(90deg, ${alpha(theme.palette.divider, 0.4)} 1px, transparent 1px)
-					`,
-					backgroundSize: "24px 24px",
-					maskImage:
-						"linear-gradient(135deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.4) 100%)",
-					WebkitMaskImage:
-						"linear-gradient(135deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.4) 100%)",
-				}}
-			/>
 			{children}
 		</BaseBox>
 	);
