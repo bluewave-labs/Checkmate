@@ -1,5 +1,5 @@
 import { BasePage, Tabs, Tab } from "@/Components/design-elements";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { TabProfile } from "./TabProfile";
@@ -7,6 +7,7 @@ import { TabPassword } from "./TabPassword";
 import { TabTeam } from "./TabTeam";
 import type { RootState } from "@/Types/state";
 import type { UserRole } from "@/Types/User";
+import { useNavigate } from "react-router";
 
 const ACCOUNT_TABS: { key: AccountTabKey; labelKey: string; roles?: UserRole[] }[] = [
 	{ key: "profile", labelKey: "pages.account.tabs.profile" },
@@ -26,25 +27,24 @@ interface AccountProps {
 
 const Account = ({ open = "profile" }: AccountProps) => {
 	const { t } = useTranslation();
+	const navigate = useNavigate();
 	const userRoles = useSelector((state: RootState) => state.auth.user?.role) ?? [];
 	const visibleTabs = ACCOUNT_TABS.filter(
 		(tab) => !tab.roles || tab.roles.some((role) => userRoles.includes(role))
 	);
-	const [requestedTab, setRequestedTab] = useState<AccountTabKey>(open);
-	const activeTab: AccountTabKey = visibleTabs.some((tab) => tab.key === requestedTab)
-		? requestedTab
-		: "profile";
+	const activeTab = visibleTabs.some((tab) => tab.key === open) ? open : "profile";
 
-	// Sync activeTab when open prop changes (e.g., navigating from sidebar)
 	useEffect(() => {
-		setRequestedTab(open);
-	}, [open]);
+		if (activeTab !== open) {
+			navigate("/account/profile");
+		}
+	}, [open, activeTab, navigate]);
 
 	return (
 		<BasePage headerKey="account">
 			<Tabs
 				value={activeTab}
-				onChange={(_, value: AccountTabKey) => setRequestedTab(value)}
+				onChange={(_, value: AccountTabKey) => navigate(`/account/${value}`)}
 			>
 				{visibleTabs.map((tab) => (
 					<Tab
