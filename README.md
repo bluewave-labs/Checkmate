@@ -84,9 +84,7 @@ Checkmate also scales horizontally for more than 5000 servers: you can run dedic
 <a id="demo"></a>
 ## Demo
 
-You can see the latest build of [Checkmate](https://demo.checkmate.so/) in action. 
-
-The username is demouser@demo.com and the password is Demouser1! (just a note that we update the demo server from time to time, so if it doesn't work for you, please ping us on the Discussions channel).
+Click here to see the latest build of [Checkmate](https://checkmate.so/demo) in action. The username is demouser@demo.com and the password is Demouser1! 
 
 <a id="users-guide"></a>
 ## User's guide
