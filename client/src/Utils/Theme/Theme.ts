@@ -117,6 +117,8 @@ export const theme = (mode: PaletteMode, palette: PaletteOptions) =>
 		components: {
 			MuiCssBaseline: {
 				styleOverrides: (theme) => ({
+					html: { overflowY: "scroll" },
+					"*:focus:not(:focus-visible)": { outline: "none" },
 					"*": {
 						scrollbarWidth: "auto",
 						scrollbarColor: `${theme.palette.scrollbar.thumb} ${theme.palette.scrollbar.track}`,
@@ -150,6 +152,17 @@ export const theme = (mode: PaletteMode, palette: PaletteOptions) =>
 				},
 			},
 			MuiIconButton: {
+				styleOverrides: {
+					root: ({ theme }) =>
+						theme.unstable_sx({
+							borderRadius: theme.shape.borderRadius,
+							"&:hover": { backgroundColor: theme.palette.neutral.selectedGreen },
+							"&.Mui-focusVisible": {
+								outline: `2px solid ${theme.palette.primary.main}`,
+								outlineOffset: 1,
+							},
+						}),
+				},
 				defaultProps: {
 					disableRipple: true,
 					disableTouchRipple: true,
@@ -184,6 +197,7 @@ export const theme = (mode: PaletteMode, palette: PaletteOptions) =>
 						height: "100%",
 					},
 					root: ({ theme }) => ({
+						...theme.unstable_sx({ borderRadius: theme.shape.borderRadius }),
 						backgroundColor: theme.palette.background.paper,
 						"&.MuiInputBase-root:has(.MuiSelect-select)": {
 							cursor: "pointer",
@@ -197,12 +211,12 @@ export const theme = (mode: PaletteMode, palette: PaletteOptions) =>
 							alignSelf: "stretch",
 						},
 						"& .MuiOutlinedInput-notchedOutline": {
-							borderColor: theme.palette.divider,
+							borderColor: theme.palette.neutral.border,
 							transition: "border-color 0.15s ease",
 						},
 						"&:hover:not(.Mui-focused):not(.Mui-disabled) .MuiOutlinedInput-notchedOutline":
 							{
-								borderColor: theme.palette.text.disabled,
+								borderColor: theme.palette.neutral.borderHover,
 							},
 						"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
 							borderColor:
@@ -222,17 +236,30 @@ export const theme = (mode: PaletteMode, palette: PaletteOptions) =>
 				styleOverrides: {
 					root: ({ theme }) => {
 						return {
+							...theme.unstable_sx({ borderRadius: theme.shape.borderRadius }),
 							marginTop: 4,
 							padding: 0,
 							border: 1,
 							borderStyle: "solid",
 							borderColor: theme.palette.divider,
-							borderRadius: 4,
-							boxShadow: shadow,
+							boxShadow: "none",
 							backgroundColor: theme.palette.background.paper,
 							backgroundImage: "none",
 						};
 					},
+				},
+			},
+			MuiPopover: { styleOverrides: { paper: { boxShadow: shadow } } },
+			MuiMenu: {
+				styleOverrides: {
+					paper: { boxShadow: shadow },
+					list: { paddingTop: 0, paddingBottom: 0 },
+				},
+			},
+			MuiDialog: {
+				styleOverrides: {
+					paper: ({ theme }) =>
+						theme.unstable_sx({ borderRadius: theme.shape.borderRadius }),
 				},
 			},
 		},
