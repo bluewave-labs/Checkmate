@@ -77,27 +77,27 @@ export const PageHeader = ({
 			alignItems="flex-start"
 			justifyContent="space-between"
 			gap={6}
-			sx={{ mb: theme.spacing(8) }}
+			mb={theme.spacing(8)}
 		>
 			<Stack gap={theme.spacing(1)}>
 				{backTo && backLabel && (
 					<Box
 						component={RouterLink}
 						to={backTo}
+						display="inline-flex"
+						gap={0.5}
+						color={theme.palette.text.secondary}
+						fontSize={typographyLevels.base}
+						mb={theme.spacing(1)}
+						alignItems={"center"}
 						sx={{
-							display: "inline-flex",
-							alignItems: "center",
-							gap: 0.5,
 							textDecoration: "none",
-							color: theme.palette.text.secondary,
-							fontSize: 13,
-							mb: theme.spacing(1),
 							"&:hover": { color: theme.palette.text.primary },
 						}}
 					>
 						<ChevronLeft
 							size={14}
-							strokeWidth={1.8}
+							strokeWidth={1.5}
 						/>
 						{backLabel}
 					</Box>
@@ -124,15 +124,13 @@ export const PageHeader = ({
 				)}
 			</Stack>
 			<Box
-				sx={{
-					display: "inline-flex",
-					alignItems: "center",
-					border: `1px solid ${theme.palette.divider}`,
-					borderRadius: 1,
-					overflow: "hidden",
-					backgroundColor: theme.palette.background.paper,
-					flexShrink: 0,
-				}}
+				display="inline-flex"
+				border={`1px solid ${theme.palette.divider}`}
+				borderRadius={theme.shape.borderRadius}
+				bgcolor={theme.palette.background.paper}
+				alignItems={"center"}
+				overflow={"hidden"}
+				flexShrink={0}
 			>
 				{showUpdate && (
 					<Tooltip title={t("components.pageHeader.update.tooltip")}>
@@ -149,7 +147,7 @@ export const PageHeader = ({
 							pr={theme.spacing(5)}
 							borderRight={`1px solid ${theme.palette.divider}`}
 							color={theme.palette.text.primary}
-							fontSize={13}
+							fontSize={typographyLevels.base}
 							sx={{
 								textDecoration: "none",
 								whiteSpace: "nowrap",
@@ -178,17 +176,16 @@ export const PageHeader = ({
 							href={EXTERNAL_LINKS[item.key]}
 							target="_blank"
 							rel="noopener noreferrer"
+							alignItems={"center"}
+							justifyContent="center"
+							display="inline-flex"
+							width={HEADER_LINK_WIDTH}
+							height={INPUT_BASE_HEIGHT}
+							color={theme.palette.text.secondary}
+							borderRight={
+								idx < linkItems.length - 1 ? `1px solid ${theme.palette.divider}` : "none"
+							}
 							sx={{
-								display: "inline-flex",
-								alignItems: "center",
-								justifyContent: "center",
-								width: 36,
-								height: INPUT_BASE_HEIGHT,
-								color: theme.palette.text.secondary,
-								borderRight:
-									idx < linkItems.length - 1
-										? `1px solid ${theme.palette.divider}`
-										: "none",
 								"&:hover": {
 									backgroundColor: theme.palette.action.hover,
 									color: theme.palette.text.primary,
