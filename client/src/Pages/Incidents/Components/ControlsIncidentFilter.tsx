@@ -4,6 +4,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { Typography, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import type { Monitor } from "@/Types/Monitor";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const resolutionTypes = ["all", "manual", "automatic"];
 
@@ -34,7 +35,7 @@ export const ControlsIncidentFilter = ({
 	return (
 		<Stack
 			direction={isSmall ? "column" : "row"}
-			gap={theme.spacing(2)}
+			gap={LAYOUT.XS}
 		>
 			<Select
 				placeholder={t("pages.incidents.filters.monitor")}
