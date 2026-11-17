@@ -111,6 +111,7 @@ export const ImageUpload = ({
 					width="100%"
 					minHeight={150}
 					border="2px dashed"
+					borderRadius={theme.shape.borderRadius}
 					borderColor={isDragging ? theme.palette.primary.main : theme.palette.divider}
 					bgcolor={isDragging ? theme.palette.action.hover : "transparent"}
 					sx={{
