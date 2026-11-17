@@ -28,9 +28,14 @@ import { useTranslation } from "react-i18next";
 import { useState, Fragment, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 import type { SxProps, Theme } from "@mui/material/styles";
+import type { SortOrder } from "@/Types/Query";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { IconButton } from "@/Components/inputs";
+
+const TABLE_HEAD_HEIGHT = 36;
+const CHECKBOX_PADDING = 9;
 
 export type Header<T> = {
 	id: number | string;
@@ -53,6 +58,8 @@ type DataTableProps<T extends { id?: string | number; _id?: string | number }> =
 	emptyViewPositive?: boolean;
 	getRowSx?: (row: T) => SxProps<Theme>;
 	isRowSelected?: (row: T) => boolean;
+	sortedColumnId?: string | number;
+	sortDirection?: SortOrder;
 };
 
 export function DataTable<
@@ -72,8 +79,25 @@ export function DataTable<
 	emptyViewPositive,
 	getRowSx,
 	isRowSelected,
+	sortedColumnId,
+	sortDirection,
 }: DataTableProps<T>) {
 	const theme = useTheme();
+
+	const isSorted = (header: Header<T>) =>
+		sortedColumnId !== undefined && header.id === sortedColumnId;
+	const getAriaSort = (header: Header<T>) => {
+		if (!isSorted(header)) return undefined;
+		return sortDirection === "desc" ? "descending" : "ascending";
+	};
+	const sortedHeaderSx = {
+		"&&": {
+			backgroundColor: theme.palette.neutral.hoverGreen,
+			color: theme.palette.text.primary,
+		},
+	};
+	const sortedCellSx = { "&&": { backgroundColor: theme.palette.neutral.sortedCell } };
+
 	const [expanded, setExpanded] = useState<(string | number) | null>(null);
 	const handleExpand = (row: T) => {
 		const key = row.id ?? row._id ?? null;
@@ -199,32 +223,45 @@ export function DataTable<
 			<Table
 				sx={{
 					"&.MuiTable-root  :is(.MuiTableHead-root, .MuiTableBody-root) :is(th, td)": {
-						paddingLeft: theme.spacing(LAYOUT.MD),
+						paddingLeft: theme.spacing(LAYOUT.SM_PLUS),
 					},
 					"& .MuiTableCell-root": {
-						borderBottom: `1px solid ${theme.palette.divider}`,
-					},
-					"& .MuiTableHead-root .MuiTableRow-root": {
-						height: "28px",
-						borderBottom: `1px solid ${theme.palette.divider}`,
+						borderBottom: `1px solid ${theme.palette.neutral.rowDivider}`,
 					},
 					"& .MuiTableHead-root .MuiTableCell-root": {
-						borderBottom: "none",
+						borderBottom: `1px solid ${theme.palette.neutral.hairline}`,
 					},
 					"& :is(th)": {
-						backgroundColor: theme.palette.background.paper,
-						color: theme.palette.text.secondary,
-						fontWeight: 600,
+						backgroundColor: theme.palette.neutral.raised,
+						color: theme.palette.neutral.tertiary,
+						fontWeight: 500,
 						textTransform: "uppercase",
-						letterSpacing: "0.08em",
-						padding: `${theme.spacing(SPACING.LG)} ${theme.spacing(LAYOUT.MD)}`,
-						fontSize: 11,
+						letterSpacing: "0.07em",
+						py: LAYOUT.XS,
+						px: LAYOUT.SM_PLUS,
+						fontSize: typographyLevels.s,
+						lineHeight: 1.5,
+						whiteSpace: "nowrap",
+						height: TABLE_HEAD_HEIGHT,
+					},
+					"& :is(th) .MuiTypography-root": {
+						fontSize: "inherit",
+						fontWeight: "inherit",
+						lineHeight: "inherit",
+						letterSpacing: "inherit",
+						color: "inherit",
+					},
+					"& :is(th) .MuiCheckbox-root": {
+						marginTop: `-${CHECKBOX_PADDING}px`,
+						marginBottom: `-${CHECKBOX_PADDING}px`,
 					},
 					"& :is(td)": {
 						backgroundColor: theme.palette.background.paper,
 						color: theme.palette.text.secondary,
-						padding: `${theme.spacing(LAYOUT.MD)} ${theme.spacing(LAYOUT.MD)}`,
+						py: LAYOUT.XS_PLUS,
+						px: LAYOUT.SM_PLUS,
 						fontSize: theme.typography.fontSize,
+						fontVariantNumeric: "tabular-nums",
 						overflowX: "hidden",
 					},
 					"& .MuiTableBody-root .MuiTableRow-root:last-child .MuiTableCell-root": {
@@ -245,6 +282,8 @@ export function DataTable<
 								<TableCell
 									align={header.align ?? (idx === 0 ? "left" : "center")}
 									key={header.id}
+									aria-sort={getAriaSort(header)}
+									sx={isSorted(header) ? sortedHeaderSx : undefined}
 								>
 									{header.content}
 								</TableCell>
@@ -325,6 +364,7 @@ export function DataTable<
 											<TableCell
 												align={header.align ?? (index === 0 ? "left" : "center")}
 												key={header.id}
+												sx={isSorted(header) ? sortedCellSx : undefined}
 												onClick={
 													header.onClick ? (e) => header.onClick!(e, row) : undefined
 												}
@@ -675,11 +715,9 @@ const EmptyView = ({ text }: { text?: string; positive?: boolean }) => {
 	const theme = useTheme();
 	return (
 		<Box
-			sx={{
-				border: `1px solid ${theme.palette.divider}`,
-				borderRadius: 1,
-				backgroundColor: theme.palette.background.paper,
-			}}
+			border={`1px solid ${theme.palette.divider}`}
+			borderRadius={theme.shape.borderRadius}
+			bgcolor={theme.palette.background.paper}
 		>
 			<EmptyState title={text ?? t("common.table.empty")} />
 		</Box>
