@@ -274,6 +274,8 @@ export const PageSpeedMonitorsTable = ({
 				onRowClick={(row) => {
 					navigate(`/pagespeed/${row.id}`);
 				}}
+				sortedColumnId={sortField || undefined}
+				sortDirection={sortOrder}
 			/>
 			<Pagination
 				component="div"
