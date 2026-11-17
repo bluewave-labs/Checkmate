@@ -27,6 +27,7 @@ import {
 	FormTimePickerField,
 } from "@/Components/inputs/forms/FormDateTimePickerField";
 import { FormMultiSelectField } from "@/Components/inputs/forms/FormMultiSelectField";
+import { MonitorSelectedRow } from "@/Components/monitors/MonitorSelectedRow";
 import { FormNumberField } from "@/Components/inputs/forms/FormNumberField";
 
 const CreateMaintenanceWindowPage = () => {
@@ -206,6 +207,7 @@ const CreateMaintenanceWindowPage = () => {
 								"pages.maintenanceWindow.form.startTime.monitors.option.addMonitors.label"
 							)}
 							options={monitors ?? []}
+							renderRow={(monitor) => <MonitorSelectedRow monitor={monitor} />}
 							renderOptionContent={(monitor) => (
 								<Stack
 									direction="row"

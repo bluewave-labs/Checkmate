@@ -166,6 +166,10 @@
 			"copy": "Copy to clipboard",
 			"copied": "Copied to clipboard",
 			"copyFailed": "Could not copy. Select the text and copy it manually."
+		},
+		"filters": {
+			"any": "Any",
+			"state": "State"
 		}
 	},
 	"components": {
@@ -191,6 +195,10 @@
 				"invalidFileSize": "File size is too large!",
 				"invalidFileFormat": "Unsupported file format!"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} selected",
+			"selectedCount_other": "{{count}} selected"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "Public link"

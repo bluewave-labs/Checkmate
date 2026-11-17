@@ -16,3 +16,4 @@ export * from "./charts/HistogramInfrastructure";
 export * from "./HeaderMonitorsSummary";
 export * from "./BulkActionsBar";
 export * from "./MonitorListPage";
+export * from "./MonitorSelectedRow";
