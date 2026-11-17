@@ -1,9 +1,6 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import { useTheme } from "@mui/material";
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { useSelector, useDispatch } from "react-redux";
@@ -17,6 +14,7 @@ import type { RootState } from "@/Types/state.js";
 import { setMode } from "@/Features/UI/uiSlice.js";
 import useSidebar from "@/Hooks/useSidebar";
 import type { SidebarMenuItem } from "@/Components/sidebar/Menu";
+import { IconButton, Menu, MenuItem } from "@/Components/inputs";
 
 interface AuthFooterProps {
 	collapsed: boolean;

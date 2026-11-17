@@ -7,13 +7,12 @@ import {
 } from "react-hook-form";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
 import { useTheme } from "@mui/material/styles";
 import { Trash2, GripVertical } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import type { DropResult } from "@hello-pangea/dnd";
 import { useTranslation } from "react-i18next";
-import { Autocomplete } from "@/Components/inputs";
+import { Autocomplete, IconButton } from "@/Components/inputs";
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 
 export interface MultiSelectOption {

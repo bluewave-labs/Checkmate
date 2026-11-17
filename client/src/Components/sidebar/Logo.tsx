@@ -1,17 +1,16 @@
 import Stack, { type StackProps } from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Tooltip from "@mui/material/Tooltip";
-import IconButton from "@mui/material/IconButton";
 import { useTheme } from "@mui/material/styles";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
-import { Icon } from "@/Components/design-elements";
+import { Icon, Tooltip } from "@/Components/design-elements";
 import { SPACING } from "@/Utils/Theme/constants";
 import { toggleSidebar } from "@/Features/UI/uiSlice.js";
 import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import useSidebar from "@/Hooks/useSidebar";
 import KingIcon from "@/assets/icons/checkmate-icon.svg?react";
+import { IconButton } from "@/Components/inputs";
 
 const ToggleButton = ({ expand, sx }: { expand: boolean; sx?: object }) => {
 	const { t } = useTranslation();

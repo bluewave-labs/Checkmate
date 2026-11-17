@@ -1,4 +1,3 @@
-import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
@@ -15,6 +14,7 @@ import { LAYOUT } from "@/Utils/Theme/constants";
 import { setDashboardUptimeOrder } from "@/Features/UI/uiSlice";
 import type { DashboardMonitor } from "@/Types/Dashboard";
 import type { AppDispatch, RootState } from "@/store";
+import { IconButton } from "@/Components/inputs";
 
 interface UptimeCardProps {
 	monitors: DashboardMonitor[];

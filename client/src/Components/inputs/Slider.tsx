@@ -36,22 +36,48 @@ export const SliderInput = forwardRef<HTMLSpanElement, SliderInputProps>(
 					ref={ref}
 					sx={[
 						{
-							"& .MuiSlider-track": {
-								backgroundColor: theme.palette.primary.main,
-								border: "none",
-							},
+							height: 4,
+							padding: "13px 0",
+							color: theme.palette.primary.main,
 							"& .MuiSlider-rail": {
+								height: 4,
+								borderRadius: "999px",
 								backgroundColor: theme.palette.grey[300],
 								opacity: 1,
 							},
+							"& .MuiSlider-track": {
+								height: 4,
+								borderRadius: "999px",
+								backgroundColor: theme.palette.primary.main,
+								border: "none",
+							},
 							"& .MuiSlider-thumb": {
+								width: 18,
+								height: 18,
 								backgroundColor: "#fff",
+								border: `2px solid ${theme.palette.primary.main}`,
+								boxShadow: "0 1px 2px rgba(16, 24, 40, 0.1)",
+								"&.Mui-active": {
+									boxShadow: `0 0 0 8px ${theme.palette.primary.main}29`,
+								},
 								"&:hover, &.Mui-focusVisible": {
 									boxShadow: "none",
 								},
 								"&:active": {
 									boxShadow: "none",
 								},
+								"&::before": { display: "none" },
+							},
+							"& .MuiSlider-mark": {
+								width: 2,
+								height: 2,
+								borderRadius: "999px",
+								backgroundColor: theme.palette.text.disabled,
+								opacity: 0.5,
+							},
+							"& .MuiSlider-markActive": {
+								backgroundColor: theme.palette.primary.main,
+								opacity: 0.5,
 							},
 							"& .MuiSlider-valueLabel": {
 								backgroundColor: theme.palette.primary.main,

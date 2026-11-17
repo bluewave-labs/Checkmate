@@ -1,7 +1,6 @@
 import Autocomplete from "@mui/material/Autocomplete";
 import type { AutocompleteProps } from "@mui/material/Autocomplete";
-import { TextField, Checkbox } from "@/Components/inputs";
-import MenuItem from "@mui/material/MenuItem";
+import { TextField, Checkbox, MenuItem } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
 import { FieldLabel } from "./FieldLabel";

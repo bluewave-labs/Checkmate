@@ -1,8 +1,9 @@
-import { Box, Stack, Typography, IconButton } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { Upload, X } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { IconButton } from "@/Components/inputs";
 
 interface FileObject {
 	src: string;

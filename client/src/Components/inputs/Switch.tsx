@@ -21,6 +21,38 @@ export const SwitchComponent = forwardRef<HTMLInputElement, SwitchComponentProps
 					},
 				}}
 				sx={[
+					{
+						width: 36,
+						height: 20,
+						padding: "0 6px 0 0",
+						boxSizing: "content-box",
+						overflow: "visible",
+						"& .MuiSwitch-switchBase": {
+							padding: props.size === "small" ? "4px" : "2px",
+							"&.Mui-checked": {
+								transform: "translateX(16px)",
+								color: "#fff",
+								"& + .MuiSwitch-track": {
+									backgroundColor: theme.palette.primary.main,
+									opacity: 1,
+									border: "0",
+								},
+							},
+						},
+						"& .MuiSwitch-thumb": {
+							width: 16,
+							height: 16,
+							boxShadow: "0 1px 2px rgba(16, 24, 40, 0.1)",
+						},
+						"& .MuiSwitch-track": {
+							borderRadius: "999px",
+							backgroundColor:
+								theme.palette.mode === "dark"
+									? "rgba(255,255,255,0.16)"
+									: theme.palette.action.disabledBackground,
+							opacity: 1,
+						},
+					},
 					...(dualOption
 						? [
 								{

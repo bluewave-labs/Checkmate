@@ -1,8 +1,7 @@
 import Stack from "@mui/material/Stack";
-import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import { useSelector } from "react-redux";
-import { Select } from "@/Components/inputs";
+import { Select, MenuItem } from "@/Components/inputs";
 import { TableLogs } from "@/Pages/Logs/components/TableLogs";
 import { EmptyState } from "@/Components/design-elements";
 

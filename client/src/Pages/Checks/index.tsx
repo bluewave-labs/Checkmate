@@ -8,10 +8,9 @@ import {
 	DegradedChecksBox,
 } from "@/Components/design-elements";
 import { HeaderTimeRange } from "@/Components/common";
-import { Select } from "@/Components/inputs";
+import { Select, MenuItem } from "@/Components/inputs";
 import { ChecksTable } from "./Components/ChecksTable";
 
-import { MenuItem } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";

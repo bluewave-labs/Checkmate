@@ -1,7 +1,6 @@
 import Stack from "@mui/material/Stack";
-import { Select, Autocomplete, Button, TextField } from "@/Components/inputs";
+import { Select, Autocomplete, Button, TextField, MenuItem } from "@/Components/inputs";
 import { ColoredLabel } from "@/Components/design-elements";
-import MenuItem from "@mui/material/MenuItem";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 import {

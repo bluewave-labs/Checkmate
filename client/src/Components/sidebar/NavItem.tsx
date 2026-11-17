@@ -1,4 +1,4 @@
-import Tooltip from "@mui/material/Tooltip";
+import { Tooltip } from "@/Components/design-elements";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Box from "@mui/material/Box";

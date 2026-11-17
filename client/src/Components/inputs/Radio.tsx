@@ -6,8 +6,33 @@ import Typography from "@mui/material/Typography";
 
 interface RadioInputProps extends RadioProps {}
 
-export const RadioInput = ({ ...props }: RadioInputProps) => {
-	return <Radio {...props} />;
+export const RadioInput = ({ sx, ...props }: RadioInputProps) => {
+	const theme = useTheme();
+	const additionalSx = Array.isArray(sx) ? sx : sx ? [sx] : [];
+
+	return (
+		<Radio
+			disableRipple
+			{...props}
+			sx={[
+				{
+					padding: theme.spacing(2),
+					color: theme.palette.divider,
+					"& .MuiSvgIcon-root": {
+						fontSize: "20px",
+						transition: "none",
+					},
+					"&.Mui-checked": {
+						color: theme.palette.primary.main,
+					},
+					"&.Mui-checked .MuiSvgIcon-root:last-of-type": {
+						transform: "scale(0.6)",
+					},
+				},
+				...additionalSx,
+			]}
+		/>
+	);
 };
 
 export const RadioWithDescription = ({
