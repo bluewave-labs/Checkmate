@@ -325,6 +325,8 @@ export const DockerMonitorsTable = ({
 					navigate(`/docker/host/${row.id}`);
 				}}
 				isRowSelected={(row) => isRowSelected(row.id)}
+				sortedColumnId={sortField || undefined}
+				sortDirection={sortOrder}
 			/>
 			<Pagination
 				component="div"
