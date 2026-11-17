@@ -7,16 +7,19 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { ChevronLeft, HelpCircle, FileText, Code } from "lucide-react";
 import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 import { useAppVersion } from "@/Hooks/useAppVersion";
 import { PulseDot } from "@/Components/design-elements/PulseDot";
 import { formatVersion } from "@/Utils/FormatUtils";
 
 import type { ReactNode } from "react";
 
+const HEADER_LINK_WIDTH = 32;
+
 const EXTERNAL_LINKS = {
 	support: "https://discord.com/invite/NAb6H3UTjK",
 	docs: "https://checkmate.so/docs",
-	changelog: "https://github.com/bluewave-labs/checkmate/releases",
+	changelog: "https://checkmate.so/changelog",
 };
 
 interface PageHeaderProps {
@@ -100,24 +103,21 @@ export const PageHeader = ({
 					</Box>
 				)}
 				<Typography
-					sx={{
-						fontSize: 26,
-						fontWeight: 400,
-						color: theme.palette.text.primary,
-						lineHeight: 1.15,
-						letterSpacing: "-0.02em",
-					}}
+					component="h1"
+					fontSize={typographyLevels.title}
+					fontWeight={500}
+					color={theme.palette.text.primary}
+					lineHeight={1.3}
+					letterSpacing="-0.02em"
 				>
 					{title}
 				</Typography>
 				{description && (
 					<Typography
-						sx={{
-							fontSize: 14,
-							color: theme.palette.text.secondary,
-							lineHeight: 1.55,
-							maxWidth: "108ch",
-						}}
+						fontSize={typographyLevels.base}
+						color={theme.palette.text.secondary}
+						lineHeight={1.5}
+						maxWidth="108ch"
 					>
 						{description}
 					</Typography>
