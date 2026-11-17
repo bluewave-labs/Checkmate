@@ -179,21 +179,11 @@ Alternatively, any of the [1-click installation options](#installation) listed a
 <a id="telemetry"></a>
 ### Telemetry
 
-Checkmate sends one anonymous heartbeat per installation every 24 hours so we can see how many instances are running. It contains only:
+Checkmate sends one small, anonymous report per installation once a day: a random installation ID, the Checkmate version, how it was installed (`docker` or `source`, primary or worker), Node.js version, operating system, CPU architecture and the number of monitors of each type. When it arrives, the receiving service adds an approximate country and city that Cloudflare derives from the IP address; the IP address itself is never stored. No URLs, hostnames, monitor names, check results, emails or anything else you've entered are sent.
 
-| Field | Example | What it is |
-|---|---|---|
-| `instanceId` | `3f0c7a52-…` | A random UUID generated once and stored in your database. It is not derived from your hardware, hostname or network |
-| `version` | `3.12.0` | Checkmate version |
-| `deployment` | `docker` | `docker` for the official image, `source` otherwise |
-| `queueMode` | `primary` | The `QUEUE_MODE` setting |
-| `nodeVersion` | `24.4.0` | Node.js version |
-| `os` | `linux` | Operating system |
-| `arch` | `x64` | CPU architecture |
+To turn it off, set `TELEMETRY_ENABLED=false` on every server container and restart.
 
-No URLs, hostnames, IP addresses, emails, names, monitor details or any other data you've entered are sent.
-
-To opt out, set `TELEMETRY_ENABLED=false` on every server container and restart. The scheduled heartbeat is removed on the next start.
+The full field list, why each field is collected, who can see the data and how to inspect the report your installation sends are on the [telemetry docs page](https://checkmate.so/docs/getting-started/telemetry).
 
 ### Using a Custom CA
 
