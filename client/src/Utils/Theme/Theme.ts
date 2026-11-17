@@ -106,7 +106,7 @@ export const theme = (mode: PaletteMode, palette: PaletteOptions) =>
 			fontFamilyMonospace,
 			fontSize: typographyLevels.base,
 			h1: {
-				fontSize: typographyLevels.xxl,
+				fontSize: typographyLevels.xxxl,
 				fontWeight: 600,
 				lineHeight: 1.3,
 				letterSpacing: "-0.02em",

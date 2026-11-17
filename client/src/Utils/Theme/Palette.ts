@@ -11,8 +11,8 @@ export const typographyLevels = {
 	m: `${typographyBase / 16}rem`,
 	l: `${(typographyBase + 1) / 16}rem`,
 	xl: `${(typographyBase + 5) / 16}rem`,
-	title: `${(typographyBase + 7) / 16}rem`,
-	xxl: `${(typographyBase + 11) / 16}rem`,
+	xxl: `${(typographyBase + 7) / 16}rem`,
+	xxxl: `${(typographyBase + 11) / 16}rem`,
 };
 
 export const colors = {

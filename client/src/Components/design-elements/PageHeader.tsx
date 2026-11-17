@@ -104,7 +104,7 @@ export const PageHeader = ({
 				)}
 				<Typography
 					component="h1"
-					fontSize={typographyLevels.title}
+					fontSize={typographyLevels.xxl}
 					fontWeight={500}
 					color={theme.palette.text.primary}
 					lineHeight={1.3}
