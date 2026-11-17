@@ -82,7 +82,7 @@ export type PaletteKey = {
 const fontFamilyPrimary = '"Geist Variable", system-ui, sans-serif';
 const fontFamilyMonospace =
 	'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace';
-const shadow =
+export const shadow =
 	"0px 4px 24px -4px rgba(16, 24, 40, 0.08), 0px 3px 3px -3px rgba(16, 24, 40, 0.03)";
 
 export const theme = (mode: PaletteMode, palette: PaletteOptions) =>
