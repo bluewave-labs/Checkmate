@@ -52,6 +52,14 @@ export const ButtonInput = ({ sx, ...props }: ButtonProps) => {
 				overflow: "hidden",
 				boxShadow: "none",
 				"&:hover": hoverOverrides,
+				"&.Mui-focusVisible": {
+					outline: `1px solid ${
+						theme.palette.mode === "dark"
+							? theme.palette.primary.light
+							: theme.palette.primary.main
+					}`,
+					outlineOffset: 2,
+				},
 				...variantSx,
 				...sx,
 			}}

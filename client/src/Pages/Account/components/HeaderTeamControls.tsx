@@ -1,6 +1,5 @@
 import Stack from "@mui/material/Stack";
-import MenuItem from "@mui/material/MenuItem";
-import { Button, Select } from "@/Components/inputs";
+import { Button, Select, MenuItem } from "@/Components/inputs";
 import { Icon } from "@/Components/design-elements";
 import { UserPlus, Mail } from "lucide-react";
 

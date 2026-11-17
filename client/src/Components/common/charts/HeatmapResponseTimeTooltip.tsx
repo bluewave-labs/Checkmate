@@ -1,5 +1,5 @@
 import Stack from "@mui/material/Stack";
-import Tooltip from "@mui/material/Tooltip";
+import { Tooltip } from "@/Components/design-elements";
 import Typography from "@mui/material/Typography";
 import { formatMs } from "@/Utils/TimeUtils";
 import type { CheckSnapshot } from "@/Types/Check";

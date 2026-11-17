@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import IconButton from "@mui/material/IconButton";
 import { Settings } from "lucide-react";
 import { useTheme } from "@mui/material/styles";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
+import { IconButton, Menu, MenuItem } from "@/Components/inputs";
 
 export type ActionMenuItem = {
 	id: number | string;

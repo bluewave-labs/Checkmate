@@ -1,9 +1,8 @@
 import { useTranslation } from "react-i18next";
 import Stack from "@mui/material/Stack";
 import RadioGroup from "@mui/material/RadioGroup";
-import MenuItem from "@mui/material/MenuItem";
 import { useTheme } from "@mui/material/styles";
-import { RadioWithDescription, Select } from "@/Components/inputs";
+import { RadioWithDescription, Select, MenuItem } from "@/Components/inputs";
 import {
 	STATUS_PAGE_THEMES,
 	STATUS_PAGE_THEME_MODES,

@@ -1,9 +1,8 @@
 import Stack from "@mui/material/Stack";
-import MenuItem from "@mui/material/MenuItem";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { ConfigBox } from "@/Components/design-elements";
-import { Select, SwitchComponent } from "@/Components/inputs";
+import { Select, SwitchComponent, MenuItem } from "@/Components/inputs";
 import { usePost } from "@/Hooks/UseApi";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { formatDuration, MS_PER_HOUR } from "@/Utils/TimeUtils";

@@ -1,4 +1,7 @@
 export { ButtonInput as Button } from "./Button";
+export { IconButtonInput as IconButton } from "./IconButton";
+export { MenuInput as Menu } from "./Menu";
+export { MenuItemInput as MenuItem } from "./MenuItem";
 export * from "./FieldLabel";
 export { SelectInput as Select } from "./Select";
 export { CheckboxInput as Checkbox } from "./Checkbox";

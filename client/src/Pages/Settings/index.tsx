@@ -6,17 +6,10 @@ import {
 	Tab,
 	CodeBlock,
 } from "@/Components/design-elements";
-import { Autocomplete, Select, Dialog } from "@/Components/inputs";
+import { Autocomplete, Select, Dialog, MenuItem } from "@/Components/inputs";
 import { logger } from "@/Utils/logger";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import {
-	Stack,
-	useTheme,
-	MenuItem,
-	Link,
-	Alert,
-	type SelectChangeEvent,
-} from "@mui/material";
+import { Stack, useTheme, Link, Alert, type SelectChangeEvent } from "@mui/material";
 import { useEffect, useMemo } from "react";
 import { FormProvider, useForm, type FieldPath } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

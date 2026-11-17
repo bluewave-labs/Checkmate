@@ -1,4 +1,4 @@
-import Tooltip from "@mui/material/Tooltip";
+import { Tooltip } from "@/Components/design-elements";
 import Box from "@mui/material/Box";
 import type { SxProps, Theme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";

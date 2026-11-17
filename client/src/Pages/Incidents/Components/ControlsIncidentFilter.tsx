@@ -1,6 +1,5 @@
 import Stack from "@mui/material/Stack";
-import { Select, Button } from "@/Components/inputs";
-import MenuItem from "@mui/material/MenuItem";
+import { Select, Button, MenuItem } from "@/Components/inputs";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { Typography, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";

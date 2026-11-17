@@ -1,11 +1,10 @@
-import IconButton from "@mui/material/IconButton";
-
 import { Moon, Sun } from "lucide-react";
 
 import { setMode } from "@/Features/UI/uiSlice.js";
 import { useTheme } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
+import { IconButton } from "@/Components/inputs";
 
 export const SwitchTheme = () => {
 	const mode = useSelector((state: RootState) => state.ui.mode);

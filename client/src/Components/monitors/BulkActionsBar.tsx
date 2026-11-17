@@ -4,7 +4,6 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Slide from "@mui/material/Slide";
-import IconButton from "@mui/material/IconButton";
 import { X } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
@@ -12,6 +11,7 @@ import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { useSidebar } from "@/Hooks/useSidebar";
+import { IconButton } from "@/Components/inputs";
 
 interface BulkActionsBarProps {
 	selectedCount: number;

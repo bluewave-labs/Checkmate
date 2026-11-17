@@ -10,9 +10,8 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Collapse from "@mui/material/Collapse";
-import Tooltip from "@mui/material/Tooltip";
+import { Tooltip } from "./Tooltip";
 
-import IconButton from "@mui/material/IconButton";
 import {
 	ChevronsLeft,
 	ChevronsRight,
@@ -31,6 +30,7 @@ import { useTheme } from "@mui/material/styles";
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import type { SxProps, Theme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { IconButton } from "@/Components/inputs";
 
 export type Header<T> = {
 	id: number | string;

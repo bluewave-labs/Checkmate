@@ -1,4 +1,4 @@
-import { Typography, IconButton, Stack, Box, Collapse } from "@mui/material";
+import { Typography, Stack, Box, Collapse } from "@mui/material";
 import { Icon } from "@/Components/design-elements";
 import { X } from "lucide-react";
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { setStarPromptOpen } from "@/Features/UI/uiSlice.js";
 import type { RootState } from "@/Types/state.js";
 import useSidebar from "@/Hooks/useSidebar.js";
+import { IconButton } from "@/Components/inputs";
 
 export const StarPrompt = ({
 	repoUrl = "https://github.com/bluewave-labs/checkmate",

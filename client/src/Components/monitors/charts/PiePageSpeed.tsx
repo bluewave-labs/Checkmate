@@ -1,4 +1,4 @@
-import { BaseChart } from "@/Components/design-elements";
+import { BaseChart, Tooltip } from "@/Components/design-elements";
 import { FileText } from "lucide-react";
 import type { CheckAudits, CheckSnapshot } from "@/Types/Check";
 import { Pie, PieChart, ResponsiveContainer, Label } from "recharts";
@@ -8,7 +8,6 @@ import { getPageSpeedPalette } from "@/Utils/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
 import { alpha } from "@mui/material/styles";
 import { useState } from "react";
-import Tooltip from "@mui/material/Tooltip";
 import { useTranslation } from "react-i18next";
 
 const CenterLabel = ({ viewBox, value }: any) => {

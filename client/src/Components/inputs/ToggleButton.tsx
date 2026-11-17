@@ -5,6 +5,7 @@ import type { ToggleButtonGroupProps } from "@mui/material/ToggleButtonGroup";
 import { useTheme } from "@mui/material/styles";
 import { alpha } from "@mui/material/styles";
 import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 
 export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 	const theme = useTheme();
@@ -22,6 +23,7 @@ export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 				px: 8,
 				textTransform: "none",
 				height: INPUT_BASE_HEIGHT,
+				fontSize: typographyLevels.base,
 				fontWeight: 400,
 				whiteSpace: "nowrap",
 				textOverflow: "ellipsis",
