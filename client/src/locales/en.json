@@ -1808,7 +1808,31 @@
 						"connecting": "Tunnel connecting",
 						"remoteAccessOff": "Remote access off",
 						"agentId": "Agent ID",
-						"lastConnected": "Last connected"
+						"lastConnected": "Last connected",
+						"siteLink": "Open checkmateconnect.io"
+					},
+					"getStarted": {
+						"title": "Get started",
+						"description": "Checkmate Connect lets you reach this installation from anywhere and keeps encrypted backups of it in the cloud.",
+						"steps": {
+							"account": {
+								"title": "Create a Connect account",
+								"body": "Sign up at checkmateconnect.io with an email address and a password."
+							},
+							"server": {
+								"title": "Add your server",
+								"body": "Name it on the Connect dashboard to get a credential block. It's shown once, so copy it right away."
+							},
+							"paste": {
+								"title": "Paste it here",
+								"body": "Paste the credential block in the box below and click Enroll."
+							},
+							"remoteAccess": {
+								"title": "Turn on remote access",
+								"body": "Your Connect address goes live once the tunnel connects."
+							}
+						},
+						"button": "Go to checkmateconnect.io"
 					},
 					"enroll": {
 						"title": "Enroll installation",

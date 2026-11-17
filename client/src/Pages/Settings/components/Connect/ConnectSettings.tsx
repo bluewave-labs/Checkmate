@@ -12,6 +12,7 @@ import type {
 } from "@/Types/Connect";
 import { ConnectBackupBox } from "./ConnectBackupBox";
 import { ConnectEnrollBox } from "./ConnectEnrollBox";
+import { ConnectGetStartedBox } from "./ConnectGetStartedBox";
 import { ConnectRecoveryKeyBox } from "./ConnectRecoveryKeyBox";
 import { ConnectRemoteAccessBox } from "./ConnectRemoteAccessBox";
 import { ConnectRestoreBox } from "./ConnectRestoreBox";
@@ -57,6 +58,7 @@ export const ConnectSettings = () => {
 					{t("pages.settings.form.connect.superadminOnly")}
 				</Typography>
 			)}
+			{!status.enrolled && <ConnectGetStartedBox />}
 			<ConnectStatusBox status={status} />
 			{isSuperAdmin && !status.enrolled && <ConnectEnrollBox onEnrolled={refetch} />}
 			{status.enrolled && (

@@ -1737,7 +1737,31 @@
 						"connecting": "隧道连接中",
 						"remoteAccessOff": "远程访问已关闭",
 						"agentId": "代理 ID",
-						"lastConnected": "上次连接"
+						"lastConnected": "上次连接",
+						"siteLink": "打开 checkmateconnect.io"
+					},
+					"getStarted": {
+						"title": "开始使用",
+						"description": "Checkmate Connect 让你可以随时随地访问此安装，并在云端保存其加密备份。",
+						"steps": {
+							"account": {
+								"title": "创建 Connect 账户",
+								"body": "在 checkmateconnect.io 使用邮箱地址和密码注册。"
+							},
+							"server": {
+								"title": "添加服务器",
+								"body": "在 Connect 控制台中为它命名，即可获得凭据块。凭据块只显示一次，请立即复制。"
+							},
+							"paste": {
+								"title": "粘贴到这里",
+								"body": "将凭据块粘贴到下方输入框，然后点击“注册”。"
+							},
+							"remoteAccess": {
+								"title": "开启远程访问",
+								"body": "隧道连接后，你的 Connect 地址即可使用。"
+							}
+						},
+						"button": "前往 checkmateconnect.io"
 					},
 					"enroll": {
 						"title": "注册安装实例",

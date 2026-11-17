@@ -1590,7 +1590,31 @@
 						"connecting": "Łączenie tunelu",
 						"remoteAccessOff": "Dostęp zdalny wyłączony",
 						"agentId": "ID agenta",
-						"lastConnected": "Ostatnie połączenie"
+						"lastConnected": "Ostatnie połączenie",
+						"siteLink": "Otwórz checkmateconnect.io"
+					},
+					"getStarted": {
+						"title": "Pierwsze kroki",
+						"description": "Checkmate Connect pozwala łączyć się z tą instalacją z dowolnego miejsca i przechowuje jej zaszyfrowane kopie zapasowe w chmurze.",
+						"steps": {
+							"account": {
+								"title": "Załóż konto Connect",
+								"body": "Zarejestruj się na checkmateconnect.io, podając adres e-mail i hasło."
+							},
+							"server": {
+								"title": "Dodaj serwer",
+								"body": "Nadaj mu nazwę w panelu Connect, aby otrzymać blok danych uwierzytelniających. Jest wyświetlany tylko raz, więc od razu go skopiuj."
+							},
+							"paste": {
+								"title": "Wklej go tutaj",
+								"body": "Wklej blok danych uwierzytelniających w polu poniżej i kliknij Zarejestruj."
+							},
+							"remoteAccess": {
+								"title": "Włącz dostęp zdalny",
+								"body": "Twój adres Connect zacznie działać, gdy tunel się połączy."
+							}
+						},
+						"button": "Przejdź do checkmateconnect.io"
 					},
 					"enroll": {
 						"title": "Zarejestruj instalację",

@@ -1742,7 +1742,31 @@
 						"connecting": "جارٍ اتصال النفق",
 						"remoteAccessOff": "الوصول عن بُعد معطَّل",
 						"agentId": "معرّف الوكيل (ID)",
-						"lastConnected": "آخر اتصال"
+						"lastConnected": "آخر اتصال",
+						"siteLink": "افتح checkmateconnect.io"
+					},
+					"getStarted": {
+						"title": "ابدأ الآن",
+						"description": "يتيح لك Checkmate Connect الوصول إلى هذا التثبيت من أي مكان ويحتفظ بنسخ احتياطية مشفّرة منه في السحابة.",
+						"steps": {
+							"account": {
+								"title": "أنشئ حساب Connect",
+								"body": "سجّل في checkmateconnect.io باستخدام بريد إلكتروني وكلمة مرور."
+							},
+							"server": {
+								"title": "أضف الخادم",
+								"body": "سمِّه في لوحة تحكم Connect للحصول على كتلة بيانات الاعتماد. تُعرض مرة واحدة فقط، لذا انسخها فورًا."
+							},
+							"paste": {
+								"title": "الصقها هنا",
+								"body": "الصق كتلة بيانات الاعتماد في المربع أدناه وانقر على تسجيل."
+							},
+							"remoteAccess": {
+								"title": "فعّل الوصول عن بُعد",
+								"body": "يصبح عنوان Connect الخاص بك متاحًا بمجرد اتصال النفق."
+							}
+						},
+						"button": "انتقل إلى checkmateconnect.io"
 					},
 					"enroll": {
 						"title": "تسجيل التثبيت",

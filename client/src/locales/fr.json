@@ -1739,7 +1739,31 @@
 						"connecting": "Connexion du tunnel en cours",
 						"remoteAccessOff": "Accès à distance désactivé",
 						"agentId": "ID de l'agent",
-						"lastConnected": "Dernière connexion"
+						"lastConnected": "Dernière connexion",
+						"siteLink": "Ouvrir checkmateconnect.io"
+					},
+					"getStarted": {
+						"title": "Premiers pas",
+						"description": "Checkmate Connect vous permet d'accéder à cette installation depuis n'importe où et en conserve des sauvegardes chiffrées dans le cloud.",
+						"steps": {
+							"account": {
+								"title": "Créez un compte Connect",
+								"body": "Inscrivez-vous sur checkmateconnect.io avec une adresse e-mail et un mot de passe."
+							},
+							"server": {
+								"title": "Ajoutez votre serveur",
+								"body": "Nommez-le dans le tableau de bord Connect pour obtenir un bloc d'identifiants. Il ne s'affiche qu'une fois, copiez-le tout de suite."
+							},
+							"paste": {
+								"title": "Collez-le ici",
+								"body": "Collez le bloc d'identifiants dans le champ ci-dessous et cliquez sur Inscrire."
+							},
+							"remoteAccess": {
+								"title": "Activez l'accès à distance",
+								"body": "Votre adresse Connect est active dès que le tunnel est connecté."
+							}
+						},
+						"button": "Aller sur checkmateconnect.io"
 					},
 					"enroll": {
 						"title": "Inscrire l'installation",

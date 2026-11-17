@@ -1739,7 +1739,31 @@
 						"connecting": "Conectando el túnel",
 						"remoteAccessOff": "Acceso remoto desactivado",
 						"agentId": "ID del agente",
-						"lastConnected": "Última conexión"
+						"lastConnected": "Última conexión",
+						"siteLink": "Abrir checkmateconnect.io"
+					},
+					"getStarted": {
+						"title": "Primeros pasos",
+						"description": "Checkmate Connect te permite acceder a esta instalación desde cualquier lugar y guarda copias de seguridad cifradas en la nube.",
+						"steps": {
+							"account": {
+								"title": "Crea una cuenta de Connect",
+								"body": "Regístrate en checkmateconnect.io con un correo electrónico y una contraseña."
+							},
+							"server": {
+								"title": "Añade tu servidor",
+								"body": "Ponle un nombre en el panel de Connect para obtener un bloque de credenciales. Solo se muestra una vez, así que cópialo enseguida."
+							},
+							"paste": {
+								"title": "Pégalo aquí",
+								"body": "Pega el bloque de credenciales en el cuadro de abajo y haz clic en Registrar."
+							},
+							"remoteAccess": {
+								"title": "Activa el acceso remoto",
+								"body": "Tu dirección de Connect se activa en cuanto se conecta el túnel."
+							}
+						},
+						"button": "Ir a checkmateconnect.io"
 					},
 					"enroll": {
 						"title": "Registrar instalación",
