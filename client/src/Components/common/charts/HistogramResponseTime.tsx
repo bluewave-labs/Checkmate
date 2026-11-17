@@ -25,6 +25,7 @@ interface ResponseTimeStats {
 }
 
 const DEFAULT_HEIGHT = 50;
+const CHART_MIN_WIDTH = 100;
 
 const calculateResponseTimeStats = (checks: CheckSnapshot[]): ResponseTimeStats => {
 	if (!Array.isArray(checks) || checks.length === 0) {
@@ -97,9 +98,13 @@ export const HistogramResponseTime = ({
 		<Stack
 			direction={statsPosition === "left" ? "row-reverse" : "row"}
 			alignItems="center"
+			flexWrap="wrap"
 			width={"100%"}
 		>
-			<Box sx={{ flex: 1 }}>
+			<Box
+				flex={1}
+				minWidth={CHART_MIN_WIDTH}
+			>
 				<Box
 					width={"100%"}
 					display={"grid"}
