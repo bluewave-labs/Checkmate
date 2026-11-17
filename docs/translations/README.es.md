@@ -82,7 +82,7 @@ Las instrucciones de uso están disponibles [aquí](https://checkmate.so/docs).
 
 Consulta las instrucciones de instalación en el [portal de documentación de Checkmate](https://checkmate.so/docs).
 
-También puedes utilizar [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Sudáfrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate) o [Pikapods](https://www.pikapods.com/) para levantar rápidamente una instancia de Checkmate. Si quieres monitorizar la infraestructura de tus servidores, necesitarás el [agente Capture](https://checkmate.so/docs/infrastructure/installing-capture). El repositorio de Capture también incluye las instrucciones de instalación.
+También puedes utilizar [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Sudáfrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate) o [Pikapods](https://www.pikapods.com/) para levantar rápidamente una instancia de Checkmate. Si quieres monitorizar la infraestructura de tus servidores, necesitarás el [agente Capture](https://checkmate.so/docs/infrastructure/installing-capture). El repositorio de Capture también incluye las instrucciones de instalación.
 
 ### Uso de una CA personalizada
 
@@ -124,6 +124,7 @@ No dudes en preguntar o compartir tus ideas — ¡nos encantará saber de ti!
 - Notificaciones por correo electrónico, webhooks, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - Mantenimiento programado
 - Monitorización mediante consultas JSON
+- [Checkmate Connect](https://checkmate.so/docs/connect) (opcional): acceso remoto sin abrir puertos de entrada, copias de seguridad cifradas en la nube con ejecuciones programadas y restauración, y un vigilante que te avisa por correo cuando tu servidor deja de reportar
 - Soporte multiidioma para árabe, chino (simplificado), chino (tradicional, Taiwán), checo, inglés, finés, francés, alemán, japonés, portugués (Brasil), ruso, español, tailandés, turco, ucraniano y vietnamita
 
 

@@ -82,7 +82,7 @@ Checkmate прошёл нагрузочное тестирование с 1000+ 
 
 Инструкции по установке смотрите на [портале документации Checkmate](https://checkmate.so/docs).
 
-В качестве альтернативы вы можете использовать [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (ЮАР), [Cloudzy](https://cloudzy.com/marketplace/checkmate) или [Pikapods](https://www.pikapods.com/), чтобы быстро поднять инстанс Checkmate. Если вы хотите мониторить серверную инфраструктуру, потребуется агент [Capture](https://checkmate.so/docs/infrastructure/installing-capture). В репозитории Capture также есть инструкции по установке.
+В качестве альтернативы вы можете использовать [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (ЮАР), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate) или [Pikapods](https://www.pikapods.com/), чтобы быстро поднять инстанс Checkmate. Если вы хотите мониторить серверную инфраструктуру, потребуется агент [Capture](https://checkmate.so/docs/infrastructure/installing-capture). В репозитории Capture также есть инструкции по установке.
 
 ### Использование собственного УЦ
 
@@ -124,6 +124,7 @@ Checkmate прошёл нагрузочное тестирование с 1000+ 
 - Уведомления по e-mail, через вебхуки, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - Запланированное обслуживание
 - Мониторинг JSON-запросов
+- [Checkmate Connect](https://checkmate.so/docs/connect) (необязательно): удалённый доступ без открытия входящих портов, зашифрованные облачные резервные копии с расписанием и восстановлением, а также сторож, который сообщает по почте, когда сервер перестаёт выходить на связь
 - Многоязычная поддержка: арабский, китайский (упрощённый), китайский (традиционный, Тайвань), чешский, английский, финский, французский, немецкий, японский, португальский (Бразилия), русский, испанский, тайский, турецкий, украинский и вьетнамский
 
 

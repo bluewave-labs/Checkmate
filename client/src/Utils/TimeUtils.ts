@@ -22,6 +22,15 @@ const resolveSystemTimezone = (): string => {
 
 export const SYSTEM_TIMEZONE = resolveSystemTimezone();
 
+export const toCanonicalTimezone = (timezone: string): string | undefined => {
+	try {
+		return new Intl.DateTimeFormat("en-US", { timeZone: timezone }).resolvedOptions()
+			.timeZone;
+	} catch {
+		return undefined;
+	}
+};
+
 export const resolveTimezone = (preferred?: string | null): string =>
 	preferred?.trim() || SYSTEM_TIMEZONE;
 

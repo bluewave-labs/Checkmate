@@ -85,7 +85,7 @@ Käyttöohjeet löytyvät [täältä](https://checkmate.so/docs).
 
 Asennusohjeet löytyvät [Checkmaten dokumentaatioportaalista](https://checkmate.so/docs).
 
-Vaihtoehtoisesti voit käyttää [Coolifya](https://coolify.io/), [Elestiota](https://elest.io/open-source/checkmate), [K8s:ää](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Hostia](https://sive.host) (Etelä-Afrikka), [Cloudzya](https://cloudzy.com/marketplace/checkmate) tai [Pikapodsia](https://www.pikapods.com/) Checkmate-instanssin nopeaan käynnistämiseen. Jos haluat valvoa palvelininfrastruktuuriasi, tarvitset [Capture-agentin](https://checkmate.so/docs/infrastructure/installing-capture). Capturen repositorio sisältää myös sen asennusohjeet.
+Vaihtoehtoisesti voit käyttää [Coolifya](https://coolify.io/), [Elestiota](https://elest.io/open-source/checkmate), [K8s:ää](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Hostia](https://sive.host) (Etelä-Afrikka), [Cloudzya](https://cloudzy.com/marketplace/checkmate), [Ryvordia](https://ryvord.com/run/checkmate) tai [Pikapodsia](https://www.pikapods.com/) Checkmate-instanssin nopeaan käynnistämiseen. Jos haluat valvoa palvelininfrastruktuuriasi, tarvitset [Capture-agentin](https://checkmate.so/docs/infrastructure/installing-capture). Capturen repositorio sisältää myös sen asennusohjeet.
 
 ### Mukautetun CA:n käyttö
 
@@ -127,6 +127,7 @@ Kysy rohkeasti tai jaa ideoitasi — kuulemme sinusta mielellämme!
 - Ilmoitukset sähköpostitse, webhookeilla, Discordilla, Slackilla, PagerDutylla, Matrixilla, Microsoft Teamsilla, Telegramilla, Pushoverilla ja Twiliolla (SMS)
 - Ajastettu huolto
 - JSON-kyselyihin perustuva valvonta
+- [Checkmate Connect](https://checkmate.so/docs/connect) (valinnainen): etäkäyttö ilman saapuvien porttien avaamista, salatut pilvivarmuuskopiot ajastuksella ja palautuksella sekä vahtikoira, joka lähettää sähköpostia, kun palvelimesi lakkaa raportoimasta
 - Monikielinen tuki: arabia, kiina (yksinkertaistettu), kiina (perinteinen, Taiwan), tšekki, englanti, suomi, ranska, saksa, japani, portugali (Brasilia), venäjä, espanja, thai, turkki, ukraina ja vietnam
 
 

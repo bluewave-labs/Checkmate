@@ -85,7 +85,7 @@ Pots trobar les instruccions d'ús [aquí](https://checkmate.so/docs).
 
 Consulta les instruccions d'instal·lació al [portal de documentació de Checkmate](https://checkmate.so/docs).
 
-Alternativament, també pots utilitzar [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Sud-àfrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate) o [Pikapods](https://www.pikapods.com/) per posar en marxa ràpidament una instància de Checkmate. Si vols monitoritzar la infraestructura de servidors, necessitaràs l'[agent Capture](https://checkmate.so/docs/infrastructure/installing-capture). El repositori de Capture també conté les instruccions d'instal·lació.
+Alternativament, també pots utilitzar [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Sud-àfrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate) o [Pikapods](https://www.pikapods.com/) per posar en marxa ràpidament una instància de Checkmate. Si vols monitoritzar la infraestructura de servidors, necessitaràs l'[agent Capture](https://checkmate.so/docs/infrastructure/installing-capture). El repositori de Capture també conté les instruccions d'instal·lació.
 
 ### Utilitzar una CA personalitzada
 
@@ -127,6 +127,7 @@ No dubtis a preguntar o compartir les teves idees — ens encantarà tenir notí
 - Notificacions per correu electrònic, webhooks, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - Manteniment programat
 - Monitorització mitjançant consultes JSON
+- [Checkmate Connect](https://checkmate.so/docs/connect) (opcional): accés remot sense obrir ports d'entrada, còpies de seguretat xifrades al núvol amb execucions programades i restauració, i un vigilant que t'avisa per correu quan el servidor deixa d'informar
 - Suport multilingüe per a àrab, xinès (simplificat), xinès (tradicional, Taiwan), txec, anglès, finès, francès, alemany, japonès, portuguès (Brasil), rus, espanyol, tailandès, turc, ucraïnès i vietnamita
 
 

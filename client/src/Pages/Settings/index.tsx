@@ -59,7 +59,12 @@ import type { ProxyResponse } from "@/Types/Proxy";
 import type { AppSettingsResponse } from "@/Types/Settings";
 import { useSearchParams, Link as RouterLink } from "react-router-dom";
 import { mutate } from "swr";
-import { SYSTEM_TIMEZONE, TIME_FORMATS, type TimeFormat } from "@/Utils/TimeUtils";
+import {
+	SYSTEM_TIMEZONE,
+	TIME_FORMATS,
+	toCanonicalTimezone,
+	type TimeFormat,
+} from "@/Utils/TimeUtils";
 
 const SETTINGS_TABS = [
 	{ key: "general", labelKey: "pages.settings.tabs.general" },
@@ -286,8 +291,11 @@ export const SettingsPage = () => {
 		},
 		...timezoneOptions,
 	];
+	const selectedTimezoneOptionId = selectedTimezoneId
+		? (toCanonicalTimezone(selectedTimezoneId) ?? selectedTimezoneId)
+		: "";
 	const selectedTimezone =
-		timezoneSelectOptions.find((tz) => tz.id === selectedTimezoneId) ?? null;
+		timezoneSelectOptions.find((tz) => tz.id === selectedTimezoneOptionId) ?? null;
 
 	const handleTimezoneChange = (newValue: TimezoneOption | null) => {
 		if (!newValue) return;

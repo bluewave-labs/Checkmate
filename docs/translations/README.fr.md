@@ -82,7 +82,7 @@ Les instructions d'utilisation sont disponibles [ici](https://checkmate.so/docs)
 
 Consultez les instructions d'installation dans le [portail de documentation Checkmate](https://checkmate.so/docs).
 
-Vous pouvez également utiliser [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Afrique du Sud), [Cloudzy](https://cloudzy.com/marketplace/checkmate) ou [Pikapods](https://www.pikapods.com/) pour démarrer rapidement une instance Checkmate. Pour surveiller votre infrastructure serveur, vous aurez besoin de l'[agent Capture](https://checkmate.so/docs/infrastructure/installing-capture). Le dépôt Capture contient également les instructions d'installation.
+Vous pouvez également utiliser [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Afrique du Sud), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate) ou [Pikapods](https://www.pikapods.com/) pour démarrer rapidement une instance Checkmate. Pour surveiller votre infrastructure serveur, vous aurez besoin de l'[agent Capture](https://checkmate.so/docs/infrastructure/installing-capture). Le dépôt Capture contient également les instructions d'installation.
 
 ### Utiliser une autorité de certification personnalisée
 
@@ -124,6 +124,7 @@ N'hésitez pas à poser vos questions ou partager vos idées — nous adorerions
 - Notifications par e-mail, webhooks, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - Maintenance planifiée
 - Surveillance par requête JSON
+- [Checkmate Connect](https://checkmate.so/docs/connect) (facultatif) : accès à distance sans ouvrir de ports entrants, sauvegardes chiffrées dans le cloud avec planification et restauration, et une surveillance externe qui vous prévient par e-mail quand votre serveur ne répond plus
 - Support multilingue : arabe, chinois (simplifié), chinois (traditionnel, Taïwan), tchèque, anglais, finnois, français, allemand, japonais, portugais (Brésil), russe, espagnol, thaï, turc, ukrainien et vietnamien
 
 

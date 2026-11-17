@@ -82,7 +82,7 @@ Kullanım talimatlarını [burada](https://checkmate.so/docs) bulabilirsiniz.
 
 Kurulum talimatları için [Checkmate dokümantasyon portalına](https://checkmate.so/docs) bakın.
 
-Alternatif olarak hızlıca bir Checkmate örneği çalıştırmak için [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Güney Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) veya [Pikapods](https://www.pikapods.com/)'u kullanabilirsiniz. Sunucu altyapınızı izlemek isterseniz [Capture ajanına](https://checkmate.so/docs/infrastructure/installing-capture) ihtiyacınız olacak. Capture deposu da kurulum talimatlarını içerir.
+Alternatif olarak hızlıca bir Checkmate örneği çalıştırmak için [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Güney Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate) veya [Pikapods](https://www.pikapods.com/)'u kullanabilirsiniz. Sunucu altyapınızı izlemek isterseniz [Capture ajanına](https://checkmate.so/docs/infrastructure/installing-capture) ihtiyacınız olacak. Capture deposu da kurulum talimatlarını içerir.
 
 ### Özel CA Kullanımı
 
@@ -124,6 +124,7 @@ Soru sormaktan ya da fikirlerinizi paylaşmaktan çekinmeyin — sizi dinlemekte
 - E-posta, webhook, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS) bildirimleri
 - Planlı bakım
 - JSON sorgu izleme
+- [Checkmate Connect](https://checkmate.so/docs/connect) (isteğe bağlı): gelen port açmadan uzaktan erişim, zamanlanmış çalıştırma ve geri yükleme destekli şifreli bulut yedekleri ve sunucunuz rapor vermeyi bıraktığında size e-posta gönderen bir bekçi
 - Çoklu dil desteği: Arapça, Çince (Basitleştirilmiş), Çince (Geleneksel, Tayvan), Çekçe, İngilizce, Fince, Fransızca, Almanca, Japonca, Portekizce (Brezilya), Rusça, İspanyolca, Tayca, Türkçe, Ukraynaca ve Vietnamca
 
 

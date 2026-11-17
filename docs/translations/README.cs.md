@@ -85,7 +85,7 @@ Pokyny k použití najdete [zde](https://checkmate.so/docs).
 
 Pokyny k instalaci najdete v [dokumentačním portálu Checkmate](https://checkmate.so/docs).
 
-Případně můžete použít [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Jižní Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) nebo [Pikapods](https://www.pikapods.com/) pro rychlé spuštění instance Checkmate. Pokud chcete monitorovat infrastrukturu serverů, budete potřebovat [agenta Capture](https://checkmate.so/docs/infrastructure/installing-capture). Repozitář Capture obsahuje také pokyny k instalaci.
+Případně můžete použít [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Jižní Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate) nebo [Pikapods](https://www.pikapods.com/) pro rychlé spuštění instance Checkmate. Pokud chcete monitorovat infrastrukturu serverů, budete potřebovat [agenta Capture](https://checkmate.so/docs/infrastructure/installing-capture). Repozitář Capture obsahuje také pokyny k instalaci.
 
 ### Použití vlastní CA
 
@@ -127,6 +127,7 @@ Neváhejte se ptát nebo sdílet své nápady — moc rádi vás slyšíme!
 - Notifikace přes e-mail, webhooky, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - Plánovaná údržba
 - Monitorování pomocí JSON dotazů
+- [Checkmate Connect](https://checkmate.so/docs/connect) (volitelné): vzdálený přístup bez otevírání příchozích portů, šifrované cloudové zálohy s plánováním a obnovou a hlídač, který vám pošle e-mail, když se server přestane hlásit
 - Vícejazyčná podpora pro arabštinu, čínštinu (zjednodušenou), čínštinu (tradiční, Tchaj-wan), češtinu, angličtinu, finštinu, francouzštinu, němčinu, japonštinu, portugalštinu (Brazílie), ruštinu, španělštinu, thajštinu, turečtinu, ukrajinštinu a vietnamštinu
 
 

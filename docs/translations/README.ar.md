@@ -87,7 +87,7 @@
 
 اطّلع على تعليمات التثبيت في [بوابة وثائق Checkmate](https://checkmate.so/docs).
 
-بدلاً من ذلك، يمكنك استخدام [Coolify](https://coolify.io/)، أو [Elestio](https://elest.io/open-source/checkmate)، أو [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm)، أو [Sive Host](https://sive.host) (جنوب أفريقيا)، أو [Cloudzy](https://cloudzy.com/marketplace/checkmate)، أو [Pikapods](https://www.pikapods.com/) لتشغيل نسخة من Checkmate بسرعة. إن أردت مراقبة البنية التحتية لخوادمك، ستحتاج إلى [وكيل Capture](https://checkmate.so/docs/infrastructure/installing-capture). يحتوي مستودع Capture أيضًا على تعليمات التثبيت.
+بدلاً من ذلك، يمكنك استخدام [Coolify](https://coolify.io/)، أو [Elestio](https://elest.io/open-source/checkmate)، أو [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm)، أو [Sive Host](https://sive.host) (جنوب أفريقيا)، أو [Cloudzy](https://cloudzy.com/marketplace/checkmate)، أو [Ryvord](https://ryvord.com/run/checkmate)، أو [Pikapods](https://www.pikapods.com/) لتشغيل نسخة من Checkmate بسرعة. إن أردت مراقبة البنية التحتية لخوادمك، ستحتاج إلى [وكيل Capture](https://checkmate.so/docs/infrastructure/installing-capture). يحتوي مستودع Capture أيضًا على تعليمات التثبيت.
 
 ### استخدام شهادة CA مخصصة
 
@@ -129,6 +129,7 @@
 - إشعارات عبر البريد الإلكتروني، Webhooks، Discord، Slack، PagerDuty، Matrix، Microsoft Teams، Telegram، Pushover، Twilio (SMS)
 - صيانة مجدولة
 - مراقبة باستخدام استعلام JSON
+- [Checkmate Connect](https://checkmate.so/docs/connect) (اختياري): وصول عن بُعد دون فتح منافذ واردة، ونسخ احتياطية سحابية مشفّرة مع جدولة واستعادة، ومراقب يرسل إليك بريدًا إلكترونيًا عندما يتوقف خادمك عن الإبلاغ
 - دعم متعدد اللغات: العربية، الصينية (المبسطة)، الصينية (التقليدية، تايوان)، التشيكية، الإنجليزية، الفنلندية، الفرنسية، الألمانية، اليابانية، البرتغالية (البرازيلية)، الروسية، الإسبانية، التايلاندية، التركية، الأوكرانية، والفيتنامية
 
 

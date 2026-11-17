@@ -85,7 +85,7 @@ Checkmate ผ่านการทดสอบโหลดสำหรับม�
 
 ดูวิธีการติดตั้งใน [พอร์ทัลเอกสารของ Checkmate](https://checkmate.so/docs)
 
-อีกทางเลือกหนึ่ง คุณสามารถใช้ [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (แอฟริกาใต้), [Cloudzy](https://cloudzy.com/marketplace/checkmate) หรือ [Pikapods](https://www.pikapods.com/) เพื่อเปิดอินสแตนซ์ Checkmate ได้อย่างรวดเร็ว หากต้องการมอนิเตอร์โครงสร้างพื้นฐานเซิร์ฟเวอร์ คุณจะต้องใช้ [เอเจนต์ Capture](https://checkmate.so/docs/infrastructure/installing-capture) รีโพ Capture ยังมีวิธีการติดตั้งด้วย
+อีกทางเลือกหนึ่ง คุณสามารถใช้ [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (แอฟริกาใต้), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate) หรือ [Pikapods](https://www.pikapods.com/) เพื่อเปิดอินสแตนซ์ Checkmate ได้อย่างรวดเร็ว หากต้องการมอนิเตอร์โครงสร้างพื้นฐานเซิร์ฟเวอร์ คุณจะต้องใช้ [เอเจนต์ Capture](https://checkmate.so/docs/infrastructure/installing-capture) รีโพ Capture ยังมีวิธีการติดตั้งด้วย
 
 ### การใช้ Custom CA
 
@@ -127,6 +127,7 @@ Checkmate ผ่านการทดสอบโหลดสำหรับม�
 - การแจ้งเตือนผ่านอีเมล Webhook, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - การบำรุงรักษาตามกำหนด
 - มอนิเตอร์ด้วย JSON query
+- [Checkmate Connect](https://checkmate.so/docs/connect) (ไม่บังคับ): เข้าถึงจากระยะไกลโดยไม่ต้องเปิดพอร์ตขาเข้า สำรองข้อมูลบนคลาวด์แบบเข้ารหัสพร้อมการตั้งเวลาและการกู้คืน และตัวเฝ้าระวังที่ส่งอีเมลแจ้งเมื่อเซิร์ฟเวอร์หยุดรายงานสถานะ
 - รองรับหลายภาษา: อาหรับ, จีน (ตัวย่อ), จีน (ตัวเต็ม, ไต้หวัน), เช็ก, อังกฤษ, ฟินแลนด์, ฝรั่งเศส, เยอรมัน, ญี่ปุ่น, โปรตุเกส (บราซิล), รัสเซีย, สเปน, ไทย, ตุรกี, ยูเครน และเวียดนาม
 
 

@@ -82,7 +82,7 @@ Die Nutzungsanleitung findest du [hier](https://checkmate.so/docs).
 
 Die Installationsanleitung findest du im [Dokumentationsportal von Checkmate](https://checkmate.so/docs).
 
-Alternativ kannst du [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Südafrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) oder [Pikapods](https://www.pikapods.com/) nutzen, um schnell eine Checkmate-Instanz hochzuziehen. Für das Monitoring deiner Server-Infrastruktur brauchst du den [Capture-Agenten](https://checkmate.so/docs/infrastructure/installing-capture); dessen Repository enthält ebenfalls eine Installationsanleitung.
+Alternativ kannst du [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Südafrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate) oder [Pikapods](https://www.pikapods.com/) nutzen, um schnell eine Checkmate-Instanz hochzuziehen. Für das Monitoring deiner Server-Infrastruktur brauchst du den [Capture-Agenten](https://checkmate.so/docs/infrastructure/installing-capture); dessen Repository enthält ebenfalls eine Installationsanleitung.
 
 ### Eigene CA verwenden
 
@@ -124,6 +124,7 @@ Frag einfach drauflos oder teile deine Ideen — wir freuen uns auf dein Feedbac
 - Benachrichtigungen per E-Mail, Webhooks, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - Geplante Wartungen
 - JSON-Abfrage-Monitoring
+- [Checkmate Connect](https://checkmate.so/docs/connect) (optional): Fernzugriff ohne eingehende Ports zu öffnen, verschlüsselte Cloud-Backups mit Zeitplan und Wiederherstellung sowie ein Watchdog, der dich per E-Mail benachrichtigt, wenn sich dein Server nicht mehr meldet
 - Mehrsprachige Unterstützung für Arabisch, Chinesisch (Vereinfacht), Chinesisch (Traditionell, Taiwan), Tschechisch, Englisch, Finnisch, Französisch, Deutsch, Japanisch, Portugiesisch (Brasilien), Russisch, Spanisch, Thailändisch, Türkisch, Ukrainisch und Vietnamesisch
 
 

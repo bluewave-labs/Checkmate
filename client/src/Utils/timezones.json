@@ -356,6 +356,10 @@
 		"name": "America/Chihuahua"
 	},
 	{
+		"_id": "America/Ciudad_Juarez",
+		"name": "America/Ciudad_Juarez"
+	},
+	{
 		"_id": "America/Costa_Rica",
 		"name": "America/Costa_Rica"
 	},
@@ -1302,6 +1306,10 @@
 	{
 		"_id": "Europe/Budapest",
 		"name": "Europe/Budapest"
+	},
+	{
+		"_id": "Europe/Busingen",
+		"name": "Europe/Busingen"
 	},
 	{
 		"_id": "Europe/Chisinau",

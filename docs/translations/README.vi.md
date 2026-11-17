@@ -85,7 +85,7 @@ Có thể tìm thấy hướng dẫn sử dụng [tại đây](https://checkmate
 
 Xem hướng dẫn cài đặt trong [cổng tài liệu của Checkmate](https://checkmate.so/docs).
 
-Hoặc bạn có thể dùng [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Nam Phi), [Cloudzy](https://cloudzy.com/marketplace/checkmate) hoặc [Pikapods](https://www.pikapods.com/) để dựng nhanh một instance Checkmate. Nếu muốn giám sát hạ tầng máy chủ, bạn sẽ cần [agent Capture](https://checkmate.so/docs/infrastructure/installing-capture). Kho Capture cũng chứa hướng dẫn cài đặt.
+Hoặc bạn có thể dùng [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Nam Phi), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate) hoặc [Pikapods](https://www.pikapods.com/) để dựng nhanh một instance Checkmate. Nếu muốn giám sát hạ tầng máy chủ, bạn sẽ cần [agent Capture](https://checkmate.so/docs/infrastructure/installing-capture). Kho Capture cũng chứa hướng dẫn cài đặt.
 
 ### Sử dụng CA tuỳ chỉnh
 
@@ -127,6 +127,7 @@ Nếu bạn có câu hỏi, góp ý hoặc bình luận, có một vài tuỳ ch
 - Thông báo qua e-mail, webhook, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - Bảo trì theo lịch
 - Giám sát qua truy vấn JSON
+- [Checkmate Connect](https://checkmate.so/docs/connect) (tùy chọn): truy cập từ xa mà không cần mở cổng vào, sao lưu đám mây được mã hóa với lịch chạy và khôi phục, cùng một watchdog gửi email cho bạn khi máy chủ ngừng báo cáo
 - Hỗ trợ đa ngôn ngữ: Ả Rập, Trung Quốc (giản thể), Trung Quốc (phồn thể, Đài Loan), Séc, Anh, Phần Lan, Pháp, Đức, Nhật, Bồ Đào Nha (Brazil), Nga, Tây Ban Nha, Thái, Thổ Nhĩ Kỳ, Ukraine và Việt Nam
 
 

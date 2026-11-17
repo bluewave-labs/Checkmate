@@ -85,7 +85,7 @@ Checkmate пройшов навантажувальне тестування з 
 
 Інструкції зі встановлення дивіться у [порталі документації Checkmate](https://checkmate.so/docs).
 
-Альтернативно, для швидкого розгортання Checkmate можна скористатися [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Південна Африка), [Cloudzy](https://cloudzy.com/marketplace/checkmate) або [Pikapods](https://www.pikapods.com/). Якщо хочете моніторити серверну інфраструктуру, знадобиться агент [Capture](https://checkmate.so/docs/infrastructure/installing-capture). У репозиторії Capture також є інструкції зі встановлення.
+Альтернативно, для швидкого розгортання Checkmate можна скористатися [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Південна Африка), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate) або [Pikapods](https://www.pikapods.com/). Якщо хочете моніторити серверну інфраструктуру, знадобиться агент [Capture](https://checkmate.so/docs/infrastructure/installing-capture). У репозиторії Capture також є інструкції зі встановлення.
 
 ### Використання власного УЦ
 
@@ -127,6 +127,7 @@ Checkmate пройшов навантажувальне тестування з 
 - Сповіщення електронною поштою, через вебхуки, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - Заплановане обслуговування
 - Моніторинг за допомогою JSON-запитів
+- [Checkmate Connect](https://checkmate.so/docs/connect) (необов'язково): віддалений доступ без відкриття вхідних портів, зашифровані хмарні резервні копії з розкладом і відновленням, а також вартовий, який сповіщає поштою, коли сервер перестає виходити на зв'язок
 - Багатомовна підтримка: арабська, китайська (спрощена), китайська (традиційна, Тайвань), чеська, англійська, фінська, французька, німецька, японська, португальська (Бразилія), російська, іспанська, тайська, турецька, українська та в'єтнамська
 
 
