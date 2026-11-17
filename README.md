@@ -402,10 +402,7 @@ You can see the memory footprint of MongoDB on the same server (398Mb) for the s
 <a id="questions--ideas"></a>
 ## Questions & Ideas
 
-If you have any questions, suggestions or comments, you have several options: 
-
-- [Discord channel](https://discord.gg/NAb6H3UTjK) (preferred)
-- [GitHub Discussions](https://github.com/bluewave-labs/Checkmate/discussions) (we check here from time to time)
+If you have any questions, suggestions or comments, use [Discord channel](https://discord.gg/NAb6H3UTjK).
 
 Feel free to ask questions or share your ideas - we'd love to hear from you!
 
