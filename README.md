@@ -38,7 +38,7 @@
 </p>
 
 <p align="center">
-<img width="1680" height="955" alt="image" src="https://github.com/user-attachments/assets/1ed9ab90-8a05-4a10-83e8-19ced72f43d5" />
+<img alt="Checkmate dashboard" src="https://checkmate.so/img/readme/dashboard.webp" />
 </p>
 <br>
 
@@ -438,16 +438,19 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 ## Screenshots
 
 <p>
-<img width="1628" alt="image" src="https://github.com/user-attachments/assets/2eff6464-0738-4a32-9312-26e1e8e86275" />
+<img alt="Uptime monitors" src="https://checkmate.so/img/readme/uptime-list.webp" />
 </p>
 <p>
-  <img width="1656" alt="image" src="https://github.com/user-attachments/assets/616c3563-c2a7-4ee4-af6c-7e6068955d1a" />
+<img alt="Uptime monitor details" src="https://checkmate.so/img/readme/uptime-details.webp" />
 </p>
 <p>
-</p><img width="1652" alt="image" src="https://github.com/user-attachments/assets/7912d7cf-0d0e-4f26-aa5c-2ad7170b5c99" />
+<img alt="Infrastructure monitor details" src="https://checkmate.so/img/readme/infrastructure-details.webp" />
 </p>
 <p>
-<img width="1652" alt="image" src="https://github.com/user-attachments/assets/08c2c6ac-3a2f-44d1-a229-d1746a3f9d16" />
+<img alt="PageSpeed monitor details" src="https://checkmate.so/img/readme/pagespeed-details.webp" />
+</p>
+<p>
+<img alt="Public status page" src="https://checkmate.so/img/readme/status-page.webp" />
 </p>
 
 
