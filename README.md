@@ -121,15 +121,16 @@ You can also run Checkmate on any of these platforms:
     <td align="center" width="120"><a href="https://elest.io/open-source/checkmate"><img src="https://checkmate.so/img/brands/hosts/elestio.png" height="28" alt="Elestio"><br><sub><b>Elestio</b></sub></a></td>
     <td align="center" width="120"><a href="https://easypanel.io/templates/checkmate"><img src="https://checkmate.so/img/brands/hosts/easypanel.svg" height="28" alt="Easypanel"><br><sub><b>Easypanel</b></sub></a></td>
     <td align="center" width="120"><a href="https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm"><img src="https://checkmate.so/img/brands/hosts/kubernetes.svg" height="28" alt="Kubernetes"><br><sub><b>Kubernetes</b></sub></a></td>
+    <td align="center" width="120"><a href="https://railyard.run/templates/checkmate"><img src="https://checkmate.so/img/brands/hosts/railyard.svg" height="28" alt="Railyard"><br><sub><b>Railyard</b></sub></a></td>
   </tr>
   <tr>
-    <td align="center" width="120"><a href="https://railyard.run/templates/checkmate"><img src="https://checkmate.so/img/brands/hosts/railyard.svg" height="28" alt="Railyard"><br><sub><b>Railyard</b></sub></a></td>
     <td align="center" width="120"><a href="https://sive.host"><img src="https://checkmate.so/img/brands/hosts/sivehost.png" height="28" alt="Sive Host"><br><sub><b>Sive Host</b></sub></a></td>
     <td align="center" width="120"><a href="https://cloudzy.com/marketplace/checkmate"><img src="https://checkmate.so/img/brands/hosts/cloudzy.svg" height="28" alt="Cloudzy"><br><sub><b>Cloudzy</b></sub></a></td>
     <td align="center" width="120"><a href="https://pethost.dev/templates/checkmate/"><img src="https://checkmate.so/img/brands/hosts/pethost.svg" height="28" alt="Pethost"><br><sub><b>Pethost</b></sub></a></td>
     <td align="center" width="120"><a href="https://xcloud.host/checkmate-hosting/"><img src="https://checkmate.so/img/brands/hosts/xcloud.png" height="28" alt="xCloud"><br><sub><b>xCloud</b></sub></a></td>
     <td align="center" width="120"><a href="https://ryvord.com/run/checkmate"><img src="https://checkmate.so/img/brands/hosts/ryvord.svg" height="28" alt="Ryvord"><br><sub><b>Ryvord</b></sub></a></td>
     <td align="center" width="120"><a href="https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate"><img src="https://checkmate.so/img/brands/hosts/zopday.svg" height="28" alt="ZopDay"><br><sub><b>ZopDay</b></sub></a></td>
+    <td align="center" width="120"><a href="https://calibernode.com/cloud-apps/checkmate"><img src="https://checkmate.so/img/brands/hosts/calibernode.png" height="28" alt="Caliber Node"><br><sub><b>Caliber Node</b></sub></a></td>
   </tr>
 </table>
 
