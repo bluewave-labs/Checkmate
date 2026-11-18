@@ -170,6 +170,12 @@
 		"filters": {
 			"any": "Tous",
 			"state": "État"
+		},
+		"fallback": {
+			"error": {
+				"title": "Une erreur s'est produite",
+				"description": "Veuillez réessayer plus tard"
+			}
 		}
 	},
 	"components": {
@@ -1517,6 +1523,8 @@
 				"monitoring": "Surveillance",
 				"email": "E-mail",
 				"integrations": "Intégrations",
+				"tags": "Étiquettes",
+				"proxies": "Proxys",
 				"data": "Données",
 				"connect": "Checkmate Connect"
 			},

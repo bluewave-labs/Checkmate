@@ -170,6 +170,12 @@
 		"filters": {
 			"any": "Tümü",
 			"state": "Durum"
+		},
+		"fallback": {
+			"error": {
+				"title": "Bir şeyler ters gitti",
+				"description": "Lütfen daha sonra tekrar deneyin"
+			}
 		}
 	},
 	"components": {
@@ -1516,6 +1522,8 @@
 				"monitoring": "İzleme",
 				"email": "E-posta",
 				"integrations": "Entegrasyonlar",
+				"tags": "Etiketler",
+				"proxies": "Proxy sunucuları",
 				"data": "Veri",
 				"connect": "Checkmate Connect"
 			},

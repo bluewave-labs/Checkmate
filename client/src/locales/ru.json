@@ -170,6 +170,12 @@
 		"filters": {
 			"any": "Любой",
 			"state": "Состояние"
+		},
+		"fallback": {
+			"error": {
+				"title": "Что-то пошло не так",
+				"description": "Пожалуйста, повторите попытку позже"
+			}
 		}
 	},
 	"components": {
@@ -1520,6 +1526,8 @@
 				"monitoring": "Мониторинг",
 				"email": "Электронная почта",
 				"integrations": "Интеграции",
+				"tags": "Теги",
+				"proxies": "Прокси",
 				"data": "Данные",
 				"connect": "Checkmate Connect"
 			},

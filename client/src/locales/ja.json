@@ -170,6 +170,12 @@
 		"filters": {
 			"any": "すべて",
 			"state": "状態"
+		},
+		"fallback": {
+			"error": {
+				"title": "問題が発生しました",
+				"description": "しばらくしてからもう一度お試しください"
+			}
 		}
 	},
 	"components": {
@@ -1514,6 +1520,8 @@
 				"monitoring": "監視",
 				"email": "メール",
 				"integrations": "連携",
+				"tags": "タグ",
+				"proxies": "プロキシ",
 				"data": "データ",
 				"connect": "Checkmate Connect"
 			},

@@ -170,6 +170,12 @@
 		"filters": {
 			"any": "Qualsiasi",
 			"state": "Stato"
+		},
+		"fallback": {
+			"error": {
+				"title": "Qualcosa è andato storto",
+				"description": "Riprova più tardi"
+			}
 		}
 	},
 	"components": {
@@ -236,7 +242,6 @@
 				"infrastructure": "Infrastruttura",
 				"docker": "Docker",
 				"notifications": "Notifiche",
-				"tags": "Tag",
 				"checks": "Verifiche",
 				"incidents": "Incidenti",
 				"statusPages": "Pagine di stato",
@@ -1518,6 +1523,8 @@
 				"monitoring": "Monitoraggio",
 				"email": "Email",
 				"integrations": "Integrazioni",
+				"tags": "Tag",
+				"proxies": "Proxy",
 				"data": "Dati",
 				"connect": "Checkmate Connect"
 			},

@@ -170,6 +170,12 @@
 		"filters": {
 			"any": "Any",
 			"state": "State"
+		},
+		"fallback": {
+			"error": {
+				"title": "Something went wrong",
+				"description": "Please try again later"
+			}
 		}
 	},
 	"components": {
@@ -236,8 +242,6 @@
 				"infrastructure": "Infrastructure",
 				"docker": "Docker",
 				"notifications": "Notifications",
-				"tags": "Tags",
-				"proxies": "Proxies",
 				"checks": "Checks",
 				"incidents": "Incidents",
 				"statusPages": "Status pages",
@@ -1586,6 +1590,8 @@
 				"monitoring": "Monitoring",
 				"email": "Email",
 				"integrations": "Integrations",
+				"tags": "Tags",
+				"proxies": "Proxies",
 				"data": "Data",
 				"connect": "Checkmate Connect"
 			},

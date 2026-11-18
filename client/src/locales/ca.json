@@ -170,6 +170,12 @@
 		"filters": {
 			"any": "Qualsevol",
 			"state": "Estat"
+		},
+		"fallback": {
+			"error": {
+				"title": "Alguna cosa ha anat malament",
+				"description": "Torna-ho a provar més tard"
+			}
 		}
 	},
 	"components": {
@@ -1517,6 +1523,8 @@
 				"monitoring": "Monitoratge",
 				"email": "Correu electrònic",
 				"integrations": "Integracions",
+				"tags": "Etiquetes",
+				"proxies": "Proxies",
 				"data": "Dades",
 				"connect": "Checkmate Connect"
 			},

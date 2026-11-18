@@ -170,6 +170,12 @@
 		"filters": {
 			"any": "Mikä tahansa",
 			"state": "Tila"
+		},
+		"fallback": {
+			"error": {
+				"title": "Jokin meni vikaan",
+				"description": "Yritä myöhemmin uudelleen"
+			}
 		}
 	},
 	"components": {
@@ -1516,6 +1522,8 @@
 				"monitoring": "Valvonta",
 				"email": "Sähköposti",
 				"integrations": "Integraatiot",
+				"tags": "Tunnisteet",
+				"proxies": "Välityspalvelimet",
 				"data": "Tiedot",
 				"connect": "Checkmate Connect"
 			},

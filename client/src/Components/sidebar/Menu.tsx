@@ -14,8 +14,6 @@ import {
 	User,
 	Lock,
 	Users,
-	Tag,
-	Waypoints,
 	Container,
 	LayoutDashboard,
 } from "lucide-react";
@@ -26,6 +24,7 @@ import type { SidebarGroupKey } from "@/Utils/Theme/Palette";
 export interface SidebarMenuItem extends NavData {
 	path: string;
 	roles?: UserRole[];
+	activePaths?: string[];
 }
 
 export interface SidebarMenuGroup {
@@ -117,20 +116,10 @@ export const getMenu = (t: TFunction, userRoles: UserRole[]): SidebarMenuGroup[]
 			group: t("components.sidebar.menu.groups.configuration"),
 			items: [
 				{
-					name: t("components.sidebar.menu.tags"),
-					path: "tags",
-					icon: <Icon icon={Tag} />,
-				},
-				{
-					name: t("components.sidebar.menu.proxies"),
-					path: "proxies",
-					icon: <Icon icon={Waypoints} />,
-					roles: ["admin", "superadmin"],
-				},
-				{
 					name: t("components.sidebar.menu.settings"),
 					path: "settings",
 					icon: <Icon icon={Settings} />,
+					activePaths: ["tags", "proxies"],
 				},
 			],
 		},

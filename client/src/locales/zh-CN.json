@@ -170,6 +170,12 @@
 		"filters": {
 			"any": "全部",
 			"state": "状态"
+		},
+		"fallback": {
+			"error": {
+				"title": "出了点问题",
+				"description": "请稍后重试"
+			}
 		}
 	},
 	"components": {
@@ -1514,6 +1520,8 @@
 				"monitoring": "监控",
 				"email": "邮件",
 				"integrations": "集成",
+				"tags": "标签",
+				"proxies": "代理",
 				"data": "数据",
 				"connect": "Checkmate Connect"
 			},
