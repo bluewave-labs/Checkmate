@@ -122,6 +122,7 @@ const EditUserPage = () => {
 							<FormMultiSelectField
 								name="role"
 								fieldLabel={t("common.form.role.option.role.label")}
+								display="chips"
 								options={roleOptions}
 							/>
 						}

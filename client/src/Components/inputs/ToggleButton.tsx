@@ -22,7 +22,7 @@ export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 				py: 0,
 				px: LAYOUT.MD,
 				border: 0,
-				borderRadius: Number(theme.shape.borderRadius) / 2,
+				borderRadius: theme.shape.borderRadius,
 				backgroundColor: "transparent",
 				textTransform: "uppercase",
 				letterSpacing: theme.typography.eyebrow.letterSpacing,
@@ -71,7 +71,7 @@ export const ToggleButtonGroupInput = ({ sx, ...props }: ToggleButtonGroupProps)
 					...(isVertical && { height: SEGMENT_HEIGHT }),
 					"&.Mui-disabled": { border: 0 },
 					"&, &:not(:first-of-type), &:not(:last-of-type)": {
-						borderRadius: Number(theme.shape.borderRadius) / 2,
+						borderRadius: theme.shape.borderRadius,
 						borderLeft: 0,
 					},
 				},
