@@ -5,6 +5,14 @@ const baseSchema = z.object({
 		.string()
 		.min(1, "Notification name is required")
 		.max(100, "Notification name must be at most 100 characters"),
+	customTitle: z.string().max(200, "Title must be at most 200 characters").optional(),
+	customBody: z.string().max(1000, "Body must be at most 1000 characters").optional(),
+	pingContent: z
+		.string()
+		.max(500, "Ping message must be at most 500 characters")
+		.optional(),
+	showMonitorUrl: z.boolean().optional(),
+	showDetails: z.boolean().optional(),
 });
 
 const emailSchema = baseSchema.extend({

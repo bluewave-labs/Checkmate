@@ -16,6 +16,8 @@ import { useTranslation } from "react-i18next";
 import { NotificationChannels } from "@/Types/Notification";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
+import { FormSwitchField } from "@/Components/inputs/forms/FormSwitchField";
+import { DiscordPreview } from "@/Pages/Notifications/components/DiscordPreview";
 
 const NotificationsCreatePage = () => {
 	const { t } = useTranslation();
@@ -46,6 +48,11 @@ const NotificationsCreatePage = () => {
 	}, [defaults, reset]);
 
 	const watchedType = watch("type");
+	const watchedTitle = watch("customTitle");
+	const watchedBody = watch("customBody");
+	const watchedPing = watch("pingContent");
+	const watchedShowUrl = watch("showMonitorUrl");
+	const watchedShowDetails = watch("showDetails");
 
 	useEffect(() => {
 		clearErrors();
@@ -281,6 +288,63 @@ const NotificationsCreatePage = () => {
 									placeholder={t("pages.notifications.form.accessToken.placeholder")}
 								/>
 							</Stack>
+						}
+					/>
+				)}
+				<ConfigBox
+					title={t("pages.notifications.form.messageContent.title")}
+					subtitle={t("pages.notifications.form.messageContent.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(8)}>
+							<FormTextField
+								name="customTitle"
+								fieldLabel={t("pages.notifications.form.messageContent.optionTitle")}
+								placeholder={t(
+									"pages.notifications.form.messageContent.placeholderTitle"
+								)}
+								helperText={t("pages.notifications.form.messageContent.helperVariables")}
+							/>
+							<FormTextField
+								name="customBody"
+								fieldLabel={t("pages.notifications.form.messageContent.optionBody")}
+								placeholder={t("pages.notifications.form.messageContent.placeholderBody")}
+								helperText={t("pages.notifications.form.messageContent.helperVariables")}
+								multiline
+								rows={3}
+							/>
+							<FormSwitchField
+								name="showMonitorUrl"
+								label={t("pages.notifications.form.messageContent.optionShowUrl")}
+							/>
+							<FormSwitchField
+								name="showDetails"
+								label={t("pages.notifications.form.messageContent.optionShowDetails")}
+							/>
+							{watchedType === "discord" && (
+								<FormTextField
+									name="pingContent"
+									fieldLabel={t("pages.notifications.form.messageContent.optionPing")}
+									placeholder={t(
+										"pages.notifications.form.messageContent.placeholderPing"
+									)}
+									helperText={t("pages.notifications.form.messageContent.helperPing")}
+								/>
+							)}
+						</Stack>
+					}
+				/>
+				{watchedType === "discord" && (
+					<ConfigBox
+						title={t("pages.notifications.form.preview.title")}
+						subtitle={t("pages.notifications.form.preview.description")}
+						rightContent={
+							<DiscordPreview
+								customTitle={watchedTitle}
+								customBody={watchedBody}
+								pingContent={watchedPing}
+								showMonitorUrl={watchedShowUrl}
+								showDetails={watchedShowDetails}
+							/>
 						}
 					/>
 				)}

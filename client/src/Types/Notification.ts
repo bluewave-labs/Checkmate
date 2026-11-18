@@ -29,6 +29,11 @@ export interface Notification {
 	accountSid?: string;
 	twilioPhoneNumber?: string;
 	topic?: string;
+	customTitle?: string;
+	customBody?: string;
+	pingContent?: string;
+	showMonitorUrl?: boolean;
+	showDetails?: boolean;
 	createdAt: string;
 	updatedAt: string;
 }
