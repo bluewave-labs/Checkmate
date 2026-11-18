@@ -1,7 +1,6 @@
 import { BasePage, EmptyState } from "@/Components/design-elements";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
 import { useTranslation } from "react-i18next";
 import {
 	SummaryCardActiveIncidents,
@@ -206,7 +205,6 @@ const IncidentsPage = () => {
 						onOpenDetails={handleOpenDetails}
 						onResolve={handleResolve}
 					/>
-					<Divider />
 				</>
 			)}
 
