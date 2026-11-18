@@ -24,7 +24,7 @@ export const TabOverview = ({
 	const checks = stats?.checks || [];
 	const recentChecks = monitor.recentChecks ?? [];
 	return (
-		<Stack gap={theme.spacing(LAYOUT.MD)}>
+		<Stack gap={theme.spacing(LAYOUT.LG)}>
 			<StatusBoxes monitor={monitor} />
 			<InfraDetailsGauges snapshot={recentChecks[recentChecks.length - 1]} />
 			<InfraDetailsCharts

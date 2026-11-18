@@ -87,7 +87,7 @@ const EditUserPage = () => {
 				component={"form"}
 				onSubmit={handleSubmit(onSubmit)}
 			>
-				<Stack gap={theme.spacing(LAYOUT.MD)}>
+				<Stack gap={theme.spacing(LAYOUT.LG)}>
 					<ConfigBox
 						title={t("pages.account.form.name.title")}
 						subtitle={t("pages.account.form.name.description")}

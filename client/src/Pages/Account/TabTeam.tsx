@@ -41,7 +41,7 @@ export const TabTeam = () => {
 	const noUsers = users !== undefined && totalUsers === 0;
 
 	return (
-		<Stack gap={theme.spacing(LAYOUT.MD)}>
+		<Stack gap={theme.spacing(LAYOUT.LG)}>
 			<HeaderTeamControls
 				filter={filter}
 				onFilterChange={setFilter}

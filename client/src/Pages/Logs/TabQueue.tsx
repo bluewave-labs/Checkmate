@@ -56,7 +56,7 @@ export const TabQueue = () => {
 	};
 
 	return (
-		<Stack gap={theme.spacing(LAYOUT.XXL)}>
+		<Stack gap={theme.spacing(LAYOUT.LG)}>
 			<Metrics metrics={metrics} />
 			<Stack gap={theme.spacing(SPACING.XXL)}>
 				<Stack gap={theme.spacing(SPACING.SM)}>

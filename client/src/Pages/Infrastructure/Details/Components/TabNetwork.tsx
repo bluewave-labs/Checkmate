@@ -20,7 +20,7 @@ export const TabNetwork = ({
 
 	const checks = stats?.checks || [];
 	return (
-		<Stack gap={theme.spacing(LAYOUT.MD)}>
+		<Stack gap={theme.spacing(LAYOUT.LG)}>
 			<InfraNetworkCharts
 				checks={checks}
 				dateRange={dateRange}

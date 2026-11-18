@@ -45,7 +45,7 @@ export const TabLogs = () => {
 	}
 
 	return (
-		<Stack gap={theme.spacing(LAYOUT.MD)}>
+		<Stack gap={theme.spacing(LAYOUT.LG)}>
 			<Select
 				sx={{ maxWidth: 200 }}
 				fieldLabel={t("pages.logs.logLevelSelect.label")}
