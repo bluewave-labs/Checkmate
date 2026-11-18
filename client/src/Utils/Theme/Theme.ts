@@ -35,6 +35,8 @@ interface ChartPalette {
 		firstByte: string;
 		download: string;
 	};
+	series: readonly string[];
+	score: readonly string[];
 }
 
 declare module "@mui/material/styles" {

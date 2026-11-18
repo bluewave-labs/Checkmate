@@ -16,19 +16,17 @@ export const typographyLevels = {
 };
 
 export const colors = {
-	green700: "#008300",
+	teal600: "#008B91",
 	brandGreenDark: "#075443",
 	brandGreen: "#13715B",
 	gray900: "#151518",
 	successText: "#17703B",
-	aqua600: "#199E70",
 	ink900: "#1A2E2B",
-	aqua500: "#1BAF7A",
 	gray850: "#1c1c21",
 	successMain: "#22A55A",
 	gray800: "#24242A",
 	rowDividerDark: "#2A2F2D",
-	blue500: "#2A78D6",
+	blue600: "#2A82B7",
 	blue700: "#2D6F99",
 	gray700: "#313131",
 	ink800: "#33453F",
@@ -38,37 +36,47 @@ export const colors = {
 	ruleDarkStrong: "#4A5652",
 	successDark: "#4BC49E",
 	brandGreenLight: "#4DAF94",
+	green500: "#59B051",
 	ink600: "#5C6D69",
+	indigo500: "#6076BE",
 	ink500: "#6B7C78",
+	olive500: "#6B8632",
+	lime500: "#7EBA43",
 	blue300: "#7FB8DE",
+	purple500: "#8A67B1",
 	ink400: "#8C9893",
 	blue200: "#8CC8EE",
+	olive700: "#90790F",
 	warningText: "#9A4D05",
+	plum500: "#A0609B",
 	ink300: "#A3AFAC",
+	lime600: "#A4BD34",
 	green200: "#A6DDB9",
+	rose600: "#AE5B7E",
+	rust500: "#B36043",
 	inkDark600: "#B3BCB7",
 	errorText: "#B91C1C",
 	blue100: "#BFE0F5",
 	rule300: "#C3C9C8",
-	yellow600: "#C98500",
+	lime700: "#C9B925",
 	rule250: "#C9D1CF",
-	magenta400: "#D55181",
 	rule200: "#D8DCDB",
-	orange700: "#D95926",
 	green100: "#D9F2E9",
 	errorMain: "#DC2626",
 	successBg: "#DCF2E4",
 	warningDark: "#E0A458",
 	blue50: "#E3F2FC",
+	orange650: "#E65723",
 	rule100: "#E6E9E8",
-	magenta300: "#E87BA4",
 	errorDark: "#E8837A",
-	orange600: "#EB6834",
+	yellow400: "#EAB308",
 	inkDark900: "#ECEFED",
 	yellow500: "#EDA100",
+	orange550: "#EE7B1D",
 	surface200: "#EEF1F0",
 	gray200: "#EFEFEF",
 	green50: "#EFFAF6",
+	amber600: "#F19416",
 	warningMain: "#F28C18",
 	surface100: "#F3F6F5",
 	red200: "#F5B5B5",
@@ -88,6 +96,50 @@ export const toSignalKey = (palette: string): SignalKey =>
 	(SignalKeys as readonly string[]).includes(palette)
 		? (palette as SignalKey)
 		: "neutral";
+
+// **************************
+// Chart colors
+// **************************
+
+const chartSeries = [
+	colors.indigo500,
+	colors.rose600,
+	colors.olive700,
+	colors.teal600,
+	colors.rust500,
+	colors.purple500,
+	colors.olive500,
+	colors.blue600,
+	colors.plum500,
+] as const;
+
+const chartPhases = {
+	dns: chartSeries[0],
+	tcp: chartSeries[1],
+	tls: chartSeries[2],
+	request: chartSeries[3],
+	firstByte: chartSeries[4],
+	download: chartSeries[5],
+};
+
+const scoreSpectrum = [
+	colors.errorMain,
+	colors.orange650,
+	colors.orange550,
+	colors.amber600,
+	colors.yellow500,
+	colors.yellow400,
+	colors.lime700,
+	colors.lime600,
+	colors.lime500,
+	colors.green500,
+	colors.successMain,
+] as const;
+
+export const getScoreColor = (spectrum: readonly string[], score: number): string => {
+	const clamped = Math.min(100, Math.max(0, Number.isFinite(score) ? score : 0));
+	return spectrum[Math.round((clamped / 100) * (spectrum.length - 1))];
+};
 
 export const lightPalette = {
 	primary: {
@@ -191,14 +243,9 @@ export const lightPalette = {
 		paused: colors.warningBg,
 	},
 	chart: {
-		phases: {
-			dns: colors.magenta300,
-			tcp: colors.orange600,
-			tls: colors.aqua500,
-			request: colors.yellow500,
-			firstByte: colors.blue500,
-			download: colors.green700,
-		},
+		phases: chartPhases,
+		series: chartSeries,
+		score: scoreSpectrum,
 	},
 } satisfies PaletteOptions;
 
@@ -296,13 +343,8 @@ export const darkPalette = {
 		paused: alpha(colors.orange500, 0.18),
 	},
 	chart: {
-		phases: {
-			dns: colors.magenta400,
-			tcp: colors.orange700,
-			tls: colors.aqua600,
-			request: colors.yellow600,
-			firstByte: colors.blue500,
-			download: colors.green700,
-		},
+		phases: chartPhases,
+		series: chartSeries,
+		score: scoreSpectrum,
 	},
 } satisfies PaletteOptions;
