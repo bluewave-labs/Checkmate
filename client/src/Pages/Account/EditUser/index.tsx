@@ -87,12 +87,12 @@ const EditUserPage = () => {
 				component={"form"}
 				onSubmit={handleSubmit(onSubmit)}
 			>
-				<Stack gap={theme.spacing(8)}>
+				<Stack gap={theme.spacing(LAYOUT.MD)}>
 					<ConfigBox
 						title={t("pages.account.form.name.title")}
 						subtitle={t("pages.account.form.name.description")}
 						rightContent={
-							<Stack gap={theme.spacing(8)}>
+							<Stack gap={theme.spacing(LAYOUT.MD)}>
 								<FormTextField
 									name="firstName"
 									autoComplete="given-name"

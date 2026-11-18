@@ -6,6 +6,7 @@ import { HeatmapResponseTimeTooltip } from "@/Components/common/charts/HeatmapRe
 import type { SxProps } from "@mui/material/styles";
 import type { ResponsiveStyleValue } from "@mui/system";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 interface PlaceholderCheck {
 	status: "placeholder";
 	responseTime: 0;
@@ -27,7 +28,7 @@ export const HeatmapResponseTime = ({
 }: HeatmapResponseTimeProps) => {
 	const theme = useTheme();
 	if (!gap) {
-		gap = theme.spacing(0.5);
+		gap = theme.spacing(SPACING.XS);
 	}
 
 	if (!checks || checks.length === 0) return null;
@@ -89,7 +90,7 @@ export const HeatmapResponseTime = ({
 							>
 								<Box
 									display={"flex"}
-									gap={theme.spacing(2)}
+									gap={theme.spacing(LAYOUT.XXS)}
 									sx={{
 										flexDirection: "column",
 									}}

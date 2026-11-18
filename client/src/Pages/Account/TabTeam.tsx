@@ -9,6 +9,7 @@ import { AddTeamMemberDialog } from "./components/AddTeamMemberDialog";
 import { EmptyState } from "@/Components/design-elements";
 import { useGet } from "@/Hooks/UseApi";
 import type { User, UserRole } from "@/Types/User";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 export const TabTeam = () => {
 	const theme = useTheme();
@@ -40,7 +41,7 @@ export const TabTeam = () => {
 	const noUsers = users !== undefined && totalUsers === 0;
 
 	return (
-		<Stack gap={theme.spacing(8)}>
+		<Stack gap={theme.spacing(LAYOUT.MD)}>
 			<HeaderTeamControls
 				filter={filter}
 				onFilterChange={setFilter}

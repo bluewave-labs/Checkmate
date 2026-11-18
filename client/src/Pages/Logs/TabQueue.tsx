@@ -11,7 +11,7 @@ import type { QueueData } from "@/Types/Queue";
 import { Metrics } from "@/Pages/Logs/components/Metrics";
 import { Button } from "@/Components/inputs";
 import { EmptyState } from "@/Components/design-elements";
-import { SPACING } from "@/Utils/Theme/constants";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 
 export const TabQueue = () => {
 	const theme = useTheme();
@@ -56,10 +56,10 @@ export const TabQueue = () => {
 	};
 
 	return (
-		<Stack gap={theme.spacing(16)}>
+		<Stack gap={theme.spacing(LAYOUT.XXL)}>
 			<Metrics metrics={metrics} />
-			<Stack gap={theme.spacing(3)}>
-				<Stack gap={theme.spacing(1)}>
+			<Stack gap={theme.spacing(SPACING.XXL)}>
+				<Stack gap={theme.spacing(SPACING.SM)}>
 					<Typography
 						variant="eyebrow"
 						color={theme.palette.text.secondary}
@@ -86,8 +86,8 @@ export const TabQueue = () => {
 				</Stack>
 				<TableWorkers queueWorkers={workers} />
 			</Stack>
-			<Stack gap={theme.spacing(3)}>
-				<Stack gap={theme.spacing(1)}>
+			<Stack gap={theme.spacing(SPACING.XXL)}>
+				<Stack gap={theme.spacing(SPACING.SM)}>
 					<Typography
 						variant="eyebrow"
 						color={theme.palette.text.secondary}
@@ -124,8 +124,8 @@ export const TabQueue = () => {
 					}}
 				/>
 			</Stack>
-			<Stack gap={theme.spacing(3)}>
-				<Stack gap={theme.spacing(1)}>
+			<Stack gap={theme.spacing(SPACING.XXL)}>
+				<Stack gap={theme.spacing(SPACING.SM)}>
 					<Typography
 						variant="eyebrow"
 						color={theme.palette.text.secondary}

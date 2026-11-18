@@ -6,7 +6,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { ChevronLeft, HelpCircle, FileText, Code } from "lucide-react";
-import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT, LAYOUT, SPACING } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import { useAppVersion } from "@/Hooks/useAppVersion";
 import { PulseDot } from "@/Components/design-elements/PulseDot";
@@ -76,16 +76,16 @@ export const PageHeader = ({
 			direction="row"
 			alignItems="flex-start"
 			justifyContent="space-between"
-			gap={6}
+			gap={LAYOUT.SM}
 			mb={theme.spacing(8)}
 		>
-			<Stack gap={theme.spacing(1)}>
+			<Stack gap={theme.spacing(SPACING.SM)}>
 				{backTo && backLabel && (
 					<Box
 						component={RouterLink}
 						to={backTo}
 						display="inline-flex"
-						gap={0.5}
+						gap={SPACING.XS}
 						color={theme.palette.text.secondary}
 						fontSize={typographyLevels.base}
 						mb={theme.spacing(1)}
@@ -142,7 +142,7 @@ export const PageHeader = ({
 							display="inline-flex"
 							alignItems="center"
 							height={INPUT_BASE_HEIGHT}
-							gap={theme.spacing(1)}
+							gap={theme.spacing(SPACING.SM)}
 							pl={theme.spacing(3)}
 							pr={theme.spacing(5)}
 							borderRight={`1px solid ${theme.palette.divider}`}

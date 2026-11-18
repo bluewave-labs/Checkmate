@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { type StatusPage } from "@/Types/StatusPage";
 import { getStatusPagePublicUrl } from "@/Utils/statusPageUrl";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface HeaderStatusPageControlsProps {
 	isAdmin: boolean;
@@ -33,7 +34,7 @@ export const HeaderStatusPageControls = ({
 		>
 			<Stack
 				direction="row"
-				gap={theme.spacing(4)}
+				gap={theme.spacing(LAYOUT.XS)}
 				alignItems="baseline"
 			>
 				<Typography

@@ -8,7 +8,7 @@ import { ResponsiveContainer, BarChart, XAxis, Bar, Cell, Tooltip } from "rechar
 import { getResponseTimeColor } from "@/Utils/MonitorUtils";
 import type { GroupedCheck } from "@/Types/Check";
 import { useFormatDate } from "@/Hooks/useFormatDate";
-import { SPACING } from "@/Utils/Theme/constants";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 
 interface XLabelProps {
 	p1: GroupedCheck;
@@ -111,7 +111,7 @@ export const HistogramStatus = ({
 			icon={icon}
 			title={title}
 		>
-			<Stack gap={theme.spacing(8)}>
+			<Stack gap={theme.spacing(LAYOUT.MD)}>
 				<Stack
 					position="relative"
 					direction="row"

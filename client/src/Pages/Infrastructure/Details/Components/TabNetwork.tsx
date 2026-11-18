@@ -3,6 +3,7 @@ import { InfraNetworkCharts } from "./ChartsNetwork";
 
 import { useTheme } from "@mui/material";
 import type { HardwareStats } from "@/Types/Monitor";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 export const TabNetwork = ({
 	stats,
@@ -19,7 +20,7 @@ export const TabNetwork = ({
 
 	const checks = stats?.checks || [];
 	return (
-		<Stack gap={theme.spacing(8)}>
+		<Stack gap={theme.spacing(LAYOUT.MD)}>
 			<InfraNetworkCharts
 				checks={checks}
 				dateRange={dateRange}

@@ -12,6 +12,7 @@ import type { Log, LogLevelOption } from "@/Types/Log";
 import { LOG_LEVEL_OPTIONS } from "@/Types/Log";
 import { t } from "i18next";
 import type { RootState } from "@/Types/state";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 export const TabLogs = () => {
 	const theme = useTheme();
@@ -44,7 +45,7 @@ export const TabLogs = () => {
 	}
 
 	return (
-		<Stack gap={theme.spacing(8)}>
+		<Stack gap={theme.spacing(LAYOUT.MD)}>
 			<Select
 				sx={{ maxWidth: 200 }}
 				fieldLabel={t("pages.logs.logLevelSelect.label")}

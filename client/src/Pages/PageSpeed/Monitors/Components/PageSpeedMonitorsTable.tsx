@@ -164,7 +164,7 @@ export const PageSpeedMonitorsTable = ({
 				id: "name",
 				content: (
 					<Stack
-						gap={theme.spacing(4)}
+						gap={theme.spacing(LAYOUT.XS)}
 						direction={"row"}
 						alignItems={"center"}
 						onClick={(e) => handleSort(e, "name")}
@@ -194,7 +194,7 @@ export const PageSpeedMonitorsTable = ({
 				id: "status",
 				content: (
 					<Stack
-						gap={theme.spacing(4)}
+						gap={theme.spacing(LAYOUT.XS)}
 						direction={"row"}
 						justifyContent={"center"}
 						alignItems={"center"}
