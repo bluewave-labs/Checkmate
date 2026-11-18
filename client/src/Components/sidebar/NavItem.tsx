@@ -3,9 +3,13 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { useTheme } from "@mui/material/styles";
-import { SPACING } from "@/Utils/Theme/constants";
+import { alpha, useTheme } from "@mui/material/styles";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 import useSidebar from "@/Hooks/useSidebar";
+import type { SidebarGroupKey } from "@/Utils/Theme/Palette";
+
+const NAV_HOVER_ALPHA = 0.08;
+const NAV_SELECTED_ALPHA = 0.16;
 
 export interface NavData {
 	name: string;
@@ -16,21 +20,38 @@ export const NavItem = ({
 	item,
 	selected,
 	onClick,
+	groupKey,
 }: {
 	item: NavData;
 	selected: boolean;
 	onClick: (event: React.MouseEvent) => void;
+	groupKey?: SidebarGroupKey;
 }) => {
 	const { collapsed, itemInset } = useSidebar();
 	const theme = useTheme();
-	const iconStroke = selected
-		? theme.palette.sidebar.accent
-		: theme.palette.text.secondary;
-	const buttonBgColor = selected ? theme.palette.action.selected : "transparent";
+	const tone = groupKey ? theme.palette.sidebar.groups[groupKey] : null;
+
+	const iconStroke = tone
+		? tone.solid
+		: selected
+			? theme.palette.sidebar.accent
+			: theme.palette.neutral.icon;
+
+	const iconHoverStroke = tone ? tone.solid : theme.palette.sidebar.accent;
+
+	const selectedBg = tone
+		? alpha(tone.solid, NAV_SELECTED_ALPHA)
+		: theme.palette.neutral.selectedGreen;
+
+	const buttonBgColor = selected ? selectedBg : "transparent";
 	const buttonBgHoverColor = selected
-		? theme.palette.action.selectedHover
-		: theme.palette.action.rowHover;
-	const fontWeight = selected ? 600 : 400;
+		? selectedBg
+		: tone
+			? alpha(tone.solid, NAV_HOVER_ALPHA)
+			: theme.palette.neutral.hoverGreen;
+	const fontWeight = selected ? 500 : 400;
+	const labelColor = selected ? theme.palette.text.primary : theme.palette.text.secondary;
+
 	return (
 		<Tooltip
 			placement="right"
@@ -60,7 +81,7 @@ export const NavItem = ({
 						backgroundImage: "none",
 					},
 					height: 32,
-					gap: theme.spacing(SPACING.MD),
+					gap: theme.spacing(LAYOUT.XS),
 					borderRadius: theme.shape.borderRadius,
 					px: theme.spacing(SPACING.MD),
 					pl: theme.spacing(itemInset),
@@ -73,7 +94,6 @@ export const NavItem = ({
 						"& svg": {
 							height: 16,
 							width: 16,
-							opacity: 0.81,
 							transition: "stroke 0.2s ease",
 						},
 						"& svg path, & svg line, & svg polyline, & svg rect, & svg circle": {
@@ -81,7 +101,7 @@ export const NavItem = ({
 						},
 						".MuiListItemButton-root:hover &": {
 							"& svg path, & svg line, & svg polyline, & svg rect, & svg circle": {
-								stroke: theme.palette.sidebar.accent,
+								stroke: iconHoverStroke,
 							},
 						},
 					}}
@@ -98,10 +118,8 @@ export const NavItem = ({
 				>
 					<Typography
 						variant="body1"
-						sx={{
-							fontWeight: fontWeight,
-							opacity: 0.9,
-						}}
+						fontWeight={fontWeight}
+						color={labelColor}
 					>
 						{item.name}
 					</Typography>

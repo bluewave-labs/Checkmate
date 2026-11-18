@@ -22,7 +22,7 @@ import {
 import type { TFunction } from "i18next";
 import type { NavData } from "@/Components/sidebar/NavItem";
 import type { UserRole } from "@/Types/User";
-
+import type { SidebarGroupKey } from "@/Utils/Theme/Palette";
 export interface SidebarMenuItem extends NavData {
 	path: string;
 	roles?: UserRole[];
@@ -30,6 +30,7 @@ export interface SidebarMenuItem extends NavData {
 
 export interface SidebarMenuGroup {
 	group: string;
+	groupKey?: SidebarGroupKey;
 	items: SidebarMenuItem[];
 }
 
@@ -40,6 +41,7 @@ export const getMenu = (t: TFunction, userRoles: UserRole[]): SidebarMenuGroup[]
 	const menu: SidebarMenuGroup[] = [
 		{
 			group: t("components.sidebar.menu.groups.monitoring"),
+			groupKey: "monitoring",
 			items: [
 				{
 					name: t("components.sidebar.menu.dashboard"),
@@ -70,6 +72,7 @@ export const getMenu = (t: TFunction, userRoles: UserRole[]): SidebarMenuGroup[]
 		},
 		{
 			group: t("components.sidebar.menu.groups.alerting"),
+			groupKey: "alerting",
 			items: [
 				{
 					name: t("components.sidebar.menu.incidents"),
@@ -90,6 +93,7 @@ export const getMenu = (t: TFunction, userRoles: UserRole[]): SidebarMenuGroup[]
 		},
 		{
 			group: t("components.sidebar.menu.groups.reporting"),
+			groupKey: "reporting",
 			items: [
 				{
 					name: t("components.sidebar.menu.statusPages"),
