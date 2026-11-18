@@ -142,15 +142,11 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 							closeOnClick={false}
 						>
 							<Box
-								sx={{
-									minWidth: 200,
-									p: theme.spacing(4),
-									bgcolor: theme.palette.background.paper,
-									borderWidth: 1,
-									borderStyle: "solid",
-									borderColor: theme.palette.divider,
-									borderRadius: 1,
-								}}
+								minWidth={200}
+								p={theme.spacing(4)}
+								bgcolor={theme.palette.background.paper}
+								border={`1px solid ${theme.palette.divider}`}
+								borderRadius={theme.shape.borderRadius}
 							>
 								<Typography
 									variant="subtitle1"

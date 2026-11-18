@@ -108,7 +108,7 @@ const RegisterPage = () => {
 							color: theme.palette.text.secondary,
 							backgroundColor: theme.palette.action.hover,
 							border: `1px solid ${theme.palette.divider}`,
-							borderRadius: 1,
+							borderRadius: theme.shape.borderRadius,
 							"& .MuiAlert-message": { padding: 0 },
 						})}
 					>
