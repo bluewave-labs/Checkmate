@@ -122,7 +122,6 @@ export const HistogramResponseTime = ({
 							check.status === true
 								? theme.palette.signal.success.mark
 								: theme.palette.signal.error.mark;
-
 						const bar = (
 							<Box
 								width={"100%"}
