@@ -120,8 +120,8 @@ export const HistogramResponseTime = ({
 						const heightPct = `${barHeights[index] ?? 0}%`;
 						const barColor =
 							check.status === true
-								? theme.palette.success.light
-								: theme.palette.error.light;
+								? theme.palette.signal.success.mark
+								: theme.palette.signal.error.mark;
 						const bar = (
 							<Box
 								width={"100%"}
