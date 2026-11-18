@@ -170,7 +170,7 @@ const IncidentsPage = () => {
 		<BasePage headerKey="incidents">
 			<Stack
 				direction={{ xs: "column", md: "row" }}
-				gap={theme.spacing(8)}
+				gap={theme.spacing(LAYOUT.MD)}
 			>
 				<SummaryCardActiveIncidents summary={summaryData} />
 				<SummaryCardLatestIncidents summary={summaryData} />

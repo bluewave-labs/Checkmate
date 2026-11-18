@@ -212,7 +212,7 @@ const CreateMaintenanceWindowPage = () => {
 								<Stack
 									direction="row"
 									alignItems="center"
-									gap={theme.spacing(2)}
+									gap={theme.spacing(LAYOUT.XXS)}
 									flexWrap="wrap"
 								>
 									<Typography>{monitor.name}</Typography>

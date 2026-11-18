@@ -82,7 +82,7 @@ export const AutoCompleteInput = ({
 							<Stack
 								direction={"row"}
 								alignItems={"center"}
-								gap={theme.spacing(2)}
+								gap={theme.spacing(LAYOUT.XXS)}
 								width="100%"
 							>
 								{multiple && <Checkbox checked={selected} />}

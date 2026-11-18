@@ -8,6 +8,7 @@ import type { CheckSnapshot } from "@/Types/Check";
 import { useTranslation } from "react-i18next";
 import { getPageSpeedPalette } from "@/Utils/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const MetricBox = ({
 	label,
@@ -66,7 +67,7 @@ export const PiePageSpeedLegend = ({ latestCheck }: { latestCheck?: CheckSnapsho
 			}
 			title={t("pages.pageSpeed.charts.legend.title")}
 		>
-			<Stack gap={theme.spacing(4)}>
+			<Stack gap={theme.spacing(LAYOUT.XS)}>
 				<MetricBox
 					label={t("pages.pageSpeed.charts.common.si")}
 					value={Math.floor((latestCheck.audits?.si?.score || 0) * 100)}

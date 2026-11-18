@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface NotFoundProps {
 	title?: string;
@@ -32,7 +33,7 @@ const NotFoundPage = ({ title, desc }: NotFoundProps) => {
 			justifyContent="center"
 		>
 			<Stack
-				gap={theme.spacing(2)}
+				gap={theme.spacing(LAYOUT.XXS)}
 				alignItems="center"
 			>
 				<Box

@@ -5,6 +5,7 @@ import Link from "@mui/material/Link";
 import { Link as RouterLink } from "react-router-dom";
 
 import { useTheme } from "@mui/material/styles";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface TextLinkProps extends StackProps {
 	text: string;
@@ -25,7 +26,7 @@ export const TextLink = ({
 	return (
 		<Stack
 			direction="row"
-			gap={theme.spacing(4)}
+			gap={theme.spacing(LAYOUT.XS)}
 			{...props}
 		>
 			<Typography>{text}</Typography>

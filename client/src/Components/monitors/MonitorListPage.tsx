@@ -6,7 +6,7 @@ import { HeaderMonitorsSummary } from "@/Components/monitors/HeaderMonitorsSumma
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import type { MonitorListController } from "@/Hooks/useMonitorListController";
 import { useMediaQuery, useTheme } from "@mui/material";
-import { SPACING } from "@/Utils/Theme/constants";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -75,7 +75,7 @@ export const MonitorListPage = ({
 			<Stack
 				direction={isSmall ? "column" : "row"}
 				justifyContent={isSmall ? "flex-start" : "space-between"}
-				gap={theme.spacing(4)}
+				gap={theme.spacing(LAYOUT.XS)}
 			>
 				<ControlsFilter
 					{...(showTypeFilter === false

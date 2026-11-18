@@ -578,7 +578,7 @@ export const SettingsPage = () => {
 					>
 						{/* general tab */}
 						{activeTab === "general" && (
-							<Stack gap={theme.spacing(LAYOUT.MD)}>
+							<Stack gap={theme.spacing(LAYOUT.LG)}>
 								<ConfigBox
 									title={t("pages.settings.form.timezone.title")}
 									subtitle={t("pages.settings.form.timezone.description")}
@@ -717,7 +717,7 @@ export const SettingsPage = () => {
 
 						{/* monitoring tab */}
 						{activeTab === "monitoring" && (
-							<Stack gap={theme.spacing(LAYOUT.MD)}>
+							<Stack gap={theme.spacing(LAYOUT.LG)}>
 								{/* Global Thresholds */}
 								{isAdmin && (
 									<ConfigBox
@@ -855,7 +855,7 @@ export const SettingsPage = () => {
 
 						{/* email tab */}
 						{activeTab === "email" && (
-							<Stack gap={theme.spacing(LAYOUT.MD)}>
+							<Stack gap={theme.spacing(LAYOUT.LG)}>
 								{/* Email Settings - Admin Only */}
 								{isAdmin && (
 									<ConfigBox
@@ -1065,7 +1065,7 @@ export const SettingsPage = () => {
 
 						{/* integrations tab */}
 						{activeTab === "integrations" && (
-							<Stack gap={theme.spacing(LAYOUT.MD)}>
+							<Stack gap={theme.spacing(LAYOUT.LG)}>
 								{isAdmin && (
 									<ConfigBox
 										title={t("pages.settings.form.globalProxy.title")}
@@ -1144,7 +1144,7 @@ export const SettingsPage = () => {
 
 						{/* data tab */}
 						{activeTab === "data" && (
-							<Stack gap={theme.spacing(LAYOUT.MD)}>
+							<Stack gap={theme.spacing(LAYOUT.LG)}>
 								{/* Export Monitors - Admin Only */}
 								{isAdmin && (
 									<ConfigBox

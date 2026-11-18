@@ -4,6 +4,7 @@ import { Upload, X } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { IconButton } from "@/Components/inputs";
+import { SPACING } from "@/Utils/Theme/constants";
 
 interface FileObject {
 	src: string;
@@ -73,7 +74,7 @@ export const ImageUpload = ({
 			{displaySrc ? (
 				<Stack
 					alignItems="center"
-					gap={1}
+					gap={SPACING.SM}
 				>
 					<Box
 						component="img"
@@ -106,7 +107,7 @@ export const ImageUpload = ({
 					}}
 					alignItems="center"
 					justifyContent="center"
-					gap={1}
+					gap={SPACING.SM}
 					position={"relative"}
 					width="100%"
 					minHeight={150}

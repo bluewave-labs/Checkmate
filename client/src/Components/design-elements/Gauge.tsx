@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { forwardRef, useMemo, useState, useEffect } from "react";
 import { getSeverityColor } from "@/Utils/MonitorUtils";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const MINIMUM_VALUE = 0;
 const MAXIMUM_VALUE = 100;
@@ -145,7 +146,7 @@ export const DetailGauge = ({
 			<Stack
 				alignItems={"center"}
 				mb={theme.spacing(4)}
-				gap={theme.spacing(4)}
+				gap={theme.spacing(LAYOUT.XS)}
 			>
 				<Gauge progress={progress} />
 			</Stack>

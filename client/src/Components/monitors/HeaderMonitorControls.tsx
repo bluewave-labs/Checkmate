@@ -9,6 +9,7 @@ import { useTheme } from "@mui/material/styles";
 import { usePost } from "@/Hooks/UseApi";
 
 import type { Monitor } from "@/Types/Monitor.js";
+import { LAYOUT } from "@/Utils/Theme/constants";
 interface BaseHeaderProps {
 	monitor: Monitor;
 }
@@ -58,7 +59,7 @@ export const HeaderMonitorControls = ({
 			<Stack
 				width={{ xs: "100%", md: "auto" }}
 				direction={{ xs: "column", md: "row" }}
-				gap={theme.spacing(2)}
+				gap={theme.spacing(LAYOUT.XXS)}
 			>
 				{isAdmin && (
 					<Button
@@ -144,7 +145,7 @@ export const HeaderDeleteControls = ({
 			<Stack
 				width={{ xs: "100%", md: "auto" }}
 				direction={{ xs: "column", md: "row" }}
-				gap={theme.spacing(2)}
+				gap={theme.spacing(LAYOUT.XXS)}
 			>
 				{isAdmin && (
 					<Button
