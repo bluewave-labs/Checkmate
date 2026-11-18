@@ -170,6 +170,12 @@
 		"filters": {
 			"any": "Beliebig",
 			"state": "Zustand"
+		},
+		"fallback": {
+			"error": {
+				"title": "Etwas ist schiefgelaufen",
+				"description": "Bitte versuchen Sie es später erneut"
+			}
 		}
 	},
 	"components": {
@@ -1516,6 +1522,8 @@
 				"monitoring": "Überwachung",
 				"email": "E-Mail",
 				"integrations": "Integrationen",
+				"tags": "Tags",
+				"proxies": "Proxys",
 				"data": "Daten",
 				"connect": "Checkmate Connect"
 			},

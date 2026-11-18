@@ -170,6 +170,12 @@
 		"filters": {
 			"any": "Будь-який",
 			"state": "Стан"
+		},
+		"fallback": {
+			"error": {
+				"title": "Щось пішло не так",
+				"description": "Спробуйте ще раз пізніше"
+			}
 		}
 	},
 	"components": {
@@ -1520,6 +1526,8 @@
 				"monitoring": "Моніторинг",
 				"email": "Електронна пошта",
 				"integrations": "Інтеграції",
+				"tags": "Теги",
+				"proxies": "Проксі",
 				"data": "Дані",
 				"connect": "Checkmate Connect"
 			},

@@ -170,6 +170,12 @@
 		"filters": {
 			"any": "Qualquer",
 			"state": "Estado"
+		},
+		"fallback": {
+			"error": {
+				"title": "Algo deu errado",
+				"description": "Tente novamente mais tarde"
+			}
 		}
 	},
 	"components": {
@@ -236,8 +242,6 @@
 				"infrastructure": "Infraestrutura",
 				"docker": "Docker",
 				"notifications": "Notificações",
-				"tags": "Tags",
-				"proxies": "Proxies",
 				"checks": "Verificações",
 				"incidents": "Incidentes",
 				"statusPages": "Páginas de status",
@@ -1587,6 +1591,8 @@
 				"monitoring": "Monitoramento",
 				"email": "E-mail",
 				"integrations": "Integrações",
+				"tags": "Tags",
+				"proxies": "Proxies",
 				"data": "Dados",
 				"connect": "Checkmate Connect"
 			},

@@ -170,6 +170,12 @@
 		"filters": {
 			"any": "Tất cả",
 			"state": "Trạng thái"
+		},
+		"fallback": {
+			"error": {
+				"title": "Đã xảy ra lỗi",
+				"description": "Vui lòng thử lại sau"
+			}
 		}
 	},
 	"components": {
@@ -1514,6 +1520,8 @@
 				"monitoring": "Giám sát",
 				"email": "Email",
 				"integrations": "Tích hợp",
+				"tags": "Thẻ",
+				"proxies": "Proxy",
 				"data": "Dữ liệu",
 				"connect": "Checkmate Connect"
 			},

@@ -170,6 +170,12 @@
 		"filters": {
 			"any": "Cualquiera",
 			"state": "Estado"
+		},
+		"fallback": {
+			"error": {
+				"title": "Algo salió mal",
+				"description": "Inténtalo de nuevo más tarde"
+			}
 		}
 	},
 	"components": {
@@ -1517,6 +1523,8 @@
 				"monitoring": "Monitorización",
 				"email": "Correo electrónico",
 				"integrations": "Integraciones",
+				"tags": "Etiquetas",
+				"proxies": "Proxies",
 				"data": "Datos",
 				"connect": "Checkmate Connect"
 			},

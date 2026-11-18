@@ -170,6 +170,12 @@
 		"filters": {
 			"any": "الكل",
 			"state": "الحالة التشغيلية"
+		},
+		"fallback": {
+			"error": {
+				"title": "حدث خطأ ما",
+				"description": "يرجى المحاولة مرة أخرى لاحقًا"
+			}
 		}
 	},
 	"components": {
@@ -1524,6 +1530,8 @@
 				"monitoring": "المراقبة",
 				"email": "البريد الإلكتروني",
 				"integrations": "التكاملات",
+				"tags": "الوسوم",
+				"proxies": "الوكلاء",
 				"data": "البيانات",
 				"connect": "Checkmate Connect"
 			},
