@@ -25,7 +25,7 @@ const URL_MAP: Record<string, string> = {
 	support: "https://discord.com/invite/NAb6H3UTjK",
 	discussions: "https://github.com/bluewave-labs/checkmate/discussions",
 	docs: "https://checkmate.so/docs",
-	changelog: "https://github.com/bluewave-labs/checkmate/releases",
+	changelog: "https://checkmate.so/changelog",
 };
 
 export const Sidebar = () => {
@@ -110,7 +110,11 @@ export const Sidebar = () => {
 								<Typography
 									variant="eyebrow"
 									component="div"
-									color={theme.palette.text.disabled}
+									color={
+										group.groupKey
+											? theme.palette.sidebar.groups[group.groupKey].text
+											: theme.palette.neutral.tertiary
+									}
 									fontSize={typographyLevels.s}
 									paddingLeft={theme.spacing(LAYOUT.XS)}
 									paddingTop={theme.spacing(LAYOUT.SM)}
@@ -141,6 +145,7 @@ export const Sidebar = () => {
 										key={item.path}
 										item={item}
 										selected={selected}
+										groupKey={group.groupKey}
 										onClick={() => handleNavClick(item.path)}
 									/>
 								);

@@ -21,8 +21,12 @@ export const colors = {
 	brandGreen: "#13715B",
 	gray900: "#151518",
 	successText: "#17703B",
+	green800: "#187340",
+	cyan700: "#196F86",
 	ink900: "#1A2E2B",
 	gray850: "#1c1c21",
+	green600: "#1D8A4C",
+	cyan600: "#208DAA",
 	successMain: "#22A55A",
 	gray800: "#24242A",
 	rowDividerDark: "#2A2F2D",
@@ -43,6 +47,7 @@ export const colors = {
 	olive500: "#6B8632",
 	lime500: "#7EBA43",
 	blue300: "#7FB8DE",
+	amber900: "#85590F",
 	purple500: "#8A67B1",
 	ink400: "#8C9893",
 	blue200: "#8CC8EE",
@@ -64,6 +69,7 @@ export const colors = {
 	green100: "#D9F2E9",
 	errorMain: "#DC2626",
 	successBg: "#DCF2E4",
+	amber700: "#E09B26",
 	warningDark: "#E0A458",
 	blue50: "#E3F2FC",
 	orange650: "#E65723",
@@ -139,6 +145,25 @@ const scoreSpectrum = [
 export const getScoreColor = (spectrum: readonly string[], score: number): string => {
 	const clamped = Math.min(100, Math.max(0, Number.isFinite(score) ? score : 0));
 	return spectrum[Math.round((clamped / 100) * (spectrum.length - 1))];
+};
+
+export const SidebarGroupKeys = ["monitoring", "alerting", "reporting"] as const;
+export type SidebarGroupKey = (typeof SidebarGroupKeys)[number];
+export type GroupTone = {
+	solid: string;
+	text: string;
+};
+
+const lightGroups: Record<SidebarGroupKey, GroupTone> = {
+	monitoring: { solid: colors.cyan600, text: colors.cyan700 },
+	alerting: { solid: colors.amber700, text: colors.amber900 },
+	reporting: { solid: colors.green600, text: colors.green800 },
+};
+
+const darkGroups: Record<SidebarGroupKey, GroupTone> = {
+	monitoring: { solid: colors.cyan600, text: colors.cyan600 },
+	alerting: { solid: colors.amber700, text: colors.amber700 },
+	reporting: { solid: colors.green600, text: colors.green600 },
 };
 
 export const lightPalette = {
@@ -233,6 +258,7 @@ export const lightPalette = {
 	},
 	sidebar: {
 		accent: colors.brandGreen,
+		groups: lightGroups,
 	},
 	scrollbar: {
 		track: "transparent",
@@ -333,6 +359,7 @@ export const darkPalette = {
 	},
 	sidebar: {
 		accent: colors.brandGreenLight,
+		groups: darkGroups,
 	},
 	scrollbar: {
 		track: "transparent",
