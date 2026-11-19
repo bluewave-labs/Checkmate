@@ -248,6 +248,99 @@ describe("CheckService", () => {
 				expect(check!.memory).toBeUndefined();
 				expect(check!.disk).toBeUndefined();
 				expect(check!.errors).toBeUndefined();
+				expect(check!.raid).toBeUndefined();
+				expect(check!.drives).toBeUndefined();
+			});
+
+			// Example arrays from the Capture contract (mdadm, after `mdadm --fail` on one member)
+			const degradedArray = {
+				device: "/dev/md127",
+				level: "raid1",
+				state: "clean",
+				raid_disks: 2,
+				degraded_disks: 1,
+				sync_action: "recover",
+				sync_progress: 0.42,
+				members: [
+					{ device: "/dev/sda2", state: "in_sync" },
+					{ device: "/dev/sdb2", state: "faulty" },
+					{ device: "/dev/sdc2", state: "spare" },
+				],
+			};
+
+			it("stores the raid arrays Capture sends", () => {
+				const { service } = createService();
+				const check = service.toCheck(makeStatusResponse({ type: "hardware", payload: { data: { raid: [degradedArray] } } } as any));
+
+				expect(check!.raid).toEqual([degradedArray]);
+			});
+
+			it("keeps an empty raid list, which means the host has no arrays", () => {
+				const { service } = createService();
+				const check = service.toCheck(makeStatusResponse({ type: "hardware", payload: { data: { raid: [] } } } as any));
+
+				expect(check!.raid).toEqual([]);
+			});
+
+			it("leaves raid unset for a Capture that does not send it", () => {
+				const { service } = createService();
+				const check = service.toCheck(makeStatusResponse({ type: "hardware", payload: { data: { cpu: {} } } } as any));
+
+				expect(check!.raid).toBeUndefined();
+			});
+
+			it("stores SMART drives and appends SMART errors to the check's errors", () => {
+				const drive = {
+					device: "/dev/sdb",
+					status: "ok",
+					serial_number: "WD-1",
+					warnings: ["disk_failing"],
+					reallocated_sectors: 184,
+					media_errors: null,
+				};
+				const payload = {
+					data: {},
+					errors: [{ metric: ["cpu.temperature"], err: "no sensors" }],
+					smart: { drives: [drive], errors: [{ metric: ["smartctl"], err: "smartctl failed for /dev/sdc: timed out" }] },
+				};
+				const { service } = createService();
+				const check = service.toCheck(makeStatusResponse({ type: "hardware", payload } as any));
+
+				expect(check!.drives).toEqual([drive]);
+				expect(check!.errors).toEqual([
+					{ metric: ["cpu.temperature"], err: "no sensors" },
+					{ metric: ["smartctl"], err: "smartctl failed for /dev/sdc: timed out" },
+				]);
+			});
+
+			it("records a failed SMART fetch as an error without drives", () => {
+				const payload = { data: {}, smart: { errors: [{ metric: ["smart"], err: "SMART request failed: timeout" }] } };
+				const { service } = createService();
+				const check = service.toCheck(makeStatusResponse({ type: "hardware", payload } as any));
+
+				expect(check!.drives).toBeUndefined();
+				expect(check!.errors).toEqual([{ metric: ["smart"], err: "SMART request failed: timeout" }]);
+				expect(check!.status).toBe(true);
+			});
+
+			it("stores an empty drive list from a fetch that found no drives", () => {
+				const payload = { data: {}, smart: { drives: [], errors: [{ metric: ["smartctl"], err: "smartctl is not installed" }] } };
+				const { service } = createService();
+				const check = service.toCheck(makeStatusResponse({ type: "hardware", payload } as any));
+
+				expect(check!.drives).toEqual([]);
+				expect(check!.errors).toEqual([{ metric: ["smartctl"], err: "smartctl is not installed" }]);
+			});
+
+			it("maps an unknown drive status to error and drops unknown warnings, so the insert cannot fail", () => {
+				const payload = {
+					data: {},
+					smart: { drives: [{ device: "/dev/sda", status: "sleeping", warnings: ["disk_failing", "new_flag"] }], errors: [] },
+				};
+				const { service } = createService();
+				const check = service.toCheck(makeStatusResponse({ type: "hardware", payload } as any));
+
+				expect(check!.drives![0]).toMatchObject({ status: "error", warnings: ["disk_failing"] });
 			});
 		});
 

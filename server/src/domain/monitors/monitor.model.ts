@@ -8,8 +8,11 @@ import type {
 	SnapshotDiskInfo,
 	SnapshotHostInfo,
 	SnapshotMemoryInfo,
+	SnapshotRaidArray,
 } from "@/domain/checks/check.type.js";
 import { containerSummarySchema } from "@/domain/checks/check.model.js";
+import { StorageAlertReasons } from "@/domain/storage/storage.schema.js";
+import type { StorageBreach } from "@/domain/storage/storage-alert.js";
 
 type CheckSnapshotDocument = Omit<CheckSnapshot, "createdAt"> & { createdAt: Date };
 
@@ -75,6 +78,28 @@ const snapshotHostSchema = new Schema<SnapshotHostInfo>(
 	{ _id: false }
 );
 
+const snapshotRaidArraySchema = new Schema<SnapshotRaidArray>(
+	{
+		device: { type: String },
+		state: { type: String },
+		degraded_disks: { type: Number },
+		sync_action: { type: String },
+		sync_progress: { type: Number },
+	},
+	{ _id: false }
+);
+
+const storageBreachSubSchema = new Schema<StorageBreach>(
+	{
+		subject: { type: String, required: true },
+		reason: { type: String, enum: StorageAlertReasons, required: true },
+		detail: { type: String, required: true },
+		device: { type: String },
+		model: { type: String },
+	},
+	{ _id: false }
+);
+
 const snapshotLighthouseAuditSchema = new Schema<ILighthouseAudit>(
 	{
 		id: { type: String },
@@ -109,6 +134,7 @@ const checkSnapshotSchema = new Schema<CheckSnapshotDocument>(
 		memory: { type: snapshotMemorySchema },
 		disk: { type: [snapshotDiskSchema] },
 		host: { type: snapshotHostSchema },
+		raid: { type: [snapshotRaidArraySchema], default: undefined },
 		accessibility: { type: Number },
 		bestPractices: { type: Number },
 		seo: { type: Number },
@@ -323,6 +349,26 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: Boolean,
 			default: false,
 		},
+		storageAlertOnArrayDegraded: {
+			type: Boolean,
+			default: true,
+		},
+		storageAlertOnDriveFailure: {
+			type: Boolean,
+			default: true,
+		},
+		storageAlertOnDriveWarning: {
+			type: Boolean,
+			default: false,
+		},
+		storageBreaches: {
+			type: [storageBreachSubSchema],
+			default: [],
+		},
+		// No default: unset on monitors from before this field, which StatusService reads from the status
+		thresholdBreached: {
+			type: Boolean,
+		},
 		dockerTlsCa: {
 			type: String,
 		},
@@ -351,6 +397,9 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		lastEvaluatedAt: {
 			type: Number,
 			default: 0,
+		},
+		smartCheckedAt: {
+			type: Number,
 		},
 	},
 	{

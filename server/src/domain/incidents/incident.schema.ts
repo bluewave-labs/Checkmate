@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { IncidentResolutionTypes } from "./incident.type.js";
+import { IncidentCauses, IncidentResolutionTypes } from "./incident.type.js";
 
 export const incidentSchema = z
 	.object({
@@ -11,6 +11,10 @@ export const incidentSchema = z
 		status: z.boolean().meta({ example: true, description: "true = resolved, false = ongoing" }),
 		message: z.string().nullable().meta({ example: "HTTP 503 from origin" }),
 		statusCode: z.number().nullable().meta({ example: 503 }),
+		cause: z.enum(IncidentCauses).nullable().meta({
+			example: "down",
+			description: "What opened the incident: the monitor going down, a hardware threshold, or a storage alert. Null on older incidents",
+		}),
 		resolutionType: z.enum(IncidentResolutionTypes).nullable().meta({ example: "automatic" }),
 		resolvedBy: z.string().nullable(),
 		resolvedByEmail: z.string().nullable(),

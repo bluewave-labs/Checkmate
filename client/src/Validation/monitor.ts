@@ -214,6 +214,9 @@ const hardwareSchema = baseSchema.extend({
 		.max(150, "Temperature threshold must be at most 150")
 		.register(monitorStepRegistry, { step: 1 }),
 	selectedDisks: z.array(z.string()),
+	storageAlertOnArrayDegraded: z.boolean().register(monitorStepRegistry, { step: 1 }),
+	storageAlertOnDriveFailure: z.boolean().register(monitorStepRegistry, { step: 1 }),
+	storageAlertOnDriveWarning: z.boolean().register(monitorStepRegistry, { step: 1 }),
 });
 
 // WebSocket monitor schema

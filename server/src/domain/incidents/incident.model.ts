@@ -1,5 +1,5 @@
 import { Schema, model, type Types } from "mongoose";
-import { IncidentResolutionTypes, type Incident } from "@/domain/incidents/incident.type.js";
+import { IncidentCauses, IncidentResolutionTypes, type Incident } from "@/domain/incidents/incident.type.js";
 
 type IncidentDocumentBase = Omit<Incident, "id" | "monitorId" | "teamId" | "resolvedBy" | "startTime" | "endTime" | "createdAt" | "updatedAt"> & {
 	monitorId: Types.ObjectId;
@@ -53,6 +53,11 @@ const IncidentSchema = new Schema<IncidentDocument>(
 			type: Number,
 			default: null,
 			index: true,
+		},
+		cause: {
+			type: String,
+			enum: IncidentCauses,
+			default: null,
 		},
 		resolutionType: {
 			type: String,
