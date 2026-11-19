@@ -37,9 +37,13 @@ import { LAYOUT } from "@/Utils/Theme/constants";
 import { Icon } from "@/Components/design-elements";
 
 import { useStatusPageTheme } from "@/Pages/StatusPage/Status/themes/StatusPageThemeProvider";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material";
+
+import upIconUrl from "@/assets/icons/status_up.svg";
+import downIconUrl from "@/assets/icons/status_down.svg";
+import warnIconUrl from "@/assets/icons/status_warn.svg";
 
 type StatusPageMonitor = Monitor;
 
@@ -122,6 +126,45 @@ export const BaseStatusPage = ({
 	const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
 	const overall = resolveOverallStatus(monitors, t, config.overallStatusOptions);
+
+	// Update the favicon when the overall status changes
+	useEffect(() => {
+		const favicon = document.getElementById("favicon");
+
+		if (!favicon || !(favicon instanceof HTMLLinkElement)) {
+			console.warn("Favicon element not found or is not a link element.");
+			return;
+		}
+
+		const previousFaviconHref = favicon.href;
+
+		switch (overall.tone) {
+			case "up":
+				changeFavicon(upIconUrl);
+				break;
+			case "down":
+				changeFavicon(downIconUrl);
+				break;
+			case "warn":
+				changeFavicon(warnIconUrl);
+				break;
+		}
+
+		return () => {
+			if (favicon instanceof HTMLLinkElement) {
+				favicon.href = previousFaviconHref;
+			}
+		};
+	}, [overall.tone]);
+
+	// Function to change the favicon dynamically
+	function changeFavicon(newImagePath: string) {
+		const favicon = document.getElementById("favicon");
+		if (favicon instanceof HTMLLinkElement) {
+			favicon.href = newImagePath;
+		}
+	}
+
 	const logoSrc = statusPage.logo?.data
 		? `data:${statusPage.logo.contentType};base64,${statusPage.logo.data}`
 		: null;
