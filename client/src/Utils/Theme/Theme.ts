@@ -249,7 +249,7 @@ export const theme = (mode: PaletteMode, palette: PaletteOptions) =>
 					root: ({ theme }) => {
 						return {
 							...theme.unstable_sx({ borderRadius: theme.shape.borderRadius }),
-							marginTop: 4,
+							marginTop: theme.spacing(LAYOUT.XXS),
 							padding: 0,
 							border: 1,
 							borderStyle: "solid",

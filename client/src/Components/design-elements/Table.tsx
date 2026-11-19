@@ -384,7 +384,14 @@ export function DataTable<
 												timeout="auto"
 												unmountOnExit
 											>
-												<Box sx={{ pt: 4, pb: 4 }}>{expandedContent}</Box>
+												<Box
+													sx={{
+														pt: theme.spacing(LAYOUT.XS),
+														pb: theme.spacing(LAYOUT.XS),
+													}}
+												>
+													{expandedContent}
+												</Box>
 											</Collapse>
 										</TableCell>
 									</TableRow>
@@ -433,7 +440,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 
 	return (
 		<Box
-			sx={{ flexShrink: 0, ml: { xs: 0, md: 2.5 } }}
+			sx={{ flexShrink: 0, ml: { xs: 0, md: theme.spacing(SPACING.XL) } }}
 			className="table-pagination-actions"
 		>
 			<IconButton
@@ -535,7 +542,7 @@ function HasMoreTablePaginationActions(props: HasMoreTablePaginationActionsProps
 
 	return (
 		<Box
-			sx={{ flexShrink: 0, ml: { xs: 0, md: 2.5 } }}
+			sx={{ flexShrink: 0, ml: { xs: 0, md: theme.spacing(SPACING.XL) } }}
 			className="table-pagination-actions"
 		>
 			<IconButton

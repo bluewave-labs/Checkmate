@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { Autocomplete, Select, Dialog, MenuItem } from "@/Components/inputs";
 import { logger } from "@/Utils/logger";
-import { LAYOUT } from "@/Utils/Theme/constants";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 import { Stack, useTheme, Link, Alert, type SelectChangeEvent } from "@mui/material";
 import { useEffect, useMemo } from "react";
 import { FormProvider, useForm, type FieldPath } from "react-hook-form";
@@ -686,7 +686,7 @@ export const SettingsPage = () => {
 									title={t("pages.settings.form.about.title")}
 									subtitle=""
 									rightContent={
-										<Stack spacing={2}>
+										<Stack spacing={theme.spacing(LAYOUT.XXS)}>
 											<Typography variant="body1">
 												{t("common.appName")} {__APP_VERSION__}
 											</Typography>
@@ -725,7 +725,7 @@ export const SettingsPage = () => {
 										title={t("pages.settings.form.thresholds.title")}
 										subtitle={t("pages.settings.form.thresholds.description")}
 										rightContent={
-											<Stack spacing={2}>
+											<Stack spacing={theme.spacing(LAYOUT.MD)}>
 												<FormSliderField
 													name="globalThresholds.cpu"
 													fieldLabel={t(
@@ -1295,13 +1295,13 @@ export const SettingsPage = () => {
 								<Alert severity="error">
 									<Typography
 										variant="body2"
-										sx={{ fontWeight: 600, mb: 1 }}
+										sx={{ fontWeight: 600, mb: theme.spacing(SPACING.SM) }}
 									>
 										{t("pages.settings.form.validation.errorMessage")}
 									</Typography>
 									<Box
 										component="ul"
-										sx={{ m: 0, pl: 2 }}
+										sx={{ m: 0, pl: theme.spacing(LAYOUT.XXS) }}
 									>
 										{flattenFieldErrors(form.formState.errors).map(
 											({ path, message }) => {
