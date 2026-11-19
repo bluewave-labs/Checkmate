@@ -184,6 +184,7 @@ const UptimeDetailsPage = () => {
 		return null;
 	}
 	const isHeartbeat = monitor.type === "heartbeat";
+	const histogramMetric = isHeartbeat ? "checkCount" : "responseTime";
 
 	const geoChecksForTable = geoChecksTableData?.geoChecks ?? [];
 	const geoChecksCount = geoChecksTableData?.geoChecksCount ?? 0;
@@ -223,7 +224,7 @@ const UptimeDetailsPage = () => {
 					icon={<TrendingUp />}
 					checks={monitorData?.groupedUpChecks ?? []}
 					range={dateRange}
-					metric={isHeartbeat ? "checkCount" : "responseTime"}
+					metric={histogramMetric}
 					countColor="success"
 				/>
 				<HistogramStatus
@@ -231,7 +232,7 @@ const UptimeDetailsPage = () => {
 					icon={<AlertTriangle />}
 					checks={monitorData?.groupedDownChecks ?? []}
 					range={dateRange}
-					metric={isHeartbeat ? "checkCount" : "responseTime"}
+					metric={histogramMetric}
 					countColor="error"
 				/>
 				{!isHeartbeat && (

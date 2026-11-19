@@ -9,11 +9,9 @@ import { getResponseTimeColor } from "@/Utils/MonitorUtils";
 import type { GroupedCheck } from "@/Types/Check";
 import type { PaletteKey } from "@/Utils/Theme/Theme";
 import { useFormatDate } from "@/Hooks/useFormatDate";
+import { formatNumber } from "@/Utils/FormatUtils";
 
-// What a bar's height represents. Heartbeat checks carry no response time
-// unless the job reports a duration, so they plot the number of checks instead.
-export const HistogramStatusMetrics = ["responseTime", "checkCount"] as const;
-export type HistogramStatusMetric = (typeof HistogramStatusMetrics)[number];
+type HistogramStatusMetric = "responseTime" | "checkCount";
 
 interface XLabelProps {
 	p1: GroupedCheck;
@@ -57,7 +55,6 @@ interface HistogramStatusProps {
 	checks?: GroupedCheck[];
 	range: string;
 	metric?: HistogramStatusMetric;
-	// Bar color for the checkCount metric; responseTime bars are colored by speed
 	countColor?: PaletteKey;
 }
 
@@ -70,7 +67,7 @@ export const HistogramStatus = ({
 	countColor = "success",
 }: HistogramStatusProps) => {
 	const isCheckCount = metric === "checkCount";
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const theme = useTheme();
 	const formatDate = useFormatDate();
 	const CustomTooltip = ({
@@ -83,7 +80,7 @@ export const HistogramStatus = ({
 		if (!active || !payload?.length) return null;
 		const d = payload[0]?.payload;
 		const valueText = isCheckCount
-			? String(d?.totalChecks ?? 0)
+			? formatNumber(d?.totalChecks ?? 0, i18n.resolvedLanguage ?? "en")
 			: formatMs(d?.avgResponseTime ?? 0);
 		const titleText = isCheckCount
 			? t("common.charts.labels.checkCount")
