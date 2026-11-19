@@ -7,11 +7,11 @@ import { readFileSync } from "fs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export default defineConfig(({}) => {
+export default defineConfig(() => {
 	const pkg = JSON.parse(readFileSync(path.resolve(__dirname, "package.json"), "utf-8"));
 	const version = pkg.version;
 
-	const allowedHosts = process.env.VITE_ALLOWED_HOSTS
+	const allowedHosts: true | string[] = process.env.VITE_ALLOWED_HOSTS
 		? process.env.VITE_ALLOWED_HOSTS.split(",").map((h) => h.trim())
 		: true;
 

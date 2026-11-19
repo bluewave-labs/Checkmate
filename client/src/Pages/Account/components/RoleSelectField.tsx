@@ -1,8 +1,7 @@
-import MenuItem from "@mui/material/MenuItem";
 import FormHelperText from "@mui/material/FormHelperText";
 import { useController } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Select } from "@/Components/inputs";
+import { Select, MenuItem } from "@/Components/inputs";
 import { UserRoles } from "@/Types/User";
 import type { UserRole } from "@/Types/User";
 

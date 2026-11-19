@@ -1,4 +1,5 @@
-import { BaseAuthPage, TextLink } from "@/Components/design-elements";
+import { TextLink } from "@/Components/design-elements";
+import { BaseAuthPage } from "@/Pages/Auth/components/BaseAuthPage";
 import { Button } from "@/Components/inputs";
 
 import { useEffect, useState } from "react";

@@ -39,7 +39,7 @@ export const ConnectEnrollBox = ({
 			title={t("pages.settings.form.connect.enroll.title")}
 			subtitle={t("pages.settings.form.connect.enroll.description")}
 			rightContent={
-				<Stack gap={theme.spacing(LAYOUT.SM)}>
+				<Stack gap={theme.spacing(LAYOUT.MD)}>
 					<TextField
 						multiline
 						minRows={3}

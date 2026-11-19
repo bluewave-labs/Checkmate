@@ -1,7 +1,6 @@
 import { useState, type KeyboardEvent } from "react";
 import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
-import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -9,7 +8,7 @@ import { alpha, keyframes, useTheme } from "@mui/material/styles";
 import { ArrowRight, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/Components/inputs";
+import { Button, IconButton } from "@/Components/inputs";
 import Icon from "@/Components/design-elements/Icon";
 import { useIsSuperAdmin } from "@/Hooks/useIsAdmin";
 import { useSceneClock } from "@/Components/whats-new/scenes/sceneTheme";

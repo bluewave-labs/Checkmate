@@ -108,7 +108,7 @@ export const RecoveryKeyDialog = ({
 			)}
 			onConfirm={verifying ? confirmStored : continueToVerify}
 		>
-			<Stack gap={theme.spacing(LAYOUT.SM)}>
+			<Stack gap={theme.spacing(LAYOUT.MD)}>
 				<Typography color={theme.palette.error.main}>
 					{t("pages.settings.form.connect.backup.keyWarning")}
 				</Typography>

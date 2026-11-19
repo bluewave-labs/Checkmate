@@ -12,6 +12,7 @@ import type {
 } from "@/Types/Connect";
 import { ConnectBackupBox } from "./ConnectBackupBox";
 import { ConnectEnrollBox } from "./ConnectEnrollBox";
+import { ConnectGetStartedBox } from "./ConnectGetStartedBox";
 import { ConnectRecoveryKeyBox } from "./ConnectRecoveryKeyBox";
 import { ConnectRemoteAccessBox } from "./ConnectRemoteAccessBox";
 import { ConnectRestoreBox } from "./ConnectRestoreBox";
@@ -51,12 +52,13 @@ export const ConnectSettings = () => {
 		isSuperAdmin && status.enrolled && status.backup.recoveryKeySet && backupToolsReady;
 
 	return (
-		<Stack gap={theme.spacing(LAYOUT.MD)}>
+		<Stack gap={theme.spacing(LAYOUT.LG)}>
 			{!isSuperAdmin && (
 				<Typography color={theme.palette.text.secondary}>
 					{t("pages.settings.form.connect.superadminOnly")}
 				</Typography>
 			)}
+			{isSuperAdmin && !status.enrolled && <ConnectGetStartedBox />}
 			<ConnectStatusBox status={status} />
 			{isSuperAdmin && !status.enrolled && <ConnectEnrollBox onEnrolled={refetch} />}
 			{status.enrolled && (

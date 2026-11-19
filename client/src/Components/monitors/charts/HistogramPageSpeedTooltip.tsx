@@ -3,6 +3,7 @@ import Typography from "@mui/material/Typography";
 import type { TooltipProps } from "recharts";
 import { useTheme } from "@mui/material/styles";
 import { useFormatDate } from "@/Hooks/useFormatDate";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 export const HistogramPageSpeedTooltip = ({
 	active,
@@ -25,7 +26,7 @@ export const HistogramPageSpeedTooltip = ({
 				border: 1,
 				borderColor: theme.palette.divider,
 				borderRadius: theme.shape.borderRadius,
-				p: theme.spacing(4),
+				p: theme.spacing(LAYOUT.XS),
 			}}
 		>
 			<Typography>{formatDate(data?.date, "dateTime")}</Typography>

@@ -22,7 +22,7 @@ export const TabDiagnostics = () => {
 	} = useGet<Diagnostics>("/diagnostic/system", {}, { refreshInterval: 5000 });
 
 	return (
-		<Stack gap={theme.spacing(LAYOUT.XL)}>
+		<Stack gap={theme.spacing(LAYOUT.LG)}>
 			<Stack gap={theme.spacing(LAYOUT.XS)}>
 				<Stack gap={theme.spacing(SPACING.SM)}>
 					<Typography

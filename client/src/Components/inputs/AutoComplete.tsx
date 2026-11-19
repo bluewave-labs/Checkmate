@@ -1,12 +1,14 @@
 import Autocomplete from "@mui/material/Autocomplete";
 import type { AutocompleteProps } from "@mui/material/Autocomplete";
-import { TextField, Checkbox } from "@/Components/inputs";
-import MenuItem from "@mui/material/MenuItem";
+import { TextField, Checkbox, MenuItem } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
 import { FieldLabel } from "./FieldLabel";
 import { ChevronDown } from "lucide-react";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
+import { shadow } from "@/Utils/Theme/Theme";
 import { useTranslation } from "react-i18next";
+import Icon from "@/Components/design-elements/Icon";
 
 type AutoCompleteInputProps = Omit<
 	AutocompleteProps<any, boolean, boolean, boolean>,
@@ -34,7 +36,7 @@ export const AutoCompleteInput = ({
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const multiple = props.multiple;
-	const { renderOption: customRenderOption, ...autocompleteProps } = props;
+	const { renderOption: customRenderOption, slotProps, ...autocompleteProps } = props;
 	const defaultRenderInput = (params: any) => (
 		<TextField
 			{...params}
@@ -49,15 +51,25 @@ export const AutoCompleteInput = ({
 			{...autocompleteProps}
 			disableCloseOnSelect={!!multiple}
 			popupIcon={
-				<ChevronDown
+				<Icon
+					icon={ChevronDown}
 					size={18}
-					strokeWidth={1.5}
-					style={{ marginRight: theme.spacing(3) }}
+					style={{ marginRight: theme.spacing(SPACING.XXL) }}
 				/>
 			}
 			renderInput={renderInput || defaultRenderInput}
 			getOptionKey={(option) => option.id}
 			renderTags={() => null}
+			slotProps={{
+				...slotProps,
+				paper: { sx: { boxShadow: shadow } },
+				listbox: {
+					sx: {
+						py: 0,
+						"& .MuiAutocomplete-option": { py: SPACING.XL, px: LAYOUT.SM },
+					},
+				},
+			}}
 			renderOption={
 				customRenderOption ||
 				((props, option, { selected }) => {
@@ -71,7 +83,7 @@ export const AutoCompleteInput = ({
 							<Stack
 								direction={"row"}
 								alignItems={"center"}
-								gap={theme.spacing(2)}
+								gap={theme.spacing(LAYOUT.XXS)}
 								width="100%"
 							>
 								{multiple && <Checkbox checked={selected} />}
@@ -83,10 +95,10 @@ export const AutoCompleteInput = ({
 			}
 			sx={{
 				"&.MuiAutocomplete-root .MuiAutocomplete-input": {
-					padding: `0 ${theme.spacing(5)}`,
+					padding: `0 ${theme.spacing(LAYOUT.XS_PLUS)}`,
 				},
 				"& .MuiInputBase-root .MuiAutocomplete-endAdornment": {
-					right: theme.spacing(3),
+					right: theme.spacing(SPACING.XXL),
 				},
 			}}
 		/>
@@ -94,7 +106,7 @@ export const AutoCompleteInput = ({
 
 	if (fieldLabel) {
 		return (
-			<Stack spacing={theme.spacing(2)}>
+			<Stack spacing={theme.spacing(LAYOUT.XXS)}>
 				<FieldLabel required={required}>{fieldLabel}</FieldLabel>
 				{autocomplete}
 			</Stack>

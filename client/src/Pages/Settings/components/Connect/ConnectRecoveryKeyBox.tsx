@@ -66,7 +66,7 @@ export const ConnectRecoveryKeyBox = ({
 				subtitle={t("pages.settings.form.connect.recoveryKey.description")}
 				rightContent={
 					<Stack
-						gap={theme.spacing(LAYOUT.SM)}
+						gap={theme.spacing(LAYOUT.MD)}
 						alignItems="flex-start"
 					>
 						<ConnectOperationStatus
@@ -92,7 +92,7 @@ export const ConnectRecoveryKeyBox = ({
 						{settingUp && !showKeyImport && (
 							<Stack
 								direction="row"
-								gap={theme.spacing(LAYOUT.SM)}
+								gap={theme.spacing(LAYOUT.XS)}
 							>
 								{!hasCloudBackups && (
 									<TipButton

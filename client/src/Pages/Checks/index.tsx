@@ -8,10 +8,9 @@ import {
 	DegradedChecksBox,
 } from "@/Components/design-elements";
 import { HeaderTimeRange } from "@/Components/common";
-import { Select } from "@/Components/inputs";
+import { Select, MenuItem } from "@/Components/inputs";
 import { ChecksTable } from "./Components/ChecksTable";
 
-import { MenuItem } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
@@ -19,6 +18,7 @@ import { useGet } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
 import type { ChecksSummary, ChecksResponse } from "@/Types/Check";
 import type { DateRange } from "@/Types/Query";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const Checks = () => {
 	const { t } = useTranslation();
@@ -125,7 +125,7 @@ const Checks = () => {
 		<BasePage headerKey="checks">
 			<Stack
 				direction={{ xs: "column", md: "row" }}
-				gap={4}
+				gap={LAYOUT.MD}
 			>
 				<TotalChecksBox n={totalChecks} />
 				<UpChecksBox n={upChecks} />
@@ -137,10 +137,10 @@ const Checks = () => {
 				direction={{ xs: "column", md: "row" }}
 				justifyContent="space-between"
 				alignItems={{ xs: "stretch", md: "center" }}
-				gap={2}
+				gap={LAYOUT.XS}
 			>
 				<Stack
-					gap={2}
+					gap={LAYOUT.XS}
 					direction={{ xs: "column", md: "row" }}
 				>
 					<Select

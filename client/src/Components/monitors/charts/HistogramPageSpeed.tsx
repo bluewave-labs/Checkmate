@@ -6,6 +6,7 @@ import type { CheckSnapshot } from "@/Types/Check";
 import type { MonitorStatus } from "@/Types/Monitor";
 
 import { getStatusColor } from "@/Utils/MonitorUtils";
+import { SPACING } from "@/Utils/Theme/constants";
 
 const processData = (checks: CheckSnapshot[]) => {
 	if (checks.length === 0) return [];
@@ -42,7 +43,7 @@ export const HistogramPageSpeed = ({
 		<Stack
 			direction="row"
 			flexWrap="nowrap"
-			gap={theme.spacing(1.5)}
+			gap={theme.spacing(SPACING.MD)}
 			height="100px"
 			maxWidth="400px"
 			width="100%"

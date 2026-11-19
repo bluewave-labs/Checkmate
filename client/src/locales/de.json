@@ -55,6 +55,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Durchschnittliche Antwortzeit",
+				"checkCount": "Checks",
 				"cpuUsage": "CPU-Auslastung",
 				"downtime": "Ausfallzeit",
 				"high": "hoch",
@@ -166,6 +167,16 @@
 			"copy": "In die Zwischenablage kopieren",
 			"copied": "In die Zwischenablage kopiert",
 			"copyFailed": "Kopieren fehlgeschlagen. Markieren Sie den Text und kopieren Sie ihn manuell."
+		},
+		"filters": {
+			"any": "Beliebig",
+			"state": "Zustand"
+		},
+		"fallback": {
+			"error": {
+				"title": "Etwas ist schiefgelaufen",
+				"description": "Bitte versuchen Sie es später erneut"
+			}
 		}
 	},
 	"components": {
@@ -179,6 +190,10 @@
 				"invalidFileSize": "Dateigröße zu groß!",
 				"invalidFileFormat": "Nicht unterstützes Dateiformat"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} ausgewählt",
+			"selectedCount_other": "{{count}} ausgewählt"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "Öffentlicher Link"
@@ -1508,6 +1523,8 @@
 				"monitoring": "Überwachung",
 				"email": "E-Mail",
 				"integrations": "Integrationen",
+				"tags": "Tags",
+				"proxies": "Proxys",
 				"data": "Daten",
 				"connect": "Checkmate Connect"
 			},
@@ -1738,7 +1755,31 @@
 						"connecting": "Tunnel wird verbunden",
 						"remoteAccessOff": "Fernzugriff aus",
 						"agentId": "Agent-ID",
-						"lastConnected": "Zuletzt verbunden"
+						"lastConnected": "Zuletzt verbunden",
+						"siteLink": "{{site}} öffnen"
+					},
+					"getStarted": {
+						"title": "Erste Schritte",
+						"description": "Mit Checkmate Connect erreichen Sie diese Installation von überall und speichern verschlüsselte Backups in der Cloud.",
+						"steps": {
+							"account": {
+								"title": "Connect-Konto erstellen",
+								"body": "Registrieren Sie sich auf {{site}} mit E-Mail-Adresse und Passwort."
+							},
+							"server": {
+								"title": "Server hinzufügen",
+								"body": "Benennen Sie ihn im Connect-Dashboard, um einen Zugangsdatenblock zu erhalten. Er wird nur einmal angezeigt, kopieren Sie ihn also sofort."
+							},
+							"paste": {
+								"title": "Hier einfügen",
+								"body": "Fügen Sie den Zugangsdatenblock in das Feld unten ein und klicken Sie auf Registrieren."
+							},
+							"remoteAccess": {
+								"title": "Fernzugriff aktivieren",
+								"body": "Ihre Connect-Adresse ist erreichbar, sobald der Tunnel verbunden ist."
+							}
+						},
+						"button": "Zu {{site}}"
 					},
 					"enroll": {
 						"title": "Installation registrieren",

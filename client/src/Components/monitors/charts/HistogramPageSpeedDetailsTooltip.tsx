@@ -6,6 +6,7 @@ import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import type { ConfigItem } from "@/Components/monitors";
 import type { TooltipProps } from "recharts";
 import { useFormatDate } from "@/Hooks/useFormatDate";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 interface HistogramPageSpeedScoresTooltipProps extends Partial<
 	TooltipProps<number, string>
 > {
@@ -35,8 +36,8 @@ export const HistogramPageSpeedScoresTooltip = ({
 				<Typography
 					sx={{
 						color: theme.palette.text.secondary,
-						fontSize: 12,
-						fontWeight: 500,
+						fontSize: typographyLevels.sm,
+						fontWeight: fontWeights.medium,
 					}}
 				>
 					{formatDate(label, "dateTime")}

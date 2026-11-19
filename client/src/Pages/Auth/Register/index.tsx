@@ -1,4 +1,4 @@
-import { BaseAuthPage } from "@/Components/design-elements";
+import { BaseAuthPage } from "@/Pages/Auth/components/BaseAuthPage";
 import { Button } from "@/Components/inputs";
 import Alert from "@mui/material/Alert";
 import { useForm, FormProvider } from "react-hook-form";
@@ -13,6 +13,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { AuthResponse } from "@/Types/User";
 import { useEffect, useRef, useState } from "react";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 
 interface RegisterPayload {
 	user: Omit<RegisterFormData, "confirm">;
@@ -103,12 +104,12 @@ const RegisterPage = () => {
 						severity="info"
 						icon={false}
 						sx={(theme) => ({
-							fontSize: 13,
+							fontSize: typographyLevels.m,
 							lineHeight: 1.55,
 							color: theme.palette.text.secondary,
 							backgroundColor: theme.palette.action.hover,
 							border: `1px solid ${theme.palette.divider}`,
-							borderRadius: 1,
+							borderRadius: theme.shape.borderRadius,
 							"& .MuiAlert-message": { padding: 0 },
 						})}
 					>

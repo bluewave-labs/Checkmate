@@ -4,8 +4,7 @@ import {
 	type FieldValues,
 	type FieldPath,
 } from "react-hook-form";
-import MenuItem from "@mui/material/MenuItem";
-import { Select } from "@/Components/inputs";
+import { Select, MenuItem } from "@/Components/inputs";
 
 export interface FormSelectOption {
 	value: string | number;

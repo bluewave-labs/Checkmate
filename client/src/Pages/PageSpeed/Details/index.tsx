@@ -16,6 +16,7 @@ import { useParams } from "react-router-dom";
 import { useTheme } from "@mui/material";
 import { useState, useMemo } from "react";
 import type { DateRange } from "@/Types/Query";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const PageSpeedDetails = () => {
 	const { monitorId } = useParams();
@@ -76,7 +77,7 @@ const PageSpeedDetails = () => {
 			/>
 			<Stack
 				direction={{ xs: "column", md: "row" }}
-				gap={theme.spacing(10)}
+				gap={theme.spacing(LAYOUT.MD)}
 			>
 				<PiePageSpeed latestCheck={latestCheck} />
 				<PiePageSpeedLegend latestCheck={latestCheck} />

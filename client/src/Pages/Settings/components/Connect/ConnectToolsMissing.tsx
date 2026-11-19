@@ -13,7 +13,7 @@ export const ConnectToolsMissing = () => {
 
 	return (
 		<Stack
-			gap={theme.spacing(LAYOUT.SM)}
+			gap={theme.spacing(LAYOUT.MD)}
 			alignItems="flex-start"
 		>
 			<Typography color={theme.palette.error.main}>

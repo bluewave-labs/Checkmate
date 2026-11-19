@@ -1,11 +1,12 @@
 import Stack from "@mui/material/Stack";
-import Tooltip from "@mui/material/Tooltip";
+import { Tooltip } from "@/Components/design-elements";
 import Typography from "@mui/material/Typography";
 import { formatMs } from "@/Utils/TimeUtils";
 import type { CheckSnapshot } from "@/Types/Check";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { useFormatDate } from "@/Hooks/useFormatDate";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 type HeatmapCheck =
 	| CheckSnapshot
@@ -23,8 +24,8 @@ export const HeatmapResponseTimeTooltip = ({
 	const formatDate = useFormatDate();
 
 	const getColor = (status: boolean) => {
-		if (status === true) return theme.palette.success.light;
-		if (status === false) return theme.palette.error.light;
+		if (status === true) return theme.palette.signal.success.mark;
+		if (status === false) return theme.palette.signal.error.mark;
 	};
 
 	if (check.status === "placeholder") {
@@ -49,7 +50,7 @@ export const HeatmapResponseTimeTooltip = ({
 						border: 1,
 						borderColor: theme.palette.divider,
 						borderRadius: theme.shape.borderRadius,
-						p: theme.spacing(4),
+						p: theme.spacing(LAYOUT.XS),
 					}}
 				>
 					<Typography>{formatDate(check?.createdAt, "dateTime")}</Typography>

@@ -12,6 +12,7 @@ import type { DockerContainerInfo } from "@/Types/Check";
 import { formatDuration } from "@/Utils/TimeUtils";
 import { PLACEHOLDER } from "@/Utils/FormatUtils";
 import { getDockerPalette } from "@/Utils/MonitorUtils";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 export const DockerContainerStatusBoxes = ({
 	container,
@@ -31,7 +32,7 @@ export const DockerContainerStatusBoxes = ({
 	return (
 		<Stack
 			direction="row"
-			gap={theme.spacing(8)}
+			gap={theme.spacing(LAYOUT.MD)}
 			flexWrap={"wrap"}
 		>
 			<StatBox

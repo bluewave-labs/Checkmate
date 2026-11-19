@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import type { Diagnostics } from "@/Types/Diagnostics";
 import { formatDuration, formatMs } from "@/Utils/TimeUtils";
 import { PLACEHOLDER } from "@/Utils/FormatUtils";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface StatsProps {
 	diagnostics: Diagnostics | null;
@@ -34,7 +35,7 @@ export const Stats = ({ diagnostics }: StatsProps) => {
 	return (
 		<Box
 			display="grid"
-			gap={theme.spacing(8)}
+			gap={theme.spacing(LAYOUT.MD)}
 			sx={{
 				gridTemplateColumns: { xs: "1fr", md: "repeat(5, 1fr)" },
 				"& > *": { width: "100% !important" },

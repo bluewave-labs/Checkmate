@@ -74,7 +74,7 @@ export const ConnectRestoreBox = ({
 				subtitle={t("pages.settings.form.connect.backup.restore.description")}
 				rightContent={
 					<Stack
-						gap={theme.spacing(LAYOUT.SM)}
+						gap={theme.spacing(LAYOUT.MD)}
 						alignItems="flex-start"
 					>
 						<ConnectOperationStatus
@@ -101,7 +101,7 @@ export const ConnectRestoreBox = ({
 								direction="row"
 								alignItems="center"
 								flexWrap="wrap"
-								gap={theme.spacing(LAYOUT.SM)}
+								gap={theme.spacing(LAYOUT.XS)}
 							>
 								<Typography>{formatDate(backup.createdAt, "dateTime")}</Typography>
 								<Typography color={theme.palette.text.secondary}>
