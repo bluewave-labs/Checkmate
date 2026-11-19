@@ -18,9 +18,6 @@ const STEP_ICONS: Record<Step, LucideIcon> = {
 	remoteAccess: Globe,
 };
 
-// Button renders an <a> when given href; its props type only covers <button>, so spread these
-const NEW_TAB_LINK = { target: "_blank", rel: "noopener noreferrer" };
-
 export const ConnectGetStartedBox = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -46,7 +43,8 @@ export const ConnectGetStartedBox = () => {
 					<Button
 						variant="contained"
 						href={CONNECT_SITE_URL}
-						{...NEW_TAB_LINK}
+						target="_blank"
+						rel="noopener noreferrer"
 					>
 						{t("pages.settings.form.connect.getStarted.button")}
 					</Button>
