@@ -54,7 +54,7 @@ export const AutoCompleteInput = ({
 				<Icon
 					icon={ChevronDown}
 					size={18}
-					style={{ marginRight: theme.spacing(3) }}
+					style={{ marginRight: theme.spacing(SPACING.XXL) }}
 				/>
 			}
 			renderInput={renderInput || defaultRenderInput}
@@ -98,7 +98,7 @@ export const AutoCompleteInput = ({
 					padding: `0 ${theme.spacing(LAYOUT.XS_PLUS)}`,
 				},
 				"& .MuiInputBase-root .MuiAutocomplete-endAdornment": {
-					right: theme.spacing(3),
+					right: theme.spacing(SPACING.XXL),
 				},
 			}}
 		/>

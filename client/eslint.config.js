@@ -101,12 +101,6 @@ const BASE_RESTRICTED_SYNTAX = [
 		message:
 			"fontSize={13} is the Typography body default — drop the prop. For other sizes use typographyLevels tokens. See docs/frontend-conventions.md rule #3.",
 	},
-	{
-		selector:
-			"CallExpression[callee.property.name='spacing'] > Literal[value>0], CallExpression[callee.property.name='spacing'] > UnaryExpression > Literal",
-		message:
-			"Pass a LAYOUT or SPACING token to theme.spacing(), not a number: theme.spacing(LAYOUT.MD). See docs/frontend-conventions.md rule #3.",
-	},
 ];
 
 // Displayed dates go through formatDate / useFormatDate in Utils/TimeUtils.ts so they
@@ -179,7 +173,31 @@ const noDirectLucideIcon = {
 		};
 	},
 };
-const checkmate = { rules: { "no-direct-lucide-icon": noDirectLucideIcon } };
+const SPACING_MESSAGE =
+	"Pass a LAYOUT or SPACING token to theme.spacing(), not a number: theme.spacing(LAYOUT.MD).";
+const noRawSpacing = {
+	meta: { type: "problem", schema: [], messages: { useToken: SPACING_MESSAGE } },
+	create(context) {
+		return {
+			CallExpression(node) {
+				if (node.callee.type !== "MemberExpression") return;
+				if (node.callee.property.name !== "spacing") return;
+				for (const arg of node.arguments) {
+					const literal = arg.type === "UnaryExpression" ? arg.argument : arg;
+					if (literal.type !== "Literal") continue;
+					if (typeof literal.value !== "number" || literal.value === 0) continue;
+					context.report({ node: arg, messageId: "useToken" });
+				}
+			},
+		};
+	},
+};
+const checkmate = {
+	rules: {
+		"no-direct-lucide-icon": noDirectLucideIcon,
+		"no-raw-spacing": noRawSpacing,
+	},
+};
 
 const REACT_RULES = {
 	"react/jsx-no-target-blank": "off",
@@ -248,9 +266,13 @@ export default [
 		},
 	},
 	{
+		files: ["src/**/*.{js,jsx,ts,tsx}"],
+		plugins: { checkmate },
+		rules: { "checkmate/no-raw-spacing": "error" },
+	},
+	{
 		files: ["src/**/*.{jsx,tsx}"],
 		ignores: ICON_EXEMPT_FILES,
-		plugins: { checkmate },
 		rules: { "checkmate/no-direct-lucide-icon": "error" },
 	},
 	{

@@ -6,7 +6,7 @@ import Stack from "@mui/material/Stack";
 import { FieldLabel } from "./FieldLabel";
 import { ChevronDown } from "lucide-react";
 import Typography from "@mui/material/Typography";
-import { INPUT_BASE_HEIGHT, LAYOUT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT, LAYOUT, SPACING } from "@/Utils/Theme/constants";
 import Icon from "@/Components/design-elements/Icon";
 
 interface SelectInputProps<T> extends Omit<SelectProps<T>, "label"> {
@@ -69,7 +69,7 @@ const SelectInputInner = <T,>(
 				<Icon
 					icon={ChevronDown}
 					size={18}
-					style={{ marginRight: theme.spacing(3), pointerEvents: "none" }}
+					style={{ marginRight: theme.spacing(SPACING.XXL), pointerEvents: "none" }}
 				/>
 			)}
 			sx={{
@@ -81,7 +81,7 @@ const SelectInputInner = <T,>(
 					boxSizing: "border-box",
 				},
 				"& .MuiSelect-icon": {
-					right: theme.spacing(3),
+					right: theme.spacing(SPACING.XXL),
 				},
 				"& .MuiOutlinedInput-notchedOutline": {
 					borderRadius: theme.shape.borderRadius,

@@ -73,7 +73,7 @@ export const PageHeader = ({
 						gap={SPACING.XS}
 						color={theme.palette.text.secondary}
 						fontSize={typographyLevels.base}
-						mb={theme.spacing(1)}
+						mb={theme.spacing(SPACING.SM)}
 						alignItems={"center"}
 						sx={{
 							textDecoration: "none",
@@ -128,7 +128,7 @@ export const PageHeader = ({
 							alignItems="center"
 							height={INPUT_BASE_HEIGHT}
 							gap={theme.spacing(SPACING.SM)}
-							pl={theme.spacing(3)}
+							pl={theme.spacing(SPACING.XXL)}
 							pr={theme.spacing(LAYOUT.XS_PLUS)}
 							borderRight={`1px solid ${theme.palette.divider}`}
 							color={theme.palette.text.primary}

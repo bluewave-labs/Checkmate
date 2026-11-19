@@ -257,7 +257,7 @@ export const BaseAuthPage = ({
 				justifyContent="center"
 				position="relative"
 				px={theme.spacing(LAYOUT.MD)}
-				py={{ xs: theme.spacing(20), md: theme.spacing(LAYOUT.XL) }}
+				py={{ xs: theme.spacing(LAYOUT.XXL), md: theme.spacing(LAYOUT.XL) }}
 			>
 				<Stack
 					direction="row"
@@ -328,7 +328,7 @@ export const BaseAuthPage = ({
 				sx={{
 					background: "linear-gradient(135deg, #0c4d3d 0%, #155a48 60%, #0f5d4a 100%)",
 					color: "#fff",
-					p: theme.spacing(28),
+					p: theme.spacing(LAYOUT.XXL),
 					position: "relative",
 					overflow: "hidden",
 					"&::after": {
