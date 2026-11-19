@@ -15,6 +15,9 @@ export const NotificationChannels = [
 ] as const;
 export type NotificationChannel = (typeof NotificationChannels)[number];
 
+export const NtfyAuthTypes = ["none", "token", "basic"] as const;
+export type NtfyAuthType = (typeof NtfyAuthTypes)[number];
+
 export interface Notification {
 	id: string;
 	userId: string;
@@ -29,6 +32,8 @@ export interface Notification {
 	accountSid?: string;
 	twilioPhoneNumber?: string;
 	topic?: string;
+	ntfyAuthType?: NtfyAuthType;
+	ntfyUsername?: string;
 	createdAt: string;
 	updatedAt: string;
 }

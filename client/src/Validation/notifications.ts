@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { NtfyAuthTypes } from "@/Types/Notification";
 
 const baseSchema = z.object({
 	notificationName: z
@@ -84,11 +85,36 @@ const twilioSchema = baseSchema.extend({
 	twilioPhoneNumber: z.string().min(1, "Twilio phone number is required"),
 });
 
-const ntfySchema = baseSchema.extend({
-	type: z.literal("ntfy"),
-	address: z.string().min(1, "Server URL is required").url("Please enter a valid URL"),
-	topic: z.string().min(1, "Topic is required"),
-});
+const ntfySchema = baseSchema
+	.extend({
+		type: z.literal("ntfy"),
+		address: z.string().min(1, "Server URL is required").url("Please enter a valid URL"),
+		topic: z.string().min(1, "Topic is required"),
+		ntfyAuthType: z.enum(NtfyAuthTypes).optional(),
+		ntfyUsername: z.string().optional(),
+		accessToken: z.string().optional(),
+	})
+	.superRefine((data, ctx) => {
+		const authType = data.ntfyAuthType ?? "none";
+		if (authType === "none") return;
+		if (!data.accessToken) {
+			ctx.addIssue({
+				code: "custom",
+				path: ["accessToken"],
+				message:
+					authType === "token"
+						? "Access token is required for token authentication"
+						: "Password is required for basic authentication",
+			});
+		}
+		if (authType === "basic" && !data.ntfyUsername) {
+			ctx.addIssue({
+				code: "custom",
+				path: ["ntfyUsername"],
+				message: "Username is required for basic authentication",
+			});
+		}
+	});
 
 export const notificationSchema = z.discriminatedUnion("type", [
 	emailSchema,
