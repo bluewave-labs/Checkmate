@@ -12,6 +12,11 @@ import { CookieJar } from "tough-cookie";
 import { HttpProxyAgent, HttpsProxyAgent } from "hpagent";
 import { CheckContext } from "@/types/network.js";
 
+export type HttpRequestOptions = {
+	timeoutMs?: number;
+	retryLimit?: number;
+};
+
 export const PROXY_CONNECT_ERROR_CODES = new Set(["ECONNREFUSED", "ECONNRESET", "EHOSTUNREACH", "ENETUNREACH", "ENOTFOUND", "EAI_AGAIN", "EPIPE"]);
 
 export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
@@ -207,7 +212,8 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		};
 	}
 
-	async handle<T>(monitor: Monitor, ctx?: CheckContext): Promise<MonitorStatusResponse<T>> {
+	// requestOptions overrides the shared 30 s timeout and single retry for one call (the hardware SMART request)
+	async handle<T>(monitor: Monitor, ctx?: CheckContext, requestOptions?: HttpRequestOptions): Promise<MonitorStatusResponse<T>> {
 		const { url, secret, ignoreTlsErrors } = monitor;
 
 		if (!url) {
@@ -224,6 +230,9 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 					http: this.httpAgent,
 					https: ignoreTlsErrors ? this.httpsAgentInsecure : this.httpsAgent,
 				};
+
+		if (requestOptions?.timeoutMs !== undefined) options.timeout = { request: requestOptions.timeoutMs };
+		if (requestOptions?.retryLimit !== undefined) options.retry = { limit: requestOptions.retryLimit };
 
 		options.method = monitor.method;
 		options.cookieJar = new CookieJar();

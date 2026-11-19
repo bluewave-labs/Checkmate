@@ -7,14 +7,18 @@ import type {
 	CheckCaptureInfo,
 	CheckCpuInfo,
 	CheckDiskInfo,
+	CheckDrive,
 	CheckErrorInfo,
 	CheckHostInfo,
 	CheckMemoryInfo,
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
+	CheckRaidArray,
+	CheckRaidMember,
 	CheckTimings,
 	ILighthouseAudit,
 } from "@/domain/checks/check.type.js";
+import { SmartDriveStatuses, SmartWarnings } from "@/domain/checks/check.type.js";
 import {
 	DockerContainerInfo,
 	DockerContainerMount,
@@ -155,6 +159,62 @@ const networkInterfaceSchema = new Schema<CheckNetworkInterfaceInfo>(
 		drop_out: { type: Number, default: 0 },
 		fifo_in: { type: Number, default: 0 },
 		fifo_out: { type: Number, default: 0 },
+	},
+	{ _id: false }
+);
+
+// Nullable numbers default to null: Capture uses null for "not reported", which must not become 0.
+const raidMemberSchema = new Schema<CheckRaidMember>(
+	{
+		device: { type: String, default: "" },
+		state: { type: String, default: "" },
+	},
+	{ _id: false }
+);
+
+const raidArraySchema = new Schema<CheckRaidArray>(
+	{
+		device: { type: String, default: "" },
+		level: { type: String, default: "" },
+		state: { type: String, default: "" },
+		raid_disks: { type: Number, default: null },
+		degraded_disks: { type: Number, default: null },
+		sync_action: { type: String, default: null },
+		sync_progress: { type: Number, default: null },
+		members: { type: [raidMemberSchema], default: () => [] },
+	},
+	{ _id: false }
+);
+
+const driveSchema = new Schema<CheckDrive>(
+	{
+		device: { type: String, default: "" },
+		type: { type: String, default: "" },
+		protocol: { type: String, default: "" },
+		status: { type: String, enum: SmartDriveStatuses, required: true },
+		model_name: { type: String, default: "" },
+		serial_number: { type: String, default: "" },
+		firmware_version: { type: String, default: "" },
+		capacity_bytes: { type: Number, default: null },
+		warnings: { type: [{ type: String, enum: SmartWarnings }], default: () => [] },
+		reallocated_sectors: { type: Number, default: null },
+		pending_sectors: { type: Number, default: null },
+		offline_uncorrectable: { type: Number, default: null },
+		media_errors: { type: Number, default: null },
+		smart_overall_health_self_assessment_test_result: { type: String, default: "" },
+		temperature: { type: String, default: "" },
+		power_on_hours: { type: String, default: "" },
+		power_cycles: { type: String, default: "" },
+		unsafe_shutdowns: { type: String, default: "" },
+		percentage_used: { type: String, default: "" },
+		available_spare: { type: String, default: "" },
+		available_spare_threshold: { type: String, default: "" },
+		critical_warning: { type: String, default: "" },
+		data_units_read: { type: String, default: "" },
+		data_units_written: { type: String, default: "" },
+		host_read_commands: { type: String, default: "" },
+		host_write_commands: { type: String, default: "" },
+		controller_busy_time: { type: String, default: "" },
 	},
 	{ _id: false }
 );
@@ -337,6 +397,14 @@ const CheckSchema = new Schema<CheckDocument>(
 		},
 		containerSummary: {
 			type: containerSummarySchema,
+			default: undefined,
+		},
+		raid: {
+			type: [raidArraySchema],
+			default: undefined,
+		},
+		drives: {
+			type: [driveSchema],
 			default: undefined,
 		},
 		egressStatus: {

@@ -1,6 +1,7 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { MonitorService } from "../../../src/domain/monitors/monitor.service.ts";
 import type { IChecksRepository } from "../../../src/domain/checks/check.repository.interface.ts";
+import type { CheckDrive } from "../../../src/domain/checks/check.type.ts";
 import type { IGeoChecksRepository } from "../../../src/domain/geo-checks/geo-check.repository.interface.ts";
 import type { IDockerLogsRepository } from "../../../src/domain/docker/docker-log.repository.interface.ts";
 import type { IIncidentsRepository } from "../../../src/domain/incidents/incident.repository.interface.ts";
@@ -37,7 +38,59 @@ const createChecksRepositoryMock = () =>
 		findByDateRangeAndMonitorId: jest.fn(),
 		findDockerContainerChecks: jest.fn(),
 		deleteByMonitorId: jest.fn(),
+		findLatestRaid: jest.fn().mockResolvedValue(null),
+		findLatestDrives: jest.fn().mockResolvedValue(null),
+		findLastKnownDrive: jest.fn().mockResolvedValue(null),
+		findDriveHistory: jest.fn().mockResolvedValue([]),
 	}) as unknown as IChecksRepository;
+
+const makeDrive = (overrides?: Partial<CheckDrive>): CheckDrive => ({
+	device: "/dev/sdb",
+	type: "sat",
+	protocol: "ATA",
+	status: "ok",
+	model_name: "WDC WD40EFRX-68N32N0",
+	serial_number: "WD-WCC7K1PL4R2X",
+	firmware_version: "82.00A82",
+	capacity_bytes: 4000787030016,
+	warnings: [],
+	reallocated_sectors: 0,
+	pending_sectors: 0,
+	offline_uncorrectable: 0,
+	media_errors: null,
+	smart_overall_health_self_assessment_test_result: "PASSED",
+	temperature: "38 Celsius",
+	power_on_hours: "41882",
+	power_cycles: "87",
+	unsafe_shutdowns: "41",
+	percentage_used: "",
+	available_spare: "",
+	available_spare_threshold: "",
+	critical_warning: "",
+	data_units_read: "",
+	data_units_written: "",
+	host_read_commands: "",
+	host_write_commands: "",
+	controller_busy_time: "",
+	...overrides,
+});
+
+const asleep = (device: string): CheckDrive =>
+	makeDrive({
+		device,
+		type: "",
+		protocol: "",
+		status: "standby",
+		model_name: "",
+		serial_number: "",
+		firmware_version: "",
+		capacity_bytes: null,
+		reallocated_sectors: null,
+		pending_sectors: null,
+		offline_uncorrectable: null,
+		temperature: "",
+		smart_overall_health_self_assessment_test_result: "",
+	});
 
 const createMonitorStatsRepositoryMock = () =>
 	({
@@ -435,6 +488,117 @@ describe("MonitorService", () => {
 			expect(result.stats).toHaveProperty("upChecks");
 			expect(result.stats).toHaveProperty("checks");
 			expect(result.monitorStats).toMatchObject({ monitorId: MONITOR_ID });
+			expect(result.raid).toBeNull();
+			expect(result.drives).toBeNull();
+			expect(result.driveHistory).toEqual([]);
+		});
+
+		const setupHardware = () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "hardware" }));
+			(checksRepository.findByDateRangeAndMonitorId as jest.Mock).mockResolvedValue({
+				monitorType: "hardware",
+				aggregateData: { totalChecks: 1 },
+				upChecks: { totalChecks: 1 },
+				checks: [],
+			});
+			const { service } = createService({ monitorsRepository, checksRepository });
+			return { service, checksRepository };
+		};
+
+		it("returns the latest raid, drives and drive history for the range", async () => {
+			const { service, checksRepository } = setupHardware();
+			const raid = {
+				arrays: [{ device: "/dev/md0", level: "raid1", state: "clean", raid_disks: 2, degraded_disks: 0, members: [] }],
+				checkedAt: "2026-11-10T08:12:00.000Z",
+			};
+			const history = [{ serial_number: "WD-WCC7K1PL4R2X", points: [] }];
+			(checksRepository.findLatestRaid as jest.Mock).mockResolvedValue(raid);
+			(checksRepository.findLatestDrives as jest.Mock).mockResolvedValue({
+				drives: [makeDrive()],
+				errors: [],
+				checkedAt: "2026-11-10T08:10:00.000Z",
+			});
+			(checksRepository.findDriveHistory as jest.Mock).mockResolvedValue(history);
+
+			const result = await service.getHardwareDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "week" });
+
+			expect(result.raid).toEqual(raid);
+			expect(result.drives).toEqual({ drives: [makeDrive()], errors: [], checkedAt: "2026-11-10T08:10:00.000Z" });
+			expect(result.driveHistory).toEqual(history);
+			expect(checksRepository.findDriveHistory).toHaveBeenCalledWith(MONITOR_ID, "week");
+		});
+
+		it("fills a standby drive's identity and values from the device's last reading", async () => {
+			const { service, checksRepository } = setupHardware();
+			(checksRepository.findLatestDrives as jest.Mock).mockResolvedValue({
+				drives: [asleep("/dev/sdc")],
+				errors: [],
+				checkedAt: "2026-11-10T09:00:00.000Z",
+			});
+			(checksRepository.findLastKnownDrive as jest.Mock).mockResolvedValue({
+				drive: makeDrive({ device: "/dev/sdc", serial_number: "ZL2ABC", reallocated_sectors: 3 }),
+				checkedAt: "2026-11-10T08:12:00.000Z",
+			});
+
+			const result = await service.getHardwareDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "day" });
+
+			expect(checksRepository.findLastKnownDrive).toHaveBeenCalledWith(MONITOR_ID, "/dev/sdc");
+			expect(result.drives?.drives[0]).toMatchObject({
+				device: "/dev/sdc",
+				status: "standby",
+				serial_number: "ZL2ABC",
+				model_name: "WDC WD40EFRX-68N32N0",
+				reallocated_sectors: 3,
+				lastKnownAt: "2026-11-10T08:12:00.000Z",
+			});
+		});
+
+		it("leaves a standby drive without identity when it was never seen awake", async () => {
+			const { service, checksRepository } = setupHardware();
+			(checksRepository.findLatestDrives as jest.Mock).mockResolvedValue({
+				drives: [asleep("/dev/sdd")],
+				errors: [],
+				checkedAt: "2026-11-10T09:00:00.000Z",
+			});
+
+			const result = await service.getHardwareDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "day" });
+
+			expect(result.drives?.drives[0]).toEqual(asleep("/dev/sdd"));
+		});
+
+		it("does not look up history for drives that reported this time", async () => {
+			const { service, checksRepository } = setupHardware();
+			(checksRepository.findLatestDrives as jest.Mock).mockResolvedValue({
+				drives: [makeDrive(), makeDrive({ device: "/dev/vda", status: "unsupported", serial_number: "" })],
+				errors: [],
+				checkedAt: "2026-11-10T09:00:00.000Z",
+			});
+
+			await service.getHardwareDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "day" });
+
+			expect(checksRepository.findLastKnownDrive).not.toHaveBeenCalled();
+		});
+
+		it("returns only the SMART errors of the latest fetch", async () => {
+			const { service, checksRepository } = setupHardware();
+			(checksRepository.findLatestDrives as jest.Mock).mockResolvedValue({
+				drives: [],
+				errors: [
+					{ metric: ["cpu.temperature"], err: "no sensors" },
+					{ metric: ["smartctl"], err: "smartctl is not installed" },
+					{ metric: ["smart"], err: "SMART request failed: timeout" },
+				],
+				checkedAt: "2026-11-10T09:00:00.000Z",
+			});
+
+			const result = await service.getHardwareDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "day" });
+
+			expect(result.drives?.errors).toEqual([
+				{ metric: ["smartctl"], err: "smartctl is not installed" },
+				{ metric: ["smart"], err: "SMART request failed: timeout" },
+			]);
 		});
 
 		it("throws 404 when monitor not found", async () => {
