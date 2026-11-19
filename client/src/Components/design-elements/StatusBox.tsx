@@ -6,7 +6,7 @@ import type { SxProps } from "@mui/material";
 
 import { useTheme } from "@mui/material/styles";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 
 type StatusBoxProps = React.PropsWithChildren<{
 	children: React.ReactNode;
@@ -49,7 +49,7 @@ const StatusBox = ({
 					color={theme.palette.text.secondary}
 					sx={{
 						fontSize: typographyLevels.s,
-						fontWeight: 500,
+						fontWeight: fontWeights.medium,
 						letterSpacing: "0.08em",
 					}}
 				>

@@ -6,7 +6,7 @@ import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 import Icon from "./Icon";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 
 const isId = (segment: string): boolean => {
 	return segment.length === 24 || /^[a-f0-9-]{36}$/.test(segment);
@@ -56,7 +56,7 @@ export const Breadcrumb = ({
 							key={index}
 							sx={{
 								fontSize: typographyLevels.l,
-								fontWeight: isLast ? 600 : 400,
+								fontWeight: isLast ? fontWeights.semibold : fontWeights.regular,
 								color: isLast ? theme.palette.primary.main : theme.palette.text.secondary,
 							}}
 						>
@@ -118,7 +118,7 @@ export const Breadcrumb = ({
 				<Typography
 					sx={{
 						fontSize: typographyLevels.l,
-						fontWeight: 600,
+						fontWeight: fontWeights.semibold,
 						color: theme.palette.primary.main,
 					}}
 				>
@@ -129,7 +129,7 @@ export const Breadcrumb = ({
 				<Typography
 					sx={{
 						fontSize: typographyLevels.l,
-						fontWeight: 600,
+						fontWeight: fontWeights.semibold,
 						color: theme.palette.primary.main,
 					}}
 				>

@@ -28,7 +28,7 @@ import { useTranslation } from "react-i18next";
 import { useState, Fragment, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 import type { SxProps, Theme } from "@mui/material/styles";
 import type { SortOrder } from "@/Types/Query";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -235,7 +235,7 @@ export function DataTable<
 					"& :is(th)": {
 						backgroundColor: theme.palette.neutral.raised,
 						color: theme.palette.neutral.tertiary,
-						fontWeight: 500,
+						fontWeight: fontWeights.medium,
 						textTransform: "uppercase",
 						letterSpacing: "0.07em",
 						py: LAYOUT.XS,

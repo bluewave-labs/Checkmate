@@ -13,6 +13,7 @@ import { LAYOUT } from "@/Utils/Theme/constants";
 import { useSidebar } from "@/Hooks/useSidebar";
 import { IconButton } from "@/Components/inputs";
 import { Icon } from "@/Components/design-elements";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 interface BulkActionsBarProps {
 	selectedCount: number;
@@ -74,7 +75,7 @@ export const BulkActionsBar = ({
 					>
 						<Typography
 							variant="body1"
-							fontWeight={600}
+							fontWeight={fontWeights.semibold}
 							color={theme.palette.text.primary}
 						>
 							{t("pages.common.monitors.actions.bulkSelected", {

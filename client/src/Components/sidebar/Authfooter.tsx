@@ -15,6 +15,7 @@ import { setMode } from "@/Features/UI/uiSlice.js";
 import useSidebar from "@/Hooks/useSidebar";
 import type { SidebarMenuItem } from "@/Components/sidebar/Menu";
 import { IconButton, Menu, MenuItem } from "@/Components/inputs";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 interface AuthFooterProps {
 	collapsed: boolean;
@@ -87,7 +88,7 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 			>
 				<Stack pr={theme.spacing(SPACING.MD)}>
 					<Typography
-						fontWeight={500}
+						fontWeight={fontWeights.medium}
 						noWrap
 						color={theme.palette.text.primary}
 					>
@@ -141,7 +142,7 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 						pb={theme.spacing(LAYOUT.XXS)}
 						sx={{ pointerEvents: "none" }}
 					>
-						<Typography fontWeight={500}>
+						<Typography fontWeight={fontWeights.medium}>
 							{user?.firstName} {user?.lastName}
 						</Typography>
 						<Typography

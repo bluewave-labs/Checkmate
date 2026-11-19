@@ -11,6 +11,7 @@ import type { RootState } from "@/Types/state";
 import { setRowsPerPage } from "@/Features/UI/uiSlice";
 import { useFormatDate } from "@/Hooks/useFormatDate";
 import { LogDetails } from "@/Pages/Logs/components/LogDetails";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 export type LogWithId = Log & { id: number };
 
@@ -35,7 +36,7 @@ const LevelBadge = ({ level }: { level: LogLevel }) => {
 
 	return (
 		<Typography
-			fontWeight={600}
+			fontWeight={fontWeights.semibold}
 			color={color}
 			textTransform={"uppercase"}
 		>

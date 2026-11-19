@@ -4,6 +4,7 @@ import { Check } from "lucide-react";
 import { useTheme } from "@mui/material/styles";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import Icon from "./Icon";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 export const BulletPointCheck = ({
 	text,
@@ -36,7 +37,7 @@ export const BulletPointCheck = ({
 			<Typography
 				component="span"
 				color={variant === "info" ? theme.palette.text.secondary : colors[variant]}
-				fontWeight={450}
+				fontWeight={fontWeights.medium}
 				sx={{
 					opacity: 0.9,
 				}}

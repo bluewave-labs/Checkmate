@@ -8,6 +8,7 @@ import type { EgressSummary } from "@/Types/Egress";
 import { useFormatDate } from "@/Hooks/useFormatDate";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import Icon from "./Icon";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 interface EgressBannerProps {
 	state: EgressSummary | null;
@@ -57,7 +58,7 @@ export const EgressBanner = ({ state }: EgressBannerProps) => {
 				/>
 				<Typography
 					variant="body2"
-					fontWeight={500}
+					fontWeight={fontWeights.medium}
 				>
 					{message}
 				</Typography>

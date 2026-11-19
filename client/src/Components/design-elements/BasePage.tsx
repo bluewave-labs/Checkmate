@@ -16,6 +16,7 @@ import type { StackProps } from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
 import { Trans, useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 export const PageSpeedKeyPriorityFallback = () => {
 	const theme = useTheme();
@@ -35,7 +36,7 @@ export const PageSpeedKeyPriorityFallback = () => {
 									component={RouterLink}
 									to="/settings"
 									color={theme.palette.primary.main}
-									fontWeight={600}
+									fontWeight={fontWeights.semibold}
 									sx={{
 										textDecoration: "underline",
 									}}

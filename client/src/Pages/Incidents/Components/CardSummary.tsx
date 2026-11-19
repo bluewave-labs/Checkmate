@@ -9,6 +9,7 @@ import { useTheme } from "@mui/material";
 import type { IncidentSummary, IncidentSummaryItem } from "@/Types/Incident";
 import { getIncidentsDuration } from "@/Pages/Incidents/utils";
 import { LAYOUT } from "@/Utils/Theme/constants";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 interface SummaryItemProps {
 	icon: React.ReactNode;
@@ -37,7 +38,7 @@ const SummaryItem = ({ icon, label, value }: SummaryItemProps) => {
 			</Stack>
 			<Typography
 				variant="body1"
-				fontWeight={600}
+				fontWeight={fontWeights.semibold}
 			>
 				{value}
 			</Typography>
@@ -143,7 +144,7 @@ const SummaryIncidentItem = ({ incident }: { incident: IncidentSummaryItem }) =>
 				/>
 				<Typography
 					variant="body1"
-					fontWeight={500}
+					fontWeight={fontWeights.medium}
 					noWrap
 				>
 					{incident.monitorName ?? t("common.labels.na")}

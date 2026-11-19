@@ -1,7 +1,7 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 import { SPACING } from "@/Utils/Theme/constants";
 import { ProgressBar } from "@/Pages/Dashboard/components/ProgressBar";
 
@@ -38,7 +38,7 @@ export const BarRow = ({
 				<Typography
 					fontSize={typographyLevels.m}
 					color={valueColor ?? theme.palette.primary.main}
-					fontWeight={500}
+					fontWeight={fontWeights.medium}
 				>
 					{value}
 				</Typography>

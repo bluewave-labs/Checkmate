@@ -9,7 +9,7 @@ import { useTheme } from "@mui/material/styles";
 import type { LucideIcon } from "lucide-react";
 import { INPUT_BASE_HEIGHT, LAYOUT } from "@/Utils/Theme/constants";
 import Icon from "@/Components/design-elements/Icon";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 
 const STEP_NUMBER_SIZE = 16;
 const STEP_NUMBER_OFFSET = -6;
@@ -50,7 +50,7 @@ const StepTile = ({ icon, number }: { icon: LucideIcon; number: number }) => {
 				bgcolor={theme.palette.background.paper}
 				color={theme.palette.text.secondary}
 				fontSize={typographyLevels.s}
-				fontWeight={600}
+				fontWeight={fontWeights.semibold}
 				lineHeight={1}
 			>
 				{number}
@@ -98,7 +98,10 @@ export const StepList = ({ steps }: { steps: StepListItem[] }) => {
 							primary={step.title}
 							secondary={step.description}
 							slotProps={{
-								primary: { fontWeight: 600, color: theme.palette.text.primary },
+								primary: {
+									fontWeight: fontWeights.semibold,
+									color: theme.palette.text.primary,
+								},
 								secondary: { variant: "body1", color: theme.palette.text.secondary },
 							}}
 							sx={{ mt: 0, mb: isLast ? 0 : LAYOUT.MD, minHeight: INPUT_BASE_HEIGHT }}

@@ -4,7 +4,7 @@ import type { ToggleButtonProps } from "@mui/material/ToggleButton";
 import type { ToggleButtonGroupProps } from "@mui/material/ToggleButtonGroup";
 import { useTheme } from "@mui/material/styles";
 import { INPUT_BASE_HEIGHT, LAYOUT, SPACING } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 
 const SEGMENT_HEIGHT = 22;
 
@@ -23,7 +23,7 @@ export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 				textTransform: "uppercase",
 				letterSpacing: theme.typography.eyebrow.letterSpacing,
 				fontSize: typographyLevels.s,
-				fontWeight: 600,
+				fontWeight: fontWeights.semibold,
 				whiteSpace: "nowrap",
 				boxShadow: "none",
 				color: theme.palette.neutral.subdued,

@@ -3,7 +3,7 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { DashboardCard } from "@/Pages/Dashboard/components/DashboardCard";
 import { ProgressBar } from "@/Pages/Dashboard/components/ProgressBar";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 import { SPACING } from "@/Utils/Theme/constants";
 import { useTranslation } from "react-i18next";
 import type { MonitorsSummary } from "@/Types/Monitor";
@@ -38,7 +38,7 @@ export const MonitorStatusCard = ({ summary }: MonitorStatusCardProps) => {
 					>
 						<Typography
 							fontSize={typographyLevels.xxxl}
-							fontWeight={500}
+							fontWeight={fontWeights.medium}
 							color={theme.palette.text.primary}
 						>
 							{up}
