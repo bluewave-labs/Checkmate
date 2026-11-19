@@ -10,10 +10,6 @@ const SEGMENT_HEIGHT = 22;
 
 export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 	const theme = useTheme();
-	const selectedText =
-		theme.palette.mode === "dark"
-			? theme.palette.primary.light
-			: theme.palette.primary.main;
 	return (
 		<ToggleButton
 			{...props}
@@ -39,7 +35,7 @@ export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 				},
 				"&.Mui-selected, &.Mui-selected:hover": {
 					backgroundColor: theme.palette.neutral.selectedGreen,
-					color: selectedText,
+					color: theme.palette.accent,
 				},
 				"&.Mui-focusVisible": {
 					outline: `2px solid ${theme.palette.primary.main}`,

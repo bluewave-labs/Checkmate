@@ -58,7 +58,8 @@ declare module "@mui/material/styles" {
 	interface Palette {
 		neutral: NeutralPalette;
 		signal: Record<SignalKey, SignalTone>;
-		sidebar: { accent: string; groups: Record<SidebarGroupKey, GroupTone> };
+		accent: string;
+		sidebar: { groups: Record<SidebarGroupKey, GroupTone> };
 		scrollbar: { track: string; thumb: string };
 		rowStatus: { running: string; paused: string };
 		chart: ChartPalette;
@@ -66,7 +67,8 @@ declare module "@mui/material/styles" {
 	interface PaletteOptions {
 		neutral?: NeutralPalette;
 		signal?: Record<SignalKey, SignalTone>;
-		sidebar?: { accent: string; groups: Record<SidebarGroupKey, GroupTone> };
+		accent?: string;
+		sidebar?: { groups: Record<SidebarGroupKey, GroupTone> };
 		scrollbar?: { track: string; thumb: string };
 		rowStatus?: { running: string; paused: string };
 		chart?: ChartPalette;
@@ -232,10 +234,7 @@ export const theme = (mode: PaletteMode, palette: PaletteOptions) =>
 								borderColor: theme.palette.neutral.borderHover,
 							},
 						"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-							borderColor:
-								theme.palette.mode === "dark"
-									? theme.palette.primary.light
-									: theme.palette.primary.main,
+							borderColor: theme.palette.accent,
 							borderWidth: 2,
 						},
 						"&.Mui-error .MuiOutlinedInput-notchedOutline": {

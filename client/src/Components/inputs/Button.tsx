@@ -60,11 +60,6 @@ export const ButtonInput = ({ sx, ...props }: ButtonInputProps) => {
 			}
 		: {};
 
-	const focusColor =
-		theme.palette.mode === "dark"
-			? theme.palette.primary.light
-			: theme.palette.primary.main;
-
 	return (
 		<Button
 			{...props}
@@ -82,7 +77,7 @@ export const ButtonInput = ({ sx, ...props }: ButtonInputProps) => {
 				...(isSmall && { px: LAYOUT.SM }),
 				"&:hover": hoverOverrides,
 				"&.Mui-focusVisible": {
-					outline: `2px solid ${focusColor}`,
+					outline: `2px solid ${theme.palette.accent}`,
 					outlineOffset: 1,
 				},
 				...variantSx,
