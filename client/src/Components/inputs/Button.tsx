@@ -4,6 +4,9 @@ import { useTheme, darken } from "@mui/material/styles";
 import { INPUT_BASE_HEIGHT, HOVER, LAYOUT } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 
+type ButtonInputProps = ButtonProps &
+	Pick<React.AnchorHTMLAttributes<HTMLAnchorElement>, "target" | "rel">;
+
 const PALETTE_COLORS = [
 	"primary",
 	"secondary",
@@ -14,7 +17,7 @@ const PALETTE_COLORS = [
 ] as const;
 type PaletteColor = (typeof PALETTE_COLORS)[number];
 
-export const ButtonInput = ({ sx, ...props }: ButtonProps) => {
+export const ButtonInput = ({ sx, ...props }: ButtonInputProps) => {
 	const theme = useTheme();
 	const colorKey = (props.color ?? "primary") as PaletteColor;
 	const isSmall = props.size === "small";
