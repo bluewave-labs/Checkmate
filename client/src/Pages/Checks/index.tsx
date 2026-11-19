@@ -125,7 +125,7 @@ const Checks = () => {
 		<BasePage headerKey="checks">
 			<Stack
 				direction={{ xs: "column", md: "row" }}
-				gap={LAYOUT.XS}
+				gap={LAYOUT.MD}
 			>
 				<TotalChecksBox n={totalChecks} />
 				<UpChecksBox n={upChecks} />

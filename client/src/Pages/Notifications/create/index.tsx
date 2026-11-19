@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import { NotificationChannels } from "@/Types/Notification";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const NotificationsCreatePage = () => {
 	const { t } = useTranslation();
@@ -287,7 +288,7 @@ const NotificationsCreatePage = () => {
 				<Stack
 					direction="row"
 					justifyContent="flex-end"
-					spacing={theme.spacing(2)}
+					spacing={theme.spacing(LAYOUT.XS)}
 				>
 					<Button
 						variant="contained"

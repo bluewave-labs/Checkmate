@@ -66,7 +66,7 @@ export const RecoveryKeyImportForm = ({
 
 	return (
 		<Stack
-			gap={theme.spacing(LAYOUT.SM)}
+			gap={theme.spacing(LAYOUT.MD)}
 			width="100%"
 		>
 			<Typography color={theme.palette.text.secondary}>
@@ -102,7 +102,7 @@ export const RecoveryKeyImportForm = ({
 			)}
 			<Stack
 				direction="row"
-				gap={theme.spacing(LAYOUT.SM)}
+				gap={theme.spacing(LAYOUT.XS)}
 			>
 				<TipButton
 					tip={t("pages.settings.form.connect.tooltips.useKey")}

@@ -194,7 +194,7 @@ const ProxiesCreatePage = () => {
 				<Stack
 					direction="row"
 					justifyContent="flex-end"
-					spacing={theme.spacing(2)}
+					spacing={theme.spacing(LAYOUT.XS)}
 				>
 					<Button
 						loading={isSubmitting || isPatching}

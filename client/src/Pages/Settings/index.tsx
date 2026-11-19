@@ -1153,7 +1153,7 @@ export const SettingsPage = () => {
 										rightContent={
 											<Stack gap={theme.spacing(LAYOUT.MD)}>
 												<Stack
-													gap={theme.spacing(LAYOUT.MD)}
+													gap={theme.spacing(LAYOUT.XS)}
 													direction={"row"}
 												>
 													<input
