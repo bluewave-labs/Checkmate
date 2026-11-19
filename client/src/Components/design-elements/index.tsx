@@ -33,3 +33,4 @@ export * from "./StrategyBadge";
 export * from "./StepProgress";
 export * from "./CodeBlock";
 export * from "./CopyRow";
+export * from "./StepList";

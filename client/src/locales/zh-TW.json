@@ -1752,7 +1752,31 @@
 						"connecting": "通道連線中",
 						"remoteAccessOff": "遠端存取已關閉",
 						"agentId": "代理程式 ID",
-						"lastConnected": "上次連線"
+						"lastConnected": "上次連線",
+						"siteLink": "開啟 {{site}}"
+					},
+					"getStarted": {
+						"title": "開始使用",
+						"description": "Checkmate Connect 讓你能隨時隨地存取此安裝，並在雲端保存其加密備份。",
+						"steps": {
+							"account": {
+								"title": "建立 Connect 帳戶",
+								"body": "在 {{site}} 使用電子郵件地址和密碼註冊。"
+							},
+							"server": {
+								"title": "新增伺服器",
+								"body": "在 Connect 控制台中為它命名，即可取得憑證區塊。憑證區塊只會顯示一次，請立即複製。"
+							},
+							"paste": {
+								"title": "貼到這裡",
+								"body": "將憑證區塊貼到下方的方塊中，然後點選「註冊」。"
+							},
+							"remoteAccess": {
+								"title": "開啟遠端存取",
+								"body": "通道連線後，你的 Connect 位址即可使用。"
+							}
+						},
+						"button": "前往 {{site}}"
 					},
 					"enroll": {
 						"title": "註冊此安裝",

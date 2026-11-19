@@ -1754,7 +1754,31 @@
 						"connecting": "Tunneli yhdistää",
 						"remoteAccessOff": "Etäkäyttö pois päältä",
 						"agentId": "Agentin ID",
-						"lastConnected": "Viimeksi yhdistetty"
+						"lastConnected": "Viimeksi yhdistetty",
+						"siteLink": "Avaa {{site}}"
+					},
+					"getStarted": {
+						"title": "Aloitus",
+						"description": "Checkmate Connectin avulla voit käyttää tätä asennusta mistä tahansa, ja se säilyttää asennuksesta salattuja varmuuskopioita pilvessä.",
+						"steps": {
+							"account": {
+								"title": "Luo Connect-tili",
+								"body": "Rekisteröidy osoitteessa {{site}} sähköpostiosoitteella ja salasanalla."
+							},
+							"server": {
+								"title": "Lisää palvelin",
+								"body": "Nimeä se Connect-hallintapaneelissa, niin saat tunnistetietolohkon. Se näytetään vain kerran, joten kopioi se heti."
+							},
+							"paste": {
+								"title": "Liitä se tähän",
+								"body": "Liitä tunnistetietolohko alla olevaan kenttään ja napsauta Rekisteröi."
+							},
+							"remoteAccess": {
+								"title": "Ota etäkäyttö käyttöön",
+								"body": "Connect-osoitteesi toimii heti, kun tunneli on yhdistetty."
+							}
+						},
+						"button": "Siirry osoitteeseen {{site}}"
 					},
 					"enroll": {
 						"title": "Rekisteröi asennus",

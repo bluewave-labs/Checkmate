@@ -1754,7 +1754,31 @@
 						"connecting": "Tünel bağlanıyor",
 						"remoteAccessOff": "Uzaktan erişim kapalı",
 						"agentId": "Ajan ID",
-						"lastConnected": "Son bağlantı"
+						"lastConnected": "Son bağlantı",
+						"siteLink": "{{site}}'yu aç"
+					},
+					"getStarted": {
+						"title": "Başlarken",
+						"description": "Checkmate Connect bu kuruluma her yerden erişmenizi sağlar ve şifreli yedeklerini bulutta saklar.",
+						"steps": {
+							"account": {
+								"title": "Connect hesabı oluşturun",
+								"body": "{{site}} adresinde bir e-posta adresi ve parolayla kaydolun."
+							},
+							"server": {
+								"title": "Sunucunuzu ekleyin",
+								"body": "Kimlik bilgisi bloğunu almak için Connect panelinde sunucuya bir ad verin. Blok yalnızca bir kez gösterilir, hemen kopyalayın."
+							},
+							"paste": {
+								"title": "Buraya yapıştırın",
+								"body": "Kimlik bilgisi bloğunu aşağıdaki kutuya yapıştırın ve Kaydı tamamla'ya tıklayın."
+							},
+							"remoteAccess": {
+								"title": "Uzaktan erişimi açın",
+								"body": "Tünel bağlandığında Connect adresiniz kullanılabilir hale gelir."
+							}
+						},
+						"button": "{{site}}'ya git"
 					},
 					"enroll": {
 						"title": "Kurulum kaydı",

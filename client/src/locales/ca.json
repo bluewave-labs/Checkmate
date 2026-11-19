@@ -1755,7 +1755,31 @@
 						"connecting": "Connectant el túnel",
 						"remoteAccessOff": "Accés remot desactivat",
 						"agentId": "ID de l'agent",
-						"lastConnected": "Darrera connexió"
+						"lastConnected": "Darrera connexió",
+						"siteLink": "Obre {{site}}"
+					},
+					"getStarted": {
+						"title": "Comença",
+						"description": "Checkmate Connect et permet accedir a aquesta instal·lació des de qualsevol lloc i en guarda còpies de seguretat xifrades al núvol.",
+						"steps": {
+							"account": {
+								"title": "Crea un compte de Connect",
+								"body": "Registra't a {{site}} amb una adreça de correu i una contrasenya."
+							},
+							"server": {
+								"title": "Afegeix el servidor",
+								"body": "Posa-li un nom al tauler de Connect per obtenir un bloc de credencials. Només es mostra una vegada, així que copia'l de seguida."
+							},
+							"paste": {
+								"title": "Enganxa'l aquí",
+								"body": "Enganxa el bloc de credencials al quadre de sota i fes clic a Registra."
+							},
+							"remoteAccess": {
+								"title": "Activa l'accés remot",
+								"body": "La teva adreça de Connect s'activa quan el túnel es connecta."
+							}
+						},
+						"button": "Ves a {{site}}"
 					},
 					"enroll": {
 						"title": "Registra la instal·lació",

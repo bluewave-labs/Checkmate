@@ -1752,7 +1752,31 @@
 						"connecting": "トンネル接続中",
 						"remoteAccessOff": "リモートアクセスオフ",
 						"agentId": "エージェントID",
-						"lastConnected": "最終接続"
+						"lastConnected": "最終接続",
+						"siteLink": "{{site}} を開く"
+					},
+					"getStarted": {
+						"title": "はじめに",
+						"description": "Checkmate Connect を使うと、どこからでもこのインストールにアクセスでき、暗号化したバックアップをクラウドに保存できます。",
+						"steps": {
+							"account": {
+								"title": "Connect アカウントを作成",
+								"body": "{{site}} でメールアドレスとパスワードを使って登録します。"
+							},
+							"server": {
+								"title": "サーバーを追加",
+								"body": "Connect のダッシュボードで名前を付けると、認証情報ブロックが表示されます。表示は一度だけなので、すぐにコピーしてください。"
+							},
+							"paste": {
+								"title": "ここに貼り付け",
+								"body": "下のボックスに認証情報ブロックを貼り付けて、「登録」をクリックします。"
+							},
+							"remoteAccess": {
+								"title": "リモートアクセスを有効化",
+								"body": "トンネルが接続されると、Connect のアドレスが使えるようになります。"
+							}
+						},
+						"button": "{{site}} へ移動"
 					},
 					"enroll": {
 						"title": "インストールを登録",

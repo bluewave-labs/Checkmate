@@ -1,3 +1,4 @@
+import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
@@ -6,6 +7,7 @@ import { ConfigBox, ValueLabel } from "@/Components/design-elements";
 import { useFormatDate } from "@/Hooks/useFormatDate";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import type { ConnectStatus } from "@/Types/Connect";
+import { CONNECT_SITE_HOST, CONNECT_SITE_URL } from "./constants";
 
 export const ConnectStatusBox = ({ status }: { status: ConnectStatus }) => {
 	const theme = useTheme();
@@ -64,6 +66,15 @@ export const ConnectStatusBox = ({ status }: { status: ConnectStatus }) => {
 							{status.tunnel.lastError}
 						</Typography>
 					)}
+					<Link
+						href={CONNECT_SITE_URL}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						{t("pages.settings.form.connect.status.siteLink", {
+							site: CONNECT_SITE_HOST,
+						})}
+					</Link>
 				</Stack>
 			}
 		/>
