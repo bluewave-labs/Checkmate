@@ -7,6 +7,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useTranslation } from "react-i18next";
 import { useMediaQuery } from "@mui/material";
 import type { DateRange } from "@/Types/Query";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface MonitorTimeFrameHeaderProps {
 	isLoading?: boolean;
@@ -66,7 +67,7 @@ export const HeaderTimeRange = ({
 			direction={{ xs: "column", md: "row" }}
 			justifyContent="flex-end"
 			alignItems="center"
-			gap={theme.spacing(4)}
+			gap={theme.spacing(LAYOUT.XS)}
 		>
 			<Box
 				width={16}

@@ -4,6 +4,7 @@ import { StatBox } from "@/Components/design-elements";
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import type { QueueMetrics } from "@/Types/Queue";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface MetricsProps {
 	metrics: QueueMetrics | null;
@@ -20,7 +21,7 @@ export const Metrics = ({ metrics }: MetricsProps) => {
 	return (
 		<Stack
 			direction={{ xs: "column", md: "row" }}
-			gap={theme.spacing(8)}
+			gap={theme.spacing(LAYOUT.MD)}
 		>
 			<StatBox
 				title={t("pages.logs.metrics.jobs")}

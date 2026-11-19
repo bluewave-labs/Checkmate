@@ -1,7 +1,7 @@
 {
 	"name": "client",
 	"private": true,
-	"version": "3.13.1",
+	"version": "4.0.0",
 	"engines": {
 		"node": ">=24",
 		"npm": ">=11"
@@ -12,8 +12,8 @@
 		"dev": "vite",
 		"build": "tsc -b && vite build",
 		"build-dev": "tsc -b && vite build --mode development",
-		"lint": "eslint . --ext js,jsx,ts,tsx --report-unused-disable-directives",
-		"lint-strict": "eslint . --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0",
+		"lint": "eslint . --report-unused-disable-directives",
+		"lint-strict": "eslint . --report-unused-disable-directives --max-warnings 0",
 		"preview": "vite preview",
 		"format": "prettier --write .",
 		"format-check": "prettier --check .",
@@ -44,7 +44,6 @@
 		"html2canvas": "^1.4.1",
 		"human-interval": "2.0.1",
 		"i18next": "25.4.2",
-		"joi": "17.13.4",
 		"lucide-react": "^0.562.0",
 		"maplibre-gl": "^5.19.0",
 		"mui-color-input": "^7.0.0",
@@ -67,20 +66,21 @@
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
+		"@eslint/js": "^9.39.5",
 		"@types/node": "24.5.2",
 		"@types/react": "^18.2.66",
 		"@types/react-dom": "^18.2.22",
-		"@typescript-eslint/eslint-plugin": "^7.18.0",
-		"@typescript-eslint/parser": "^7.18.0",
 		"@vitejs/plugin-react": "^4.2.1",
-		"eslint": "^8.57.0",
+		"eslint": "^9.39.5",
 		"eslint-plugin-react": "^7.34.1",
 		"eslint-plugin-react-hooks": "^5.0.0",
 		"eslint-plugin-react-refresh": "^0.4.6",
+		"globals": "^15.15.0",
 		"lint-staged": "^16.2.7",
 		"mongoose": "9.6.2",
 		"prettier": "^3.3.3",
 		"typescript": "5.9.3",
+		"typescript-eslint": "^8.73.0",
 		"vite": "^6.4.2"
 	}
 }

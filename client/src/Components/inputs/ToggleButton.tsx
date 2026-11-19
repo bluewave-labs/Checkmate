@@ -3,41 +3,43 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import type { ToggleButtonProps } from "@mui/material/ToggleButton";
 import type { ToggleButtonGroupProps } from "@mui/material/ToggleButtonGroup";
 import { useTheme } from "@mui/material/styles";
-import { alpha } from "@mui/material/styles";
-import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT, LAYOUT, SPACING } from "@/Utils/Theme/constants";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
+
+const SEGMENT_HEIGHT = 22;
 
 export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 	const theme = useTheme();
-	const isDark = theme.palette.mode === "dark";
-	const selectedBg = isDark
-		? alpha(theme.palette.primary.main, 0.22)
-		: alpha(theme.palette.primary.main, 0.06);
-	const selectedHoverBg = isDark
-		? alpha(theme.palette.primary.main, 0.3)
-		: alpha(theme.palette.primary.main, 0.1);
 	return (
 		<ToggleButton
 			{...props}
 			sx={{
-				px: 8,
-				textTransform: "none",
-				height: INPUT_BASE_HEIGHT,
-				fontWeight: 400,
+				height: "100%",
+				py: 0,
+				px: LAYOUT.MD,
+				border: 0,
+				borderRadius: theme.shape.borderRadius,
+				backgroundColor: "transparent",
+				textTransform: "uppercase",
+				letterSpacing: theme.typography.eyebrow.letterSpacing,
+				fontSize: typographyLevels.s,
+				fontWeight: fontWeights.semibold,
 				whiteSpace: "nowrap",
-				textOverflow: "ellipsis",
-				overflow: "hidden",
 				boxShadow: "none",
-				color: theme.palette.text.secondary,
+				color: theme.palette.neutral.subdued,
+				transition: "background-color 150ms ease, color 150ms ease",
 				"&:hover": {
 					boxShadow: "none",
-					backgroundColor: theme.palette.action.hover,
-				},
-				"&.Mui-selected": {
-					backgroundColor: selectedBg,
+					backgroundColor: "transparent",
 					color: theme.palette.text.primary,
-					"&:hover": {
-						backgroundColor: selectedHoverBg,
-					},
+				},
+				"&.Mui-selected, &.Mui-selected:hover": {
+					backgroundColor: theme.palette.neutral.selectedGreen,
+					color: theme.palette.accent,
+				},
+				"&.Mui-focusVisible": {
+					outline: `2px solid ${theme.palette.primary.main}`,
+					outlineOffset: -2,
 				},
 				...sx,
 			}}
@@ -47,20 +49,26 @@ export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 
 export const ToggleButtonGroupInput = ({ sx, ...props }: ToggleButtonGroupProps) => {
 	const theme = useTheme();
+	const isVertical = props.orientation === "vertical";
 	return (
 		<ToggleButtonGroup
 			{...props}
 			sx={{
+				height: isVertical ? "auto" : INPUT_BASE_HEIGHT,
+				boxSizing: "border-box",
+				p: SPACING.MD,
+				gap: SPACING.SM,
+				backgroundColor: theme.palette.background.paper,
+				border: `1px solid ${theme.palette.neutral.hairline}`,
+				borderRadius: theme.shape.borderRadius,
 				"& .MuiToggleButtonGroup-grouped": {
-					borderColor: theme.palette.divider,
-					borderRadius: 0,
-					"&:first-of-type": {
-						borderTopLeftRadius: 2,
-						borderBottomLeftRadius: 2,
-					},
-					"&:last-of-type": {
-						borderTopRightRadius: 2,
-						borderBottomRightRadius: 2,
+					border: 0,
+					m: 0,
+					...(isVertical && { height: SEGMENT_HEIGHT }),
+					"&.Mui-disabled": { border: 0 },
+					"&, &:not(:first-of-type), &:not(:last-of-type)": {
+						borderRadius: theme.shape.borderRadius,
+						borderLeft: 0,
 					},
 				},
 				...sx,

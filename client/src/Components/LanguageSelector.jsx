@@ -5,6 +5,7 @@ import "flag-icons/css/flag-icons.min.css";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setLanguage } from "../Features/UI/uiSlice";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const langMap = {
 	cs: "cz",
@@ -65,7 +66,7 @@ const LanguageSelector = () => {
 					>
 						<Stack
 							direction="row"
-							spacing={theme.spacing(2)}
+							spacing={theme.spacing(LAYOUT.XXS)}
 							alignItems="center"
 							justifyContent="center"
 						>

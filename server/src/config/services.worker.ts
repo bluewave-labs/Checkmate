@@ -1,4 +1,5 @@
 import { Resolver } from "dns/promises";
+import { execFile, spawn } from "node:child_process";
 import got from "got";
 import ping from "ping";
 import Docker from "dockerode";
@@ -17,6 +18,13 @@ import { IBufferService, BufferService } from "@/service/bufferService.js";
 import { IStatusService, StatusService } from "@/service/statusService.js";
 import { SecretsRotationService } from "@/service/encryption/secretsRotationService.js";
 import { TelemetryService } from "@/domain/telemetry/telemetry.service.js";
+import { ConnectHeartbeatService } from "@/domain/connect/connect-heartbeat.service.js";
+import { ConnectBackupTools } from "@/domain/connect/connect.backup-tools.js";
+import { ConnectToolsService } from "@/domain/connect/connect-tools.service.js";
+import { ConnectApiService } from "@/domain/connect/connect-api.service.js";
+import { ConnectBackupService } from "@/domain/connect/connect-backup.service.js";
+import { ConnectOperationService } from "@/domain/connect/connect-operation.service.js";
+import { ConnectScheduleService } from "@/domain/connect/connect-schedule.service.js";
 import { IQueueWorker, JobHandlers } from "@/worker/worker.interface.js";
 import { WorkerHelper } from "@/worker/worker.helper.js";
 import { GeoChecksPipeline } from "@/worker/worker.geo-pipeline.js";
@@ -51,6 +59,7 @@ export interface WorkerServices {
 export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig): Promise<WorkerServices> => {
 	const {
 		logger,
+		db,
 		settingsService,
 		checkService,
 		geoChecksService,
@@ -110,6 +119,11 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	const statusService = new StatusService(logger, monitorsRepository, monitorStatsRepository);
 	const egressService = new EgressService(settingsService, workerId, queueWorkersRepository, providerRegistry, proxyResolver, logger);
 	const telemetryService = new TelemetryService(got, settingsService, settingsRepository, monitorsRepository, logger);
+	const connectHeartbeatService = new ConnectHeartbeatService(got, connectRepository, encryptionService, logger);
+	const connectBackupTools = new ConnectBackupTools(spawn, execFile, settingsService, logger);
+	const connectToolsService = new ConnectToolsService(connectBackupTools, queueWorkersRepository, workerId, logger);
+	const connectApiService = new ConnectApiService(got, settingsService, logger);
+	const connectBackupService = new ConnectBackupService(connectBackupTools, connectApiService, connectRepository, db, logger);
 
 	const notificationReactor = new NotificationReactor(notificationsService);
 	const incidentReactor = new IncidentReactor(incidentService);
@@ -149,7 +163,8 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		incidentsRepository,
 		geoChecksRepository,
 		dockerLogsRepository,
-		telemetryService
+		telemetryService,
+		connectHeartbeatService
 	);
 
 	const handlers: JobHandlers = {
@@ -159,9 +174,12 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		"cleanup-orphaned": workerHelper.getCleanupOrphanedJob(),
 		"cleanup-retention": workerHelper.getCleanupRetentionJob(),
 		telemetry: workerHelper.getTelemetryJob(),
+		"connect-heartbeat": workerHelper.getConnectHeartbeatJob(),
+		"connect-operation": () => connectOperationService.handleJob(),
+		"connect-backup": () => connectScheduleService.handleJob(),
 	};
 
-	const worker = await DBQueueWorker.create({
+	const worker = new DBQueueWorker({
 		logger,
 		isDbConnected: () => mongoose.connection.readyState === 1,
 		jobsRepository,
@@ -173,7 +191,20 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		queuePrimaryProcesses: envSettings.queuePrimaryProcesses,
 		workerId,
 		telemetryEnabled: envSettings.telemetryEnabled,
+		afterHeartbeat: connectToolsService.report,
 	});
+
+	const connectOperationService = new ConnectOperationService(
+		connectRepository,
+		encryptionService,
+		connectBackupService,
+		connectToolsService,
+		worker,
+		logger
+	);
+	const connectScheduleService = new ConnectScheduleService(connectRepository, worker, logger);
+
+	await worker.init();
 
 	const secretsRotationService = new SecretsRotationService(monitorsRepository, connectRepository, encryptionService, logger);
 	const log = logger.child({ service: "WorkerServices" }); // this function's own lines; services above get the root logger

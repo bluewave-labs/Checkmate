@@ -5,11 +5,12 @@ import type { ILogger } from "../../src/utils/logger/logger.ts";
 import type { IJobScheduler } from "../../src/worker/worker.interface.ts";
 import type { IDb } from "../../src/db/db.interface.ts";
 import type { Mongoose } from "mongoose";
+import type { IConnectService } from "../../src/domain/connect/connect.service.ts";
 import { createMockLogger } from "../helpers/createMockLogger.ts";
 
 type Handler = (...args: unknown[]) => void;
 
-const setup = (opts?: { drain?: () => Promise<void> }) => {
+const setup = (opts?: { drain?: () => Promise<void>; withConnect?: boolean }) => {
 	const handlers: Record<string, Handler> = {};
 	jest.spyOn(process, "on").mockImplementation(((event: string, handler: Handler) => {
 		handlers[event] = handler;
@@ -24,11 +25,17 @@ const setup = (opts?: { drain?: () => Promise<void> }) => {
 		shutdown: jest.fn(async () => {}),
 	} as unknown as jest.Mocked<IJobScheduler>;
 	const db = { disconnect: jest.fn(async () => {}) } as unknown as jest.Mocked<IDb<Mongoose>>;
+	const connectService = { stop: jest.fn() };
 
-	initShutdownListener(server, { worker, db, logger: logger as unknown as ILogger });
+	initShutdownListener(server, {
+		worker,
+		db,
+		logger: logger as unknown as ILogger,
+		...(opts?.withConnect ? { connectService: connectService as unknown as IConnectService } : {}),
+	});
 
 	const emit = (event: string, ...args: unknown[]) => handlers[event]!(...args);
-	return { emit, exit, logger, server, worker, db };
+	return { emit, exit, logger, server, worker, db, connectService };
 };
 
 const never = () => new Promise<void>(() => {});
@@ -50,6 +57,28 @@ describe("initShutdownListener signals", () => {
 		expect(worker.drain).toHaveBeenCalled();
 		expect(worker.shutdown).toHaveBeenCalled();
 		expect(db.disconnect).toHaveBeenCalled();
+		expect(exit).toHaveBeenCalledWith(0);
+	});
+
+	it("stops the Connect tunnel before closing the HTTP server", async () => {
+		const { emit, exit, server, connectService } = setup({ withConnect: true });
+
+		emit("SIGTERM");
+		await flush();
+
+		expect(connectService.stop).toHaveBeenCalledTimes(1);
+		const closeMock = server.close as unknown as jest.Mock;
+		expect(connectService.stop.mock.invocationCallOrder[0]).toBeLessThan(closeMock.mock.invocationCallOrder[0]);
+		expect(exit).toHaveBeenCalledWith(0);
+	});
+
+	it("shuts down without a Connect service, as worker-only processes do", async () => {
+		const { emit, exit, connectService } = setup();
+
+		emit("SIGTERM");
+		await flush();
+
+		expect(connectService.stop).not.toHaveBeenCalled();
 		expect(exit).toHaveBeenCalledWith(0);
 	});
 

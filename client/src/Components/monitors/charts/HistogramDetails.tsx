@@ -1,5 +1,5 @@
 import Stack from "@mui/material/Stack";
-import { BaseChart, BaseBox } from "@/Components/design-elements";
+import { BaseChart, BaseBox, Icon } from "@/Components/design-elements";
 import { Clock } from "lucide-react";
 import { Dot } from "@/Components/design-elements";
 import {
@@ -55,7 +55,7 @@ const ResponseTimeToolTip = ({
 	const format = tooltipDateFormatLookup(range);
 	const responseTime = payload[0]?.payload?.avgResponseTime ?? 0;
 	return (
-		<BaseBox sx={{ py: theme.spacing(2), px: theme.spacing(4) }}>
+		<BaseBox sx={{ py: theme.spacing(LAYOUT.XXS), px: theme.spacing(LAYOUT.XS) }}>
 			<Typography>{formatDate(String(label), format)}</Typography>
 			<Typography>
 				{t("common.charts.histogram.responseTime", {
@@ -84,7 +84,7 @@ const TimingPhasesToolTip = ({
 	const total = PHASE_KEYS.reduce((sum, key) => sum + bucket[key], 0);
 	const format = tooltipDateFormatLookup(range);
 	return (
-		<BaseBox sx={{ py: theme.spacing(2), px: theme.spacing(4) }}>
+		<BaseBox sx={{ py: theme.spacing(LAYOUT.XXS), px: theme.spacing(LAYOUT.XS) }}>
 			<Typography>{formatDate(bucket.bucketDate, format)}</Typography>
 			<Typography>
 				{t("common.charts.histogram.total", { value: formatMs(total) })}
@@ -137,9 +137,9 @@ export const HistogramDetails = ({
 	return (
 		<BaseChart
 			icon={
-				<Clock
+				<Icon
+					icon={Clock}
 					size={20}
-					strokeWidth={1.5}
 				/>
 			}
 			title={

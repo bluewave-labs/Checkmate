@@ -17,7 +17,7 @@ export const statusPageSchema = z
 		companyName: z.string(),
 		url: z.string(),
 		customDomain: z.string().nullable(),
-		timezone: z.string().optional(),
+		timezone: z.string(),
 		color: z.string(),
 		monitors: z.array(z.string()),
 		subMonitors: z.array(z.string()),

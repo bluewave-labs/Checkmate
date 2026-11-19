@@ -7,6 +7,7 @@ import { getFrequency } from "@/Utils/InfraUtils";
 import { useTheme } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import type { CheckSnapshot } from "@/Types/Check";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const GAUGE_MAX_WIDTH = 260;
 
@@ -26,7 +27,7 @@ export const InfraDetailsGauges = ({
 	return (
 		<Stack
 			direction={isSmall ? "column" : "row"}
-			spacing={theme.spacing(8)}
+			spacing={theme.spacing(LAYOUT.MD)}
 			alignItems={"stretch"}
 			flexWrap={"wrap"}
 			useFlexGap

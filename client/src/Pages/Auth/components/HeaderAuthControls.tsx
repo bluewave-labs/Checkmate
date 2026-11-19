@@ -5,6 +5,7 @@ import { LanguageSelector, SwitchTheme } from "@/Components/inputs";
 
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface HeaderAuthControlsProps extends StackProps {
 	hideLogo?: boolean;
@@ -24,14 +25,14 @@ export const HeaderAuthControls = ({
 			direction="row"
 			alignItems="center"
 			justifyContent="space-between"
-			px={theme.spacing(12)}
-			gap={theme.spacing(4)}
+			px={theme.spacing(LAYOUT.XL)}
+			gap={theme.spacing(LAYOUT.XS)}
 			{...stackProps}
 		>
 			<Stack
 				direction="row"
 				alignItems="center"
-				gap={theme.spacing(4)}
+				gap={theme.spacing(LAYOUT.XS)}
 			>
 				{!hideLogo && (
 					<>
@@ -42,7 +43,7 @@ export const HeaderAuthControls = ({
 			</Stack>
 			<Stack
 				direction="row"
-				spacing={theme.spacing(2)}
+				spacing={theme.spacing(LAYOUT.XS)}
 				alignItems="center"
 			>
 				<LanguageSelector />

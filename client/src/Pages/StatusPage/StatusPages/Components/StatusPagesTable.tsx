@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { Table, type Header, ValueLabel } from "@/Components/design-elements";
+import { Table, type Header, ValueLabel, Icon } from "@/Components/design-elements";
 import { Pagination } from "@/Components/design-elements/Table";
 import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
 import { useClientPagination } from "@/Hooks/useClientPagination";
@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { getStatusPagePublicPath, getStatusPagePublicUrl } from "@/Utils/statusPageUrl";
 
 import { type StatusPage } from "@/Types/StatusPage";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface StatusPagesTableProps {
 	data: StatusPage[];
@@ -82,9 +83,9 @@ export const StatusPagesTable = ({
 							direction="row"
 							alignItems="center"
 							justifyContent="center"
-							gap={theme.spacing(2)}
-							paddingLeft={theme.spacing(2)}
-							paddingRight={theme.spacing(2)}
+							gap={theme.spacing(LAYOUT.XXS)}
+							paddingLeft={theme.spacing(LAYOUT.XXS)}
+							paddingRight={theme.spacing(LAYOUT.XXS)}
 							onClick={(e) => handleUrlClick(e, row)}
 							sx={{
 								...(row.isPublished && {
@@ -97,7 +98,12 @@ export const StatusPagesTable = ({
 							}}
 						>
 							<Typography>{content}</Typography>
-							{row.isPublished && <ExternalLink size={18} />}
+							{row.isPublished && (
+								<Icon
+									icon={ExternalLink}
+									size={18}
+								/>
+							)}
 						</Stack>
 					);
 				},

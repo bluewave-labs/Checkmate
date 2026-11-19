@@ -1,27 +1,93 @@
 import Box from "@mui/material/Box";
-import { BaseBox } from "@/Components/design-elements";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 
 import type { MonitorStatus } from "@/Types/Monitor";
 import type { SxProps } from "@mui/material/styles";
-import {
-	getDockerStatePalette,
-	getStatusPalette,
-	getValuePalette,
-} from "@/Utils/MonitorUtils";
-import { useTheme } from "@mui/material/styles";
+import { getDockerStatePalette, getStatusSignal } from "@/Utils/MonitorUtils";
+import { useTheme, alpha, darken, lighten } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import type { DockerContainerState } from "@/Types/Check";
-import { SPACING } from "@/Utils/Theme/constants";
+import {
+	SPACING,
+	LAYOUT,
+	BADGE_HEIGHT,
+	TAG_HEIGHT,
+	STATUS_DOT_SIZE,
+} from "@/Utils/Theme/constants";
+import { typographyLevels, type SignalKey, fontWeights } from "@/Utils/Theme/Palette";
+
+const TAG_TINT = { BG_LIGHT: 0.14, BG_DARK: 0.2, TEXT_SHIFT: 0.35 } as const;
 
 export const ValueTypes = ["positive", "negative", "neutral"] as const;
 export type ValueType = (typeof ValueTypes)[number];
 
+const VALUE_SIGNAL: Record<ValueType, SignalKey> = {
+	positive: "success",
+	negative: "error",
+	neutral: "warning",
+};
+
+const getTagTint = (color: string, isDark: boolean) => {
+	try {
+		return {
+			bg: alpha(color, isDark ? TAG_TINT.BG_DARK : TAG_TINT.BG_LIGHT),
+			fg: isDark
+				? lighten(color, TAG_TINT.TEXT_SHIFT)
+				: darken(color, TAG_TINT.TEXT_SHIFT),
+		};
+	} catch {
+		return { bg: color, fg: color };
+	}
+};
+
+const SignalBadge = ({
+	signal,
+	children,
+	dot = true,
+	tabular = false,
+	sx,
+}: React.PropsWithChildren<{
+	signal: SignalKey;
+	dot?: boolean;
+	tabular?: boolean;
+	sx?: SxProps;
+}>) => {
+	const theme = useTheme();
+	const tone = theme.palette.signal[signal];
+	return (
+		<Box
+			display="inline-flex"
+			alignItems="center"
+			gap={SPACING.XXL}
+			height={BADGE_HEIGHT}
+			py={SPACING.XS}
+			px={LAYOUT.XS}
+			borderRadius={theme.shape.borderRadius}
+			bgcolor={tone.bg}
+			color={tone.text}
+			fontSize={typographyLevels.s}
+			fontWeight={fontWeights.medium}
+			lineHeight={1}
+			whiteSpace="nowrap"
+			sx={{ ...(tabular && { fontVariantNumeric: "tabular-nums" }), ...sx }}
+		>
+			{dot && (
+				<Box
+					width={STATUS_DOT_SIZE}
+					height={STATUS_DOT_SIZE}
+					borderRadius="50%"
+					bgcolor={tone.text}
+					flexShrink={0}
+				/>
+			)}
+			{children}
+		</Box>
+	);
+};
+
 export const StatusLabel = ({ status, sx }: { status: MonitorStatus; sx?: SxProps }) => {
 	const { t } = useTranslation();
-	const theme = useTheme();
-	const palette = getStatusPalette(status);
 
 	const determineStatus = (status: MonitorStatus): string => {
 		if (status === "up") {
@@ -41,80 +107,65 @@ export const StatusLabel = ({ status, sx }: { status: MonitorStatus; sx?: SxProp
 		return t("pages.common.monitors.status.initializing");
 	};
 
+	const label = determineStatus(status);
 	return (
-		<BaseBox
-			sx={{
-				display: "inline-flex",
-				flexDirection: "row",
-				alignItems: "center",
-				justifyContent: "center",
-				padding: theme.spacing(3, 5),
-				color: theme.palette[palette].main,
-				borderColor:
-					theme.palette.mode === "dark"
-						? "rgba(255, 255, 255, 0.08)"
-						: "rgba(0, 0, 0, 0.08)",
-				...sx,
-			}}
+		<SignalBadge
+			signal={getStatusSignal(status)}
+			sx={sx}
 		>
-			<Box
-				width={7}
-				height={7}
-				bgcolor={theme.palette[palette].light}
-				borderRadius="50%"
-				marginRight="5px"
-			/>
-			<Typography textTransform={"capitalize"}>{determineStatus(status)}</Typography>
-		</BaseBox>
+			{label.charAt(0).toUpperCase() + label.slice(1)}
+		</SignalBadge>
 	);
 };
 
-export const ValueLabel = ({ value, text }: { value: ValueType; text: string }) => {
-	const theme = useTheme();
-	const palette = getValuePalette(value);
-	const transformedText = text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+export const ValueLabel = ({
+	value,
+	text,
+	preserveCase = false,
+}: {
+	value: ValueType;
+	text: string;
+	preserveCase?: boolean;
+}) => {
+	const transformedText = preserveCase
+		? text
+		: text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 
-	return (
-		<BaseBox
-			sx={{
-				display: "inline-flex",
-				flexDirection: "row",
-				alignItems: "center",
-				justifyContent: "center",
-				padding: theme.spacing(3, 5),
-				color: theme.palette[palette].main,
-				borderColor:
-					theme.palette.mode === "dark"
-						? "rgba(255, 255, 255, 0.08)"
-						: "rgba(0, 0, 0, 0.08)",
-			}}
-		>
-			<Box
-				width={7}
-				height={7}
-				bgcolor={theme.palette[palette].light}
-				borderRadius="50%"
-				marginRight="5px"
-			/>
-			<Typography>{transformedText}</Typography>
-		</BaseBox>
-	);
+	return <SignalBadge signal={VALUE_SIGNAL[value]}>{transformedText}</SignalBadge>;
 };
+
+export const SignalLabel = ({ text, signal }: { text: string; signal: SignalKey }) => (
+	<SignalBadge
+		signal={signal}
+		dot={false}
+		tabular
+	>
+		{text}
+	</SignalBadge>
+);
 
 export const ColoredLabel = ({ text, color }: { text: string; color: string }) => {
 	const theme = useTheme();
+	const { bg, fg } = getTagTint(color, theme.palette.mode === "dark");
 
 	return (
-		<BaseBox
-			sx={{
-				width: "fit-content",
-				padding: theme.spacing(1, 3),
-				color: color,
-				borderColor: color,
-			}}
+		<Box
+			display="inline-flex"
+			alignItems="center"
+			width="fit-content"
+			height={TAG_HEIGHT}
+			py={SPACING.XS}
+			px={LAYOUT.XS}
+			borderRadius={theme.shape.borderRadius}
+			bgcolor={bg}
+			color={fg}
+			fontSize={typographyLevels.sm}
+			fontWeight={fontWeights.medium}
+			lineHeight={1}
+			whiteSpace="nowrap"
 		>
-			<Typography>{text}</Typography>
-		</BaseBox>
+			{text}
+		</Box>
 	);
 };
 
@@ -137,11 +188,11 @@ export const DockerStateLabel = ({
 			alignItems={"center"}
 		>
 			<Box
-				width={7}
-				height={7}
-				bgcolor={theme.palette[palette].light}
+				width={STATUS_DOT_SIZE}
+				height={STATUS_DOT_SIZE}
+				bgcolor={theme.palette[palette].main}
 				borderRadius="50%"
-				marginRight="5px"
+				marginRight={theme.spacing(SPACING.XL)}
 			/>
 			<Stack>
 				<Typography>{name}</Typography>

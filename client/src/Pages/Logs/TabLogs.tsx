@@ -1,8 +1,7 @@
 import Stack from "@mui/material/Stack";
-import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import { useSelector } from "react-redux";
-import { Select } from "@/Components/inputs";
+import { Select, MenuItem } from "@/Components/inputs";
 import { TableLogs } from "@/Pages/Logs/components/TableLogs";
 import { EmptyState } from "@/Components/design-elements";
 
@@ -13,6 +12,7 @@ import type { Log, LogLevelOption } from "@/Types/Log";
 import { LOG_LEVEL_OPTIONS } from "@/Types/Log";
 import { t } from "i18next";
 import type { RootState } from "@/Types/state";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 export const TabLogs = () => {
 	const theme = useTheme();
@@ -45,7 +45,7 @@ export const TabLogs = () => {
 	}
 
 	return (
-		<Stack gap={theme.spacing(8)}>
+		<Stack gap={theme.spacing(LAYOUT.LG)}>
 			<Select
 				sx={{ maxWidth: 200 }}
 				fieldLabel={t("pages.logs.logLevelSelect.label")}

@@ -36,7 +36,7 @@
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+<img alt="Checkmate dashboard" src="https://checkmate.so/img/readme/dashboard.webp" />
 
 <br>
 
@@ -82,13 +82,13 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 
 请参阅 [Checkmate 文档门户](https://checkmate.so/docs)中的安装说明。
 
-你也可以使用 [Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](../../charts/helm/checkmate/INSTALLATION.md)、[Sive Host](https://sive.host)（南非）、[Cloudzy](https://cloudzy.com/marketplace/checkmate) 或 [Pikapods](https://www.pikapods.com/) 快速启动一个 Checkmate 实例。如果想监控服务器基础设施，你需要 [Capture 代理](https://github.com/bluewave-labs/capture)，Capture 仓库中也提供了安装说明。
+你也可以使用 [Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm)、[Sive Host](https://sive.host)（南非）、[Cloudzy](https://cloudzy.com/marketplace/checkmate)、[Ryvord](https://ryvord.com/run/checkmate)、[ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate)（需要自备 MongoDB）、[Caliber Node](https://calibernode.com/cloud-apps/checkmate) 或 [Pikapods](https://www.pikapods.com/) 快速启动一个 Checkmate 实例。如果想监控服务器基础设施，你需要 [Capture 代理](https://checkmate.so/docs/infrastructure/installing-capture)，Capture 仓库中也提供了安装说明。
 
 ### 使用自定义 CA
 
-如果你需要使用私有 CA（例如 Smallstep）签发的证书来监控内部 HTTPS 端点，请查看我们的 [自定义 CA 信任指南](../custom-ca-trust.md)，其中介绍了 Docker 的配置选项。
+如果你需要使用私有 CA（例如 Smallstep）签发的证书来监控内部 HTTPS 端点，请查看我们的 [自定义 CA 信任指南](https://checkmate.so/docs/settings/custom-ca-trust)，其中介绍了 Docker 的配置选项。
 
-更多文档请参见 [docs 目录](../)。
+更多文档请参见 [Checkmate 文档门户](https://checkmate.so/docs)。
 
 <a id="performance"></a>
 ## 性能
@@ -124,6 +124,7 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 - 通过邮件、Webhook、Discord、Slack、PagerDuty、Matrix、Microsoft Teams、Telegram、Pushover、Twilio (SMS) 发送通知
 - 计划维护
 - JSON 查询监控
+- [Checkmate Connect](https://checkmate.so/docs/connect)（可选）：无需开放入站端口即可远程访问，支持定时运行与恢复的加密云备份，以及在服务器停止上报时发邮件提醒的看门狗
 - 多语言支持: 阿拉伯语、简体中文、繁体中文（台湾）、捷克语、英语、芬兰语、法语、德语、日语、葡萄牙语（巴西）、俄语、西班牙语、泰语、土耳其语、乌克兰语和越南语
 
 
@@ -140,16 +141,19 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 ## 截图
 
 <p>
-<img width="1628" alt="image" src="https://github.com/user-attachments/assets/2eff6464-0738-4a32-9312-26e1e8e86275" />
+<img alt="Uptime monitors" src="https://checkmate.so/img/readme/uptime-list.webp" />
 </p>
 <p>
-  <img width="1656" alt="image" src="https://github.com/user-attachments/assets/616c3563-c2a7-4ee4-af6c-7e6068955d1a" />
+<img alt="Uptime monitor details" src="https://checkmate.so/img/readme/uptime-details.webp" />
 </p>
 <p>
-</p><img width="1652" alt="image" src="https://github.com/user-attachments/assets/7912d7cf-0d0e-4f26-aa5c-2ad7170b5c99" />
+<img alt="Infrastructure monitor details" src="https://checkmate.so/img/readme/infrastructure-details.webp" />
 </p>
 <p>
-<img width="1652" alt="image" src="https://github.com/user-attachments/assets/08c2c6ac-3a2f-44d1-a229-d1746a3f9d16" />
+<img alt="PageSpeed monitor details" src="https://checkmate.so/img/readme/pagespeed-details.webp" />
+</p>
+<p>
+<img alt="Public status page" src="https://checkmate.so/img/readme/status-page.webp" />
 </p>
 
 
@@ -184,7 +188,7 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 参与贡献的方式:
 
 0. 给本仓库点亮 ⭐ :)
-1. 阅读 [贡献者指南](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md)。新手建议先查看 `good-first-issue` 标签。
+1. 阅读 [贡献者指南](https://checkmate.so/docs/getting-started/contributing)。新手建议先查看 `good-first-issue` 标签。
 2. 如果想深入了解架构，请阅读 [Checkmate 的详细结构介绍](https://deepwiki.com/bluewave-labs/Checkmate)。
 3. 如果你认为遇到了 bug，请提交一个 issue。
 4. 如果你是新手，建议从 `good-first-issue` 入手。

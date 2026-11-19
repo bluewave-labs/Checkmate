@@ -2,6 +2,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { LAYOUT } from "@/Utils/Theme/constants";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 interface InfoRowProps {
 	label: string;
@@ -18,7 +19,9 @@ export const InfoRow = ({ label, value }: InfoRowProps) => {
 			justifyContent="space-between"
 			gap={{ xs: theme.spacing(LAYOUT.XS), md: 0 }}
 		>
-			<Typography fontWeight={{ xs: 500, md: "normal" }}>{label}</Typography>
+			<Typography fontWeight={{ xs: fontWeights.medium, md: fontWeights.regular }}>
+				{label}
+			</Typography>
 			<Typography>{value}</Typography>
 		</Stack>
 	);
