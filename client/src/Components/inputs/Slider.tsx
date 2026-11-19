@@ -92,6 +92,8 @@ export const SliderInput = forwardRef<HTMLSpanElement, SliderInputProps>(
 	}
 );
 
+SliderInput.displayName = "SliderInput";
+
 interface SliderWithLabelProps extends SliderProps {
 	fieldLabel?: string;
 	required?: boolean;
@@ -133,3 +135,5 @@ export const SliderWithLabel = forwardRef<HTMLSpanElement, SliderWithLabelProps>
 		);
 	}
 );
+
+SliderWithLabel.displayName = "SliderWithLabel";
