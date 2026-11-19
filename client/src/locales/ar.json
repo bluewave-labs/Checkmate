@@ -55,6 +55,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "متوسط وقت الاستجابة",
+				"checkCount": "الفحوصات",
 				"cpuUsage": "استخدام CPU",
 				"downtime": "وقت التوقف",
 				"high": "مرتفع",

@@ -55,6 +55,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "平均响应时间",
+				"checkCount": "检查次数",
 				"cpuUsage": "CPU 使用率",
 				"downtime": "停机时间",
 				"high": "高的",

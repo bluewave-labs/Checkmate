@@ -55,6 +55,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Keskimääräinen vasteaika",
+				"checkCount": "Tarkistukset",
 				"cpuUsage": "CPU-käyttö",
 				"downtime": "Käyttökatko",
 				"high": "Korkea",

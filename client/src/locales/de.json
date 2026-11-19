@@ -55,6 +55,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Durchschnittliche Antwortzeit",
+				"checkCount": "Checks",
 				"cpuUsage": "CPU-Auslastung",
 				"downtime": "Ausfallzeit",
 				"high": "hoch",

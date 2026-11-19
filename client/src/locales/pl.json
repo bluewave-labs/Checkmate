@@ -71,6 +71,7 @@
 			},
 			"labels": {
 				"averageResponseTime": "Średni czas odpowiedzi",
+				"checkCount": "Kontrole",
 				"cpuUsage": "Użycie CPU",
 				"downtime": "Czas przestoju",
 				"high": "Wysoki",

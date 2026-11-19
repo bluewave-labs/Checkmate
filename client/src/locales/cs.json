@@ -55,6 +55,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Průměrná doba odezvy",
+				"checkCount": "Kontroly",
 				"cpuUsage": "Využití CPU",
 				"downtime": "Výpadek",
 				"high": "Vysoké",

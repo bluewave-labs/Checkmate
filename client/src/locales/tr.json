@@ -55,6 +55,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Ortalama yanıt süresi",
+				"checkCount": "Kontroller",
 				"cpuUsage": "CPU kullanımı",
 				"downtime": "Kesinti süresi",
 				"high": "yüksek",

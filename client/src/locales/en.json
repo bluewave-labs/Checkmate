@@ -66,6 +66,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Average response time",
+				"checkCount": "Checks",
 				"cpuUsage": "CPU usage",
 				"downtime": "Downtime",
 				"high": "High",

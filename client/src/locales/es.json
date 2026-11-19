@@ -55,6 +55,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Tiempo de respuesta promedio",
+				"checkCount": "Verificaciones",
 				"cpuUsage": "Uso de CPU",
 				"downtime": "Tiempo de inactividad",
 				"high": "alto",

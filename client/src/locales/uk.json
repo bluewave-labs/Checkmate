@@ -55,6 +55,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Середній час відповіді",
+				"checkCount": "Перевірки",
 				"cpuUsage": "Використання CPU",
 				"downtime": "Час простою",
 				"high": "Високий",

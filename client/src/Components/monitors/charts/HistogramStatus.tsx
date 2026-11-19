@@ -7,9 +7,13 @@ import { useTranslation } from "react-i18next";
 import { ResponsiveContainer, BarChart, XAxis, Bar, Cell, Tooltip } from "recharts";
 import { getResponseTimeColor } from "@/Utils/MonitorUtils";
 import type { GroupedCheck } from "@/Types/Check";
+import type { PaletteKey } from "@/Utils/Theme/Theme";
 import { useFormatDate } from "@/Hooks/useFormatDate";
+import { formatNumber } from "@/Utils/FormatUtils";
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
+
+type HistogramStatusMetric = "responseTime" | "checkCount";
 
 interface XLabelProps {
 	p1: GroupedCheck;
@@ -52,6 +56,8 @@ interface HistogramStatusProps {
 	icon: React.ReactNode;
 	checks?: GroupedCheck[];
 	range: string;
+	metric?: HistogramStatusMetric;
+	countColor?: PaletteKey;
 }
 
 export const HistogramStatus = ({
@@ -59,8 +65,11 @@ export const HistogramStatus = ({
 	icon,
 	checks = [],
 	range,
+	metric = "responseTime",
+	countColor = "success",
 }: HistogramStatusProps) => {
-	const { t } = useTranslation();
+	const isCheckCount = metric === "checkCount";
+	const { t, i18n } = useTranslation();
 	const theme = useTheme();
 	const barRadius = Number(theme.shape.borderRadius);
 	const formatDate = useFormatDate();
@@ -73,8 +82,12 @@ export const HistogramStatus = ({
 	}) => {
 		if (!active || !payload?.length) return null;
 		const d = payload[0]?.payload;
-		const avg = d?.avgResponseTime ?? 0;
-		const titleText = t("common.charts.labels.averageResponseTime");
+		const valueText = isCheckCount
+			? formatNumber(d?.totalChecks ?? 0, i18n.resolvedLanguage ?? "en")
+			: formatMs(d?.avgResponseTime ?? 0);
+		const titleText = isCheckCount
+			? t("common.charts.labels.checkCount")
+			: t("common.charts.labels.averageResponseTime");
 		const fmt: DateFormat = range === "30d" ? "date" : "dateTime";
 		let dateLabel = "";
 		if (d?.bucketDate) {
@@ -100,7 +113,7 @@ export const HistogramStatus = ({
 					</Typography>
 				) : null}
 				<Typography variant="caption">{titleText}</Typography>
-				<Typography variant="body2">{formatMs(avg)}</Typography>
+				<Typography variant="body2">{valueText}</Typography>
 			</Stack>
 		);
 	};
@@ -144,13 +157,15 @@ export const HistogramStatus = ({
 							content={<CustomTooltip />}
 						/>
 						<Bar
-							dataKey="avgResponseTime"
+							dataKey={isCheckCount ? "totalChecks" : "avgResponseTime"}
 							maxBarSize={7}
 							radius={[barRadius, barRadius, 0, 0]}
 							background={{ fill: "transparent" }}
 						>
 							{checks?.map((groupedCheck, index) => {
-								const fillColor = getResponseTimeColor(groupedCheck.avgResponseTime);
+								const fillColor = isCheckCount
+									? countColor
+									: getResponseTimeColor(groupedCheck.avgResponseTime);
 								return (
 									<Cell
 										key={groupedCheck.bucketDate || `check-${index}`}

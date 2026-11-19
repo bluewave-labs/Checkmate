@@ -55,6 +55,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "เวลาตอบสนองเฉลี่ย",
+				"checkCount": "การตรวจสอบ",
 				"cpuUsage": "การใช้งาน CPU",
 				"downtime": "ดาวน์ไทม์",
 				"high": "สูง",

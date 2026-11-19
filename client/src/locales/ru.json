@@ -55,6 +55,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Среднее время ответа",
+				"checkCount": "Проверки",
 				"cpuUsage": "Загрузка CPU",
 				"downtime": "Простой",
 				"high": "высокий",
