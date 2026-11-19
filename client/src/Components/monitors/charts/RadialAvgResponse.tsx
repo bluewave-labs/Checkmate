@@ -1,4 +1,4 @@
-import { BaseChart } from "@/Components/design-elements";
+import { BaseChart, Icon } from "@/Components/design-elements";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { Gauge } from "lucide-react";
@@ -27,9 +27,9 @@ export const RadialAvgResponse = ({ avg, max }: { avg: number; max: number }) =>
 	return (
 		<BaseChart
 			icon={
-				<Gauge
+				<Icon
+					icon={Gauge}
 					size={20}
-					strokeWidth={1.5}
 				/>
 			}
 			title={t("common.charts.labels.averageResponseTime")}

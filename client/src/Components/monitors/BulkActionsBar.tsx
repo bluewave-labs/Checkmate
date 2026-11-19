@@ -12,6 +12,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { useSidebar } from "@/Hooks/useSidebar";
 import { IconButton } from "@/Components/inputs";
+import { Icon } from "@/Components/design-elements";
 
 interface BulkActionsBarProps {
 	selectedCount: number;
@@ -85,7 +86,10 @@ export const BulkActionsBar = ({
 							onClick={onCancel}
 							aria-label={t("common.buttons.cancel")}
 						>
-							<X size={18} />
+							<Icon
+								icon={X}
+								size={18}
+							/>
 						</IconButton>
 					</Stack>
 					<Stack

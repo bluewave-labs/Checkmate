@@ -11,6 +11,7 @@ import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
+import Icon from "@/Components/design-elements/Icon";
 
 export const DialogInput = ({
 	open,
@@ -96,10 +97,7 @@ export const DialogInput = ({
 								"&:hover": { backgroundColor: theme.palette.neutral.raised },
 							}}
 						>
-							<X
-								size={16}
-								strokeWidth={1.5}
-							/>
+							<Icon icon={X} />
 						</IconButton>
 					)}
 				</DialogTitle>

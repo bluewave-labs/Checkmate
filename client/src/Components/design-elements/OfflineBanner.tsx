@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { WifiOff } from "lucide-react";
 import { useState, useEffect } from "react";
 import { LAYOUT } from "@/Utils/Theme/constants";
+import Icon from "./Icon";
 
 interface OfflineBannerProps {
 	visible: boolean;
@@ -51,7 +52,10 @@ export const OfflineBanner = ({ visible }: OfflineBannerProps) => {
 				justifyContent="center"
 				gap={theme.spacing(LAYOUT.XS)}
 			>
-				<WifiOff size={20} />
+				<Icon
+					icon={WifiOff}
+					size={20}
+				/>
 				<Typography
 					variant="body2"
 					fontWeight={500}

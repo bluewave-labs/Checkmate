@@ -5,6 +5,7 @@ import { Info } from "lucide-react";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import type { TooltipProps } from "@mui/material/Tooltip";
+import Icon from "./Icon";
 type StyledTooltipProps = TooltipProps;
 
 export const Tooltip = ({
@@ -61,9 +62,9 @@ export const TooltipWithInfo = ({
 					cursor: "help",
 				}}
 			>
-				<Info
+				<Icon
+					icon={Info}
 					size={iconSize}
-					strokeWidth={1.5}
 					style={{
 						opacity: 0.7,
 						color: iconColor || defaultColor,

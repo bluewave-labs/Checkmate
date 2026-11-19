@@ -1,5 +1,5 @@
 import Stack from "@mui/material/Stack";
-import { BaseChart, BaseBox } from "@/Components/design-elements";
+import { BaseChart, BaseBox, Icon } from "@/Components/design-elements";
 import { Clock } from "lucide-react";
 import { Dot } from "@/Components/design-elements";
 import {
@@ -137,9 +137,9 @@ export const HistogramDetails = ({
 	return (
 		<BaseChart
 			icon={
-				<Clock
+				<Icon
+					icon={Clock}
 					size={20}
-					strokeWidth={1.5}
 				/>
 			}
 			title={

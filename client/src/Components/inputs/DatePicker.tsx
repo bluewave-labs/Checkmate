@@ -9,6 +9,7 @@ import { Calendar } from "lucide-react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import Icon from "@/Components/design-elements/Icon";
 
 interface DatePickerComponentProps extends Omit<DatePickerProps<Dayjs>, "label"> {
 	fieldLabel?: string;
@@ -32,7 +33,8 @@ export const DatePickerComponent = ({
 				{...props}
 				slots={{
 					openPickerIcon: () => (
-						<Calendar
+						<Icon
+							icon={Calendar}
 							size={20}
 							stroke={theme.palette.text.secondary}
 						/>

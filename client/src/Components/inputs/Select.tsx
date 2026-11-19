@@ -7,6 +7,7 @@ import { FieldLabel } from "./FieldLabel";
 import { ChevronDown } from "lucide-react";
 import Typography from "@mui/material/Typography";
 import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import Icon from "@/Components/design-elements/Icon";
 
 interface SelectInputProps<T> extends Omit<SelectProps<T>, "label"> {
 	fieldLabel?: string;
@@ -65,9 +66,9 @@ const SelectInputInner = <T,>(
 				"aria-placeholder": placeholder,
 			}}
 			IconComponent={() => (
-				<ChevronDown
+				<Icon
+					icon={ChevronDown}
 					size={18}
-					strokeWidth={1.5}
 					style={{ marginRight: theme.spacing(3), pointerEvents: "none" }}
 				/>
 			)}

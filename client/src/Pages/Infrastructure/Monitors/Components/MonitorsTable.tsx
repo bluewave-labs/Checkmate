@@ -7,6 +7,7 @@ import {
 	StatusLabel,
 	Gauge,
 	ColoredLabel,
+	Icon,
 } from "@/Components/design-elements";
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { getNextMonitorSort } from "@/Utils/MonitorUtils";
@@ -166,9 +167,9 @@ export const InfraMonitorsTable = ({
 			>
 				{isActive ? (
 					sortOrder === "asc" ? (
-						<ArrowUp size={16} />
+						<Icon icon={ArrowUp} />
 					) : (
-						<ArrowDown size={16} />
+						<Icon icon={ArrowDown} />
 					)
 				) : null}
 			</Box>

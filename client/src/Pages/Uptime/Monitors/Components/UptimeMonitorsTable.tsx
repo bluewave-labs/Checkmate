@@ -8,6 +8,7 @@ import {
 	StatusLabel,
 	ColoredLabel,
 	SignalLabel,
+	Icon,
 } from "@/Components/design-elements";
 import { HeatmapResponseTime, HistogramResponseTime } from "@/Components/common";
 import { ActionsMenu } from "@/Components/actions-menu";
@@ -173,9 +174,9 @@ export const MonitorTable = ({
 			>
 				{isActive ? (
 					sortOrder === "asc" ? (
-						<ArrowUp size={16} />
+						<Icon icon={ArrowUp} />
 					) : (
-						<ArrowDown size={16} />
+						<Icon icon={ArrowDown} />
 					)
 				) : null}
 			</Box>
