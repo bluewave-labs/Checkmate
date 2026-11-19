@@ -256,8 +256,8 @@ export const lightPalette = {
 			mark: colors.blue200,
 		},
 	},
+	accent: colors.brandGreen,
 	sidebar: {
-		accent: colors.brandGreen,
 		groups: lightGroups,
 	},
 	scrollbar: {
@@ -357,8 +357,8 @@ export const darkPalette = {
 			mark: colors.blue300,
 		},
 	},
+	accent: colors.brandGreenLight,
 	sidebar: {
-		accent: colors.brandGreenLight,
 		groups: darkGroups,
 	},
 	scrollbar: {

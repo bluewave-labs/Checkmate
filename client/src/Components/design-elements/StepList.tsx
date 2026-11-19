@@ -34,7 +34,7 @@ const StepTile = ({ icon, number }: { icon: LucideIcon; number: number }) => {
 			borderRadius={theme.shape.borderRadius}
 			border={`1px solid ${theme.palette.neutral.hairline}`}
 			bgcolor={theme.palette.neutral.raised}
-			color={theme.palette.sidebar.accent}
+			color={theme.palette.accent}
 		>
 			<Icon icon={icon} />
 			<Stack

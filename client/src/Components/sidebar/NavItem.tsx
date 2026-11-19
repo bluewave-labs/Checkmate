@@ -34,10 +34,10 @@ export const NavItem = ({
 	const iconStroke = tone
 		? tone.solid
 		: selected
-			? theme.palette.sidebar.accent
+			? theme.palette.accent
 			: theme.palette.neutral.icon;
 
-	const iconHoverStroke = tone ? tone.solid : theme.palette.sidebar.accent;
+	const iconHoverStroke = tone ? tone.solid : theme.palette.accent;
 
 	const selectedBg = tone
 		? alpha(tone.solid, NAV_SELECTED_ALPHA)
