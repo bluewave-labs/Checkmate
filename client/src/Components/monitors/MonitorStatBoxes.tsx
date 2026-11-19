@@ -6,6 +6,7 @@ import type { MonitorStats, Monitor } from "@/Types/Monitor";
 import { getStatusPalette } from "@/Utils/MonitorUtils";
 import { useTranslation } from "react-i18next";
 import { formatMs, formatDuration } from "@/Utils/TimeUtils";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface MonitorStatBoxesProps {
 	monitor?: Monitor;
@@ -50,7 +51,7 @@ export const MonitorStatBoxes = ({
 	return (
 		<Stack
 			direction={{ xs: "column", md: "row" }}
-			gap={theme.spacing(8)}
+			gap={theme.spacing(LAYOUT.MD)}
 		>
 			<StatBox
 				palette={palette}

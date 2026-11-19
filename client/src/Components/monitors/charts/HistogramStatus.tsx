@@ -8,6 +8,7 @@ import { ResponsiveContainer, BarChart, XAxis, Bar, Cell, Tooltip } from "rechar
 import { getResponseTimeColor } from "@/Utils/MonitorUtils";
 import type { GroupedCheck } from "@/Types/Check";
 import { useFormatDate } from "@/Hooks/useFormatDate";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 
 interface XLabelProps {
 	p1: GroupedCheck;
@@ -27,7 +28,7 @@ const XLabel = ({ p1, p2, range }: XLabelProps) => {
 				dy={-3}
 				textAnchor="start"
 				fontSize={11}
-				fill={theme.palette.text.secondary}
+				fill={theme.palette.neutral.tertiary}
 			>
 				{formatDate(p1.bucketDate, dateFormat)}
 			</text>
@@ -37,7 +38,7 @@ const XLabel = ({ p1, p2, range }: XLabelProps) => {
 				dy={-3}
 				textAnchor="end"
 				fontSize={11}
-				fill={theme.palette.text.secondary}
+				fill={theme.palette.neutral.tertiary}
 			>
 				{formatDate(p2.bucketDate, dateFormat)}
 			</text>
@@ -60,6 +61,7 @@ export const HistogramStatus = ({
 }: HistogramStatusProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
+	const barRadius = Number(theme.shape.borderRadius);
 	const formatDate = useFormatDate();
 	const CustomTooltip = ({
 		active,
@@ -82,17 +84,15 @@ export const HistogramStatus = ({
 		}
 		return (
 			<Stack
-				sx={{
-					p: 1,
-					bgcolor: "background.paper",
-					border: 1,
-					borderColor: "divider",
-					borderRadius: 1,
-				}}
+				p={SPACING.SM}
+				bgcolor={theme.palette.background.paper}
+				border={1}
+				borderColor={theme.palette.divider}
+				borderRadius={theme.shape.borderRadius}
 			>
 				{dateLabel ? (
 					<Typography
-						sx={{ color: "text.secondary" }}
+						color={theme.palette.text.secondary}
 						variant="caption"
 					>
 						{dateLabel}
@@ -111,7 +111,7 @@ export const HistogramStatus = ({
 			icon={icon}
 			title={title}
 		>
-			<Stack gap={theme.spacing(8)}>
+			<Stack gap={theme.spacing(LAYOUT.MD)}>
 				<Stack
 					position="relative"
 					direction="row"
@@ -145,6 +145,7 @@ export const HistogramStatus = ({
 						<Bar
 							dataKey="avgResponseTime"
 							maxBarSize={7}
+							radius={[barRadius, barRadius, 0, 0]}
 							background={{ fill: "transparent" }}
 						>
 							{checks?.map((groupedCheck, index) => {

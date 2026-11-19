@@ -2,7 +2,7 @@ import Logo from "@/assets/icons/checkmate-icon.svg?react";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
-import { LAYOUT } from "@/Utils/Theme/constants";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 import {
 	ErrorFallback,
 	EmptyFallback,
@@ -287,7 +287,7 @@ export const BaseAuthPage = ({
 					<Stack
 						direction="row"
 						alignItems="center"
-						gap={theme.spacing(3)}
+						gap={theme.spacing(SPACING.XXL)}
 						mb={theme.spacing(2)}
 					>
 						<Box width={28}>
@@ -297,7 +297,7 @@ export const BaseAuthPage = ({
 							{t("common.appName")}
 						</Typography>
 					</Stack>
-					<Stack gap={theme.spacing(2)}>
+					<Stack gap={theme.spacing(LAYOUT.XXS)}>
 						<Typography
 							sx={{
 								fontSize: 26,
@@ -350,7 +350,7 @@ export const BaseAuthPage = ({
 				}}
 			>
 				<div />
-				<Stack sx={{ position: "relative", zIndex: 1, gap: theme.spacing(4) }}>
+				<Stack sx={{ position: "relative", zIndex: 1, gap: theme.spacing(LAYOUT.XS) }}>
 					<Typography
 						sx={{
 							fontSize: 13,

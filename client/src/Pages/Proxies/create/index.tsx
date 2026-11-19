@@ -93,7 +93,7 @@ const ProxiesCreatePage = () => {
 			: await post("/proxies", payload);
 		if (result?.success) {
 			await mutate((key) => typeof key === "string" && key.startsWith("/proxies"));
-			navigate("/proxies");
+			navigate("/settings?tab=proxies");
 		}
 	};
 

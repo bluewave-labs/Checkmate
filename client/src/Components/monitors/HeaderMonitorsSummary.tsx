@@ -9,6 +9,7 @@ import Stack from "@mui/material/Stack";
 
 import type { MonitorsSummary } from "@/Types/Monitor";
 import { useTheme } from "@mui/material";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface MonitorsSummaryProps {
 	summary: MonitorsSummary | null;
@@ -23,7 +24,7 @@ export const HeaderMonitorsSummary = ({
 	return (
 		<Stack
 			direction={{ xs: "column", md: "row" }}
-			gap={theme.spacing(8)}
+			gap={theme.spacing(LAYOUT.MD)}
 		>
 			<UpStatusBox n={summary?.upMonitors || 0} />
 			<DownStatusBox n={summary?.downMonitors || 0} />

@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 import { computeBarHeights } from "@/Utils/DataUtils";
 import { formatMs } from "@/Utils/TimeUtils";
+import { SPACING } from "@/Utils/Theme/constants";
 
 interface HistogramResponseTimeProps {
 	checks: CheckSnapshot[];
@@ -25,6 +26,7 @@ interface ResponseTimeStats {
 }
 
 const DEFAULT_HEIGHT = 50;
+const CHART_MIN_WIDTH = 100;
 
 const calculateResponseTimeStats = (checks: CheckSnapshot[]): ResponseTimeStats => {
 	if (!Array.isArray(checks) || checks.length === 0) {
@@ -68,7 +70,7 @@ export const HistogramResponseTime = ({
 			: checks;
 
 	const chartHeight = typeof height === "number" ? `${height}px` : height;
-	const gridGap = gap ?? theme.spacing(0.5);
+	const gridGap = gap ?? theme.spacing(SPACING.XS);
 
 	const statsContent = showStats && (stats.max !== null || stats.avg !== null) && (
 		<Stack
@@ -97,9 +99,13 @@ export const HistogramResponseTime = ({
 		<Stack
 			direction={statsPosition === "left" ? "row-reverse" : "row"}
 			alignItems="center"
+			flexWrap="wrap"
 			width={"100%"}
 		>
-			<Box sx={{ flex: 1 }}>
+			<Box
+				flex={1}
+				minWidth={CHART_MIN_WIDTH}
+			>
 				<Box
 					width={"100%"}
 					display={"grid"}
@@ -115,8 +121,8 @@ export const HistogramResponseTime = ({
 						const heightPct = `${barHeights[index] ?? 0}%`;
 						const barColor =
 							check.status === true
-								? theme.palette.success.light
-								: theme.palette.error.light;
+								? theme.palette.signal.success.mark
+								: theme.palette.signal.error.mark;
 						const bar = (
 							<Box
 								width={"100%"}

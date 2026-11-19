@@ -8,6 +8,7 @@ import type { CheckSnapshot } from "@/Types/Check";
 import { useTranslation } from "react-i18next";
 import { getPageSpeedPalette } from "@/Utils/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const MetricBox = ({
 	label,
@@ -24,12 +25,9 @@ const MetricBox = ({
 	return (
 		<Stack
 			direction={"row"}
-			sx={{
-				border: 1,
-				borderStyle: "solid",
-				borderColor: theme.palette.divider,
-				borderRadius: theme.shape.borderRadius,
-			}}
+			border={`1px solid ${theme.palette.divider}`}
+			borderRadius={theme.shape.borderRadius}
+			overflow="hidden"
 		>
 			<Stack
 				flex={1}
@@ -47,10 +45,6 @@ const MetricBox = ({
 			<Box
 				width={4}
 				bgcolor={theme.palette[palette].light}
-				sx={{
-					borderTopRightRadius: theme.shape.borderRadius,
-					borderBottomRightRadius: theme.shape.borderRadius,
-				}}
 			/>
 		</Stack>
 	);
@@ -73,7 +67,7 @@ export const PiePageSpeedLegend = ({ latestCheck }: { latestCheck?: CheckSnapsho
 			}
 			title={t("pages.pageSpeed.charts.legend.title")}
 		>
-			<Stack gap={theme.spacing(4)}>
+			<Stack gap={theme.spacing(LAYOUT.XS)}>
 				<MetricBox
 					label={t("pages.pageSpeed.charts.common.si")}
 					value={Math.floor((latestCheck.audits?.si?.score || 0) * 100)}

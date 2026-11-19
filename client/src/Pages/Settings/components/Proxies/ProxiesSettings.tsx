@@ -1,7 +1,11 @@
-import { BasePageWithStates } from "@/Components/design-elements";
-import { ProxiesTable } from "@/Pages/Proxies/components/ProxiesTable";
+import Stack from "@mui/material/Stack";
+import CircularProgress from "@mui/material/CircularProgress";
+import { useTheme } from "@mui/material/styles";
+import { BaseFallback, EmptyFallback, ErrorFallback } from "@/Components/design-elements";
+import { ProxiesTable } from "./ProxiesTable";
 import { Dialog } from "@/Components/inputs";
 import { HeaderCreate } from "@/Components/common";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 import { useState } from "react";
 import { useGet, useDelete } from "@/Hooks/UseApi";
@@ -9,8 +13,9 @@ import { useTranslation } from "react-i18next";
 import type { ProxyResponse } from "@/Types/Proxy";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 
-const ProxiesPage = () => {
+export const ProxiesSettings = () => {
 	const { t } = useTranslation();
+	const theme = useTheme();
 	const isAdmin = useIsAdmin();
 
 	const [selectedProxy, setSelectedProxy] = useState<ProxyResponse | null>(null);
@@ -37,20 +42,45 @@ const ProxiesPage = () => {
 		setSelectedProxy(null);
 	};
 
+	const isFetching = isLoading || isValidating;
+	const hasItems = (proxies?.length ?? 0) > 0;
+
+	if (error) {
+		return (
+			<ErrorFallback
+				title={t("common.fallback.error.title")}
+				subtitle={t("common.fallback.error.description")}
+			/>
+		);
+	}
+
+	if (isFetching && !hasItems) {
+		return (
+			<BaseFallback>
+				<CircularProgress
+					color="primary"
+					size={28}
+				/>
+			</BaseFallback>
+		);
+	}
+
+	if (!hasItems) {
+		return (
+			<EmptyFallback
+				title={t("pages.proxies.fallback.title")}
+				description={t("pages.proxies.fallback.description")}
+				actionButtonText={t("pages.proxies.fallback.actionButton")}
+				actionLink="/proxies/create"
+			/>
+		);
+	}
+
 	return (
-		<BasePageWithStates
-			headerKey="proxies"
-			page={t("pages.proxies.fallback.title")}
-			description={t("pages.proxies.fallback.description")}
-			loading={isLoading || isValidating}
-			error={!!error}
-			totalCount={proxies?.length ?? 0}
-			actionButtonText={t("pages.proxies.fallback.actionButton")}
-			actionLink="/proxies/create"
-		>
+		<Stack spacing={theme.spacing(LAYOUT.LG)}>
 			<HeaderCreate
 				path="/proxies/create"
-				isLoading={isLoading || isValidating}
+				isLoading={isFetching}
 				isAdmin={isAdmin}
 			/>
 			<ProxiesTable
@@ -65,8 +95,6 @@ const ProxiesPage = () => {
 				onCancel={handleCancel}
 				loading={isDeleting}
 			/>
-		</BasePageWithStates>
+		</Stack>
 	);
 };
-
-export default ProxiesPage;

@@ -6,17 +6,20 @@ import { Link as RouterLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { ChevronLeft, HelpCircle, FileText, Code } from "lucide-react";
-import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT, LAYOUT, SPACING } from "@/Utils/Theme/constants";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 import { useAppVersion } from "@/Hooks/useAppVersion";
 import { PulseDot } from "@/Components/design-elements/PulseDot";
 import { formatVersion } from "@/Utils/FormatUtils";
 
 import type { ReactNode } from "react";
 
+const HEADER_LINK_WIDTH = 32;
+
 const EXTERNAL_LINKS = {
 	support: "https://discord.com/invite/NAb6H3UTjK",
 	docs: "https://checkmate.so/docs",
-	changelog: "https://github.com/bluewave-labs/checkmate/releases",
+	changelog: "https://checkmate.so/changelog",
 };
 
 interface PageHeaderProps {
@@ -73,66 +76,61 @@ export const PageHeader = ({
 			direction="row"
 			alignItems="flex-start"
 			justifyContent="space-between"
-			gap={6}
-			sx={{ mb: theme.spacing(8) }}
+			gap={LAYOUT.SM}
+			mb={theme.spacing(8)}
 		>
-			<Stack gap={theme.spacing(1)}>
+			<Stack gap={theme.spacing(SPACING.SM)}>
 				{backTo && backLabel && (
 					<Box
 						component={RouterLink}
 						to={backTo}
+						display="inline-flex"
+						gap={SPACING.XS}
+						color={theme.palette.text.secondary}
+						fontSize={typographyLevels.base}
+						mb={theme.spacing(1)}
+						alignItems={"center"}
 						sx={{
-							display: "inline-flex",
-							alignItems: "center",
-							gap: 0.5,
 							textDecoration: "none",
-							color: theme.palette.text.secondary,
-							fontSize: 13,
-							mb: theme.spacing(1),
 							"&:hover": { color: theme.palette.text.primary },
 						}}
 					>
 						<ChevronLeft
 							size={14}
-							strokeWidth={1.8}
+							strokeWidth={1.5}
 						/>
 						{backLabel}
 					</Box>
 				)}
 				<Typography
-					sx={{
-						fontSize: 26,
-						fontWeight: 400,
-						color: theme.palette.text.primary,
-						lineHeight: 1.15,
-						letterSpacing: "-0.02em",
-					}}
+					component="h1"
+					fontSize={typographyLevels.xxl}
+					fontWeight={500}
+					color={theme.palette.text.primary}
+					lineHeight={1.3}
+					letterSpacing="-0.02em"
 				>
 					{title}
 				</Typography>
 				{description && (
 					<Typography
-						sx={{
-							fontSize: 14,
-							color: theme.palette.text.secondary,
-							lineHeight: 1.55,
-							maxWidth: "108ch",
-						}}
+						fontSize={typographyLevels.base}
+						color={theme.palette.text.secondary}
+						lineHeight={1.5}
+						maxWidth="108ch"
 					>
 						{description}
 					</Typography>
 				)}
 			</Stack>
 			<Box
-				sx={{
-					display: "inline-flex",
-					alignItems: "center",
-					border: `1px solid ${theme.palette.divider}`,
-					borderRadius: 1,
-					overflow: "hidden",
-					backgroundColor: theme.palette.background.paper,
-					flexShrink: 0,
-				}}
+				display="inline-flex"
+				border={`1px solid ${theme.palette.divider}`}
+				borderRadius={theme.shape.borderRadius}
+				bgcolor={theme.palette.background.paper}
+				alignItems={"center"}
+				overflow={"hidden"}
+				flexShrink={0}
 			>
 				{showUpdate && (
 					<Tooltip title={t("components.pageHeader.update.tooltip")}>
@@ -144,12 +142,12 @@ export const PageHeader = ({
 							display="inline-flex"
 							alignItems="center"
 							height={INPUT_BASE_HEIGHT}
-							gap={theme.spacing(1)}
+							gap={theme.spacing(SPACING.SM)}
 							pl={theme.spacing(3)}
 							pr={theme.spacing(5)}
 							borderRight={`1px solid ${theme.palette.divider}`}
 							color={theme.palette.text.primary}
-							fontSize={13}
+							fontSize={typographyLevels.base}
 							sx={{
 								textDecoration: "none",
 								whiteSpace: "nowrap",
@@ -178,17 +176,16 @@ export const PageHeader = ({
 							href={EXTERNAL_LINKS[item.key]}
 							target="_blank"
 							rel="noopener noreferrer"
+							alignItems={"center"}
+							justifyContent="center"
+							display="inline-flex"
+							width={HEADER_LINK_WIDTH}
+							height={INPUT_BASE_HEIGHT}
+							color={theme.palette.text.secondary}
+							borderRight={
+								idx < linkItems.length - 1 ? `1px solid ${theme.palette.divider}` : "none"
+							}
 							sx={{
-								display: "inline-flex",
-								alignItems: "center",
-								justifyContent: "center",
-								width: 36,
-								height: INPUT_BASE_HEIGHT,
-								color: theme.palette.text.secondary,
-								borderRight:
-									idx < linkItems.length - 1
-										? `1px solid ${theme.palette.divider}`
-										: "none",
 								"&:hover": {
 									backgroundColor: theme.palette.action.hover,
 									color: theme.palette.text.primary,

@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { getStatusPagePublicPath, getStatusPagePublicUrl } from "@/Utils/statusPageUrl";
 
 import { type StatusPage } from "@/Types/StatusPage";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface StatusPagesTableProps {
 	data: StatusPage[];
@@ -82,7 +83,7 @@ export const StatusPagesTable = ({
 							direction="row"
 							alignItems="center"
 							justifyContent="center"
-							gap={theme.spacing(2)}
+							gap={theme.spacing(LAYOUT.XXS)}
 							paddingLeft={theme.spacing(2)}
 							paddingRight={theme.spacing(2)}
 							onClick={(e) => handleUrlClick(e, row)}

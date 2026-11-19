@@ -166,6 +166,16 @@
 			"copy": "In die Zwischenablage kopieren",
 			"copied": "In die Zwischenablage kopiert",
 			"copyFailed": "Kopieren fehlgeschlagen. Markieren Sie den Text und kopieren Sie ihn manuell."
+		},
+		"filters": {
+			"any": "Beliebig",
+			"state": "Zustand"
+		},
+		"fallback": {
+			"error": {
+				"title": "Etwas ist schiefgelaufen",
+				"description": "Bitte versuchen Sie es später erneut"
+			}
 		}
 	},
 	"components": {
@@ -179,6 +189,10 @@
 				"invalidFileSize": "Dateigröße zu groß!",
 				"invalidFileFormat": "Nicht unterstützes Dateiformat"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} ausgewählt",
+			"selectedCount_other": "{{count}} ausgewählt"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "Öffentlicher Link"
@@ -1508,6 +1522,8 @@
 				"monitoring": "Überwachung",
 				"email": "E-Mail",
 				"integrations": "Integrationen",
+				"tags": "Tags",
+				"proxies": "Proxys",
 				"data": "Daten",
 				"connect": "Checkmate Connect"
 			},

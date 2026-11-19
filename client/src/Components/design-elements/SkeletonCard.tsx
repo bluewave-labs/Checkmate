@@ -1,5 +1,5 @@
 import { Box, Stack, useTheme } from "@mui/material";
-import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT, LAYOUT } from "@/Utils/Theme/constants";
 
 interface SkeletonCardProps {
 	width?: number | string | { xs?: number | string; md?: number | string };
@@ -38,7 +38,7 @@ export const SkeletonCard = ({
 				? "0 8px 30px rgba(0,0,0,.3), 0 0 0 1px rgba(255,255,255,.05) inset"
 				: "0 8px 30px rgba(0,0,0,.08), 0 0 0 1px rgba(0,0,0,.05) inset",
 		display: "flex",
-		gap: theme.spacing(5),
+		gap: theme.spacing(LAYOUT.XS_PLUS),
 		alignItems: "center",
 		padding: theme.spacing(5),
 	};
@@ -96,7 +96,7 @@ export const SkeletonCard = ({
 				{/* Front card (now at bottom) */}
 				<Box sx={cardStyle}>
 					<Box sx={blockStyle} />
-					<Stack sx={{ flex: 1, gap: "12px" }}>
+					<Stack sx={{ flex: 1, gap: theme.spacing(LAYOUT.SM) }}>
 						{/* Empty space to maintain card height */}
 					</Stack>
 				</Box>
@@ -114,7 +114,7 @@ export const SkeletonCard = ({
 					aria-hidden="true"
 				>
 					<Box sx={blockStyle} />
-					<Stack sx={{ flex: 1, gap: "12px" }}>
+					<Stack sx={{ flex: 1, gap: theme.spacing(LAYOUT.SM) }}>
 						<Box sx={{ ...lineStyle, width: "60%" }} />
 						<Box sx={{ ...lineStyle, width: "80%" }} />
 						<Box sx={{ ...lineStyle, width: "40%" }} />
@@ -136,7 +136,7 @@ export const SkeletonCard = ({
 					aria-hidden="true"
 				>
 					<Box sx={blockStyle} />
-					<Stack sx={{ flex: 1, gap: "12px" }}>
+					<Stack sx={{ flex: 1, gap: theme.spacing(LAYOUT.SM) }}>
 						<Box sx={{ ...lineStyle, width: "60%" }} />
 						<Box sx={{ ...lineStyle, width: "80%" }} />
 						<Box sx={{ ...lineStyle, width: "40%" }} />

@@ -4,6 +4,7 @@ import { Upload, X } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { IconButton } from "@/Components/inputs";
+import { SPACING } from "@/Utils/Theme/constants";
 
 interface FileObject {
 	src: string;
@@ -73,13 +74,16 @@ export const ImageUpload = ({
 			{displaySrc ? (
 				<Stack
 					alignItems="center"
-					gap={1}
+					gap={SPACING.SM}
 				>
 					<Box
 						component="img"
 						src={displaySrc}
 						alt="Preview"
-						sx={{ maxWidth: 250, maxHeight: 250, objectFit: "contain", borderRadius: 1 }}
+						borderRadius={theme.shape.borderRadius}
+						maxWidth={250}
+						maxHeight={250}
+						sx={{ objectFit: "contain" }}
 					/>
 					<IconButton
 						size="small"
@@ -103,15 +107,15 @@ export const ImageUpload = ({
 					}}
 					alignItems="center"
 					justifyContent="center"
-					gap={1}
+					gap={SPACING.SM}
+					position={"relative"}
+					width="100%"
+					minHeight={150}
+					border="2px dashed"
+					borderRadius={theme.shape.borderRadius}
+					borderColor={isDragging ? theme.palette.primary.main : theme.palette.divider}
+					bgcolor={isDragging ? theme.palette.action.hover : "transparent"}
 					sx={{
-						position: "relative",
-						width: "100%",
-						minHeight: 150,
-						border: "2px dashed",
-						borderRadius: 1,
-						borderColor: isDragging ? theme.palette.primary.main : theme.palette.divider,
-						backgroundColor: isDragging ? theme.palette.action.hover : "transparent",
 						transition: "0.2s",
 						cursor: "pointer",
 						"&:hover": {

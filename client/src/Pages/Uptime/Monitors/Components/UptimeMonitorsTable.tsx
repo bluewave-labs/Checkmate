@@ -7,6 +7,7 @@ import {
 	Pagination,
 	StatusLabel,
 	ColoredLabel,
+	SignalLabel,
 } from "@/Components/design-elements";
 import { HeatmapResponseTime, HistogramResponseTime } from "@/Components/common";
 import { ActionsMenu } from "@/Components/actions-menu";
@@ -25,9 +26,10 @@ import type { RootState } from "@/Types/state";
 import { Checkbox } from "@/Components/inputs";
 import type { Tag } from "@/Types/Tag";
 import type { SortOrder } from "@/Types/Query";
-import { SPACING } from "@/Utils/Theme/constants";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { getNextMonitorSort, getUptimePercentageColor } from "@/Utils/MonitorUtils";
 import { formatPercentage } from "@/Utils/FormatUtils";
+import { toSignalKey } from "@/Utils/Theme/Palette";
 
 interface MonitorTableProps {
 	monitors: Monitor[];
@@ -210,7 +212,7 @@ export const MonitorTable = ({
 				mobileLabel: t("common.table.headers.name"),
 				content: (
 					<Stack
-						gap={theme.spacing(4)}
+						gap={theme.spacing(LAYOUT.XS)}
 						direction={"row"}
 						alignItems={"center"}
 						onClick={(e) => handleSort(e, "name")}
@@ -230,7 +232,7 @@ export const MonitorTable = ({
 				mobileLabel: t("common.table.headers.status"),
 				content: (
 					<Stack
-						gap={theme.spacing(4)}
+						gap={theme.spacing(LAYOUT.XS)}
 						direction={"row"}
 						justifyContent={"center"}
 						alignItems={"center"}
@@ -264,12 +266,11 @@ export const MonitorTable = ({
 					const uptimePercentage = row.uptimePercentage ?? 0;
 					const formattedPercentage = formatPercentage(uptimePercentage);
 					const paletteKey = getUptimePercentageColor(uptimePercentage);
-					const color = theme.palette[paletteKey].main;
 					return (
 						<Stack alignItems={"center"}>
-							<ColoredLabel
+							<SignalLabel
 								text={formattedPercentage}
-								color={color}
+								signal={toSignalKey(paletteKey)}
 							/>
 						</Stack>
 					);
@@ -307,7 +308,7 @@ export const MonitorTable = ({
 				mobileLabel: t("common.table.headers.type"),
 				content: (
 					<Stack
-						gap={theme.spacing(4)}
+						gap={theme.spacing(LAYOUT.XS)}
 						direction={"row"}
 						justifyContent={"center"}
 						alignItems={"center"}
@@ -347,6 +348,8 @@ export const MonitorTable = ({
 					navigate(`/uptime/${row.id}`);
 				}}
 				isRowSelected={(row) => isRowSelected(row.id)}
+				sortedColumnId={sortField || undefined}
+				sortDirection={sortOrder}
 			/>
 			<Pagination
 				component="div"

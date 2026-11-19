@@ -37,7 +37,7 @@ export const MonitorStatusCard = ({ summary }: MonitorStatusCardProps) => {
 						gap={theme.spacing(SPACING.XS)}
 					>
 						<Typography
-							fontSize={typographyLevels.xxl}
+							fontSize={typographyLevels.xxxl}
 							fontWeight={500}
 							color={theme.palette.text.primary}
 						>

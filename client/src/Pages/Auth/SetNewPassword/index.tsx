@@ -13,6 +13,7 @@ import { usePost } from "@/Hooks/UseApi";
 import { useDispatch } from "react-redux";
 import { setAuthState } from "@/Features/Auth/authSlice";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const SetNewPasswordPage = () => {
 	const theme = useTheme();
@@ -78,7 +79,7 @@ const SetNewPasswordPage = () => {
 					placeholder={t("pages.auth.common.form.option.password.placeholder")}
 				/>
 
-				<Stack gap={theme.spacing(4)}>
+				<Stack gap={theme.spacing(LAYOUT.XS)}>
 					<BulletPointCheck
 						text={t("pages.auth.common.passwordRules.length")}
 						variant={getVariant(hasLength)}

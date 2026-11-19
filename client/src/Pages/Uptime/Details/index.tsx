@@ -31,6 +31,7 @@ import { t } from "i18next";
 import { Typography } from "@mui/material";
 import type { DateRange } from "@/Types/Query";
 import { useFormatDate } from "@/Hooks/useFormatDate";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface CertificateResponse {
 	certificateDate: string;
@@ -216,7 +217,7 @@ const UptimeDetailsPage = () => {
 
 			<Stack
 				direction={{ xs: "column", md: "row" }}
-				gap={theme.spacing(8)}
+				gap={theme.spacing(LAYOUT.MD)}
 			>
 				<HistogramStatus
 					title={t("common.charts.labels.uptime")}

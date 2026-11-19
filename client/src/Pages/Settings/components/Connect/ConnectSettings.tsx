@@ -52,7 +52,7 @@ export const ConnectSettings = () => {
 		isSuperAdmin && status.enrolled && status.backup.recoveryKeySet && backupToolsReady;
 
 	return (
-		<Stack gap={theme.spacing(LAYOUT.MD)}>
+		<Stack gap={theme.spacing(LAYOUT.LG)}>
 			{!isSuperAdmin && (
 				<Typography color={theme.palette.text.secondary}>
 					{t("pages.settings.form.connect.superadminOnly")}

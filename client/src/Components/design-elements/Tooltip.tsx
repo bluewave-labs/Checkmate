@@ -2,9 +2,9 @@ import MuiTooltip from "@mui/material/Tooltip";
 import { useTheme } from "@mui/material/styles";
 import { mergeSlotProps } from "@mui/material/utils";
 import { Info } from "lucide-react";
-
+import { LAYOUT } from "@/Utils/Theme/constants";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 import type { TooltipProps } from "@mui/material/Tooltip";
-
 type StyledTooltipProps = TooltipProps;
 
 export const Tooltip = ({
@@ -13,8 +13,7 @@ export const Tooltip = ({
 	...props
 }: StyledTooltipProps) => {
 	const theme = useTheme();
-	const backgroundColor =
-		theme.palette.mode === "dark" ? theme.palette.grey[900] : theme.palette.grey[800];
+	const backgroundColor = theme.palette.neutral.tooltip;
 
 	return (
 		<MuiTooltip
@@ -26,10 +25,11 @@ export const Tooltip = ({
 					sx: {
 						backgroundColor,
 						color: theme.palette.common.white,
-						fontSize: "13px",
-						padding: `${theme.spacing(4)} ${theme.spacing(5)}`,
-						borderRadius: `${theme.shape.borderRadius}px`,
-						boxShadow: theme.shadows[6],
+						fontSize: typographyLevels.base,
+						py: LAYOUT.XS,
+						px: LAYOUT.SM,
+						borderRadius: theme.shape.borderRadius,
+						boxShadow: "none",
 					},
 				}),
 				arrow: mergeSlotProps(slotProps?.arrow, { sx: { color: backgroundColor } }),

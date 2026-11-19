@@ -7,6 +7,7 @@ import Stack from "@mui/material/Stack";
 import { FieldLabel } from "./FieldLabel";
 import Box from "@mui/material/Box";
 import type { ResponsiveStyleValue } from "@mui/system";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface SliderInputProps extends SliderProps {
 	sx?: SliderProps["sx"];
@@ -26,7 +27,7 @@ export const SliderInput = forwardRef<HTMLSpanElement, SliderInputProps>(
 
 		return (
 			<Stack
-				gap={theme.spacing(8)}
+				gap={theme.spacing(LAYOUT.MD)}
 				direction={"row"}
 				alignItems={"center"}
 			>
