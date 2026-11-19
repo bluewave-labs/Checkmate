@@ -58,7 +58,7 @@ export const ConnectSettings = () => {
 					{t("pages.settings.form.connect.superadminOnly")}
 				</Typography>
 			)}
-			{isSuperAdmin && status.enrolled && <ConnectGetStartedBox />}
+			{isSuperAdmin && !status.enrolled && <ConnectGetStartedBox />}
 			<ConnectStatusBox status={status} />
 			{isSuperAdmin && !status.enrolled && <ConnectEnrollBox onEnrolled={refetch} />}
 			{status.enrolled && (
