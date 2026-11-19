@@ -328,7 +328,7 @@ export const BaseAuthPage = ({
 				sx={{
 					background: "linear-gradient(135deg, #0c4d3d 0%, #155a48 60%, #0f5d4a 100%)",
 					color: "#fff",
-					p: theme.spacing(LAYOUT.XXL),
+					p: theme.spacing(LAYOUT.XXXL),
 					position: "relative",
 					overflow: "hidden",
 					"&::after": {
