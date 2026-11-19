@@ -1,3 +1,10 @@
+import js from "@eslint/js";
+import globals from "globals";
+import react from "eslint-plugin-react";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
+import tseslint from "typescript-eslint";
+
 // MUI sx keys that have a native (system) prop equivalent.
 // Flagged when found inside an sx={{ ... }} object literal — see frontend-conventions.md rule #1.
 const SX_NATIVE_EQUIVALENT_KEYS = [
@@ -115,7 +122,7 @@ const DATE_FORMATTING_RESTRICTIONS = [
 // dayjs is for pickers and maintenance-window form values, never display. New files that
 // need it are added to DAYJS_ALLOWED_FILES, so the exception is visible in review.
 const DAYJS_IMPORT_MESSAGE =
-	"dayjs is restricted to pickers and maintenance forms. Format displayed dates with useFormatDate() from @/Utils/TimeUtils, or add the file to DAYJS_ALLOWED_FILES in .eslintrc.cjs.";
+	"dayjs is restricted to pickers and maintenance forms. Format displayed dates with useFormatDate() from @/Utils/TimeUtils, or add the file to DAYJS_ALLOWED_FILES in eslint.config.js.";
 const DAYJS_ALLOWED_FILES = [
 	"src/Utils/TimeUtils.ts",
 	"src/Components/inputs/DatePicker.tsx",
@@ -140,81 +147,119 @@ const FRONTEND_CONVENTION_RULES = {
 	],
 };
 
-module.exports = {
-	root: true,
-	env: { browser: true, es2020: true },
-	extends: [
-		"eslint:recommended",
-		"plugin:react/recommended",
-		"plugin:react/jsx-runtime",
-		"plugin:react-hooks/recommended",
-	],
-	ignorePatterns: ["dist", ".eslintrc.cjs"],
-	parserOptions: { ecmaVersion: "latest", sourceType: "module" },
-	settings: { react: { version: "18.2" } },
-	plugins: ["react-refresh"],
-	rules: {
-		"react/jsx-no-target-blank": "off",
-		"react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
-		"react/no-unescaped-entities": "off",
-		...FRONTEND_CONVENTION_RULES,
-		"no-restricted-imports": ["warn", dayjsImportRestriction()],
+const ICON_MESSAGE =
+	"Render lucide icons through the Icon design element: <Icon icon={Name} />, not <Name />.";
+const ICON_EXEMPT_FILES = [
+	"src/Pages/StatusPage/Status/themes/**",
+	"src/Components/whats-new/**",
+];
+const noDirectLucideIcon = {
+	meta: { type: "problem", schema: [], messages: { useIcon: ICON_MESSAGE } },
+	create(context) {
+		const lucideNames = new Set();
+		return {
+			ImportDeclaration(node) {
+				if (node.source.value !== "lucide-react") return;
+				if (node.importKind === "type") return;
+				for (const specifier of node.specifiers) {
+					if (specifier.importKind === "type") continue;
+					lucideNames.add(specifier.local.name);
+				}
+			},
+			JSXOpeningElement(node) {
+				if (node.name.type !== "JSXIdentifier") return;
+				if (!lucideNames.has(node.name.name)) return;
+				context.report({ node, messageId: "useIcon" });
+			},
+		};
 	},
-	globals: {
-		__APP_VERSION__: "readonly",
-		process: "readonly",
-	},
-	overrides: [
-		{
-			files: ["**/*.ts", "**/*.tsx"],
-			parser: "@typescript-eslint/parser",
-			parserOptions: { ecmaVersion: "latest", sourceType: "module" },
-			extends: [
-				"eslint:recommended",
-				"plugin:@typescript-eslint/recommended",
-				"plugin:react/recommended",
-				"plugin:react/jsx-runtime",
-				"plugin:react-hooks/recommended",
-			],
-			plugins: ["@typescript-eslint", "react-refresh"],
-			rules: {
-				"react/jsx-no-target-blank": "off",
-				"react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
-				"react/no-unescaped-entities": "off",
-				"no-unused-vars": "off",
-				"@typescript-eslint/no-unused-vars": [
-					"warn",
-					{ argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
-				],
-				// TS handles these; eslint duplicates create noise on existing files.
-				"@typescript-eslint/no-explicit-any": "off",
-				"@typescript-eslint/ban-ts-comment": "off",
-				"@typescript-eslint/ban-types": "off",
-				"@typescript-eslint/no-empty-function": "off",
-				"@typescript-eslint/no-empty-interface": "off",
-				"@typescript-eslint/no-non-null-assertion": "off",
-				...FRONTEND_CONVENTION_RULES,
-				// Type-only imports (e.g. the Dayjs type) don't format anything
-				"no-restricted-imports": "off",
-				"@typescript-eslint/no-restricted-imports": [
-					"warn",
-					dayjsImportRestriction({ allowTypeImports: true }),
-				],
-			},
-		},
-		{
-			files: DAYJS_ALLOWED_FILES,
-			rules: {
-				"no-restricted-imports": "off",
-				"@typescript-eslint/no-restricted-imports": "off",
-			},
-		},
-		{
-			// The one place allowed to format dates directly
-			files: ["src/Utils/TimeUtils.ts"],
-			rules: {
-				"no-restricted-syntax": ["warn", ...BASE_RESTRICTED_SYNTAX],
-			},
-		},
-	],
 };
+const checkmate = { rules: { "no-direct-lucide-icon": noDirectLucideIcon } };
+
+const REACT_RULES = {
+	"react/jsx-no-target-blank": "off",
+	"react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+	"react/no-unescaped-entities": "off",
+};
+
+const TYPESCRIPT_FILES = ["**/*.ts", "**/*.tsx"];
+
+export default [
+	{
+		ignores: ["dist/**"],
+	},
+	{
+		files: ["**/*.{js,jsx,ts,tsx}"],
+		languageOptions: {
+			ecmaVersion: "latest",
+			sourceType: "module",
+			globals: {
+				...globals.browser,
+				...globals.es2020,
+				__APP_VERSION__: "readonly",
+				process: "readonly",
+			},
+		},
+		settings: { react: { version: "18.2" } },
+	},
+	js.configs.recommended,
+	react.configs.flat.recommended,
+	react.configs.flat["jsx-runtime"],
+	{
+		plugins: { "react-hooks": reactHooks, "react-refresh": reactRefresh },
+		rules: {
+			...reactHooks.configs.recommended.rules,
+			...REACT_RULES,
+			...FRONTEND_CONVENTION_RULES,
+			"no-restricted-imports": ["warn", dayjsImportRestriction()],
+		},
+	},
+	...tseslint.configs.recommended.map((config) => ({
+		...config,
+		files: TYPESCRIPT_FILES,
+	})),
+	{
+		files: TYPESCRIPT_FILES,
+		rules: {
+			"no-unused-vars": "off",
+			"@typescript-eslint/no-unused-vars": [
+				"warn",
+				{ argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+			],
+			// TS handles these; eslint duplicates create noise on existing files.
+			"@typescript-eslint/no-explicit-any": "off",
+			"@typescript-eslint/ban-ts-comment": "off",
+			"@typescript-eslint/no-empty-object-type": "off",
+			"@typescript-eslint/no-unsafe-function-type": "off",
+			"@typescript-eslint/no-wrapper-object-types": "off",
+			"@typescript-eslint/no-empty-function": "off",
+			"@typescript-eslint/no-non-null-assertion": "off",
+			// Type-only imports (e.g. the Dayjs type) don't format anything
+			"no-restricted-imports": "off",
+			"@typescript-eslint/no-restricted-imports": [
+				"warn",
+				dayjsImportRestriction({ allowTypeImports: true }),
+			],
+		},
+	},
+	{
+		files: ["src/**/*.{jsx,tsx}"],
+		ignores: ICON_EXEMPT_FILES,
+		plugins: { checkmate },
+		rules: { "checkmate/no-direct-lucide-icon": "error" },
+	},
+	{
+		files: DAYJS_ALLOWED_FILES,
+		rules: {
+			"no-restricted-imports": "off",
+			"@typescript-eslint/no-restricted-imports": "off",
+		},
+	},
+	{
+		// The one place allowed to format dates directly
+		files: ["src/Utils/TimeUtils.ts"],
+		rules: {
+			"no-restricted-syntax": ["warn", ...BASE_RESTRICTED_SYNTAX],
+		},
+	},
+];
