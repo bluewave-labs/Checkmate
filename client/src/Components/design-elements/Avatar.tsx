@@ -1,6 +1,5 @@
 import { Avatar as MuiAvatar } from "@mui/material";
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material";
 import type { RootState } from "@/Types/state";
 
@@ -17,19 +16,15 @@ export const Avatar = ({ src, small, sx, onClick = () => {} }: AvatarProps) => {
 	if (!user) return null;
 
 	const style = small ? { width: 32, height: 32 } : { width: 64, height: 64 };
-
-	const [image, setImage] = useState<string>();
-	useEffect(() => {
-		if (user.avatarImage) {
-			setImage(`data:image/png;base64,${user.avatarImage}`);
-		}
-	}, [user?.avatarImage]);
+	const image = user.avatarImage
+		? `data:image/png;base64,${user.avatarImage}`
+		: undefined;
 
 	return (
 		<MuiAvatar
 			onClick={onClick}
 			alt={`${user?.firstName} ${user?.lastName}`}
-			src={src ? src : user?.avatarImage ? image : undefined}
+			src={src || image}
 			sx={{
 				color: theme.palette.primary.contrastText,
 				fontSize: small ? "16px" : "22px",
