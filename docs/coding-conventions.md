@@ -140,7 +140,7 @@ The theme exposes tokens for every kind of magic value. Use them. Reserve raw nu
 ### Token sources
 
 - **Spacing / layout** — `client/src/Utils/Theme/constants.ts`
-  - `LAYOUT.XXS = 2` · `LAYOUT.XS = 4` · `LAYOUT.XS_PLUS = 5` · `LAYOUT.SM = 6` · `LAYOUT.SM_PLUS = 7` · `LAYOUT.MD = 8` · `LAYOUT.LG = 10` · `LAYOUT.XL = 12` · `LAYOUT.XXL = 16`
+  - `LAYOUT.XXS = 2` · `LAYOUT.XS = 4` · `LAYOUT.XS_PLUS = 5` · `LAYOUT.SM = 6` · `LAYOUT.SM_PLUS = 7` · `LAYOUT.MD = 8` · `LAYOUT.LG = 10` · `LAYOUT.XL = 12` · `LAYOUT.XXL = 16` · `LAYOUT.XXXL = 28`
   - `SPACING` for `theme.spacing(...)` multipliers
 - **Typography sizes** — `client/src/Utils/Theme/Palette.ts` → `typographyLevels`
   - `s / sm / m / l / xl / xxl / xxxl` (rem values; 11, 12, 13, 14, 18, 20, 24 px)
