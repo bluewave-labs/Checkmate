@@ -29,6 +29,7 @@ import { useSelector, useDispatch } from "react-redux";
 import DummyChart from "@/Pages/Settings/DummyChart";
 import { HeartbeatKeyBox } from "@/Pages/Settings/components/HeartbeatKeyBox";
 import { ConnectSettings } from "@/Pages/Settings/components/Connect/ConnectSettings";
+import { CONNECT_SITE_URL } from "@/Pages/Settings/components/Connect/constants";
 import { TagsSettings } from "@/Pages/Settings/components/Tags/TagsSettings";
 import { ProxiesSettings } from "@/Pages/Settings/components/Proxies/ProxiesSettings";
 import { useGet, usePatch, usePost, useLazyGet } from "@/Hooks/UseApi";
@@ -1194,7 +1195,7 @@ export const SettingsPage = () => {
 														{t("pages.settings.form.importExportMonitors.connectTabLink")}
 													</Link>
 													<Link
-														href="https://checkmateconnect.io"
+														href={CONNECT_SITE_URL}
 														target="_blank"
 														rel="noopener noreferrer"
 													>
