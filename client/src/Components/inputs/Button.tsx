@@ -7,15 +7,7 @@ import { typographyLevels } from "@/Utils/Theme/Palette";
 type ButtonInputProps = ButtonProps &
 	Pick<React.AnchorHTMLAttributes<HTMLAnchorElement>, "target" | "rel">;
 
-const PALETTE_COLORS = [
-	"primary",
-	"secondary",
-	"error",
-	"warning",
-	"info",
-	"success",
-] as const;
-type PaletteColor = (typeof PALETTE_COLORS)[number];
+type PaletteColor = "primary" | "secondary" | "error" | "warning" | "info" | "success";
 
 export const ButtonInput = ({ sx, ...props }: ButtonInputProps) => {
 	const theme = useTheme();

@@ -473,7 +473,7 @@ export const SettingsPage = () => {
 			await importMonitors("/monitors/import/json", { monitors });
 
 			event.target.value = "";
-		} catch (error) {
+		} catch {
 			toastError("Error parsing JSON file. Please check the file format.");
 			event.target.value = "";
 		}
