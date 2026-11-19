@@ -147,6 +147,35 @@ const FRONTEND_CONVENTION_RULES = {
 	],
 };
 
+const ICON_MESSAGE =
+	"Render lucide icons through the Icon design element: <Icon icon={Name} />, not <Name />.";
+const ICON_EXEMPT_FILES = [
+	"src/Pages/StatusPage/Status/themes/**",
+	"src/Components/whats-new/**",
+];
+const noDirectLucideIcon = {
+	meta: { type: "problem", schema: [], messages: { useIcon: ICON_MESSAGE } },
+	create(context) {
+		const lucideNames = new Set();
+		return {
+			ImportDeclaration(node) {
+				if (node.source.value !== "lucide-react") return;
+				if (node.importKind === "type") return;
+				for (const specifier of node.specifiers) {
+					if (specifier.importKind === "type") continue;
+					lucideNames.add(specifier.local.name);
+				}
+			},
+			JSXOpeningElement(node) {
+				if (node.name.type !== "JSXIdentifier") return;
+				if (!lucideNames.has(node.name.name)) return;
+				context.report({ node, messageId: "useIcon" });
+			},
+		};
+	},
+};
+const checkmate = { rules: { "no-direct-lucide-icon": noDirectLucideIcon } };
+
 const REACT_RULES = {
 	"react/jsx-no-target-blank": "off",
 	"react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
@@ -212,6 +241,12 @@ export default [
 				dayjsImportRestriction({ allowTypeImports: true }),
 			],
 		},
+	},
+	{
+		files: ["src/**/*.{jsx,tsx}"],
+		ignores: ICON_EXEMPT_FILES,
+		plugins: { checkmate },
+		rules: { "checkmate/no-direct-lucide-icon": "error" },
 	},
 	{
 		files: DAYJS_ALLOWED_FILES,
