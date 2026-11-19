@@ -44,7 +44,6 @@
 		"html2canvas": "^1.4.1",
 		"human-interval": "2.0.1",
 		"i18next": "25.4.2",
-		"joi": "17.13.4",
 		"lucide-react": "^0.562.0",
 		"maplibre-gl": "^5.19.0",
 		"mui-color-input": "^7.0.0",

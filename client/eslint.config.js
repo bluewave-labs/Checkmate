@@ -132,7 +132,6 @@ const DAYJS_ALLOWED_FILES = [
 	"src/Pages/Maintenance/MaintenanceWindowTable.tsx",
 	"src/Pages/Maintenance/create/index.tsx",
 	"src/Validation/maintenanceWindow.ts",
-	"src/Validation/validation.js",
 ];
 const dayjsImportRestriction = (extra = {}) => ({
 	paths: [{ name: "dayjs", message: DAYJS_IMPORT_MESSAGE, ...extra }],
