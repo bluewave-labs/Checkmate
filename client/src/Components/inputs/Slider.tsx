@@ -7,7 +7,10 @@ import Stack from "@mui/material/Stack";
 import { FieldLabel } from "./FieldLabel";
 import Box from "@mui/material/Box";
 import type { ResponsiveStyleValue } from "@mui/system";
-import { LAYOUT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT, LAYOUT } from "@/Utils/Theme/constants";
+
+const TRACK_HEIGHT = 4;
+const TRACK_PADDING = (INPUT_BASE_HEIGHT - TRACK_HEIGHT) / 2;
 
 interface SliderInputProps extends SliderProps {
 	sx?: SliderProps["sx"];
@@ -37,17 +40,17 @@ export const SliderInput = forwardRef<HTMLSpanElement, SliderInputProps>(
 					ref={ref}
 					sx={[
 						{
-							height: 4,
-							padding: "13px 0",
+							height: TRACK_HEIGHT,
+							padding: `${TRACK_PADDING}px 0`,
 							color: theme.palette.primary.main,
 							"& .MuiSlider-rail": {
-								height: 4,
+								height: TRACK_HEIGHT,
 								borderRadius: "999px",
 								backgroundColor: theme.palette.grey[300],
 								opacity: 1,
 							},
 							"& .MuiSlider-track": {
-								height: 4,
+								height: TRACK_HEIGHT,
 								borderRadius: "999px",
 								backgroundColor: theme.palette.primary.main,
 								border: "none",

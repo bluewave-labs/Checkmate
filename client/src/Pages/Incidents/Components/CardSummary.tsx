@@ -59,7 +59,7 @@ export const SummaryCard = ({
 	return (
 		<BaseBox
 			sx={{ ...sx }}
-			padding={8}
+			padding={theme.spacing(LAYOUT.MD)}
 			flex={1}
 		>
 			<Stack

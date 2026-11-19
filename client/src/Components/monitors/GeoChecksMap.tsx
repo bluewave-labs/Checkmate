@@ -8,7 +8,7 @@ import { formatStatusCode } from "@/Utils/statusCode";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { formatMs } from "@/Utils/TimeUtils";
 import { useFormatDate } from "@/Hooks/useFormatDate";
-import { LAYOUT } from "@/Utils/Theme/constants";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 
 interface GeoChecksMapProps {
@@ -44,7 +44,7 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 					color: theme.palette.text.primary,
 					background: "transparent",
 					fontSize: typographyLevels.xxl,
-					padding: "4px",
+					padding: theme.spacing(LAYOUT.XXS),
 					"&:hover": {
 						backgroundColor: theme.palette.action.hover,
 					},
@@ -157,7 +157,7 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 								>
 									{selectedCheck.location.city}, {selectedCheck.location.country}
 								</Typography>
-								<Stack spacing={0.5}>
+								<Stack spacing={theme.spacing(SPACING.XS)}>
 									<Typography variant="body2">
 										<Typography
 											component="span"
@@ -188,7 +188,7 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 									<Typography
 										variant="caption"
 										color="text.secondary"
-										sx={{ mt: 0.5 }}
+										sx={{ mt: theme.spacing(SPACING.XS) }}
 									>
 										{formatDate(selectedCheck.createdAt, "dateTime")}
 									</Typography>

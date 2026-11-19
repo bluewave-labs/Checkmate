@@ -91,7 +91,7 @@ export const StarPrompt = ({
 
 				<Typography
 					sx={{
-						mb: 1,
+						mb: theme.spacing(SPACING.SM),
 						px: theme.spacing(LAYOUT.XS),
 					}}
 				>

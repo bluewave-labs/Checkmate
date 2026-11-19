@@ -2,6 +2,7 @@ import { forwardRef } from "react";
 import Switch from "@mui/material/Switch";
 import type { SwitchProps } from "@mui/material/Switch";
 import { useTheme } from "@mui/material/styles";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 
 interface SwitchComponentProps extends SwitchProps {
 	dualOption?: boolean;
@@ -24,11 +25,14 @@ export const SwitchComponent = forwardRef<HTMLInputElement, SwitchComponentProps
 					{
 						width: 36,
 						height: 20,
-						padding: "0 6px 0 0",
+						padding: `0 ${theme.spacing(SPACING.XXL)} 0 0`,
 						boxSizing: "content-box",
 						overflow: "visible",
 						"& .MuiSwitch-switchBase": {
-							padding: props.size === "small" ? "4px" : "2px",
+							padding:
+								props.size === "small"
+									? theme.spacing(LAYOUT.XXS)
+									: theme.spacing(SPACING.SM),
 							"&.Mui-checked": {
 								transform: "translateX(16px)",
 								color: "#fff",

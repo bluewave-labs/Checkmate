@@ -168,7 +168,7 @@ export const ImageUpload = ({
 				<Typography
 					variant="caption"
 					color="error"
-					sx={{ mt: 1 }}
+					sx={{ mt: theme.spacing(SPACING.SM) }}
 				>
 					{displayError}
 				</Typography>

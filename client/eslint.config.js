@@ -197,21 +197,33 @@ const FONT_SIZE_MESSAGE =
 	"Use a typographyLevels token for fontSize, not a raw value: fontSize={typographyLevels.l}.";
 const isRawSize = (value) =>
 	typeof value === "number" || (typeof value === "string" && /\d/.test(value));
-const collectRawSizes = (node, found = []) => {
+const BREAKPOINT_KEYS = ["xs", "sm", "md", "lg", "xl"];
+const isBreakpointProperty = (property) =>
+	property.type === "Property" && BREAKPOINT_KEYS.includes(property.key.name);
+const collectRawValues = (node, isRaw, found = []) => {
 	if (!node) return found;
-	if (node.type === "Literal" && isRawSize(node.value)) found.push(node);
-	if (node.type === "TemplateLiteral" && node.expressions.length === 0) found.push(node);
-	if (node.type === "JSXExpressionContainer") collectRawSizes(node.expression, found);
+	if (node.type === "Literal" && isRaw(node.value)) found.push(node);
+	if (node.type === "TemplateLiteral" && node.quasis.some((q) => isRaw(q.value.raw))) {
+		found.push(node);
+	}
+	if (node.type === "UnaryExpression" && node.argument.type === "Literal") {
+		if (isRaw(node.argument.value)) found.push(node);
+	}
+	if (node.type === "JSXExpressionContainer") {
+		collectRawValues(node.expression, isRaw, found);
+	}
 	if (node.type === "ConditionalExpression") {
-		collectRawSizes(node.consequent, found);
-		collectRawSizes(node.alternate, found);
+		collectRawValues(node.consequent, isRaw, found);
+		collectRawValues(node.alternate, isRaw, found);
 	}
 	if (node.type === "LogicalExpression") {
-		collectRawSizes(node.left, found);
-		collectRawSizes(node.right, found);
+		collectRawValues(node.left, isRaw, found);
+		collectRawValues(node.right, isRaw, found);
 	}
 	if (node.type === "ObjectExpression") {
-		for (const property of node.properties) collectRawSizes(property.value, found);
+		for (const property of node.properties.filter(isBreakpointProperty)) {
+			collectRawValues(property.value, isRaw, found);
+		}
 	}
 	return found;
 };
@@ -223,7 +235,7 @@ const noRawFontSize = {
 	meta: { type: "problem", schema: [], messages: { useToken: FONT_SIZE_MESSAGE } },
 	create(context) {
 		const report = (value) => {
-			for (const node of collectRawSizes(value)) {
+			for (const node of collectRawValues(value, isRawSize)) {
 				context.report({ node, messageId: "useToken" });
 			}
 		};
@@ -241,11 +253,78 @@ const noRawFontSize = {
 		};
 	},
 };
+const SPACING_PROP_MESSAGE =
+	"Use a LAYOUT or SPACING token for padding, margin and gap, not a raw value: gap={theme.spacing(LAYOUT.MD)}.";
+const SPACING_PROPS = new Set([
+	"gap",
+	"rowGap",
+	"columnGap",
+	"spacing",
+	"p",
+	"px",
+	"py",
+	"pt",
+	"pb",
+	"pl",
+	"pr",
+	"m",
+	"mx",
+	"my",
+	"mt",
+	"mb",
+	"ml",
+	"mr",
+	"padding",
+	"paddingX",
+	"paddingY",
+	"paddingTop",
+	"paddingBottom",
+	"paddingLeft",
+	"paddingRight",
+	"margin",
+	"marginX",
+	"marginY",
+	"marginTop",
+	"marginBottom",
+	"marginLeft",
+	"marginRight",
+]);
+const isRawSpace = (value) =>
+	(typeof value === "number" && value !== 0) ||
+	(typeof value === "string" && /[1-9]/.test(value));
+const isCallOptions = (object) =>
+	object.parent.type === "CallExpression" &&
+	object.parent.arguments.includes(object) &&
+	object.parent.callee.property?.name !== "unstable_sx";
+const noRawSpacingProps = {
+	meta: { type: "problem", schema: [], messages: { useToken: SPACING_PROP_MESSAGE } },
+	create(context) {
+		const report = (value) => {
+			for (const node of collectRawValues(value, isRawSpace)) {
+				context.report({ node, messageId: "useToken" });
+			}
+		};
+		return {
+			JSXAttribute(node) {
+				if (!SPACING_PROPS.has(node.name.name)) return;
+				report(node.value);
+			},
+			Property(node) {
+				if (node.computed) return;
+				const key = node.key.name ?? node.key.value;
+				if (key === "spacing" || !SPACING_PROPS.has(key)) return;
+				if (isCallOptions(node.parent)) return;
+				report(node.value);
+			},
+		};
+	},
+};
 const checkmate = {
 	rules: {
 		"no-direct-lucide-icon": noDirectLucideIcon,
 		"no-raw-spacing": noRawSpacing,
 		"no-raw-font-size": noRawFontSize,
+		"no-raw-spacing-props": noRawSpacingProps,
 	},
 };
 
@@ -329,6 +408,11 @@ export default [
 		files: ["src/**/*.{js,jsx,ts,tsx}"],
 		ignores: CONVENTION_EXEMPT_FILES,
 		rules: { "checkmate/no-raw-font-size": "error" },
+	},
+	{
+		files: ["src/**/*.{js,jsx,ts,tsx}"],
+		ignores: CONVENTION_EXEMPT_FILES,
+		rules: { "checkmate/no-raw-spacing-props": "error" },
 	},
 	{
 		files: DAYJS_ALLOWED_FILES,

@@ -192,7 +192,7 @@ export const DockerStateLabel = ({
 				height={STATUS_DOT_SIZE}
 				bgcolor={theme.palette[palette].main}
 				borderRadius="50%"
-				marginRight="5px"
+				marginRight={theme.spacing(SPACING.XL)}
 			/>
 			<Stack>
 				<Typography>{name}</Typography>

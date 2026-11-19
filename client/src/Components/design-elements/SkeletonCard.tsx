@@ -65,8 +65,8 @@ export const SkeletonCard = ({
 	return (
 		<Box
 			position={"relative"}
-			mt={20}
-			mb={20}
+			mt={theme.spacing(LAYOUT.XXL)}
+			mb={theme.spacing(LAYOUT.XXL)}
 		>
 			{showHalo && (
 				<Box

@@ -17,7 +17,7 @@ const RootLayout = () => {
 			<Sidebar />
 			<Stack
 				flex={1}
-				padding={6}
+				padding={theme.spacing(LAYOUT.SM)}
 				overflow={"hidden"}
 				bgcolor={
 					theme.palette.mode === "dark"
@@ -25,7 +25,7 @@ const RootLayout = () => {
 						: "rgba(124, 116, 116, 0.01)"
 				}
 				alignItems="center"
-				paddingLeft={isSmall ? `${collapsedWidth + 12}px` : 12}
+				paddingLeft={isSmall ? `${collapsedWidth + 12}px` : theme.spacing(LAYOUT.XL)}
 			>
 				<Stack
 					maxWidth={1280}

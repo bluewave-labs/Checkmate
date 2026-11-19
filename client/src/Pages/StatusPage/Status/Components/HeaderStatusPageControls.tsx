@@ -30,7 +30,7 @@ export const HeaderStatusPageControls = ({
 			direction={"row"}
 			alignItems={"center"}
 			justifyContent={"space-between"}
-			mb={4}
+			mb={theme.spacing(LAYOUT.XS)}
 		>
 			<Stack
 				direction="row"
