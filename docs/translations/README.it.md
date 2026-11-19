@@ -36,7 +36,7 @@
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+<img alt="Checkmate dashboard" src="https://checkmate.so/img/readme/dashboard.webp" />
 
 <br>
 
@@ -82,7 +82,7 @@ Le istruzioni per l'uso sono disponibili [qui](https://checkmate.so/docs).
 
 Consulta le istruzioni di installazione nel [portale della documentazione di Checkmate](https://checkmate.so/docs). 
 
-In alternativa, puoi usare [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Sudafrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate) o [Pikapods](https://www.pikapods.com/) per creare rapidamente un'istanza di Checkmate. Se desideri monitorare l'infrastruttura dei tuoi server, ti servirà l'[agente Capture](https://checkmate.so/docs/infrastructure/installing-capture). Anche il repository di Capture contiene le istruzioni di installazione.
+In alternativa, puoi usare [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Sudafrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate), [ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate) (richiede un tuo MongoDB), [Caliber Node](https://calibernode.com/cloud-apps/checkmate) o [Pikapods](https://www.pikapods.com/) per creare rapidamente un'istanza di Checkmate. Se desideri monitorare l'infrastruttura dei tuoi server, ti servirà l'[agente Capture](https://checkmate.so/docs/infrastructure/installing-capture). Anche il repository di Capture contiene le istruzioni di installazione.
 
 ### Usare una CA personalizzata
 
@@ -124,6 +124,7 @@ Non esitare a fare domande o a condividere le tue idee: ci farebbe piacere senti
 - Notifiche via E-mail, Webhook, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - Manutenzione programmata
 - Monitoraggio tramite query JSON
+- [Checkmate Connect](https://checkmate.so/docs/connect) (opzionale): accesso remoto senza aprire porte in ingresso, backup cifrati nel cloud con esecuzioni pianificate e ripristino, e un watchdog che ti avvisa via e-mail quando il server smette di segnalare
 - Supporto multilingua per arabo, cinese (semplificato), cinese (tradizionale, Taiwan), ceco, inglese, finlandese, francese, tedesco, giapponese, portoghese (Brasile), russo, spagnolo, thailandese, turco, ucraino e vietnamita
 
 
@@ -140,16 +141,19 @@ Non esitare a fare domande o a condividere le tue idee: ci farebbe piacere senti
 ## Screenshot
 
 <p>
-<img width="1628" alt="image" src="https://github.com/user-attachments/assets/2eff6464-0738-4a32-9312-26e1e8e86275" />
+<img alt="Uptime monitors" src="https://checkmate.so/img/readme/uptime-list.webp" />
 </p>
 <p>
-  <img width="1656" alt="image" src="https://github.com/user-attachments/assets/616c3563-c2a7-4ee4-af6c-7e6068955d1a" />
+<img alt="Uptime monitor details" src="https://checkmate.so/img/readme/uptime-details.webp" />
 </p>
 <p>
-</p><img width="1652" alt="image" src="https://github.com/user-attachments/assets/7912d7cf-0d0e-4f26-aa5c-2ad7170b5c99" />
+<img alt="Infrastructure monitor details" src="https://checkmate.so/img/readme/infrastructure-details.webp" />
 </p>
 <p>
-<img width="1652" alt="image" src="https://github.com/user-attachments/assets/08c2c6ac-3a2f-44d1-a229-d1746a3f9d16" />
+<img alt="PageSpeed monitor details" src="https://checkmate.so/img/readme/pagespeed-details.webp" />
+</p>
+<p>
+<img alt="Public status page" src="https://checkmate.so/img/readme/status-page.webp" />
 </p>
 
 

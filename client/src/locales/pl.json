@@ -71,6 +71,7 @@
 			},
 			"labels": {
 				"averageResponseTime": "Średni czas odpowiedzi",
+				"checkCount": "Kontrole",
 				"cpuUsage": "Użycie CPU",
 				"downtime": "Czas przestoju",
 				"high": "Wysoki",
@@ -166,6 +167,16 @@
 			"copy": "Kopiuj do schowka",
 			"copied": "Skopiowano do schowka",
 			"copyFailed": "Nie udało się skopiować. Zaznacz tekst i skopiuj go ręcznie."
+		},
+		"filters": {
+			"any": "Dowolny",
+			"state": "Stan"
+		},
+		"fallback": {
+			"error": {
+				"title": "Coś poszło nie tak",
+				"description": "Spróbuj ponownie później"
+			}
 		}
 	},
 	"components": {
@@ -196,6 +207,12 @@
 			"maxSize": "Maksymalny rozmiar",
 			"orDragAndDrop": "lub przeciągnij i upuść",
 			"supportedFormats": "Obsługiwane formaty"
+		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} wybrany",
+			"selectedCount_few": "{{count}} wybrane",
+			"selectedCount_many": "{{count}} wybranych",
+			"selectedCount_other": "{{count}} wybranych"
 		},
 		"offlineBanner": {
 			"reconnected": "Połączenie przywrócone",
@@ -249,7 +266,6 @@
 				"infrastructure": "Infrastruktura",
 				"docker": "Docker",
 				"notifications": "Powiadomienia",
-				"tags": "Tagi",
 				"checks": "Kontrole",
 				"incidents": "Incydenty",
 				"statusPages": "Strony statusu",
@@ -1480,6 +1496,8 @@
 				"monitoring": "Monitorowanie",
 				"email": "E-mail",
 				"integrations": "Integracje",
+				"tags": "Tagi",
+				"proxies": "Serwery proxy",
 				"data": "Dane",
 				"connect": "Checkmate Connect"
 			},
@@ -1590,7 +1608,31 @@
 						"connecting": "Łączenie tunelu",
 						"remoteAccessOff": "Dostęp zdalny wyłączony",
 						"agentId": "ID agenta",
-						"lastConnected": "Ostatnie połączenie"
+						"lastConnected": "Ostatnie połączenie",
+						"siteLink": "Otwórz {{site}}"
+					},
+					"getStarted": {
+						"title": "Pierwsze kroki",
+						"description": "Checkmate Connect pozwala łączyć się z tą instalacją z dowolnego miejsca i przechowuje jej zaszyfrowane kopie zapasowe w chmurze.",
+						"steps": {
+							"account": {
+								"title": "Załóż konto Connect",
+								"body": "Zarejestruj się na {{site}}, podając adres e-mail i hasło."
+							},
+							"server": {
+								"title": "Dodaj serwer",
+								"body": "Nadaj mu nazwę w panelu Connect, aby otrzymać blok danych uwierzytelniających. Jest wyświetlany tylko raz, więc od razu go skopiuj."
+							},
+							"paste": {
+								"title": "Wklej go tutaj",
+								"body": "Wklej blok danych uwierzytelniających w polu poniżej i kliknij Zarejestruj."
+							},
+							"remoteAccess": {
+								"title": "Włącz dostęp zdalny",
+								"body": "Twój adres Connect zacznie działać, gdy tunel się połączy."
+							}
+						},
+						"button": "Przejdź do {{site}}"
 					},
 					"enroll": {
 						"title": "Zarejestruj instalację",

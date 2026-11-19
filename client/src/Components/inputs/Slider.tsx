@@ -7,6 +7,10 @@ import Stack from "@mui/material/Stack";
 import { FieldLabel } from "./FieldLabel";
 import Box from "@mui/material/Box";
 import type { ResponsiveStyleValue } from "@mui/system";
+import { INPUT_BASE_HEIGHT, LAYOUT } from "@/Utils/Theme/constants";
+
+const TRACK_HEIGHT = 4;
+const TRACK_PADDING = (INPUT_BASE_HEIGHT - TRACK_HEIGHT) / 2;
 
 interface SliderInputProps extends SliderProps {
 	sx?: SliderProps["sx"];
@@ -26,7 +30,7 @@ export const SliderInput = forwardRef<HTMLSpanElement, SliderInputProps>(
 
 		return (
 			<Stack
-				gap={theme.spacing(8)}
+				gap={theme.spacing(LAYOUT.MD)}
 				direction={"row"}
 				alignItems={"center"}
 			>
@@ -36,22 +40,48 @@ export const SliderInput = forwardRef<HTMLSpanElement, SliderInputProps>(
 					ref={ref}
 					sx={[
 						{
-							"& .MuiSlider-track": {
-								backgroundColor: theme.palette.primary.main,
-								border: "none",
-							},
+							height: TRACK_HEIGHT,
+							padding: `${TRACK_PADDING}px 0`,
+							color: theme.palette.primary.main,
 							"& .MuiSlider-rail": {
+								height: TRACK_HEIGHT,
+								borderRadius: "999px",
 								backgroundColor: theme.palette.grey[300],
 								opacity: 1,
 							},
+							"& .MuiSlider-track": {
+								height: TRACK_HEIGHT,
+								borderRadius: "999px",
+								backgroundColor: theme.palette.primary.main,
+								border: "none",
+							},
 							"& .MuiSlider-thumb": {
+								width: 18,
+								height: 18,
 								backgroundColor: "#fff",
+								border: `2px solid ${theme.palette.primary.main}`,
+								boxShadow: "0 1px 2px rgba(16, 24, 40, 0.1)",
+								"&.Mui-active": {
+									boxShadow: `0 0 0 8px ${theme.palette.primary.main}29`,
+								},
 								"&:hover, &.Mui-focusVisible": {
 									boxShadow: "none",
 								},
 								"&:active": {
 									boxShadow: "none",
 								},
+								"&::before": { display: "none" },
+							},
+							"& .MuiSlider-mark": {
+								width: 2,
+								height: 2,
+								borderRadius: "999px",
+								backgroundColor: theme.palette.text.disabled,
+								opacity: 0.5,
+							},
+							"& .MuiSlider-markActive": {
+								backgroundColor: theme.palette.primary.main,
+								opacity: 0.5,
 							},
 							"& .MuiSlider-valueLabel": {
 								backgroundColor: theme.palette.primary.main,
@@ -64,6 +94,8 @@ export const SliderInput = forwardRef<HTMLSpanElement, SliderInputProps>(
 		);
 	}
 );
+
+SliderInput.displayName = "SliderInput";
 
 interface SliderWithLabelProps extends SliderProps {
 	fieldLabel?: string;
@@ -91,7 +123,7 @@ export const SliderWithLabel = forwardRef<HTMLSpanElement, SliderWithLabelProps>
 		const labelText = fieldLabel;
 
 		return (
-			<Stack spacing={theme.spacing(2)}>
+			<Stack spacing={theme.spacing(LAYOUT.XXS)}>
 				{fieldLabel && <FieldLabel required={required}>{labelText}</FieldLabel>}
 				<Box maxWidth={sliderMaxWidth}>
 					<SliderInput
@@ -106,3 +138,5 @@ export const SliderWithLabel = forwardRef<HTMLSpanElement, SliderWithLabelProps>
 		);
 	}
 );
+
+SliderWithLabel.displayName = "SliderWithLabel";

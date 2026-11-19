@@ -55,6 +55,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Tiempo de respuesta promedio",
+				"checkCount": "Verificaciones",
 				"cpuUsage": "Uso de CPU",
 				"downtime": "Tiempo de inactividad",
 				"high": "alto",
@@ -166,6 +167,16 @@
 			"copy": "Copiar al portapapeles",
 			"copied": "Copiado al portapapeles",
 			"copyFailed": "No se pudo copiar. Seleccione el texto y cópielo manualmente."
+		},
+		"filters": {
+			"any": "Cualquiera",
+			"state": "Estado"
+		},
+		"fallback": {
+			"error": {
+				"title": "Algo salió mal",
+				"description": "Inténtalo de nuevo más tarde"
+			}
 		}
 	},
 	"components": {
@@ -179,6 +190,10 @@
 				"invalidFileSize": "¡El archivo es demasiado grande!",
 				"invalidFileFormat": "¡Formato de archivo no admitido!"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} seleccionado",
+			"selectedCount_other": "{{count}} seleccionados"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "Enlace público"
@@ -1509,6 +1524,8 @@
 				"monitoring": "Monitorización",
 				"email": "Correo electrónico",
 				"integrations": "Integraciones",
+				"tags": "Etiquetas",
+				"proxies": "Proxies",
 				"data": "Datos",
 				"connect": "Checkmate Connect"
 			},
@@ -1739,7 +1756,31 @@
 						"connecting": "Conectando el túnel",
 						"remoteAccessOff": "Acceso remoto desactivado",
 						"agentId": "ID del agente",
-						"lastConnected": "Última conexión"
+						"lastConnected": "Última conexión",
+						"siteLink": "Abrir {{site}}"
+					},
+					"getStarted": {
+						"title": "Primeros pasos",
+						"description": "Checkmate Connect te permite acceder a esta instalación desde cualquier lugar y guarda copias de seguridad cifradas en la nube.",
+						"steps": {
+							"account": {
+								"title": "Crea una cuenta de Connect",
+								"body": "Regístrate en {{site}} con un correo electrónico y una contraseña."
+							},
+							"server": {
+								"title": "Añade tu servidor",
+								"body": "Ponle un nombre en el panel de Connect para obtener un bloque de credenciales. Solo se muestra una vez, así que cópialo enseguida."
+							},
+							"paste": {
+								"title": "Pégalo aquí",
+								"body": "Pega el bloque de credenciales en el cuadro de abajo y haz clic en Registrar."
+							},
+							"remoteAccess": {
+								"title": "Activa el acceso remoto",
+								"body": "Tu dirección de Connect se activa en cuanto se conecta el túnel."
+							}
+						},
+						"button": "Ir a {{site}}"
 					},
 					"enroll": {
 						"title": "Registrar instalación",

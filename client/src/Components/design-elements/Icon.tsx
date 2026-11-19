@@ -1,19 +1,20 @@
-import type { LucideIcon } from "lucide-react";
+import type { LucideIcon, LucideProps } from "lucide-react";
 
-interface IconProps {
+interface IconProps extends LucideProps {
 	icon: LucideIcon;
-	size?: number;
-	strokeWidth?: number;
-	stroke?: string;
-	color?: string;
 }
 
-const Icon = ({ icon: Icon, size = 16, strokeWidth = 1.5, color }: IconProps) => {
+const Icon = ({
+	icon: IconComponent,
+	size = 16,
+	strokeWidth = 1.5,
+	...props
+}: IconProps) => {
 	return (
-		<Icon
+		<IconComponent
 			size={size}
 			strokeWidth={strokeWidth}
-			color={color}
+			{...props}
 		/>
 	);
 };

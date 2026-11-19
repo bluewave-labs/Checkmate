@@ -39,7 +39,7 @@
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+<img alt="Checkmate dashboard" src="https://checkmate.so/img/readme/dashboard.webp" />
 
 <br>
 
@@ -85,7 +85,7 @@ Pokyny k použití najdete [zde](https://checkmate.so/docs).
 
 Pokyny k instalaci najdete v [dokumentačním portálu Checkmate](https://checkmate.so/docs).
 
-Případně můžete použít [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Jižní Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) nebo [Pikapods](https://www.pikapods.com/) pro rychlé spuštění instance Checkmate. Pokud chcete monitorovat infrastrukturu serverů, budete potřebovat [agenta Capture](https://checkmate.so/docs/infrastructure/installing-capture). Repozitář Capture obsahuje také pokyny k instalaci.
+Případně můžete použít [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Jižní Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate), [ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate) (vyžaduje vlastní MongoDB), [Caliber Node](https://calibernode.com/cloud-apps/checkmate) nebo [Pikapods](https://www.pikapods.com/) pro rychlé spuštění instance Checkmate. Pokud chcete monitorovat infrastrukturu serverů, budete potřebovat [agenta Capture](https://checkmate.so/docs/infrastructure/installing-capture). Repozitář Capture obsahuje také pokyny k instalaci.
 
 ### Použití vlastní CA
 
@@ -127,6 +127,7 @@ Neváhejte se ptát nebo sdílet své nápady — moc rádi vás slyšíme!
 - Notifikace přes e-mail, webhooky, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - Plánovaná údržba
 - Monitorování pomocí JSON dotazů
+- [Checkmate Connect](https://checkmate.so/docs/connect) (volitelné): vzdálený přístup bez otevírání příchozích portů, šifrované cloudové zálohy s plánováním a obnovou a hlídač, který vám pošle e-mail, když se server přestane hlásit
 - Vícejazyčná podpora pro arabštinu, čínštinu (zjednodušenou), čínštinu (tradiční, Tchaj-wan), češtinu, angličtinu, finštinu, francouzštinu, němčinu, japonštinu, portugalštinu (Brazílie), ruštinu, španělštinu, thajštinu, turečtinu, ukrajinštinu a vietnamštinu
 
 
@@ -143,16 +144,19 @@ Neváhejte se ptát nebo sdílet své nápady — moc rádi vás slyšíme!
 ## Snímky obrazovky
 
 <p>
-<img width="1628" alt="image" src="https://github.com/user-attachments/assets/2eff6464-0738-4a32-9312-26e1e8e86275" />
+<img alt="Uptime monitors" src="https://checkmate.so/img/readme/uptime-list.webp" />
 </p>
 <p>
-  <img width="1656" alt="image" src="https://github.com/user-attachments/assets/616c3563-c2a7-4ee4-af6c-7e6068955d1a" />
+<img alt="Uptime monitor details" src="https://checkmate.so/img/readme/uptime-details.webp" />
 </p>
 <p>
-</p><img width="1652" alt="image" src="https://github.com/user-attachments/assets/7912d7cf-0d0e-4f26-aa5c-2ad7170b5c99" />
+<img alt="Infrastructure monitor details" src="https://checkmate.so/img/readme/infrastructure-details.webp" />
 </p>
 <p>
-<img width="1652" alt="image" src="https://github.com/user-attachments/assets/08c2c6ac-3a2f-44d1-a229-d1746a3f9d16" />
+<img alt="PageSpeed monitor details" src="https://checkmate.so/img/readme/pagespeed-details.webp" />
+</p>
+<p>
+<img alt="Public status page" src="https://checkmate.so/img/readme/status-page.webp" />
 </p>
 
 

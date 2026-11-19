@@ -4,7 +4,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 
 interface DashboardCardProps {
 	title: string;
@@ -26,7 +26,7 @@ export const DashboardCard = ({
 			bgcolor={theme.palette.background.paper}
 			border={1}
 			borderColor={theme.palette.divider}
-			borderRadius={`${theme.shape.borderRadius}px`}
+			borderRadius={theme.shape.borderRadius}
 			padding={theme.spacing(LAYOUT.MD)}
 			display="flex"
 			flexDirection="column"
@@ -41,7 +41,7 @@ export const DashboardCard = ({
 			>
 				<Typography
 					fontSize={typographyLevels.m}
-					fontWeight={500}
+					fontWeight={fontWeights.medium}
 					color={theme.palette.text.primary}
 				>
 					{title}

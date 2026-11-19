@@ -9,6 +9,7 @@ import { Routes } from "./Routes";
 import AppLayout from "@/Components/layout/AppLayout";
 import type { RootState } from "@/Types/state";
 import { lightTheme, darkTheme } from "@/Utils/Theme/Theme";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const swrConfig = {
 	dedupingInterval: 5000,
@@ -27,7 +28,7 @@ function App() {
 	return (
 		<SWRConfig value={swrConfig}>
 			<ThemeProvider theme={theme}>
-				<CssBaseline />
+				<CssBaseline enableColorScheme />
 				<GlobalStyles
 					styles={{
 						body: {
@@ -61,7 +62,7 @@ function App() {
 					}
 					toastStyle={{
 						minHeight: 40,
-						padding: "8px 12px",
+						padding: theme.spacing(LAYOUT.XS, LAYOUT.SM),
 						width: "auto",
 						maxWidth: "min(560px, calc(100vw - 32px))",
 					}}

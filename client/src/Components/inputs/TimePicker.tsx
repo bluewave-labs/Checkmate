@@ -7,7 +7,7 @@ import Typography from "@mui/material/Typography";
 import { FieldLabel } from "./FieldLabel";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
-import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT, LAYOUT } from "@/Utils/Theme/constants";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
 
@@ -40,7 +40,7 @@ export const TimePickerComponent = ({
 							"& input": {
 								minHeight: INPUT_BASE_HEIGHT,
 								p: 0,
-								px: theme.spacing(5),
+								px: theme.spacing(LAYOUT.XS_PLUS),
 							},
 							"& fieldset": {
 								borderColor: error ? theme.palette.error.main : theme.palette.divider,
@@ -59,7 +59,7 @@ export const TimePickerComponent = ({
 	);
 
 	return (
-		<Stack spacing={theme.spacing(2)}>
+		<Stack spacing={theme.spacing(LAYOUT.XXS)}>
 			{fieldLabel && <FieldLabel required={required}>{fieldLabel}</FieldLabel>}
 			{picker}
 			{helperText && (

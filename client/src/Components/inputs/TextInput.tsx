@@ -5,7 +5,7 @@ import { typographyLevels } from "@/Utils/Theme/Palette";
 import { useTheme } from "@mui/material/styles";
 import Stack from "@mui/material/Stack";
 import { FieldLabel } from "./FieldLabel";
-import { INPUT_BASE_HEIGHT, LAYOUT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT, LAYOUT, SPACING } from "@/Utils/Theme/constants";
 
 interface TextInputProps extends Omit<TextFieldProps, "label"> {
 	fieldLabel?: string;
@@ -29,7 +29,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function T
 		"& .MuiFormHelperText-root": {
 			marginLeft: 0,
 			marginRight: 0,
-			marginTop: theme.spacing(1),
+			marginTop: theme.spacing(SPACING.SM),
 		},
 		"& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus, & input:-webkit-autofill:active":
 			{

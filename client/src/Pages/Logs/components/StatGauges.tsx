@@ -6,6 +6,7 @@ import prettyBytes from "pretty-bytes";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material";
 import type { Diagnostics } from "@/Types/Diagnostics";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface StatGaugesProps {
 	diagnostics: Diagnostics | null;
@@ -46,7 +47,7 @@ export const StatGauges = ({ diagnostics }: StatGaugesProps) => {
 			sx={{
 				display: "grid",
 				gridTemplateColumns: { xs: "1fr", md: "repeat(4, 1fr)" },
-				gap: theme.spacing(8),
+				gap: theme.spacing(LAYOUT.MD),
 				"& > *": { width: "100% !important" },
 			}}
 		>

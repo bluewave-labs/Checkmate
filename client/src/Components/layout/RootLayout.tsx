@@ -5,6 +5,7 @@ import { useMediaQuery } from "@mui/material";
 import { useSidebar } from "@/Hooks/useSidebar";
 
 import { useTheme } from "@mui/material";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const RootLayout = () => {
 	const theme = useTheme();
@@ -16,7 +17,7 @@ const RootLayout = () => {
 			<Sidebar />
 			<Stack
 				flex={1}
-				padding={6}
+				padding={theme.spacing(LAYOUT.SM)}
 				overflow={"hidden"}
 				bgcolor={
 					theme.palette.mode === "dark"
@@ -24,12 +25,12 @@ const RootLayout = () => {
 						: "rgba(124, 116, 116, 0.01)"
 				}
 				alignItems="center"
-				paddingLeft={isSmall ? `${collapsedWidth + 12}px` : 12}
+				paddingLeft={isSmall ? `${collapsedWidth + 12}px` : theme.spacing(LAYOUT.XL)}
 			>
 				<Stack
 					maxWidth={1280}
 					width="100%"
-					paddingY={theme.spacing(6)}
+					paddingY={theme.spacing(LAYOUT.SM)}
 					flex={1}
 				>
 					<Outlet />

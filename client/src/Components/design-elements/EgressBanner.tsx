@@ -7,6 +7,8 @@ import { TriangleAlert } from "lucide-react";
 import type { EgressSummary } from "@/Types/Egress";
 import { useFormatDate } from "@/Hooks/useFormatDate";
 import { LAYOUT } from "@/Utils/Theme/constants";
+import Icon from "./Icon";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 interface EgressBannerProps {
 	state: EgressSummary | null;
@@ -50,10 +52,13 @@ export const EgressBanner = ({ state }: EgressBannerProps) => {
 				justifyContent="center"
 				gap={theme.spacing(LAYOUT.XS)}
 			>
-				<TriangleAlert size={20} />
+				<Icon
+					icon={TriangleAlert}
+					size={20}
+				/>
 				<Typography
 					variant="body2"
-					fontWeight={500}
+					fontWeight={fontWeights.medium}
 				>
 					{message}
 				</Typography>

@@ -18,6 +18,7 @@ import { createGradient } from "@/Components/monitors/charts/ChartUtils";
 import { tooltipDateFormatLookup } from "@/Utils/TimeUtils";
 import type { DateRange } from "@/Types/Query";
 import { useFormatDate } from "@/Hooks/useFormatDate";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 type DockerHistogramToolTipProps = TooltipProps<ValueType, NameType> & {
 	dataKey: string;
@@ -45,7 +46,7 @@ const DockerHistogramToolTip = ({
 	const dataPoint = payload[0].payload?.[dataKey] ?? null;
 
 	return (
-		<BaseBox sx={{ py: theme.spacing(2), px: theme.spacing(4) }}>
+		<BaseBox sx={{ py: theme.spacing(LAYOUT.XXS), px: theme.spacing(LAYOUT.XS) }}>
 			<Typography>{formatDate(ts, format)}</Typography>
 			<Typography>{t(labelKey, { value: valueFormatter(dataPoint) })}</Typography>
 		</BaseBox>

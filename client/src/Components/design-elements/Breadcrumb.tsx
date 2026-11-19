@@ -5,6 +5,8 @@ import { useTheme } from "@mui/material/styles";
 import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
+import Icon from "./Icon";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 
 const isId = (segment: string): boolean => {
 	return segment.length === 24 || /^[a-f0-9-]{36}$/.test(segment);
@@ -16,15 +18,9 @@ const BreadcrumbWrapper = ({ children }: { children: ReactNode }) => {
 	const theme = useTheme();
 	return (
 		<MuiBreadcrumbs
-			separator={
-				<ChevronRight
-					size={16}
-					strokeWidth={1.5}
-				/>
-			}
+			separator={<Icon icon={ChevronRight} />}
 			sx={{
-				fontSize: "14px",
-				marginBottom: theme.spacing(6),
+				fontSize: typographyLevels.l,
 				"& .MuiBreadcrumbs-separator": {
 					color: theme.palette.text.secondary,
 				},
@@ -59,8 +55,8 @@ export const Breadcrumb = ({
 						<Typography
 							key={index}
 							sx={{
-								fontSize: "14px",
-								fontWeight: isLast ? 600 : 400,
+								fontSize: typographyLevels.l,
+								fontWeight: isLast ? fontWeights.semibold : fontWeights.regular,
 								color: isLast ? theme.palette.primary.main : theme.palette.text.secondary,
 							}}
 						>
@@ -108,7 +104,7 @@ export const Breadcrumb = ({
 				>
 					<Typography
 						sx={{
-							fontSize: "14px",
+							fontSize: typographyLevels.l,
 							color: theme.palette.text.secondary,
 							"&:hover": {
 								color: theme.palette.primary.main,
@@ -121,8 +117,8 @@ export const Breadcrumb = ({
 			) : (
 				<Typography
 					sx={{
-						fontSize: "14px",
-						fontWeight: 600,
+						fontSize: typographyLevels.l,
+						fontWeight: fontWeights.semibold,
 						color: theme.palette.primary.main,
 					}}
 				>
@@ -132,8 +128,8 @@ export const Breadcrumb = ({
 			{hasSubPage && (
 				<Typography
 					sx={{
-						fontSize: "14px",
-						fontWeight: 600,
+						fontSize: typographyLevels.l,
+						fontWeight: fontWeights.semibold,
 						color: theme.palette.primary.main,
 					}}
 				>

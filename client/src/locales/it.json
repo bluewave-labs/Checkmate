@@ -66,6 +66,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Tempo di risposta medio",
+				"checkCount": "Verifiche",
 				"cpuUsage": "Utilizzo CPU",
 				"downtime": "Downtime",
 				"high": "Alto",
@@ -166,6 +167,16 @@
 			"copy": "Copia negli appunti",
 			"copied": "Copiato negli appunti",
 			"copyFailed": "Impossibile copiare. Seleziona il testo e copialo manualmente."
+		},
+		"filters": {
+			"any": "Qualsiasi",
+			"state": "Stato"
+		},
+		"fallback": {
+			"error": {
+				"title": "Qualcosa è andato storto",
+				"description": "Riprova più tardi"
+			}
 		}
 	},
 	"components": {
@@ -191,6 +202,10 @@
 				"invalidFileSize": "La dimensione del file è troppo grande!",
 				"invalidFileFormat": "Formato file non supportato!"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} selezionato",
+			"selectedCount_other": "{{count}} selezionati"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "Link pubblico"
@@ -228,7 +243,6 @@
 				"infrastructure": "Infrastruttura",
 				"docker": "Docker",
 				"notifications": "Notifiche",
-				"tags": "Tag",
 				"checks": "Verifiche",
 				"incidents": "Incidenti",
 				"statusPages": "Pagine di stato",
@@ -1510,6 +1524,8 @@
 				"monitoring": "Monitoraggio",
 				"email": "Email",
 				"integrations": "Integrazioni",
+				"tags": "Tag",
+				"proxies": "Proxy",
 				"data": "Dati",
 				"connect": "Checkmate Connect"
 			},
@@ -1740,7 +1756,31 @@
 						"connecting": "Connessione del tunnel in corso",
 						"remoteAccessOff": "Accesso remoto disattivato",
 						"agentId": "ID agente",
-						"lastConnected": "Ultima connessione"
+						"lastConnected": "Ultima connessione",
+						"siteLink": "Apri {{site}}"
+					},
+					"getStarted": {
+						"title": "Per iniziare",
+						"description": "Checkmate Connect ti consente di raggiungere questa installazione da qualsiasi luogo e ne conserva backup cifrati nel cloud.",
+						"steps": {
+							"account": {
+								"title": "Crea un account Connect",
+								"body": "Registrati su {{site}} con un indirizzo email e una password."
+							},
+							"server": {
+								"title": "Aggiungi il server",
+								"body": "Assegnagli un nome nella dashboard di Connect per ottenere un blocco di credenziali. Viene mostrato una sola volta, quindi copialo subito."
+							},
+							"paste": {
+								"title": "Incollalo qui",
+								"body": "Incolla il blocco di credenziali nella casella qui sotto e fai clic su Registra."
+							},
+							"remoteAccess": {
+								"title": "Attiva l'accesso remoto",
+								"body": "Il tuo indirizzo Connect diventa attivo appena il tunnel si connette."
+							}
+						},
+						"button": "Vai a {{site}}"
 					},
 					"enroll": {
 						"title": "Registra installazione",

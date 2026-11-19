@@ -44,7 +44,7 @@ export const SortableCard = ({ cardKey, arranging, children }: SortableCardProps
 					bottom={0}
 					border={2}
 					borderColor={isDragging ? theme.palette.primary.main : theme.palette.divider}
-					borderRadius={`${theme.shape.borderRadius}px`}
+					borderRadius={theme.shape.borderRadius}
 					bgcolor={
 						isDragging ? theme.palette.action.selected : theme.palette.action.hover
 					}

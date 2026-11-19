@@ -55,6 +55,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Ortalama yanıt süresi",
+				"checkCount": "Kontroller",
 				"cpuUsage": "CPU kullanımı",
 				"downtime": "Kesinti süresi",
 				"high": "yüksek",
@@ -166,6 +167,16 @@
 			"copy": "Panoya kopyala",
 			"copied": "Panoya kopyalandı",
 			"copyFailed": "Kopyalanamadı. Metni seçip elle kopyalayın."
+		},
+		"filters": {
+			"any": "Tümü",
+			"state": "Durum"
+		},
+		"fallback": {
+			"error": {
+				"title": "Bir şeyler ters gitti",
+				"description": "Lütfen daha sonra tekrar deneyin"
+			}
 		}
 	},
 	"components": {
@@ -179,6 +190,10 @@
 				"invalidFileSize": "Dosya boyutu çok büyük!",
 				"invalidFileFormat": "Desteklenmeyen dosya biçimi!"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} seçildi",
+			"selectedCount_other": "{{count}} seçildi"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "Herkese açık bağlantı"
@@ -1508,6 +1523,8 @@
 				"monitoring": "İzleme",
 				"email": "E-posta",
 				"integrations": "Entegrasyonlar",
+				"tags": "Etiketler",
+				"proxies": "Proxy sunucuları",
 				"data": "Veri",
 				"connect": "Checkmate Connect"
 			},
@@ -1738,7 +1755,31 @@
 						"connecting": "Tünel bağlanıyor",
 						"remoteAccessOff": "Uzaktan erişim kapalı",
 						"agentId": "Ajan ID",
-						"lastConnected": "Son bağlantı"
+						"lastConnected": "Son bağlantı",
+						"siteLink": "{{site}}'yu aç"
+					},
+					"getStarted": {
+						"title": "Başlarken",
+						"description": "Checkmate Connect bu kuruluma her yerden erişmenizi sağlar ve şifreli yedeklerini bulutta saklar.",
+						"steps": {
+							"account": {
+								"title": "Connect hesabı oluşturun",
+								"body": "{{site}} adresinde bir e-posta adresi ve parolayla kaydolun."
+							},
+							"server": {
+								"title": "Sunucunuzu ekleyin",
+								"body": "Kimlik bilgisi bloğunu almak için Connect panelinde sunucuya bir ad verin. Blok yalnızca bir kez gösterilir, hemen kopyalayın."
+							},
+							"paste": {
+								"title": "Buraya yapıştırın",
+								"body": "Kimlik bilgisi bloğunu aşağıdaki kutuya yapıştırın ve Kaydı tamamla'ya tıklayın."
+							},
+							"remoteAccess": {
+								"title": "Uzaktan erişimi açın",
+								"body": "Tünel bağlandığında Connect adresiniz kullanılabilir hale gelir."
+							}
+						},
+						"button": "{{site}}'ya git"
 					},
 					"enroll": {
 						"title": "Kurulum kaydı",

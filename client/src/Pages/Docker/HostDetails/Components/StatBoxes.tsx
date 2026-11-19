@@ -7,6 +7,7 @@ import type { DockerStats } from "@/Types/Monitor";
 // Hooks
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 // Utils
 
@@ -21,7 +22,7 @@ export const DockerStatusBoxes = ({ stats }: { stats: DockerStats | undefined })
 	return (
 		<Stack
 			direction="row"
-			gap={theme.spacing(8)}
+			gap={theme.spacing(LAYOUT.MD)}
 			flexWrap={"wrap"}
 		>
 			<StatBox

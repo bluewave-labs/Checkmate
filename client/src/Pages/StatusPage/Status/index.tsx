@@ -46,6 +46,7 @@ import { editorialStyles } from "@/Pages/StatusPage/Status/themes/editorial/styl
 import { EditorialHeader } from "@/Pages/StatusPage/Status/themes/editorial/EditorialHeader";
 import { EditorialHero } from "@/Pages/StatusPage/Status/themes/editorial/EditorialHero";
 import { minimalStyles } from "@/Pages/StatusPage/Status/themes/minimal/styles";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const THEME_CONFIGS: Record<StatusPageTheme, ThemeConfig<any>> = {
 	refined: {
@@ -134,7 +135,7 @@ const StatusPageView = () => {
 					<BaseFallback>
 						<Typography
 							variant="h1"
-							marginY={theme.spacing(4)}
+							marginY={theme.spacing(LAYOUT.XS)}
 							color={theme.palette.text.secondary}
 						>
 							{t("pages.statusPages.details.empty.title")}

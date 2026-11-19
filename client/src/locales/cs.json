@@ -55,6 +55,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Průměrná doba odezvy",
+				"checkCount": "Kontroly",
 				"cpuUsage": "Využití CPU",
 				"downtime": "Výpadek",
 				"high": "Vysoké",
@@ -166,6 +167,16 @@
 			"copy": "Kopírovat do schránky",
 			"copied": "Zkopírováno do schránky",
 			"copyFailed": "Kopírování se nezdařilo. Označte text a zkopírujte ho ručně."
+		},
+		"filters": {
+			"any": "Jakýkoli",
+			"state": "Stav"
+		},
+		"fallback": {
+			"error": {
+				"title": "Něco se pokazilo",
+				"description": "Zkuste to prosím později"
+			}
 		}
 	},
 	"components": {
@@ -179,6 +190,12 @@
 				"invalidFileSize": "Soubor je příliš velký!",
 				"invalidFileFormat": "Nepodporovaný formát souboru!"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} vybraná položka",
+			"selectedCount_few": "{{count}} vybrané položky",
+			"selectedCount_many": "{{count}} vybraných položek",
+			"selectedCount_other": "{{count}} vybraných položek"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "Veřejný odkaz"
@@ -1510,6 +1527,8 @@
 				"monitoring": "Monitorování",
 				"email": "E-mail",
 				"integrations": "Integrace",
+				"tags": "Štítky",
+				"proxies": "Proxy",
 				"data": "Data",
 				"connect": "Checkmate Connect"
 			},
@@ -1740,7 +1759,31 @@
 						"connecting": "Tunel se připojuje",
 						"remoteAccessOff": "Vzdálený přístup vypnut",
 						"agentId": "ID agenta",
-						"lastConnected": "Naposledy připojeno"
+						"lastConnected": "Naposledy připojeno",
+						"siteLink": "Otevřít {{site}}"
+					},
+					"getStarted": {
+						"title": "Začínáme",
+						"description": "Checkmate Connect vám umožní přistupovat k této instalaci odkudkoli a ukládá její šifrované zálohy v cloudu.",
+						"steps": {
+							"account": {
+								"title": "Vytvořte si účet Connect",
+								"body": "Zaregistrujte se na {{site}} pomocí e-mailu a hesla."
+							},
+							"server": {
+								"title": "Přidejte server",
+								"body": "Pojmenujte ho na nástěnce Connect a získáte blok přihlašovacích údajů. Zobrazí se jen jednou, proto si ho hned zkopírujte."
+							},
+							"paste": {
+								"title": "Vložte ho sem",
+								"body": "Vložte blok přihlašovacích údajů do pole níže a klikněte na Zaregistrovat."
+							},
+							"remoteAccess": {
+								"title": "Zapněte vzdálený přístup",
+								"body": "Vaše adresa Connect začne fungovat, jakmile se tunel připojí."
+							}
+						},
+						"button": "Přejít na {{site}}"
 					},
 					"enroll": {
 						"title": "Zaregistrovat instalaci",

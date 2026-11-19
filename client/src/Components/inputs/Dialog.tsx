@@ -5,11 +5,13 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import { Button } from "@/Components/inputs";
-import { LAYOUT } from "@/Utils/Theme/constants";
+import { X } from "lucide-react";
+import { Button, IconButton } from "@/Components/inputs";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
+import Icon from "@/Components/design-elements/Icon";
 
 export const DialogInput = ({
 	open,
@@ -25,6 +27,7 @@ export const DialogInput = ({
 	maxWidth,
 	fullWidth = false,
 	additionalButtons,
+	framed = true,
 }: {
 	open: boolean;
 	title?: string;
@@ -39,6 +42,7 @@ export const DialogInput = ({
 	maxWidth?: DialogProps["maxWidth"];
 	fullWidth?: boolean;
 	additionalButtons?: ReactNode;
+	framed?: boolean;
 }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
@@ -50,44 +54,83 @@ export const DialogInput = ({
 			onClose={(_event, reason) => {
 				if (reason !== "backdropClick" && onCancel) onCancel(undefined);
 			}}
+			slotProps={{
+				paper: { sx: { backgroundColor: theme.palette.background.default } },
+			}}
 		>
 			{title && (
 				<DialogTitle
-					pb={theme.spacing(LAYOUT.XS)}
-					bgcolor={theme.palette.action.hover}
-					borderBottom={`1px solid ${theme.palette.divider}`}
+					component="div"
+					display="flex"
+					alignItems="flex-start"
+					justifyContent="space-between"
+					gap={LAYOUT.MD}
+					py={LAYOUT.MD}
+					px={LAYOUT.XL}
+					borderBottom={`1px solid ${theme.palette.neutral.hairline}`}
 				>
-					<Typography
-						component="span"
-						variant="h2"
-						fontWeight={600}
-						display={"block"}
-					>
-						{title}
-					</Typography>
-					{content && (
+					<Box>
 						<Typography
-							variant="body1"
-							color={theme.palette.text.secondary}
-							mt={theme.spacing(LAYOUT.XS)}
-							display={"block"}
+							variant="h2"
+							color={theme.palette.text.primary}
 						>
-							{content}
+							{title}
 						</Typography>
+						{content && (
+							<Typography
+								variant="body1"
+								color={theme.palette.text.secondary}
+								mt={LAYOUT.XXS}
+							>
+								{content}
+							</Typography>
+						)}
+					</Box>
+					{onCancel && (
+						<IconButton
+							aria-label={t("common.buttons.close")}
+							onClick={onCancel}
+							sx={{
+								p: LAYOUT.XXS,
+								mt: -SPACING.SM,
+								color: theme.palette.neutral.icon,
+								"&:hover": { backgroundColor: theme.palette.neutral.raised },
+							}}
+						>
+							<Icon icon={X} />
+						</IconButton>
 					)}
 				</DialogTitle>
 			)}
 			{children && (
-				<DialogContent sx={{ pt: theme.spacing(LAYOUT.MD) }}>
-					<Box pt={theme.spacing(LAYOUT.XS)}>{children}</Box>
+				<DialogContent
+					sx={{
+						py: LAYOUT.MD,
+						px: LAYOUT.XL,
+						".MuiDialogTitle-root + &": { pt: LAYOUT.MD },
+					}}
+				>
+					{framed ? (
+						<Box
+							bgcolor={theme.palette.background.paper}
+							border={`1px solid ${theme.palette.neutral.hairline}`}
+							borderRadius={theme.shape.borderRadius}
+							p={LAYOUT.LG}
+						>
+							{children}
+						</Box>
+					) : (
+						children
+					)}
 				</DialogContent>
 			)}
 			<DialogActions
 				sx={{
-					p: theme.spacing(LAYOUT.MD),
-					pt: theme.spacing(LAYOUT.SM),
-					backgroundColor: theme.palette.action.hover,
-					borderTop: `1px solid ${theme.palette.divider}`,
+					py: LAYOUT.SM,
+					px: LAYOUT.XL,
+					gap: LAYOUT.XS,
+					borderTop: `1px solid ${theme.palette.neutral.hairline}`,
+					"& > :not(style) ~ :not(style)": { ml: 0 },
 				}}
 			>
 				<Button

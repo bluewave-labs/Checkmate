@@ -55,6 +55,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Thời gian phản hồi trung bình",
+				"checkCount": "Lượt kiểm tra",
 				"cpuUsage": "Sử dụng CPU",
 				"downtime": "Thời gian ngừng hoạt động",
 				"high": "Cao",
@@ -166,6 +167,16 @@
 			"copy": "Sao chép vào bộ nhớ tạm",
 			"copied": "Đã sao chép vào bộ nhớ tạm",
 			"copyFailed": "Không thể sao chép. Hãy chọn văn bản và sao chép thủ công."
+		},
+		"filters": {
+			"any": "Tất cả",
+			"state": "Trạng thái"
+		},
+		"fallback": {
+			"error": {
+				"title": "Đã xảy ra lỗi",
+				"description": "Vui lòng thử lại sau"
+			}
 		}
 	},
 	"components": {
@@ -179,6 +190,9 @@
 				"invalidFileSize": "Tệp quá lớn!",
 				"invalidFileFormat": "Định dạng tệp không được hỗ trợ!"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_other": "Đã chọn {{count}}"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "Liên kết công khai"
@@ -1507,6 +1521,8 @@
 				"monitoring": "Giám sát",
 				"email": "Email",
 				"integrations": "Tích hợp",
+				"tags": "Thẻ",
+				"proxies": "Proxy",
 				"data": "Dữ liệu",
 				"connect": "Checkmate Connect"
 			},
@@ -1737,7 +1753,31 @@
 						"connecting": "Đường hầm đang kết nối",
 						"remoteAccessOff": "Truy cập từ xa đã tắt",
 						"agentId": "ID tác tử",
-						"lastConnected": "Kết nối lần cuối"
+						"lastConnected": "Kết nối lần cuối",
+						"siteLink": "Mở {{site}}"
+					},
+					"getStarted": {
+						"title": "Bắt đầu",
+						"description": "Checkmate Connect cho phép bạn truy cập bản cài đặt này từ bất cứ đâu và lưu các bản sao lưu được mã hóa trên đám mây.",
+						"steps": {
+							"account": {
+								"title": "Tạo tài khoản Connect",
+								"body": "Đăng ký tại {{site}} bằng địa chỉ email và mật khẩu."
+							},
+							"server": {
+								"title": "Thêm máy chủ",
+								"body": "Đặt tên cho máy chủ trên bảng điều khiển Connect để nhận khối thông tin xác thực. Khối này chỉ hiển thị một lần, hãy sao chép ngay."
+							},
+							"paste": {
+								"title": "Dán vào đây",
+								"body": "Dán khối thông tin xác thực vào ô bên dưới rồi nhấn Đăng ký."
+							},
+							"remoteAccess": {
+								"title": "Bật truy cập từ xa",
+								"body": "Địa chỉ Connect của bạn sẽ hoạt động khi đường hầm được kết nối."
+							}
+						},
+						"button": "Đến {{site}}"
 					},
 					"enroll": {
 						"title": "Đăng ký bản cài đặt",

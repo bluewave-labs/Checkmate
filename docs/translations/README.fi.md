@@ -39,7 +39,7 @@
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+<img alt="Checkmate dashboard" src="https://checkmate.so/img/readme/dashboard.webp" />
 
 <br>
 
@@ -85,7 +85,7 @@ Käyttöohjeet löytyvät [täältä](https://checkmate.so/docs).
 
 Asennusohjeet löytyvät [Checkmaten dokumentaatioportaalista](https://checkmate.so/docs).
 
-Vaihtoehtoisesti voit käyttää [Coolifya](https://coolify.io/), [Elestiota](https://elest.io/open-source/checkmate), [K8s:ää](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Hostia](https://sive.host) (Etelä-Afrikka), [Cloudzya](https://cloudzy.com/marketplace/checkmate) tai [Pikapodsia](https://www.pikapods.com/) Checkmate-instanssin nopeaan käynnistämiseen. Jos haluat valvoa palvelininfrastruktuuriasi, tarvitset [Capture-agentin](https://checkmate.so/docs/infrastructure/installing-capture). Capturen repositorio sisältää myös sen asennusohjeet.
+Vaihtoehtoisesti voit käyttää [Coolifya](https://coolify.io/), [Elestiota](https://elest.io/open-source/checkmate), [K8s:ää](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Hostia](https://sive.host) (Etelä-Afrikka), [Cloudzya](https://cloudzy.com/marketplace/checkmate), [Ryvordia](https://ryvord.com/run/checkmate), [ZopDayta](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate) (vaatii oman MongoDB:n), [Caliber Nodea](https://calibernode.com/cloud-apps/checkmate) tai [Pikapodsia](https://www.pikapods.com/) Checkmate-instanssin nopeaan käynnistämiseen. Jos haluat valvoa palvelininfrastruktuuriasi, tarvitset [Capture-agentin](https://checkmate.so/docs/infrastructure/installing-capture). Capturen repositorio sisältää myös sen asennusohjeet.
 
 ### Mukautetun CA:n käyttö
 
@@ -127,6 +127,7 @@ Kysy rohkeasti tai jaa ideoitasi — kuulemme sinusta mielellämme!
 - Ilmoitukset sähköpostitse, webhookeilla, Discordilla, Slackilla, PagerDutylla, Matrixilla, Microsoft Teamsilla, Telegramilla, Pushoverilla ja Twiliolla (SMS)
 - Ajastettu huolto
 - JSON-kyselyihin perustuva valvonta
+- [Checkmate Connect](https://checkmate.so/docs/connect) (valinnainen): etäkäyttö ilman saapuvien porttien avaamista, salatut pilvivarmuuskopiot ajastuksella ja palautuksella sekä vahtikoira, joka lähettää sähköpostia, kun palvelimesi lakkaa raportoimasta
 - Monikielinen tuki: arabia, kiina (yksinkertaistettu), kiina (perinteinen, Taiwan), tšekki, englanti, suomi, ranska, saksa, japani, portugali (Brasilia), venäjä, espanja, thai, turkki, ukraina ja vietnam
 
 
@@ -143,16 +144,19 @@ Kysy rohkeasti tai jaa ideoitasi — kuulemme sinusta mielellämme!
 ## Kuvakaappaukset
 
 <p>
-<img width="1628" alt="image" src="https://github.com/user-attachments/assets/2eff6464-0738-4a32-9312-26e1e8e86275" />
+<img alt="Uptime monitors" src="https://checkmate.so/img/readme/uptime-list.webp" />
 </p>
 <p>
-  <img width="1656" alt="image" src="https://github.com/user-attachments/assets/616c3563-c2a7-4ee4-af6c-7e6068955d1a" />
+<img alt="Uptime monitor details" src="https://checkmate.so/img/readme/uptime-details.webp" />
 </p>
 <p>
-</p><img width="1652" alt="image" src="https://github.com/user-attachments/assets/7912d7cf-0d0e-4f26-aa5c-2ad7170b5c99" />
+<img alt="Infrastructure monitor details" src="https://checkmate.so/img/readme/infrastructure-details.webp" />
 </p>
 <p>
-<img width="1652" alt="image" src="https://github.com/user-attachments/assets/08c2c6ac-3a2f-44d1-a229-d1746a3f9d16" />
+<img alt="PageSpeed monitor details" src="https://checkmate.so/img/readme/pagespeed-details.webp" />
+</p>
+<p>
+<img alt="Public status page" src="https://checkmate.so/img/readme/status-page.webp" />
 </p>
 
 

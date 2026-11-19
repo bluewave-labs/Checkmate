@@ -5,6 +5,7 @@ import { InfraDetailsCharts } from "@/Pages/Infrastructure/Details/Components/Ch
 
 import { useTheme } from "@mui/material";
 import type { HardwareStats, Monitor } from "@/Types/Monitor";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 export const TabOverview = ({
 	monitor,
@@ -23,7 +24,7 @@ export const TabOverview = ({
 	const checks = stats?.checks || [];
 	const recentChecks = monitor.recentChecks ?? [];
 	return (
-		<Stack gap={theme.spacing(8)}>
+		<Stack gap={theme.spacing(LAYOUT.LG)}>
 			<StatusBoxes monitor={monitor} />
 			<InfraDetailsGauges snapshot={recentChecks[recentChecks.length - 1]} />
 			<InfraDetailsCharts
