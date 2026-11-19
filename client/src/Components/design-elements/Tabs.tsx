@@ -3,6 +3,7 @@ import type { TabsProps } from "@mui/material/Tabs";
 import MuiTab from "@mui/material/Tab";
 import type { TabProps } from "@mui/material/Tab";
 import type { LucideIcon } from "lucide-react";
+import Icon from "./Icon";
 import { useTheme } from "@mui/material/styles";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
@@ -33,10 +34,10 @@ export const Tabs = (props: CustomTabsProps) => {
 
 interface CustomTabProps extends TabProps {}
 
-export const TabIcon = ({ icon: IconComponent }: { icon: LucideIcon }) => (
-	<IconComponent
+export const TabIcon = ({ icon }: { icon: LucideIcon }) => (
+	<Icon
+		icon={icon}
 		size={15}
-		strokeWidth={1.5}
 	/>
 );
 

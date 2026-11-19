@@ -1,4 +1,4 @@
-import { BasePage } from "@/Components/design-elements";
+import { BasePage, Icon } from "@/Components/design-elements";
 import { HeaderTimeRange } from "@/Components/common";
 import Stack from "@mui/material/Stack";
 import {
@@ -221,13 +221,23 @@ const UptimeDetailsPage = () => {
 			>
 				<HistogramStatus
 					title={t("common.charts.labels.uptime")}
-					icon={<TrendingUp />}
+					icon={
+						<Icon
+							icon={TrendingUp}
+							size={20}
+						/>
+					}
 					checks={monitorData?.groupedUpChecks ?? []}
 					range={dateRange}
 				/>
 				<HistogramStatus
 					title={t("common.charts.labels.downtime")}
-					icon={<AlertTriangle />}
+					icon={
+						<Icon
+							icon={AlertTriangle}
+							size={20}
+						/>
+					}
 					checks={monitorData?.groupedDownChecks ?? []}
 					range={dateRange}
 				/>

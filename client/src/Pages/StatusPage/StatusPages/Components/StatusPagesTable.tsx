@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { Table, type Header, ValueLabel } from "@/Components/design-elements";
+import { Table, type Header, ValueLabel, Icon } from "@/Components/design-elements";
 import { Pagination } from "@/Components/design-elements/Table";
 import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
 import { useClientPagination } from "@/Hooks/useClientPagination";
@@ -98,7 +98,12 @@ export const StatusPagesTable = ({
 							}}
 						>
 							<Typography>{content}</Typography>
-							{row.isPublished && <ExternalLink size={18} />}
+							{row.isPublished && (
+								<Icon
+									icon={ExternalLink}
+									size={18}
+								/>
+							)}
 						</Stack>
 					);
 				},

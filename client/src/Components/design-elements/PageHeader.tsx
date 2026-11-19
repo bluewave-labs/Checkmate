@@ -13,6 +13,7 @@ import { PulseDot } from "@/Components/design-elements/PulseDot";
 import { formatVersion } from "@/Utils/FormatUtils";
 
 import type { ReactNode } from "react";
+import Icon from "./Icon";
 
 const HEADER_LINK_WIDTH = 32;
 
@@ -44,30 +45,15 @@ export const PageHeader = ({
 	const linkItems: { key: keyof typeof EXTERNAL_LINKS; icon: ReactNode }[] = [
 		{
 			key: "support",
-			icon: (
-				<HelpCircle
-					size={16}
-					strokeWidth={1.6}
-				/>
-			),
+			icon: <Icon icon={HelpCircle} />,
 		},
 		{
 			key: "docs",
-			icon: (
-				<FileText
-					size={16}
-					strokeWidth={1.6}
-				/>
-			),
+			icon: <Icon icon={FileText} />,
 		},
 		{
 			key: "changelog",
-			icon: (
-				<Code
-					size={16}
-					strokeWidth={1.6}
-				/>
-			),
+			icon: <Icon icon={Code} />,
 		},
 	];
 
@@ -95,9 +81,9 @@ export const PageHeader = ({
 							"&:hover": { color: theme.palette.text.primary },
 						}}
 					>
-						<ChevronLeft
+						<Icon
+							icon={ChevronLeft}
 							size={14}
-							strokeWidth={1.5}
 						/>
 						{backLabel}
 					</Box>

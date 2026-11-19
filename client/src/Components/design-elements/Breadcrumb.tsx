@@ -5,6 +5,7 @@ import { useTheme } from "@mui/material/styles";
 import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
+import Icon from "./Icon";
 
 const isId = (segment: string): boolean => {
 	return segment.length === 24 || /^[a-f0-9-]{36}$/.test(segment);
@@ -16,12 +17,7 @@ const BreadcrumbWrapper = ({ children }: { children: ReactNode }) => {
 	const theme = useTheme();
 	return (
 		<MuiBreadcrumbs
-			separator={
-				<ChevronRight
-					size={16}
-					strokeWidth={1.5}
-				/>
-			}
+			separator={<Icon icon={ChevronRight} />}
 			sx={{
 				fontSize: "14px",
 				marginBottom: theme.spacing(6),

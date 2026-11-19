@@ -1,7 +1,7 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import { BarChart3 } from "lucide-react";
-import { BaseChart } from "@/Components/design-elements";
+import { BaseChart, Icon } from "@/Components/design-elements";
 import Typography from "@mui/material/Typography";
 
 import type { CheckSnapshot } from "@/Types/Check";
@@ -60,9 +60,9 @@ export const PiePageSpeedLegend = ({ latestCheck }: { latestCheck?: CheckSnapsho
 	return (
 		<BaseChart
 			icon={
-				<BarChart3
+				<Icon
+					icon={BarChart3}
 					size={20}
-					strokeWidth={1.5}
 				/>
 			}
 			title={t("pages.pageSpeed.charts.legend.title")}

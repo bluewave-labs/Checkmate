@@ -8,6 +8,7 @@ import { ChevronDown } from "lucide-react";
 import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 import { shadow } from "@/Utils/Theme/Theme";
 import { useTranslation } from "react-i18next";
+import Icon from "@/Components/design-elements/Icon";
 
 type AutoCompleteInputProps = Omit<
 	AutocompleteProps<any, boolean, boolean, boolean>,
@@ -50,9 +51,9 @@ export const AutoCompleteInput = ({
 			{...autocompleteProps}
 			disableCloseOnSelect={!!multiple}
 			popupIcon={
-				<ChevronDown
+				<Icon
+					icon={ChevronDown}
 					size={18}
-					strokeWidth={1.5}
 					style={{ marginRight: theme.spacing(3) }}
 				/>
 			}

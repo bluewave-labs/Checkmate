@@ -7,6 +7,7 @@ import {
 	StatusLabel,
 	StrategyBadge,
 	ColoredLabel,
+	Icon,
 } from "@/Components/design-elements";
 import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 import { getNextMonitorSort } from "@/Utils/MonitorUtils";
@@ -151,9 +152,9 @@ export const PageSpeedMonitorsTable = ({
 			>
 				{isActive ? (
 					sortOrder === "asc" ? (
-						<ArrowUp size={16} />
+						<Icon icon={ArrowUp} />
 					) : (
-						<ArrowDown size={16} />
+						<Icon icon={ArrowDown} />
 					)
 				) : null}
 			</Box>

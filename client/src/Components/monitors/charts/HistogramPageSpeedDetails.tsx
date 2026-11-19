@@ -1,4 +1,4 @@
-import { BaseChart } from "@/Components/design-elements";
+import { BaseChart, Icon } from "@/Components/design-elements";
 import { TrendingUp } from "lucide-react";
 import { XTick } from "@/Components/monitors/charts/XTick";
 import {
@@ -59,9 +59,9 @@ export const HistogramPageSpeedDetails = ({
 	return (
 		<BaseChart
 			icon={
-				<TrendingUp
+				<Icon
+					icon={TrendingUp}
 					size={20}
-					strokeWidth={1.5}
 				/>
 			}
 			title="Score history"

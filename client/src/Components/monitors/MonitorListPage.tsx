@@ -1,5 +1,9 @@
 import { HeaderCreate } from "@/Components/common";
-import { ColoredLabel, MonitorBasePageWithStates } from "@/Components/design-elements";
+import {
+	ColoredLabel,
+	MonitorBasePageWithStates,
+	Icon,
+} from "@/Components/design-elements";
 import { BulkActionsBar } from "@/Components/monitors/BulkActionsBar";
 import { ControlsFilter } from "@/Components/monitors/ControlsFilter";
 import { HeaderMonitorsSummary } from "@/Components/monitors/HeaderMonitorsSummary";
@@ -132,14 +136,14 @@ export const MonitorListPage = ({
 				>
 					<Button
 						size="small"
-						startIcon={<Play size={16} />}
+						startIcon={<Icon icon={Play} />}
 						onClick={controller.handleBulkResume}
 					>
 						{t("common.buttons.resume")}
 					</Button>
 					<Button
 						size="small"
-						startIcon={<Pause size={16} />}
+						startIcon={<Icon icon={Pause} />}
 						onClick={controller.handleBulkPause}
 					>
 						{t("common.buttons.pause")}

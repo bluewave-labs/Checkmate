@@ -3,6 +3,7 @@ import { Settings } from "lucide-react";
 import { useTheme } from "@mui/material/styles";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import { IconButton, Menu, MenuItem } from "@/Components/inputs";
+import { Icon } from "@/Components/design-elements";
 
 export type ActionMenuItem = {
 	id: number | string;
@@ -40,9 +41,9 @@ export const ActionsMenu = ({ items }: { items: ActionMenuItem[] }) => {
 					},
 				}}
 			>
-				<Settings
+				<Icon
+					icon={Settings}
 					size={20}
-					strokeWidth={1.5}
 				/>
 			</IconButton>
 			<Menu

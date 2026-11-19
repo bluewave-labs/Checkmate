@@ -5,6 +5,7 @@ import { useTheme } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
 import { IconButton } from "@/Components/inputs";
+import Icon from "@/Components/design-elements/Icon";
 
 export const SwitchTheme = () => {
 	const mode = useSelector((state: RootState) => state.ui.mode);
@@ -31,17 +32,7 @@ export const SwitchTheme = () => {
 					},
 			}}
 		>
-			{mode === "light" ? (
-				<Moon
-					size={16}
-					strokeWidth={1.5}
-				/>
-			) : (
-				<Sun
-					size={16}
-					strokeWidth={1.5}
-				/>
-			)}
+			{mode === "light" ? <Icon icon={Moon} /> : <Icon icon={Sun} />}
 		</IconButton>
 	);
 };

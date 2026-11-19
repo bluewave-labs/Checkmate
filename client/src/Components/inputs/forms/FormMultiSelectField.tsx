@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import { Autocomplete, Button, IconButton } from "@/Components/inputs";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import { BADGE_HEIGHT, SPACING, LAYOUT } from "@/Utils/Theme/constants";
+import Icon from "@/Components/design-elements/Icon";
 
 const SELECTED_HEADER_HEIGHT = 32;
 const SELECTED_ROW_HEIGHT = 34;
@@ -88,9 +89,9 @@ export const FormMultiSelectField = <T extends FieldValues, O extends MultiSelec
 						aria-label={t("common.buttons.removeItem", { item: option.name })}
 						sx={{ color: theme.palette.neutral.icon }}
 					>
-						<X
+						<Icon
+							icon={X}
 							size={14}
-							strokeWidth={1.5}
 						/>
 					</IconButton>
 				);
@@ -142,9 +143,9 @@ export const FormMultiSelectField = <T extends FieldValues, O extends MultiSelec
 								display="inline-flex"
 								color={theme.palette.neutral.subdued}
 							>
-								<GripVertical
+								<Icon
+									icon={GripVertical}
 									size={14}
-									strokeWidth={1.5}
 								/>
 							</Box>
 						)}

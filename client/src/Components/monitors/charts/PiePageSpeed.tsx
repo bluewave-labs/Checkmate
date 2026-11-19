@@ -1,4 +1,4 @@
-import { BaseChart, Tooltip } from "@/Components/design-elements";
+import { BaseChart, Tooltip, Icon } from "@/Components/design-elements";
 import { FileText } from "lucide-react";
 import type { CheckAudits, CheckSnapshot } from "@/Types/Check";
 import { Pie, PieChart, ResponsiveContainer, Label } from "recharts";
@@ -91,9 +91,9 @@ export const PiePageSpeed = ({ latestCheck }: { latestCheck?: CheckSnapshot }) =
 	return (
 		<BaseChart
 			icon={
-				<FileText
+				<Icon
+					icon={FileText}
 					size={20}
-					strokeWidth={1.5}
 				/>
 			}
 			title={t("pages.pageSpeed.charts.pie.title")}

@@ -69,7 +69,10 @@ export const HeaderStatusPageControls = ({
 							{t("components.headerStatusPageControls.publicLink")}
 						</Typography>
 						<Box>
-							<ExternalLink size={14} />
+							<Icon
+								icon={ExternalLink}
+								size={14}
+							/>
 						</Box>
 					</>
 				)}
