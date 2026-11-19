@@ -9,6 +9,7 @@ import { getResponseTimeColor } from "@/Utils/MonitorUtils";
 import type { GroupedCheck } from "@/Types/Check";
 import { useFormatDate } from "@/Hooks/useFormatDate";
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 
 interface XLabelProps {
 	p1: GroupedCheck;
@@ -27,7 +28,7 @@ const XLabel = ({ p1, p2, range }: XLabelProps) => {
 				y="100%"
 				dy={-3}
 				textAnchor="start"
-				fontSize={11}
+				fontSize={typographyLevels.s}
 				fill={theme.palette.neutral.tertiary}
 			>
 				{formatDate(p1.bucketDate, dateFormat)}
@@ -37,7 +38,7 @@ const XLabel = ({ p1, p2, range }: XLabelProps) => {
 				y="100%"
 				dy={-3}
 				textAnchor="end"
-				fontSize={11}
+				fontSize={typographyLevels.s}
 				fill={theme.palette.neutral.tertiary}
 			>
 				{formatDate(p2.bucketDate, dateFormat)}

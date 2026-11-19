@@ -151,6 +151,7 @@ const ICON_MESSAGE =
 const CONVENTION_EXEMPT_FILES = [
 	"src/Pages/StatusPage/Status/themes/**",
 	"src/Components/whats-new/**",
+	"src/Pages/Auth/components/AuthBrandPanel.tsx",
 ];
 const noDirectLucideIcon = {
 	meta: { type: "problem", schema: [], messages: { useIcon: ICON_MESSAGE } },
@@ -214,6 +215,10 @@ const collectRawSizes = (node, found = []) => {
 	}
 	return found;
 };
+const isIconSelector = (node) =>
+	node?.type === "Property" &&
+	typeof node.key.value === "string" &&
+	node.key.value.includes(".MuiSvgIcon-root");
 const noRawFontSize = {
 	meta: { type: "problem", schema: [], messages: { useToken: FONT_SIZE_MESSAGE } },
 	create(context) {
@@ -230,6 +235,7 @@ const noRawFontSize = {
 			Property(node) {
 				if (node.computed) return;
 				if (node.key.name !== "fontSize" && node.key.value !== "fontSize") return;
+				if (isIconSelector(node.parent.parent)) return;
 				report(node.value);
 			},
 		};
@@ -322,7 +328,7 @@ export default [
 	{
 		files: ["src/**/*.{js,jsx,ts,tsx}"],
 		ignores: CONVENTION_EXEMPT_FILES,
-		rules: { "checkmate/no-raw-font-size": "warn" },
+		rules: { "checkmate/no-raw-font-size": "error" },
 	},
 	{
 		files: DAYJS_ALLOWED_FILES,

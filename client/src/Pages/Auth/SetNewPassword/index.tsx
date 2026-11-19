@@ -1,4 +1,5 @@
-import { BaseAuthPage, BulletPointCheck, TextLink } from "@/Components/design-elements";
+import { BulletPointCheck, TextLink } from "@/Components/design-elements";
+import { BaseAuthPage } from "@/Pages/Auth/components/BaseAuthPage";
 import { Button } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
