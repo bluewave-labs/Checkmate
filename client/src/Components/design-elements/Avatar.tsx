@@ -1,6 +1,5 @@
 import { Avatar as MuiAvatar } from "@mui/material";
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material";
 import type { RootState } from "@/Types/state";
 
