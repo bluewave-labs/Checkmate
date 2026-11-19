@@ -71,6 +71,7 @@ export interface StatusPage {
 	showUptimePercentage: boolean;
 	showAdminLoginLink: boolean;
 	showInfrastructure: boolean;
+	showMonitorUrls: boolean;
 	customCSS: string;
 	theme: StatusPageTheme;
 	themeMode: StatusPageThemeMode;

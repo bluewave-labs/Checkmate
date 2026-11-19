@@ -28,6 +28,7 @@ export const statusPageSchema = z
 		showUptimePercentage: z.boolean(),
 		showAdminLoginLink: z.boolean(),
 		showInfrastructure: z.boolean(),
+		showMonitorUrls: z.boolean(),
 		customCSS: z.string(),
 		theme: z.enum(StatusPageThemes),
 		themeMode: z.enum(StatusPageThemeModes),
@@ -36,7 +37,7 @@ export const statusPageSchema = z
 	})
 	.meta({ id: "StatusPage" });
 
-// url and port are present only when the showURL setting is enabled; dailyChecks only when range !== "latest".
+// url and port are present only when global and per-page URL visibility are enabled; dailyChecks only when range !== "latest".
 export const publicStatusPageMonitorSchema = monitorResponseSchema
 	.pick({ id: true, name: true, type: true, status: true, uptimePercentage: true, recentChecks: true })
 	.extend({
@@ -64,6 +65,7 @@ const publicStatusPagePayloadExample = {
 		showUptimePercentage: true,
 		showAdminLoginLink: false,
 		showInfrastructure: false,
+		showMonitorUrls: false,
 		customCSS: "",
 		theme: "refined",
 		themeMode: "auto",

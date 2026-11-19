@@ -18,6 +18,16 @@ describe("createStatusPageBodyValidation", () => {
 		expect(result.success).toBe(true);
 	});
 
+	it("accepts the per-status-page monitor URL visibility setting", () => {
+		for (const showMonitorUrls of ["true", "false"]) {
+			const result = createStatusPageBodyValidation.safeParse(baseCreateBody({ showMonitorUrls }));
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.showMonitorUrls).toBe(showMonitorUrls === "true");
+			}
+		}
+	});
+
 	it("accepts and preserves customCSS", () => {
 		const customCSS = ".status-page > footer { display: none; }";
 		const result = createStatusPageBodyValidation.safeParse(baseCreateBody({ customCSS }));

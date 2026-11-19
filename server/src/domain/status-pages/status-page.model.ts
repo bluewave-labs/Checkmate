@@ -123,6 +123,10 @@ const StatusPageSchema = new Schema<StatusPageDocument>(
 			type: Boolean,
 			default: false,
 		},
+		showMonitorUrls: {
+			type: Boolean,
+			default: false,
+		},
 		customCSS: {
 			type: String,
 			default: "",

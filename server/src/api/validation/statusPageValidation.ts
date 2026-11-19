@@ -61,6 +61,7 @@ export const createStatusPageBodyValidation = z
 		showUptimePercentage: booleanCoercion,
 		showAdminLoginLink: booleanCoercion.optional(),
 		showInfrastructure: booleanCoercion.optional(),
+		showMonitorUrls: booleanCoercion.optional(),
 		customCSS: z
 			.string()
 			.max(100000, "Custom CSS must be at most 100000 characters")

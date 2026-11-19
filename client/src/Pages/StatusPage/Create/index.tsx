@@ -190,6 +190,7 @@ const CreateStatusPage = () => {
 		fd.append("showUptimePercentage", String(data.showUptimePercentage));
 		fd.append("showAdminLoginLink", String(data.showAdminLoginLink));
 		fd.append("showInfrastructure", String(data.showInfrastructure));
+		fd.append("showMonitorUrls", String(data.showMonitorUrls));
 		fd.append("customCSS", data.customCSS ?? "");
 		if (data.theme) fd.append("theme", data.theme);
 		if (data.themeMode) fd.append("themeMode", data.themeMode);
@@ -406,6 +407,12 @@ const CreateStatusPage = () => {
 									name="showInfrastructure"
 									label={t(
 										"pages.statusPages.form.features.option.showInfrastructure.label"
+									)}
+								/>
+								<FormCheckboxField
+									name="showMonitorUrls"
+									label={t(
+										"pages.statusPages.form.features.option.showMonitorUrls.label"
 									)}
 								/>
 								{/* 
