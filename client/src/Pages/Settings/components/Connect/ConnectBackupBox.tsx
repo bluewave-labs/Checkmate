@@ -68,7 +68,7 @@ export const ConnectBackupBox = ({
 			subtitle={t("pages.settings.form.connect.backup.description")}
 			rightContent={
 				<Stack
-					gap={theme.spacing(LAYOUT.SM)}
+					gap={theme.spacing(LAYOUT.MD)}
 					alignItems="flex-start"
 				>
 					<ConnectOperationStatus
@@ -84,7 +84,7 @@ export const ConnectBackupBox = ({
 					{toolsReady && recoveryKeySet && (
 						<Stack
 							direction="row"
-							gap={theme.spacing(LAYOUT.SM)}
+							gap={theme.spacing(LAYOUT.XS)}
 						>
 							<TipButton
 								tip={t("pages.settings.form.connect.tooltips.runFull")}

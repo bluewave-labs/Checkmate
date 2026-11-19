@@ -43,7 +43,7 @@ export const HeaderAuthControls = ({
 			</Stack>
 			<Stack
 				direction="row"
-				spacing={theme.spacing(2)}
+				spacing={theme.spacing(LAYOUT.XS)}
 				alignItems="center"
 			>
 				<LanguageSelector />

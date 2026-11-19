@@ -59,7 +59,7 @@ export const HeaderMonitorControls = ({
 			<Stack
 				width={{ xs: "100%", md: "auto" }}
 				direction={{ xs: "column", md: "row" }}
-				gap={theme.spacing(LAYOUT.XXS)}
+				gap={theme.spacing(LAYOUT.XS)}
 			>
 				{isAdmin && (
 					<Button
@@ -145,7 +145,7 @@ export const HeaderDeleteControls = ({
 			<Stack
 				width={{ xs: "100%", md: "auto" }}
 				direction={{ xs: "column", md: "row" }}
-				gap={theme.spacing(LAYOUT.XXS)}
+				gap={theme.spacing(LAYOUT.XS)}
 			>
 				{isAdmin && (
 					<Button

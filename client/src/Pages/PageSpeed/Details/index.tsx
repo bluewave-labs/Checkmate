@@ -77,7 +77,7 @@ const PageSpeedDetails = () => {
 			/>
 			<Stack
 				direction={{ xs: "column", md: "row" }}
-				gap={theme.spacing(LAYOUT.LG)}
+				gap={theme.spacing(LAYOUT.MD)}
 			>
 				<PiePageSpeed latestCheck={latestCheck} />
 				<PiePageSpeedLegend latestCheck={latestCheck} />

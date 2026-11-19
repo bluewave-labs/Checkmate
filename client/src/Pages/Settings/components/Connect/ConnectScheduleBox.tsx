@@ -38,7 +38,7 @@ export const ConnectScheduleBox = ({
 			subtitle={t("pages.settings.form.connect.schedule.description")}
 			rightContent={
 				<Stack
-					gap={theme.spacing(LAYOUT.SM)}
+					gap={theme.spacing(LAYOUT.MD)}
 					alignItems="flex-start"
 				>
 					<SwitchComponent

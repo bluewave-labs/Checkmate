@@ -26,12 +26,12 @@ export const ConnectStatusBox = ({ status }: { status: ConnectStatus }) => {
 			subtitle={t("pages.settings.form.connect.status.description")}
 			rightContent={
 				<Stack
-					gap={theme.spacing(LAYOUT.SM)}
+					gap={theme.spacing(LAYOUT.MD)}
 					alignItems="flex-start"
 				>
 					<Stack
 						direction="row"
-						gap={theme.spacing(LAYOUT.SM)}
+						gap={theme.spacing(LAYOUT.XS)}
 					>
 						<ValueLabel
 							value={status.enrolled ? "positive" : "neutral"}

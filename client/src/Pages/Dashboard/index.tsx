@@ -142,7 +142,7 @@ const Dashboard = () => {
 				<Stack
 					direction="row"
 					justifyContent="flex-end"
-					gap={theme.spacing(LAYOUT.SM)}
+					gap={theme.spacing(LAYOUT.XS)}
 				>
 					{arranging ? (
 						<>

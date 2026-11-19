@@ -1,7 +1,7 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { logger } from "@/Utils/logger";
-import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
+import { LAYOUT } from "@/Utils/Theme/constants";
 import { BasePage, ColoredLabel, ConfigBox } from "@/Components/design-elements";
 import { Button } from "@/Components/inputs";
 
@@ -234,7 +234,7 @@ const CreateMaintenanceWindowPage = () => {
 				<Stack
 					direction="row"
 					justifyContent="flex-end"
-					spacing={theme.spacing(SPACING.LG)}
+					spacing={theme.spacing(LAYOUT.XS)}
 				>
 					<Button
 						loading={isLoading}
