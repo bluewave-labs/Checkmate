@@ -1753,7 +1753,7 @@
 						"remoteAccessOff": "ปิดการเข้าถึงระยะไกล",
 						"agentId": "ID เอเจนต์",
 						"lastConnected": "เชื่อมต่อล่าสุด",
-						"siteLink": "เปิด checkmateconnect.io"
+						"siteLink": "เปิด {{site}}"
 					},
 					"getStarted": {
 						"title": "เริ่มต้นใช้งาน",
@@ -1761,7 +1761,7 @@
 						"steps": {
 							"account": {
 								"title": "สร้างบัญชี Connect",
-								"body": "สมัครที่ checkmateconnect.io ด้วยอีเมลและรหัสผ่าน"
+								"body": "สมัครที่ {{site}} ด้วยอีเมลและรหัสผ่าน"
 							},
 							"server": {
 								"title": "เพิ่มเซิร์ฟเวอร์",
@@ -1776,7 +1776,7 @@
 								"body": "ที่อยู่ Connect ของคุณจะใช้งานได้เมื่ออุโมงค์เชื่อมต่อแล้ว"
 							}
 						},
-						"button": "ไปที่ checkmateconnect.io"
+						"button": "ไปที่ {{site}}"
 					},
 					"enroll": {
 						"title": "ลงทะเบียนการติดตั้ง",

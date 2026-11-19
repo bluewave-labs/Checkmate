@@ -1759,7 +1759,7 @@
 						"remoteAccessOff": "Віддалений доступ вимкнено",
 						"agentId": "ID агента",
 						"lastConnected": "Останнє підключення",
-						"siteLink": "Відкрити checkmateconnect.io"
+						"siteLink": "Відкрити {{site}}"
 					},
 					"getStarted": {
 						"title": "Початок роботи",
@@ -1767,7 +1767,7 @@
 						"steps": {
 							"account": {
 								"title": "Створіть обліковий запис Connect",
-								"body": "Зареєструйтеся на checkmateconnect.io за допомогою електронної пошти та пароля."
+								"body": "Зареєструйтеся на {{site}} за допомогою електронної пошти та пароля."
 							},
 							"server": {
 								"title": "Додайте сервер",
@@ -1782,7 +1782,7 @@
 								"body": "Ваша адреса Connect запрацює, щойно тунель підключиться."
 							}
 						},
-						"button": "Перейти на checkmateconnect.io"
+						"button": "Перейти на {{site}}"
 					},
 					"enroll": {
 						"title": "Зареєструвати інсталяцію",

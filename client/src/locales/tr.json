@@ -1755,7 +1755,7 @@
 						"remoteAccessOff": "Uzaktan erişim kapalı",
 						"agentId": "Ajan ID",
 						"lastConnected": "Son bağlantı",
-						"siteLink": "checkmateconnect.io'yu aç"
+						"siteLink": "{{site}}'yu aç"
 					},
 					"getStarted": {
 						"title": "Başlarken",
@@ -1763,7 +1763,7 @@
 						"steps": {
 							"account": {
 								"title": "Connect hesabı oluşturun",
-								"body": "checkmateconnect.io adresinde bir e-posta adresi ve parolayla kaydolun."
+								"body": "{{site}} adresinde bir e-posta adresi ve parolayla kaydolun."
 							},
 							"server": {
 								"title": "Sunucunuzu ekleyin",
@@ -1778,7 +1778,7 @@
 								"body": "Tünel bağlandığında Connect adresiniz kullanılabilir hale gelir."
 							}
 						},
-						"button": "checkmateconnect.io'ya git"
+						"button": "{{site}}'ya git"
 					},
 					"enroll": {
 						"title": "Kurulum kaydı",

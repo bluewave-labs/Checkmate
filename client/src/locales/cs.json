@@ -1759,7 +1759,7 @@
 						"remoteAccessOff": "Vzdálený přístup vypnut",
 						"agentId": "ID agenta",
 						"lastConnected": "Naposledy připojeno",
-						"siteLink": "Otevřít checkmateconnect.io"
+						"siteLink": "Otevřít {{site}}"
 					},
 					"getStarted": {
 						"title": "Začínáme",
@@ -1767,7 +1767,7 @@
 						"steps": {
 							"account": {
 								"title": "Vytvořte si účet Connect",
-								"body": "Zaregistrujte se na checkmateconnect.io pomocí e-mailu a hesla."
+								"body": "Zaregistrujte se na {{site}} pomocí e-mailu a hesla."
 							},
 							"server": {
 								"title": "Přidejte server",
@@ -1782,7 +1782,7 @@
 								"body": "Vaše adresa Connect začne fungovat, jakmile se tunel připojí."
 							}
 						},
-						"button": "Přejít na checkmateconnect.io"
+						"button": "Přejít na {{site}}"
 					},
 					"enroll": {
 						"title": "Zaregistrovat instalaci",

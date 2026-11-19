@@ -6,7 +6,7 @@ import type { LucideIcon } from "lucide-react";
 import { ConfigBox, StepList } from "@/Components/design-elements";
 import { Button } from "@/Components/inputs";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { CONNECT_SITE_URL } from "./constants";
+import { CONNECT_SITE_HOST, CONNECT_SITE_URL } from "./constants";
 
 const STEPS = ["account", "server", "paste", "remoteAccess"] as const;
 type Step = (typeof STEPS)[number];
@@ -27,7 +27,7 @@ export const ConnectGetStartedBox = () => {
 	const steps = STEPS.map((step) => ({
 		icon: STEP_ICONS[step],
 		title: t(stepKey(step, "title")),
-		description: t(stepKey(step, "body")),
+		description: t(stepKey(step, "body"), { site: CONNECT_SITE_HOST }),
 	}));
 
 	return (
@@ -46,7 +46,9 @@ export const ConnectGetStartedBox = () => {
 						target="_blank"
 						rel="noopener noreferrer"
 					>
-						{t("pages.settings.form.connect.getStarted.button")}
+						{t("pages.settings.form.connect.getStarted.button", {
+							site: CONNECT_SITE_HOST,
+						})}
 					</Button>
 				</Stack>
 			}

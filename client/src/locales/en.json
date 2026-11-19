@@ -1823,7 +1823,7 @@
 						"remoteAccessOff": "Remote access off",
 						"agentId": "Agent ID",
 						"lastConnected": "Last connected",
-						"siteLink": "Open checkmateconnect.io"
+						"siteLink": "Open {{site}}"
 					},
 					"getStarted": {
 						"title": "Get started",
@@ -1831,7 +1831,7 @@
 						"steps": {
 							"account": {
 								"title": "Create a Connect account",
-								"body": "Sign up at checkmateconnect.io with an email address and a password."
+								"body": "Sign up at {{site}} with an email address and a password."
 							},
 							"server": {
 								"title": "Add your server",
@@ -1846,7 +1846,7 @@
 								"body": "Your Connect address goes live once the tunnel connects."
 							}
 						},
-						"button": "Go to checkmateconnect.io"
+						"button": "Go to {{site}}"
 					},
 					"enroll": {
 						"title": "Enroll installation",

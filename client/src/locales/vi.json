@@ -1753,7 +1753,7 @@
 						"remoteAccessOff": "Truy cập từ xa đã tắt",
 						"agentId": "ID tác tử",
 						"lastConnected": "Kết nối lần cuối",
-						"siteLink": "Mở checkmateconnect.io"
+						"siteLink": "Mở {{site}}"
 					},
 					"getStarted": {
 						"title": "Bắt đầu",
@@ -1761,7 +1761,7 @@
 						"steps": {
 							"account": {
 								"title": "Tạo tài khoản Connect",
-								"body": "Đăng ký tại checkmateconnect.io bằng địa chỉ email và mật khẩu."
+								"body": "Đăng ký tại {{site}} bằng địa chỉ email và mật khẩu."
 							},
 							"server": {
 								"title": "Thêm máy chủ",
@@ -1776,7 +1776,7 @@
 								"body": "Địa chỉ Connect của bạn sẽ hoạt động khi đường hầm được kết nối."
 							}
 						},
-						"button": "Đến checkmateconnect.io"
+						"button": "Đến {{site}}"
 					},
 					"enroll": {
 						"title": "Đăng ký bản cài đặt",

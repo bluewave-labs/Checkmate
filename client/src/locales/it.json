@@ -1756,7 +1756,7 @@
 						"remoteAccessOff": "Accesso remoto disattivato",
 						"agentId": "ID agente",
 						"lastConnected": "Ultima connessione",
-						"siteLink": "Apri checkmateconnect.io"
+						"siteLink": "Apri {{site}}"
 					},
 					"getStarted": {
 						"title": "Per iniziare",
@@ -1764,7 +1764,7 @@
 						"steps": {
 							"account": {
 								"title": "Crea un account Connect",
-								"body": "Registrati su checkmateconnect.io con un indirizzo email e una password."
+								"body": "Registrati su {{site}} con un indirizzo email e una password."
 							},
 							"server": {
 								"title": "Aggiungi il server",
@@ -1779,7 +1779,7 @@
 								"body": "Il tuo indirizzo Connect diventa attivo appena il tunnel si connette."
 							}
 						},
-						"button": "Vai a checkmateconnect.io"
+						"button": "Vai a {{site}}"
 					},
 					"enroll": {
 						"title": "Registra installazione",

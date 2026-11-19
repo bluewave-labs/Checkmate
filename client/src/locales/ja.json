@@ -1753,7 +1753,7 @@
 						"remoteAccessOff": "リモートアクセスオフ",
 						"agentId": "エージェントID",
 						"lastConnected": "最終接続",
-						"siteLink": "checkmateconnect.io を開く"
+						"siteLink": "{{site}} を開く"
 					},
 					"getStarted": {
 						"title": "はじめに",
@@ -1761,7 +1761,7 @@
 						"steps": {
 							"account": {
 								"title": "Connect アカウントを作成",
-								"body": "checkmateconnect.io でメールアドレスとパスワードを使って登録します。"
+								"body": "{{site}} でメールアドレスとパスワードを使って登録します。"
 							},
 							"server": {
 								"title": "サーバーを追加",
@@ -1776,7 +1776,7 @@
 								"body": "トンネルが接続されると、Connect のアドレスが使えるようになります。"
 							}
 						},
-						"button": "checkmateconnect.io へ移動"
+						"button": "{{site}} へ移動"
 					},
 					"enroll": {
 						"title": "インストールを登録",

@@ -1753,7 +1753,7 @@
 						"remoteAccessOff": "远程访问已关闭",
 						"agentId": "代理 ID",
 						"lastConnected": "上次连接",
-						"siteLink": "打开 checkmateconnect.io"
+						"siteLink": "打开 {{site}}"
 					},
 					"getStarted": {
 						"title": "开始使用",
@@ -1761,7 +1761,7 @@
 						"steps": {
 							"account": {
 								"title": "创建 Connect 账户",
-								"body": "在 checkmateconnect.io 使用邮箱地址和密码注册。"
+								"body": "在 {{site}} 使用邮箱地址和密码注册。"
 							},
 							"server": {
 								"title": "添加服务器",
@@ -1776,7 +1776,7 @@
 								"body": "隧道连接后，你的 Connect 地址即可使用。"
 							}
 						},
-						"button": "前往 checkmateconnect.io"
+						"button": "前往 {{site}}"
 					},
 					"enroll": {
 						"title": "注册安装实例",

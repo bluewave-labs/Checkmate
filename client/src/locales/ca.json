@@ -1756,7 +1756,7 @@
 						"remoteAccessOff": "Accés remot desactivat",
 						"agentId": "ID de l'agent",
 						"lastConnected": "Darrera connexió",
-						"siteLink": "Obre checkmateconnect.io"
+						"siteLink": "Obre {{site}}"
 					},
 					"getStarted": {
 						"title": "Comença",
@@ -1764,7 +1764,7 @@
 						"steps": {
 							"account": {
 								"title": "Crea un compte de Connect",
-								"body": "Registra't a checkmateconnect.io amb una adreça de correu i una contrasenya."
+								"body": "Registra't a {{site}} amb una adreça de correu i una contrasenya."
 							},
 							"server": {
 								"title": "Afegeix el servidor",
@@ -1779,7 +1779,7 @@
 								"body": "La teva adreça de Connect s'activa quan el túnel es connecta."
 							}
 						},
-						"button": "Ves a checkmateconnect.io"
+						"button": "Ves a {{site}}"
 					},
 					"enroll": {
 						"title": "Registra la instal·lació",
