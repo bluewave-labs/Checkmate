@@ -144,6 +144,7 @@ The theme exposes tokens for every kind of magic value. Use them. Reserve raw nu
   - `SPACING` for `theme.spacing(...)` multipliers
 - **Typography sizes** — `client/src/Utils/Theme/Palette.ts` → `typographyLevels`
   - `s / sm / m / l / xl / xxl / xxxl` (rem values; 11, 12, 13, 14, 18, 20, 24 px)
+- **Font weights** — `client/src/Utils/Theme/Palette.ts` → `fontWeights` (`regular` 400 · `medium` 500 · `semibold` 600)
 - **Hover / interaction** — `HOVER.DARKEN` etc.
 - **Shape** — `theme.shape.borderRadius` (don't write `borderRadius: 1` or `borderRadius: 4`)
 - **Colors** — `theme.palette.*` (rule 2 above), including `theme.palette.neutral.*` for raised fills, borders, dividers, icon and muted text greys, and the hover and selected greens

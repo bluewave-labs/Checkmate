@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import { Check, ChevronDown } from "lucide-react";
 import { Menu, MenuItem } from "@/Components/inputs";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 import { INPUT_BASE_HEIGHT, LAYOUT } from "@/Utils/Theme/constants";
 import Icon from "@/Components/design-elements/Icon";
 
@@ -106,7 +106,7 @@ export const FilterChip = (props: SingleProps | MultipleProps) => {
 					{label}:{" "}
 					<Box
 						component="span"
-						fontWeight={isSet ? 500 : 400}
+						fontWeight={isSet ? fontWeights.medium : fontWeights.regular}
 					>
 						{valueText}
 					</Box>

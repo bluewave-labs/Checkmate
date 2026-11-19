@@ -15,7 +15,7 @@ import {
 	TAG_HEIGHT,
 	STATUS_DOT_SIZE,
 } from "@/Utils/Theme/constants";
-import { typographyLevels, type SignalKey } from "@/Utils/Theme/Palette";
+import { typographyLevels, type SignalKey, fontWeights } from "@/Utils/Theme/Palette";
 
 const TAG_TINT = { BG_LIGHT: 0.14, BG_DARK: 0.2, TEXT_SHIFT: 0.35 } as const;
 
@@ -67,7 +67,7 @@ const SignalBadge = ({
 			bgcolor={tone.bg}
 			color={tone.text}
 			fontSize={typographyLevels.s}
-			fontWeight={500}
+			fontWeight={fontWeights.medium}
 			lineHeight={1}
 			whiteSpace="nowrap"
 			sx={{ ...(tabular && { fontVariantNumeric: "tabular-nums" }), ...sx }}
@@ -160,7 +160,7 @@ export const ColoredLabel = ({ text, color }: { text: string; color: string }) =
 			bgcolor={bg}
 			color={fg}
 			fontSize={typographyLevels.sm}
-			fontWeight={500}
+			fontWeight={fontWeights.medium}
 			lineHeight={1}
 			whiteSpace="nowrap"
 		>

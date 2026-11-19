@@ -72,6 +72,7 @@ import {
 	toCanonicalTimezone,
 	type TimeFormat,
 } from "@/Utils/TimeUtils";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 const SETTINGS_TABS = [
 	{
@@ -1295,7 +1296,10 @@ export const SettingsPage = () => {
 								<Alert severity="error">
 									<Typography
 										variant="body2"
-										sx={{ fontWeight: 600, mb: theme.spacing(SPACING.SM) }}
+										sx={{
+											fontWeight: fontWeights.semibold,
+											mb: theme.spacing(SPACING.SM),
+										}}
 									>
 										{t("pages.settings.form.validation.errorMessage")}
 									</Typography>

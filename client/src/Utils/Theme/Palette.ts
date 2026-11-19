@@ -15,6 +15,12 @@ export const typographyLevels = {
 	xxxl: `${(typographyBase + 11) / 16}rem`,
 };
 
+export const fontWeights = {
+	regular: 400,
+	medium: 500,
+	semibold: 600,
+} as const;
+
 export const colors = {
 	teal600: "#008B91",
 	brandGreenDark: "#075443",

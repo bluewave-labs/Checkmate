@@ -3,7 +3,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { typographyLevels, toSignalKey } from "@/Utils/Theme/Palette";
+import { typographyLevels, toSignalKey, fontWeights } from "@/Utils/Theme/Palette";
 import type { PaletteKey } from "@/Utils/Theme/Theme";
 import { BaseBox, TooltipWithInfo } from "@/Components/design-elements";
 import type { SxProps } from "@mui/material";
@@ -100,7 +100,7 @@ export const StatBox = ({
 					<Typography
 						color={valueColor}
 						fontSize={typographyLevels.xl}
-						fontWeight={600}
+						fontWeight={fontWeights.semibold}
 						lineHeight={1.3}
 						sx={{ fontVariantNumeric: "tabular-nums" }}
 					>

@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import useSidebar from "@/Hooks/useSidebar";
 import KingIcon from "@/assets/icons/checkmate-icon.svg?react";
 import { IconButton } from "@/Components/inputs";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 const ToggleButton = ({ expand, sx }: { expand: boolean; sx?: object }) => {
 	const { t } = useTranslation();
@@ -112,7 +113,7 @@ export const Logo = (props: StackProps) => {
 					lineHeight={1}
 					mt={theme.spacing(LAYOUT.XXS)}
 					variant="h2"
-					fontWeight={500}
+					fontWeight={fontWeights.medium}
 				>
 					{t("common.appName")}
 				</Typography>

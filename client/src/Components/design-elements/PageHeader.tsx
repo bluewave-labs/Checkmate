@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { ChevronLeft, HelpCircle, FileText, Code } from "lucide-react";
 import { INPUT_BASE_HEIGHT, LAYOUT, SPACING } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 import { useAppVersion } from "@/Hooks/useAppVersion";
 import { PulseDot } from "@/Components/design-elements/PulseDot";
 import { formatVersion } from "@/Utils/FormatUtils";
@@ -90,7 +90,7 @@ export const PageHeader = ({
 				<Typography
 					component="h1"
 					fontSize={typographyLevels.xxl}
-					fontWeight={500}
+					fontWeight={fontWeights.medium}
 					color={theme.palette.text.primary}
 					lineHeight={1.3}
 					letterSpacing="-0.02em"

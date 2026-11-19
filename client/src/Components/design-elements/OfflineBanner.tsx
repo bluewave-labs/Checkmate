@@ -7,6 +7,7 @@ import { WifiOff } from "lucide-react";
 import { useState, useEffect } from "react";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import Icon from "./Icon";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 interface OfflineBannerProps {
 	visible: boolean;
@@ -58,7 +59,7 @@ export const OfflineBanner = ({ visible }: OfflineBannerProps) => {
 				/>
 				<Typography
 					variant="body2"
-					fontWeight={500}
+					fontWeight={fontWeights.medium}
 				>
 					{t("components.offlineBanner.serverUnreachable")}
 				</Typography>

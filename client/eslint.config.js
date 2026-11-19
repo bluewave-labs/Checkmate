@@ -319,12 +319,40 @@ const noRawSpacingProps = {
 		};
 	},
 };
+const FONT_WEIGHT_MESSAGE =
+	"Use a fontWeights token for fontWeight, not a raw value: fontWeight={fontWeights.medium}.";
+const INHERITED_KEYWORDS = ["inherit", "initial", "unset"];
+const isRawWeight = (value) =>
+	typeof value === "number" ||
+	(typeof value === "string" && !INHERITED_KEYWORDS.includes(value));
+const noRawFontWeight = {
+	meta: { type: "problem", schema: [], messages: { useToken: FONT_WEIGHT_MESSAGE } },
+	create(context) {
+		const report = (value) => {
+			for (const node of collectRawValues(value, isRawWeight)) {
+				context.report({ node, messageId: "useToken" });
+			}
+		};
+		return {
+			JSXAttribute(node) {
+				if (node.name.name !== "fontWeight") return;
+				report(node.value);
+			},
+			Property(node) {
+				if (node.computed) return;
+				if ((node.key.name ?? node.key.value) !== "fontWeight") return;
+				report(node.value);
+			},
+		};
+	},
+};
 const checkmate = {
 	rules: {
 		"no-direct-lucide-icon": noDirectLucideIcon,
 		"no-raw-spacing": noRawSpacing,
 		"no-raw-font-size": noRawFontSize,
 		"no-raw-spacing-props": noRawSpacingProps,
+		"no-raw-font-weight": noRawFontWeight,
 	},
 };
 
@@ -413,6 +441,11 @@ export default [
 		files: ["src/**/*.{js,jsx,ts,tsx}"],
 		ignores: CONVENTION_EXEMPT_FILES,
 		rules: { "checkmate/no-raw-spacing-props": "error" },
+	},
+	{
+		files: ["src/**/*.{js,jsx,ts,tsx}"],
+		ignores: CONVENTION_EXEMPT_FILES,
+		rules: { "checkmate/no-raw-font-weight": "error" },
 	},
 	{
 		files: DAYJS_ALLOWED_FILES,

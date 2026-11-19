@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { LanguageSelector, SwitchTheme } from "@/Components/inputs";
 import { AuthBrandPanel } from "./AuthBrandPanel";
 import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 
 interface BaseAuthPageProps extends React.PropsWithChildren, StackProps {
 	title: string;
@@ -76,7 +76,7 @@ export const BaseAuthPage = ({
 						</Box>
 						<Typography
 							sx={{
-								fontWeight: 500,
+								fontWeight: fontWeights.medium,
 								letterSpacing: "-0.01em",
 								fontSize: typographyLevels.l,
 							}}
@@ -88,7 +88,7 @@ export const BaseAuthPage = ({
 						<Typography
 							sx={{
 								fontSize: typographyLevels.xxxl,
-								fontWeight: 400,
+								fontWeight: fontWeights.regular,
 								lineHeight: 1.15,
 								letterSpacing: "-0.02em",
 								color: theme.palette.text.primary,

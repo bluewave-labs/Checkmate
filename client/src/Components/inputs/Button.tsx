@@ -2,7 +2,7 @@ import Button from "@mui/material/Button";
 import type { ButtonProps } from "@mui/material/Button";
 import { useTheme, darken } from "@mui/material/styles";
 import { INPUT_BASE_HEIGHT, HOVER, LAYOUT } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 
 type ButtonInputProps = ButtonProps &
 	Pick<React.AnchorHTMLAttributes<HTMLAnchorElement>, "target" | "rel">;
@@ -60,7 +60,7 @@ export const ButtonInput = ({ sx, ...props }: ButtonInputProps) => {
 				height: INPUT_BASE_HEIGHT,
 				fontSize: isSmall ? typographyLevels.sm : typographyLevels.m,
 				lineHeight: 1.2,
-				fontWeight: 500,
+				fontWeight: fontWeights.medium,
 				borderRadius: theme.shape.borderRadius,
 				whiteSpace: "nowrap",
 				textOverflow: "ellipsis",

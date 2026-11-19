@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { IconButton } from "@/Components/inputs";
 import { SPACING } from "@/Utils/Theme/constants";
 import Icon from "@/Components/design-elements/Icon";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 interface FileObject {
 	src: string;
@@ -149,7 +150,7 @@ export const ImageUpload = ({
 							component="span"
 							variant="body2"
 							color="primary"
-							fontWeight={500}
+							fontWeight={fontWeights.medium}
 						>
 							{t("components.imageUpload.clickToUpload")}
 						</Typography>{" "}

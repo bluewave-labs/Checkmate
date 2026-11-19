@@ -7,6 +7,7 @@ import {
 	type SignalTone,
 	type SidebarGroupKey,
 	type GroupTone,
+	fontWeights,
 } from "@/Utils/Theme/Palette";
 
 import type { PaletteMode, PaletteOptions, Theme } from "@mui/material/styles";
@@ -113,16 +114,28 @@ export const theme = (mode: PaletteMode, palette: PaletteOptions) =>
 			fontSize: typographyLevels.base,
 			h1: {
 				fontSize: typographyLevels.xxxl,
-				fontWeight: 600,
+				fontWeight: fontWeights.semibold,
 				lineHeight: 1.3,
 				letterSpacing: "-0.02em",
 			},
-			h2: { fontSize: typographyLevels.l, fontWeight: 600, lineHeight: 1.4 },
-			body1: { fontSize: typographyLevels.m, fontWeight: 400, lineHeight: 1.5 },
-			body2: { fontSize: typographyLevels.sm, fontWeight: 400, lineHeight: 1.5 },
+			h2: {
+				fontSize: typographyLevels.l,
+				fontWeight: fontWeights.semibold,
+				lineHeight: 1.4,
+			},
+			body1: {
+				fontSize: typographyLevels.m,
+				fontWeight: fontWeights.regular,
+				lineHeight: 1.5,
+			},
+			body2: {
+				fontSize: typographyLevels.sm,
+				fontWeight: fontWeights.regular,
+				lineHeight: 1.5,
+			},
 			eyebrow: {
 				fontSize: typographyLevels.s,
-				fontWeight: 500,
+				fontWeight: fontWeights.medium,
 				textTransform: "uppercase",
 				letterSpacing: "0.07em",
 				lineHeight: 1.4,
