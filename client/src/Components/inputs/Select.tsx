@@ -6,7 +6,7 @@ import Stack from "@mui/material/Stack";
 import { FieldLabel } from "./FieldLabel";
 import { ChevronDown } from "lucide-react";
 import Typography from "@mui/material/Typography";
-import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT, LAYOUT } from "@/Utils/Theme/constants";
 import Icon from "@/Components/design-elements/Icon";
 
 interface SelectInputProps<T> extends Omit<SelectProps<T>, "label"> {
@@ -102,7 +102,7 @@ const SelectInputInner = <T,>(
 
 	if (fieldLabel || helper) {
 		return (
-			<Stack spacing={theme.spacing(2)}>
+			<Stack spacing={theme.spacing(LAYOUT.XXS)}>
 				{fieldLabel && <FieldLabel required={required}>{fieldLabel}</FieldLabel>}
 				{select}
 				{helper}

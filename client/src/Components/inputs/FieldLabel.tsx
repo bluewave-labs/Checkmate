@@ -1,5 +1,6 @@
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface FieldLabelProps {
 	children: React.ReactNode;
@@ -20,7 +21,7 @@ export const FieldLabel = ({ children, required = false, htmlFor }: FieldLabelPr
 			sx={{
 				fontWeight: 500,
 				color: theme.palette.text.secondary,
-				marginBottom: theme.spacing(2),
+				marginBottom: theme.spacing(LAYOUT.XXS),
 				display: "block",
 			}}
 		>
@@ -29,7 +30,7 @@ export const FieldLabel = ({ children, required = false, htmlFor }: FieldLabelPr
 				<span
 					style={{
 						color: theme.palette.error.main,
-						marginLeft: theme.spacing(2),
+						marginLeft: theme.spacing(LAYOUT.XXS),
 					}}
 				>
 					*

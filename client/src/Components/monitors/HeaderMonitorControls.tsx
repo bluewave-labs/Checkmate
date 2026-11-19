@@ -18,7 +18,7 @@ const BaseHeader = ({ monitor, children }: React.PropsWithChildren<BaseHeaderPro
 	const theme = useTheme();
 	return (
 		<Stack
-			spacing={{ xs: theme.spacing(8), md: 0 }}
+			spacing={{ xs: theme.spacing(LAYOUT.MD), md: 0 }}
 			direction={{ xs: "column", md: "row" }}
 			alignItems={"center"}
 			justifyContent={"space-between"}

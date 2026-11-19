@@ -257,7 +257,7 @@ export const BaseAuthPage = ({
 				justifyContent="center"
 				position="relative"
 				px={theme.spacing(LAYOUT.MD)}
-				py={{ xs: theme.spacing(20), md: theme.spacing(12) }}
+				py={{ xs: theme.spacing(20), md: theme.spacing(LAYOUT.XL) }}
 			>
 				<Stack
 					direction="row"
@@ -288,7 +288,7 @@ export const BaseAuthPage = ({
 						direction="row"
 						alignItems="center"
 						gap={theme.spacing(SPACING.XXL)}
-						mb={theme.spacing(2)}
+						mb={theme.spacing(LAYOUT.XXS)}
 					>
 						<Box width={28}>
 							<Logo width="100%" />

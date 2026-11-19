@@ -20,7 +20,6 @@ const BreadcrumbWrapper = ({ children }: { children: ReactNode }) => {
 			separator={<Icon icon={ChevronRight} />}
 			sx={{
 				fontSize: "14px",
-				marginBottom: theme.spacing(6),
 				"& .MuiBreadcrumbs-separator": {
 					color: theme.palette.text.secondary,
 				},

@@ -25,7 +25,7 @@ export const HeaderAuthControls = ({
 			direction="row"
 			alignItems="center"
 			justifyContent="space-between"
-			px={theme.spacing(12)}
+			px={theme.spacing(LAYOUT.XL)}
 			gap={theme.spacing(LAYOUT.XS)}
 			{...stackProps}
 		>

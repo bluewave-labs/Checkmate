@@ -8,6 +8,7 @@ import { formatStatusCode } from "@/Utils/statusCode";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { formatMs } from "@/Utils/TimeUtils";
 import { useFormatDate } from "@/Hooks/useFormatDate";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface GeoChecksMapProps {
 	geoChecks: FlatGeoCheck[];
@@ -143,7 +144,7 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 						>
 							<Box
 								minWidth={200}
-								p={theme.spacing(4)}
+								p={theme.spacing(LAYOUT.XS)}
 								bgcolor={theme.palette.background.paper}
 								border={`1px solid ${theme.palette.divider}`}
 								borderRadius={theme.shape.borderRadius}

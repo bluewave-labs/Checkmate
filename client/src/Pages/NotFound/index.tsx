@@ -53,7 +53,7 @@ const NotFoundPage = ({ title, desc }: NotFoundProps) => {
 				<Button
 					variant="contained"
 					color="primary"
-					sx={{ mt: theme.spacing(10) }}
+					sx={{ mt: theme.spacing(LAYOUT.LG) }}
 					onClick={() => navigate("/")}
 				>
 					{t("common.buttons.notFound")}

@@ -31,7 +31,7 @@ const MetricBox = ({
 		>
 			<Stack
 				flex={1}
-				p={theme.spacing(4)}
+				p={theme.spacing(LAYOUT.XS)}
 			>
 				<Typography textTransform={"uppercase"}>{label}</Typography>
 				<Stack

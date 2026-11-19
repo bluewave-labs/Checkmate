@@ -4,7 +4,7 @@ import { typographyLevels } from "@/Utils/Theme/Palette";
 import { useTheme } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import { FieldLabel } from "@/Components/inputs/FieldLabel";
-import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT, LAYOUT } from "@/Utils/Theme/constants";
 
 interface ColorPickerProps extends MuiColorInputProps {
 	fieldLabel?: string;
@@ -38,7 +38,7 @@ export const ColorInput = ({ fieldLabel, required, ...props }: ColorPickerProps)
 	);
 	if (fieldLabel) {
 		return (
-			<Stack spacing={theme.spacing(2)}>
+			<Stack spacing={theme.spacing(LAYOUT.XXS)}>
 				<FieldLabel required={required}>{fieldLabel}</FieldLabel>
 				{input}
 			</Stack>

@@ -145,7 +145,7 @@ export const DetailGauge = ({
 		>
 			<Stack
 				alignItems={"center"}
-				mb={theme.spacing(4)}
+				mb={theme.spacing(LAYOUT.XS)}
 				gap={theme.spacing(LAYOUT.XS)}
 			>
 				<Gauge progress={progress} />

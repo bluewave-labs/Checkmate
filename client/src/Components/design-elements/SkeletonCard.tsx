@@ -40,7 +40,7 @@ export const SkeletonCard = ({
 		display: "flex",
 		gap: theme.spacing(LAYOUT.XS_PLUS),
 		alignItems: "center",
-		padding: theme.spacing(5),
+		padding: theme.spacing(LAYOUT.SM),
 	};
 
 	const blockStyle = {

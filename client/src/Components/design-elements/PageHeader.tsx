@@ -63,7 +63,6 @@ export const PageHeader = ({
 			alignItems="flex-start"
 			justifyContent="space-between"
 			gap={LAYOUT.SM}
-			mb={theme.spacing(8)}
 		>
 			<Stack gap={theme.spacing(SPACING.SM)}>
 				{backTo && backLabel && (
@@ -130,7 +129,7 @@ export const PageHeader = ({
 							height={INPUT_BASE_HEIGHT}
 							gap={theme.spacing(SPACING.SM)}
 							pl={theme.spacing(3)}
-							pr={theme.spacing(5)}
+							pr={theme.spacing(LAYOUT.XS_PLUS)}
 							borderRight={`1px solid ${theme.palette.divider}`}
 							color={theme.palette.text.primary}
 							fontSize={typographyLevels.base}

@@ -95,7 +95,7 @@ export const AutoCompleteInput = ({
 			}
 			sx={{
 				"&.MuiAutocomplete-root .MuiAutocomplete-input": {
-					padding: `0 ${theme.spacing(5)}`,
+					padding: `0 ${theme.spacing(LAYOUT.XS_PLUS)}`,
 				},
 				"& .MuiInputBase-root .MuiAutocomplete-endAdornment": {
 					right: theme.spacing(3),
@@ -106,7 +106,7 @@ export const AutoCompleteInput = ({
 
 	if (fieldLabel) {
 		return (
-			<Stack spacing={theme.spacing(2)}>
+			<Stack spacing={theme.spacing(LAYOUT.XXS)}>
 				<FieldLabel required={required}>{fieldLabel}</FieldLabel>
 				{autocomplete}
 			</Stack>

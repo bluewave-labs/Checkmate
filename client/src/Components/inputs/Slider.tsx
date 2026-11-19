@@ -120,7 +120,7 @@ export const SliderWithLabel = forwardRef<HTMLSpanElement, SliderWithLabelProps>
 		const labelText = fieldLabel;
 
 		return (
-			<Stack spacing={theme.spacing(2)}>
+			<Stack spacing={theme.spacing(LAYOUT.XXS)}>
 				{fieldLabel && <FieldLabel required={required}>{labelText}</FieldLabel>}
 				<Box maxWidth={sliderMaxWidth}>
 					<SliderInput

@@ -101,6 +101,12 @@ const BASE_RESTRICTED_SYNTAX = [
 		message:
 			"fontSize={13} is the Typography body default — drop the prop. For other sizes use typographyLevels tokens. See docs/frontend-conventions.md rule #3.",
 	},
+	{
+		selector:
+			"CallExpression[callee.property.name='spacing'] > Literal[value>0], CallExpression[callee.property.name='spacing'] > UnaryExpression > Literal",
+		message:
+			"Pass a LAYOUT or SPACING token to theme.spacing(), not a number: theme.spacing(LAYOUT.MD). See docs/frontend-conventions.md rule #3.",
+	},
 ];
 
 // Displayed dates go through formatDate / useFormatDate in Utils/TimeUtils.ts so they
