@@ -9,6 +9,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { formatMs } from "@/Utils/TimeUtils";
 import { useFormatDate } from "@/Hooks/useFormatDate";
 import { LAYOUT } from "@/Utils/Theme/constants";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 
 interface GeoChecksMapProps {
 	geoChecks: FlatGeoCheck[];
@@ -42,7 +43,7 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 				".maplibregl-popup-close-button": {
 					color: theme.palette.text.primary,
 					background: "transparent",
-					fontSize: "20px",
+					fontSize: typographyLevels.xxl,
 					padding: "4px",
 					"&:hover": {
 						backgroundColor: theme.palette.action.hover,

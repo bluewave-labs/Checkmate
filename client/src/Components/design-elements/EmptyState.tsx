@@ -7,6 +7,7 @@ import { LAYOUT } from "@/Utils/Theme/constants";
 import { EmptyStateIllustration } from "./EmptyStateIllustration";
 
 import type { ReactNode } from "react";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 
 interface EmptyStateProps {
 	title: string;
@@ -52,7 +53,7 @@ export const EmptyState = ({
 				<Stack sx={{ flex: 1 }}>
 					<Typography
 						sx={{
-							fontSize: 14,
+							fontSize: typographyLevels.l,
 							fontWeight: 400,
 							color: theme.palette.text.secondary,
 						}}
@@ -62,7 +63,7 @@ export const EmptyState = ({
 					{description && (
 						<Typography
 							sx={{
-								fontSize: 13,
+								fontSize: typographyLevels.m,
 								color: theme.palette.text.secondary,
 								lineHeight: 1.55,
 							}}
@@ -91,7 +92,7 @@ export const EmptyState = ({
 				sx={{
 					mt: theme.spacing(LAYOUT.MD),
 					mb: theme.spacing(LAYOUT.XS),
-					fontSize: 14,
+					fontSize: typographyLevels.l,
 					fontWeight: 400,
 					color: theme.palette.text.secondary,
 				}}
@@ -102,7 +103,7 @@ export const EmptyState = ({
 				<Typography
 					sx={{
 						maxWidth: 360,
-						fontSize: 13,
+						fontSize: typographyLevels.m,
 						color: theme.palette.text.secondary,
 						lineHeight: 1.55,
 						mb: theme.spacing(LAYOUT.LG),
@@ -140,7 +141,7 @@ export const EmptyState = ({
 							target="_blank"
 							rel="noopener"
 							sx={{
-								fontSize: 13,
+								fontSize: typographyLevels.m,
 								fontWeight: 500,
 								color: theme.palette.primary.main,
 								textDecoration: "none",

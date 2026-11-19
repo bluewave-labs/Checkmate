@@ -6,6 +6,7 @@ import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 import Icon from "./Icon";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 
 const isId = (segment: string): boolean => {
 	return segment.length === 24 || /^[a-f0-9-]{36}$/.test(segment);
@@ -19,7 +20,7 @@ const BreadcrumbWrapper = ({ children }: { children: ReactNode }) => {
 		<MuiBreadcrumbs
 			separator={<Icon icon={ChevronRight} />}
 			sx={{
-				fontSize: "14px",
+				fontSize: typographyLevels.l,
 				"& .MuiBreadcrumbs-separator": {
 					color: theme.palette.text.secondary,
 				},
@@ -54,7 +55,7 @@ export const Breadcrumb = ({
 						<Typography
 							key={index}
 							sx={{
-								fontSize: "14px",
+								fontSize: typographyLevels.l,
 								fontWeight: isLast ? 600 : 400,
 								color: isLast ? theme.palette.primary.main : theme.palette.text.secondary,
 							}}
@@ -103,7 +104,7 @@ export const Breadcrumb = ({
 				>
 					<Typography
 						sx={{
-							fontSize: "14px",
+							fontSize: typographyLevels.l,
 							color: theme.palette.text.secondary,
 							"&:hover": {
 								color: theme.palette.primary.main,
@@ -116,7 +117,7 @@ export const Breadcrumb = ({
 			) : (
 				<Typography
 					sx={{
-						fontSize: "14px",
+						fontSize: typographyLevels.l,
 						fontWeight: 600,
 						color: theme.palette.primary.main,
 					}}
@@ -127,7 +128,7 @@ export const Breadcrumb = ({
 			{hasSubPage && (
 				<Typography
 					sx={{
-						fontSize: "14px",
+						fontSize: typographyLevels.l,
 						fontWeight: 600,
 						color: theme.palette.primary.main,
 					}}

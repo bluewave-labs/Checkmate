@@ -1,5 +1,6 @@
 import { Button } from "@/Components/inputs";
-import { BaseAuthPage, TextLink } from "@/Components/design-elements";
+import { TextLink } from "@/Components/design-elements";
+import { BaseAuthPage } from "@/Pages/Auth/components/BaseAuthPage";
 
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";

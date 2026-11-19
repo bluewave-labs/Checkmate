@@ -148,9 +148,10 @@ const FRONTEND_CONVENTION_RULES = {
 
 const ICON_MESSAGE =
 	"Render lucide icons through the Icon design element: <Icon icon={Name} />, not <Name />.";
-const ICON_EXEMPT_FILES = [
+const CONVENTION_EXEMPT_FILES = [
 	"src/Pages/StatusPage/Status/themes/**",
 	"src/Components/whats-new/**",
+	"src/Pages/Auth/components/AuthBrandPanel.tsx",
 ];
 const noDirectLucideIcon = {
 	meta: { type: "problem", schema: [], messages: { useIcon: ICON_MESSAGE } },
@@ -192,10 +193,59 @@ const noRawSpacing = {
 		};
 	},
 };
+const FONT_SIZE_MESSAGE =
+	"Use a typographyLevels token for fontSize, not a raw value: fontSize={typographyLevels.l}.";
+const isRawSize = (value) =>
+	typeof value === "number" || (typeof value === "string" && /\d/.test(value));
+const collectRawSizes = (node, found = []) => {
+	if (!node) return found;
+	if (node.type === "Literal" && isRawSize(node.value)) found.push(node);
+	if (node.type === "TemplateLiteral" && node.expressions.length === 0) found.push(node);
+	if (node.type === "JSXExpressionContainer") collectRawSizes(node.expression, found);
+	if (node.type === "ConditionalExpression") {
+		collectRawSizes(node.consequent, found);
+		collectRawSizes(node.alternate, found);
+	}
+	if (node.type === "LogicalExpression") {
+		collectRawSizes(node.left, found);
+		collectRawSizes(node.right, found);
+	}
+	if (node.type === "ObjectExpression") {
+		for (const property of node.properties) collectRawSizes(property.value, found);
+	}
+	return found;
+};
+const isIconSelector = (node) =>
+	node?.type === "Property" &&
+	typeof node.key.value === "string" &&
+	node.key.value.includes(".MuiSvgIcon-root");
+const noRawFontSize = {
+	meta: { type: "problem", schema: [], messages: { useToken: FONT_SIZE_MESSAGE } },
+	create(context) {
+		const report = (value) => {
+			for (const node of collectRawSizes(value)) {
+				context.report({ node, messageId: "useToken" });
+			}
+		};
+		return {
+			JSXAttribute(node) {
+				if (node.name.name !== "fontSize") return;
+				report(node.value);
+			},
+			Property(node) {
+				if (node.computed) return;
+				if (node.key.name !== "fontSize" && node.key.value !== "fontSize") return;
+				if (isIconSelector(node.parent.parent)) return;
+				report(node.value);
+			},
+		};
+	},
+};
 const checkmate = {
 	rules: {
 		"no-direct-lucide-icon": noDirectLucideIcon,
 		"no-raw-spacing": noRawSpacing,
+		"no-raw-font-size": noRawFontSize,
 	},
 };
 
@@ -272,8 +322,13 @@ export default [
 	},
 	{
 		files: ["src/**/*.{jsx,tsx}"],
-		ignores: ICON_EXEMPT_FILES,
+		ignores: CONVENTION_EXEMPT_FILES,
 		rules: { "checkmate/no-direct-lucide-icon": "error" },
+	},
+	{
+		files: ["src/**/*.{js,jsx,ts,tsx}"],
+		ignores: CONVENTION_EXEMPT_FILES,
+		rules: { "checkmate/no-raw-font-size": "error" },
 	},
 	{
 		files: DAYJS_ALLOWED_FILES,
