@@ -6,6 +6,7 @@ import type { HardwareCheckStats } from "@/Types/Monitor";
 import { useMemo } from "react";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { LAYOUT } from "@/Utils/Theme/constants";
 const formatPercent = (value: number) => `${(value * 100).toFixed(0)}%`;
 const formatTemp = (value: number) => `${value.toFixed(0)}°C`;
 
@@ -72,7 +73,7 @@ export const InfraDetailsCharts = ({
 	return (
 		<Grid
 			container
-			spacing={theme.spacing(8)}
+			spacing={theme.spacing(LAYOUT.MD)}
 		>
 			{chartConfigs.map((config) => {
 				return (

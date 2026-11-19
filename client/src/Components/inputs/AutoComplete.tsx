@@ -54,7 +54,7 @@ export const AutoCompleteInput = ({
 				<Icon
 					icon={ChevronDown}
 					size={18}
-					style={{ marginRight: theme.spacing(3) }}
+					style={{ marginRight: theme.spacing(SPACING.XXL) }}
 				/>
 			}
 			renderInput={renderInput || defaultRenderInput}
@@ -95,10 +95,10 @@ export const AutoCompleteInput = ({
 			}
 			sx={{
 				"&.MuiAutocomplete-root .MuiAutocomplete-input": {
-					padding: `0 ${theme.spacing(5)}`,
+					padding: `0 ${theme.spacing(LAYOUT.XS_PLUS)}`,
 				},
 				"& .MuiInputBase-root .MuiAutocomplete-endAdornment": {
-					right: theme.spacing(3),
+					right: theme.spacing(SPACING.XXL),
 				},
 			}}
 		/>
@@ -106,7 +106,7 @@ export const AutoCompleteInput = ({
 
 	if (fieldLabel) {
 		return (
-			<Stack spacing={theme.spacing(2)}>
+			<Stack spacing={theme.spacing(LAYOUT.XXS)}>
 				<FieldLabel required={required}>{fieldLabel}</FieldLabel>
 				{autocomplete}
 			</Stack>

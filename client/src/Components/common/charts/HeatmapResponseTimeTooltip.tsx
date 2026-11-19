@@ -6,6 +6,7 @@ import type { CheckSnapshot } from "@/Types/Check";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { useFormatDate } from "@/Hooks/useFormatDate";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 type HeatmapCheck =
 	| CheckSnapshot
@@ -49,7 +50,7 @@ export const HeatmapResponseTimeTooltip = ({
 						border: 1,
 						borderColor: theme.palette.divider,
 						borderRadius: theme.shape.borderRadius,
-						p: theme.spacing(4),
+						p: theme.spacing(LAYOUT.XS),
 					}}
 				>
 					<Typography>{formatDate(check?.createdAt, "dateTime")}</Typography>

@@ -18,6 +18,7 @@ export const LAYOUT = {
 	LG: 10,
 	XL: 12,
 	XXL: 16,
+	XXXL: 28,
 } as const;
 
 export const INPUT_BASE_HEIGHT = 30;

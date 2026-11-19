@@ -248,7 +248,7 @@ export const DockerMonitorsTable = ({
 						onClick={(e) => handleSort(e, "status")}
 						sx={{ cursor: "pointer" }}
 					>
-						<Box width={theme.spacing(8)} />
+						<Box width={theme.spacing(LAYOUT.MD)} />
 						{t("common.table.headers.status")}
 						{renderSortIcon(sortField === "status")}
 					</Stack>

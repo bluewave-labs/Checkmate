@@ -8,7 +8,7 @@ import { FieldLabel } from "./FieldLabel";
 import { Calendar } from "lucide-react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
-import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT, LAYOUT, SPACING } from "@/Utils/Theme/constants";
 import Icon from "@/Components/design-elements/Icon";
 
 interface DatePickerComponentProps extends Omit<DatePickerProps<Dayjs>, "label"> {
@@ -43,7 +43,7 @@ export const DatePickerComponent = ({
 				}}
 				slotProps={{
 					switchViewButton: { sx: { display: "none" } },
-					nextIconButton: { sx: { ml: theme.spacing(2) } },
+					nextIconButton: { sx: { ml: theme.spacing(LAYOUT.XXS) } },
 					day: {
 						sx: {
 							"&.MuiPickersDay-root.Mui-disabled": {
@@ -60,8 +60,8 @@ export const DatePickerComponent = ({
 							"& input": {
 								minHeight: INPUT_BASE_HEIGHT,
 								p: 0,
-								pl: theme.spacing(3),
-								pr: theme.spacing(5),
+								pl: theme.spacing(SPACING.XXL),
+								pr: theme.spacing(LAYOUT.XS_PLUS),
 							},
 							"& fieldset": {
 								borderColor: error ? theme.palette.error.main : theme.palette.divider,
@@ -89,7 +89,7 @@ export const DatePickerComponent = ({
 	);
 
 	return (
-		<Stack spacing={theme.spacing(2)}>
+		<Stack spacing={theme.spacing(LAYOUT.XXS)}>
 			{fieldLabel && <FieldLabel required={required}>{fieldLabel}</FieldLabel>}
 			{picker}
 			{helperText && (

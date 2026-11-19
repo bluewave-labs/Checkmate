@@ -9,6 +9,7 @@ import {
 	type StatusPageTheme,
 	type StatusPageThemeMode,
 } from "@/Types/StatusPage";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface Props {
 	theme: StatusPageTheme;
@@ -27,12 +28,12 @@ export const ThemePicker = ({
 	const muiTheme = useTheme();
 
 	return (
-		<Stack spacing={muiTheme.spacing(6)}>
+		<Stack spacing={muiTheme.spacing(LAYOUT.SM)}>
 			<RadioGroup
 				value={theme}
 				onChange={(_, value) => onThemeChange(value as StatusPageTheme)}
 			>
-				<Stack spacing={muiTheme.spacing(4)}>
+				<Stack spacing={muiTheme.spacing(LAYOUT.XS)}>
 					{STATUS_PAGE_THEMES.map((option) => (
 						<RadioWithDescription
 							key={option}

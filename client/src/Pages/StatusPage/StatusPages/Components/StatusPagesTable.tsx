@@ -84,8 +84,8 @@ export const StatusPagesTable = ({
 							alignItems="center"
 							justifyContent="center"
 							gap={theme.spacing(LAYOUT.XXS)}
-							paddingLeft={theme.spacing(2)}
-							paddingRight={theme.spacing(2)}
+							paddingLeft={theme.spacing(LAYOUT.XXS)}
+							paddingRight={theme.spacing(LAYOUT.XXS)}
 							onClick={(e) => handleUrlClick(e, row)}
 							sx={{
 								...(row.isPublished && {

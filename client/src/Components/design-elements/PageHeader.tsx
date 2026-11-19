@@ -63,7 +63,6 @@ export const PageHeader = ({
 			alignItems="flex-start"
 			justifyContent="space-between"
 			gap={LAYOUT.SM}
-			mb={theme.spacing(8)}
 		>
 			<Stack gap={theme.spacing(SPACING.SM)}>
 				{backTo && backLabel && (
@@ -74,7 +73,7 @@ export const PageHeader = ({
 						gap={SPACING.XS}
 						color={theme.palette.text.secondary}
 						fontSize={typographyLevels.base}
-						mb={theme.spacing(1)}
+						mb={theme.spacing(SPACING.SM)}
 						alignItems={"center"}
 						sx={{
 							textDecoration: "none",
@@ -129,8 +128,8 @@ export const PageHeader = ({
 							alignItems="center"
 							height={INPUT_BASE_HEIGHT}
 							gap={theme.spacing(SPACING.SM)}
-							pl={theme.spacing(3)}
-							pr={theme.spacing(5)}
+							pl={theme.spacing(SPACING.XXL)}
+							pr={theme.spacing(LAYOUT.XS_PLUS)}
 							borderRight={`1px solid ${theme.palette.divider}`}
 							color={theme.palette.text.primary}
 							fontSize={typographyLevels.base}

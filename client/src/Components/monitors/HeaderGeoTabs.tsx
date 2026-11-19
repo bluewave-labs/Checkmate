@@ -4,6 +4,7 @@ import { MapPin } from "lucide-react";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import type { GeoContinent } from "@/Types/GeoCheck";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface HeaderGeoTabsProps {
 	geoCheckEnabled: boolean;
@@ -31,7 +32,7 @@ export const HeaderGeoTabs = ({
 
 	return (
 		<Stack
-			spacing={{ xs: theme.spacing(8), md: 0 }}
+			spacing={{ xs: theme.spacing(LAYOUT.MD), md: 0 }}
 			direction={{ xs: "column", md: "row" }}
 			alignItems={"center"}
 			justifyContent={"flex-start"}

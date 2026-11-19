@@ -4,6 +4,7 @@ import { useTheme } from "@mui/material/styles";
 import { HeatmapResponseTime, HistogramResponseTime } from "@/Components/common";
 import type { CheckSnapshot } from "@/Types/Check";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface DummyChartProps {
 	chartType: string;
@@ -34,8 +35,8 @@ const DummyChart = ({ chartType }: DummyChartProps) => {
 	return (
 		<Box
 			sx={{
-				mt: theme.spacing(4),
-				p: theme.spacing(4),
+				mt: theme.spacing(LAYOUT.XS),
+				p: theme.spacing(LAYOUT.XS),
 				border: 1,
 				borderColor: theme.palette.divider,
 				borderRadius: theme.shape.borderRadius,
@@ -45,7 +46,7 @@ const DummyChart = ({ chartType }: DummyChartProps) => {
 			<Typography
 				variant="body2"
 				color="text.secondary"
-				sx={{ mb: theme.spacing(2) }}
+				sx={{ mb: theme.spacing(LAYOUT.XXS) }}
 			>
 				Preview
 			</Typography>

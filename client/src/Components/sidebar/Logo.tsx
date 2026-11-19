@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Icon, Tooltip } from "@/Components/design-elements";
-import { SPACING } from "@/Utils/Theme/constants";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { toggleSidebar } from "@/Features/UI/uiSlice.js";
 import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
@@ -68,8 +68,8 @@ export const Logo = (props: StackProps) => {
 			<Box
 				position="relative"
 				flexShrink={0}
-				width={theme.spacing(16)}
-				height={theme.spacing(16)}
+				width={theme.spacing(LAYOUT.XXL)}
+				height={theme.spacing(LAYOUT.XXL)}
 			>
 				<Box
 					width="100%"
@@ -110,7 +110,7 @@ export const Logo = (props: StackProps) => {
 				{" "}
 				<Typography
 					lineHeight={1}
-					mt={theme.spacing(2)}
+					mt={theme.spacing(LAYOUT.XXS)}
 					variant="h2"
 					fontWeight={500}
 				>

@@ -3,6 +3,7 @@ import type { RadioProps } from "@mui/material/Radio";
 import { useTheme } from "@mui/material/styles";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Typography from "@mui/material/Typography";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 
 interface RadioInputProps extends RadioProps {}
 
@@ -16,7 +17,7 @@ export const RadioInput = ({ sx, ...props }: RadioInputProps) => {
 			{...props}
 			sx={[
 				{
-					padding: theme.spacing(2),
+					padding: theme.spacing(LAYOUT.XXS),
 					color: theme.palette.divider,
 					"& .MuiSvgIcon-root": {
 						fontSize: "20px",
@@ -57,15 +58,15 @@ export const RadioWithDescription = ({
 			}
 			sx={{
 				alignItems: "flex-start",
-				p: theme.spacing(2.5),
-				m: theme.spacing(-2.5),
+				p: theme.spacing(SPACING.XL),
+				m: theme.spacing(-SPACING.XL),
 				borderRadius: theme.shape.borderRadius,
 
 				"&:hover": {
 					backgroundColor: theme.palette.background.paper,
 				},
 				"& .MuiButtonBase-root": {
-					mr: theme.spacing(6),
+					mr: theme.spacing(LAYOUT.SM),
 				},
 				"&:has(.Mui-focusVisible)": {
 					backgroundColor: theme.palette.action.hover,

@@ -41,8 +41,8 @@ export const OfflineBanner = ({ visible }: OfflineBannerProps) => {
 				zIndex: theme.zIndex.snackbar,
 				backgroundColor: theme.palette.error.dark,
 				color: "#FFFFFF",
-				px: theme.spacing(8),
-				py: theme.spacing(4),
+				px: theme.spacing(LAYOUT.MD),
+				py: theme.spacing(LAYOUT.XS),
 				transition: "top 1s ease-in-out",
 			}}
 		>

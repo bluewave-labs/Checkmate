@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 import { computeBarHeights } from "@/Utils/DataUtils";
 import { formatMs } from "@/Utils/TimeUtils";
-import { SPACING } from "@/Utils/Theme/constants";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 
 interface HistogramResponseTimeProps {
 	checks: CheckSnapshot[];
@@ -77,8 +77,8 @@ export const HistogramResponseTime = ({
 			justifyContent="center"
 			alignItems={statsPosition === "left" ? "flex-end" : "flex-start"}
 			width={110}
-			pr={statsPosition === "left" ? theme.spacing(8) : 0}
-			pl={statsPosition === "right" ? theme.spacing(8) : 0}
+			pr={statsPosition === "left" ? theme.spacing(LAYOUT.MD) : 0}
+			pl={statsPosition === "right" ? theme.spacing(LAYOUT.MD) : 0}
 		>
 			<Typography
 				variant="body2"

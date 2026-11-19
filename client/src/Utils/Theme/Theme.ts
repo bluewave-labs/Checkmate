@@ -11,7 +11,7 @@ import {
 
 import type { PaletteMode, PaletteOptions, Theme } from "@mui/material/styles";
 import type {} from "@mui/material/styles";
-import { SCROLLBAR_SIZE } from "@/Utils/Theme/constants";
+import { SCROLLBAR_SIZE, LAYOUT } from "@/Utils/Theme/constants";
 
 interface NeutralPalette {
 	raised: string;
@@ -197,7 +197,7 @@ export const theme = (mode: PaletteMode, palette: PaletteOptions) =>
 			MuiInputLabel: {
 				styleOverrides: {
 					root: ({ theme }) => ({
-						top: `-${theme.spacing(4)}`,
+						top: `-${theme.spacing(LAYOUT.XS)}`,
 						"&.MuiInputLabel-shrink": {
 							top: 0,
 						},

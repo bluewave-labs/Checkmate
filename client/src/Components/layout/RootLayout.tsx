@@ -5,6 +5,7 @@ import { useMediaQuery } from "@mui/material";
 import { useSidebar } from "@/Hooks/useSidebar";
 
 import { useTheme } from "@mui/material";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const RootLayout = () => {
 	const theme = useTheme();
@@ -29,7 +30,7 @@ const RootLayout = () => {
 				<Stack
 					maxWidth={1280}
 					width="100%"
-					paddingY={theme.spacing(6)}
+					paddingY={theme.spacing(LAYOUT.SM)}
 					flex={1}
 				>
 					<Outlet />
