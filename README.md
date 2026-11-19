@@ -134,6 +134,7 @@ You can also run Checkmate on any of these platforms:
   </tr>
   <tr>
     <td align="center" width="120"><a href="https://www.simafri.com/en/guides/self-host-checkmate/"><img src="https://checkmate.so/img/brands/hosts/simafri.png" height="28" alt="Simafri"><br><sub><b>Simafri</b></sub></a></td>
+    <td align="center" width="120"><a href="https://podway.io/start?app=checkmate&ref=docs-checkmate"><img src="https://podway.io/icon.svg" height="28" alt="Podway"><br><sub><b>Podway</b></sub></a></td>
   </tr>
 </table>
 
