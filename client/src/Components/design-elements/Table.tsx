@@ -666,7 +666,7 @@ export const Pagination = ({ ...props }: PaginationProps) => {
 					<TablePaginationActions {...props} />
 				)
 			}
-			rowsPerPageOptions={[5, 10, 25]}
+			rowsPerPageOptions={[5, 10, 25, 50, 100]}
 			labelDisplayedRows={labelDisplayedRows}
 			{...rest}
 			sx={{
