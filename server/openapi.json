@@ -822,24 +822,30 @@
 					},
 					"mongoStats": {
 						"type": "object",
+						"nullable": true,
 						"properties": {
 							"readyState": {
 								"type": "number"
 							},
 							"readsPerSecond": {
-								"type": "number"
+								"type": "number",
+								"nullable": true
 							},
 							"insertsPerSecond": {
-								"type": "number"
+								"type": "number",
+								"nullable": true
 							},
 							"updatesPerSecond": {
-								"type": "number"
+								"type": "number",
+								"nullable": true
 							},
 							"deletesPerSecond": {
-								"type": "number"
+								"type": "number",
+								"nullable": true
 							},
 							"writesPerSecond": {
-								"type": "number"
+								"type": "number",
+								"nullable": true
 							},
 							"host": {
 								"type": "string"
