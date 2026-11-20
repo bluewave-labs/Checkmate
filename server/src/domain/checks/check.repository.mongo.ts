@@ -37,7 +37,7 @@ import {
 import { PendingCheck } from "@/domain/jobs/job.type.js";
 
 const SERVICE_NAME = "ChecksRepository";
-
+const MONGO_UNAUTHORIZED = 13;
 class MongoChecksRepository implements IChecksRepository {
 	static SERVICE_NAME = SERVICE_NAME;
 
@@ -477,6 +477,22 @@ class MongoChecksRepository implements IChecksRepository {
 
 		return totalDeleted;
 	};
+
+	setExpireAfterSeconds = async (seconds: number | null): Promise<boolean> => {
+		const db = mongoose.connection.db;
+		if (!db) {
+			throw new AppError(internalError, { message: "Database connection is not initialized", service: SERVICE_NAME });
+		}
+
+		try {
+			await db.command({ collMod: CheckModel.collection.collectionName, expireAfterSeconds: seconds ?? "off" });
+			return true;
+		} catch (error: unknown) {
+			if (error instanceof mongoose.mongo.MongoServerError && error.code === MONGO_UNAUTHORIZED) return false;
+			throw error;
+		}
+	};
+
 	private findUptimeDateRangeChecks = async (
 		monitorType: Exclude<MonitorType, "hardware" | "pagespeed" | "docker">,
 		monitorObjectId: mongoose.Types.ObjectId,
