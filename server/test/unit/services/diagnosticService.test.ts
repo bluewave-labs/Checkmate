@@ -1,5 +1,6 @@
 import { describe, expect, it, jest, beforeEach, afterEach } from "@jest/globals";
 import { DiagnosticService } from "../../../src/domain/diagnostics/diagnostic.service.ts";
+import MongoDiagnosticsRepository from "../../../src/domain/diagnostics/diagnostic.repository.mongo.ts";
 import type { IDb } from "../../../src/db/db.interface.ts";
 import type { Mongoose } from "mongoose";
 import type { IntervalHistogram } from "perf_hooks";
@@ -86,7 +87,7 @@ describe("DiagnosticService", () => {
 	describe("constructor", () => {
 		it("enables the event loop delay histogram", () => {
 			const histogram = makeHistogram(0);
-			const service = new DiagnosticService(makeDb(), createMockLogger(), asHistogram(histogram));
+			const service = new DiagnosticService(new MongoDiagnosticsRepository(makeDb()), createMockLogger(), asHistogram(histogram));
 
 			expect(histogram.enable).toHaveBeenCalledTimes(1);
 			expect(service).toBeDefined();
@@ -97,7 +98,7 @@ describe("DiagnosticService", () => {
 
 	describe("getSystemStats", () => {
 		it("returns only the slimmed diagnostic shape (no serverStatus/serverInfo/memoryUsage)", async () => {
-			const service = new DiagnosticService(makeDb(), createMockLogger());
+			const service = new DiagnosticService(new MongoDiagnosticsRepository(makeDb()), createMockLogger());
 			const result = await service.getSystemStats();
 
 			expect(Object.keys(result).sort()).toEqual(["cpuUsage", "eventLoopDelayMs", "mongoStats", "osStats", "uptimeMs", "v8HeapStats"].sort());
@@ -120,7 +121,7 @@ describe("DiagnosticService", () => {
 				dbStats: { totalSize: 9999 },
 				countDocuments: 7,
 			});
-			const service = new DiagnosticService(db, createMockLogger());
+			const service = new DiagnosticService(new MongoDiagnosticsRepository(db), createMockLogger());
 			const result = await service.getSystemStats();
 
 			expect(Object.keys(result.mongoStats ?? {}).sort()).toEqual(
@@ -154,7 +155,7 @@ describe("DiagnosticService", () => {
 				collections: [{ collectionName: "monitors" }],
 				dbStats: { storageSize: 376832, indexSize: 1155072 },
 			});
-			const service = new DiagnosticService(db, createMockLogger());
+			const service = new DiagnosticService(new MongoDiagnosticsRepository(db), createMockLogger());
 			const result = await service.getSystemStats();
 
 			expect(result.mongoStats?.totalSize).toBe(376832 + 1155072);
@@ -166,7 +167,7 @@ describe("DiagnosticService", () => {
 				collections: [{ collectionName: "checks" }],
 				collStats: { storageSize: 200 },
 			});
-			const service = new DiagnosticService(db, createMockLogger());
+			const service = new DiagnosticService(new MongoDiagnosticsRepository(db), createMockLogger());
 			const result = await service.getSystemStats();
 
 			const coll = result.mongoStats?.collections[0];
@@ -184,20 +185,20 @@ describe("DiagnosticService", () => {
 				collections: [{ collectionName: "checks" }],
 				collStats: { storageSize: 1, totalIndexSize: 2, totalSize: 3, timeseries: { bucketCount: 12 } },
 			});
-			const service = new DiagnosticService(db, createMockLogger());
+			const service = new DiagnosticService(new MongoDiagnosticsRepository(db), createMockLogger());
 			const result = await service.getSystemStats();
 
 			expect(result.mongoStats?.collections[0]?.bucketCount).toBe(12);
 
 			const db2 = makeDb({ collections: [{ collectionName: "monitors" }] });
-			const service2 = new DiagnosticService(db2, createMockLogger());
+			const service2 = new DiagnosticService(new MongoDiagnosticsRepository(db2), createMockLogger());
 			const result2 = await service2.getSystemStats();
 			expect(result2.mongoStats?.collections[0]).not.toHaveProperty("bucketCount");
 		});
 
 		it("returns null mongoStats and keeps the runtime stats when the connection has no db handle", async () => {
 			const logger = createMockLogger();
-			const service = new DiagnosticService(makeDb({ noDb: true }), logger);
+			const service = new DiagnosticService(new MongoDiagnosticsRepository(makeDb({ noDb: true })), logger);
 			const result = await service.getSystemStats();
 
 			expect(result.mongoStats).toBeNull();
@@ -210,7 +211,7 @@ describe("DiagnosticService", () => {
 		it("returns null mongoStats when db.stats fails", async () => {
 			const logger = createMockLogger();
 			const db = makeDb({ dbStatsFn: jest.fn<() => Promise<Record<string, unknown>>>().mockRejectedValue(new Error("stats failed")) });
-			const service = new DiagnosticService(db, logger);
+			const service = new DiagnosticService(new MongoDiagnosticsRepository(db), logger);
 			const result = await service.getSystemStats();
 
 			expect(result.mongoStats).toBeNull();
@@ -223,7 +224,7 @@ describe("DiagnosticService", () => {
 				collections: [{ collectionName: "monitors" }, { collectionName: "broken" }, { collectionName: "checks" }],
 				failingCollections: ["broken"],
 			});
-			const service = new DiagnosticService(db, logger);
+			const service = new DiagnosticService(new MongoDiagnosticsRepository(db), logger);
 			const result = await service.getSystemStats();
 
 			expect(result.mongoStats?.collections.map((collection) => collection.name)).toEqual(["monitors", "checks"]);
@@ -233,7 +234,7 @@ describe("DiagnosticService", () => {
 
 		it("does not warn when every section succeeds", async () => {
 			const logger = createMockLogger();
-			const service = new DiagnosticService(makeDb({ collections: [{ collectionName: "monitors" }] }), logger);
+			const service = new DiagnosticService(new MongoDiagnosticsRepository(makeDb({ collections: [{ collectionName: "monitors" }] })), logger);
 			await service.getSystemStats();
 
 			expect(logger.warn).not.toHaveBeenCalled();
@@ -245,7 +246,7 @@ describe("DiagnosticService", () => {
 			{ label: "returns 0 when the histogram has no samples", meanNs: Number.NaN, expected: 0, resets: 0 },
 		])("eventLoopDelayMs $label", async ({ meanNs, expected, resets }) => {
 			const histogram = makeHistogram(meanNs);
-			const service = new DiagnosticService(makeDb(), createMockLogger(), asHistogram(histogram));
+			const service = new DiagnosticService(new MongoDiagnosticsRepository(makeDb()), createMockLogger(), asHistogram(histogram));
 			const result = await service.getSystemStats();
 
 			expect(result.eventLoopDelayMs).toBeCloseTo(expected);
@@ -254,7 +255,7 @@ describe("DiagnosticService", () => {
 
 		it("reports the previous event loop delay when the histogram has no new samples", async () => {
 			const histogram = makeHistogram(25_000_000);
-			const service = new DiagnosticService(makeDb(), createMockLogger(), asHistogram(histogram));
+			const service = new DiagnosticService(new MongoDiagnosticsRepository(makeDb()), createMockLogger(), asHistogram(histogram));
 			const first = await service.getSystemStats();
 			histogram.mean = Number.NaN;
 			const second = await service.getSystemStats();
@@ -268,7 +269,7 @@ describe("DiagnosticService", () => {
 			const serverStatus = makeServerStatus([
 				{ opcounters: { query: 900, getmore: 100, insert: 100, update: 50, delete: 50 }, uptimeMillis: 100_000 },
 			]);
-			const service = new DiagnosticService(makeDb({ serverStatus }), createMockLogger());
+			const service = new DiagnosticService(new MongoDiagnosticsRepository(makeDb({ serverStatus })), createMockLogger());
 			const result = await service.getSystemStats();
 
 			expect(result.mongoStats).toMatchObject({
@@ -285,7 +286,7 @@ describe("DiagnosticService", () => {
 				{ opcounters: { query: 1000, insert: 100, update: 100, delete: 100 }, uptimeMillis: 100_000 },
 				{ opcounters: { query: 1050, insert: 110, update: 105, delete: 100 }, uptimeMillis: 105_000 },
 			]);
-			const service = new DiagnosticService(makeDb({ serverStatus }), createMockLogger());
+			const service = new DiagnosticService(new MongoDiagnosticsRepository(makeDb({ serverStatus })), createMockLogger());
 			await service.getSystemStats();
 			jest.advanceTimersByTime(5000);
 			const result = await service.getSystemStats();
@@ -305,7 +306,7 @@ describe("DiagnosticService", () => {
 				{ opcounters: { query: 1001, insert: 100, update: 100, delete: 100 }, uptimeMillis: 100_100 },
 				{ opcounters: { query: 1200, insert: 100, update: 100, delete: 100 }, uptimeMillis: 110_000 },
 			]);
-			const service = new DiagnosticService(makeDb({ serverStatus }), createMockLogger());
+			const service = new DiagnosticService(new MongoDiagnosticsRepository(makeDb({ serverStatus })), createMockLogger());
 			const first = await service.getSystemStats();
 			jest.advanceTimersByTime(100);
 			const second = await service.getSystemStats();
@@ -323,7 +324,7 @@ describe("DiagnosticService", () => {
 				{ opcounters: { query: 1000, insert: 100, update: 100, delete: 100 }, uptimeMillis: 100_000 },
 				{ opcounters: { query: 10, insert: 1, update: 1, delete: 1 }, uptimeMillis: 2000 },
 			]);
-			const service = new DiagnosticService(makeDb({ serverStatus }), createMockLogger());
+			const service = new DiagnosticService(new MongoDiagnosticsRepository(makeDb({ serverStatus })), createMockLogger());
 			await service.getSystemStats();
 			jest.advanceTimersByTime(5000);
 			const result = await service.getSystemStats();
@@ -339,7 +340,7 @@ describe("DiagnosticService", () => {
 
 		it("reports 0 on the first call when serverStatus has no uptime", async () => {
 			const serverStatus = makeServerStatus([{ opcounters: { query: 1000, insert: 100, update: 100, delete: 100 } }]);
-			const service = new DiagnosticService(makeDb({ serverStatus }), createMockLogger());
+			const service = new DiagnosticService(new MongoDiagnosticsRepository(makeDb({ serverStatus })), createMockLogger());
 			const result = await service.getSystemStats();
 
 			expect(result.mongoStats?.readsPerSecond).toBe(0);
@@ -349,7 +350,7 @@ describe("DiagnosticService", () => {
 		it("reports null rates and warns on each poll when serverStatus fails", async () => {
 			const logger = createMockLogger();
 			const serverStatus = jest.fn<() => Promise<Record<string, unknown>>>().mockRejectedValue(new Error("not authorized"));
-			const service = new DiagnosticService(makeDb({ serverStatus }), logger);
+			const service = new DiagnosticService(new MongoDiagnosticsRepository(makeDb({ serverStatus })), logger);
 			const result = await service.getSystemStats();
 			await service.getSystemStats();
 
@@ -371,7 +372,7 @@ describe("DiagnosticService", () => {
 				collStats: { count: 24, storageSize: 1, totalIndexSize: 1, totalSize: 2 },
 				countDocumentsFn,
 			});
-			const result = await new DiagnosticService(db, createMockLogger()).getSystemStats();
+			const result = await new DiagnosticService(new MongoDiagnosticsRepository(db), createMockLogger()).getSystemStats();
 
 			expect(result.mongoStats?.collections[0]?.documentCount).toBe(24);
 			expect(countDocumentsFn).not.toHaveBeenCalled();
@@ -384,19 +385,19 @@ describe("DiagnosticService", () => {
 				collStats: { storageSize: 1, totalIndexSize: 1, totalSize: 2, timeseries: { bucketCount: 930 } },
 				countDocumentsFn,
 			});
-			const result = await new DiagnosticService(db, createMockLogger()).getSystemStats();
+			const result = await new DiagnosticService(new MongoDiagnosticsRepository(db), createMockLogger()).getSystemStats();
 
 			expect(result.mongoStats?.collections[0]).toMatchObject({ documentCount: 109_764, bucketCount: 930 });
 			expect(countDocumentsFn).toHaveBeenCalledTimes(1);
 		});
 
 		it("queries MongoDB on every request", async () => {
-			const db = makeDb();
-			const service = new DiagnosticService(db, createMockLogger());
+			const dbStatsFn = jest.fn<() => Promise<Record<string, unknown>>>().mockResolvedValue({ totalSize: 1000 });
+			const service = new DiagnosticService(new MongoDiagnosticsRepository(makeDb({ dbStatsFn })), createMockLogger());
 			await service.getSystemStats();
 			await service.getSystemStats();
 
-			expect(db.getConnection).toHaveBeenCalledTimes(2);
+			expect(dbStatsFn).toHaveBeenCalledTimes(2);
 		});
 	});
 });
