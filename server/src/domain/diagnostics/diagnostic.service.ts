@@ -2,14 +2,23 @@ import v8 from "v8";
 import os from "os";
 import { monitorEventLoopDelay, type IntervalHistogram } from "perf_hooks";
 import { IDb } from "@/db/db.interface.js";
-import { Mongoose } from "mongoose";
+import type { Mongoose, mongo } from "mongoose";
 import { AppError, internalError } from "@/utils/AppError.js";
 import type { CollectionDiagnostics, Diagnostics, MongoDiagnostics } from "@/domain/diagnostics/diagnostic.type.js";
 
 const SERVICE_NAME = "diagnosticService";
 const MIN_CPU_WINDOW_MS = 500;
+const MIN_OPS_WINDOW_MS = 500;
 const EVENT_LOOP_RESOLUTION_MS = 20;
 const NS_PER_MS = 1_000_000;
+
+const ZERO_OPS: MongoOpsPerSecond = {
+	readsPerSecond: 0,
+	insertsPerSecond: 0,
+	updatesPerSecond: 0,
+	deletesPerSecond: 0,
+	writesPerSecond: 0,
+};
 export interface MongoStats {
 	reads: number;
 	inserts: number;
@@ -34,8 +43,10 @@ export class DiagnosticService implements IDiagnosticService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private lastMongoOpsPerSecond: MongoStats | null = null;
+	private lastOpsRates: MongoOpsPerSecond = ZERO_OPS;
 	private lastCpuSample = { usage: process.cpuUsage(), timestamp: performance.now() };
 	private lastCpuFraction = 0;
+	private lastEventLoopDelayMs = 0;
 
 	constructor(
 		private db: IDb<Mongoose>,
@@ -44,7 +55,7 @@ export class DiagnosticService implements IDiagnosticService {
 		this.eventLoopHistogram.enable();
 	}
 
-	private getCPUUsagePercentage = async (): Promise<number> => {
+	private getCPUUsagePercentage = (): number => {
 		const now = performance.now();
 		const elapsedMs = now - this.lastCpuSample.timestamp;
 		if (elapsedMs < MIN_CPU_WINDOW_MS) return this.lastCpuFraction;
@@ -56,51 +67,68 @@ export class DiagnosticService implements IDiagnosticService {
 
 	private getEventLoopDelayMs = (): number => {
 		const meanNs = this.eventLoopHistogram.mean;
+		if (Number.isNaN(meanNs)) return this.lastEventLoopDelayMs;
 		this.eventLoopHistogram.reset();
-		if (Number.isNaN(meanNs)) return 0;
-		return Math.max(0, meanNs / NS_PER_MS - EVENT_LOOP_RESOLUTION_MS);
+		this.lastEventLoopDelayMs = Math.max(0, meanNs / NS_PER_MS - EVENT_LOOP_RESOLUTION_MS);
+		return this.lastEventLoopDelayMs;
 	};
 
-	private getMongoOpsPerSecond = async (): Promise<MongoOpsPerSecond | null> => {
+	private getMongoOpsPerSecond = async (db: mongo.Db): Promise<MongoOpsPerSecond | null> => {
 		try {
-			const mongo = await this.db.getConnection();
-			const db = mongo.connection.db;
-			if (!db) {
-				throw new AppError(internalError, { message: "Database connection is not available", service: SERVICE_NAME });
-			}
-			const sample = async (): Promise<MongoStats> => {
-				const res = await db.command({ serverStatus: 1 });
-				return {
-					reads: (res.opcounters?.query ?? 0) + (res.opcounters?.getmore ?? 0),
-					inserts: res.opcounters?.insert ?? 0,
-					updates: res.opcounters?.update ?? 0,
-					deletes: res.opcounters?.delete ?? 0,
-					timestamp: Date.now(),
-				};
+			const res = await db.command({ serverStatus: 1 });
+			const current: MongoStats = {
+				reads: (res.opcounters?.query ?? 0) + (res.opcounters?.getmore ?? 0),
+				inserts: res.opcounters?.insert ?? 0,
+				updates: res.opcounters?.update ?? 0,
+				deletes: res.opcounters?.delete ?? 0,
+				timestamp: Date.now(),
+			};
+			const isFirstSample = this.lastMongoOpsPerSecond === null;
+			const previous = this.lastMongoOpsPerSecond ?? {
+				reads: 0,
+				inserts: 0,
+				updates: 0,
+				deletes: 0,
+				timestamp: current.timestamp - Number(res.uptimeMillis ?? 0),
 			};
 
-			// First call has no baseline, seed one so we always have a rate
-			if (this.lastMongoOpsPerSecond === null) {
-				this.lastMongoOpsPerSecond = await sample();
-				await new Promise((resolve) => setTimeout(resolve, 1000));
-			}
-
-			const previous = this.lastMongoOpsPerSecond;
-			const current = await sample();
+			const elapsedMs = current.timestamp - previous.timestamp;
+			if (!isFirstSample && elapsedMs < MIN_OPS_WINDOW_MS) return this.lastOpsRates;
 			this.lastMongoOpsPerSecond = current;
+			if (elapsedMs <= 0) return this.lastOpsRates;
 
-			const elapsedSeconds = (current.timestamp - previous.timestamp) / 1000;
-			return {
-				readsPerSecond: (current.reads - previous.reads) / elapsedSeconds,
-				insertsPerSecond: (current.inserts - previous.inserts) / elapsedSeconds,
-				updatesPerSecond: (current.updates - previous.updates) / elapsedSeconds,
-				deletesPerSecond: (current.deletes - previous.deletes) / elapsedSeconds,
-				writesPerSecond:
-					(current.inserts - previous.inserts + current.updates - previous.updates + current.deletes - previous.deletes) / elapsedSeconds,
+			const elapsedSeconds = elapsedMs / 1000;
+			const rate = (now: number, before: number) => Math.max(0, now - before) / elapsedSeconds;
+			const insertsPerSecond = rate(current.inserts, previous.inserts);
+			const updatesPerSecond = rate(current.updates, previous.updates);
+			const deletesPerSecond = rate(current.deletes, previous.deletes);
+			this.lastOpsRates = {
+				readsPerSecond: rate(current.reads, previous.reads),
+				insertsPerSecond,
+				updatesPerSecond,
+				deletesPerSecond,
+				writesPerSecond: insertsPerSecond + updatesPerSecond + deletesPerSecond,
 			};
+			return this.lastOpsRates;
 		} catch {
 			return null;
 		}
+	};
+
+	private getCollectionStats = async (db: mongo.Db, name: string): Promise<CollectionDiagnostics> => {
+		const stats = await db.command({ collStats: name });
+		const documentCount = typeof stats.count === "number" ? stats.count : await db.collection(name).countDocuments({});
+		const entry: CollectionDiagnostics = {
+			name,
+			documentCount,
+			storageSize: stats.storageSize ?? 0,
+			totalIndexSize: stats.totalIndexSize ?? 0,
+			totalSize: stats.totalSize ?? (stats.storageSize ?? 0) + (stats.totalIndexSize ?? 0),
+		};
+		if (stats.timeseries?.bucketCount !== undefined) {
+			entry.bucketCount = stats.timeseries.bucketCount;
+		}
+		return entry;
 	};
 
 	private getMongoDBStats = async (): Promise<MongoDiagnostics> => {
@@ -110,29 +138,13 @@ export class DiagnosticService implements IDiagnosticService {
 			throw new AppError(internalError, { message: "Database connection is not available", service: SERVICE_NAME });
 		}
 
-		const opsPerSecond = await this.getMongoOpsPerSecond();
+		const [opsPerSecond, dbStats, rawCollections] = await Promise.all([this.getMongoOpsPerSecond(db), db.stats(), db.collections()]);
 
-		const dbStats = await db.stats();
-		const rawCollections = await db.collections();
-
-		const collections: CollectionDiagnostics[] = await Promise.all(
+		const collections = await Promise.all(
 			rawCollections
-				.filter((collection) => !collection.collectionName.startsWith("system"))
-				.map(async (collection) => {
-					const stats = await db.command({ collStats: collection.collectionName });
-					const documentCount = await db.collection(collection.collectionName).countDocuments({});
-					const entry: CollectionDiagnostics = {
-						name: collection.collectionName,
-						documentCount,
-						storageSize: stats.storageSize ?? 0,
-						totalIndexSize: stats.totalIndexSize ?? 0,
-						totalSize: stats.totalSize ?? (stats.storageSize ?? 0) + (stats.totalIndexSize ?? 0),
-					};
-					if (stats.timeseries?.bucketCount !== undefined) {
-						entry.bucketCount = stats.timeseries.bucketCount;
-					}
-					return entry;
-				})
+				.map((collection) => collection.collectionName)
+				.filter((name) => !name.startsWith("system"))
+				.map((name) => this.getCollectionStats(db, name))
 		);
 
 		return {
@@ -153,7 +165,7 @@ export class DiagnosticService implements IDiagnosticService {
 	getSystemStats = async (): Promise<Diagnostics> => {
 		const osStats = { totalMemoryBytes: os.totalmem() };
 
-		const cpuUsage = { usagePercentage: await this.getCPUUsagePercentage() };
+		const cpuUsage = { usagePercentage: this.getCPUUsagePercentage() };
 
 		const heapStats = v8.getHeapStatistics();
 		const v8HeapStats = {
