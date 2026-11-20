@@ -6,10 +6,14 @@ import prettyBytes from "pretty-bytes";
 import { useTheme } from "@mui/material";
 import type { Diagnostics } from "@/Types/Diagnostics";
 import { LAYOUT } from "@/Utils/Theme/constants";
+import { PLACEHOLDER } from "@/Utils/FormatUtils";
 
 interface MongoStatsProps {
 	diagnostics: Diagnostics | null;
 }
+
+const formatRate = (value: number | null) =>
+	value === null ? PLACEHOLDER : value.toFixed(0);
 
 export const MongoStats = ({ diagnostics }: MongoStatsProps) => {
 	const theme = useTheme();
@@ -35,23 +39,23 @@ export const MongoStats = ({ diagnostics }: MongoStatsProps) => {
 			/>
 			<StatBox
 				title={t("pages.logs.diagnostics.mongoDBStats.readsPerSecond")}
-				subtitle={mongoStats.readsPerSecond.toFixed(0)}
+				subtitle={formatRate(mongoStats.readsPerSecond)}
 			/>
 			<StatBox
 				title={t("pages.logs.diagnostics.mongoDBStats.insertsPerSecond")}
-				subtitle={mongoStats.insertsPerSecond.toFixed(0)}
+				subtitle={formatRate(mongoStats.insertsPerSecond)}
 			/>
 			<StatBox
 				title={t("pages.logs.diagnostics.mongoDBStats.updatesPerSecond")}
-				subtitle={mongoStats.updatesPerSecond.toFixed(0)}
+				subtitle={formatRate(mongoStats.updatesPerSecond)}
 			/>
 			<StatBox
 				title={t("pages.logs.diagnostics.mongoDBStats.deletesPerSecond")}
-				subtitle={mongoStats.deletesPerSecond.toFixed(0)}
+				subtitle={formatRate(mongoStats.deletesPerSecond)}
 			/>
 			<StatBox
 				title={t("pages.logs.diagnostics.mongoDBStats.writesPerSecond")}
-				subtitle={mongoStats.writesPerSecond.toFixed(0)}
+				subtitle={formatRate(mongoStats.writesPerSecond)}
 			/>
 			<StatBox
 				title={t("pages.logs.diagnostics.mongoDBStats.host")}

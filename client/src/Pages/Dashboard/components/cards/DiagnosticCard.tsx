@@ -11,7 +11,7 @@ import { LAYOUT } from "@/Utils/Theme/constants";
 import prettyBytes from "pretty-bytes";
 import { getSeverityColor } from "@/Utils/MonitorUtils";
 import { formatMs } from "@/Utils/TimeUtils";
-import { formatPercentage, formatVersion } from "@/Utils/FormatUtils";
+import { formatPercentage, formatVersion, PLACEHOLDER } from "@/Utils/FormatUtils";
 import { useAppVersion } from "@/Hooks/useAppVersion";
 import { useTranslation } from "react-i18next";
 
@@ -41,6 +41,17 @@ export const DiagnosticCard = () => {
 	const usedHeap = diagnostics.v8HeapStats.usedHeapSizeBytes;
 	const heapLimit = diagnostics.v8HeapStats.heapSizeLimitBytes;
 	const cpuUSage = diagnostics.cpuUsage;
+	const mongoStats = diagnostics.mongoStats;
+	const dbSize = mongoStats ? prettyBytes(mongoStats.totalSize) : PLACEHOLDER;
+	const dbOperations =
+		mongoStats &&
+		mongoStats.readsPerSecond !== null &&
+		mongoStats.writesPerSecond !== null
+			? t("pages.dashboard.diagnostic.dbOperationsSummary", {
+					reads: mongoStats.readsPerSecond.toFixed(1),
+					writes: mongoStats.writesPerSecond.toFixed(1),
+				})
+			: PLACEHOLDER;
 
 	return (
 		<DashboardCard
@@ -85,14 +96,11 @@ export const DiagnosticCard = () => {
 				/>
 				<InfoRow
 					label={t("pages.dashboard.diagnostic.dbSize")}
-					value={prettyBytes(diagnostics.mongoStats.totalSize)}
+					value={dbSize}
 				/>
 				<InfoRow
 					label={t("pages.dashboard.diagnostic.dbOperations")}
-					value={t("pages.dashboard.diagnostic.dbOperationsSummary", {
-						reads: diagnostics.mongoStats.readsPerSecond.toFixed(1),
-						writes: diagnostics.mongoStats.writesPerSecond.toFixed(1),
-					})}
+					value={dbOperations}
 				/>
 			</Stack>
 		</DashboardCard>
