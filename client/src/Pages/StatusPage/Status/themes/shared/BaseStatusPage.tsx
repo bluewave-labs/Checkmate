@@ -37,7 +37,7 @@ import { LAYOUT } from "@/Utils/Theme/constants";
 import { Icon } from "@/Components/design-elements";
 
 import { useStatusPageTheme } from "@/Pages/StatusPage/Status/themes/StatusPageThemeProvider";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material";
 
@@ -122,6 +122,16 @@ export const BaseStatusPage = ({
 	const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
 	const overall = resolveOverallStatus(monitors, t, config.overallStatusOptions);
+
+	useEffect(() => {
+		const previousTitle = document.title;
+		document.title = `${overall.message} · ${statusPage.companyName}`;
+
+		return () => {
+			document.title = previousTitle;
+		};
+	}, [overall.message, statusPage.companyName]);
+
 	const logoSrc = statusPage.logo?.data
 		? `data:${statusPage.logo.contentType};base64,${statusPage.logo.data}`
 		: null;

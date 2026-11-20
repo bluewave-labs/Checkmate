@@ -116,6 +116,7 @@ const StatusPageView = () => {
 		{
 			keepPreviousData: true,
 			refreshInterval: range === "latest" ? 10000 : 60000,
+			refreshWhenHidden: isPublic,
 		}
 	);
 
