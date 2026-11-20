@@ -116,7 +116,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 
 	const statusPageService = new StatusPageService(statusPagesRepository, settingsService, monitorsRepository, checksRepository, incidentsRepository);
 	const tagsService = new TagsService(tagsRepository, monitorsRepository);
-	const diagnosticService = new DiagnosticService(db);
+	const diagnosticService = new DiagnosticService(db, logger);
 	const proxiesService = new ProxiesService(proxiesRepository, monitorsRepository, settingsService);
 	const egressStateService = new EgressStateService(queueWorkersRepository, settingsService);
 	const heartbeatService = new HeartbeatService({

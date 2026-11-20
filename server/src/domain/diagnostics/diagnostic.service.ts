@@ -5,6 +5,7 @@ import { IDb } from "@/db/db.interface.js";
 import type { Mongoose, mongo } from "mongoose";
 import { AppError, internalError } from "@/utils/AppError.js";
 import type { CollectionDiagnostics, Diagnostics, MongoDiagnostics } from "@/domain/diagnostics/diagnostic.type.js";
+import { ILogger } from "@/utils/logger/logger.js";
 
 const SERVICE_NAME = "diagnosticService";
 const MIN_CPU_WINDOW_MS = 500;
@@ -41,6 +42,7 @@ export interface IDiagnosticService {
 
 export class DiagnosticService implements IDiagnosticService {
 	static SERVICE_NAME = SERVICE_NAME;
+	private logger: ILogger;
 
 	private lastMongoOpsPerSecond: MongoStats | null = null;
 	private lastOpsRates: MongoOpsPerSecond = ZERO_OPS;
@@ -50,8 +52,10 @@ export class DiagnosticService implements IDiagnosticService {
 
 	constructor(
 		private db: IDb<Mongoose>,
+		logger: ILogger,
 		private eventLoopHistogram: IntervalHistogram = monitorEventLoopDelay({ resolution: EVENT_LOOP_RESOLUTION_MS })
 	) {
+		this.logger = logger.child({ service: SERVICE_NAME });
 		this.eventLoopHistogram.enable();
 	}
 
@@ -110,7 +114,8 @@ export class DiagnosticService implements IDiagnosticService {
 				writesPerSecond: insertsPerSecond + updatesPerSecond + deletesPerSecond,
 			};
 			return this.lastOpsRates;
-		} catch {
+		} catch (error: unknown) {
+			this.logger.warn({ err: error }, "MongoDB operation counters are unavailable");
 			return null;
 		}
 	};
@@ -131,37 +136,49 @@ export class DiagnosticService implements IDiagnosticService {
 		return entry;
 	};
 
-	private getMongoDBStats = async (): Promise<MongoDiagnostics> => {
-		const mongo = await this.db.getConnection();
-		const db = mongo.connection.db;
-		if (!db) {
-			throw new AppError(internalError, { message: "Database connection is not available", service: SERVICE_NAME });
-		}
-
-		const [opsPerSecond, dbStats, rawCollections] = await Promise.all([this.getMongoOpsPerSecond(db), db.stats(), db.collections()]);
-
-		const collections = await Promise.all(
-			rawCollections
-				.map((collection) => collection.collectionName)
-				.filter((name) => !name.startsWith("system"))
-				.map((name) => this.getCollectionStats(db, name))
-		);
-
-		return {
-			readyState: mongo.connection.readyState,
-			readsPerSecond: opsPerSecond?.readsPerSecond ?? 0,
-			insertsPerSecond: opsPerSecond?.insertsPerSecond ?? 0,
-			updatesPerSecond: opsPerSecond?.updatesPerSecond ?? 0,
-			deletesPerSecond: opsPerSecond?.deletesPerSecond ?? 0,
-			writesPerSecond: opsPerSecond?.writesPerSecond ?? 0,
-			host: mongo.connection.host,
-			port: mongo.connection.port,
-			dbName: mongo.connection.name,
-			totalSize: dbStats.totalSize ?? (dbStats.storageSize ?? 0) + (dbStats.indexSize ?? 0),
-			collections,
-		};
+	private getCollections = async (db: mongo.Db, names: string[]): Promise<CollectionDiagnostics[]> => {
+		const settled = await Promise.allSettled(names.map((name) => this.getCollectionStats(db, name)));
+		const collections: CollectionDiagnostics[] = [];
+		settled.forEach((result, index) => {
+			if (result.status === "rejected") {
+				this.logger.warn({ err: result.reason }, `Collection stats are unavailable for ${names[index]}`);
+				return;
+			}
+			collections.push(result.value);
+		});
+		return collections;
 	};
 
+	private getMongoDBStats = async (): Promise<MongoDiagnostics | null> => {
+		try {
+			const mongo = await this.db.getConnection();
+			const db = mongo.connection.db;
+			if (!db) {
+				throw new AppError(internalError, { message: "Database connection is not available", service: SERVICE_NAME });
+			}
+
+			const [opsPerSecond, dbStats, rawCollections] = await Promise.all([this.getMongoOpsPerSecond(db), db.stats(), db.collections()]);
+			const names = rawCollections.map((collection) => collection.collectionName).filter((name) => !name.startsWith("system"));
+			const collections = await this.getCollections(db, names);
+
+			return {
+				readyState: mongo.connection.readyState,
+				readsPerSecond: opsPerSecond?.readsPerSecond ?? null,
+				insertsPerSecond: opsPerSecond?.insertsPerSecond ?? null,
+				updatesPerSecond: opsPerSecond?.updatesPerSecond ?? null,
+				deletesPerSecond: opsPerSecond?.deletesPerSecond ?? null,
+				writesPerSecond: opsPerSecond?.writesPerSecond ?? null,
+				host: mongo.connection.host,
+				port: mongo.connection.port,
+				dbName: mongo.connection.name,
+				totalSize: dbStats.totalSize ?? (dbStats.storageSize ?? 0) + (dbStats.indexSize ?? 0),
+				collections,
+			};
+		} catch (error: unknown) {
+			this.logger.warn({ err: error }, "MongoDB diagnostics are unavailable");
+			return null;
+		}
+	};
 	getSystemStats = async (): Promise<Diagnostics> => {
 		const osStats = { totalMemoryBytes: os.totalmem() };
 
