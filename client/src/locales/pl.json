@@ -1160,10 +1160,10 @@
 					"heapAllocation": "Alokacja sterty",
 					"heapUsage": "Zużycie sterty",
 					"heapUtilization": "Wykorzystanie sterty",
-					"instantCpuUsage": "Bieżące użycie CPU",
+					"instantCpuUsage": "Użycie CPU",
 					"total": "Razem",
 					"used": "Używane",
-					"usedSPercentage": "% użycia 1s przez CPU"
+					"usedSPercentage": "% jednego rdzenia CPU"
 				},
 				"mongoDBCollectionStats": {
 					"bucketCount": "Liczba kubełków: {{count}}",

@@ -1246,10 +1246,10 @@
 					"heapAllocation": "Виділення купи",
 					"heapUsage": "Використання купи",
 					"heapUtilization": "Утилізація купи",
-					"instantCpuUsage": "Миттєве використання CPU",
+					"instantCpuUsage": "Використання CPU",
 					"availableMemoryPercentage": "% доступної пам'яті",
 					"allocatedPercentage": "% виділено",
-					"usedSPercentage": "% від 1с використано CPU",
+					"usedSPercentage": "% одного ядра CPU",
 					"total": "Усього",
 					"used": "Використано"
 				},

@@ -1246,10 +1246,10 @@
 					"heapAllocation": "Alokace haldy",
 					"heapUsage": "Využití haldy",
 					"heapUtilization": "Utilizace haldy",
-					"instantCpuUsage": "Okamžité využití CPU",
+					"instantCpuUsage": "Využití CPU",
 					"availableMemoryPercentage": "% dostupné paměti",
 					"allocatedPercentage": "% alokováno",
-					"usedSPercentage": "% z 1s využito CPU",
+					"usedSPercentage": "% jednoho jádra CPU",
 					"total": "Celkem",
 					"used": "Použité"
 				},

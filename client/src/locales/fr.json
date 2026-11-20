@@ -1243,10 +1243,10 @@
 					"heapAllocation": "Allocation du tas",
 					"heapUsage": "Utilisation du tas",
 					"heapUtilization": "Utilisation du tas",
-					"instantCpuUsage": "Utilisation CPU instantanée",
+					"instantCpuUsage": "Utilisation du CPU",
 					"availableMemoryPercentage": "% de mémoire disponible",
 					"allocatedPercentage": "% alloué",
-					"usedSPercentage": "% de 1s utilisé par le CPU",
+					"usedSPercentage": "% d'un cœur de CPU",
 					"total": "Total",
 					"used": "Utilisé"
 				},

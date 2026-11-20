@@ -1265,10 +1265,10 @@
 					"heapAllocation": "Assignació de heap",
 					"heapUsage": "Ús del heap",
 					"heapUtilization": "Utilització del heap",
-					"instantCpuUsage": "Ús instantani de CPU",
+					"instantCpuUsage": "Ús de CPU",
 					"availableMemoryPercentage": "% de memòria disponible",
 					"allocatedPercentage": "% assignat",
-					"usedSPercentage": "% d'1s usat per la CPU",
+					"usedSPercentage": "% d'un nucli de CPU",
 					"total": "Total",
 					"used": "Usat"
 				}

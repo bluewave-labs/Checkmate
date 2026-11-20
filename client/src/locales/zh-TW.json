@@ -1240,10 +1240,10 @@
 					"heapAllocation": "堆積配置",
 					"heapUsage": "堆積使用率",
 					"heapUtilization": "堆積利用率",
-					"instantCpuUsage": "即時 CPU 使用率",
+					"instantCpuUsage": "CPU 使用率",
 					"availableMemoryPercentage": "可用記憶體百分比",
 					"allocatedPercentage": "已配置百分比",
-					"usedSPercentage": "CPU 使用 1 秒百分比",
+					"usedSPercentage": "單一 CPU 核心的百分比",
 					"total": "總計",
 					"used": "已使用"
 				},

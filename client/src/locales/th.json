@@ -1240,10 +1240,10 @@
 					"heapAllocation": "การจัดสรร Heap",
 					"heapUsage": "การใช้งาน Heap",
 					"heapUtilization": "การใช้ประโยชน์ Heap",
-					"instantCpuUsage": "การใช้งาน CPU ขณะนี้",
+					"instantCpuUsage": "การใช้งาน CPU",
 					"availableMemoryPercentage": "% ของหน่วยความจำที่มี",
 					"allocatedPercentage": "% ที่จัดสรร",
-					"usedSPercentage": "% ของ 1 วินาทีที่ CPU ใช้",
+					"usedSPercentage": "% ของ CPU หนึ่งคอร์",
 					"total": "ทั้งหมด",
 					"used": "ใช้แล้ว"
 				},

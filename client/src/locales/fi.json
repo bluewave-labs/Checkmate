@@ -1242,10 +1242,10 @@
 					"heapAllocation": "Keon varaus",
 					"heapUsage": "Keon käyttö",
 					"heapUtilization": "Keon hyödyntäminen",
-					"instantCpuUsage": "Hetkellinen CPU:n käyttö",
+					"instantCpuUsage": "CPU-käyttö",
 					"availableMemoryPercentage": "% vapaasta muistista",
 					"allocatedPercentage": "% varattu",
-					"usedSPercentage": "% sekunnista CPU:n käytössä",
+					"usedSPercentage": "% yhdestä CPU-ytimestä",
 					"total": "Yhteensä",
 					"used": "Käytetty"
 				},

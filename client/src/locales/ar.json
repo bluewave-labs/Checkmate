@@ -1250,10 +1250,10 @@
 					"heapAllocation": "تخصيص الذاكرة",
 					"heapUsage": "استخدام الذاكرة",
 					"heapUtilization": "معدل استخدام الذاكرة",
-					"instantCpuUsage": "استخدام CPU اللحظي",
+					"instantCpuUsage": "استخدام CPU",
 					"availableMemoryPercentage": "% من الذاكرة المتاحة",
 					"allocatedPercentage": "% مخصص",
-					"usedSPercentage": "% من 1 ثانية مستخدمة بواسطة CPU",
+					"usedSPercentage": "% من نواة CPU واحدة",
 					"total": "الإجمالي",
 					"used": "مستخدم"
 				},
