@@ -1,12 +1,15 @@
 import v8 from "v8";
 import os from "os";
+import { monitorEventLoopDelay, type IntervalHistogram } from "perf_hooks";
 import { IDb } from "@/db/db.interface.js";
 import { Mongoose } from "mongoose";
 import { AppError, internalError } from "@/utils/AppError.js";
 import type { CollectionDiagnostics, Diagnostics, MongoDiagnostics } from "@/domain/diagnostics/diagnostic.type.js";
 
 const SERVICE_NAME = "diagnosticService";
-
+const MIN_CPU_WINDOW_MS = 500;
+const EVENT_LOOP_RESOLUTION_MS = 20;
+const NS_PER_MS = 1_000_000;
 export interface MongoStats {
 	reads: number;
 	inserts: number;
@@ -31,26 +34,31 @@ export class DiagnosticService implements IDiagnosticService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private lastMongoOpsPerSecond: MongoStats | null = null;
+	private lastCpuSample = { usage: process.cpuUsage(), timestamp: performance.now() };
+	private lastCpuFraction = 0;
 
-	constructor(private db: IDb<Mongoose>) {
-		/**
-		 * Performance Observer for monitoring system performance metrics.
-		 * Clears performance marks after each measurement to prevent memory leaks.
-		 */
-		const obs = new PerformanceObserver((items) => {
-			items.getEntries();
-			performance.clearMarks();
-		});
-		obs.observe({ entryTypes: ["measure"] });
+	constructor(
+		private db: IDb<Mongoose>,
+		private eventLoopHistogram: IntervalHistogram = monitorEventLoopDelay({ resolution: EVENT_LOOP_RESOLUTION_MS })
+	) {
+		this.eventLoopHistogram.enable();
 	}
 
 	private getCPUUsagePercentage = async (): Promise<number> => {
-		const startUsage = process.cpuUsage();
-		const timingPeriod = 1000; // measured in ms
-		await new Promise((resolve) => setTimeout(resolve, timingPeriod));
-		const endUsage = process.cpuUsage(startUsage);
-		// Fraction of one core (0.25 = 25%)
-		return (endUsage.user + endUsage.system) / 1000 / timingPeriod;
+		const now = performance.now();
+		const elapsedMs = now - this.lastCpuSample.timestamp;
+		if (elapsedMs < MIN_CPU_WINDOW_MS) return this.lastCpuFraction;
+		const delta = process.cpuUsage(this.lastCpuSample.usage);
+		this.lastCpuSample = { usage: process.cpuUsage(), timestamp: now };
+		this.lastCpuFraction = (delta.user + delta.system) / 1000 / elapsedMs;
+		return this.lastCpuFraction;
+	};
+
+	private getEventLoopDelayMs = (): number => {
+		const meanNs = this.eventLoopHistogram.mean;
+		this.eventLoopHistogram.reset();
+		if (Number.isNaN(meanNs)) return 0;
+		return Math.max(0, meanNs / NS_PER_MS - EVENT_LOOP_RESOLUTION_MS);
 	};
 
 	private getMongoOpsPerSecond = async (): Promise<MongoOpsPerSecond | null> => {
@@ -154,16 +162,7 @@ export class DiagnosticService implements IDiagnosticService {
 			heapSizeLimitBytes: heapStats.heap_size_limit,
 		};
 
-		let eventLoopDelayMs = 0;
-		performance.mark("start");
-		await new Promise((resolve) => setTimeout(resolve, 0));
-		performance.mark("end");
-		performance.measure("eventLoopDelay", "start", "end");
-		const entries = performance.getEntriesByName("eventLoopDelay");
-		if (entries.length > 0 && entries[0] !== undefined) {
-			eventLoopDelayMs = entries[0].duration;
-		}
-
+		const eventLoopDelayMs = this.getEventLoopDelayMs();
 		const uptimeMs = process.uptime() * 1000;
 		const mongoStats = await this.getMongoDBStats();
 
