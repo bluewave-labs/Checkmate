@@ -21,6 +21,7 @@ const createChecksRepo = () =>
 		deleteByMonitorId: jest.fn().mockResolvedValue(5),
 		deleteByTeamId: jest.fn().mockResolvedValue(10),
 		deleteOlderThan: jest.fn().mockResolvedValue(3),
+		setExpireAfterSeconds: jest.fn().mockResolvedValue(true),
 	}) as unknown as jest.Mocked<IChecksRepository>;
 
 const createService = () => {
@@ -428,15 +429,79 @@ describe("CheckService", () => {
 		});
 	});
 
-	describe("deleteOlderThan", () => {
-		it("delegates to repository", async () => {
-			const date = new Date();
+	describe("applyRetention", () => {
+		it("sets the collection TTL in seconds from checkTTL days", async () => {
 			const { service, checksRepository } = createService();
 
-			const result = await service.deleteOlderThan(date);
+			await service.applyRetention(30);
 
-			expect(checksRepository.deleteOlderThan).toHaveBeenCalledWith(date);
-			expect(result).toBe(3);
+			expect(checksRepository.setExpireAfterSeconds).toHaveBeenCalledWith(30 * 24 * 60 * 60);
+			expect(checksRepository.deleteOlderThan).not.toHaveBeenCalled();
+		});
+
+		it("turns the TTL off for the unlimited sentinel (366)", async () => {
+			const { service, checksRepository } = createService();
+
+			await service.applyRetention(366);
+
+			expect(checksRepository.setExpireAfterSeconds).toHaveBeenCalledWith(null);
+		});
+
+		it.each([
+			{ label: "NaN", value: Number.NaN },
+			{ label: "undefined", value: undefined },
+			{ label: "zero", value: 0 },
+			{ label: "a negative number", value: -1 },
+			{ label: "a fraction", value: 1.5 },
+		])("does not touch the collection when checkTTL is $label", async ({ value }) => {
+			const { service, checksRepository, logger } = createService();
+
+			await service.applyRetention(value as number);
+
+			expect(checksRepository.setExpireAfterSeconds).not.toHaveBeenCalled();
+			expect(checksRepository.deleteOlderThan).not.toHaveBeenCalled();
+			expect(logger.error).toHaveBeenCalledTimes(1);
+		});
+
+		it("deletes expired checks directly when the TTL is not permitted", async () => {
+			jest.useFakeTimers({ now: new Date("2026-06-01T00:00:00.000Z") });
+			const { service, checksRepository, logger } = createService();
+			checksRepository.setExpireAfterSeconds.mockResolvedValue(false);
+
+			await service.applyRetention(30);
+
+			expect(checksRepository.deleteOlderThan).toHaveBeenCalledWith(new Date("2026-05-02T00:00:00.000Z"));
+			expect(logger.error).not.toHaveBeenCalled();
+			jest.useRealTimers();
+		});
+
+		it("does not delete anything when retention is unlimited and the TTL is not permitted", async () => {
+			const { service, checksRepository } = createService();
+			checksRepository.setExpireAfterSeconds.mockResolvedValue(false);
+
+			await service.applyRetention(366);
+
+			expect(checksRepository.deleteOlderThan).not.toHaveBeenCalled();
+		});
+
+		it("logs and does not delete when setting the TTL fails for another reason", async () => {
+			const { service, checksRepository, logger } = createService();
+			checksRepository.setExpireAfterSeconds.mockRejectedValue(new Error("connection closed"));
+
+			await expect(service.applyRetention(30)).resolves.toBeUndefined();
+
+			expect(checksRepository.deleteOlderThan).not.toHaveBeenCalled();
+			expect(logger.error).toHaveBeenCalledTimes(1);
+		});
+
+		it("logs and does not throw when the fallback delete fails", async () => {
+			const { service, checksRepository, logger } = createService();
+			checksRepository.setExpireAfterSeconds.mockResolvedValue(false);
+			checksRepository.deleteOlderThan.mockRejectedValue(new Error("not the metaField"));
+
+			await expect(service.applyRetention(30)).resolves.toBeUndefined();
+
+			expect(logger.error).toHaveBeenCalledTimes(1);
 		});
 	});
 });

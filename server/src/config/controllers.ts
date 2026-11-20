@@ -48,7 +48,8 @@ export const initializeControllers = (apiServices: ApiServices): InitializedCont
 			apiServices.settingsService,
 			apiServices.emailService,
 			apiServices.proxiesService,
-			apiServices.appVersionService
+			apiServices.appVersionService,
+			apiServices.checkService
 		),
 		checkController: new CheckController(apiServices.checkService),
 		geoCheckController: new GeoCheckController(apiServices.geoChecksService),

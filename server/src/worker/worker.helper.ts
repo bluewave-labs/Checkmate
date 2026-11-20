@@ -1,7 +1,6 @@
 const SERVICE_NAME = "JobQueueHelper";
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { ICheckService } from "@/domain/checks/check.service.js";
-import { CHECK_TTL_SENTINEL } from "@/domain/checks/check.type.js";
 import { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
 import { IGeoChecksRepository } from "@/domain/geo-checks/geo-check.repository.interface.js";
 import { IIncidentsRepository } from "@/domain/incidents/incident.repository.interface.js";
@@ -145,17 +144,7 @@ export class WorkerHelper implements IWorkerHelper {
 		return async () => {
 			try {
 				const settings = await this.settingsService.getDBSettings();
-
-				const checkTTL = settings.checkTTL; // Check TTL is in DAYS, not MS
-
-				if (checkTTL === CHECK_TTL_SENTINEL) {
-					this.logger.info("Check TTL is set to unlimited, skipping cleanup");
-					return;
-				}
-				const checkTTLInMs = checkTTL * 24 * 60 * 60 * 1000;
-				const cutoffDate = new Date(Date.now() - checkTTLInMs);
-				const deleteCount = await this.checkService.deleteOlderThan(cutoffDate);
-				this.logger.info({ count: deleteCount, cutoff: cutoffDate.toISOString() }, "Deleted checks older than the retention cutoff");
+				await this.checkService.applyRetention(settings.checkTTL);
 			} catch (error: unknown) {
 				this.logger.error({ err: error }, "Retention cleanup failed");
 			}

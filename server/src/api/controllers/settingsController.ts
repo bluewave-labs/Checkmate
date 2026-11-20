@@ -9,6 +9,7 @@ import { IProxiesService } from "@/domain/proxies/proxy.service.js";
 import { Settings } from "@/domain/app-settings/app-settings.type.js";
 import { appSettingsErrors } from "@/domain/app-settings/app-settings.errors.js";
 import { IAppVersionService } from "@/domain/app-version/app-version.service.js";
+import { ICheckService } from "@/domain/checks/check.service.js";
 
 const SERVICE_NAME = "SettingsController";
 
@@ -26,16 +27,20 @@ class SettingsController implements ISettingsController {
 	private emailService: IEmailService;
 	private proxiesService: IProxiesService;
 	private appVersionService: IAppVersionService;
+	private checkService: ICheckService;
+
 	constructor(
 		settingsService: ISettingsService,
 		emailService: IEmailService,
 		proxiesService: IProxiesService,
-		appVersionService: IAppVersionService
+		appVersionService: IAppVersionService,
+		checkService: ICheckService
 	) {
 		this.settingsService = settingsService;
 		this.emailService = emailService;
 		this.proxiesService = proxiesService;
 		this.appVersionService = appVersionService;
+		this.checkService = checkService;
 	}
 
 	buildAppSettings = async (dbSettings: Settings) => {
@@ -85,6 +90,7 @@ class SettingsController implements ISettingsController {
 		}
 
 		const updatedSettings = await this.settingsService.updateDbSettings(validatedBody);
+		await this.checkService.applyRetention(updatedSettings.checkTTL);
 
 		const data = await this.buildAppSettings(updatedSettings);
 		res.json({ success: true, msg: "App settings updated successfully", data });
