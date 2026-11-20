@@ -28,6 +28,7 @@ const createMonitorsRepositoryMock = () =>
 		togglePauseById: jest.fn(),
 		bulkTogglePause: jest.fn(),
 		deleteById: jest.fn(),
+		deleteByIds: jest.fn(),
 		deleteByTeamId: jest.fn(),
 		findExistingHeartbeatSlugs: jest.fn(async () => []),
 	}) as unknown as IMonitorsRepository;
@@ -1807,6 +1808,96 @@ describe("MonitorService", () => {
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({ err: { code: 500 }, monitorId: "monitor-1" }),
 				"Error deleting geo checks for monitor"
+			);
+		});
+	});
+
+	describe("bulkDeleteMonitors", () => {
+		const createChildRepositories = () => {
+			const checksRepository = createChecksRepositoryMock();
+			const monitorStatsRepository = createMonitorStatsRepositoryMock();
+			const statusPagesRepository = createStatusPagesRepositoryMock();
+			const geoChecksRepository = createGeoChecksRepositoryMock();
+			const incidentsRepository = createIncidentsRepositoryMock();
+			(checksRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
+			(monitorStatsRepository.deleteByMonitorId as jest.Mock).mockResolvedValue({});
+			(statusPagesRepository.removeMonitorFromStatusPages as jest.Mock).mockResolvedValue(0);
+			(geoChecksRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
+			(incidentsRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
+			return { checksRepository, monitorStatsRepository, statusPagesRepository, geoChecksRepository, incidentsRepository };
+		};
+
+		it("deletes the selected monitors with their associated data and jobs", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const children = createChildRepositories();
+			const monitors = [makeMonitor({ id: "m1" }), makeMonitor({ id: "m2" })];
+			(monitorsRepository.deleteByIds as jest.Mock).mockResolvedValue(monitors);
+			const { service, jobQueue } = createService({ monitorsRepository, ...children });
+
+			const result = await service.bulkDeleteMonitors({ teamId: TEAM_ID, monitorIds: ["m1", "m2"] });
+
+			expect(result).toEqual({ deletedCount: 2, failedCount: 0 });
+			expect(monitorsRepository.deleteByIds).toHaveBeenCalledWith(["m1", "m2"], TEAM_ID);
+			expect(children.checksRepository.deleteByMonitorId).toHaveBeenCalledWith("m1");
+			expect(children.checksRepository.deleteByMonitorId).toHaveBeenCalledWith("m2");
+			expect(children.statusPagesRepository.removeMonitorFromStatusPages).toHaveBeenCalledTimes(2);
+			expect(children.incidentsRepository.deleteByMonitorId).toHaveBeenCalledWith("m1", TEAM_ID);
+			expect(children.geoChecksRepository.deleteByMonitorId).toHaveBeenCalledTimes(2);
+			expect(children.monitorStatsRepository.deleteByMonitorId).toHaveBeenCalledTimes(2);
+			expect(jobQueue.deleteJob).toHaveBeenCalledWith(monitors[0]);
+			expect(jobQueue.deleteJob).toHaveBeenCalledWith(monitors[1]);
+		});
+
+		it("returns zero counts when no selected monitor belongs to the team", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.deleteByIds as jest.Mock).mockResolvedValue([]);
+			const { service, jobQueue } = createService({ monitorsRepository });
+
+			const result = await service.bulkDeleteMonitors({ teamId: TEAM_ID, monitorIds: ["m1"] });
+
+			expect(result).toEqual({ deletedCount: 0, failedCount: 0 });
+			expect(jobQueue.deleteJob).not.toHaveBeenCalled();
+		});
+
+		it("still deletes the job when a child deletion fails", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const children = createChildRepositories();
+			(children.checksRepository.deleteByMonitorId as jest.Mock).mockRejectedValue(new Error("fail"));
+			(monitorsRepository.deleteByIds as jest.Mock).mockResolvedValue([makeMonitor({ id: "m1" })]);
+			const logger = createMockLogger();
+			const { service, jobQueue } = createService({ monitorsRepository, ...children, logger });
+
+			const result = await service.bulkDeleteMonitors({ teamId: TEAM_ID, monitorIds: ["m1"] });
+
+			expect(result).toEqual({ deletedCount: 1, failedCount: 0 });
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ monitorId: "m1" }), "Error deleting checks for monitor");
+			expect(jobQueue.deleteJob).toHaveBeenCalledTimes(1);
+		});
+
+		it("returns failedCount and logs errors when job deletions reject", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const children = createChildRepositories();
+			const monitors = [makeMonitor({ id: "m1" }), makeMonitor({ id: "m2" }), makeMonitor({ id: "m3" })];
+			(monitorsRepository.deleteByIds as jest.Mock).mockResolvedValue(monitors);
+			const jobQueue = createJobQueueMock();
+			(jobQueue.deleteJob as jest.Mock)
+				.mockRejectedValueOnce(new Error("Queue failure 1"))
+				.mockResolvedValueOnce(undefined)
+				.mockRejectedValueOnce(new Error("Queue failure 2"));
+			const logger = createMockLogger();
+			const { service } = createService({ monitorsRepository, ...children, jobQueue, logger });
+
+			const result = await service.bulkDeleteMonitors({ teamId: TEAM_ID, monitorIds: ["m1", "m2", "m3"] });
+
+			expect(result).toEqual({ deletedCount: 3, failedCount: 2 });
+			expect(logger.error).toHaveBeenCalledTimes(2);
+			expect(logger.error).toHaveBeenCalledWith(
+				{ err: new Error("Queue failure 1"), monitorId: "m1" },
+				"Failed to clean up job or associated records for monitor during bulk delete"
+			);
+			expect(logger.error).toHaveBeenCalledWith(
+				{ err: new Error("Queue failure 2"), monitorId: "m3" },
+				"Failed to clean up job or associated records for monitor during bulk delete"
 			);
 		});
 	});
