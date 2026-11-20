@@ -1265,10 +1265,10 @@
 					"heapAllocation": "Allocazione heap",
 					"heapUsage": "Utilizzo heap",
 					"heapUtilization": "Utilizzo heap",
-					"instantCpuUsage": "Utilizzo CPU istantaneo",
+					"instantCpuUsage": "Utilizzo CPU",
 					"availableMemoryPercentage": "% memoria disponibile",
 					"allocatedPercentage": "% allocato",
-					"usedSPercentage": "% di 1s usato dalla CPU",
+					"usedSPercentage": "% di un core della CPU",
 					"total": "Totale",
 					"used": "Utilizzato"
 				}

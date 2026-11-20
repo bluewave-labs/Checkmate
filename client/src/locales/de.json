@@ -1242,10 +1242,10 @@
 					"heapAllocation": "Heap-Zuweisung",
 					"heapUsage": "Heap-Nutzung",
 					"heapUtilization": "Heap-Auslastung",
-					"instantCpuUsage": "Momentane CPU-Auslastung",
+					"instantCpuUsage": "CPU-Auslastung",
 					"availableMemoryPercentage": "% des verfügbaren Speichers",
 					"allocatedPercentage": "% zugewiesen",
-					"usedSPercentage": "% von 1s durch CPU genutzt",
+					"usedSPercentage": "% eines CPU-Kerns",
 					"total": "Gesamt",
 					"used": "Belegt"
 				},

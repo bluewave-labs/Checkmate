@@ -1242,10 +1242,10 @@
 					"heapAllocation": "Heap tahsisi",
 					"heapUsage": "Heap kullanımı",
 					"heapUtilization": "Heap verimliliği",
-					"instantCpuUsage": "Anlık CPU kullanımı",
+					"instantCpuUsage": "CPU kullanımı",
 					"availableMemoryPercentage": "% kullanılabilir bellek",
 					"allocatedPercentage": "% tahsis edilmiş",
-					"usedSPercentage": "% CPU tarafından kullanılan (1s)",
+					"usedSPercentage": "Tek CPU çekirdeğinin %'si",
 					"total": "Toplam",
 					"used": "Kullanılan"
 				},

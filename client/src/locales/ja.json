@@ -1240,10 +1240,10 @@
 					"heapAllocation": "ヒープ割り当て",
 					"heapUsage": "ヒープ使用率",
 					"heapUtilization": "ヒープ使用効率",
-					"instantCpuUsage": "瞬時CPU使用率",
+					"instantCpuUsage": "CPU使用率",
 					"availableMemoryPercentage": "利用可能メモリの%",
 					"allocatedPercentage": "割り当て済み%",
-					"usedSPercentage": "CPUによる1秒あたりの使用%",
+					"usedSPercentage": "CPU 1コアに対する%",
 					"total": "合計",
 					"used": "使用済み"
 				},

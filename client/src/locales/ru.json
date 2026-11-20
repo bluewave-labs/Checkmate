@@ -1246,10 +1246,10 @@
 					"heapAllocation": "Выделение кучи",
 					"heapUsage": "Использование кучи",
 					"heapUtilization": "Утилизация кучи",
-					"instantCpuUsage": "Мгновенная загрузка CPU",
+					"instantCpuUsage": "Загрузка CPU",
 					"availableMemoryPercentage": "% доступной памяти",
 					"allocatedPercentage": "% выделено",
-					"usedSPercentage": "% 1с использовано CPU",
+					"usedSPercentage": "% одного ядра CPU",
 					"total": "Всего",
 					"used": "Использовано"
 				},

@@ -1240,10 +1240,10 @@
 					"heapAllocation": "Cấp phát heap",
 					"heapUsage": "Sử dụng heap",
 					"heapUtilization": "Hiệu suất sử dụng heap",
-					"instantCpuUsage": "Sử dụng CPU tức thời",
+					"instantCpuUsage": "Sử dụng CPU",
 					"availableMemoryPercentage": "% bộ nhớ khả dụng",
 					"allocatedPercentage": "% đã cấp phát",
-					"usedSPercentage": "% của 1 giây CPU sử dụng",
+					"usedSPercentage": "% của một lõi CPU",
 					"total": "Tổng",
 					"used": "Đã dùng"
 				},
