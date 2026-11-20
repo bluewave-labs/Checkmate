@@ -54,7 +54,7 @@ export class DiagnosticService implements IDiagnosticService {
 		return this.lastCpuFraction;
 	};
 
-	private getEVentLoopDelayMs = (): number => {
+	private getEventLoopDelayMs = (): number => {
 		const meanNs = this.eventLoopHistogram.mean;
 		this.eventLoopHistogram.reset();
 		if (Number.isNaN(meanNs)) return 0;
@@ -162,7 +162,7 @@ export class DiagnosticService implements IDiagnosticService {
 			heapSizeLimitBytes: heapStats.heap_size_limit,
 		};
 
-		const eventLoopDelayMs = this.getEVentLoopDelayMs();
+		const eventLoopDelayMs = this.getEventLoopDelayMs();
 		const uptimeMs = process.uptime() * 1000;
 		const mongoStats = await this.getMongoDBStats();
 

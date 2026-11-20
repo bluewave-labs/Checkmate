@@ -2,6 +2,7 @@ import { describe, expect, it, jest, beforeEach, afterEach } from "@jest/globals
 import { DiagnosticService } from "../../../src/domain/diagnostics/diagnostic.service.ts";
 import type { IDb } from "../../../src/db/db.interface.ts";
 import type { Mongoose } from "mongoose";
+import type { IntervalHistogram } from "perf_hooks";
 
 // ── Test helpers ─────────────────────────────────────────────────────────────
 
@@ -45,6 +46,15 @@ const makeDb = (overrides?: {
 	} as unknown as IDb<Mongoose>;
 };
 
+const makeHistogram = (meanNs: number) => ({
+	mean: meanNs,
+	enable: jest.fn(),
+	disable: jest.fn(),
+	reset: jest.fn(),
+});
+
+const asHistogram = (histogram: ReturnType<typeof makeHistogram>) => histogram as unknown as IntervalHistogram;
+
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("DiagnosticService", () => {
@@ -59,30 +69,11 @@ describe("DiagnosticService", () => {
 	// ── constructor ─────────────────────────────────────────────────────────
 
 	describe("constructor", () => {
-		it("sets up PerformanceObserver that clears marks on callback", () => {
-			let capturedCallback: ((list: PerformanceObserverEntryList) => void) | null = null;
-			const originalObserver = globalThis.PerformanceObserver;
-			const mockObserve = jest.fn();
+		it("enables the event loop delay histogram", () => {
+			const histogram = makeHistogram(0);
+			const service = new DiagnosticService(makeDb(), asHistogram(histogram));
 
-			globalThis.PerformanceObserver = jest.fn().mockImplementation((cb: any) => {
-				capturedCallback = cb;
-				return { observe: mockObserve };
-			}) as any;
-
-			const clearMarksSpy = jest.spyOn(performance, "clearMarks");
-			const service = new DiagnosticService(makeDb());
-
-			expect(mockObserve).toHaveBeenCalledWith({ entryTypes: ["measure"] });
-			expect(capturedCallback).not.toBeNull();
-
-			const mockEntryList = { getEntries: jest.fn().mockReturnValue([]) } as unknown as PerformanceObserverEntryList;
-			capturedCallback!(mockEntryList);
-
-			expect(mockEntryList.getEntries).toHaveBeenCalled();
-			expect(clearMarksSpy).toHaveBeenCalled();
-
-			clearMarksSpy.mockRestore();
-			globalThis.PerformanceObserver = originalObserver;
+			expect(histogram.enable).toHaveBeenCalledTimes(1);
 			expect(service).toBeDefined();
 		});
 	});
@@ -209,38 +200,19 @@ describe("DiagnosticService", () => {
 			jest.useFakeTimers();
 		});
 
-		it("reads eventLoopDelay from real performance entries", async () => {
-			jest.useRealTimers();
-			const service = new DiagnosticService(makeDb());
-			const result = await service.getSystemStats();
-			expect(typeof result.eventLoopDelayMs).toBe("number");
-			expect(result.eventLoopDelayMs).toBeGreaterThanOrEqual(0);
-			jest.useFakeTimers();
-		});
-
 		it.each([
-			{ label: "empty entries array", entries: [] },
-			{ label: "undefined entry in array", entries: [undefined] },
-		])("defaults eventLoopDelayMs to 0 when $label", async ({ entries }) => {
-			const service = new DiagnosticService(makeDb());
-			const originalGetEntries = performance.getEntriesByName;
-			const originalMeasure = performance.measure;
-			const originalMark = performance.mark;
-
-			performance.mark = jest.fn() as any;
-			performance.measure = jest.fn() as any;
-			performance.getEntriesByName = jest.fn().mockReturnValue(entries) as any;
-
+			{ label: "subtracts the sampling resolution from the mean", meanNs: 25_000_000, expected: 5 },
+			{ label: "clamps to 0 when the mean is below the resolution", meanNs: 19_000_000, expected: 0 },
+			{ label: "returns 0 when the histogram has no samples", meanNs: Number.NaN, expected: 0 },
+		])("eventLoopDelayMs $label", async ({ meanNs, expected }) => {
+			const histogram = makeHistogram(meanNs);
+			const service = new DiagnosticService(makeDb(), asHistogram(histogram));
 			const promise = service.getSystemStats();
 			await jest.advanceTimersByTimeAsync(2500);
 			const result = await promise;
 
-			expect(result.eventLoopDelayMs).toBe(0);
-			expect(performance.getEntriesByName).toHaveBeenCalledWith("eventLoopDelay");
-
-			performance.getEntriesByName = originalGetEntries;
-			performance.measure = originalMeasure;
-			performance.mark = originalMark;
+			expect(result.eventLoopDelayMs).toBeCloseTo(expected);
+			expect(histogram.reset).toHaveBeenCalledTimes(1);
 		});
 	});
 });
