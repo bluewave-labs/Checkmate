@@ -43,7 +43,6 @@ export interface ApiServices extends SharedServices {
 export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): ApiServices => {
 	const {
 		logger,
-		db,
 		settingsService,
 		checkService,
 		emailService,
@@ -65,6 +64,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		proxiesRepository,
 		queueWorkersRepository,
 		connectRepository,
+		diagnosticsRepository,
 		encryptionService,
 	} = shared;
 
@@ -116,7 +116,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 
 	const statusPageService = new StatusPageService(statusPagesRepository, settingsService, monitorsRepository, checksRepository, incidentsRepository);
 	const tagsService = new TagsService(tagsRepository, monitorsRepository);
-	const diagnosticService = new DiagnosticService(db, logger);
+	const diagnosticService = new DiagnosticService(diagnosticsRepository, logger);
 	const proxiesService = new ProxiesService(proxiesRepository, monitorsRepository, settingsService);
 	const egressStateService = new EgressStateService(queueWorkersRepository, settingsService);
 	const heartbeatService = new HeartbeatService({

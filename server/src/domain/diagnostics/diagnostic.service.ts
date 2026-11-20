@@ -1,9 +1,7 @@
 import v8 from "v8";
 import os from "os";
 import { monitorEventLoopDelay, type IntervalHistogram } from "perf_hooks";
-import { IDb } from "@/db/db.interface.js";
-import type { Mongoose, mongo } from "mongoose";
-import { AppError, internalError } from "@/utils/AppError.js";
+import type { IDiagnosticsRepository } from "@/domain/diagnostics/diagnostic.repository.interface.js";
 import type { CollectionDiagnostics, Diagnostics, MongoDiagnostics } from "@/domain/diagnostics/diagnostic.type.js";
 import { ILogger } from "@/utils/logger/logger.js";
 
@@ -51,7 +49,7 @@ export class DiagnosticService implements IDiagnosticService {
 	private lastEventLoopDelayMs = 0;
 
 	constructor(
-		private db: IDb<Mongoose>,
+		private diagnosticsRepository: IDiagnosticsRepository,
 		logger: ILogger,
 		private eventLoopHistogram: IntervalHistogram = monitorEventLoopDelay({ resolution: EVENT_LOOP_RESOLUTION_MS })
 	) {
@@ -77,14 +75,14 @@ export class DiagnosticService implements IDiagnosticService {
 		return this.lastEventLoopDelayMs;
 	};
 
-	private getMongoOpsPerSecond = async (db: mongo.Db): Promise<MongoOpsPerSecond | null> => {
+	private getMongoOpsPerSecond = async (): Promise<MongoOpsPerSecond | null> => {
 		try {
-			const res = await db.command({ serverStatus: 1 });
+			const counters = await this.diagnosticsRepository.getOpCounters();
 			const current: MongoStats = {
-				reads: (res.opcounters?.query ?? 0) + (res.opcounters?.getmore ?? 0),
-				inserts: res.opcounters?.insert ?? 0,
-				updates: res.opcounters?.update ?? 0,
-				deletes: res.opcounters?.delete ?? 0,
+				reads: counters.reads,
+				inserts: counters.inserts,
+				updates: counters.updates,
+				deletes: counters.deletes,
 				timestamp: Date.now(),
 			};
 			const isFirstSample = this.lastMongoOpsPerSecond === null;
@@ -93,7 +91,7 @@ export class DiagnosticService implements IDiagnosticService {
 				inserts: 0,
 				updates: 0,
 				deletes: 0,
-				timestamp: current.timestamp - Number(res.uptimeMillis ?? 0),
+				timestamp: current.timestamp - counters.uptimeMs,
 			};
 
 			const elapsedMs = current.timestamp - previous.timestamp;
@@ -120,24 +118,8 @@ export class DiagnosticService implements IDiagnosticService {
 		}
 	};
 
-	private getCollectionStats = async (db: mongo.Db, name: string): Promise<CollectionDiagnostics> => {
-		const stats = await db.command({ collStats: name });
-		const documentCount = typeof stats.count === "number" ? stats.count : await db.collection(name).countDocuments({});
-		const entry: CollectionDiagnostics = {
-			name,
-			documentCount,
-			storageSize: stats.storageSize ?? 0,
-			totalIndexSize: stats.totalIndexSize ?? 0,
-			totalSize: stats.totalSize ?? (stats.storageSize ?? 0) + (stats.totalIndexSize ?? 0),
-		};
-		if (stats.timeseries?.bucketCount !== undefined) {
-			entry.bucketCount = stats.timeseries.bucketCount;
-		}
-		return entry;
-	};
-
-	private getCollections = async (db: mongo.Db, names: string[]): Promise<CollectionDiagnostics[]> => {
-		const settled = await Promise.allSettled(names.map((name) => this.getCollectionStats(db, name)));
+	private getCollections = async (names: string[]): Promise<CollectionDiagnostics[]> => {
+		const settled = await Promise.allSettled(names.map((name) => this.diagnosticsRepository.getCollectionStats(name)));
 		const collections: CollectionDiagnostics[] = [];
 		settled.forEach((result, index) => {
 			if (result.status === "rejected") {
@@ -151,27 +133,25 @@ export class DiagnosticService implements IDiagnosticService {
 
 	private getMongoDBStats = async (): Promise<MongoDiagnostics | null> => {
 		try {
-			const mongo = await this.db.getConnection();
-			const db = mongo.connection.db;
-			if (!db) {
-				throw new AppError(internalError, { message: "Database connection is not available", service: SERVICE_NAME });
-			}
-
-			const [opsPerSecond, dbStats, rawCollections] = await Promise.all([this.getMongoOpsPerSecond(db), db.stats(), db.collections()]);
-			const names = rawCollections.map((collection) => collection.collectionName).filter((name) => !name.startsWith("system"));
-			const collections = await this.getCollections(db, names);
+			const connection = await this.diagnosticsRepository.getConnectionInfo();
+			const [opsPerSecond, totalSize, names] = await Promise.all([
+				this.getMongoOpsPerSecond(),
+				this.diagnosticsRepository.getDatabaseSize(),
+				this.diagnosticsRepository.listCollectionNames(),
+			]);
+			const collections = await this.getCollections(names);
 
 			return {
-				readyState: mongo.connection.readyState,
+				readyState: connection.readyState,
 				readsPerSecond: opsPerSecond?.readsPerSecond ?? null,
 				insertsPerSecond: opsPerSecond?.insertsPerSecond ?? null,
 				updatesPerSecond: opsPerSecond?.updatesPerSecond ?? null,
 				deletesPerSecond: opsPerSecond?.deletesPerSecond ?? null,
 				writesPerSecond: opsPerSecond?.writesPerSecond ?? null,
-				host: mongo.connection.host,
-				port: mongo.connection.port,
-				dbName: mongo.connection.name,
-				totalSize: dbStats.totalSize ?? (dbStats.storageSize ?? 0) + (dbStats.indexSize ?? 0),
+				host: connection.host,
+				port: connection.port,
+				dbName: connection.dbName,
+				totalSize,
 				collections,
 			};
 		} catch (error: unknown) {
