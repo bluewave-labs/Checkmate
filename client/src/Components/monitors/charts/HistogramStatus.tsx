@@ -24,7 +24,12 @@ interface XLabelProps {
 const XLabel = ({ p1, p2, range }: XLabelProps) => {
 	const theme = useTheme();
 	const formatDate = useFormatDate();
-	const dateFormat: DateFormat = range === "day" ? "dateTimeShort" : "dateShort";
+	const dateFormat: DateFormat =
+		range === "day"
+			? "dateTimeShort"
+			: range === "year" || range === "all"
+				? "date"
+				: "dateShort";
 	return (
 		<>
 			<text

@@ -58,6 +58,12 @@ export const HeaderTimeRange = ({
 				<ToggleButton value="month">
 					{t("components.headerTimeRange.labels.month")}
 				</ToggleButton>
+				<ToggleButton value="year">
+					{t("components.headerTimeRange.labels.year")}
+				</ToggleButton>
+				<ToggleButton value="all">
+					{t("components.headerTimeRange.labels.all")}
+				</ToggleButton>
 			</ToggleButtonGroup>
 		);
 	}

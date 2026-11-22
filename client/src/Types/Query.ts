@@ -1,4 +1,12 @@
-export const DateRanges = ["recent", "hour", "day", "week", "month", "all"] as const;
+export const DateRanges = [
+	"recent",
+	"hour",
+	"day",
+	"week",
+	"month",
+	"year",
+	"all",
+] as const;
 export type DateRange = (typeof DateRanges)[number];
 
 export const SortOrders = ["asc", "desc"] as const;

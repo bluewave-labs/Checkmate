@@ -215,13 +215,17 @@
 				"day": "Giorno",
 				"month": "Mese",
 				"recent": "Recente",
-				"week": "Settimana"
+				"week": "Settimana",
+				"year": "Anno",
+				"all": "Tutto"
 			},
 			"description": {
 				"recent": "Mostra le statistiche delle ultime 2 ore.",
 				"day": "Mostra le statistiche delle ultime 24 ore.",
 				"week": "Mostra le statistiche degli ultimi 7 giorni.",
-				"month": "Mostra le statistiche degli ultimi 30 giorni."
+				"month": "Mostra le statistiche degli ultimi 30 giorni.",
+				"year": "Mostra le statistiche degli ultimi 365 giorni.",
+				"all": "Mostra le statistiche dell’intero periodo."
 			}
 		},
 		"offlineBanner": {

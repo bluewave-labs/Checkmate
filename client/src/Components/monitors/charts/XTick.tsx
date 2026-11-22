@@ -9,6 +9,10 @@ const TICK_FORMATS: Record<string, DateFormat> = {
 	day: "time",
 	week: "dateTimeShort",
 	month: "dateShort",
+	// Daily buckets over a year or more: keep the year on the tick so "Oct 4"
+	// cannot be read as this year.
+	year: "date",
+	all: "date",
 };
 
 type XTickProps = {

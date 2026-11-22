@@ -203,13 +203,17 @@
 				"day": "Gün",
 				"month": "Ay",
 				"recent": "Son",
-				"week": "Hafta"
+				"week": "Hafta",
+				"year": "Yıl",
+				"all": "Tümü"
 			},
 			"description": {
 				"recent": "Son 2 saatin istatistikleri gösteriliyor.",
 				"day": "Son 24 saatin istatistikleri gösteriliyor.",
 				"week": "Son 7 günün istatistikleri gösteriliyor.",
-				"month": "Son 30 günün istatistikleri gösteriliyor."
+				"month": "Son 30 günün istatistikleri gösteriliyor.",
+				"year": "Son 365 günün istatistikleri gösteriliyor.",
+				"all": "Tüm zamanların istatistikleri gösteriliyor."
 			}
 		},
 		"offlineBanner": {

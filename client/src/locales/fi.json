@@ -203,13 +203,17 @@
 				"day": "Päivä",
 				"month": "Kuukausi",
 				"recent": "Viimeisimmät",
-				"week": "Viikko"
+				"week": "Viikko",
+				"year": "Vuosi",
+				"all": "Kaikki"
 			},
 			"description": {
 				"recent": "Näytetään tilastot viimeisiltä 2 tunnilta.",
 				"day": "Näytetään tilastot viimeisiltä 24 tunnilta.",
 				"week": "Näytetään tilastot viimeisiltä 7 päivältä.",
-				"month": "Näytetään tilastot viimeisiltä 30 päivältä."
+				"month": "Näytetään tilastot viimeisiltä 30 päivältä.",
+				"year": "Näytetään tilastot viimeisiltä 365 päivältä.",
+				"all": "Näytetään tilastot koko ajalta."
 			}
 		},
 		"offlineBanner": {

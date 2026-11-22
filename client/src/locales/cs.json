@@ -205,13 +205,17 @@
 				"day": "Den",
 				"month": "Měsíc",
 				"recent": "Nedávné",
-				"week": "Týden"
+				"week": "Týden",
+				"year": "Rok",
+				"all": "Vše"
 			},
 			"description": {
 				"recent": "Zobrazení statistik za poslední 2 hodiny.",
 				"day": "Zobrazení statistik za posledních 24 hodin.",
 				"week": "Zobrazení statistik za posledních 7 dní.",
-				"month": "Zobrazení statistik za posledních 30 dní."
+				"month": "Zobrazení statistik za posledních 30 dní.",
+				"year": "Zobrazení statistik za posledních 365 dní.",
+				"all": "Zobrazení statistik za celé období."
 			}
 		},
 		"offlineBanner": {

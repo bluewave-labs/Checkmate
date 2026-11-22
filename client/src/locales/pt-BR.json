@@ -215,13 +215,17 @@
 				"day": "Dia",
 				"month": "Mês",
 				"recent": "Recente",
-				"week": "Semana"
+				"week": "Semana",
+				"year": "Ano",
+				"all": "Tudo"
 			},
 			"description": {
 				"recent": "Exibindo estatísticas das últimas 2 horas.",
 				"day": "Exibindo estatísticas das últimas 24 horas.",
 				"week": "Exibindo estatísticas dos últimos 7 dias.",
-				"month": "Exibindo estatísticas dos últimos 30 dias."
+				"month": "Exibindo estatísticas dos últimos 30 dias.",
+				"year": "Exibindo estatísticas dos últimos 365 dias.",
+				"all": "Exibindo estatísticas de todo o período."
 			}
 		},
 		"offlineBanner": {

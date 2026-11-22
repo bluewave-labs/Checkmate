@@ -35,7 +35,8 @@ export const resolveTimezone = (preferred?: string | null): string =>
 	preferred?.trim() || SYSTEM_TIMEZONE;
 
 export const tooltipDateFormatLookup = (range: string): DateFormat =>
-	range === "month" ? "date" : "dateTime";
+	// Ranges whose bucket can fall in another year keep the year in the tooltip.
+	range === "month" || range === "year" || range === "all" ? "date" : "dateTime";
 
 const DISPLAY_UNITS = [MS_PER_DAY, MS_PER_HOUR, MS_PER_MINUTE, MS_PER_SECOND];
 
