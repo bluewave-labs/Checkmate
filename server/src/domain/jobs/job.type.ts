@@ -2,6 +2,7 @@ export const JOB_TYPES = [
 	"check",
 	"geo-check",
 	"evaluate",
+	"rollup-checks",
 	"cleanup-orphaned",
 	"cleanup-retention",
 	"telemetry",

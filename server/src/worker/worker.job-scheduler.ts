@@ -8,6 +8,7 @@ import { WorkerJobsPagination, WorkerJobSummary, WorkerMetrics } from "@/worker/
 import { WORKER_STALE_MS } from "@/domain/queue-workers/queue-worker.model.js";
 import { QueueMode } from "@/domain/app-settings/app-settings.type.js";
 import { ILogger } from "@/utils/logger/logger.js";
+import { ROLLUP_BUCKET_MINUTES } from "@/domain/check-rollups/check-rollup.type.js";
 
 export const POLL_MS = 250; // base poll interval while a loop is actively claiming work
 const SERVICE_NAME = "JobScheduler";
@@ -16,6 +17,7 @@ const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const TELEMETRY_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const TELEMETRY_FIRST_RUN_JITTER_MS = 60 * 60 * 1000;
 const CONNECT_HEARTBEAT_INTERVAL_MS = 60 * 1000;
+const ROLLUP_INTERVAL_MS = ROLLUP_BUCKET_MINUTES * 60 * 1000;
 
 export class JobScheduler implements IJobScheduler {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -47,6 +49,7 @@ export class JobScheduler implements IJobScheduler {
 		check: POLL_MS,
 		"geo-check": POLL_MS,
 		evaluate: POLL_MS,
+		"rollup-checks": POLL_MS,
 		"cleanup-orphaned": POLL_MS,
 		"cleanup-retention": POLL_MS,
 		telemetry: POLL_MS,
@@ -294,6 +297,8 @@ export class JobScheduler implements IJobScheduler {
 		// Both cleanup jobs run immediately on every startup, then once a day
 		await this.jobsRepository.upsertJobAndSchedule(this.toCleanupJob("cleanup-orphaned", now));
 		await this.jobsRepository.upsertJobAndSchedule(this.toCleanupJob("cleanup-retention", now));
+
+		await this.jobsRepository.upsertJobAndSchedule(this.toGlobalRecurringJob("rollup-checks", ROLLUP_INTERVAL_MS, now));
 
 		if (this.telemetryEnabled) {
 			await this.jobsRepository.upsertJob(this.toTelemetryJob(now));
