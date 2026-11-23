@@ -244,6 +244,7 @@ export const buildShared = async ({
 		monitorsRepository,
 		queueWorkersRepository,
 		checksRepository,
+		checkRollupsRepository,
 		geoChecksRepository,
 		dockerLogsRepository,
 		monitorStatsRepository,

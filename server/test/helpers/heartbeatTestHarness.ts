@@ -97,7 +97,7 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 	};
 	// The real mapper, so the stored check carries the hardware/docker payload the evaluator reads.
 	// Only toCheck is reached; the repositories are never touched.
-	const checkService = new CheckService(monitorsRepo as any, logger, {} as any);
+	const checkService = new CheckService(monitorsRepo as any, logger, {} as any, {} as any);
 
 	const setNextResponse = (status: boolean, code: number) => {
 		nextResponse = null;

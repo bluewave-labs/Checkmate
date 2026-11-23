@@ -82,6 +82,7 @@ const makeHandlers = (overrides?: Record<string, any>) => ({
 	"geo-check": jest.fn<any>().mockResolvedValue(undefined),
 	"cleanup-orphaned": jest.fn<any>().mockResolvedValue(undefined),
 	"cleanup-retention": jest.fn<any>().mockResolvedValue(undefined),
+	"rollup-checks": jest.fn<any>().mockResolvedValue(undefined),
 	telemetry: jest.fn<any>().mockResolvedValue(undefined),
 	...overrides,
 });

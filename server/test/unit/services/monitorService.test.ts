@@ -1,6 +1,7 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { MonitorService } from "../../../src/domain/monitors/monitor.service.ts";
 import type { IChecksRepository } from "../../../src/domain/checks/check.repository.interface.ts";
+import type { ICheckRollupsRepository } from "../../../src/domain/check-rollups/check-rollup.repository.interface.ts";
 import type { IGeoChecksRepository } from "../../../src/domain/geo-checks/geo-check.repository.interface.ts";
 import type { IDockerLogsRepository } from "../../../src/domain/docker/docker-log.repository.interface.ts";
 import type { IIncidentsRepository } from "../../../src/domain/incidents/incident.repository.interface.ts";
@@ -38,6 +39,11 @@ const createChecksRepositoryMock = () =>
 		findDockerContainerChecks: jest.fn(),
 		deleteByMonitorId: jest.fn(),
 	}) as unknown as IChecksRepository;
+
+const createCheckRollupsRepositoryMock = () =>
+	({
+		deleteByMonitorId: jest.fn().mockResolvedValue(0),
+	}) as unknown as ICheckRollupsRepository;
 
 const createMonitorStatsRepositoryMock = () =>
 	({
@@ -110,6 +116,7 @@ const createService = (
 	overrides: {
 		monitorsRepository?: IMonitorsRepository;
 		checksRepository?: IChecksRepository;
+		checkRollupsRepository?: ICheckRollupsRepository;
 		monitorStatsRepository?: IMonitorStatsRepository;
 		statusPagesRepository?: IStatusPagesRepository;
 		geoChecksRepository?: IGeoChecksRepository;
@@ -129,6 +136,7 @@ const createService = (
 		games: (overrides.games ?? { cs2: { name: "Counter-Strike 2" } }) as any,
 		monitorsRepository: overrides.monitorsRepository ?? createMonitorsRepositoryMock(),
 		checksRepository: overrides.checksRepository ?? createChecksRepositoryMock(),
+		checkRollupsRepository: overrides.checkRollupsRepository ?? createCheckRollupsRepositoryMock(),
 		geoChecksRepository: overrides.geoChecksRepository ?? createGeoChecksRepositoryMock(),
 		dockerLogsRepository: overrides.dockerLogsRepository ?? createDockerLogsRepositoryMock(),
 		monitorStatsRepository: overrides.monitorStatsRepository ?? createMonitorStatsRepositoryMock(),
@@ -1427,6 +1435,70 @@ describe("MonitorService", () => {
 	});
 
 	describe("deleteMonitor", () => {
+		it("deletes the monitor's check rollups", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			const checkRollupsRepository = createCheckRollupsRepositoryMock();
+			const monitorStatsRepository = createMonitorStatsRepositoryMock();
+			const statusPagesRepository = createStatusPagesRepositoryMock();
+			const incidentsRepository = createIncidentsRepositoryMock();
+			const geoChecksRepository = createGeoChecksRepositoryMock();
+			(monitorsRepository.deleteById as jest.Mock).mockResolvedValue(makeMonitor());
+			(monitorStatsRepository.deleteByMonitorId as jest.Mock).mockResolvedValue({});
+			(checksRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
+			(statusPagesRepository.removeMonitorFromStatusPages as jest.Mock).mockResolvedValue(0);
+			(incidentsRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
+			(geoChecksRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
+			const { service } = createService({
+				monitorsRepository,
+				checksRepository,
+				checkRollupsRepository,
+				monitorStatsRepository,
+				statusPagesRepository,
+				incidentsRepository,
+				geoChecksRepository,
+			});
+
+			await service.deleteMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID });
+
+			expect(checkRollupsRepository.deleteByMonitorId).toHaveBeenCalledWith(MONITOR_ID);
+		});
+
+		it("logs warning when check rollups deletion fails", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			const checkRollupsRepository = createCheckRollupsRepositoryMock();
+			const monitorStatsRepository = createMonitorStatsRepositoryMock();
+			const statusPagesRepository = createStatusPagesRepositoryMock();
+			const incidentsRepository = createIncidentsRepositoryMock();
+			const geoChecksRepository = createGeoChecksRepositoryMock();
+			(monitorsRepository.deleteById as jest.Mock).mockResolvedValue(makeMonitor());
+			(monitorStatsRepository.deleteByMonitorId as jest.Mock).mockResolvedValue({});
+			(checksRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
+			(checkRollupsRepository.deleteByMonitorId as jest.Mock).mockRejectedValue(new Error("rollups error"));
+			(statusPagesRepository.removeMonitorFromStatusPages as jest.Mock).mockResolvedValue(0);
+			(incidentsRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
+			(geoChecksRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
+			const logger = createMockLogger();
+			const { service } = createService({
+				monitorsRepository,
+				checksRepository,
+				checkRollupsRepository,
+				monitorStatsRepository,
+				statusPagesRepository,
+				incidentsRepository,
+				geoChecksRepository,
+				logger,
+			});
+
+			await service.deleteMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID });
+
+			expect(logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({ err: new Error("rollups error"), monitorId: "monitor-1" }),
+				"Error deleting check rollups for monitor"
+			);
+		});
+
 		it("deletes monitor and all associated data", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			const checksRepository = createChecksRepositoryMock();
@@ -1912,6 +1984,7 @@ describe("MonitorService", () => {
 				games: {} as any,
 				monitorsRepository,
 				checksRepository,
+				checkRollupsRepository: createCheckRollupsRepositoryMock(),
 				geoChecksRepository,
 				dockerLogsRepository: createDockerLogsRepositoryMock(),
 				monitorStatsRepository,

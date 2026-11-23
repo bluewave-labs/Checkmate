@@ -154,7 +154,7 @@ describe("Evaluate cursor with more than one processing worker", () => {
 		monitorsRepository = new InMemoryMonitorsRepository();
 		monitorsRepository.seed(makeMonitor());
 		checksRepository = new MongoChecksRepository(logger);
-		checkService = new CheckService(monitorsRepository, logger, checksRepository);
+		checkService = new CheckService(monitorsRepository, logger, checksRepository, {} as never);
 		evaluatedCheckIds = [];
 		const workerA = createWorkerPipeline("worker-a");
 		const workerB = createWorkerPipeline("worker-b");
@@ -175,6 +175,7 @@ describe("Evaluate cursor with more than one processing worker", () => {
 				"geo-check": unused,
 				"cleanup-orphaned": unused,
 				"cleanup-retention": unused,
+				"rollup-checks": unused,
 				egress: unused,
 				telemetry: unused,
 			},

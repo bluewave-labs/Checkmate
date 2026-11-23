@@ -2,6 +2,7 @@ import { describe, expect, it, jest } from "@jest/globals";
 import { CheckService } from "../../../src/domain/checks/check.service.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import type { IChecksRepository } from "../../../src/domain/checks/check.repository.interface.ts";
+import type { ICheckRollupsRepository } from "../../../src/domain/check-rollups/check-rollup.repository.interface.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
 import type { MonitorStatusResponse, HardwareStatusPayload, PageSpeedStatusPayload } from "../../../src/types/network.ts";
 
@@ -24,12 +25,19 @@ const createChecksRepo = () =>
 		setExpireAfterSeconds: jest.fn().mockResolvedValue(true),
 	}) as unknown as jest.Mocked<IChecksRepository>;
 
+const createCheckRollupsRepo = () =>
+	({
+		deleteByMonitorId: jest.fn().mockResolvedValue(2),
+		deleteByTeamId: jest.fn().mockResolvedValue(4),
+	}) as unknown as jest.Mocked<ICheckRollupsRepository>;
+
 const createService = () => {
 	const logger = createMockLogger();
 	const monitorsRepository = createMonitorsRepo();
 	const checksRepository = createChecksRepo();
-	const service = new CheckService(monitorsRepository, logger as any, checksRepository);
-	return { service, logger, monitorsRepository, checksRepository };
+	const checkRollupsRepository = createCheckRollupsRepo();
+	const service = new CheckService(monitorsRepository, logger as any, checksRepository, checkRollupsRepository);
+	return { service, logger, monitorsRepository, checksRepository, checkRollupsRepository };
 };
 
 const makeStatusResponse = (overrides?: Partial<MonitorStatusResponse>): MonitorStatusResponse =>
@@ -416,6 +424,15 @@ describe("CheckService", () => {
 			expect(checksRepository.deleteByMonitorId).toHaveBeenCalledWith("mon-1");
 			expect(result).toBe(5);
 		});
+
+		it("deletes the monitor's rollups and still returns the check count", async () => {
+			const { service, checkRollupsRepository } = createService();
+
+			const result = await service.deleteChecks({ monitorId: "mon-1", teamId: "team-1" });
+
+			expect(checkRollupsRepository.deleteByMonitorId).toHaveBeenCalledWith("mon-1");
+			expect(result).toBe(5);
+		});
 	});
 
 	describe("deleteChecksByTeamId", () => {
@@ -425,6 +442,15 @@ describe("CheckService", () => {
 			const result = await service.deleteChecksByTeamId({ teamId: "team-1" });
 
 			expect(checksRepository.deleteByTeamId).toHaveBeenCalledWith("team-1");
+			expect(result).toBe(10);
+		});
+
+		it("deletes the team's rollups and still returns the check count", async () => {
+			const { service, checkRollupsRepository } = createService();
+
+			const result = await service.deleteChecksByTeamId({ teamId: "team-1" });
+
+			expect(checkRollupsRepository.deleteByTeamId).toHaveBeenCalledWith("team-1");
 			expect(result).toBe(10);
 		});
 	});

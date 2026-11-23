@@ -47,6 +47,12 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 	const connectHeartbeatService = {
 		handleJob: jest.fn().mockResolvedValue(undefined),
 	};
+	const checkRollupsRepository = {
+		deleteByMonitorIdsNotIn: jest.fn().mockResolvedValue(0),
+	};
+	const checkRollupService = {
+		rollUpClosedBuckets: jest.fn().mockResolvedValue(undefined),
+	};
 
 	const defaults = {
 		logger: createMockLogger(),
@@ -62,6 +68,8 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		dockerLogsRepository,
 		telemetryService,
 		connectHeartbeatService,
+		checkRollupsRepository,
+		checkRollupService,
 		...overrides,
 	};
 
@@ -78,7 +86,9 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		defaults.geoChecksRepository as any,
 		defaults.dockerLogsRepository as any,
 		defaults.telemetryService as any,
-		defaults.connectHeartbeatService as any
+		defaults.connectHeartbeatService as any,
+		defaults.checkRollupsRepository as any,
+		defaults.checkRollupService as any
 	);
 	return { helper, defaults };
 };
@@ -94,6 +104,7 @@ describe("WorkerHelper", () => {
 			(defaults.monitorsRepository.deleteByTeamIdsNotIn as jest.Mock).mockResolvedValue(2);
 			(defaults.monitorStatsRepository.deleteByMonitorIdsNotIn as jest.Mock).mockResolvedValue(3);
 			(defaults.checksRepository.deleteByMonitorIdsNotIn as jest.Mock).mockResolvedValue(4);
+			(defaults.checkRollupsRepository.deleteByMonitorIdsNotIn as jest.Mock).mockResolvedValue(8);
 			(defaults.incidentsRepository.deleteByMonitorIdsNotIn as jest.Mock).mockResolvedValue(1);
 			(defaults.geoChecksRepository.deleteByMonitorIdsNotIn as jest.Mock).mockResolvedValue(5);
 			(defaults.dockerLogsRepository.deleteByMonitorIdsNotIn as jest.Mock).mockResolvedValue(7);
@@ -107,6 +118,7 @@ describe("WorkerHelper", () => {
 			expect(defaults.monitorsRepository.findAllMonitorIds).toHaveBeenCalled();
 			expect(defaults.monitorStatsRepository.deleteByMonitorIdsNotIn).toHaveBeenCalledWith(["m1"]);
 			expect(defaults.checksRepository.deleteByMonitorIdsNotIn).toHaveBeenCalledWith(["m1"]);
+			expect(defaults.checkRollupsRepository.deleteByMonitorIdsNotIn).toHaveBeenCalledWith(["m1"]);
 			expect(defaults.incidentsRepository.deleteByMonitorIdsNotIn).toHaveBeenCalledWith(["m1"]);
 			expect(defaults.geoChecksRepository.deleteByMonitorIdsNotIn).toHaveBeenCalledWith(["m1"]);
 			expect(defaults.dockerLogsRepository.deleteByMonitorIdsNotIn).toHaveBeenCalledWith(["m1"]);
@@ -114,6 +126,7 @@ describe("WorkerHelper", () => {
 			expect(defaults.logger.info).toHaveBeenCalledWith({ count: 2 }, "Deleted orphaned monitors");
 			expect(defaults.logger.info).toHaveBeenCalledWith({ count: 3 }, "Deleted orphaned monitor stats");
 			expect(defaults.logger.info).toHaveBeenCalledWith({ count: 4 }, "Deleted orphaned checks");
+			expect(defaults.logger.info).toHaveBeenCalledWith({ count: 8 }, "Deleted orphaned check rollups");
 			expect(defaults.logger.info).toHaveBeenCalledWith({ count: 1 }, "Deleted orphaned incidents");
 			expect(defaults.logger.info).toHaveBeenCalledWith({ count: 5 }, "Deleted orphaned geo checks");
 			expect(defaults.logger.info).toHaveBeenCalledWith({ count: 7 }, "Deleted orphaned docker logs");
@@ -189,6 +202,27 @@ describe("WorkerHelper", () => {
 			await job();
 
 			expect(defaults.logger.error).toHaveBeenCalledWith({ err: "boom" }, "Retention cleanup failed");
+		});
+	});
+
+	describe("getRollupChecksJob", () => {
+		it("rolls up closed buckets", async () => {
+			const { helper, defaults } = createHelper();
+			const job = helper.getRollupChecksJob();
+			await job();
+
+			expect(defaults.checkRollupService.rollUpClosedBuckets).toHaveBeenCalledTimes(1);
+		});
+
+		it("logs error on failure without rethrowing", async () => {
+			const { helper, defaults } = createHelper({
+				checkRollupService: { rollUpClosedBuckets: jest.fn().mockRejectedValue(new Error("db error")) },
+			});
+			const job = helper.getRollupChecksJob();
+
+			await job();
+
+			expect(defaults.logger.error).toHaveBeenCalledWith({ err: new Error("db error") }, "Check rollup failed");
 		});
 	});
 

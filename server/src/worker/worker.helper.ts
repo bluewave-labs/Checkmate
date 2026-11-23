@@ -17,6 +17,7 @@ import { ICheckRollupService } from "@/domain/check-rollups/check-rollup.service
 export interface IWorkerHelper {
 	getCleanupOrphanedJob(): () => Promise<void>;
 	getCleanupRetentionJob(): () => Promise<void>;
+	getRollupChecksJob(): () => Promise<void>;
 	getTelemetryJob(): () => Promise<void>;
 	getConnectHeartbeatJob(): () => Promise<void>;
 }

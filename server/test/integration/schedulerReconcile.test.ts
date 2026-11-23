@@ -76,6 +76,7 @@ describe("JobScheduler.init (scheduler-only primary reconcile)", () => {
 		expect(ids).toContain(`check:${m2.id}`);
 		expect(ids).toContain("cleanup-orphaned");
 		expect(ids).toContain("cleanup-retention");
+		expect(ids).toContain("rollup-checks");
 	});
 
 	it("seeds the telemetry row once and keeps its schedule across restarts", async () => {
