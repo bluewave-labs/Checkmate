@@ -1494,6 +1494,10 @@
 				},
 				"pie": {
 					"title": "パフォーマンスレポート"
+				},
+				"scoreHistory": {
+					"title": "スコア履歴",
+					"scrollToExplore": "スクロールして表示"
 				}
 			},
 			"table": {

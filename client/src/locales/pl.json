@@ -1469,6 +1469,10 @@
 				},
 				"pie": {
 					"title": "Raport wydajności"
+				},
+				"scoreHistory": {
+					"title": "Historia wyników",
+					"scrollToExplore": "przewiń, aby odkryć"
 				}
 			},
 			"fallback": {

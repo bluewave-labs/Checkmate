@@ -9,8 +9,8 @@ import { useTheme } from "@mui/material/styles";
 
 type BaseChartProps = React.PropsWithChildren<{
 	icon?: React.ReactNode;
-	title: string;
-	rightTitle?: string;
+	title: React.ReactNode;
+	rightTitle?: React.ReactNode;
 	width?: number | string;
 	maxWidth?: number | string;
 	flexBasis?: number | string;
@@ -39,6 +39,8 @@ export const BaseChart = ({
 				flexBasis,
 				width: width,
 				maxWidth: maxWidth,
+				minWidth: 0,
+				overflow: "hidden",
 				...(onClick && {
 					cursor: "pointer",
 					"& .recharts-wrapper": { cursor: "pointer !important" },
@@ -48,6 +50,8 @@ export const BaseChart = ({
 			<Stack
 				gap={theme.spacing(LAYOUT.MD)}
 				flex={1}
+				minWidth={0}
+				sx={{ width: "100%", overflow: "hidden" }}
 			>
 				<Stack
 					direction="row"
@@ -70,7 +74,13 @@ export const BaseChart = ({
 						</Typography>
 					)}
 				</Stack>
-				<Box flex={1}>{children}</Box>
+				<Box
+					flex={1}
+					minWidth={0}
+					sx={{ width: "100%", overflow: "hidden" }}
+				>
+					{children}
+				</Box>
 			</Stack>
 		</BaseBox>
 	);

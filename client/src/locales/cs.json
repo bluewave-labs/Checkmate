@@ -1500,6 +1500,10 @@
 				},
 				"pie": {
 					"title": "Zpráva o výkonu"
+				},
+				"scoreHistory": {
+					"title": "Historie skóre",
+					"scrollToExplore": "posunutím zobrazíte více"
 				}
 			},
 			"table": {
