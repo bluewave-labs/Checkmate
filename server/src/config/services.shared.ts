@@ -57,6 +57,7 @@ import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
 import { IUsersRepository } from "@/domain/users/user.repository.interface.js";
 import { IProxiesRepository } from "@/domain/proxies/proxy.repository.interface.js";
 import { IConnectRepository } from "@/domain/connect/connect.repository.interface.js";
+import { IDiagnosticsRepository } from "@/domain/diagnostics/diagnostic.repository.interface.js";
 
 // Mongo repository implementations
 import MongoSettingsRepository from "@/domain/app-settings/app-settings.repository.mongo.js";
@@ -78,6 +79,7 @@ import MongoTeamsRepository from "@/domain/teams/team.repository.model.js";
 import MongoUsersRepository from "@/domain/users/user.repository.mongo.js";
 import MongoProxiesRepository from "@/domain/proxies/proxy.repository.mongo.js";
 import MongoConnectRepository from "@/domain/connect/connect.repository.mongo.js";
+import MongoDiagnosticsRepository from "@/domain/diagnostics/diagnostic.repository.mongo.js";
 import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
 
 // Shared infrastructure + business services that both the API and the worker process construct.
@@ -117,6 +119,7 @@ export interface SharedServices {
 	maintenanceWindowsRepository: IMaintenanceWindowsRepository;
 	proxiesRepository: IProxiesRepository;
 	connectRepository: IConnectRepository;
+	diagnosticsRepository: IDiagnosticsRepository;
 }
 
 export const buildShared = async ({
@@ -161,6 +164,7 @@ export const buildShared = async ({
 	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
 	const proxiesRepository = new MongoProxiesRepository();
 	const connectRepository = new MongoConnectRepository();
+	const diagnosticsRepository = new MongoDiagnosticsRepository(db);
 
 	// Inject settings repository into settings service (now that DB is connected)
 	(settingsService as SettingsService).setRepository(settingsRepository);
@@ -251,6 +255,7 @@ export const buildShared = async ({
 		maintenanceWindowsRepository,
 		proxiesRepository,
 		connectRepository,
+		diagnosticsRepository,
 	};
 	return sharedServices;
 };

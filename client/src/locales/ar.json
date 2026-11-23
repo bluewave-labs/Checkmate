@@ -32,6 +32,8 @@
 			"pause": "إيقاف مؤقت",
 			"resume": "استئناف",
 			"save": "حفظ",
+			"next": "التالي",
+			"back": "رجوع",
 			"sendInvite": "إرسال دعوة",
 			"test": "اختبار",
 			"testNotifications": "اختبار الإشعارات",
@@ -47,19 +49,38 @@
 			"exportToJSON": "تصدير إلى JSON",
 			"importFromJSON": "استيراد من JSON",
 			"clearFilters": "مسح المرشحات",
-			"removeUser": "إزالة المستخدم"
+			"removeUser": "إزالة المستخدم",
+			"removeItem": "إزالة {{item}}"
 		},
 		"charts": {
 			"labels": {
 				"averageResponseTime": "متوسط وقت الاستجابة",
+				"checkCount": "الفحوصات",
+				"cpuUsage": "استخدام CPU",
 				"downtime": "وقت التوقف",
 				"high": "مرتفع",
 				"low": "منخفض",
+				"memoryUsage": "استخدام الذاكرة",
+				"responseTime": "وقت الاستجابة",
+				"timingPhases": "مراحل التوقيت",
+				"totalResponseTime": "إجمالي وقت الاستجابة",
 				"uptime": "وقت التشغيل"
 			},
 			"histogram": {
 				"avg": "المتوسط: {{value}}",
-				"max": "الحد الأقصى: {{value}}"
+				"max": "الحد الأقصى: {{value}}",
+				"responseTime": "وقت الاستجابة: {{value}}",
+				"total": "الإجمالي: {{value}}",
+				"avgCpuUsage": "متوسط استخدام CPU: {{value}}",
+				"avgMemoryUsage": "متوسط استخدام الذاكرة: {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "الطلب",
+				"firstByte": "أول بايت",
+				"download": "التنزيل"
 			}
 		},
 		"dialogs": {
@@ -74,10 +95,17 @@
 			"na": "غير متوفر",
 			"resolved": "تم الحل",
 			"responseTime": "وقت الاستجابة",
+			"state": "الحالة",
+			"uptime": "وقت التشغيل",
+			"health": "السلامة",
+			"restarts": "مرات إعادة التشغيل",
 			"idle": "خامل",
 			"running": "قيد التشغيل"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "اكتب للبحث"
+			},
 			"role": {
 				"option": {
 					"role": {
@@ -120,7 +148,8 @@
 				"url": "الرابط",
 				"interval": "الفاصل الزمني",
 				"active": "نشط",
-				"responseTime": "وقت الاستجابة"
+				"responseTime": "وقت الاستجابة",
+				"tags": "الوسوم"
 			}
 		},
 		"statusCode": {
@@ -138,6 +167,16 @@
 			"copy": "نسخ إلى الحافظة",
 			"copied": "تم النسخ إلى الحافظة",
 			"copyFailed": "تعذّر النسخ. حدّد النص وانسخه يدويًا."
+		},
+		"filters": {
+			"any": "الكل",
+			"state": "الحالة التشغيلية"
+		},
+		"fallback": {
+			"error": {
+				"title": "حدث خطأ ما",
+				"description": "يرجى المحاولة مرة أخرى لاحقًا"
+			}
 		}
 	},
 	"components": {
@@ -151,6 +190,14 @@
 				"invalidFileSize": "حجم الملف كبير جدًا!",
 				"invalidFileFormat": "تنسيق الملف غير مدعوم!"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_zero": "لم يتم تحديد أي عنصر",
+			"selectedCount_one": "تم تحديد عنصر واحد",
+			"selectedCount_two": "تم تحديد عنصرين",
+			"selectedCount_few": "تم تحديد {{count}} عناصر",
+			"selectedCount_many": "تم تحديد {{count}} عنصرًا",
+			"selectedCount_other": "تم تحديد {{count}} عنصر"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "رابط عام"
@@ -247,9 +294,130 @@
 				"available": "{{version}} متاح",
 				"tooltip": "يتوفر إصدار أحدث من Checkmate. اعرض ملاحظات الإصدار."
 			}
+		},
+		"whatsNew": {
+			"eyebrow": "الجديد في Checkmate {{version}}",
+			"stepCount": "{{current}} من {{total}}",
+			"goToStep": "الانتقال إلى الخطوة {{step}}",
+			"skip": "تخطي",
+			"done": "تم",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "يسجّل المسؤول الأعلى هذا الخادم من {{settings}}.",
+			"connectAskSuperadmin": "اطلب من المسؤول الأعلى إعداد ذلك من {{settings}}.",
+			"connectCta": "إعداد Checkmate Connect",
+			"steps": {
+				"dashboard": {
+					"title": "لوحة المعلومات هي صفحتك الرئيسية الجديدة",
+					"description": "يفتح Checkmate على لوحة معلومات تعرض حالة المراقبات، والمراقبات المتوقفة، ونسبة التشغيل لكل منها. يرى المسؤولون أيضًا قائمة انتظار المهام وتشخيصات Checkmate. رتّب البطاقات كما تشاء باستخدام «{{arrange}}». أخفِ ما لا تحتاج إليه باستخدام «{{editCards}}»."
+				},
+				"heartbeat": {
+					"title": "مراقبات نبض للمهام المجدولة",
+					"description": "ترسل مهام cron والنسخ الاحتياطية والبرامج النصية إشارة ping إلى Checkmate في كل تشغيل. إذا لم تصل أي إشارة خلال نافذة التنبيه، تصبح المراقبة متوقفة وتُرسَل إشعاراتك."
+				},
+				"remoteAccess": {
+					"title": "افتح Checkmate من أي مكان دون فتح منافذ",
+					"description": "مع Checkmate Connect يُبقي هذا الخادم نفقًا صادرًا مفتوحًا، فتصل إليه من عنوان Connect الخاص به دون فتح منافذ واردة أو إعداد شبكة VPN."
+				},
+				"backups": {
+					"title": "جدولة نسخ احتياطية مشفّرة إلى السحابة",
+					"description": "انسخ احتياطيًا إلى Checkmate Connect كل 1 أو 3 أو 7 أيام، إما قاعدة البيانات كاملة أو الإعدادات فقط. يشفّر هذا الخادم البيانات قبل رفعها. يمكنك استعادة نسخة احتياطية من {{settings}}."
+				},
+				"intervals": {
+					"title": "افحص المراقبات كل ساعة أو مرة يوميًا",
+					"description": "يمكن للمراقبة الآن أن تعمل كل 1 أو 2 أو 6 أو 12 ساعة، أو مرة واحدة يوميًا. إذا لم تجد الفاصل الزمني الذي تريده في القائمة، فاكتبه. تناسب الفواصل الطويلة المراقبات التي لا تحتاج إلى فحص كل دقيقة، مثل PageSpeed."
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "نسخة احتياطية ليلية",
+					"subtitle": "{{type}} · نافذة التنبيه {{window}}",
+					"downTitle": "{{name}} متوقفة",
+					"pingNotReceived": "لم تُستلم إشارة ping"
+				},
+				"remote": {
+					"network": "شبكتك",
+					"server": "خادم Checkmate",
+					"tunnel": "نفق صادر",
+					"noInbound": "لا منافذ واردة مفتوحة",
+					"laptop": "حاسوبك المحمول"
+				},
+				"backup": {
+					"encrypted": "يُشفَّر هنا قبل الرفع. لا تخزّن السحابة إلا نصًا مشفّرًا.",
+					"database": "قاعدة البيانات",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "إنشاء مراقبة",
+					"checksInADay": "الفحوصات في اليوم",
+					"checksPerDay_zero": "{{formatted}} فحص يوميًا",
+					"checksPerDay_one": "فحص واحد يوميًا",
+					"checksPerDay_two": "فحصان يوميًا",
+					"checksPerDay_few": "{{formatted}} فحوصات يوميًا",
+					"checksPerDay_many": "{{formatted}} فحصًا يوميًا",
+					"checksPerDay_other": "{{formatted}} فحص يوميًا",
+					"nextCheck": "الفحص التالي بعد {{interval}}"
+				}
+			}
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "الوكلاء",
+				"description": "إدارة الخوادم الوكيلة لتوجيه حركة مراقبة HTTP."
+			},
+			"fallback": {
+				"title": "لا توجد خوادم وكيلة بعد",
+				"description": "وجّه فحوصات مراقبات HTTP عبر خادم وكيل. بعد إنشاء خادم وكيل، يمكنك اختياره لمراقبات فردية أو تعيينه كخادم افتراضي عام في الإعدادات.",
+				"actionButton": "إنشاء خادم وكيل"
+			},
+			"form": {
+				"name": {
+					"title": "اسم الخادم الوكيل",
+					"description": "اسم مألوف لتمييز هذا الخادم الوكيل",
+					"optionName": "اسم الخادم الوكيل",
+					"placeholder": "خادمي الوكيل"
+				},
+				"server": {
+					"title": "الخادم الوكيل",
+					"description": "عنوان الوصول إلى الخادم الوكيل. حدّد البروتوكول الذي يستخدمه Checkmate للاتصال به، واسم المضيف أو عنوان IP، والمنفذ الذي يستمع عليه.",
+					"option": {
+						"protocol": {
+							"label": "البروتوكول"
+						},
+						"host": {
+							"label": "اسم المضيف / عنوان IP",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "المنفذ"
+						}
+					}
+				},
+				"auth": {
+					"title": "المصادقة",
+					"description": "اختياري. مطلوب فقط إذا كان الخادم الوكيل يتطلب مصادقة أساسية.",
+					"option": {
+						"username": {
+							"label": "اسم المستخدم",
+							"placeholder": "اسم مستخدم الخادم الوكيل",
+							"labelSet": "تم تعيين اسم المستخدم. انقر على \"إعادة تعيين\" لتغييره."
+						},
+						"password": {
+							"label": "كلمة المرور",
+							"labelSet": "تم تعيين كلمة المرور. انقر على \"إعادة تعيين\" لتغييرها."
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "البروتوكول",
+					"host": "المضيف",
+					"port": "المنفذ"
+				}
+			}
+		},
 		"notFound": {
 			"title": "يا إلهي! لقد أسقطت السوشي!",
 			"subtitle": "إما أن الرابط غير موجود، أو ليس لديك صلاحية الوصول إليه."
@@ -471,7 +639,9 @@
 				},
 				"statBoxes": {
 					"activeFor": "نشط منذ",
+					"checkingEvery": "الفحص كل {{interval}}",
 					"certificateExpiry": "انتهاء الشهادة",
+					"domainExpiry": "انتهاء النطاق",
 					"lastCheck": "آخر فحص",
 					"lastResponseTime": "آخر وقت استجابة",
 					"serviceIsDown": "الخدمة معطلة"
@@ -517,6 +687,13 @@
 				"advanced": {
 					"description": "إعدادات اختيارية لحالات الاستخدام المتقدمة",
 					"option": {
+						"method": {
+							"label": "طريقة الطلب",
+							"description": {
+								"GET": "تجلب GET الاستجابة الكاملة بما في ذلك المحتوى. تدعم المطابقة المتقدمة بالكامل.",
+								"HEAD": "تجلب HEAD ترويسات الاستجابة فقط لتقليل الحمل على الهدف. تدعم مطابقة رمز الحالة لكنها لا تدعم المطابقة المتقدمة لعدم وجود محتوى."
+							}
+						},
 						"advancedMatching": {
 							"label": "استخدام المطابقة المتقدمة"
 						},
@@ -532,6 +709,10 @@
 							"equal": "يساوي",
 							"include": "يحتوي",
 							"regex": "تعبير عادي"
+						},
+						"customUpCodes": {
+							"label": "رموز الحالة المقبولة",
+							"description": "أضف أي رموز غير 2xx يجب اعتبارها ناجحة أيضاً."
 						}
 					},
 					"title": "إعدادات متقدمة"
@@ -565,6 +746,9 @@
 					"title": "تكرار الفحص"
 				},
 				"general": {
+					"url": {
+						"alert": "ستستخدم الفحوصات القادمة عنوان URL الجديد. يتم الاحتفاظ بالبيانات السابقة لهذا المراقب، لكنها جُمعت من عنوان URL القديم."
+					},
 					"option": {
 						"host": {
 							"label": "المضيف",
@@ -581,6 +765,24 @@
 						"url": {
 							"label": "URL",
 							"placeholder": "https://www.google.com"
+						},
+						"proxyMode": {
+							"label": "الخادم الوكيل",
+							"value": {
+								"inheritDirect": "افتراضي (اتصال مباشر)",
+								"inheritGlobal": "افتراضي ({{name}})",
+								"none": "عدم استخدام خادم وكيل مطلقاً",
+								"custom": "خادم وكيل مخصص"
+							},
+							"description": {
+								"inheritDirect": "لم يتم تهيئة خادم وكيل عام، لذا يتم الاتصال مباشرة. إذا تمت تهيئة خادم وكيل عام لاحقاً، فسيستخدمه هذا المراقب.",
+								"inheritGlobal": "استخدام إعداد الخادم الوكيل العام",
+								"none": "يتصل دائماً بشكل مباشر حتى لو تم تفعيل خادم وكيل عام لاحقاً.",
+								"custom": "توجيه فحوصات هذا المراقب عبر خادم وكيل محدد. يتجاوز الخادم الوكيل العام"
+							}
+						},
+						"proxy": {
+							"label": "الخادم الوكيل"
 						},
 						"game": {
 							"label": "اختر اللعبة",
@@ -667,6 +869,10 @@
 				"notifications": {
 					"description": "اختر قنوات الإشعارات التي تريد استخدامها",
 					"title": "الإشعارات"
+				},
+				"tags": {
+					"description": "اختر الوسوم التي تريد تطبيقها على هذا المراقب",
+					"title": "الوسوم"
 				},
 				"type": {
 					"description": "اختر نوع الفحص المراد تنفيذه",
@@ -901,6 +1107,7 @@
 					"disk": "استخدام القرص",
 					"netBytesRecv": "{{name}} - البايتات المستلمة",
 					"netBytesSent": "{{name}} - البايتات المرسلة",
+					"loopbackOnlyNotice": "لا يرى Capture سوى واجهات شبكة الحاوية، ولا يحمل أي منها حركة مرور حقيقية. هذا طبيعي عندما يعمل Capture داخل حاوية لا يمكنها إلا مراقبة مساحة أسماء الشبكة الخاصة بها — فالواجهات ذات الأسماء الشبيهة بالمضيف (eth0، ens3) هي واجهات افتراضية للحاوية وليست واجهات المضيف. شغّل Capture مباشرة على المضيف لرؤية نشاط الشبكة الحقيقي.",
 					"temp": "الحرارة"
 				}
 			},
@@ -953,6 +1160,37 @@
 				"description": "تتبّع أداء الخوادم وحدد الاختناقات واضمن الموثوقية مع مراقبة البنية التحتية في الوقت الفعلي."
 			}
 		},
+		"tags": {
+			"header": {
+				"title": "الوسوم",
+				"description": "نظّم مراقباتك باستخدام الوسوم"
+			},
+			"fallback": {
+				"title": "لا توجد وسوم بعد",
+				"description": "نظّم مراقباتك باستخدام الوسوم. بعد إنشاء وسم وتعيينه لمراقب، ستتمكن من التصفية حسب هذا الوسم في جميع أنحاء التطبيق وعرض تفاصيل الوسم هنا.",
+				"actionButton": "إنشاء وسم"
+			},
+			"table": {
+				"headers": {
+					"color": "اللون",
+					"appearance": "المظهر"
+				}
+			},
+			"form": {
+				"name": {
+					"title": "اسم الوسم",
+					"description": "اختر اسماً للوسم",
+					"optionName": "اسم الوسم",
+					"placeholder": "مثال: المجموعة 1"
+				},
+				"color": {
+					"title": "لون الوسم",
+					"description": "اختر لوناً للوسم",
+					"optionName": "لون الوسم",
+					"placeholder": "مثال: #13715B"
+				}
+			}
+		},
 		"logs": {
 			"fallback": {
 				"title": "لا توجد سجلات بعد",
@@ -966,6 +1204,8 @@
 			"logLevelSelect": {
 				"label": "مستوى السجل"
 			},
+			"workers": "العمّال",
+			"workersExplainers": "يعرض عمليات العمّال. معرّفات العمّال مختصرة، مرّر المؤشر لرؤية المعرّف الكامل",
 			"jobQueue": "قائمة المهام",
 			"jobQueueExplainer": "<highlight>الصفوف المميزة</highlight> هي المهام التي تتم معالجتها حالياً بواسطة عامل.",
 			"failedJobs": "المهام الفاشلة",
@@ -986,14 +1226,34 @@
 					"totalHeapSize": "إجمالي حجم الذاكرة",
 					"osMemoryLimit": "حد ذاكرة نظام التشغيل"
 				},
+				"mongoDBStats": {
+					"readyState": "حالة الجاهزية",
+					"readsPerSecond": "القراءات/ث",
+					"insertsPerSecond": "الإدراجات/ث",
+					"updatesPerSecond": "التحديثات/ث",
+					"deletesPerSecond": "الحذف/ث",
+					"writesPerSecond": "إجمالي الكتابات/ث",
+					"host": "المضيف",
+					"port": "المنفذ",
+					"dbName": "اسم قاعدة البيانات",
+					"storageSize": "حجم التخزين"
+				},
+				"mongoDBCollectionStats": {
+					"documents": "المستندات: {{count}}",
+					"bucketCount": "عدد الحاويات: {{count}}",
+					"storageSize": "حجم التخزين: {{size}}",
+					"indexSize": "حجم الفهرس: {{size}}",
+					"totalSize": "الحجم الإجمالي: {{size}}",
+					"dbUsageTooltip": "{{percentage}}% من تخزين قاعدة البيانات"
+				},
 				"gauges": {
 					"heapAllocation": "تخصيص الذاكرة",
 					"heapUsage": "استخدام الذاكرة",
 					"heapUtilization": "معدل استخدام الذاكرة",
-					"instantCpuUsage": "استخدام CPU اللحظي",
+					"instantCpuUsage": "استخدام CPU",
 					"availableMemoryPercentage": "% من الذاكرة المتاحة",
 					"allocatedPercentage": "% مخصص",
-					"usedSPercentage": "% من 1 ثانية مستخدمة بواسطة CPU",
+					"usedSPercentage": "% من نواة CPU واحدة",
 					"total": "الإجمالي",
 					"used": "مستخدم"
 				},
@@ -1005,17 +1265,32 @@
 					"memoryCpu": {
 						"title": "الذاكرة والمعالج",
 						"description": "كيف تستخدم العملية الذاكرة المخصصة لها ومعالج الجهاز المضيف."
+					},
+					"mongoDBStats": {
+						"title": "إحصائيات MongoDB",
+						"description": "لقطة لمقاييس MongoDB"
+					},
+					"mongoDBCollectionStats": {
+						"title": "إحصائيات مجموعات MongoDB",
+						"description": "إحصائيات مجموعات MongoDB"
 					}
 				}
 			},
 			"table": {
 				"headers": {
+					"host": "المضيف",
+					"processId": "معرّف العملية",
+					"workerId": "معرّف العامل",
+					"workerMode": "وضع العامل",
+					"lastSeenAt": "آخر ظهور",
 					"timestamp": "الطابع الزمني",
 					"level": "المستوى",
 					"service": "الخدمة",
 					"monitorId": "معرّف المراقب",
 					"runCount": "عدد التشغيلات",
 					"failCount": "عدد حالات الفشل",
+					"nextScheduledAt": "التشغيل التالي",
+					"lockedBy": "مقفل بواسطة",
 					"lastFinishedAt": "آخر انتهاء في",
 					"lastFailedAt": "آخر فشل في",
 					"failReason": "سبب الفشل",
@@ -1142,7 +1417,22 @@
 				"type": {
 					"description": "اختر نوع قناة الإشعارات المراد إنشاؤها.",
 					"optionType": "النوع",
-					"title": "نوع القناة"
+					"title": "نوع القناة",
+					"value": {
+						"email": "البريد الإلكتروني",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"signalgrid": "Signalgrid",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "تهيئة Telegram",
@@ -1160,6 +1450,14 @@
 					"optionUserKey": "مفتاح المستخدم",
 					"placeholderUserKey": "أدخل مفتاح المستخدم"
 				},
+				"signalgrid": {
+					"title": "إعدادات Signalgrid",
+					"description": "قم بتهيئة Signalgrid لتلقي الإشعارات الفورية على أجهزتك.",
+					"optionClientKey": "مفتاح العميل",
+					"placeholderClientKey": "مفتاح عميل Signalgrid الخاص بك",
+					"optionChannel": "القناة",
+					"placeholderChannel": "قناة Signalgrid الخاصة بك"
+				},
 				"twilio": {
 					"title": "إعدادات Twilio",
 					"description": "أدخل بيانات اعتماد حساب Twilio لإرسال الرسائل النصية.",
@@ -1171,6 +1469,14 @@
 					"placeholderFromNumber": "+1234567890",
 					"optionToNumber": "إلى الرقم",
 					"placeholderToNumber": "+1234567890"
+				},
+				"ntfy": {
+					"title": "إعدادات ntfy",
+					"description": "قم بتهيئة خادم وموضوع ntfy للإشعارات الفورية.",
+					"optionServerUrl": "عنوان URL للخادم",
+					"placeholderServerUrl": "https://ntfy.sh",
+					"optionTopic": "الموضوع",
+					"placeholderTopic": "checkmate-alerts"
 				}
 			},
 			"table": {
@@ -1225,7 +1531,10 @@
 				"monitoring": "المراقبة",
 				"email": "البريد الإلكتروني",
 				"integrations": "التكاملات",
-				"data": "البيانات"
+				"tags": "الوسوم",
+				"proxies": "الوكلاء",
+				"data": "البيانات",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1259,6 +1568,22 @@
 							"label": "نوع المخطط",
 							"histogram": "مدرج تكراري",
 							"heatmap": "خريطة حرارية"
+						}
+					}
+				},
+				"globalProxy": {
+					"title": "الخادم الوكيل العام",
+					"description": "توجيه فحوصات المراقبة عبر خادم وكيل بشكل افتراضي. ينطبق على جميع مراقبات HTTP التي يكون إعداد الخادم الوكيل فيها \"افتراضي\"؛ ولا تتأثر المراقبات المعيّنة على \"عدم استخدام خادم وكيل مطلقاً\" أو على خادم وكيل مخصص.",
+					"option": {
+						"enabled": {
+							"label": "استخدام الخادم الوكيل العام"
+						},
+						"proxy": {
+							"label": "اختر خادماً وكيلاً عاماً"
+						},
+						"empty": {
+							"text": "لم تتم تهيئة أي خوادم وكيلة بعد.",
+							"link": "أنشئ واحداً أولاً"
 						}
 					}
 				},
@@ -1420,7 +1745,183 @@
 				},
 				"importExportMonitors": {
 					"title": "استيراد / تصدير المراقبات",
-					"description": "استيراد أو تصدير بيانات المراقبات كملف JSON للنسخ الاحتياطي أو النقل."
+					"description": "استيراد أو تصدير بيانات المراقبات كملف JSON للنسخ الاحتياطي أو النقل.",
+					"backupNotice": "يحتوي ملف JSON هذا على المراقبات فقط، لذا فهو ليس نسخة احتياطية كاملة. لنسخ بيانات Checkmate احتياطيًا أو استعادتها، استخدم Checkmate Connect.",
+					"connectTabLink": "افتح علامة تبويب Checkmate Connect",
+					"connectSiteLink": "زُر موقع Checkmate Connect"
+				},
+				"connect": {
+					"superadminOnly": "يمكن للمسؤول الأعلى فقط تسجيل هذا الخادم، أو تغيير الوصول عن بُعد، أو تشغيل النسخ الاحتياطية أو استعادتها، أو إزالة تسجيله. سجّل الخروج ثم سجّل الدخول مجددًا إذا تغيّر دورك مؤخرًا.",
+					"clickToConfirm": "انقر مرة أخرى للتأكيد",
+					"status": {
+						"title": "الحالة",
+						"description": "حالة اتصال هذا التثبيت.",
+						"enrolled": "مسجَّل",
+						"notEnrolled": "غير مسجَّل",
+						"connected": "النفق متصل",
+						"disconnected": "النفق غير متصل",
+						"connecting": "جارٍ اتصال النفق",
+						"remoteAccessOff": "الوصول عن بُعد معطَّل",
+						"agentId": "معرّف الوكيل (ID)",
+						"lastConnected": "آخر اتصال",
+						"siteLink": "افتح {{site}}"
+					},
+					"getStarted": {
+						"title": "ابدأ الآن",
+						"description": "يتيح لك Checkmate Connect الوصول إلى هذا التثبيت من أي مكان ويحتفظ بنسخ احتياطية مشفّرة منه في السحابة.",
+						"steps": {
+							"account": {
+								"title": "أنشئ حساب Connect",
+								"body": "سجّل في {{site}} باستخدام بريد إلكتروني وكلمة مرور."
+							},
+							"server": {
+								"title": "أضف الخادم",
+								"body": "سمِّه في لوحة تحكم Connect للحصول على كتلة بيانات الاعتماد. تُعرض مرة واحدة فقط، لذا انسخها فورًا."
+							},
+							"paste": {
+								"title": "الصقها هنا",
+								"body": "الصق كتلة بيانات الاعتماد في المربع أدناه وانقر على تسجيل."
+							},
+							"remoteAccess": {
+								"title": "فعّل الوصول عن بُعد",
+								"body": "يصبح عنوان Connect الخاص بك متاحًا بمجرد اتصال النفق."
+							}
+						},
+						"button": "انتقل إلى {{site}}"
+					},
+					"enroll": {
+						"title": "تسجيل التثبيت",
+						"description": "الصق كتلة بيانات الاعتماد من لوحة تحكم Checkmate Connect. تُخزَّن بيانات الاعتماد مشفّرة في قاعدة بيانات هذا التثبيت، ولا تغادرها إلا للمصادقة مع Checkmate Connect.",
+						"button": "تسجيل"
+					},
+					"remoteAccess": {
+						"title": "الوصول عن بُعد",
+						"description": "يُبقي نفقًا صادرًا مفتوحًا لتتمكن من الوصول إلى هذا التثبيت من عنوان Connect الخاص بك. لا تُفتح أي منافذ واردة."
+					},
+					"tooltips": {
+						"enroll": "اربط هذا الخادم بحسابك",
+						"unenroll": "افصل هذا الخادم عن Connect",
+						"generateKey": "أنشئ المفتاح الذي يفتح نسخك الاحتياطية",
+						"lostKey": "ابدأ من جديد بمفتاح جديد",
+						"runFull": "انسخ قاعدة البيانات كاملة احتياطيًا الآن",
+						"runConfig": "انسخ كل شيء احتياطيًا باستثناء سجل الفحوصات",
+						"importKey": "استخدم المفتاح من خادمك الأصلي",
+						"useKey": "تحقّق من هذا المفتاح مقابل نسخك الاحتياطية",
+						"replaceKey": "التبديل إلى مفتاح استرداد آخر",
+						"restore": "استبدل بيانات هذا الخادم بهذه النسخة الاحتياطية"
+					},
+					"backup": {
+						"title": "النسخ الاحتياطية السحابية",
+						"description": "نسخ احتياطية مشفّرة لقاعدة بيانات هذا التثبيت تُرفع إلى Checkmate Connect. تُشفَّر البيانات هنا قبل الرفع، ولا تخزّن السحابة سوى نص مشفّر.",
+						"needsKey": "أعدّ مفتاح استرداد أدناه لبدء النسخ الاحتياطي.",
+						"generateKey": "إنشاء مفتاح استرداد",
+						"existingBackups": "لدى هذا الحساب نسخ احتياطية سحابية بالفعل. أدخل مفتاح الاسترداد من خادمك الأصلي لاستعادتها.",
+						"lostKey": "فقدت مفتاحي",
+						"lostKeyWarning": "لا يمكن استعادة نسخك الاحتياطية السحابية الحالية بدون المفتاح الأصلي. تُحفظ لمدة 30 يومًا بعد أول نسخة احتياطية بمفتاح جديد، لذا يمكنك العودة إليه إذا عثرت على المفتاح الأصلي.",
+						"importKey": "لدي مفتاح استرداد بالفعل",
+						"importKeyHelp": "الصق المفتاح المكوّن من 64 حرفًا من خادمك الأصلي. يفك Checkmate تشفير إحدى نسخك الاحتياطية السحابية للتحقق من المفتاح قبل حفظه.",
+						"replaceKey": "استخدام مفتاح استرداد مختلف",
+						"replaceKeyHelp": "الصق المفتاح المكوّن من 64 حرفًا الذي تريد استخدامه بدلًا من ذلك. يفك Checkmate تشفير نسخك الاحتياطية السحابية للتحقق من المفتاح، ويحتفظ بمفتاحك الحالي إذا لم تُفتح أي منها.",
+						"replaceKeyWarning": "لا يمكن استعادة النسخ الاحتياطية التي أُنشئت بمفتاحك الحالي بعد التبديل.",
+						"importKeyConfirm": "استخدام هذا المفتاح",
+						"verifyOutcome": {
+							"ok": "تم حفظ مفتاح الاسترداد",
+							"wrong-key": "هذا المفتاح لا يفك تشفير نسخك الاحتياطية السحابية",
+							"no-backups": "لا توجد نسخ احتياطية سحابية للتحقق من هذا المفتاح",
+							"failed": "تعذّر التحقق من المفتاح: {{error}}"
+						},
+						"keyTitle": "مفتاح الاسترداد",
+						"keyWarning": "احفظ هذا المفتاح في مكان آمن بعيدًا عن هذا الخادم. لن يُعرض إلا مرة واحدة. إذا فقدته فلن تتمكن من استعادة نسخك الاحتياطية السحابية، ولن يستطيع أحد استرداده لك.",
+						"keyCopy": "نسخ المفتاح",
+						"keyLabel": "مفتاح الاسترداد الخاص بك",
+						"keyContinue": "لقد حفظته",
+						"keyDone": "لقد خزّنت المفتاح",
+						"keyShowAgain": "إظهار المفتاح مرة أخرى",
+						"keyVerifyHelp": "افتح المكان الذي حفظت فيه المفتاح والصقه هنا لتأكيد أن لديك نسخة صالحة.",
+						"keyPlaceholder": "مفتاح الاسترداد",
+						"keyAcknowledge": "أفهم أنني إذا فقدت هذا المفتاح فلن أتمكن من استعادة نسخي الاحتياطية السحابية.",
+						"keyMismatch": "هذا لا يطابق مفتاح الاسترداد الخاص بك. أظهر المفتاح مرة أخرى واحفظ نسخة جديدة.",
+						"keyAckRequired": "حدّد المربع لتأكيد أنك تفهم.",
+						"toolsMissing": "تحتاج النسخ الاحتياطية السحابية إلى mongodump وmongorestore، ولم يُعثر عليهما على هذا الخادم.",
+						"toolsMac": "على macOS، شغّل: brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "تنزيل MongoDB Database Tools لنظام Linux",
+						"toolsPath": "إذا كانت مثبّتة في مكان آخر، فاضبط CONNECT_MONGODUMP_BIN وCONNECT_MONGORESTORE_BIN. تختفي هذه الرسالة خلال دقيقة من العثور على الأدوات.",
+						"runFull": "نسخ احتياطي الآن",
+						"runConfig": "نسخ الإعدادات احتياطيًا فقط",
+						"kind": {
+							"full": "قاعدة البيانات كاملة",
+							"config": "الإعدادات فقط"
+						},
+						"progress": {
+							"idle": "خامل",
+							"finished": {
+								"backup": {
+									"ok": "اكتمل النسخ الاحتياطي",
+									"failed": "فشل النسخ الاحتياطي"
+								},
+								"restore": {
+									"ok": "اكتملت الاستعادة",
+									"failed": "فشلت الاستعادة"
+								},
+								"verify": {
+									"ok": "تم حفظ مفتاح الاسترداد",
+									"failed": "فشل التحقق من المفتاح"
+								}
+							},
+							"queued": {
+								"backup": "أُضيفت مهمة النسخ الاحتياطي إلى قائمة الانتظار",
+								"restore": "أُضيفت مهمة الاستعادة إلى قائمة الانتظار"
+							},
+							"checking": "جارٍ التحقق من مفتاحك…",
+							"restore": {
+								"downloading": "الخطوة 1 من 3: جارٍ تنزيل النسخة الاحتياطية",
+								"decrypting": "الخطوة 2 من 3: جارٍ فك تشفير النسخة الاحتياطية",
+								"restoring": "الخطوة 3 من 3: جارٍ استعادة قاعدة البيانات"
+							},
+							"verify": {
+								"downloading": "جارٍ التحقق من مفتاحك: تنزيل النسخة الاحتياطية {{attempt}} من {{attempts}}",
+								"decrypting": "جارٍ التحقق من مفتاحك: فك تشفير النسخة الاحتياطية {{attempt}} من {{attempts}}"
+							},
+							"backup": {
+								"dumping": "الخطوة 1 من 3: جارٍ قراءة قاعدة البيانات وتشفيرها",
+								"uploading": "الخطوة 2 من 3: جارٍ رفع النسخة الاحتياطية المشفّرة",
+								"saving": "الخطوة 3 من 3: جارٍ حفظ النسخة الاحتياطية في حسابك"
+							}
+						},
+						"progressWithPercent": "{{step}} ({{percent}}%)",
+						"progressWithSize": "{{step}} ({{size}})",
+						"lastBackupSucceeded": "آخر نسخة احتياطية ({{date}}): نجحت",
+						"lastBackupSucceededSize": "آخر نسخة احتياطية ({{date}}): نجحت · {{size}}",
+						"lastBackupFailed": "آخر نسخة احتياطية ({{date}}): فشلت — {{error}}",
+						"lastRestoreSucceeded": "آخر استعادة ({{date}}): نجحت",
+						"lastRestoreFailed": "آخر استعادة ({{date}}): فشلت — {{error}}",
+						"restore": {
+							"title": "استعادة نسخة احتياطية",
+							"description": "ينزّل النسخة الاحتياطية المحددة، ويتحقق منها ويفك تشفيرها على هذا الخادم، ثم يستبدل قاعدة البيانات الحالية.",
+							"empty": "لا توجد نسخ احتياطية سحابية موثَّقة بعد.",
+							"button": "استعادة",
+							"confirmTitle": "استعادة النسخة الاحتياطية من {{date}} ({{kind}})؟",
+							"confirmBody": "يستبدل هذا قاعدة البيانات الحالية ولا يمكن التراجع عنه. تُستبدل حسابات المستخدمين أيضًا، لذا سجّل الدخول بعد ذلك بحساب موجود في النسخة الاحتياطية.",
+							"differentKey": "مفتاح مختلف",
+							"expires": "تُحذف بعد {{date}}"
+						}
+					},
+					"schedule": {
+						"title": "النسخ الاحتياطية المجدولة",
+						"description": "شغّل نسخة احتياطية سحابية مشفّرة تلقائيًا. تبدأ الأولى فور تفعيل هذا الخيار، وإذا حان موعد نسخة مجدولة أثناء تشغيل نسخ احتياطي أو استعادة أخرى، فتُتخطّى حتى الفترة التالية.",
+						"interval": "نسخ احتياطي كل",
+						"kind": "نوع النسخة الاحتياطية"
+					},
+					"recoveryKey": {
+						"title": "مفتاح الاسترداد",
+						"description": "يشفّر نسخك الاحتياطية السحابية على هذا الخادم. لا يغادر هذا الخادم أبدًا، وبدونه لا يمكن استعادة نسخك الاحتياطية.",
+						"set": "تم تعيين مفتاح استرداد على هذا الخادم."
+					},
+					"unenroll": {
+						"title": "إزالة التسجيل",
+						"description": "يفصل هذا التثبيت عن Checkmate Connect ويحذف بيانات الاعتماد المحلية. لا تتأثر المراقبة المحلية.",
+						"button": "إزالة التسجيل"
+					}
 				},
 				"about": {
 					"title": "حول",
@@ -1449,6 +1950,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "تم حذف صفحة الحالة بنجاح",
+			"rangeSelectorAria": "نطاق السجل",
+			"rangeExceedsRetention": "تم تعيين فترة الاحتفاظ بسجل الفحوصات على {{days}} يوماً. زد فترة الاحتفاظ للحصول على مزيد من البيانات.",
+			"range": {
+				"latest": "الأحدث",
+				"30d": "30 يوماً",
+				"60d": "60 يوماً",
+				"90d": "90 يوماً"
+			},
 			"fallback": {
 				"title": "لا توجد بعد صفحات حالة",
 				"actionButton": "أنشئ صفحة حالة!",
@@ -1476,6 +1985,9 @@
 					"avg": "متوسط {{value}}",
 					"downTooltip": "متوقف",
 					"heatmapAria": "خريطة حرارية لزمن الاستجابة",
+					"dayAria": "{{date}}، وقت التشغيل {{uptime}}",
+					"dayUptime": "وقت التشغيل: {{uptime}} ({{upChecks}}/{{totalChecks}} فحص)",
+					"dayAvgResponse": "متوسط الاستجابة: {{value}}",
 					"max": "أقصى {{value}}"
 				},
 				"status": {
@@ -1487,6 +1999,10 @@
 					"up": "قيد التشغيل"
 				},
 				"incidents": {
+					"modalTitle": "حوادث يوم {{date}}",
+					"loading": "جارٍ التحميل...",
+					"noIncidents": "لم يتم الإبلاغ عن أي حوادث في هذا اليوم.",
+					"ongoing": "مستمرة",
 					"errorLoading": "فشل تحميل الحوادث."
 				}
 			},
@@ -1545,6 +2061,11 @@
 						"url": {
 							"label": "عنوان صفحة الحالة",
 							"placeholder": "my-status-page"
+						},
+						"customDomain": {
+							"label": "نطاق مخصص",
+							"placeholder": "status.example.com",
+							"helper": "اختياري. وجّه سجل DNS إلى نسخة Checkmate هذه لعرض صفحة الحالة على نطاقك الخاص."
 						}
 					}
 				},
@@ -1611,6 +2132,10 @@
 							"description": "عناوين بخط مسرف وفواصل دقيقة. مميز وهادئ.",
 							"name": "تحريري"
 						},
+						"minimal": {
+							"name": "بسيط",
+							"description": "مسطح ومركّز ومضغوط، يقتصر على الأساسيات فقط."
+						},
 						"modern": {
 							"description": "بجودة SaaS مع نقطة حالة نابضة وبطاقات تتلاشى بنعومة.",
 							"name": "حديث"
@@ -1627,11 +2152,24 @@
 					"dark": "داكن فقط",
 					"label": "وضع السمة",
 					"light": "فاتح فقط"
+				},
+				"customCSS": {
+					"title": "CSS مخصص",
+					"description": "أضف CSS مخصصاً لضبط مظهر صفحة الحالة العامة بدقة.",
+					"option": {
+						"customCSS": {
+							"label": "CSS مخصص",
+							"placeholder": "footer { display: none; }"
+						}
+					}
 				}
 			},
 			"header": {
 				"title": "صفحات الحالة",
 				"description": "انشر صفحات عامة تُظهر للعملاء وأصحاب المصلحة وقت التشغيل الفعلي وتاريخ الحوادث."
+			},
+			"preview": {
+				"title": "معاينة صفحة الحالة"
 			},
 			"editorial": {
 				"allUp": "جميع الأنظمة تعمل بشكل طبيعي.",
@@ -1645,11 +2183,13 @@
 			"filters": {
 				"search": {
 					"placeholder": "البحث في المراقبات..."
-				}
+				},
+				"activeTags": "الوسوم المحددة"
 			},
 			"table": {
 				"headers": {
-					"responseTime": "وقت الاستجابة"
+					"responseTime": "وقت الاستجابة",
+					"uptime": "وقت التشغيل %"
 				}
 			},
 			"fallback": {

@@ -9,6 +9,7 @@ import { useTheme } from "@mui/material/styles";
 import { usePost } from "@/Hooks/UseApi";
 
 import type { Monitor } from "@/Types/Monitor.js";
+import { LAYOUT } from "@/Utils/Theme/constants";
 interface BaseHeaderProps {
 	monitor: Monitor;
 }
@@ -17,7 +18,7 @@ const BaseHeader = ({ monitor, children }: React.PropsWithChildren<BaseHeaderPro
 	const theme = useTheme();
 	return (
 		<Stack
-			spacing={{ xs: theme.spacing(8), md: 0 }}
+			spacing={{ xs: theme.spacing(LAYOUT.MD), md: 0 }}
 			direction={{ xs: "column", md: "row" }}
 			alignItems={"center"}
 			justifyContent={"space-between"}
@@ -58,7 +59,7 @@ export const HeaderMonitorControls = ({
 			<Stack
 				width={{ xs: "100%", md: "auto" }}
 				direction={{ xs: "column", md: "row" }}
-				gap={theme.spacing(2)}
+				gap={theme.spacing(LAYOUT.XS)}
 			>
 				{isAdmin && (
 					<Button
@@ -144,7 +145,7 @@ export const HeaderDeleteControls = ({
 			<Stack
 				width={{ xs: "100%", md: "auto" }}
 				direction={{ xs: "column", md: "row" }}
-				gap={theme.spacing(2)}
+				gap={theme.spacing(LAYOUT.XS)}
 			>
 				{isAdmin && (
 					<Button

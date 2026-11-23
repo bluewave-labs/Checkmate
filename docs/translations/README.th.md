@@ -39,7 +39,7 @@
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+<img alt="Checkmate dashboard" src="https://checkmate.so/img/readme/dashboard.webp" />
 
 <br>
 
@@ -85,13 +85,13 @@ Checkmate ผ่านการทดสอบโหลดสำหรับม�
 
 ดูวิธีการติดตั้งใน [พอร์ทัลเอกสารของ Checkmate](https://checkmate.so/docs)
 
-อีกทางเลือกหนึ่ง คุณสามารถใช้ [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (แอฟริกาใต้), [Cloudzy](https://cloudzy.com/marketplace/checkmate) หรือ [Pikapods](https://www.pikapods.com/) เพื่อเปิดอินสแตนซ์ Checkmate ได้อย่างรวดเร็ว หากต้องการมอนิเตอร์โครงสร้างพื้นฐานเซิร์ฟเวอร์ คุณจะต้องใช้ [เอเจนต์ Capture](https://github.com/bluewave-labs/capture) รีโพ Capture ยังมีวิธีการติดตั้งด้วย
+อีกทางเลือกหนึ่ง คุณสามารถใช้ [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (แอฟริกาใต้), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate), [ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate) (ต้องใช้ MongoDB ของคุณเอง), [Caliber Node](https://calibernode.com/cloud-apps/checkmate) หรือ [Pikapods](https://www.pikapods.com/) เพื่อเปิดอินสแตนซ์ Checkmate ได้อย่างรวดเร็ว หากต้องการมอนิเตอร์โครงสร้างพื้นฐานเซิร์ฟเวอร์ คุณจะต้องใช้ [เอเจนต์ Capture](https://checkmate.so/docs/infrastructure/installing-capture) รีโพ Capture ยังมีวิธีการติดตั้งด้วย
 
 ### การใช้ Custom CA
 
-หากคุณต้องการมอนิเตอร์ HTTPS เอนด์พอยต์ภายในที่ใช้ใบรับรองจาก CA ส่วนตัว (เช่น Smallstep) โปรดดู [คู่มือการเชื่อถือ CA แบบกำหนดเอง](../custom-ca-trust.md) สำหรับตัวเลือกการตั้งค่า Docker
+หากคุณต้องการมอนิเตอร์ HTTPS เอนด์พอยต์ภายในที่ใช้ใบรับรองจาก CA ส่วนตัว (เช่น Smallstep) โปรดดู [คู่มือการเชื่อถือ CA แบบกำหนดเอง](https://checkmate.so/docs/settings/custom-ca-trust) สำหรับตัวเลือกการตั้งค่า Docker
 
-สำหรับเอกสารเพิ่มเติม ดูที่ [โฟลเดอร์ docs](../)
+สำหรับเอกสารเพิ่มเติม ดูที่ [พอร์ทัลเอกสารของ Checkmate](https://checkmate.so/docs)
 
 <a id="performance"></a>
 ## ประสิทธิภาพ
@@ -127,6 +127,7 @@ Checkmate ผ่านการทดสอบโหลดสำหรับม�
 - การแจ้งเตือนผ่านอีเมล Webhook, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - การบำรุงรักษาตามกำหนด
 - มอนิเตอร์ด้วย JSON query
+- [Checkmate Connect](https://checkmate.so/docs/connect) (ไม่บังคับ): เข้าถึงจากระยะไกลโดยไม่ต้องเปิดพอร์ตขาเข้า สำรองข้อมูลบนคลาวด์แบบเข้ารหัสพร้อมการตั้งเวลาและการกู้คืน และตัวเฝ้าระวังที่ส่งอีเมลแจ้งเมื่อเซิร์ฟเวอร์หยุดรายงานสถานะ
 - รองรับหลายภาษา: อาหรับ, จีน (ตัวย่อ), จีน (ตัวเต็ม, ไต้หวัน), เช็ก, อังกฤษ, ฟินแลนด์, ฝรั่งเศส, เยอรมัน, ญี่ปุ่น, โปรตุเกส (บราซิล), รัสเซีย, สเปน, ไทย, ตุรกี, ยูเครน และเวียดนาม
 
 
@@ -143,16 +144,19 @@ Checkmate ผ่านการทดสอบโหลดสำหรับม�
 ## ภาพหน้าจอ
 
 <p>
-<img width="1628" alt="image" src="https://github.com/user-attachments/assets/2eff6464-0738-4a32-9312-26e1e8e86275" />
+<img alt="Uptime monitors" src="https://checkmate.so/img/readme/uptime-list.webp" />
 </p>
 <p>
-  <img width="1656" alt="image" src="https://github.com/user-attachments/assets/616c3563-c2a7-4ee4-af6c-7e6068955d1a" />
+<img alt="Uptime monitor details" src="https://checkmate.so/img/readme/uptime-details.webp" />
 </p>
 <p>
-</p><img width="1652" alt="image" src="https://github.com/user-attachments/assets/7912d7cf-0d0e-4f26-aa5c-2ad7170b5c99" />
+<img alt="Infrastructure monitor details" src="https://checkmate.so/img/readme/infrastructure-details.webp" />
 </p>
 <p>
-<img width="1652" alt="image" src="https://github.com/user-attachments/assets/08c2c6ac-3a2f-44d1-a229-d1746a3f9d16" />
+<img alt="PageSpeed monitor details" src="https://checkmate.so/img/readme/pagespeed-details.webp" />
+</p>
+<p>
+<img alt="Public status page" src="https://checkmate.so/img/readme/status-page.webp" />
 </p>
 
 
@@ -187,7 +191,7 @@ Checkmate ผ่านการทดสอบโหลดสำหรับม�
 วิธีที่คุณสามารถร่วมพัฒนา:
 
 0. ให้ดาวกับรีโพนี้ :)
-1. อ่าน [คู่มือผู้ร่วมพัฒนา](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md) ผู้เริ่มต้นแนะนำให้ดูแท็ก `good-first-issue`
+1. อ่าน [คู่มือผู้ร่วมพัฒนา](https://checkmate.so/docs/getting-started/contributing) ผู้เริ่มต้นแนะนำให้ดูแท็ก `good-first-issue`
 2. อ่านโครงสร้างเชิงลึกของ [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate) หากต้องการเจาะลึกสถาปัตยกรรม
 3. เปิด issue หากคุณคิดว่าพบบั๊ก
 4. มองหาประเด็นที่ติดแท็ก `good-first-issue` หากเป็นมือใหม่

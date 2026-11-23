@@ -45,11 +45,9 @@ import Notifications from "@/Pages/Notifications";
 import CreateNotifications from "@/Pages/Notifications/create";
 
 // Tags
-import Tags from "@/Pages/Tags";
 import CreateTags from "@/Pages/Tags/create";
 
 // Proxies
-import Proxies from "@/Pages/Proxies";
 import CreateProxies from "@/Pages/Proxies/create";
 
 // Settings
@@ -268,7 +266,12 @@ const Routes = () => {
 				/>
 				<Route
 					path="tags"
-					element={<Tags />}
+					element={
+						<Navigate
+							to="/settings?tab=tags"
+							replace
+						/>
+					}
 				/>
 				<Route
 					path="tags/create"
@@ -290,11 +293,13 @@ const Routes = () => {
 				<Route
 					path="proxies"
 					element={
-						<RoleProtectedRoute roles={["admin", "superadmin"]}>
-							<Proxies />
-						</RoleProtectedRoute>
+						<Navigate
+							to="/settings?tab=proxies"
+							replace
+						/>
 					}
 				/>
+
 				<Route
 					path="proxies/create"
 					element={

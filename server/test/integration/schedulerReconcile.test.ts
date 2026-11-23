@@ -92,6 +92,31 @@ describe("JobScheduler.init (scheduler-only primary reconcile)", () => {
 		expect(afterRestart?.nextScheduledAt).toBe(seeded?.nextScheduledAt);
 	});
 
+	it("seeds the Connect heartbeat row once and keeps its schedule across restarts", async () => {
+		const first = makeScheduler();
+		await first.init();
+		await first.shutdown();
+		const seeded = await JobModel.findById("connect-heartbeat").lean<JobDocument>();
+		expect(seeded).toMatchObject({ type: "connect-heartbeat", refId: null, intervalMs: 60 * 1000 });
+
+		const second = makeScheduler();
+		await second.init();
+		await second.shutdown();
+		const afterRestart = await JobModel.findById("connect-heartbeat").lean<JobDocument>();
+		expect(afterRestart?.nextScheduledAt).toBe(seeded?.nextScheduledAt);
+		expect((await idsOf()).filter((id) => id === "connect-heartbeat")).toHaveLength(1);
+	});
+
+	it("keeps the Connect heartbeat row through the orphan cleanup", async () => {
+		const scheduler = makeScheduler();
+		await scheduler.init();
+		await scheduler.shutdown();
+
+		await new MongoJobsRepository(WORKER_ID).deleteByMonitorIdsNotIn([]);
+
+		expect(await idsOf()).toContain("connect-heartbeat");
+	});
+
 	it("removes the telemetry row when telemetry is disabled", async () => {
 		const enabled = makeScheduler(true);
 		await enabled.init();

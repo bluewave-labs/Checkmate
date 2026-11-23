@@ -66,6 +66,7 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Average response time",
+				"checkCount": "Checks",
 				"cpuUsage": "CPU usage",
 				"downtime": "Downtime",
 				"high": "High",
@@ -166,6 +167,16 @@
 			"copy": "Copy to clipboard",
 			"copied": "Copied to clipboard",
 			"copyFailed": "Could not copy. Select the text and copy it manually."
+		},
+		"filters": {
+			"any": "Any",
+			"state": "State"
+		},
+		"fallback": {
+			"error": {
+				"title": "Something went wrong",
+				"description": "Please try again later"
+			}
 		}
 	},
 	"components": {
@@ -191,6 +202,10 @@
 				"invalidFileSize": "File size is too large!",
 				"invalidFileFormat": "Unsupported file format!"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} selected",
+			"selectedCount_other": "{{count}} selected"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "Public link"
@@ -228,8 +243,6 @@
 				"infrastructure": "Infrastructure",
 				"docker": "Docker",
 				"notifications": "Notifications",
-				"tags": "Tags",
-				"proxies": "Proxies",
 				"checks": "Checks",
 				"incidents": "Incidents",
 				"statusPages": "Status pages",
@@ -277,6 +290,66 @@
 		"starPrompt": {
 			"title": "Star Checkmate",
 			"description": "See the latest releases and help grow the community on GitHub"
+		},
+		"whatsNew": {
+			"eyebrow": "New in Checkmate {{version}}",
+			"stepCount": "{{current}} of {{total}}",
+			"goToStep": "Go to step {{step}}",
+			"skip": "Skip",
+			"done": "Done",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "A superadmin enrolls this server in {{settings}}.",
+			"connectAskSuperadmin": "Ask a superadmin to set it up in {{settings}}.",
+			"connectCta": "Set up Checkmate Connect",
+			"steps": {
+				"dashboard": {
+					"title": "The dashboard is your new home page",
+					"description": "Checkmate opens on a dashboard that shows monitor status, which monitors are down and the uptime of each one. Admins also see the job queue and Checkmate diagnostics. Drag cards into any order with {{arrange}}. Hide the ones you don't need with {{editCards}}."
+				},
+				"heartbeat": {
+					"title": "Heartbeat monitors for scheduled jobs",
+					"description": "Cron jobs, backups and scripts ping Checkmate each time they run. If no ping arrives within the alert window, the monitor goes down and your notifications fire."
+				},
+				"remoteAccess": {
+					"title": "Open Checkmate from anywhere without opening ports",
+					"description": "With Checkmate Connect, this server keeps an outbound tunnel open, so you can reach it from its Connect address without opening inbound ports or setting up a VPN."
+				},
+				"backups": {
+					"title": "Schedule encrypted backups to the cloud",
+					"description": "Back up to Checkmate Connect every 1, 3 or 7 days, either the full database or the configuration only. This server encrypts the data before it uploads. You can restore a backup from {{settings}}."
+				},
+				"intervals": {
+					"title": "Check monitors hourly or once a day",
+					"description": "A monitor can now run every 1, 2, 6 or 12 hours, or once a day. If the interval you want isn't in the list, type it in. Long intervals suit monitors that don't need a check every minute, such as PageSpeed."
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "Nightly backup",
+					"subtitle": "{{type}} · alert window {{window}}",
+					"downTitle": "{{name}} is down",
+					"pingNotReceived": "Ping not received"
+				},
+				"remote": {
+					"network": "Your network",
+					"server": "Checkmate server",
+					"tunnel": "Outbound tunnel",
+					"noInbound": "No inbound ports open",
+					"laptop": "Your laptop"
+				},
+				"backup": {
+					"encrypted": "Encrypted here before upload. The cloud only stores ciphertext.",
+					"database": "Database",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "Create monitor",
+					"checksInADay": "Checks in a day",
+					"checksPerDay_one": "{{formatted}} check a day",
+					"checksPerDay_other": "{{formatted}} checks a day",
+					"nextCheck": "Next check in {{interval}}"
+				}
+			}
 		}
 	},
 	"pages": {
@@ -305,7 +378,7 @@
 							"label": "Protocol"
 						},
 						"host": {
-							"label": "Hostname / IP Address",
+							"label": "Hostname / IP address",
 							"placeholder": "proxy.example.com"
 						},
 						"port": {
@@ -825,7 +898,7 @@
 					}
 				},
 				"geoChecks": {
-					"title": "Geo-Distributed Checks",
+					"title": "Geo-distributed checks",
 					"description": "Run checks from multiple geographic locations to monitor global availability and performance.",
 					"option": {
 						"enabled": {
@@ -958,7 +1031,7 @@
 						"automatic": "Automatic",
 						"manual": "Manual"
 					},
-					"resolve": "Resolve Incident",
+					"resolve": "Resolve incident",
 					"resolvedAt": "Resolved at:",
 					"resolvedBy": "Resolved by:",
 					"startedAt": "Started at:",
@@ -981,35 +1054,35 @@
 			},
 			"summaryCard": {
 				"activeIncidents": {
-					"title": "Active Incidents",
+					"title": "Active incidents",
 					"active_zero": "No active incidents",
 					"active_one": "{{count}} active incident",
 					"active_other": "{{count}} active incidents"
 				},
 				"incidentStats": {
-					"avgResolutionTime": "Avg Resolution Time",
-					"mostAffectedMonitor": "Most Affected Monitor",
-					"title": "Incident Statistics",
-					"totalIncidents": "Total Incidents"
+					"avgResolutionTime": "Avg resolution time",
+					"mostAffectedMonitor": "Most affected monitor",
+					"title": "Incident statistics",
+					"totalIncidents": "Total incidents"
 				},
 				"latestIncidents": {
-					"title": "Latest Incidents"
+					"title": "Latest incidents"
 				}
 			},
 			"table": {
 				"actions": {
 					"details": "Details",
 					"goToMonitor": "Go to monitor",
-					"resolveManually": "Resolve Manually"
+					"resolveManually": "Resolve manually"
 				},
-				"activeIncidents": "Active Incidents",
+				"activeIncidents": "Active incidents",
 				"headers": {
-					"endTime": "End Time",
-					"resolutionType": "Resolution Type",
-					"startTime": "Start Time",
-					"statusCode": "Status Code"
+					"endTime": "End time",
+					"resolutionType": "Resolution type",
+					"startTime": "Start time",
+					"statusCode": "Status code"
 				},
-				"resolvedIncidents": "Resolved Incidents",
+				"resolvedIncidents": "Resolved incidents",
 				"status": {
 					"active": "Active",
 					"resolved": "Resolved"
@@ -1092,8 +1165,8 @@
 			"charts": {
 				"labels": {
 					"disk": "Disk usage",
-					"netBytesRecv": "{{name}} - Bytes Received",
-					"netBytesSent": "{{name}} - Bytes Sent",
+					"netBytesRecv": "{{name}} - Bytes received",
+					"netBytesSent": "{{name}} - Bytes sent",
 					"loopbackOnlyNotice": "Capture is only seeing container network interfaces, and none of them are carrying real traffic. This is normal when Capture runs inside a container that can only observe its own network namespace — interfaces with host-like names (eth0, ens3) are the container's virtual interfaces, not the host's. Run Capture directly on the host to see real network activity.",
 					"temp": "CPU temperature"
 				}
@@ -1116,8 +1189,8 @@
 				}
 			},
 			"statBoxes": {
-				"avgCpuTemperature": "Average CPU Temperature",
-				"cpuFrequency": "CPU Frequency",
+				"avgCpuTemperature": "Average CPU temperature",
+				"cpuFrequency": "CPU frequency",
 				"cpuLogical": "CPU (Logical)",
 				"cpuPhysical": "CPU (Physical)",
 				"disk": "Disk",
@@ -1421,10 +1494,10 @@
 					"heapAllocation": "Heap allocation",
 					"heapUsage": "Heap usage",
 					"heapUtilization": "Heap utilization",
-					"instantCpuUsage": "Instant CPU usage",
+					"instantCpuUsage": "CPU usage",
 					"availableMemoryPercentage": "% of available memory",
 					"allocatedPercentage": "% allocated",
-					"usedSPercentage": "% of 1s used by CPU",
+					"usedSPercentage": "% of one CPU core",
 					"total": "Total",
 					"used": "Used"
 				}
@@ -1680,6 +1753,8 @@
 				"monitoring": "Monitoring",
 				"email": "Email",
 				"integrations": "Integrations",
+				"tags": "Tags",
+				"proxies": "Proxies",
 				"data": "Data",
 				"connect": "Checkmate Connect"
 			},
@@ -1782,19 +1857,19 @@
 					"description": "Set global CPU, Memory, Disk, and Temperature thresholds for infrastructure monitoring. These apply to all hardware monitors unless overridden.",
 					"option": {
 						"cpu": {
-							"label": "CPU Threshold (%)",
+							"label": "CPU threshold (%)",
 							"placeholder": "1 - 100"
 						},
 						"memory": {
-							"label": "Memory Threshold (%)",
+							"label": "Memory threshold (%)",
 							"placeholder": "1 - 100"
 						},
 						"disk": {
-							"label": "Disk Threshold (%)",
+							"label": "Disk threshold (%)",
 							"placeholder": "1 - 100"
 						},
 						"temperature": {
-							"label": "Temperature Threshold (°C)",
+							"label": "Temperature threshold (°C)",
 							"placeholder": "1 - 150"
 						}
 					}
@@ -1806,7 +1881,7 @@
 					"descriptionTransportLink": "See specifications here",
 					"option": {
 						"host": {
-							"label": "Email host - Hostname or IP address to connect to",
+							"label": "Email host - hostname or IP address to connect to",
 							"placeholder": "smtp.gmail.com"
 						},
 						"port": {
@@ -1814,7 +1889,7 @@
 							"placeholder": "587"
 						},
 						"address": {
-							"label": "Email address - Used for authentication",
+							"label": "Email address - used for authentication",
 							"placeholder": "you@example.com"
 						},
 						"displayName": {
@@ -1826,7 +1901,7 @@
 							"placeholder": "Leave empty if not required"
 						},
 						"password": {
-							"label": "Email password - Password for authentication",
+							"label": "Email password - password for authentication",
 							"labelSet": "Password is set. Click Reset to change it.",
 							"placeholder": "Enter your password"
 						},
@@ -1891,28 +1966,183 @@
 					"title": "Export monitors"
 				},
 				"importExportMonitors": {
-					"title": "Import / Export monitors",
-					"description": "Import or export your monitors data as a JSON file for backup or transfer."
+					"title": "Import / export monitors",
+					"description": "Import or export your monitors data as a JSON file for backup or transfer.",
+					"backupNotice": "This JSON file only contains your monitors, so it isn't a full backup. To back up or restore your Checkmate data, use Checkmate Connect.",
+					"connectTabLink": "Open the Checkmate Connect tab",
+					"connectSiteLink": "Visit the Checkmate Connect website"
 				},
 				"connect": {
-					"superadminOnly": "Only a superadmin can enroll this server or remove its enrollment. Sign out and back in if your role changed recently.",
+					"superadminOnly": "Only a superadmin can enroll this server, change remote access, run or restore backups, or remove its enrollment. Sign out and back in if your role changed recently.",
+					"clickToConfirm": "Click again to confirm",
 					"status": {
 						"title": "Status",
-						"description": "Whether this installation is enrolled with Checkmate Connect.",
+						"description": "Connection state of this installation.",
 						"enrolled": "Enrolled",
 						"notEnrolled": "Not enrolled",
-						"agentId": "Agent ID"
+						"connected": "Tunnel connected",
+						"disconnected": "Tunnel disconnected",
+						"connecting": "Tunnel connecting",
+						"remoteAccessOff": "Remote access off",
+						"agentId": "Agent ID",
+						"lastConnected": "Last connected",
+						"siteLink": "Open {{site}}"
+					},
+					"getStarted": {
+						"title": "Get started",
+						"description": "Checkmate Connect lets you reach this installation from anywhere and keeps encrypted backups of it in the cloud.",
+						"steps": {
+							"account": {
+								"title": "Create a Connect account",
+								"body": "Sign up at {{site}} with an email address and a password."
+							},
+							"server": {
+								"title": "Add your server",
+								"body": "Name it on the Connect dashboard to get a credential block. It's shown once, so copy it right away."
+							},
+							"paste": {
+								"title": "Paste it here",
+								"body": "Paste the credential block in the box below and click Enroll."
+							},
+							"remoteAccess": {
+								"title": "Turn on remote access",
+								"body": "Your Connect address goes live once the tunnel connects."
+							}
+						},
+						"button": "Go to {{site}}"
 					},
 					"enroll": {
 						"title": "Enroll installation",
 						"description": "Paste the credential block from your Checkmate Connect dashboard. The credential is stored encrypted in this installation's database and only leaves it to authenticate with Checkmate Connect.",
 						"button": "Enroll"
 					},
+					"remoteAccess": {
+						"title": "Remote access",
+						"description": "Keep an outbound tunnel open so you can reach this installation from your Connect address. No inbound ports are opened."
+					},
+					"tooltips": {
+						"enroll": "Connect this server to your account",
+						"unenroll": "Disconnect this server from Connect",
+						"generateKey": "Create the key that unlocks your backups",
+						"lostKey": "Start again with a new key",
+						"runFull": "Back up the whole database now",
+						"runConfig": "Back up everything except check history",
+						"importKey": "Use the key from your original server",
+						"useKey": "Check this key against your backups",
+						"replaceKey": "Switch to another recovery key",
+						"restore": "Replace this server's data with this backup"
+					},
+					"backup": {
+						"title": "Cloud backups",
+						"description": "Encrypted backups of this installation's database, uploaded to Checkmate Connect. Data is encrypted here before upload; the cloud only ever stores ciphertext.",
+						"needsKey": "Set up a recovery key below to start backing up.",
+						"generateKey": "Generate recovery key",
+						"existingBackups": "This account already has cloud backups. Enter the recovery key from your original server to restore them.",
+						"lostKey": "I lost my key",
+						"lostKeyWarning": "Your existing cloud backups can't be restored without the original key. They're kept for 30 days after your first backup with a new key, so you can switch back if you find the original.",
+						"importKey": "I already have a recovery key",
+						"importKeyHelp": "Paste the 64-character key from your original server. Checkmate decrypts one of your cloud backups to check the key before saving it.",
+						"replaceKey": "Use a different recovery key",
+						"replaceKeyHelp": "Paste the 64-character key you want to use instead. Checkmate decrypts your cloud backups to check the key, and keeps your current key if none of them open.",
+						"replaceKeyWarning": "Backups made with your current key can't be restored after you switch.",
+						"importKeyConfirm": "Use this key",
+						"verifyOutcome": {
+							"ok": "Recovery key saved",
+							"wrong-key": "This key does not decrypt your cloud backups",
+							"no-backups": "No cloud backups to check this key against",
+							"failed": "The key couldn't be checked: {{error}}"
+						},
+						"keyTitle": "Recovery key",
+						"keyWarning": "Store this key somewhere safe, away from this server. It is shown only once. If you lose it, your cloud backups can't be restored and nobody can recover it for you.",
+						"keyCopy": "Copy key",
+						"keyLabel": "Your recovery key",
+						"keyContinue": "I have saved it",
+						"keyDone": "I have stored the key",
+						"keyShowAgain": "Show the key again",
+						"keyVerifyHelp": "Open the place you saved the key and paste it here to confirm you have a working copy.",
+						"keyPlaceholder": "Recovery key",
+						"keyAcknowledge": "I understand that if I lose this key, I can't restore my cloud backups.",
+						"keyMismatch": "That doesn't match your recovery key. Show the key again and save a new copy.",
+						"keyAckRequired": "Tick the box to confirm you understand.",
+						"toolsMissing": "Cloud backups need mongodump and mongorestore, which weren't found on this server.",
+						"toolsMac": "On macOS, run: brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "Download MongoDB Database Tools for Linux",
+						"toolsPath": "If they're installed elsewhere, set CONNECT_MONGODUMP_BIN and CONNECT_MONGORESTORE_BIN. This message clears within a minute of the tools being found.",
+						"runFull": "Back up now",
+						"runConfig": "Back up configuration only",
+						"kind": {
+							"full": "Full database",
+							"config": "Configuration only"
+						},
+						"progress": {
+							"idle": "Idle",
+							"finished": {
+								"backup": {
+									"ok": "Backup completed",
+									"failed": "Backup failed"
+								},
+								"restore": {
+									"ok": "Restore completed",
+									"failed": "Restore failed"
+								},
+								"verify": {
+									"ok": "Recovery key saved",
+									"failed": "Key check failed"
+								}
+							},
+							"queued": {
+								"backup": "Backup job enqueued",
+								"restore": "Restore job enqueued"
+							},
+							"checking": "Checking your key…",
+							"restore": {
+								"downloading": "Step 1 of 3: downloading the backup",
+								"decrypting": "Step 2 of 3: decrypting the backup",
+								"restoring": "Step 3 of 3: restoring your database"
+							},
+							"verify": {
+								"downloading": "Checking your key: downloading backup {{attempt}} of {{attempts}}",
+								"decrypting": "Checking your key: decrypting backup {{attempt}} of {{attempts}}"
+							},
+							"backup": {
+								"dumping": "Step 1 of 3: reading and encrypting your database",
+								"uploading": "Step 2 of 3: uploading the encrypted backup",
+								"saving": "Step 3 of 3: saving the backup to your account"
+							}
+						},
+						"progressWithPercent": "{{step}} ({{percent}}%)",
+						"progressWithSize": "{{step}} ({{size}})",
+						"lastBackupSucceeded": "Last backup ({{date}}): succeeded",
+						"lastBackupSucceededSize": "Last backup ({{date}}): succeeded · {{size}}",
+						"lastBackupFailed": "Last backup ({{date}}): failed — {{error}}",
+						"lastRestoreSucceeded": "Last restore ({{date}}): succeeded",
+						"lastRestoreFailed": "Last restore ({{date}}): failed — {{error}}",
+						"restore": {
+							"title": "Restore a backup",
+							"description": "Downloads the selected backup, verifies and decrypts it on this server, then replaces the current database.",
+							"empty": "No verified cloud backups yet.",
+							"button": "Restore",
+							"confirmTitle": "Restore the backup from {{date}} ({{kind}})?",
+							"confirmBody": "This replaces the current database and cannot be undone. User accounts are replaced too, so log in with an account from the backup afterwards.",
+							"differentKey": "Different key",
+							"expires": "Removed after {{date}}"
+						}
+					},
+					"schedule": {
+						"title": "Scheduled backups",
+						"description": "Run an encrypted cloud backup automatically. The first one starts as soon as you turn this on, and a scheduled backup that comes due while another backup or restore is running is skipped until the next interval.",
+						"interval": "Back up every",
+						"kind": "Backup type"
+					},
+					"recoveryKey": {
+						"title": "Recovery key",
+						"description": "Encrypts your cloud backups on this server. It never leaves this server, and without it your backups can't be restored.",
+						"set": "A recovery key is set on this server."
+					},
 					"unenroll": {
 						"title": "Remove enrollment",
 						"description": "Disconnects this installation from Checkmate Connect and deletes the local credential. Local monitoring is not affected.",
-						"button": "Remove enrollment",
-						"confirm": "Click again to confirm"
+						"button": "Remove enrollment"
 					}
 				},
 				"about": {
@@ -2036,7 +2266,7 @@
 				"poweredBy": "Powered by"
 			},
 			"editorial": {
-				"reportTitle": "Service Report",
+				"reportTitle": "Service report",
 				"allUp": "All systems are operating normally."
 			},
 			"form": {

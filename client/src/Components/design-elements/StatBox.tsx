@@ -2,39 +2,33 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
-import { darken, lighten } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { typographyLevels, toSignalKey, fontWeights } from "@/Utils/Theme/Palette";
 import type { PaletteKey } from "@/Utils/Theme/Theme";
 import { BaseBox, TooltipWithInfo } from "@/Components/design-elements";
 import type { SxProps } from "@mui/material";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 type GradientBox = React.PropsWithChildren<{
-	palette?: PaletteKey;
 	sx?: SxProps;
 	interactive?: boolean;
 }>;
 
-export const GradientBox = ({ children, palette, sx, interactive }: GradientBox) => {
+export const GradientBox = ({ children, sx, interactive }: GradientBox) => {
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
-	const isLight = theme.palette.mode === "light";
-	const paper = theme.palette.background.paper;
-	const paperStart = isLight ? darken(paper, 0.02) : lighten(paper, 0.08);
-	const paperEnd = paper;
-	const bg = palette
-		? `linear-gradient(135deg, ${lighten(theme.palette[palette].main, 0.12)} 0%, ${theme.palette[palette].main} 100%)`
-		: `linear-gradient(135deg, ${paperStart} 0%, ${paperEnd} 100%)`;
 
 	return (
 		<BaseBox
 			sx={{
-				padding: `${theme.spacing(4)} ${theme.spacing(8)}`,
-				width: isSmall ? `100%` : `calc(25% - (3 * ${theme.spacing(8)} / 4))`,
-				background: bg,
+				padding: theme.spacing(LAYOUT.SM, LAYOUT.MD),
+				width: isSmall ? `100%` : `calc(25% - (3 * ${theme.spacing(LAYOUT.MD)} / 4))`,
+				backgroundColor: theme.palette.background.paper,
 				...(interactive && {
 					cursor: "pointer",
 					"&:hover": {
-						backgroundImage: `linear-gradient(${theme.palette.action.rowHover}, ${theme.palette.action.rowHover}), ${bg}`,
+						backgroundColor: theme.palette.action.rowHover,
+						borderColor: theme.palette.neutral.border,
 					},
 				}),
 				...sx,
@@ -64,31 +58,55 @@ export const StatBox = ({
 	onClick,
 }: StatBoxProps) => {
 	const theme = useTheme();
-	const textColor = palette ? theme.palette[palette].contrastText : "inherit";
+	const valueColor = palette ? theme.palette[palette].dark : theme.palette.text.primary;
+	const bannerTone =
+		palette && !subtitle ? theme.palette.signal[toSignalKey(palette)] : null;
 
 	return (
 		<GradientBox
-			palette={palette}
 			interactive={Boolean(onClick)}
-			sx={{ ...(sx as object) }}
+			sx={{
+				...(bannerTone && {
+					backgroundColor: bannerTone.bg,
+					borderColor: bannerTone.border,
+				}),
+				...(sx as object),
+			}}
 		>
-			<Stack onClick={onClick}>
-				<Box sx={{ display: "flex", alignItems: "center", gap: theme.spacing(2) }}>
+			<Stack
+				onClick={onClick}
+				gap={theme.spacing(LAYOUT.XXS)}
+			>
+				<Box
+					display="flex"
+					alignItems="center"
+					gap={theme.spacing(LAYOUT.XXS)}
+				>
 					<Typography
 						variant="eyebrow"
-						color={palette ? textColor : "text.secondary"}
+						color={bannerTone ? bannerTone.text : theme.palette.neutral.tertiary}
 					>
 						{title}
 					</Typography>
 					{tooltip && (
 						<TooltipWithInfo
 							title={tooltip}
-							iconColor={textColor as string}
+							iconColor={theme.palette.neutral.icon}
 							iconSize={14}
 						/>
 					)}
 				</Box>
-				<Typography color={textColor}>{subtitle}</Typography>
+				{subtitle && (
+					<Typography
+						color={valueColor}
+						fontSize={typographyLevels.xl}
+						fontWeight={fontWeights.semibold}
+						lineHeight={1.3}
+						sx={{ fontVariantNumeric: "tabular-nums" }}
+					>
+						{subtitle}
+					</Typography>
+				)}
 				{children}
 			</Stack>
 		</GradientBox>

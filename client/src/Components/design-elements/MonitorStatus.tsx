@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import { PulseDot, Dot, StrategyBadge } from "@/Components/design-elements";
 import { getStatusColor, formatUrl } from "@/Utils/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { formatDuration } from "@/Utils/TimeUtils";
@@ -22,7 +22,7 @@ export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 		<Stack>
 			<Typography
 				fontSize={typographyLevels.xxl}
-				fontWeight={500}
+				fontWeight={fontWeights.medium}
 				overflow={"hidden"}
 				textOverflow={"ellipsis"}
 				whiteSpace={"nowrap"}
@@ -37,7 +37,7 @@ export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 				<PulseDot color={getStatusColor(monitor.status, theme)} />
 				<Typography
 					fontSize={typographyLevels.l}
-					fontWeight={"bolder"}
+					fontWeight={fontWeights.semibold}
 					fontFamily={theme.typography.fontFamilyMonospace}
 					overflow={"hidden"}
 					textOverflow={"ellipsis"}

@@ -1,8 +1,10 @@
 import Stack from "@mui/material/Stack";
-import { Tabs, Tab } from "@/Components/design-elements";
+import { Tabs, Tab, TabIcon } from "@/Components/design-elements";
+import { MapPin } from "lucide-react";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import type { GeoContinent } from "@/Types/GeoCheck";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface HeaderGeoTabsProps {
 	geoCheckEnabled: boolean;
@@ -30,7 +32,7 @@ export const HeaderGeoTabs = ({
 
 	return (
 		<Stack
-			spacing={{ xs: theme.spacing(8), md: 0 }}
+			spacing={{ xs: theme.spacing(LAYOUT.MD), md: 0 }}
 			direction={{ xs: "column", md: "row" }}
 			alignItems={"center"}
 			justifyContent={"flex-start"}
@@ -46,6 +48,7 @@ export const HeaderGeoTabs = ({
 							`pages.createMonitor.form.geoChecks.option.locations.options.${location}`
 						)}
 						value={location}
+						icon={<TabIcon icon={MapPin} />}
 					/>
 				))}
 			</Tabs>

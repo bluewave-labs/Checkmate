@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import { useTagsForm } from "@/Hooks/useTagsForm";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { FormColorField } from "@/Components/inputs/forms/FormColorField";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const TagsCreatePage = () => {
 	const { t } = useTranslation();
@@ -48,7 +49,7 @@ const TagsCreatePage = () => {
 			: await post("/tags", data);
 		if (result?.success) {
 			await mutate((key) => typeof key === "string" && key.startsWith("/tags"));
-			navigate("/tags");
+			navigate("/settings?tab=tags");
 		}
 	};
 
@@ -83,7 +84,7 @@ const TagsCreatePage = () => {
 				<Stack
 					direction="row"
 					justifyContent="flex-end"
-					spacing={theme.spacing(2)}
+					spacing={theme.spacing(LAYOUT.XS)}
 				>
 					<Button
 						loading={isSubmitting || isPatching}

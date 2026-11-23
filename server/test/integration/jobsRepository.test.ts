@@ -231,7 +231,7 @@ describe("MongoJobsRepository", () => {
 				lastFailReason: "connection refused",
 			});
 
-			const ok = await repo.recordOneShot("check:mon-1", NOW + 1_000);
+			const ok = await repo.recordOneShot("check:mon-1", NOW, NOW + 1_000);
 
 			expect(ok).toBe(true);
 			const row = await readRow("check:mon-1");
@@ -247,7 +247,7 @@ describe("MongoJobsRepository", () => {
 		it("does not touch a lock owned by another worker (fenced no-op)", async () => {
 			await seedJob({ intervalMs: null, lockedBy: "other-worker", lockedUntil: NOW + LOCK_MS, failCount: 2, lastFailReason: "timeout" });
 
-			expect(await repo.recordOneShot("check:mon-1", NOW + 1_000)).toBe(false);
+			expect(await repo.recordOneShot("check:mon-1", NOW, NOW + 1_000)).toBe(false);
 			const row = await readRow("check:mon-1");
 			expect(row?.nextScheduledAt).toBe(NOW); // not parked
 			expect(row?.lockedBy).toBe("other-worker");
@@ -265,11 +265,38 @@ describe("MongoJobsRepository", () => {
 				pendingChecks: pending("c-late"), // arrived mid-run, not yet pulled
 			});
 
-			expect(await repo.recordOneShot("evaluate:mon-1", NOW + 1_000)).toBe(true);
+			expect(await repo.recordOneShot("evaluate:mon-1", NOW, NOW + 1_000)).toBe(true);
 			const row = await readRow("evaluate:mon-1");
 			expect(row?.nextScheduledAt).toBe(NOW + 1_000); // due now, not PARKED
 			expect(row?.lockedBy).toBeNull();
 			expect(row?.runCount).toBe(1);
+		});
+
+		it("keeps a row that was re-armed while the run held the lease", async () => {
+			await seedJob({ intervalMs: null, nextScheduledAt: NOW + 5_000, lockedBy: ownedBy(repo), lockedUntil: NOW + LOCK_MS });
+
+			expect(await repo.recordOneShot("check:mon-1", NOW, NOW + 1_000)).toBe(true);
+			const row = await readRow("check:mon-1");
+			expect(row?.nextScheduledAt).toBe(NOW + 5_000);
+			expect(row?.lockedBy).toBeNull();
+			expect(row?.lockedUntil).toBeNull();
+			expect(row?.runCount).toBe(1);
+		});
+
+		it("re-arms for pending checks even when the row was also re-armed", async () => {
+			await seedJob({
+				_id: "evaluate:mon-1",
+				type: "evaluate",
+				intervalMs: null,
+				nextScheduledAt: NOW + 5_000,
+				lockedBy: ownedBy(repo),
+				lockedUntil: NOW + LOCK_MS,
+				pendingChecks: pending("c-late"),
+			});
+
+			await repo.recordOneShot("evaluate:mon-1", NOW, NOW + 1_000);
+
+			expect((await readRow("evaluate:mon-1"))?.nextScheduledAt).toBe(NOW + 1_000);
 		});
 	});
 
@@ -541,7 +568,7 @@ describe("MongoJobsRepository", () => {
 			expect(row?.runCount).toBe(7);
 		});
 
-		it("upsertCleanupJob resets nextScheduledAt on an existing row so it is due again on restart", async () => {
+		it("upsertJobAndSchedule resets nextScheduledAt on an existing row so it is due again on restart", async () => {
 			const job: Job = {
 				id: "cleanup-orphaned",
 				type: "cleanup-orphaned",
@@ -557,13 +584,13 @@ describe("MongoJobsRepository", () => {
 				lastFinishedAt: null,
 				lastFailReason: null,
 			};
-			await repo.upsertCleanupJob(job);
+			await repo.upsertJobAndSchedule(job);
 
 			// row has already advanced a day into the future after a previous run
 			await JobModel.updateOne({ _id: "cleanup-orphaned" }, { $set: { nextScheduledAt: NOW + 86_400_000, runCount: 3 } });
 
 			// a restart reconcile re-upserts and pulls it due now
-			await repo.upsertCleanupJob({ ...job, nextScheduledAt: NOW + 1_000 });
+			await repo.upsertJobAndSchedule({ ...job, nextScheduledAt: NOW + 1_000 });
 
 			const row = await readRow("cleanup-orphaned");
 			expect(row?.nextScheduledAt).toBe(NOW + 1_000); // schedule reset ($set)
@@ -810,6 +837,25 @@ describe("MongoJobsRepository", () => {
 			expect(await readRow("telemetry")).toBeNull();
 			expect(await readRow("cleanup-orphaned")).not.toBeNull();
 			expect(await repo.deleteGlobalJob("telemetry")).toBe(false);
+		});
+
+		it("findGlobalJob returns the global row of a type", async () => {
+			await seedJob({
+				_id: "connect-operation",
+				type: "connect-operation" as JobType,
+				refId: null,
+				intervalMs: null,
+				lockedBy: "w",
+				lockedUntil: NOW + LOCK_MS,
+			});
+
+			const job = await repo.findGlobalJob("connect-operation");
+
+			expect(job).toMatchObject({ id: "connect-operation", type: "connect-operation", refId: null, lockedUntil: NOW + LOCK_MS });
+		});
+
+		it("findGlobalJob returns null when there is no row", async () => {
+			await expect(repo.findGlobalJob("connect-operation")).resolves.toBeNull();
 		});
 	});
 });

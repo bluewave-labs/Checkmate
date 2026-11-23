@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import type { LatestDrives, LatestRaid, Monitor } from "@/Types/Monitor";
 import { getAvgTemp, getCores, getFrequency, getOsAndPlatform } from "@/Utils/InfraUtils";
 import { isArrayAtRisk, isDriveFailed } from "@/Utils/StorageUtils";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 export const StatusBoxes = ({
 	monitor,
@@ -44,7 +45,7 @@ export const StatusBoxes = ({
 	return (
 		<Stack
 			direction="row"
-			gap={theme.spacing(8)}
+			gap={theme.spacing(LAYOUT.MD)}
 			flexWrap={"wrap"}
 		>
 			<StatBox

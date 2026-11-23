@@ -1,4 +1,5 @@
-import { BasePage, Tab, Tabs } from "@/Components/design-elements";
+import { BasePage, Tab, TabIcon, Tabs } from "@/Components/design-elements";
+import { HardDrive, LayoutDashboard, Network } from "lucide-react";
 import { HeaderTimeRange } from "@/Components/common";
 import { MonitorStatBoxes, HeaderMonitorControls } from "@/Components/monitors";
 import { TabNetwork } from "@/Pages/Infrastructure/Details/Components/TabNetwork";
@@ -76,9 +77,18 @@ const InfrastructureDetails = () => {
 					setSelectedTab(value);
 				}}
 			>
-				<Tab label={t("pages.infrastructure.tabs.labels.overview")} />
-				<Tab label={t("pages.infrastructure.tabs.labels.network")} />
-				<Tab label={t("pages.infrastructure.tabs.labels.storage")} />
+				<Tab
+					label={t("pages.infrastructure.tabs.labels.overview")}
+					icon={<TabIcon icon={LayoutDashboard} />}
+				/>
+				<Tab
+					label={t("pages.infrastructure.tabs.labels.network")}
+					icon={<TabIcon icon={Network} />}
+				/>
+				<Tab
+					label={t("pages.infrastructure.tabs.labels.storage")}
+					icon={<TabIcon icon={HardDrive} />}
+				/>
 			</Tabs>
 			{selectedTab === 0 && (
 				<TabOverview

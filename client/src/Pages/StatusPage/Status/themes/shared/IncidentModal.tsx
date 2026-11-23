@@ -3,7 +3,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
-import IconButton from "@mui/material/IconButton";
 import { X as XIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useGet } from "@/Hooks/UseApi";
@@ -12,6 +11,7 @@ import { SPACING } from "@/Utils/Theme/constants";
 
 import type { Incident } from "@/Types/Incident";
 import { formatDate } from "@/Utils/TimeUtils";
+import { IconButton } from "@/Components/inputs";
 interface IncidentModalProps {
 	url: string;
 	monitorId: string | null;

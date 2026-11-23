@@ -36,7 +36,7 @@
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+<img alt="Checkmate dashboard" src="https://checkmate.so/img/readme/dashboard.webp" />
 
 <br>
 
@@ -82,13 +82,13 @@ Les instructions d'utilisation sont disponibles [ici](https://checkmate.so/docs)
 
 Consultez les instructions d'installation dans le [portail de documentation Checkmate](https://checkmate.so/docs).
 
-Vous pouvez également utiliser [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Afrique du Sud), [Cloudzy](https://cloudzy.com/marketplace/checkmate) ou [Pikapods](https://www.pikapods.com/) pour démarrer rapidement une instance Checkmate. Pour surveiller votre infrastructure serveur, vous aurez besoin de l'[agent Capture](https://github.com/bluewave-labs/capture). Le dépôt Capture contient également les instructions d'installation.
+Vous pouvez également utiliser [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Afrique du Sud), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate), [ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate) (nécessite votre propre MongoDB), [Caliber Node](https://calibernode.com/cloud-apps/checkmate) ou [Pikapods](https://www.pikapods.com/) pour démarrer rapidement une instance Checkmate. Pour surveiller votre infrastructure serveur, vous aurez besoin de l'[agent Capture](https://checkmate.so/docs/infrastructure/installing-capture). Le dépôt Capture contient également les instructions d'installation.
 
 ### Utiliser une autorité de certification personnalisée
 
-Si vous devez surveiller des points d'accès HTTPS internes avec des certificats issus d'autorités de certification privées (comme Smallstep), consultez notre [guide de confiance d'autorité de certification personnalisée](../custom-ca-trust.md) pour les options de configuration Docker.
+Si vous devez surveiller des points d'accès HTTPS internes avec des certificats issus d'autorités de certification privées (comme Smallstep), consultez notre [guide de confiance d'autorité de certification personnalisée](https://checkmate.so/docs/settings/custom-ca-trust) pour les options de configuration Docker.
 
-Pour plus de documentation, consultez le [répertoire docs](../).
+Pour plus de documentation, consultez le [portail de documentation de Checkmate](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Performance
@@ -124,6 +124,7 @@ N'hésitez pas à poser vos questions ou partager vos idées — nous adorerions
 - Notifications par e-mail, webhooks, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - Maintenance planifiée
 - Surveillance par requête JSON
+- [Checkmate Connect](https://checkmate.so/docs/connect) (facultatif) : accès à distance sans ouvrir de ports entrants, sauvegardes chiffrées dans le cloud avec planification et restauration, et une surveillance externe qui vous prévient par e-mail quand votre serveur ne répond plus
 - Support multilingue : arabe, chinois (simplifié), chinois (traditionnel, Taïwan), tchèque, anglais, finnois, français, allemand, japonais, portugais (Brésil), russe, espagnol, thaï, turc, ukrainien et vietnamien
 
 
@@ -140,16 +141,19 @@ N'hésitez pas à poser vos questions ou partager vos idées — nous adorerions
 ## Captures d'écran
 
 <p>
-<img width="1628" alt="image" src="https://github.com/user-attachments/assets/2eff6464-0738-4a32-9312-26e1e8e86275" />
+<img alt="Uptime monitors" src="https://checkmate.so/img/readme/uptime-list.webp" />
 </p>
 <p>
-  <img width="1656" alt="image" src="https://github.com/user-attachments/assets/616c3563-c2a7-4ee4-af6c-7e6068955d1a" />
+<img alt="Uptime monitor details" src="https://checkmate.so/img/readme/uptime-details.webp" />
 </p>
 <p>
-</p><img width="1652" alt="image" src="https://github.com/user-attachments/assets/7912d7cf-0d0e-4f26-aa5c-2ad7170b5c99" />
+<img alt="Infrastructure monitor details" src="https://checkmate.so/img/readme/infrastructure-details.webp" />
 </p>
 <p>
-<img width="1652" alt="image" src="https://github.com/user-attachments/assets/08c2c6ac-3a2f-44d1-a229-d1746a3f9d16" />
+<img alt="PageSpeed monitor details" src="https://checkmate.so/img/readme/pagespeed-details.webp" />
+</p>
+<p>
+<img alt="Public status page" src="https://checkmate.so/img/readme/status-page.webp" />
 </p>
 
 
@@ -184,7 +188,7 @@ Notre dépôt a été suivi par des employés de **Google, Microsoft, Intel, Cis
 Voici comment contribuer :
 
 0. Mettez une étoile à ce dépôt :)
-1. Consultez le [guide du contributeur](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). Les nouveaux contributeurs sont encouragés à consulter le tag `good-first-issue`.
+1. Consultez le [guide du contributeur](https://checkmate.so/docs/getting-started/contributing). Les nouveaux contributeurs sont encouragés à consulter le tag `good-first-issue`.
 2. Lisez une structure détaillée de [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate) si vous souhaitez plonger dans l'architecture.
 3. Ouvrez une issue si vous pensez avoir rencontré un bug.
 4. Cherchez les `good-first-issue` si vous débutez.

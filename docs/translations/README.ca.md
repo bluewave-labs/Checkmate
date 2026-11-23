@@ -39,7 +39,7 @@
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+<img alt="Checkmate dashboard" src="https://checkmate.so/img/readme/dashboard.webp" />
 
 <br>
 
@@ -85,13 +85,13 @@ Pots trobar les instruccions d'ús [aquí](https://checkmate.so/docs).
 
 Consulta les instruccions d'instal·lació al [portal de documentació de Checkmate](https://checkmate.so/docs).
 
-Alternativament, també pots utilitzar [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Sud-àfrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate) o [Pikapods](https://www.pikapods.com/) per posar en marxa ràpidament una instància de Checkmate. Si vols monitoritzar la infraestructura de servidors, necessitaràs l'[agent Capture](https://github.com/bluewave-labs/capture). El repositori de Capture també conté les instruccions d'instal·lació.
+Alternativament, també pots utilitzar [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Sud-àfrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate), [ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate) (cal la teva pròpia MongoDB), [Caliber Node](https://calibernode.com/cloud-apps/checkmate) o [Pikapods](https://www.pikapods.com/) per posar en marxa ràpidament una instància de Checkmate. Si vols monitoritzar la infraestructura de servidors, necessitaràs l'[agent Capture](https://checkmate.so/docs/infrastructure/installing-capture). El repositori de Capture també conté les instruccions d'instal·lació.
 
 ### Utilitzar una CA personalitzada
 
-Si necessites monitoritzar punts HTTPS interns amb certificats d'autoritats certificadores privades (com Smallstep), consulta la nostra [Guia de confiança per a CA personalitzades](../custom-ca-trust.md) per a les opcions de configuració de Docker.
+Si necessites monitoritzar punts HTTPS interns amb certificats d'autoritats certificadores privades (com Smallstep), consulta la nostra [Guia de confiança per a CA personalitzades](https://checkmate.so/docs/settings/custom-ca-trust) per a les opcions de configuració de Docker.
 
-Per a més documentació, consulta el [directori docs](../).
+Per a més documentació, consulta el [portal de documentació de Checkmate](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Rendiment
@@ -127,6 +127,7 @@ No dubtis a preguntar o compartir les teves idees — ens encantarà tenir notí
 - Notificacions per correu electrònic, webhooks, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - Manteniment programat
 - Monitorització mitjançant consultes JSON
+- [Checkmate Connect](https://checkmate.so/docs/connect) (opcional): accés remot sense obrir ports d'entrada, còpies de seguretat xifrades al núvol amb execucions programades i restauració, i un vigilant que t'avisa per correu quan el servidor deixa d'informar
 - Suport multilingüe per a àrab, xinès (simplificat), xinès (tradicional, Taiwan), txec, anglès, finès, francès, alemany, japonès, portuguès (Brasil), rus, espanyol, tailandès, turc, ucraïnès i vietnamita
 
 
@@ -143,16 +144,19 @@ No dubtis a preguntar o compartir les teves idees — ens encantarà tenir notí
 ## Captures de pantalla
 
 <p>
-<img width="1628" alt="image" src="https://github.com/user-attachments/assets/2eff6464-0738-4a32-9312-26e1e8e86275" />
+<img alt="Uptime monitors" src="https://checkmate.so/img/readme/uptime-list.webp" />
 </p>
 <p>
-  <img width="1656" alt="image" src="https://github.com/user-attachments/assets/616c3563-c2a7-4ee4-af6c-7e6068955d1a" />
+<img alt="Uptime monitor details" src="https://checkmate.so/img/readme/uptime-details.webp" />
 </p>
 <p>
-</p><img width="1652" alt="image" src="https://github.com/user-attachments/assets/7912d7cf-0d0e-4f26-aa5c-2ad7170b5c99" />
+<img alt="Infrastructure monitor details" src="https://checkmate.so/img/readme/infrastructure-details.webp" />
 </p>
 <p>
-<img width="1652" alt="image" src="https://github.com/user-attachments/assets/08c2c6ac-3a2f-44d1-a229-d1746a3f9d16" />
+<img alt="PageSpeed monitor details" src="https://checkmate.so/img/readme/pagespeed-details.webp" />
+</p>
+<p>
+<img alt="Public status page" src="https://checkmate.so/img/readme/status-page.webp" />
 </p>
 
 
@@ -187,7 +191,7 @@ El nostre repositori té estrelles d'empleats de **Google, Microsoft, Intel, Cis
 Així pots contribuir:
 
 0. Posa una estrella a aquest repositori :)
-1. Consulta la [guia per a col·laboradors](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). Recomanem als principiants revisar l'etiqueta `good-first-issue`.
+1. Consulta la [guia per a col·laboradors](https://checkmate.so/docs/getting-started/contributing). Recomanem als principiants revisar l'etiqueta `good-first-issue`.
 2. Llegeix una estructura detallada de [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate) si vols aprofundir en l'arquitectura.
 3. Obre una issue si creus que has trobat un error.
 4. Mira els `good-first-issue` si ets nou.

@@ -1,17 +1,17 @@
 import Stack, { type StackProps } from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Tooltip from "@mui/material/Tooltip";
-import IconButton from "@mui/material/IconButton";
 import { useTheme } from "@mui/material/styles";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
-import { Icon } from "@/Components/design-elements";
-import { SPACING } from "@/Utils/Theme/constants";
+import { Icon, Tooltip } from "@/Components/design-elements";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { toggleSidebar } from "@/Features/UI/uiSlice.js";
 import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import useSidebar from "@/Hooks/useSidebar";
 import KingIcon from "@/assets/icons/checkmate-icon.svg?react";
+import { IconButton } from "@/Components/inputs";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 const ToggleButton = ({ expand, sx }: { expand: boolean; sx?: object }) => {
 	const { t } = useTranslation();
@@ -69,8 +69,8 @@ export const Logo = (props: StackProps) => {
 			<Box
 				position="relative"
 				flexShrink={0}
-				width={theme.spacing(16)}
-				height={theme.spacing(16)}
+				width={theme.spacing(LAYOUT.XXL)}
+				height={theme.spacing(LAYOUT.XXL)}
 			>
 				<Box
 					width="100%"
@@ -111,9 +111,9 @@ export const Logo = (props: StackProps) => {
 				{" "}
 				<Typography
 					lineHeight={1}
-					mt={theme.spacing(2)}
+					mt={theme.spacing(LAYOUT.XXS)}
 					variant="h2"
-					fontWeight={500}
+					fontWeight={fontWeights.medium}
 				>
 					{t("common.appName")}
 				</Typography>
