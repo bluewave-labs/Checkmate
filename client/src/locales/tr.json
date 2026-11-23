@@ -1496,6 +1496,10 @@
 				},
 				"pie": {
 					"title": "Performans raporu"
+				},
+				"scoreHistory": {
+					"title": "Skor geçmişi",
+					"scrollToExplore": "kaydırarak keşfedin"
 				}
 			},
 			"table": {

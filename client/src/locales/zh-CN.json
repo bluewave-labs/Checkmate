@@ -1494,6 +1494,10 @@
 				},
 				"pie": {
 					"title": "性能报告"
+				},
+				"scoreHistory": {
+					"title": "评分历史",
+					"scrollToExplore": "滑动以查看更多"
 				}
 			},
 			"table": {

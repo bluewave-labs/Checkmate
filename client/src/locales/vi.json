@@ -1494,6 +1494,10 @@
 				},
 				"pie": {
 					"title": "Báo cáo hiệu suất"
+				},
+				"scoreHistory": {
+					"title": "Lịch sử điểm số",
+					"scrollToExplore": "cuộn để khám phá"
 				}
 			},
 			"table": {

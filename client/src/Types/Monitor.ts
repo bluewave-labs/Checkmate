@@ -261,10 +261,18 @@ export interface MonitorDetailsResponse {
 	monitorStats: MonitorStats | null;
 }
 
+export interface PageSpeedPagination {
+	hasMoreBefore: boolean;
+	hasMoreAfter: boolean;
+	oldestDate: string | null;
+	newestDate: string | null;
+}
+
 export interface PageSpeedDetailsResponse {
 	monitorData: {
 		monitor: Monitor;
 		groupedChecks: PageSpeedGroupedCheck[];
+		pagination?: PageSpeedPagination;
 	};
 	monitorStats: MonitorStats | null;
 }
