@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import type { CheckRaidArray, SnapshotDiskInfo } from "@/Types/Check";
 import type { LatestDrive } from "@/Types/Monitor";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 import { PLACEHOLDER } from "@/Utils/FormatUtils";
 import {
 	ARRAY_HEALTH_TONES,
@@ -39,7 +39,7 @@ const Field = ({ label, value }: { label: string; value: string }) => {
 				{label}
 			</Typography>
 			<Typography
-				fontWeight={600}
+				fontWeight={fontWeights.semibold}
 				sx={{ overflowWrap: "anywhere" }}
 			>
 				{value}
@@ -145,8 +145,8 @@ export const RaidArrayCard = ({
 						justifyContent="space-between"
 						gap={theme.spacing(LAYOUT.MD)}
 					>
-						<Typography fontWeight={500}>{getSyncLabel()}</Typography>
-						<Typography fontWeight={600}>{`${progress}%`}</Typography>
+						<Typography fontWeight={fontWeights.medium}>{getSyncLabel()}</Typography>
+						<Typography fontWeight={fontWeights.semibold}>{`${progress}%`}</Typography>
 					</Stack>
 					<LinearProgress
 						variant="determinate"

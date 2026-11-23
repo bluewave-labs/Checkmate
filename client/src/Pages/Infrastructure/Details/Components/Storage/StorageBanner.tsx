@@ -12,6 +12,7 @@ import {
 	isArrayAtRisk,
 	isDriveFailed,
 } from "@/Utils/StorageUtils";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 // One sentence per problem: which array is missing disks, and which drive to replace by model and serial
 export const StorageBanner = ({
@@ -90,7 +91,7 @@ export const StorageBanner = ({
 				<Box
 					component="span"
 					display="block"
-					fontWeight={600}
+					fontWeight={fontWeights.semibold}
 					color={theme.palette.error.main}
 				>
 					{title}

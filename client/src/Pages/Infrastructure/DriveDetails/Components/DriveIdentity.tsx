@@ -12,7 +12,7 @@ import { Link as RouterLink } from "react-router-dom";
 import type { CheckRaidArray } from "@/Types/Check";
 import type { LatestDrive } from "@/Types/Monitor";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 import { formatNumber, PLACEHOLDER } from "@/Utils/FormatUtils";
 import { hasDriveValues, parseCount } from "@/Utils/StorageUtils";
 
@@ -31,7 +31,7 @@ const Field = ({ label, children }: React.PropsWithChildren<{ label: string }>) 
 			</Typography>
 			<Typography
 				component="div"
-				fontWeight={600}
+				fontWeight={fontWeights.semibold}
 				sx={{ overflowWrap: "anywhere" }}
 			>
 				{children}

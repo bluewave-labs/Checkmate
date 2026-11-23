@@ -6,6 +6,7 @@ import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import type { DriveHistoryPoint, LatestDrive } from "@/Types/Monitor";
 import { isNvme } from "@/Utils/StorageUtils";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const TEMPERATURE_HEADROOM = 1.3;
 const formatCount = (value: number) => value.toFixed(0);
@@ -60,7 +61,7 @@ export const DriveCharts = ({
 	return (
 		<Grid
 			container
-			spacing={theme.spacing(8)}
+			spacing={theme.spacing(LAYOUT.MD)}
 		>
 			{charts.map((chart) => (
 				<Grid

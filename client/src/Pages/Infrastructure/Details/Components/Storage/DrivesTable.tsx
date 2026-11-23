@@ -28,6 +28,7 @@ import {
 	parseTemperature,
 	type StorageTone,
 } from "@/Utils/StorageUtils";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 interface DriveRow {
 	id: string;
@@ -121,7 +122,7 @@ export const DrivesTable = ({
 					.join(" · ");
 				return (
 					<Stack>
-						<Typography fontWeight={600}>
+						<Typography fontWeight={fontWeights.semibold}>
 							{drive.model_name || t("pages.infrastructure.storage.drives.unknownDrive")}
 						</Typography>
 						{identity && (
@@ -216,7 +217,9 @@ export const DrivesTable = ({
 							<Typography
 								key={line.key}
 								color={toneColor(line.tone)}
-								fontWeight={line.tone === "muted" ? 400 : 600}
+								fontWeight={
+									line.tone === "muted" ? fontWeights.regular : fontWeights.semibold
+								}
 							>
 								{line.text}
 							</Typography>
@@ -259,7 +262,7 @@ export const DrivesTable = ({
 						component={RouterLink}
 						to={getDrivePath(monitorId, drive.serial_number)}
 						color={theme.palette.primary.main}
-						fontWeight={500}
+						fontWeight={fontWeights.medium}
 						onClick={(event) => event.stopPropagation()}
 					>
 						{t("pages.infrastructure.storage.drives.details")}

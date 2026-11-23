@@ -5,6 +5,7 @@ import { BaseBox } from "@/Components/design-elements";
 import { useTheme } from "@mui/material/styles";
 import { useId } from "react";
 import { LAYOUT } from "@/Utils/Theme/constants";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 // A titled block of the Storage tab: heading on the left, a short note on the right
 export const StorageSection = ({
@@ -58,7 +59,7 @@ export const StorageMessage = ({
 			gap={theme.spacing(LAYOUT.XS)}
 			p={theme.spacing(LAYOUT.LG)}
 		>
-			{title && <Typography fontWeight={600}>{title}</Typography>}
+			{title && <Typography fontWeight={fontWeights.semibold}>{title}</Typography>}
 			{children}
 		</BaseBox>
 	);

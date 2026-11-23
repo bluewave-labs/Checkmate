@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import type { SmartWarning } from "@/Types/Check";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { getWarningTone } from "@/Utils/StorageUtils";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 const LABEL_WIDTH = 220;
 
@@ -42,7 +43,7 @@ export const DriveWarnings = ({ warnings }: { warnings: SmartWarning[] }) => {
 							>
 								<Typography
 									flex={`0 0 ${LABEL_WIDTH}px`}
-									fontWeight={600}
+									fontWeight={fontWeights.semibold}
 									color={
 										getWarningTone(warning) === "error"
 											? theme.palette.error.main

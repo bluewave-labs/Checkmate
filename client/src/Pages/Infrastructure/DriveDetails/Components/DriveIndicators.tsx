@@ -7,7 +7,7 @@ import { alpha, useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import type { DriveHistoryPoint, LatestDrive } from "@/Types/Monitor";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 import { formatNumber } from "@/Utils/FormatUtils";
 import {
 	getCounterTone,
@@ -70,7 +70,7 @@ const IndicatorCard = ({
 			</Typography>
 			<Typography
 				fontSize={typographyLevels.xxl}
-				fontWeight={600}
+				fontWeight={fontWeights.semibold}
 				color={color}
 			>
 				{value}

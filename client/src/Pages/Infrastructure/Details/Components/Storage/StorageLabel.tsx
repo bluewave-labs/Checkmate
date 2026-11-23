@@ -4,7 +4,7 @@ import { BaseBox } from "@/Components/design-elements";
 
 import { useTheme } from "@mui/material/styles";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 import type { StorageTone } from "@/Utils/StorageUtils";
 
 // Status chip for arrays, members and drives. Mirrors ValueLabel, with a muted tone for states that are
@@ -41,7 +41,7 @@ export const StorageLabel = ({ tone, text }: { tone: StorageTone; text: string }
 			/>
 			<Typography
 				fontSize={typographyLevels.s}
-				fontWeight={600}
+				fontWeight={fontWeights.semibold}
 				color={color}
 			>
 				{text}
