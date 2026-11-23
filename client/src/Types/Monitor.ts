@@ -196,6 +196,9 @@ export interface Monitor {
 	dockerLogsEnabled?: boolean;
 	dockerAlertOnStopped?: boolean;
 	dockerAlertOnUnhealthy?: boolean;
+	storageAlertOnArrayDegraded?: boolean;
+	storageAlertOnDriveFailure?: boolean;
+	storageAlertOnDriveWarning?: boolean;
 	dockerTlsCa?: string;
 	dockerTlsCert?: string;
 	dockerTlsKeySet?: boolean;

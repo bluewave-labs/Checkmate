@@ -127,6 +127,9 @@ export const getMonitorDefaults = (
 				diskAlertThreshold: data?.diskAlertThreshold ?? 100,
 				tempAlertThreshold: data?.tempAlertThreshold ?? 100,
 				selectedDisks: data?.selectedDisks || [],
+				storageAlertOnArrayDegraded: data?.storageAlertOnArrayDegraded ?? true,
+				storageAlertOnDriveFailure: data?.storageAlertOnDriveFailure ?? true,
+				storageAlertOnDriveWarning: data?.storageAlertOnDriveWarning ?? false,
 			};
 			break;
 		case "websocket":

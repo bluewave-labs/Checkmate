@@ -873,6 +873,53 @@ describe("monitorValidation — docker alert switches", () => {
 	});
 });
 
+describe("monitorValidation — storage alert switches", () => {
+	const hardwareBody = { name: "Storage host", type: "hardware" as const, url: "http://host:59232/api/v1/metrics" };
+
+	it("retains the storage switches on create", () => {
+		const parsed = createMonitorBodyValidation.parse({
+			...hardwareBody,
+			storageAlertOnArrayDegraded: false,
+			storageAlertOnDriveFailure: true,
+			storageAlertOnDriveWarning: true,
+		});
+
+		expect(parsed.storageAlertOnArrayDegraded).toBe(false);
+		expect(parsed.storageAlertOnDriveFailure).toBe(true);
+		expect(parsed.storageAlertOnDriveWarning).toBe(true);
+	});
+
+	it("leaves the switches undefined on create when omitted, so the model defaults apply", () => {
+		const parsed = createMonitorBodyValidation.parse(hardwareBody);
+
+		expect(parsed.storageAlertOnArrayDegraded).toBeUndefined();
+		expect(parsed.storageAlertOnDriveFailure).toBeUndefined();
+		expect(parsed.storageAlertOnDriveWarning).toBeUndefined();
+	});
+
+	it("retains the storage switches on edits", () => {
+		const parsed = editMonitorBodyValidation.parse({ storageAlertOnArrayDegraded: false, storageAlertOnDriveWarning: true });
+
+		expect(parsed.storageAlertOnArrayDegraded).toBe(false);
+		expect(parsed.storageAlertOnDriveWarning).toBe(true);
+	});
+
+	it("never accepts storageBreaches from a request", () => {
+		const breaches = [{ subject: "/dev/md1", reason: "array_degraded", detail: "x" }];
+
+		expect(createMonitorBodyValidation.parse({ ...hardwareBody, storageBreaches: breaches })).not.toHaveProperty("storageBreaches");
+		expect(editMonitorBodyValidation.parse({ storageBreaches: breaches })).not.toHaveProperty("storageBreaches");
+	});
+
+	it("defaults imported monitors to alerting on arrays and drive failures, not warnings", () => {
+		const parsed = importMonitorsBodyValidation.parse({ monitors: [hardwareBody] });
+
+		expect(parsed.monitors[0].storageAlertOnArrayDegraded).toBe(true);
+		expect(parsed.monitors[0].storageAlertOnDriveFailure).toBe(true);
+		expect(parsed.monitors[0].storageAlertOnDriveWarning).toBe(false);
+	});
+});
+
 describe("monitorValidation — heartbeat", () => {
 	const heartbeatBody = { name: "Nightly backup", type: "heartbeat" as const, interval: 3600000 };
 	const createBody = { ...heartbeatBody, heartbeatSlug: "nightly-backup" };

@@ -2,15 +2,18 @@ import type {
 	CheckCaptureInfo,
 	CheckCpuInfo,
 	CheckDiskInfo,
+	CheckDrive,
 	CheckErrorInfo,
 	CheckHostInfo,
 	CheckMemoryInfo,
 	CheckNetworkInterfaceInfo,
+	CheckRaidArray,
 	CheckTimings,
 	ILighthouseAudit,
 } from "@/domain/checks/check.type.js";
 import { DockerContainerInfo, DockerContainerLogs, DockerContainerSummary } from "@/domain/docker/docker.type.js";
 import type { DnsRecordType, HardwareBreaches, Monitor, MonitorMatchMethod, MonitorStatus, MonitorType } from "@/domain/monitors/monitor.type.js";
+import type { StorageBreach } from "@/domain/storage/storage-alert.js";
 
 import type { QueryResult } from "gamedig";
 
@@ -94,12 +97,29 @@ export interface HardwareStatusMetrics {
 	disk?: CheckDiskInfo[];
 	host?: CheckHostInfo;
 	net?: CheckNetworkInterfaceInfo[];
+	raid?: CheckRaidArray[]; // absent on Capture versions without RAID support
+}
+
+// Capture's /api/v1/metrics/smart. Before per-drive SMART, data was a single object; a non-array data means the
+// host's Capture does not support per-drive SMART.
+export interface CaptureSmartPayload {
+	data?: CheckDrive[] | Record<string, unknown> | null;
+	errors?: CheckErrorInfo[] | null;
+	capture?: CheckCaptureInfo;
+}
+
+// Attached to the hardware payload by HardwareProvider when SMART was fetched alongside the metrics.
+// drives is absent when the fetch failed; errors holds Capture's SMART errors and any fetch failure.
+export interface HardwareSmartResult {
+	drives?: CheckDrive[];
+	errors: CheckErrorInfo[];
 }
 
 export interface HardwareStatusPayload {
 	data?: HardwareStatusMetrics;
 	errors?: CheckErrorInfo[] | { errors?: CheckErrorInfo[] };
 	capture?: CheckCaptureInfo;
+	smart?: HardwareSmartResult;
 	[key: string]: unknown;
 }
 
@@ -184,6 +204,22 @@ export type StatusChangeResult = {
 	statusChanged: boolean;
 	prevStatus: MonitorStatus;
 	thresholdBreaches?: HardwareBreaches;
+	// Hardware monitors, once the status window is full: the storage alerts after this check, and how they changed
+	storage?: StorageChange;
+	// Hardware monitors, once the status window is full: whether the CPU/memory/disk/temperature thresholds tripped
+	// or cleared on this check, independent of the overall status (storage alerts can keep the monitor breached)
+	threshold?: ThresholdChange;
+};
+
+export type ThresholdChange = {
+	opened: boolean;
+	cleared: boolean;
+};
+
+export type StorageChange = {
+	breaches: StorageBreach[];
+	opened: StorageBreach[];
+	cleared: boolean;
 };
 
 export type MonitorStatusResponseOverrides<T> = Partial<Omit<MonitorStatusResponse<T>, "monitorId" | "teamId" | "type">>;
@@ -191,4 +227,6 @@ export type MonitorStatusResponseOverrides<T> = Partial<Omit<MonitorStatusRespon
 export type CheckContext = {
 	proxyUrl?: string;
 	dockerTlsKey?: string;
+	// Hardware monitors only: set by the pipeline when a SMART fetch is due (see domain/storage/smart-schedule.ts)
+	smartUrl?: string;
 };
