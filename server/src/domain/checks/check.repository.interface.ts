@@ -40,7 +40,7 @@ export interface IChecksRepository {
 	findByDateRangeAndMonitorId(
 		monitorId: string,
 		dateRange: DateRange,
-		options?: { type?: MonitorType }
+		options?: { type?: MonitorType; before?: Date; after?: Date; limit?: number }
 	): Promise<UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult | DockerChecksResult>;
 	findDockerContainerChecks(monitorId: string, containerName: string, dateRange: DateRange): Promise<Omit<DockerContainerStats, "restartsInRange">>;
 	findSummaryByTeamId(teamId: string, dateRange: DateRange, monitorId?: string): Promise<ChecksSummary>;

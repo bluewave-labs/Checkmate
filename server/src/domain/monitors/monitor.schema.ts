@@ -182,11 +182,19 @@ export const hardwareDetailsResultSchema = z
 	})
 	.meta({ id: "HardwareDetails" });
 
+export const pageSpeedPaginationSchema = z.object({
+	hasMoreBefore: z.boolean(),
+	hasMoreAfter: z.boolean(),
+	oldestDate: z.string().nullable(),
+	newestDate: z.string().nullable(),
+});
+
 export const pageSpeedDetailsResultSchema = z
 	.object({
 		monitorData: z.object({
 			monitor: monitorResponseSchema,
 			groupedChecks: z.array(pageSpeedGroupedCheckSchema),
+			pagination: pageSpeedPaginationSchema.optional(),
 		}),
 		monitorStats: monitorStatsSchema.or(z.null()),
 	})

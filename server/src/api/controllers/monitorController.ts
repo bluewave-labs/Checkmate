@@ -13,6 +13,7 @@ import {
 	getDomainParamValidation,
 	getHardwareDetailsByIdParamValidation,
 	getHardwareDetailsByIdQueryValidation,
+	getPageSpeedDetailsByIdQueryValidation,
 	getUptimeDetailsByIdParamValidation,
 	getUptimeDetailsByIdQueryValidation,
 	importMonitorsBodyValidation,
@@ -111,9 +112,16 @@ class MonitorController implements IMonitorController {
 
 	getPageSpeedDetailsById: Handler = async (req, res) => {
 		const { monitorId } = getHardwareDetailsByIdParamValidation.parse(req.params);
-		const { dateRange } = getHardwareDetailsByIdQueryValidation.parse(req.query);
+		const { dateRange, before, after, limit } = getPageSpeedDetailsByIdQueryValidation.parse(req.query);
 		const teamId = requireTeamId(req.user?.teamId);
-		const data = await this.monitorService.getPageSpeedDetailsById({ teamId, monitorId, dateRange });
+		const data = await this.monitorService.getPageSpeedDetailsById({
+			teamId,
+			monitorId,
+			dateRange,
+			before,
+			after,
+			limit,
+		});
 
 		res.json({ success: true, msg: "Page speed details retrieved successfully", data });
 	};

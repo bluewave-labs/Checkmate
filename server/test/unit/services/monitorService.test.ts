@@ -778,7 +778,7 @@ describe("MonitorService", () => {
 			);
 		});
 
-		it("handles pagespeed with different date range", async () => {
+		it("handles pagespeed with pagination parameters", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			const checksRepository = createChecksRepositoryMock();
 			const monitorStatsRepository = createMonitorStatsRepositoryMock();
@@ -787,12 +787,32 @@ describe("MonitorService", () => {
 			(checksRepository.findByDateRangeAndMonitorId as jest.Mock).mockResolvedValue({
 				monitorType: "pagespeed",
 				groupedChecks: [],
-			});
+				pagination: {
+					hasMoreBefore: true,
+					hasMoreAfter: false,
+					oldestDate: "2024-01-01T00:00:00.000Z",
+					newestDate: "2024-01-02T00:00:00.000Z",
+				},
+			} as unknown as Awaited<ReturnType<typeof checksRepository.findByDateRangeAndMonitorId>>);
 			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(null);
 			const { service } = createService({ monitorsRepository, checksRepository, monitorStatsRepository });
 
-			await service.getPageSpeedDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "week" });
-			expect(checksRepository.findByDateRangeAndMonitorId).toHaveBeenCalled();
+			const beforeDate = new Date("2024-01-02T00:00:00.000Z");
+			const result = await service.getPageSpeedDetailsById({
+				teamId: TEAM_ID,
+				monitorId: MONITOR_ID,
+				dateRange: "week",
+				before: beforeDate,
+				limit: 20,
+			});
+
+			expect(checksRepository.findByDateRangeAndMonitorId).toHaveBeenCalledWith(MONITOR_ID, "week", {
+				type: "pagespeed",
+				before: beforeDate,
+				after: undefined,
+				limit: 20,
+			});
+			expect(result.monitorData.pagination?.hasMoreBefore).toBe(true);
 		});
 	});
 

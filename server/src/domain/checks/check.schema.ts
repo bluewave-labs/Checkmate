@@ -208,6 +208,7 @@ export const pageSpeedGroupedCheckSchema = z.object({
 	accessibility: z.number(),
 	bestPractices: z.number(),
 	seo: z.number(),
+	totalChecks: z.number().optional(),
 });
 
 export const hardwareDiskStatsSchema = z.object({
