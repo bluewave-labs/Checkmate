@@ -1,7 +1,7 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { logger } from "@/Utils/logger";
-import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
+import { LAYOUT } from "@/Utils/Theme/constants";
 import { BasePage, ColoredLabel, ConfigBox } from "@/Components/design-elements";
 import { Button } from "@/Components/inputs";
 
@@ -27,6 +27,7 @@ import {
 	FormTimePickerField,
 } from "@/Components/inputs/forms/FormDateTimePickerField";
 import { FormMultiSelectField } from "@/Components/inputs/forms/FormMultiSelectField";
+import { MonitorSelectedRow } from "@/Components/monitors/MonitorSelectedRow";
 import { FormNumberField } from "@/Components/inputs/forms/FormNumberField";
 
 const CreateMaintenanceWindowPage = () => {
@@ -206,11 +207,12 @@ const CreateMaintenanceWindowPage = () => {
 								"pages.maintenanceWindow.form.startTime.monitors.option.addMonitors.label"
 							)}
 							options={monitors ?? []}
+							renderRow={(monitor) => <MonitorSelectedRow monitor={monitor} />}
 							renderOptionContent={(monitor) => (
 								<Stack
 									direction="row"
 									alignItems="center"
-									gap={theme.spacing(2)}
+									gap={theme.spacing(LAYOUT.XXS)}
 									flexWrap="wrap"
 								>
 									<Typography>{monitor.name}</Typography>
@@ -232,7 +234,7 @@ const CreateMaintenanceWindowPage = () => {
 				<Stack
 					direction="row"
 					justifyContent="flex-end"
-					spacing={theme.spacing(SPACING.LG)}
+					spacing={theme.spacing(LAYOUT.XS)}
 				>
 					<Button
 						loading={isLoading}

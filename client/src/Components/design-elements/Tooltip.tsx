@@ -1,9 +1,11 @@
 import MuiTooltip from "@mui/material/Tooltip";
 import { useTheme } from "@mui/material/styles";
+import { mergeSlotProps } from "@mui/material/utils";
 import { Info } from "lucide-react";
-
+import { LAYOUT } from "@/Utils/Theme/constants";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 import type { TooltipProps } from "@mui/material/Tooltip";
-
+import Icon from "./Icon";
 type StyledTooltipProps = TooltipProps;
 
 export const Tooltip = ({
@@ -12,30 +14,28 @@ export const Tooltip = ({
 	...props
 }: StyledTooltipProps) => {
 	const theme = useTheme();
+	const backgroundColor = theme.palette.neutral.tooltip;
 
 	return (
 		<MuiTooltip
-			title={props.title}
+			{...props}
 			placement={placement}
 			slotProps={{
-				tooltip: {
-					sx: {
-						backgroundColor:
-							theme.palette.mode === "dark"
-								? theme.palette.grey[900]
-								: theme.palette.grey[800],
-						color: theme.palette.common.white,
-						fontSize: "13px",
-						padding: `${theme.spacing(4)} ${theme.spacing(5)}`,
-						borderRadius: `${theme.shape.borderRadius}px`,
-						boxShadow: theme.shadows[6],
-					},
-				},
 				...slotProps,
+				tooltip: mergeSlotProps(slotProps?.tooltip, {
+					sx: {
+						backgroundColor,
+						color: theme.palette.common.white,
+						fontSize: typographyLevels.base,
+						py: LAYOUT.XS,
+						px: LAYOUT.SM,
+						borderRadius: theme.shape.borderRadius,
+						boxShadow: "none",
+					},
+				}),
+				arrow: mergeSlotProps(slotProps?.arrow, { sx: { color: backgroundColor } }),
 			}}
-		>
-			{props.children}
-		</MuiTooltip>
+		/>
 	);
 };
 
@@ -62,9 +62,9 @@ export const TooltipWithInfo = ({
 					cursor: "help",
 				}}
 			>
-				<Info
+				<Icon
+					icon={Info}
 					size={iconSize}
-					strokeWidth={1.5}
 					style={{
 						opacity: 0.7,
 						color: iconColor || defaultColor,

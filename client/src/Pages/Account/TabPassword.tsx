@@ -37,7 +37,7 @@ export const TabPassword = () => {
 	return (
 		<FormProvider {...form}>
 			<Stack
-				gap={theme.spacing(LAYOUT.MD)}
+				gap={theme.spacing(LAYOUT.LG)}
 				component="form"
 				onSubmit={handleSubmit(onSubmit)}
 			>

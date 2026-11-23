@@ -6,8 +6,9 @@ import {
 	Pagination,
 	StatusLabel,
 	ColoredLabel,
+	Icon,
 } from "@/Components/design-elements";
-import { SPACING } from "@/Utils/Theme/constants";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { getNextMonitorSort } from "@/Utils/MonitorUtils";
 import type { Header } from "@/Components/design-elements/Table";
 import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
@@ -171,9 +172,9 @@ export const DockerMonitorsTable = ({
 			>
 				{isActive ? (
 					sortOrder === "asc" ? (
-						<ArrowUp size={16} />
+						<Icon icon={ArrowUp} />
 					) : (
-						<ArrowDown size={16} />
+						<Icon icon={ArrowDown} />
 					)
 				) : null}
 			</Box>
@@ -213,7 +214,7 @@ export const DockerMonitorsTable = ({
 						component="div"
 						display="inline-flex"
 						alignItems="center"
-						gap={theme.spacing(4)}
+						gap={theme.spacing(LAYOUT.XS)}
 						onClick={(e) => handleSort(e, "name")}
 						sx={{ cursor: "pointer" }}
 					>
@@ -240,14 +241,14 @@ export const DockerMonitorsTable = ({
 				mobileLabel: t("common.table.headers.status"),
 				content: (
 					<Stack
-						gap={theme.spacing(4)}
+						gap={theme.spacing(LAYOUT.XS)}
 						direction={"row"}
 						justifyContent={"center"}
 						alignItems={"center"}
 						onClick={(e) => handleSort(e, "status")}
 						sx={{ cursor: "pointer" }}
 					>
-						<Box width={theme.spacing(8)} />
+						<Box width={theme.spacing(LAYOUT.MD)} />
 						{t("common.table.headers.status")}
 						{renderSortIcon(sortField === "status")}
 					</Stack>
@@ -325,6 +326,8 @@ export const DockerMonitorsTable = ({
 					navigate(`/docker/host/${row.id}`);
 				}}
 				isRowSelected={(row) => isRowSelected(row.id)}
+				sortedColumnId={sortField || undefined}
+				sortDirection={sortOrder}
 			/>
 			<Pagination
 				component="div"

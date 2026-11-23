@@ -60,19 +60,38 @@
 			"exportToJSON": "Esporta in JSON",
 			"importFromJSON": "Importa da JSON",
 			"clearFilters": "Cancella filtri",
-			"removeUser": "Rimuovi utente"
+			"removeUser": "Rimuovi utente",
+			"removeItem": "Rimuovi {{item}}"
 		},
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Tempo di risposta medio",
+				"checkCount": "Verifiche",
+				"cpuUsage": "Utilizzo CPU",
 				"downtime": "Downtime",
 				"high": "Alto",
 				"low": "Basso",
+				"memoryUsage": "Utilizzo memoria",
+				"responseTime": "Tempo di risposta",
+				"timingPhases": "Fasi della richiesta",
+				"totalResponseTime": "Tempo di risposta totale",
 				"uptime": "Uptime"
 			},
 			"histogram": {
 				"avg": "Media: {{value}}",
-				"max": "Max: {{value}}"
+				"max": "Max: {{value}}",
+				"responseTime": "Tempo di risposta: {{value}}",
+				"total": "Totale: {{value}}",
+				"avgCpuUsage": "Utilizzo medio CPU: {{value}}",
+				"avgMemoryUsage": "Utilizzo medio memoria: {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "Richiesta",
+				"firstByte": "Primo byte",
+				"download": "Download"
 			}
 		},
 		"dialogs": {
@@ -88,9 +107,16 @@
 			"idle": "Inattivo",
 			"na": "N/A",
 			"resolved": "Risolto",
-			"responseTime": "Tempo di risposta"
+			"responseTime": "Tempo di risposta",
+			"state": "Stato",
+			"uptime": "Uptime",
+			"health": "Salute",
+			"restarts": "Riavvii"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "Digita per cercare"
+			},
 			"role": {
 				"option": {
 					"role": {
@@ -141,6 +167,16 @@
 			"copy": "Copia negli appunti",
 			"copied": "Copiato negli appunti",
 			"copyFailed": "Impossibile copiare. Seleziona il testo e copialo manualmente."
+		},
+		"filters": {
+			"any": "Qualsiasi",
+			"state": "Stato"
+		},
+		"fallback": {
+			"error": {
+				"title": "Qualcosa è andato storto",
+				"description": "Riprova più tardi"
+			}
 		}
 	},
 	"components": {
@@ -166,6 +202,10 @@
 				"invalidFileSize": "La dimensione del file è troppo grande!",
 				"invalidFileFormat": "Formato file non supportato!"
 			}
+		},
+		"multiSelect": {
+			"selectedCount_one": "{{count}} selezionato",
+			"selectedCount_other": "{{count}} selezionati"
 		},
 		"headerStatusPageControls": {
 			"publicLink": "Link pubblico"
@@ -203,7 +243,6 @@
 				"infrastructure": "Infrastruttura",
 				"docker": "Docker",
 				"notifications": "Notifiche",
-				"tags": "Tag",
 				"checks": "Verifiche",
 				"incidents": "Incidenti",
 				"statusPages": "Pagine di stato",
@@ -251,9 +290,127 @@
 		"starPrompt": {
 			"title": "Metti una stella a Checkmate",
 			"description": "Scopri le ultime release e aiuta a far crescere la community su GitHub"
+		},
+		"whatsNew": {
+			"eyebrow": "Novità in Checkmate {{version}}",
+			"stepCount": "{{current}} di {{total}}",
+			"goToStep": "Vai al passaggio {{step}}",
+			"skip": "Salta",
+			"done": "Fatto",
+			"connectTag": "Checkmate Connect",
+			"connectHint": "Un superadmin registra questo server in {{settings}}.",
+			"connectAskSuperadmin": "Chiedi a un superadmin di configurarlo in {{settings}}.",
+			"connectCta": "Configura Checkmate Connect",
+			"steps": {
+				"dashboard": {
+					"title": "La dashboard è la tua nuova pagina iniziale",
+					"description": "Checkmate si apre su una dashboard che mostra lo stato dei monitor, quali sono inattivi e l'uptime di ciascuno. Gli admin vedono anche la coda dei job e la diagnostica di Checkmate. Disponi le schede nell'ordine che preferisci con {{arrange}}. Nascondi quelle che non ti servono con {{editCards}}."
+				},
+				"heartbeat": {
+					"title": "Monitor heartbeat per i job pianificati",
+					"description": "Job cron, backup e script inviano un ping a Checkmate a ogni esecuzione. Se nessun ping arriva entro la finestra di avviso, il monitor risulta inattivo e partono le tue notifiche."
+				},
+				"remoteAccess": {
+					"title": "Apri Checkmate ovunque senza aprire porte",
+					"description": "Con Checkmate Connect, questo server mantiene aperto un tunnel in uscita. Puoi raggiungerlo dal suo indirizzo Connect senza aprire porte in entrata né configurare una VPN."
+				},
+				"backups": {
+					"title": "Pianifica backup cifrati nel cloud",
+					"description": "Esegui il backup su Checkmate Connect ogni 1, 3 o 7 giorni, del database completo o della sola configurazione. Questo server cifra i dati prima di caricarli. Puoi ripristinare un backup da {{settings}}."
+				},
+				"intervals": {
+					"title": "Controlla i monitor ogni ora o una volta al giorno",
+					"description": "Ora un monitor può essere eseguito ogni 1, 2, 6 o 12 ore, oppure una volta al giorno. Se l'intervallo che vuoi non è nell'elenco, digitalo. Gli intervalli lunghi sono adatti ai monitor che non richiedono un controllo ogni minuto, come PageSpeed."
+				}
+			},
+			"scene": {
+				"heartbeat": {
+					"monitorName": "Backup notturno",
+					"subtitle": "{{type}} · finestra di avviso {{window}}",
+					"downTitle": "{{name}} è inattivo",
+					"pingNotReceived": "Ping non ricevuto"
+				},
+				"remote": {
+					"network": "La tua rete",
+					"server": "Server Checkmate",
+					"tunnel": "Tunnel in uscita",
+					"noInbound": "Nessuna porta in entrata aperta",
+					"laptop": "Il tuo portatile"
+				},
+				"backup": {
+					"encrypted": "Cifrato qui prima del caricamento. Il cloud conserva solo testo cifrato.",
+					"database": "Database",
+					"connect": "Connect"
+				},
+				"interval": {
+					"createMonitor": "Crea monitor",
+					"checksInADay": "Controlli al giorno",
+					"checksPerDay_one": "{{formatted}} controllo al giorno",
+					"checksPerDay_many": "{{formatted}} controlli al giorno",
+					"checksPerDay_other": "{{formatted}} controlli al giorno",
+					"nextCheck": "Prossimo controllo tra {{interval}}"
+				}
+			}
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "Proxy",
+				"description": "Gestisci i tuoi server proxy per instradare il traffico di monitoraggio HTTP."
+			},
+			"fallback": {
+				"title": "Nessun proxy",
+				"description": "Instrada le verifiche dei monitor HTTP attraverso un server proxy. Dopo aver creato un proxy, puoi selezionarlo sui singoli monitor o impostarlo come predefinito globale nelle Impostazioni.",
+				"actionButton": "Crea un proxy"
+			},
+			"form": {
+				"name": {
+					"title": "Nome proxy",
+					"description": "Un nome descrittivo per identificare questo proxy",
+					"optionName": "Nome proxy",
+					"placeholder": "Il mio proxy"
+				},
+				"server": {
+					"title": "Server proxy",
+					"description": "Dove è raggiungibile il server proxy. Imposta il protocollo che Checkmate usa per connettersi, il suo hostname o indirizzo IP e la porta su cui è in ascolto.",
+					"option": {
+						"protocol": {
+							"label": "Protocollo"
+						},
+						"host": {
+							"label": "Hostname / indirizzo IP",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "Porta"
+						}
+					}
+				},
+				"auth": {
+					"title": "Autenticazione",
+					"description": "Facoltativo. Necessario solo se il server proxy richiede l'autenticazione di base.",
+					"option": {
+						"username": {
+							"label": "Nome utente",
+							"placeholder": "Nome utente del proxy",
+							"labelSet": "Il nome utente è impostato. Fai clic su Reimposta per modificarlo."
+						},
+						"password": {
+							"label": "Password",
+							"labelSet": "La password è impostata. Fai clic su Reimposta per modificarla."
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "Protocollo",
+					"host": "Host",
+					"port": "Porta"
+				}
+			}
+		},
 		"notFound": {
 			"title": "Oh no! Hai fatto cadere il tuo sushi!",
 			"subtitle": "L'URL non esiste, oppure non hai accesso."
@@ -486,7 +643,9 @@
 				},
 				"statBoxes": {
 					"activeFor": "Attivo da",
+					"checkingEvery": "Verifica ogni {{interval}}",
 					"certificateExpiry": "Scadenza certificato",
+					"domainExpiry": "Scadenza dominio",
 					"lastCheck": "Ultima verifica",
 					"lastResponseTime": "Ultimo tempo di risposta",
 					"serviceIsDown": "Servizio non attivo"
@@ -580,6 +739,9 @@
 					"title": "Frequenza di verifica"
 				},
 				"general": {
+					"url": {
+						"alert": "Le verifiche future useranno il nuovo URL. I dati storici di questo monitor vengono conservati, ma sono stati raccolti dal vecchio URL."
+					},
 					"option": {
 						"host": {
 							"label": "Host",
@@ -596,6 +758,24 @@
 						"url": {
 							"label": "URL",
 							"placeholder": "https://www.google.com"
+						},
+						"proxyMode": {
+							"label": "Proxy",
+							"value": {
+								"inheritDirect": "Predefinito (connessione diretta)",
+								"inheritGlobal": "Predefinito ({{name}})",
+								"none": "Non usare mai un proxy",
+								"custom": "Proxy personalizzato"
+							},
+							"description": {
+								"inheritDirect": "Nessun proxy globale configurato, la connessione è diretta. Se in seguito viene configurato un proxy globale, questo monitor lo userà.",
+								"inheritGlobal": "Usa l'impostazione del proxy globale",
+								"none": "Si connette sempre direttamente, anche se in seguito viene abilitato un proxy globale.",
+								"custom": "Instrada le verifiche di questo monitor attraverso un proxy specifico. Sostituisce il proxy globale"
+							}
+						},
+						"proxy": {
+							"label": "Server proxy"
 						},
 						"game": {
 							"label": "Scegli gioco",
@@ -1085,10 +1265,10 @@
 					"heapAllocation": "Allocazione heap",
 					"heapUsage": "Utilizzo heap",
 					"heapUtilization": "Utilizzo heap",
-					"instantCpuUsage": "Utilizzo CPU istantaneo",
+					"instantCpuUsage": "Utilizzo CPU",
 					"availableMemoryPercentage": "% memoria disponibile",
 					"allocatedPercentage": "% allocato",
-					"usedSPercentage": "% di 1s usato dalla CPU",
+					"usedSPercentage": "% di un core della CPU",
 					"total": "Totale",
 					"used": "Utilizzato"
 				}
@@ -1230,7 +1410,22 @@
 				"type": {
 					"description": "Seleziona il tipo di canale di notifica da creare.",
 					"optionType": "Tipo",
-					"title": "Tipo di canale"
+					"title": "Tipo di canale",
+					"value": {
+						"email": "Email",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"signalgrid": "Signalgrid",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "Configurazione Telegram",
@@ -1247,6 +1442,14 @@
 					"placeholderAppToken": "azGDORePK8gMaC0QOYAMyEEuzJnyUi",
 					"optionUserKey": "Chiave utente",
 					"placeholderUserKey": "uQiRzpo4DXghDmr9QzzfQu27cmVRsG"
+				},
+				"signalgrid": {
+					"title": "Configurazione Signalgrid",
+					"description": "Configura Signalgrid per ricevere notifiche push sui tuoi dispositivi.",
+					"optionClientKey": "Chiave client",
+					"placeholderClientKey": "La tua chiave client Signalgrid",
+					"optionChannel": "Canale",
+					"placeholderChannel": "Il tuo canale Signalgrid"
 				},
 				"twilio": {
 					"title": "Configurazione SMS Twilio",
@@ -1321,7 +1524,10 @@
 				"monitoring": "Monitoraggio",
 				"email": "Email",
 				"integrations": "Integrazioni",
-				"data": "Dati"
+				"tags": "Tag",
+				"proxies": "Proxy",
+				"data": "Dati",
+				"connect": "Checkmate Connect"
 			},
 			"form": {
 				"timezone": {
@@ -1355,6 +1561,22 @@
 							"label": "Tipo di grafico",
 							"histogram": "Istogramma",
 							"heatmap": "Heatmap"
+						}
+					}
+				},
+				"globalProxy": {
+					"title": "Proxy globale",
+					"description": "Instrada per impostazione predefinita le verifiche di monitoraggio attraverso un proxy. Si applica a tutti i monitor HTTP con impostazione proxy \"Predefinito\"; i monitor impostati su \"Non usare mai un proxy\" o su un proxy personalizzato non sono interessati.",
+					"option": {
+						"enabled": {
+							"label": "Usa proxy globale"
+						},
+						"proxy": {
+							"label": "Scegli un proxy globale"
+						},
+						"empty": {
+							"text": "Nessun proxy ancora configurato.",
+							"link": "Creane prima uno"
 						}
 					}
 				},
@@ -1516,7 +1738,183 @@
 				},
 				"importExportMonitors": {
 					"title": "Importa / Esporta monitor",
-					"description": "Importa o esporta i dati dei tuoi monitor come file JSON per backup o trasferimento."
+					"description": "Importa o esporta i dati dei tuoi monitor come file JSON per backup o trasferimento.",
+					"backupNotice": "Questo file JSON contiene solo i tuoi monitor, quindi non è un backup completo. Per eseguire il backup o il ripristino dei tuoi dati Checkmate, usa Checkmate Connect.",
+					"connectTabLink": "Apri la scheda Checkmate Connect",
+					"connectSiteLink": "Visita il sito di Checkmate Connect"
+				},
+				"connect": {
+					"superadminOnly": "Solo un superadmin può registrare questo server, modificare l'accesso remoto, eseguire o ripristinare backup o rimuoverne la registrazione. Esci e accedi di nuovo se il tuo ruolo è cambiato di recente.",
+					"clickToConfirm": "Clicca di nuovo per confermare",
+					"status": {
+						"title": "Stato",
+						"description": "Stato della connessione di questa installazione.",
+						"enrolled": "Registrata",
+						"notEnrolled": "Non registrata",
+						"connected": "Tunnel connesso",
+						"disconnected": "Tunnel disconnesso",
+						"connecting": "Connessione del tunnel in corso",
+						"remoteAccessOff": "Accesso remoto disattivato",
+						"agentId": "ID agente",
+						"lastConnected": "Ultima connessione",
+						"siteLink": "Apri {{site}}"
+					},
+					"getStarted": {
+						"title": "Per iniziare",
+						"description": "Checkmate Connect ti consente di raggiungere questa installazione da qualsiasi luogo e ne conserva backup cifrati nel cloud.",
+						"steps": {
+							"account": {
+								"title": "Crea un account Connect",
+								"body": "Registrati su {{site}} con un indirizzo email e una password."
+							},
+							"server": {
+								"title": "Aggiungi il server",
+								"body": "Assegnagli un nome nella dashboard di Connect per ottenere un blocco di credenziali. Viene mostrato una sola volta, quindi copialo subito."
+							},
+							"paste": {
+								"title": "Incollalo qui",
+								"body": "Incolla il blocco di credenziali nella casella qui sotto e fai clic su Registra."
+							},
+							"remoteAccess": {
+								"title": "Attiva l'accesso remoto",
+								"body": "Il tuo indirizzo Connect diventa attivo appena il tunnel si connette."
+							}
+						},
+						"button": "Vai a {{site}}"
+					},
+					"enroll": {
+						"title": "Registra installazione",
+						"description": "Incolla il blocco di credenziali dalla tua dashboard di Checkmate Connect. La credenziale viene salvata crittografata nel database di questa installazione e ne esce solo per autenticarsi con Checkmate Connect.",
+						"button": "Registra"
+					},
+					"remoteAccess": {
+						"title": "Accesso remoto",
+						"description": "Mantiene aperto un tunnel in uscita per raggiungere questa installazione dal tuo indirizzo Connect. Non viene aperta nessuna porta in ingresso."
+					},
+					"tooltips": {
+						"enroll": "Collega questo server al tuo account",
+						"unenroll": "Scollega questo server da Connect",
+						"generateKey": "Crea la chiave che sblocca i tuoi backup",
+						"lostKey": "Ricomincia con una nuova chiave",
+						"runFull": "Esegui ora il backup dell'intero database",
+						"runConfig": "Esegui il backup di tutto tranne la cronologia delle verifiche",
+						"importKey": "Usa la chiave del tuo server originale",
+						"useKey": "Verifica questa chiave sui tuoi backup",
+						"replaceKey": "Passa a un'altra chiave di ripristino",
+						"restore": "Sostituisci i dati di questo server con questo backup"
+					},
+					"backup": {
+						"title": "Backup nel cloud",
+						"description": "Backup crittografati del database di questa installazione, caricati su Checkmate Connect. I dati vengono crittografati qui prima del caricamento; il cloud memorizza solo testo cifrato.",
+						"needsKey": "Configura una chiave di ripristino qui sotto per iniziare a eseguire i backup.",
+						"generateKey": "Genera chiave di ripristino",
+						"existingBackups": "Questo account ha già dei backup nel cloud. Inserisci la chiave di ripristino del tuo server originale per ripristinarli.",
+						"lostKey": "Ho perso la chiave",
+						"lostKeyWarning": "I tuoi backup nel cloud esistenti non possono essere ripristinati senza la chiave originale. Vengono conservati per 30 giorni dopo il primo backup con una nuova chiave, così puoi tornare indietro se ritrovi l'originale.",
+						"importKey": "Ho già una chiave di ripristino",
+						"importKeyHelp": "Incolla la chiave di 64 caratteri del tuo server originale. Checkmate decrittografa uno dei tuoi backup nel cloud per verificare la chiave prima di salvarla.",
+						"replaceKey": "Usa un'altra chiave di ripristino",
+						"replaceKeyHelp": "Incolla la chiave di 64 caratteri che vuoi usare al suo posto. Checkmate decrittografa i tuoi backup nel cloud per verificare la chiave e mantiene quella attuale se nessuno si apre.",
+						"replaceKeyWarning": "I backup creati con la chiave attuale non potranno essere ripristinati dopo il cambio.",
+						"importKeyConfirm": "Usa questa chiave",
+						"verifyOutcome": {
+							"ok": "Chiave di ripristino salvata",
+							"wrong-key": "Questa chiave non decrittografa i tuoi backup nel cloud",
+							"no-backups": "Nessun backup nel cloud su cui verificare questa chiave",
+							"failed": "Impossibile verificare la chiave: {{error}}"
+						},
+						"keyTitle": "Chiave di ripristino",
+						"keyWarning": "Conserva questa chiave in un luogo sicuro, lontano da questo server. Viene mostrata una sola volta. Se la perdi, i tuoi backup nel cloud non potranno essere ripristinati e nessuno potrà recuperarla per te.",
+						"keyCopy": "Copia chiave",
+						"keyLabel": "La tua chiave di ripristino",
+						"keyContinue": "L'ho salvata",
+						"keyDone": "Ho conservato la chiave",
+						"keyShowAgain": "Mostra di nuovo la chiave",
+						"keyVerifyHelp": "Apri il posto in cui hai salvato la chiave e incollala qui per confermare di averne una copia funzionante.",
+						"keyPlaceholder": "Chiave di ripristino",
+						"keyAcknowledge": "Ho capito che, se perdo questa chiave, non potrò ripristinare i miei backup nel cloud.",
+						"keyMismatch": "Non corrisponde alla tua chiave di ripristino. Mostra di nuovo la chiave e salvane una nuova copia.",
+						"keyAckRequired": "Seleziona la casella per confermare di aver capito.",
+						"toolsMissing": "I backup nel cloud richiedono mongodump e mongorestore, che non sono stati trovati su questo server.",
+						"toolsMac": "Su macOS, esegui: brew install mongodb/brew/mongodb-database-tools",
+						"toolsLink": "Scarica MongoDB Database Tools per Linux",
+						"toolsPath": "Se sono installati altrove, imposta CONNECT_MONGODUMP_BIN e CONNECT_MONGORESTORE_BIN. Questo messaggio scompare entro un minuto da quando gli strumenti vengono trovati.",
+						"runFull": "Esegui backup ora",
+						"runConfig": "Backup solo della configurazione",
+						"kind": {
+							"full": "Database completo",
+							"config": "Solo configurazione"
+						},
+						"progress": {
+							"idle": "Inattivo",
+							"finished": {
+								"backup": {
+									"ok": "Backup completato",
+									"failed": "Backup non riuscito"
+								},
+								"restore": {
+									"ok": "Ripristino completato",
+									"failed": "Ripristino non riuscito"
+								},
+								"verify": {
+									"ok": "Chiave di ripristino salvata",
+									"failed": "Verifica della chiave non riuscita"
+								}
+							},
+							"queued": {
+								"backup": "Job di backup in coda",
+								"restore": "Job di ripristino in coda"
+							},
+							"checking": "Verifica della chiave in corso…",
+							"restore": {
+								"downloading": "Passaggio 1 di 3: download del backup",
+								"decrypting": "Passaggio 2 di 3: decrittografia del backup",
+								"restoring": "Passaggio 3 di 3: ripristino del database"
+							},
+							"verify": {
+								"downloading": "Verifica della chiave: download del backup {{attempt}} di {{attempts}}",
+								"decrypting": "Verifica della chiave: decrittografia del backup {{attempt}} di {{attempts}}"
+							},
+							"backup": {
+								"dumping": "Passaggio 1 di 3: lettura e crittografia del database",
+								"uploading": "Passaggio 2 di 3: caricamento del backup crittografato",
+								"saving": "Passaggio 3 di 3: salvataggio del backup nel tuo account"
+							}
+						},
+						"progressWithPercent": "{{step}} ({{percent}}%)",
+						"progressWithSize": "{{step}} ({{size}})",
+						"lastBackupSucceeded": "Ultimo backup ({{date}}): riuscito",
+						"lastBackupSucceededSize": "Ultimo backup ({{date}}): riuscito · {{size}}",
+						"lastBackupFailed": "Ultimo backup ({{date}}): non riuscito — {{error}}",
+						"lastRestoreSucceeded": "Ultimo ripristino ({{date}}): riuscito",
+						"lastRestoreFailed": "Ultimo ripristino ({{date}}): non riuscito — {{error}}",
+						"restore": {
+							"title": "Ripristina un backup",
+							"description": "Scarica il backup selezionato, lo verifica e lo decrittografa su questo server, quindi sostituisce il database attuale.",
+							"empty": "Nessun backup nel cloud verificato.",
+							"button": "Ripristina",
+							"confirmTitle": "Ripristinare il backup del {{date}} ({{kind}})?",
+							"confirmBody": "Questa operazione sostituisce il database attuale e non può essere annullata. Vengono sostituiti anche gli account utente, quindi in seguito accedi con un account presente nel backup.",
+							"differentKey": "Chiave diversa",
+							"expires": "Rimosso dopo il {{date}}"
+						}
+					},
+					"schedule": {
+						"title": "Backup pianificati",
+						"description": "Esegue automaticamente un backup crittografato nel cloud. Il primo parte non appena attivi questa opzione, e un backup pianificato che scade mentre è in corso un altro backup o ripristino viene saltato fino all'intervallo successivo.",
+						"interval": "Esegui backup ogni",
+						"kind": "Tipo di backup"
+					},
+					"recoveryKey": {
+						"title": "Chiave di ripristino",
+						"description": "Crittografa i tuoi backup nel cloud su questo server. Non lascia mai questo server e, senza di essa, i tuoi backup non possono essere ripristinati.",
+						"set": "Su questo server è impostata una chiave di ripristino."
+					},
+					"unenroll": {
+						"title": "Rimuovi registrazione",
+						"description": "Scollega questa installazione da Checkmate Connect ed elimina la credenziale locale. Il monitoraggio locale non viene influenzato.",
+						"button": "Rimuovi registrazione"
+					}
 				},
 				"about": {
 					"title": "Informazioni",
@@ -1545,6 +1943,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "Pagina di stato eliminata correttamente",
+			"rangeSelectorAria": "Intervallo cronologia",
+			"rangeExceedsRetention": "La conservazione della cronologia delle verifiche è impostata a {{days}} giorni. Aumenta la conservazione per avere più dati.",
+			"range": {
+				"latest": "Recente",
+				"30d": "30 giorni",
+				"60d": "60 giorni",
+				"90d": "90 giorni"
+			},
 			"fallback": {
 				"title": "Nessuna pagina di stato ancora",
 				"description": "Pubblica una pagina pubblica che mostra l'uptime in tempo reale e la cronologia degli incidenti ai tuoi clienti e stakeholder.",
@@ -1566,7 +1972,10 @@
 					"avg": "media {{value}}",
 					"max": "max {{value}}",
 					"downTooltip": "Non attivo",
-					"heatmapAria": "Heatmap del tempo di risposta"
+					"heatmapAria": "Heatmap del tempo di risposta",
+					"dayAria": "{{date}}, uptime {{uptime}}",
+					"dayUptime": "Uptime: {{uptime}} ({{upChecks}}/{{totalChecks}} verifiche)",
+					"dayAvgResponse": "Risposta media: {{value}}"
 				},
 				"infrastructure": {
 					"title": "Infrastruttura",
@@ -1583,6 +1992,10 @@
 					"responseTime": "Tempo di risposta"
 				},
 				"incidents": {
+					"modalTitle": "Incidenti del {{date}}",
+					"loading": "Caricamento...",
+					"noIncidents": "Nessun incidente segnalato per questo giorno.",
+					"ongoing": "In corso",
 					"errorLoading": "Impossibile caricare gli incidenti."
 				}
 			},

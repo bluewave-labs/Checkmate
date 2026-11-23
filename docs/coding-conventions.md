@@ -140,13 +140,14 @@ The theme exposes tokens for every kind of magic value. Use them. Reserve raw nu
 ### Token sources
 
 - **Spacing / layout** — `client/src/Utils/Theme/constants.ts`
-  - `LAYOUT.XXS = 2` · `LAYOUT.XS = 4` · `LAYOUT.SM = 6` · `LAYOUT.MD = 8` · `LAYOUT.LG = 10` · `LAYOUT.XL = 12` · `LAYOUT.XXL = 16`
+  - `LAYOUT.XXS = 2` · `LAYOUT.XS = 4` · `LAYOUT.XS_PLUS = 5` · `LAYOUT.SM = 6` · `LAYOUT.SM_PLUS = 7` · `LAYOUT.MD = 8` · `LAYOUT.LG = 10` · `LAYOUT.XL = 12` · `LAYOUT.XXL = 16` · `LAYOUT.XXXL = 28`
   - `SPACING` for `theme.spacing(...)` multipliers
 - **Typography sizes** — `client/src/Utils/Theme/Palette.ts` → `typographyLevels`
-  - `xs / s / m / l / xl / xxl` (rem values)
+  - `s / sm / m / l / xl / xxl / xxxl` (rem values; 11, 12, 13, 14, 18, 20, 24 px)
+- **Font weights** — `client/src/Utils/Theme/Palette.ts` → `fontWeights` (`regular` 400 · `medium` 500 · `semibold` 600)
 - **Hover / interaction** — `HOVER.DARKEN` etc.
 - **Shape** — `theme.shape.borderRadius` (don't write `borderRadius: 1` or `borderRadius: 4`)
-- **Colors** — `theme.palette.*` (rule 2 above)
+- **Colors** — `theme.palette.*` (rule 2 above), including `theme.palette.neutral.*` for raised fills, borders, dividers, icon and muted text greys, and the hover and selected greens
 
 ### Examples
 

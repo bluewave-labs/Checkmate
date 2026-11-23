@@ -1,8 +1,12 @@
-import { Box, Stack, Typography, IconButton } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { Upload, X } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { IconButton } from "@/Components/inputs";
+import { SPACING } from "@/Utils/Theme/constants";
+import Icon from "@/Components/design-elements/Icon";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 interface FileObject {
 	src: string;
@@ -72,20 +76,26 @@ export const ImageUpload = ({
 			{displaySrc ? (
 				<Stack
 					alignItems="center"
-					gap={1}
+					gap={SPACING.SM}
 				>
 					<Box
 						component="img"
 						src={displaySrc}
 						alt="Preview"
-						sx={{ maxWidth: 250, maxHeight: 250, objectFit: "contain", borderRadius: 1 }}
+						borderRadius={theme.shape.borderRadius}
+						maxWidth={250}
+						maxHeight={250}
+						sx={{ objectFit: "contain" }}
 					/>
 					<IconButton
 						size="small"
 						onClick={handleClear}
 						sx={{ color: theme.palette.error.main }}
 					>
-						<X size={18} />
+						<Icon
+							icon={X}
+							size={18}
+						/>
 					</IconButton>
 				</Stack>
 			) : (
@@ -102,15 +112,15 @@ export const ImageUpload = ({
 					}}
 					alignItems="center"
 					justifyContent="center"
-					gap={1}
+					gap={SPACING.SM}
+					position={"relative"}
+					width="100%"
+					minHeight={150}
+					border="2px dashed"
+					borderRadius={theme.shape.borderRadius}
+					borderColor={isDragging ? theme.palette.primary.main : theme.palette.divider}
+					bgcolor={isDragging ? theme.palette.action.hover : "transparent"}
 					sx={{
-						position: "relative",
-						width: "100%",
-						minHeight: 150,
-						border: "2px dashed",
-						borderRadius: 1,
-						borderColor: isDragging ? theme.palette.primary.main : theme.palette.divider,
-						backgroundColor: isDragging ? theme.palette.action.hover : "transparent",
 						transition: "0.2s",
 						cursor: "pointer",
 						"&:hover": {
@@ -126,9 +136,9 @@ export const ImageUpload = ({
 						onChange={(e) => handleFile(e.target.files?.[0])}
 						style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer" }}
 					/>
-					<Upload
+					<Icon
+						icon={Upload}
 						size={20}
-						strokeWidth={1.5}
 						color="currentColor"
 						style={{ opacity: 0.7 }}
 					/>
@@ -140,7 +150,7 @@ export const ImageUpload = ({
 							component="span"
 							variant="body2"
 							color="primary"
-							fontWeight={500}
+							fontWeight={fontWeights.medium}
 						>
 							{t("components.imageUpload.clickToUpload")}
 						</Typography>{" "}
@@ -159,7 +169,7 @@ export const ImageUpload = ({
 				<Typography
 					variant="caption"
 					color="error"
-					sx={{ mt: 1 }}
+					sx={{ mt: theme.spacing(SPACING.SM) }}
 				>
 					{displayError}
 				</Typography>

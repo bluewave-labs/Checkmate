@@ -181,13 +181,13 @@ export class StatusPageService implements IStatusPageService {
 		if (range === "latest") {
 			return {
 				statusPage,
-				bucketTimezone: statusPage.timezone ?? "Etc/UTC",
+				bucketTimezone: statusPage.timezone,
 				monitors: sorted.map((monitor) => this.toPublicMonitor(monitor, showURL)),
 			};
 		}
 
 		const days = STATUS_PAGE_RANGE_DAYS[range];
-		const bucketTimezone = statusPage.timezone ?? "Etc/UTC";
+		const bucketTimezone = statusPage.timezone;
 		const buckets = await this.checksRepository.getDailyStatusBuckets(statusPage.monitors, days, bucketTimezone);
 		const bucketsByMonitor = buckets.reduce((grouped, bucket) => {
 			const monitorBuckets = grouped.get(bucket.monitorId);
@@ -226,7 +226,7 @@ export class StatusPageService implements IStatusPageService {
 			throw new AppError(statusPageErrors.monitorNotOnPage, { service: SERVICE_NAME });
 		}
 
-		const tz = statusPage.timezone ?? "Etc/UTC";
+		const tz = statusPage.timezone;
 		const dateStart = dayjs.tz(date, tz).startOf("day").toDate();
 		const dateEnd = dayjs.tz(date, tz).endOf("day").toDate();
 

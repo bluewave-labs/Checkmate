@@ -8,6 +8,8 @@ import { formatStatusCode } from "@/Utils/statusCode";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { formatMs } from "@/Utils/TimeUtils";
 import { useFormatDate } from "@/Hooks/useFormatDate";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
+import { typographyLevels, fontWeights } from "@/Utils/Theme/Palette";
 
 interface GeoChecksMapProps {
 	geoChecks: FlatGeoCheck[];
@@ -41,8 +43,8 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 				".maplibregl-popup-close-button": {
 					color: theme.palette.text.primary,
 					background: "transparent",
-					fontSize: "20px",
-					padding: "4px",
+					fontSize: typographyLevels.xxl,
+					padding: theme.spacing(LAYOUT.XXS),
 					"&:hover": {
 						backgroundColor: theme.palette.action.hover,
 					},
@@ -142,28 +144,24 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 							closeOnClick={false}
 						>
 							<Box
-								sx={{
-									minWidth: 200,
-									p: theme.spacing(4),
-									bgcolor: theme.palette.background.paper,
-									borderWidth: 1,
-									borderStyle: "solid",
-									borderColor: theme.palette.divider,
-									borderRadius: 1,
-								}}
+								minWidth={200}
+								p={theme.spacing(LAYOUT.XS)}
+								bgcolor={theme.palette.background.paper}
+								border={`1px solid ${theme.palette.divider}`}
+								borderRadius={theme.shape.borderRadius}
 							>
 								<Typography
 									variant="subtitle1"
-									fontWeight="bold"
+									fontWeight={fontWeights.semibold}
 									gutterBottom
 								>
 									{selectedCheck.location.city}, {selectedCheck.location.country}
 								</Typography>
-								<Stack spacing={0.5}>
+								<Stack spacing={theme.spacing(SPACING.XS)}>
 									<Typography variant="body2">
 										<Typography
 											component="span"
-											fontWeight="medium"
+											fontWeight={fontWeights.medium}
 										>
 											Status:
 										</Typography>{" "}
@@ -172,7 +170,7 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 									<Typography variant="body2">
 										<Typography
 											component="span"
-											fontWeight="medium"
+											fontWeight={fontWeights.medium}
 										>
 											Status Code:
 										</Typography>{" "}
@@ -181,7 +179,7 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 									<Typography variant="body2">
 										<Typography
 											component="span"
-											fontWeight="medium"
+											fontWeight={fontWeights.medium}
 										>
 											Response Time:
 										</Typography>{" "}
@@ -190,7 +188,7 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 									<Typography
 										variant="caption"
 										color="text.secondary"
-										sx={{ mt: 0.5 }}
+										sx={{ mt: theme.spacing(SPACING.XS) }}
 									>
 										{formatDate(selectedCheck.createdAt, "dateTime")}
 									</Typography>

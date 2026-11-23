@@ -200,7 +200,7 @@ export const TabLogs = ({ monitorId, containerName, enabled }: TabLogsProps) => 
 	}
 
 	return (
-		<Stack gap={LAYOUT.MD}>
+		<Stack gap={LAYOUT.LG}>
 			<HeaderLogs
 				lines={rows.length}
 				loading={loadingInitial}

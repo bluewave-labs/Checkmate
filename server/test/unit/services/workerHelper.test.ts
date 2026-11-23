@@ -39,9 +39,12 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		getDBSettings: jest.fn().mockResolvedValue({ checkTTL: 30 }),
 	};
 	const checkService = {
-		deleteOlderThan: jest.fn().mockResolvedValue(0),
+		applyRetention: jest.fn().mockResolvedValue(undefined),
 	};
 	const telemetryService = {
+		handleJob: jest.fn().mockResolvedValue(undefined),
+	};
+	const connectHeartbeatService = {
 		handleJob: jest.fn().mockResolvedValue(undefined),
 	};
 
@@ -58,6 +61,7 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		geoChecksRepository,
 		dockerLogsRepository,
 		telemetryService,
+		connectHeartbeatService,
 		...overrides,
 	};
 
@@ -73,7 +77,8 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		defaults.incidentsRepository as any,
 		defaults.geoChecksRepository as any,
 		defaults.dockerLogsRepository as any,
-		defaults.telemetryService as any
+		defaults.telemetryService as any,
+		defaults.connectHeartbeatService as any
 	);
 	return { helper, defaults };
 };
@@ -147,27 +152,22 @@ describe("WorkerHelper", () => {
 	// ── getCleanupRetentionJob ───────────────────────────────────────────────
 
 	describe("getCleanupRetentionJob", () => {
-		it("deletes checks older than TTL cutoff", async () => {
+		it("applies retention using the configured checkTTL", async () => {
 			const { helper, defaults } = createHelper();
 			const job = helper.getCleanupRetentionJob();
 			await job();
 
-			expect(defaults.checkService.deleteOlderThan).toHaveBeenCalledWith(expect.any(Date));
-			expect(defaults.logger.info).toHaveBeenCalledWith(
-				expect.objectContaining({ count: expect.any(Number), cutoff: expect.any(String) }),
-				"Deleted checks older than the retention cutoff"
-			);
+			expect(defaults.checkService.applyRetention).toHaveBeenCalledWith(30);
 		});
 
-		it("skips cleanup when checkTTL is sentinel value (366)", async () => {
+		it("passes the unlimited sentinel through to the service", async () => {
 			const { helper, defaults } = createHelper({
 				settingsService: { getDBSettings: jest.fn().mockResolvedValue({ checkTTL: 366 }) },
 			});
 			const job = helper.getCleanupRetentionJob();
 			await job();
 
-			expect(defaults.checkService.deleteOlderThan).not.toHaveBeenCalled();
-			expect(defaults.logger.info).toHaveBeenCalledWith("Check TTL is set to unlimited, skipping cleanup");
+			expect(defaults.checkService.applyRetention).toHaveBeenCalledWith(366);
 		});
 
 		it("logs error on failure without rethrowing", async () => {
@@ -199,6 +199,16 @@ describe("WorkerHelper", () => {
 			await helper.getTelemetryJob()();
 
 			expect(defaults.telemetryService.handleJob).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	describe("getConnectHeartbeatJob", () => {
+		it("returns a function that runs the Connect heartbeat", async () => {
+			const { helper, defaults } = createHelper();
+
+			await helper.getConnectHeartbeatJob()();
+
+			expect(defaults.connectHeartbeatService.handleJob).toHaveBeenCalledTimes(1);
 		});
 	});
 });

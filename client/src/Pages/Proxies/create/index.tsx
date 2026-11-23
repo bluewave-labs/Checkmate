@@ -93,7 +93,7 @@ const ProxiesCreatePage = () => {
 			: await post("/proxies", payload);
 		if (result?.success) {
 			await mutate((key) => typeof key === "string" && key.startsWith("/proxies"));
-			navigate("/proxies");
+			navigate("/settings?tab=proxies");
 		}
 	};
 
@@ -194,7 +194,7 @@ const ProxiesCreatePage = () => {
 				<Stack
 					direction="row"
 					justifyContent="flex-end"
-					spacing={theme.spacing(2)}
+					spacing={theme.spacing(LAYOUT.XS)}
 				>
 					<Button
 						loading={isSubmitting || isPatching}

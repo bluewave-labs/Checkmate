@@ -7,7 +7,13 @@ import { useTranslation } from "react-i18next";
 import { ResponsiveContainer, BarChart, XAxis, Bar, Cell, Tooltip } from "recharts";
 import { getResponseTimeColor } from "@/Utils/MonitorUtils";
 import type { GroupedCheck } from "@/Types/Check";
+import type { PaletteKey } from "@/Utils/Theme/Theme";
 import { useFormatDate } from "@/Hooks/useFormatDate";
+import { formatNumber } from "@/Utils/FormatUtils";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
+import { typographyLevels } from "@/Utils/Theme/Palette";
+
+type HistogramStatusMetric = "responseTime" | "checkCount";
 
 interface XLabelProps {
 	p1: GroupedCheck;
@@ -26,8 +32,8 @@ const XLabel = ({ p1, p2, range }: XLabelProps) => {
 				y="100%"
 				dy={-3}
 				textAnchor="start"
-				fontSize={11}
-				fill={theme.palette.text.secondary}
+				fontSize={typographyLevels.s}
+				fill={theme.palette.neutral.tertiary}
 			>
 				{formatDate(p1.bucketDate, dateFormat)}
 			</text>
@@ -36,8 +42,8 @@ const XLabel = ({ p1, p2, range }: XLabelProps) => {
 				y="100%"
 				dy={-3}
 				textAnchor="end"
-				fontSize={11}
-				fill={theme.palette.text.secondary}
+				fontSize={typographyLevels.s}
+				fill={theme.palette.neutral.tertiary}
 			>
 				{formatDate(p2.bucketDate, dateFormat)}
 			</text>
@@ -50,6 +56,8 @@ interface HistogramStatusProps {
 	icon: React.ReactNode;
 	checks?: GroupedCheck[];
 	range: string;
+	metric?: HistogramStatusMetric;
+	countColor?: PaletteKey;
 }
 
 export const HistogramStatus = ({
@@ -57,9 +65,13 @@ export const HistogramStatus = ({
 	icon,
 	checks = [],
 	range,
+	metric = "responseTime",
+	countColor = "success",
 }: HistogramStatusProps) => {
-	const { t } = useTranslation();
+	const isCheckCount = metric === "checkCount";
+	const { t, i18n } = useTranslation();
 	const theme = useTheme();
+	const barRadius = Number(theme.shape.borderRadius);
 	const formatDate = useFormatDate();
 	const CustomTooltip = ({
 		active,
@@ -70,8 +82,12 @@ export const HistogramStatus = ({
 	}) => {
 		if (!active || !payload?.length) return null;
 		const d = payload[0]?.payload;
-		const avg = d?.avgResponseTime ?? 0;
-		const titleText = t("common.charts.labels.averageResponseTime");
+		const valueText = isCheckCount
+			? formatNumber(d?.totalChecks ?? 0, i18n.resolvedLanguage ?? "en")
+			: formatMs(d?.avgResponseTime ?? 0);
+		const titleText = isCheckCount
+			? t("common.charts.labels.checkCount")
+			: t("common.charts.labels.averageResponseTime");
 		const fmt: DateFormat = range === "30d" ? "date" : "dateTime";
 		let dateLabel = "";
 		if (d?.bucketDate) {
@@ -82,24 +98,22 @@ export const HistogramStatus = ({
 		}
 		return (
 			<Stack
-				sx={{
-					p: 1,
-					bgcolor: "background.paper",
-					border: 1,
-					borderColor: "divider",
-					borderRadius: 1,
-				}}
+				p={SPACING.SM}
+				bgcolor={theme.palette.background.paper}
+				border={1}
+				borderColor={theme.palette.divider}
+				borderRadius={theme.shape.borderRadius}
 			>
 				{dateLabel ? (
 					<Typography
-						sx={{ color: "text.secondary" }}
+						color={theme.palette.text.secondary}
 						variant="caption"
 					>
 						{dateLabel}
 					</Typography>
 				) : null}
 				<Typography variant="caption">{titleText}</Typography>
-				<Typography variant="body2">{formatMs(avg)}</Typography>
+				<Typography variant="body2">{valueText}</Typography>
 			</Stack>
 		);
 	};
@@ -111,7 +125,7 @@ export const HistogramStatus = ({
 			icon={icon}
 			title={title}
 		>
-			<Stack gap={theme.spacing(8)}>
+			<Stack gap={theme.spacing(LAYOUT.MD)}>
 				<Stack
 					position="relative"
 					direction="row"
@@ -143,12 +157,15 @@ export const HistogramStatus = ({
 							content={<CustomTooltip />}
 						/>
 						<Bar
-							dataKey="avgResponseTime"
+							dataKey={isCheckCount ? "totalChecks" : "avgResponseTime"}
 							maxBarSize={7}
+							radius={[barRadius, barRadius, 0, 0]}
 							background={{ fill: "transparent" }}
 						>
 							{checks?.map((groupedCheck, index) => {
-								const fillColor = getResponseTimeColor(groupedCheck.avgResponseTime);
+								const fillColor = isCheckCount
+									? countColor
+									: getResponseTimeColor(groupedCheck.avgResponseTime);
 								return (
 									<Cell
 										key={groupedCheck.bucketDate || `check-${index}`}

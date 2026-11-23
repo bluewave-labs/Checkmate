@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import { NotificationChannels } from "@/Types/Notification";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const NotificationsCreatePage = () => {
 	const { t } = useTranslation();
@@ -146,7 +147,7 @@ const NotificationsCreatePage = () => {
 						title={t("pages.notifications.form.ntfy.title")}
 						subtitle={t("pages.notifications.form.ntfy.description")}
 						rightContent={
-							<Stack spacing={theme.spacing(8)}>
+							<Stack spacing={theme.spacing(LAYOUT.MD)}>
 								<FormTextField
 									name="address"
 									fieldLabel={t("pages.notifications.form.ntfy.optionServerUrl")}
@@ -166,7 +167,7 @@ const NotificationsCreatePage = () => {
 						title={t("pages.notifications.form.telegram.title")}
 						subtitle={t("pages.notifications.form.telegram.description")}
 						rightContent={
-							<Stack spacing={theme.spacing(8)}>
+							<Stack spacing={theme.spacing(LAYOUT.MD)}>
 								<FormTextField
 									name="accessToken"
 									fieldLabel={t("pages.notifications.form.telegram.optionBotToken")}
@@ -186,7 +187,7 @@ const NotificationsCreatePage = () => {
 						title={t("pages.notifications.form.pushover.title")}
 						subtitle={t("pages.notifications.form.pushover.description")}
 						rightContent={
-							<Stack spacing={theme.spacing(8)}>
+							<Stack spacing={theme.spacing(LAYOUT.MD)}>
 								<FormTextField
 									name="accessToken"
 									fieldLabel={t("pages.notifications.form.pushover.optionAppToken")}
@@ -207,7 +208,7 @@ const NotificationsCreatePage = () => {
 						title={t("pages.notifications.form.signalgrid.title")}
 						subtitle={t("pages.notifications.form.signalgrid.description")}
 						rightContent={
-							<Stack spacing={theme.spacing(8)}>
+							<Stack spacing={theme.spacing(LAYOUT.MD)}>
 								<FormTextField
 									name="accessToken"
 									fieldLabel={t("pages.notifications.form.signalgrid.optionClientKey")}
@@ -232,7 +233,7 @@ const NotificationsCreatePage = () => {
 						title={t("pages.notifications.form.twilio.title")}
 						subtitle={t("pages.notifications.form.twilio.description")}
 						rightContent={
-							<Stack spacing={theme.spacing(8)}>
+							<Stack spacing={theme.spacing(LAYOUT.MD)}>
 								<FormTextField
 									name="accountSid"
 									fieldLabel={t("pages.notifications.form.twilio.optionAccountSid")}
@@ -264,7 +265,7 @@ const NotificationsCreatePage = () => {
 						title={t("pages.notifications.form.matrix.title")}
 						subtitle={t("pages.notifications.form.matrix.description")}
 						rightContent={
-							<Stack spacing={theme.spacing(8)}>
+							<Stack spacing={theme.spacing(LAYOUT.MD)}>
 								<FormTextField
 									name="homeserverUrl"
 									fieldLabel={t("pages.notifications.form.homeServer.optionHomeServer")}
@@ -287,7 +288,7 @@ const NotificationsCreatePage = () => {
 				<Stack
 					direction="row"
 					justifyContent="flex-end"
-					spacing={theme.spacing(2)}
+					spacing={theme.spacing(LAYOUT.XS)}
 				>
 					<Button
 						variant="contained"
