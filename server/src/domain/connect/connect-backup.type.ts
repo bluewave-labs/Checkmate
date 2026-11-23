@@ -40,6 +40,7 @@ export const ConnectBackupCollections = [
 	"invites",
 	"monitors",
 	"checks",
+	"checkrollups",
 	"monitorstats",
 	"geochecks",
 	"dockerlogs",
@@ -54,6 +55,7 @@ export const ConnectBackupCollections = [
 
 export const ConnectConfigExcludedCollections = [
 	"checks",
+	"checkrollups",
 	"monitorstats",
 	"geochecks",
 	"dockerlogs",
