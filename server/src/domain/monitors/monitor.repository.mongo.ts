@@ -612,6 +612,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 			lastEvaluatedAt: doc.lastEvaluatedAt,
+			smartCheckedAt: doc.smartCheckedAt ?? undefined,
 		};
 	};
 

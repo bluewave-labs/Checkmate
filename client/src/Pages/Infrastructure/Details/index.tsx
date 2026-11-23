@@ -1,17 +1,21 @@
 import { BasePage, Tab, TabIcon, Tabs } from "@/Components/design-elements";
-import { LayoutDashboard, Network } from "lucide-react";
+import { HardDrive, LayoutDashboard, Network } from "lucide-react";
 import { HeaderTimeRange } from "@/Components/common";
 import { MonitorStatBoxes, HeaderMonitorControls } from "@/Components/monitors";
 import { TabNetwork } from "@/Pages/Infrastructure/Details/Components/TabNetwork";
 import { TabOverview } from "@/Pages/Infrastructure/Details/Components/TabOverview";
+import { TabStorage } from "@/Pages/Infrastructure/Details/Components/TabStorage";
 
 import { useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useGet } from "@/Hooks/UseApi";
 import type { HardwareDetailsResponse } from "@/Types/Monitor";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import { useTranslation } from "react-i18next";
 import type { DateRange } from "@/Types/Query";
+
+const DETAILS_TABS = ["overview", "network", "storage"] as const;
+type DetailsTab = (typeof DETAILS_TABS)[number];
 
 const InfrastructureDetails = () => {
 	const { t } = useTranslation();
@@ -20,7 +24,11 @@ const InfrastructureDetails = () => {
 	const { monitorId } = useParams<{ monitorId: string }>();
 
 	const [dateRange, setDateRange] = useState<DateRange>("recent");
-	const [selectedTab, setSelectedTab] = useState<number>(0);
+	// ?tab=storage opens a tab directly, e.g. when coming back from a drive's page
+	const [searchParams] = useSearchParams();
+	const [selectedTab, setSelectedTab] = useState<number>(() =>
+		Math.max(0, DETAILS_TABS.indexOf(searchParams.get("tab") as DetailsTab))
+	);
 
 	const monitorDetailsUrl = useMemo(() => {
 		if (!monitorId) {
@@ -77,18 +85,31 @@ const InfrastructureDetails = () => {
 					label={t("pages.infrastructure.tabs.labels.network")}
 					icon={<TabIcon icon={Network} />}
 				/>
+				<Tab
+					label={t("pages.infrastructure.tabs.labels.storage")}
+					icon={<TabIcon icon={HardDrive} />}
+				/>
 			</Tabs>
 			{selectedTab === 0 && (
 				<TabOverview
 					monitor={monitor}
 					stats={stats}
 					dateRange={dateRange}
+					raid={monitorDetailsData?.raid}
+					drives={monitorDetailsData?.drives}
 				/>
 			)}
 			{selectedTab === 1 && (
 				<TabNetwork
 					stats={stats}
 					dateRange={dateRange}
+				/>
+			)}
+			{selectedTab === 2 && (
+				<TabStorage
+					monitor={monitor}
+					raid={monitorDetailsData?.raid}
+					drives={monitorDetailsData?.drives}
 				/>
 			)}
 		</BasePage>

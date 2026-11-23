@@ -4,7 +4,7 @@ import { type IStatusPagesRepository } from "@/domain/status-pages/status-page-r
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
-import type { DailyCheckBucket } from "@/domain/checks/check.type.js";
+import type { CheckSnapshot, DailyCheckBucket } from "@/domain/checks/check.type.js";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc.js";
 import timezone from "dayjs/plugin/timezone.js";
@@ -87,6 +87,13 @@ export class StatusPageService implements IStatusPageService {
 	private normalizeInput = (data: Partial<StatusPage>): Partial<StatusPage> =>
 		this.settingsService.areStatusPageThemesEnabled() ? data : this.withoutThemeFields(data);
 
+	// Status pages are public: RAID array names and state, and disk mount points, describe the host's storage
+	// layout, and the public themes do not show them, so they stay on the authenticated endpoints only.
+	private toPublicSnapshot = ({ raid: _raid, ...snapshot }: CheckSnapshot): CheckSnapshot => ({
+		...snapshot,
+		...(snapshot.disk && { disk: snapshot.disk.map(({ mountpoint: _mountpoint, ...disk }) => disk) }),
+	});
+
 	private toPublicMonitor = (monitor: Monitor, showURL: boolean) => {
 		const base = {
 			id: monitor.id,
@@ -94,7 +101,7 @@ export class StatusPageService implements IStatusPageService {
 			type: monitor.type,
 			status: monitor.status,
 			uptimePercentage: monitor.uptimePercentage,
-			recentChecks: monitor.recentChecks,
+			recentChecks: monitor.recentChecks.map(this.toPublicSnapshot),
 		};
 
 		if (showURL) {

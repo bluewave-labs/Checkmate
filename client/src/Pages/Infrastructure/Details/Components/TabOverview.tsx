@@ -4,17 +4,21 @@ import { StatusBoxes } from "@/Pages/Infrastructure/Details/Components/StatusBox
 import { InfraDetailsCharts } from "@/Pages/Infrastructure/Details/Components/Charts";
 
 import { useTheme } from "@mui/material";
-import type { HardwareStats, Monitor } from "@/Types/Monitor";
+import type { HardwareStats, LatestDrives, LatestRaid, Monitor } from "@/Types/Monitor";
 import { LAYOUT } from "@/Utils/Theme/constants";
 
 export const TabOverview = ({
 	monitor,
 	stats,
 	dateRange,
+	raid,
+	drives,
 }: {
 	monitor: Monitor | undefined;
 	stats: HardwareStats | undefined;
 	dateRange: string;
+	raid?: LatestRaid | null;
+	drives?: LatestDrives | null;
 }) => {
 	const theme = useTheme();
 	if (!monitor) {
@@ -25,7 +29,11 @@ export const TabOverview = ({
 	const recentChecks = monitor.recentChecks ?? [];
 	return (
 		<Stack gap={theme.spacing(LAYOUT.LG)}>
-			<StatusBoxes monitor={monitor} />
+			<StatusBoxes
+				monitor={monitor}
+				raid={raid}
+				drives={drives}
+			/>
 			<InfraDetailsGauges snapshot={recentChecks[recentChecks.length - 1]} />
 			<InfraDetailsCharts
 				checks={checks}
