@@ -21,6 +21,7 @@ import type {
 	DockerContainerStatsBucket,
 } from "@/domain/checks/check.type.js";
 import type { GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
+import type { ICheckRollupsRepository } from "@/domain/check-rollups/check-rollup.repository.interface.js";
 import type { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
 import type { IGeoChecksRepository } from "@/domain/geo-checks/geo-check.repository.interface.js";
 import type { IIncidentsRepository } from "@/domain/incidents/incident.repository.interface.js";
@@ -145,6 +146,7 @@ export class MonitorService implements IMonitorService {
 	private games: GamesMap;
 	private monitorsRepository: IMonitorsRepository;
 	private checksRepository: IChecksRepository;
+	private checkRollupsRepository: ICheckRollupsRepository;
 	private geoChecksRepository: IGeoChecksRepository;
 	private dockerLogsRepository: IDockerLogsRepository;
 	private monitorStatsRepository: IMonitorStatsRepository;
@@ -158,6 +160,7 @@ export class MonitorService implements IMonitorService {
 		games,
 		monitorsRepository,
 		checksRepository,
+		checkRollupsRepository,
 		geoChecksRepository,
 		dockerLogsRepository,
 		monitorStatsRepository,
@@ -170,6 +173,7 @@ export class MonitorService implements IMonitorService {
 		games: GamesMap;
 		monitorsRepository: IMonitorsRepository;
 		checksRepository: IChecksRepository;
+		checkRollupsRepository: ICheckRollupsRepository;
 		geoChecksRepository: IGeoChecksRepository;
 		dockerLogsRepository: IDockerLogsRepository;
 		monitorStatsRepository: IMonitorStatsRepository;
@@ -182,6 +186,7 @@ export class MonitorService implements IMonitorService {
 		this.games = games;
 		this.monitorsRepository = monitorsRepository;
 		this.checksRepository = checksRepository;
+		this.checkRollupsRepository = checkRollupsRepository;
 		this.geoChecksRepository = geoChecksRepository;
 		this.dockerLogsRepository = dockerLogsRepository;
 		this.monitorStatsRepository = monitorStatsRepository;
@@ -712,6 +717,9 @@ export class MonitorService implements IMonitorService {
 	private deleteMonitorChildren = async (monitor: Monitor, teamId: string) => {
 		await this.checksRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
 			this.logger.warn({ err, monitorId: monitor.id, monitorName: monitor.name }, "Error deleting checks for monitor");
+		});
+		await this.checkRollupsRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
+			this.logger.warn({ err, monitorId: monitor.id, monitorName: monitor.name }, "Error deleting check rollups for monitor");
 		});
 		await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id).catch((err: unknown) => {
 			this.logger.warn({ err, monitorId: monitor.id, monitorName: monitor.name }, "Error removing monitor from status pages");

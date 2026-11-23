@@ -12,10 +12,12 @@ import { ILogger } from "@/utils/logger/logger.js";
 import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
 import { ITelemetryService } from "@/domain/telemetry/telemetry.service.js";
 import { IConnectHeartbeatService } from "@/domain/connect/connect-heartbeat.service.js";
-
+import { ICheckRollupsRepository } from "@/domain/check-rollups/check-rollup.repository.interface.js";
+import { ICheckRollupService } from "@/domain/check-rollups/check-rollup.service.js";
 export interface IWorkerHelper {
 	getCleanupOrphanedJob(): () => Promise<void>;
 	getCleanupRetentionJob(): () => Promise<void>;
+	getRollupChecksJob(): () => Promise<void>;
 	getTelemetryJob(): () => Promise<void>;
 	getConnectHeartbeatJob(): () => Promise<void>;
 }
@@ -36,6 +38,8 @@ export class WorkerHelper implements IWorkerHelper {
 	private dockerLogsRepository: IDockerLogsRepository;
 	private telemetryService: ITelemetryService;
 	private connectHeartbeatService: IConnectHeartbeatService;
+	private checkRollupsRepository: ICheckRollupsRepository;
+	private checkRollupService: ICheckRollupService;
 
 	constructor(
 		logger: ILogger,
@@ -50,7 +54,9 @@ export class WorkerHelper implements IWorkerHelper {
 		geoChecksRepository: IGeoChecksRepository,
 		dockerLogsRepository: IDockerLogsRepository,
 		telemetryService: ITelemetryService,
-		connectHeartbeatService: IConnectHeartbeatService
+		connectHeartbeatService: IConnectHeartbeatService,
+		checkRollupsRepository: ICheckRollupsRepository,
+		checkRollupService: ICheckRollupService
 	) {
 		this.logger = logger.child({ service: SERVICE_NAME });
 		this.checkService = checkService;
@@ -65,6 +71,8 @@ export class WorkerHelper implements IWorkerHelper {
 		this.dockerLogsRepository = dockerLogsRepository;
 		this.telemetryService = telemetryService;
 		this.connectHeartbeatService = connectHeartbeatService;
+		this.checkRollupsRepository = checkRollupsRepository;
+		this.checkRollupService = checkRollupService;
 	}
 
 	getTelemetryJob = () => {
@@ -109,6 +117,12 @@ export class WorkerHelper implements IWorkerHelper {
 					this.logger.info({ count: deletedChecksCount }, "Deleted orphaned checks");
 				}
 
+				// Remove orphaned rollups
+				const deletedRollupsCount = await this.checkRollupsRepository.deleteByMonitorIdsNotIn(allMonitorIds);
+				if (deletedRollupsCount > 0) {
+					this.logger.info({ count: deletedRollupsCount }, "Deleted orphaned check rollups");
+				}
+
 				// Remove orphaned incidents
 				const deletedIncidentsCount = await this.incidentsRepository.deleteByMonitorIdsNotIn(allMonitorIds);
 				if (deletedIncidentsCount > 0) {
@@ -147,6 +161,16 @@ export class WorkerHelper implements IWorkerHelper {
 				await this.checkService.applyRetention(settings.checkTTL);
 			} catch (error: unknown) {
 				this.logger.error({ err: error }, "Retention cleanup failed");
+			}
+		};
+	};
+
+	getRollupChecksJob = () => {
+		return async () => {
+			try {
+				await this.checkRollupService.rollUpClosedBuckets();
+			} catch (error: unknown) {
+				this.logger.error({ err: error }, "Check rollup failed");
 			}
 		};
 	};

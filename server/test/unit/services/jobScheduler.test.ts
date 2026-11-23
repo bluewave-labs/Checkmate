@@ -90,6 +90,7 @@ describe("JobScheduler", () => {
 			const cleanupTypes = mocks.jobsRepository.upsertJobAndSchedule.mock.calls.map((c: any[]) => c[0].type);
 			expect(cleanupTypes).toContain("cleanup-orphaned");
 			expect(cleanupTypes).toContain("cleanup-retention");
+			expect(cleanupTypes).toContain("rollup-checks");
 		});
 
 		it("primary mode also seeds a geo-check row for geo-enabled monitors", async () => {
@@ -129,6 +130,7 @@ describe("JobScheduler", () => {
 			const cleanupTypes = mocks.jobsRepository.upsertJobAndSchedule.mock.calls.map((c: any[]) => c[0].type);
 			expect(cleanupTypes).toContain("cleanup-orphaned");
 			expect(cleanupTypes).toContain("cleanup-retention");
+			expect(cleanupTypes).toContain("rollup-checks");
 		});
 
 		it("primary mode seeds the telemetry row when telemetry is enabled", async () => {

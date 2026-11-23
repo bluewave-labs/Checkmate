@@ -246,6 +246,11 @@ class MongoChecksRepository implements IChecksRepository {
 		}
 	};
 
+	findOldestCreatedAt = async (): Promise<Date | null> => {
+		const oldest = await CheckModel.findOne().sort({ createdAt: 1 }).select({ createdAt: 1 }).lean();
+		return oldest?.createdAt ?? null;
+	};
+
 	findByMonitorId = async (
 		monitorId: string,
 		sortOrder: string,

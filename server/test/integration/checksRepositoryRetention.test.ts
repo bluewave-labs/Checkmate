@@ -81,3 +81,29 @@ describe("MongoChecksRepository.setExpireAfterSeconds", () => {
 		}
 	});
 });
+
+describe("MongoChecksRepository.findOldestCreatedAt", () => {
+	const seedAt = (createdAt: Date) =>
+		CheckModel.create({
+			metadata: { monitorId: new mongoose.Types.ObjectId(), teamId: new mongoose.Types.ObjectId(), type: "http" },
+			status: true,
+			createdAt,
+		});
+
+	it("returns null when there are no checks", async () => {
+		await CheckModel.deleteMany({});
+
+		await expect(repository.findOldestCreatedAt()).resolves.toBeNull();
+	});
+
+	it("returns the createdAt of the oldest check across all monitors", async () => {
+		await CheckModel.deleteMany({});
+		await seedAt(new Date("2026-03-10T10:00:00.000Z"));
+		await seedAt(new Date("2026-03-01T08:30:00.000Z"));
+		await seedAt(new Date("2026-03-12T00:00:00.000Z"));
+
+		const oldest = await repository.findOldestCreatedAt();
+
+		expect(oldest?.toISOString()).toBe("2026-03-01T08:30:00.000Z");
+	});
+});
