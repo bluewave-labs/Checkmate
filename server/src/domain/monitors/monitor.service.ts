@@ -19,7 +19,9 @@ import type {
 	PageSpeedChecksResult,
 	DockerChecksResult,
 	DockerContainerStatsBucket,
+	LatestDrives,
 } from "@/domain/checks/check.type.js";
+import { SmartErrorMetrics } from "@/domain/checks/check.type.js";
 import type { GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
 import type { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
 import type { IGeoChecksRepository } from "@/domain/geo-checks/geo-check.repository.interface.js";
@@ -330,13 +332,40 @@ export class MonitorService implements IMonitorService {
 			checks: checksData.checks,
 		};
 
-		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
+		const [monitorStats, raid, drives, driveHistory] = await Promise.all([
+			this.monitorStatsRepository.findByMonitorId(monitor.id),
+			this.checksRepository.findLatestRaid(monitor.id),
+			this.getLatestDrives(monitor.id),
+			this.checksRepository.findDriveHistory(monitor.id, dateRange),
+		]);
 
 		return {
 			monitor,
 			stats,
 			monitorStats,
+			raid,
+			drives,
+			driveHistory,
 		};
+	};
+
+	// The latest SMART fetch, with only its SMART errors. A drive in standby is not woken, so it reports no identity
+	// or values; those are filled from the last reading of the same device that had a serial, marked lastKnownAt.
+	private getLatestDrives = async (monitorId: string): Promise<HardwareDetailsResult["drives"]> => {
+		const latest: LatestDrives | null = await this.checksRepository.findLatestDrives(monitorId);
+		if (!latest) return null;
+
+		const drives = await Promise.all(
+			latest.drives.map(async (drive) => {
+				if (drive.status !== "standby" || drive.serial_number) return drive;
+				const lastKnown = await this.checksRepository.findLastKnownDrive(monitorId, drive.device);
+				if (!lastKnown) return drive;
+				return { ...lastKnown.drive, device: drive.device, status: drive.status, lastKnownAt: lastKnown.checkedAt };
+			})
+		);
+		const smartErrorMetrics: readonly string[] = SmartErrorMetrics;
+		const errors = latest.errors.filter((error) => error.metric.some((metric) => smartErrorMetrics.includes(metric)));
+		return { drives, errors, checkedAt: latest.checkedAt };
 	};
 
 	getPageSpeedDetailsById = async ({

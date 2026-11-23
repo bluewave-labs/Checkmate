@@ -12,6 +12,7 @@ import { IBufferService } from "@/service/bufferService.js";
 import { IProxyResolver } from "@/service/networkProviders/ProxyResolver.js";
 import { IProviderRegistry } from "@/service/networkProviders/providerRegistry.js";
 import { IStatusService } from "@/service/statusService.js";
+import { deriveSmartUrl, isSmartDue } from "@/domain/storage/smart-schedule.js";
 import { DockerStatusPayload, MonitorStatusResponse, StatusChangeResult } from "@/types/network.js";
 import { AppError, internalError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger/logger.js";
@@ -113,8 +114,9 @@ export class WorkerPipeline implements IWorkerPipeline {
 		// Step 1b: Acquire status
 		const proxyUrl = await this.deps.proxyResolver.resolve(monitor);
 		const dockerTlsKey = await this.resolveDockerTlsKey(monitor);
+		const smartUrl = await this.resolveSmartUrl(monitor);
 
-		const status = await this.deps.providerRegistry.probe(monitor, { proxyUrl, dockerTlsKey });
+		const status = await this.deps.providerRegistry.probe(monitor, { proxyUrl, dockerTlsKey, smartUrl });
 		if (!status) {
 			throw new AppError(internalError, { message: "No network response", service: SERVICE_NAME });
 		}
@@ -164,6 +166,27 @@ export class WorkerPipeline implements IWorkerPipeline {
 		if (monitor.type !== "docker" || !monitor.dockerTlsKeySet || !monitor.id) return undefined;
 		const dockerTlsKey = await this.deps.monitorsRepository.findDockerTlsKeyById(monitor.id);
 		return dockerTlsKey ?? undefined;
+	}
+
+	// Hardware monitors fetch SMART at most every SMART_INTERVAL_MS. The attempt is recorded before the probe, so a slow
+	// or failing host is not retried on every check. SMART must never fail the check, so if recording the attempt
+	// fails, SMART is skipped this time.
+	private async resolveSmartUrl(monitor: Monitor): Promise<string | undefined> {
+		if (monitor.type !== "hardware" || !monitor.id) return undefined;
+		const now = Date.now();
+		if (!isSmartDue(monitor.smartCheckedAt, now)) return undefined;
+		const smartUrl = deriveSmartUrl(monitor.url);
+		if (!smartUrl) {
+			this.logger.debug({ monitorId: monitor.id }, "Hardware monitor URL does not end with /api/v1/metrics, skipping SMART");
+			return undefined;
+		}
+		try {
+			await this.deps.monitorsRepository.updateById(monitor.id, monitor.teamId, { smartCheckedAt: now });
+		} catch (error: unknown) {
+			this.logger.warn({ err: error, monitorId: monitor.id }, "Could not record SMART attempt, skipping SMART");
+			return undefined;
+		}
+		return smartUrl;
 	}
 
 	// Only a failure to reach the target at all can be the instance's own fault. A provider that can tell the
