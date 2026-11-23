@@ -1497,6 +1497,10 @@
 				},
 				"pie": {
 					"title": "Rapport de performance"
+				},
+				"scoreHistory": {
+					"title": "Historique des scores",
+					"scrollToExplore": "faire défiler pour explorer"
 				}
 			},
 			"table": {

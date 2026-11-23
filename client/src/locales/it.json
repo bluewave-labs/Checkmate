@@ -1501,6 +1501,10 @@
 				},
 				"pie": {
 					"title": "Report prestazioni"
+				},
+				"scoreHistory": {
+					"title": "Cronologia punteggi",
+					"scrollToExplore": "scorri per esplorare"
 				}
 			},
 			"table": {

@@ -1497,6 +1497,10 @@
 				},
 				"pie": {
 					"title": "Informe de rendiment"
+				},
+				"scoreHistory": {
+					"title": "Historial de puntuacions",
+					"scrollToExplore": "desplaça per explorar"
 				}
 			},
 			"table": {

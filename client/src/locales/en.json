@@ -1568,6 +1568,10 @@
 				},
 				"pie": {
 					"title": "Performance report"
+				},
+				"scoreHistory": {
+					"title": "Score history",
+					"scrollToExplore": "scroll to explore"
 				}
 			},
 			"table": {
