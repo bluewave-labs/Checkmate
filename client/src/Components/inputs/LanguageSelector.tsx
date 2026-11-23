@@ -1,5 +1,4 @@
-import MenuItem from "@mui/material/MenuItem";
-import { Select } from "@/Components/inputs";
+import { Select, MenuItem } from "@/Components/inputs";
 
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";

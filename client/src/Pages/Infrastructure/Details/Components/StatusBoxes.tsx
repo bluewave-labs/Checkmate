@@ -6,6 +6,7 @@ import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import type { Monitor } from "@/Types/Monitor";
 import { getAvgTemp, getCores, getFrequency, getOsAndPlatform } from "@/Utils/InfraUtils";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 export const StatusBoxes = ({ monitor }: { monitor: Monitor }) => {
 	const { t } = useTranslation();
@@ -27,7 +28,7 @@ export const StatusBoxes = ({ monitor }: { monitor: Monitor }) => {
 	return (
 		<Stack
 			direction="row"
-			gap={theme.spacing(8)}
+			gap={theme.spacing(LAYOUT.MD)}
 			flexWrap={"wrap"}
 		>
 			<StatBox

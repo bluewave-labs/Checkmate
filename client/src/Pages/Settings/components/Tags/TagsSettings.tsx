@@ -1,7 +1,11 @@
-import { BasePageWithStates } from "@/Components/design-elements";
-import { TagsTable } from "@/Pages/Tags/components/TagsTable";
+import Stack from "@mui/material/Stack";
+import CircularProgress from "@mui/material/CircularProgress";
+import { useTheme } from "@mui/material/styles";
+import { BaseFallback, EmptyFallback, ErrorFallback } from "@/Components/design-elements";
+import { TagsTable } from "./TagsTable";
 import { Dialog } from "@/Components/inputs";
 import { HeaderCreate } from "@/Components/common";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 import { useState } from "react";
 import { useGet, useDelete } from "@/Hooks/UseApi";
@@ -9,8 +13,9 @@ import { useTranslation } from "react-i18next";
 import type { Tag } from "@/Types/Tag";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 
-const TagsPage = () => {
+export const TagsSettings = () => {
 	const { t } = useTranslation();
+	const theme = useTheme();
 	const isAdmin = useIsAdmin();
 
 	const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
@@ -37,21 +42,46 @@ const TagsPage = () => {
 		setSelectedTag(null);
 	};
 
+	const isFetching = isLoading || isValidating;
+	const hasItems = (tags?.length ?? 0) > 0;
+
+	if (error) {
+		return (
+			<ErrorFallback
+				title={t("common.fallback.error.title")}
+				subtitle={t("common.fallback.error.description")}
+			/>
+		);
+	}
+
+	if (isFetching && !hasItems) {
+		return (
+			<BaseFallback>
+				<CircularProgress
+					color="primary"
+					size={28}
+				/>
+			</BaseFallback>
+		);
+	}
+
+	if (!hasItems) {
+		return (
+			<EmptyFallback
+				title={t("pages.tags.fallback.title")}
+				description={t("pages.tags.fallback.description")}
+				showActionButton={isAdmin}
+				actionButtonText={t("pages.tags.fallback.actionButton")}
+				actionLink="/tags/create"
+			/>
+		);
+	}
+
 	return (
-		<BasePageWithStates
-			headerKey="tags"
-			page={t("pages.tags.fallback.title")}
-			description={t("pages.tags.fallback.description")}
-			loading={isLoading || isValidating}
-			error={!!error}
-			totalCount={tags?.length ?? 0}
-			showActionButton={isAdmin}
-			actionButtonText={t("pages.tags.fallback.actionButton")}
-			actionLink="/tags/create"
-		>
+		<Stack spacing={theme.spacing(LAYOUT.LG)}>
 			<HeaderCreate
 				path="/tags/create"
-				isLoading={isLoading || isValidating}
+				isLoading={isFetching}
 				isAdmin={isAdmin}
 			/>
 			<TagsTable
@@ -66,8 +96,6 @@ const TagsPage = () => {
 				onCancel={handleCancel}
 				loading={isDeleting}
 			/>
-		</BasePageWithStates>
+		</Stack>
 	);
 };
-
-export default TagsPage;

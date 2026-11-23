@@ -69,6 +69,10 @@ const envSchema = z.object({
 	// Optional
 	ORIGIN: z.string().optional(),
 	CONNECT_ALLOWED_HOSTS: z.string().default(DEFAULT_CONNECT_HOSTS.join(",")),
+	CONNECT_API_URL: z.string().url("CONNECT_API_URL must be a valid URL").optional(),
+
+	CONNECT_MONGODUMP_BIN: z.string().default("mongodump"),
+	CONNECT_MONGORESTORE_BIN: z.string().default("mongorestore"),
 
 	// Feature flags
 	STATUS_PAGE_THEMES_ENABLED: booleanCoercion.default(true),

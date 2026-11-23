@@ -1,4 +1,5 @@
-import { BaseAuthPage, BulletPointCheck, TextLink } from "@/Components/design-elements";
+import { BulletPointCheck, TextLink } from "@/Components/design-elements";
+import { BaseAuthPage } from "@/Pages/Auth/components/BaseAuthPage";
 import { Button } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
@@ -13,6 +14,7 @@ import { usePost } from "@/Hooks/UseApi";
 import { useDispatch } from "react-redux";
 import { setAuthState } from "@/Features/Auth/authSlice";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const SetNewPasswordPage = () => {
 	const theme = useTheme();
@@ -78,7 +80,7 @@ const SetNewPasswordPage = () => {
 					placeholder={t("pages.auth.common.form.option.password.placeholder")}
 				/>
 
-				<Stack gap={theme.spacing(4)}>
+				<Stack gap={theme.spacing(LAYOUT.XS)}>
 					<BulletPointCheck
 						text={t("pages.auth.common.passwordRules.length")}
 						variant={getVariant(hasLength)}

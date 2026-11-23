@@ -87,12 +87,12 @@ const EditUserPage = () => {
 				component={"form"}
 				onSubmit={handleSubmit(onSubmit)}
 			>
-				<Stack gap={theme.spacing(8)}>
+				<Stack gap={theme.spacing(LAYOUT.LG)}>
 					<ConfigBox
 						title={t("pages.account.form.name.title")}
 						subtitle={t("pages.account.form.name.description")}
 						rightContent={
-							<Stack gap={theme.spacing(8)}>
+							<Stack gap={theme.spacing(LAYOUT.MD)}>
 								<FormTextField
 									name="firstName"
 									autoComplete="given-name"
@@ -122,6 +122,7 @@ const EditUserPage = () => {
 							<FormMultiSelectField
 								name="role"
 								fieldLabel={t("common.form.role.option.role.label")}
+								display="chips"
 								options={roleOptions}
 							/>
 						}

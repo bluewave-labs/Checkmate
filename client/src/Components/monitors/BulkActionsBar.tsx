@@ -4,7 +4,6 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Slide from "@mui/material/Slide";
-import IconButton from "@mui/material/IconButton";
 import { X } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
@@ -12,6 +11,9 @@ import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { useSidebar } from "@/Hooks/useSidebar";
+import { IconButton } from "@/Components/inputs";
+import { Icon } from "@/Components/design-elements";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 interface BulkActionsBarProps {
 	selectedCount: number;
@@ -73,7 +75,7 @@ export const BulkActionsBar = ({
 					>
 						<Typography
 							variant="body1"
-							fontWeight={600}
+							fontWeight={fontWeights.semibold}
 							color={theme.palette.text.primary}
 						>
 							{t("pages.common.monitors.actions.bulkSelected", {
@@ -85,7 +87,10 @@ export const BulkActionsBar = ({
 							onClick={onCancel}
 							aria-label={t("common.buttons.cancel")}
 						>
-							<X size={18} />
+							<Icon
+								icon={X}
+								size={18}
+							/>
 						</IconButton>
 					</Stack>
 					<Stack

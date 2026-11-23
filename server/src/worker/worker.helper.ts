@@ -1,7 +1,6 @@
 const SERVICE_NAME = "JobQueueHelper";
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { ICheckService } from "@/domain/checks/check.service.js";
-import { CHECK_TTL_SENTINEL } from "@/domain/checks/check.type.js";
 import { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
 import { IGeoChecksRepository } from "@/domain/geo-checks/geo-check.repository.interface.js";
 import { IIncidentsRepository } from "@/domain/incidents/incident.repository.interface.js";
@@ -12,11 +11,13 @@ import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
 import { ILogger } from "@/utils/logger/logger.js";
 import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
 import { ITelemetryService } from "@/domain/telemetry/telemetry.service.js";
+import { IConnectHeartbeatService } from "@/domain/connect/connect-heartbeat.service.js";
 
 export interface IWorkerHelper {
 	getCleanupOrphanedJob(): () => Promise<void>;
 	getCleanupRetentionJob(): () => Promise<void>;
 	getTelemetryJob(): () => Promise<void>;
+	getConnectHeartbeatJob(): () => Promise<void>;
 }
 
 export class WorkerHelper implements IWorkerHelper {
@@ -34,6 +35,7 @@ export class WorkerHelper implements IWorkerHelper {
 	private geoChecksRepository: IGeoChecksRepository;
 	private dockerLogsRepository: IDockerLogsRepository;
 	private telemetryService: ITelemetryService;
+	private connectHeartbeatService: IConnectHeartbeatService;
 
 	constructor(
 		logger: ILogger,
@@ -47,7 +49,8 @@ export class WorkerHelper implements IWorkerHelper {
 		incidentsRepository: IIncidentsRepository,
 		geoChecksRepository: IGeoChecksRepository,
 		dockerLogsRepository: IDockerLogsRepository,
-		telemetryService: ITelemetryService
+		telemetryService: ITelemetryService,
+		connectHeartbeatService: IConnectHeartbeatService
 	) {
 		this.logger = logger.child({ service: SERVICE_NAME });
 		this.checkService = checkService;
@@ -61,11 +64,18 @@ export class WorkerHelper implements IWorkerHelper {
 		this.geoChecksRepository = geoChecksRepository;
 		this.dockerLogsRepository = dockerLogsRepository;
 		this.telemetryService = telemetryService;
+		this.connectHeartbeatService = connectHeartbeatService;
 	}
 
 	getTelemetryJob = () => {
 		return async () => {
 			await this.telemetryService.handleJob();
+		};
+	};
+
+	getConnectHeartbeatJob = () => {
+		return async () => {
+			await this.connectHeartbeatService.handleJob();
 		};
 	};
 
@@ -134,17 +144,7 @@ export class WorkerHelper implements IWorkerHelper {
 		return async () => {
 			try {
 				const settings = await this.settingsService.getDBSettings();
-
-				const checkTTL = settings.checkTTL; // Check TTL is in DAYS, not MS
-
-				if (checkTTL === CHECK_TTL_SENTINEL) {
-					this.logger.info("Check TTL is set to unlimited, skipping cleanup");
-					return;
-				}
-				const checkTTLInMs = checkTTL * 24 * 60 * 60 * 1000;
-				const cutoffDate = new Date(Date.now() - checkTTLInMs);
-				const deleteCount = await this.checkService.deleteOlderThan(cutoffDate);
-				this.logger.info({ count: deleteCount, cutoff: cutoffDate.toISOString() }, "Deleted checks older than the retention cutoff");
+				await this.checkService.applyRetention(settings.checkTTL);
 			} catch (error: unknown) {
 				this.logger.error({ err: error }, "Retention cleanup failed");
 			}

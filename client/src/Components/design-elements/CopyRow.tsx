@@ -1,7 +1,6 @@
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { Copy } from "lucide-react";
@@ -9,6 +8,7 @@ import { CodeBlock } from "./CodeBlock";
 import Icon from "./Icon";
 import { useToast } from "@/Hooks/UseToast";
 import { LAYOUT } from "@/Utils/Theme/constants";
+import { IconButton } from "@/Components/inputs";
 
 interface CopyRowProps {
 	label: string;

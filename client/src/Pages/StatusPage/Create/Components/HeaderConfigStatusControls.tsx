@@ -5,6 +5,7 @@ import { Trash } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface HeaderConfigStatusControlsProps {
 	onDelete: () => void;
@@ -17,7 +18,7 @@ export const HeaderConfigStatusControls = ({
 	const translate = useTranslation();
 	return (
 		<Stack
-			spacing={{ xs: theme.spacing(8), md: 0 }}
+			spacing={{ xs: theme.spacing(LAYOUT.MD), md: 0 }}
 			direction={{ xs: "column", md: "row" }}
 			alignItems={"center"}
 			justifyContent={"end"}

@@ -5,6 +5,9 @@ import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { WifiOff } from "lucide-react";
 import { useState, useEffect } from "react";
+import { LAYOUT } from "@/Utils/Theme/constants";
+import Icon from "./Icon";
+import { fontWeights } from "@/Utils/Theme/Palette";
 
 interface OfflineBannerProps {
 	visible: boolean;
@@ -39,8 +42,8 @@ export const OfflineBanner = ({ visible }: OfflineBannerProps) => {
 				zIndex: theme.zIndex.snackbar,
 				backgroundColor: theme.palette.error.dark,
 				color: "#FFFFFF",
-				px: theme.spacing(8),
-				py: theme.spacing(4),
+				px: theme.spacing(LAYOUT.MD),
+				py: theme.spacing(LAYOUT.XS),
 				transition: "top 1s ease-in-out",
 			}}
 		>
@@ -48,12 +51,15 @@ export const OfflineBanner = ({ visible }: OfflineBannerProps) => {
 				direction="row"
 				alignItems="center"
 				justifyContent="center"
-				gap={theme.spacing(4)}
+				gap={theme.spacing(LAYOUT.XS)}
 			>
-				<WifiOff size={20} />
+				<Icon
+					icon={WifiOff}
+					size={20}
+				/>
 				<Typography
 					variant="body2"
-					fontWeight={500}
+					fontWeight={fontWeights.medium}
 				>
 					{t("components.offlineBanner.serverUnreachable")}
 				</Typography>

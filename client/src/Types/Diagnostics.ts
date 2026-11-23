@@ -4,7 +4,7 @@ export interface Diagnostics {
 	v8HeapStats: V8HeapStats;
 	eventLoopDelayMs: number;
 	uptimeMs: number;
-	mongoStats: MongoStats;
+	mongoStats: MongoStats | null;
 }
 
 export interface OsStats {
@@ -23,11 +23,11 @@ export interface V8HeapStats {
 
 export interface MongoStats {
 	readyState: number;
-	readsPerSecond: number;
-	insertsPerSecond: number;
-	updatesPerSecond: number;
-	deletesPerSecond: number;
-	writesPerSecond: number;
+	readsPerSecond: number | null;
+	insertsPerSecond: number | null;
+	updatesPerSecond: number | null;
+	deletesPerSecond: number | null;
+	writesPerSecond: number | null;
 	host: string;
 	port: number;
 	dbName: string;

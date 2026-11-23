@@ -59,6 +59,7 @@ const SECRET_KEYS = [
 	"heartbeatKey",
 	"heartbeatKeyHash",
 	"token",
+	"recoveryKey",
 ];
 const REDACT_PATHS = SECRET_KEYS.flatMap((key) => [key, `*.${key}`, `*.*.${key}`]);
 

@@ -11,11 +11,11 @@ export const collectionDiagnosticsSchema = z.object({
 
 export const mongoDiagnosticsSchema = z.object({
 	readyState: z.number(),
-	readsPerSecond: z.number(),
-	insertsPerSecond: z.number(),
-	updatesPerSecond: z.number(),
-	deletesPerSecond: z.number(),
-	writesPerSecond: z.number(),
+	readsPerSecond: z.number().nullable(),
+	insertsPerSecond: z.number().nullable(),
+	updatesPerSecond: z.number().nullable(),
+	deletesPerSecond: z.number().nullable(),
+	writesPerSecond: z.number().nullable(),
 	host: z.string(),
 	port: z.number(),
 	dbName: z.string(),
@@ -34,6 +34,6 @@ export const diagnosticsSchema = z
 		}),
 		eventLoopDelayMs: z.number(),
 		uptimeMs: z.number(),
-		mongoStats: mongoDiagnosticsSchema,
+		mongoStats: mongoDiagnosticsSchema.nullable(),
 	})
 	.meta({ id: "Diagnostics" });

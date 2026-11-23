@@ -7,8 +7,10 @@ import type { DockerStatusPayload, MonitorPayloadMap, MonitorStatusResponse } fr
 import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
 import { ILogger } from "@/utils/logger/logger.js";
 import { CheckFilter, DateRange } from "@/types/query.js";
+import { CHECK_TTL_SENTINEL } from "@/domain/checks/check.type.js";
 
 const SERVICE_NAME = "checkService";
+const SECONDS_PER_DAY = 24 * 60 * 60;
 
 const isSmartDriveStatus = (value: unknown): value is SmartDriveStatus => SmartDriveStatuses.includes(value as SmartDriveStatus);
 const isSmartWarning = (value: unknown): value is SmartWarning => SmartWarnings.includes(value as SmartWarning);
@@ -45,7 +47,7 @@ export interface ICheckService {
 	getChecksSummaryByTeamId(params: { teamId: string; dateRange: DateRange; monitorId?: string }): Promise<ChecksSummary>;
 	deleteChecks(params: { monitorId: string; teamId: string }): Promise<number>;
 	deleteChecksByTeamId(params: { teamId: string }): Promise<number>;
-	deleteOlderThan(date: Date): Promise<number>;
+	applyRetention(checkTTLDays: number): Promise<void>;
 }
 
 export class CheckService implements ICheckService {
@@ -212,8 +214,21 @@ export class CheckService implements ICheckService {
 		return deletedCount;
 	};
 
-	deleteOlderThan = async (date: Date) => {
-		const deletedCount = await this.checksRepository.deleteOlderThan(date);
-		return deletedCount;
+	applyRetention = async (checkTTLDays: number): Promise<void> => {
+		if (!Number.isInteger(checkTTLDays) || checkTTLDays < 1) {
+			this.logger.error({ checkTTL: checkTTLDays }, "Check retention not applied: checkTTL must be a whole number of days");
+			return;
+		}
+		const expireAfterSeconds = checkTTLDays === CHECK_TTL_SENTINEL ? null : checkTTLDays * SECONDS_PER_DAY;
+		try {
+			const ttlApplied = await this.checksRepository.setExpireAfterSeconds(expireAfterSeconds);
+			if (ttlApplied || expireAfterSeconds === null) return;
+			await this.checksRepository.deleteOlderThan(new Date(Date.now() - expireAfterSeconds * 1000));
+		} catch (error: unknown) {
+			this.logger.error(
+				{ err: error },
+				"Check retention not applied. If the database user lacks the collMod privilege, grant it or upgrade to MongoDB 7.0 or later"
+			);
+		}
 	};
 }

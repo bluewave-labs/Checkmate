@@ -18,6 +18,7 @@ export interface User {
 	role: UserRole[];
 	teamId: string;
 	checkTTL?: number;
+	whatsNewSeen?: string;
 	createdAt: string;
 	updatedAt: string;
 }
