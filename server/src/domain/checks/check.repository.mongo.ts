@@ -13,6 +13,7 @@ import type {
 	CheckTimings,
 	DockerContainerStats,
 	HardwareCheckStats,
+	PageSpeedGroupedCheck,
 } from "@/domain/checks/check.type.js";
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
 import { CheckModel, type CheckDocument } from "@/domain/checks/check.model.js";
@@ -303,7 +304,11 @@ class MongoChecksRepository implements IChecksRepository {
 		return { checksCount, checks: this.mapDocuments(checks) };
 	};
 
-	findByDateRangeAndMonitorId = async (monitorId: string, dateRange: DateRange, options?: { type?: MonitorType }) => {
+	findByDateRangeAndMonitorId = async (
+		monitorId: string,
+		dateRange: DateRange,
+		options?: { type?: MonitorType; before?: Date; after?: Date; limit?: number }
+	) => {
 		const monitorObjectId = new mongoose.Types.ObjectId(monitorId);
 		const start = getDateForRange(dateRange);
 		const dateString = getDateFormat(dateRange);
@@ -313,7 +318,7 @@ class MongoChecksRepository implements IChecksRepository {
 			return this.findHardwareDateRangeChecks(monitorObjectId, start, end, dateString);
 		}
 		if (options?.type === "pagespeed") {
-			return this.findPageSpeedDateRangeChecks(monitorObjectId, start, end, dateString);
+			return this.findPageSpeedDateRangeChecks(monitorObjectId, start, end, dateString, options);
 		}
 		if (options?.type === "docker") {
 			return this.findDockerDateRangeChecks(monitorObjectId, start, end, dateString);
@@ -665,51 +670,98 @@ class MongoChecksRepository implements IChecksRepository {
 		};
 	};
 
-	private findPageSpeedDateRangeChecks = async (monitorObjectId: mongoose.Types.ObjectId, startDate: Date, endDate: Date, dateString: string) => {
-		const matchStage = {
+	private findPageSpeedDateRangeChecks = async (
+		monitorObjectId: mongoose.Types.ObjectId,
+		startDate: Date,
+		endDate: Date,
+		dateString: string,
+		options?: { before?: Date; after?: Date; limit?: number }
+	) => {
+		const limit = options?.limit ?? 30;
+		const matchStage: Record<string, unknown> = {
 			"metadata.monitorId": monitorObjectId,
-			createdAt: { $gte: startDate, $lte: endDate },
 			...EXCLUDE_DEGRADED_EGRESS_MATCH,
 		};
 
-		const [result] = await CheckModel.aggregate([
-			{ $match: matchStage },
-			{ $sort: { createdAt: 1 } },
-			{
-				$facet: {
-					groupedChecks: [
-						{
-							$group: {
-								_id: {
-									$dateToString: { format: dateString, date: "$createdAt" },
-								},
-								avgPerformance: { $avg: "$performance" },
-								avgAccessibility: { $avg: "$accessibility" },
-								avgBestPractices: { $avg: "$bestPractices" },
-								avgSeo: { $avg: "$seo" },
-								totalChecks: { $sum: 1 },
-							},
-						},
-						{ $sort: { _id: 1 } },
-						{
-							$project: {
-								bucketDate: "$_id",
-								performance: "$avgPerformance",
-								accessibility: "$avgAccessibility",
-								bestPractices: "$avgBestPractices",
-								seo: "$avgSeo",
-								totalChecks: 1,
-								_id: 0,
-							},
-						},
-					],
-				},
-			},
-		]);
+		if (options?.before || options?.after) {
+			const createdAtFilter: Record<string, unknown> = {};
+			if (options.before) {
+				createdAtFilter.$lt = options.before;
+			}
+			if (options.after) {
+				createdAtFilter.$gt = options.after;
+			}
+			matchStage.createdAt = createdAtFilter;
+		} else {
+			matchStage.createdAt = { $gte: startDate, $lte: endDate };
+		}
+
+		// When paginating with 'before', fetch in descending order so we get the most recent checks before the cursor,
+		// then reverse back to chronological order.
+		const sortOrder = options?.before ? -1 : options?.after ? 1 : -1;
+
+		const checks = (await CheckModel.find(matchStage)
+			.sort({ createdAt: sortOrder })
+			.limit(limit + 1)
+			.select({
+				createdAt: 1,
+				performance: 1,
+				accessibility: 1,
+				bestPractices: 1,
+				seo: 1,
+			})
+			.lean()) as Array<{
+			_id: mongoose.Types.ObjectId;
+			createdAt: Date;
+			performance?: number;
+			accessibility?: number;
+			bestPractices?: number;
+			seo?: number;
+		}>;
+
+		const hasMore = checks.length > limit;
+		const slicedChecks = hasMore ? checks.slice(0, limit) : checks;
+
+		// If sorted descending, restore chronological ascending order for display
+		if (sortOrder === -1) {
+			slicedChecks.reverse();
+		}
+
+		const groupedChecks: PageSpeedGroupedCheck[] = slicedChecks.map((check) => ({
+			bucketDate: check.createdAt.toISOString(),
+			performance: check.performance ?? 0,
+			accessibility: check.accessibility ?? 0,
+			bestPractices: check.bestPractices ?? 0,
+			seo: check.seo ?? 0,
+			totalChecks: 1,
+		}));
+
+		const oldestDate = groupedChecks[0]?.bucketDate ?? null;
+		const newestDate = groupedChecks[groupedChecks.length - 1]?.bucketDate ?? null;
+
+		let hasMoreBefore = false;
+		let hasMoreAfter = false;
+
+		if (options?.before) {
+			hasMoreBefore = hasMore;
+			hasMoreAfter = true;
+		} else if (options?.after) {
+			hasMoreBefore = true;
+			hasMoreAfter = hasMore;
+		} else {
+			hasMoreBefore = hasMore;
+			hasMoreAfter = false;
+		}
 
 		return {
 			monitorType: "pagespeed" as const,
-			groupedChecks: result?.groupedChecks ?? [],
+			groupedChecks,
+			pagination: {
+				hasMoreBefore,
+				hasMoreAfter,
+				oldestDate,
+				newestDate,
+			},
 		};
 	};
 

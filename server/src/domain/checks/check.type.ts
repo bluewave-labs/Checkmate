@@ -76,9 +76,17 @@ export interface UptimeChecksResult {
 	avgResponseTime: number;
 }
 
+export interface PageSpeedPagination {
+	hasMoreBefore: boolean;
+	hasMoreAfter: boolean;
+	oldestDate: string | null;
+	newestDate: string | null;
+}
+
 export interface PageSpeedChecksResult {
 	monitorType: "pagespeed";
 	groupedChecks: PageSpeedGroupedCheck[];
+	pagination?: PageSpeedPagination;
 }
 
 export interface HardwareChecksResult extends HardwareStats {

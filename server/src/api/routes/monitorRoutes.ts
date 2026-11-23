@@ -18,6 +18,7 @@ import {
 	importMonitorsBodyValidation,
 	getHardwareDetailsByIdParamValidation,
 	getHardwareDetailsByIdQueryValidation,
+	getPageSpeedDetailsByIdQueryValidation,
 	getDockerDetailsByIdParamValidation,
 	getDockerDetailsByIdQueryValidation,
 	getDockerContainerNameParamValidation,
@@ -103,7 +104,7 @@ export const monitorRoutes: RouteTable<IMonitorController> = {
 			summary: "Get PageSpeed detail for a monitor",
 			errors: [monitorErrors.notPageSpeedMonitor, monitorErrors.notFound],
 			params: getHardwareDetailsByIdParamValidation,
-			query: getHardwareDetailsByIdQueryValidation,
+			query: getPageSpeedDetailsByIdQueryValidation,
 			response: pageSpeedDetailsResultSchema,
 		},
 		{

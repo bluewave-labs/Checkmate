@@ -455,6 +455,23 @@ export const getDockerContainerNameParamValidation = z.object({
 export const getDockerContainerByNameQueryValidation = z.object({ dateRange: z.enum(DateRanges).default("recent") });
 
 const isoToDate = z.iso.datetime().transform((v) => new Date(v));
+
+export const getPageSpeedDetailsByIdQueryValidation = z
+	.object({
+		dateRange: z.enum(DateRanges).default("recent"),
+		before: isoToDate.optional(),
+		after: isoToDate.optional(),
+		limit: z.coerce.number().int().min(1).max(100).default(30),
+	})
+	.superRefine((query, ctx) => {
+		if (query.before && query.after) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Specify either before or after, not both",
+				path: ["after"],
+			});
+		}
+	});
 export const getDockerContainerLogsQueryValidation = z
 	.object({
 		before: isoToDate.optional(),

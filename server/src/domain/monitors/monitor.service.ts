@@ -72,7 +72,14 @@ export interface IMonitorService {
 	// read
 	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<UptimeDetailsResult>;
 	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<HardwareDetailsResult>;
-	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<PageSpeedDetailsResult>;
+	getPageSpeedDetailsById(args: {
+		teamId: string;
+		monitorId: string;
+		dateRange: DateRange;
+		before?: Date;
+		after?: Date;
+		limit?: number;
+	}): Promise<PageSpeedDetailsResult>;
 	getDockerDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<DockerDetailsResult>;
 	getDockerContainerByName(args: {
 		teamId: string;
@@ -343,10 +350,16 @@ export class MonitorService implements IMonitorService {
 		teamId,
 		monitorId,
 		dateRange,
+		before,
+		after,
+		limit,
 	}: {
 		teamId: string;
 		monitorId: string;
 		dateRange: DateRange;
+		before?: Date;
+		after?: Date;
+		limit?: number;
 	}): Promise<PageSpeedDetailsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
@@ -364,6 +377,9 @@ export class MonitorService implements IMonitorService {
 
 		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, dateRange, {
 			type: monitor.type,
+			before,
+			after,
+			limit,
 		});
 
 		if (checksData.monitorType !== "pagespeed") {
@@ -379,6 +395,7 @@ export class MonitorService implements IMonitorService {
 			monitorData: {
 				monitor,
 				groupedChecks: checksData.groupedChecks,
+				pagination: checksData.pagination,
 			},
 			monitorStats,
 		};
