@@ -19,6 +19,7 @@ export interface IChecksRepository {
 	createChecks(checks: Check[]): Promise<Check[]>;
 
 	// single fetch
+	findOldestCreatedAt(): Promise<Date | null>;
 	// collection fetch
 	findByMonitorId(
 		monitorId: string,
