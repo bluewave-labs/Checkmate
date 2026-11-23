@@ -1,5 +1,6 @@
 import { Types } from "mongoose";
 import { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
+import { ICheckRollupsRepository } from "@/domain/check-rollups/check-rollup.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import type { Check, CheckErrorInfo, ChecksQueryResult, ChecksSummary, ILighthouseAudit } from "@/domain/checks/check.type.js";
 import type { DockerStatusPayload, MonitorPayloadMap, MonitorStatusResponse } from "@/types/network.js";
@@ -43,11 +44,18 @@ export class CheckService implements ICheckService {
 
 	private monitorsRepository: IMonitorsRepository;
 	private checksRepository: IChecksRepository;
+	private checkRollupsRepository: ICheckRollupsRepository;
 	private logger: ILogger;
-	constructor(monitorsRepository: IMonitorsRepository, logger: ILogger, checksRepository: IChecksRepository) {
+	constructor(
+		monitorsRepository: IMonitorsRepository,
+		logger: ILogger,
+		checksRepository: IChecksRepository,
+		checkRollupsRepository: ICheckRollupsRepository
+	) {
 		this.monitorsRepository = monitorsRepository;
 		this.logger = logger.child({ service: SERVICE_NAME });
 		this.checksRepository = checksRepository;
+		this.checkRollupsRepository = checkRollupsRepository;
 	}
 
 	createChecks = async (checks: Check[]) => {
@@ -190,12 +198,13 @@ export class CheckService implements ICheckService {
 
 	deleteChecks = async ({ monitorId, teamId }: { monitorId: string; teamId: string }) => {
 		await this.monitorsRepository.findById(monitorId, teamId);
-
 		const deletedCount = await this.checksRepository.deleteByMonitorId(monitorId);
+		await this.checkRollupsRepository.deleteByMonitorId(monitorId);
 		return deletedCount;
 	};
 	deleteChecksByTeamId = async ({ teamId }: { teamId: string }) => {
 		const deletedCount = await this.checksRepository.deleteByTeamId(teamId);
+		await this.checkRollupsRepository.deleteByTeamId(teamId);
 		return deletedCount;
 	};
 

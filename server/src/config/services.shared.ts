@@ -41,6 +41,7 @@ import { NtfyProvider } from "@/domain/notifications/providers/ntfy.js";
 // Repository interfaces
 import { ISettingsRepository } from "@/domain/app-settings/app-settings-repository.interface.js";
 import { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
+import { ICheckRollupsRepository } from "@/domain/check-rollups/check-rollup.repository.interface.js";
 import { IGeoChecksRepository } from "@/domain/geo-checks/geo-check.repository.interface.js";
 import { IIncidentsRepository } from "@/domain/incidents/incident.repository.interface.js";
 import { IInvitesRepository } from "@/domain/invites/invite.repository.interface.js";
@@ -81,6 +82,7 @@ import MongoProxiesRepository from "@/domain/proxies/proxy.repository.mongo.js";
 import MongoConnectRepository from "@/domain/connect/connect.repository.mongo.js";
 import MongoDiagnosticsRepository from "@/domain/diagnostics/diagnostic.repository.mongo.js";
 import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
+import MongoCheckRollupsRepository from "@/domain/check-rollups/check-rollup.repository.mongo.js";
 
 // Shared infrastructure + business services that both the API and the worker process construct.
 export interface SharedServices {
@@ -104,6 +106,7 @@ export interface SharedServices {
 	// Repositories
 	monitorsRepository: IMonitorsRepository;
 	checksRepository: IChecksRepository;
+	checkRollupsRepository: ICheckRollupsRepository;
 	geoChecksRepository: IGeoChecksRepository;
 	dockerLogsRepository: IDockerLogsRepository;
 	monitorStatsRepository: IMonitorStatsRepository;
@@ -147,6 +150,7 @@ export const buildShared = async ({
 	// Repositories
 	const monitorsRepository = new MongoMonitorsRepository();
 	const checksRepository = new MongoChecksRepository(logger);
+	const checkRollupsRepository = new MongoCheckRollupsRepository();
 	const incidentsRepository = new MongoIncidentsRepository();
 	const usersRepository = new MongoUsersRepository();
 	const geoChecksRepository = new MongoGeoChecksRepository();
@@ -173,7 +177,7 @@ export const buildShared = async ({
 	const notificationMessageBuilder = new NotificationMessageBuilder();
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 	const incidentService = new IncidentService(logger, incidentsRepository, monitorsRepository, usersRepository, notificationMessageBuilder);
-	const checkService = new CheckService(monitorsRepository, logger, checksRepository);
+	const checkService = new CheckService(monitorsRepository, logger, checksRepository, checkRollupsRepository);
 
 	const globalPingService = new GlobalPingService(logger);
 	const geoChecksService = new GeoChecksService({

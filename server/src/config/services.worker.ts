@@ -27,6 +27,7 @@ import { ConnectOperationService } from "@/domain/connect/connect-operation.serv
 import { ConnectScheduleService } from "@/domain/connect/connect-schedule.service.js";
 import { IQueueWorker, JobHandlers } from "@/worker/worker.interface.js";
 import { WorkerHelper } from "@/worker/worker.helper.js";
+import { CheckRollupService } from "@/domain/check-rollups/check-rollup.service.js";
 import { GeoChecksPipeline } from "@/worker/worker.geo-pipeline.js";
 import { NotificationReactor } from "@/worker/reactors/reactor.notification.js";
 import { IncidentReactor } from "@/worker/reactors/reactor.incident.js";
@@ -72,6 +73,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		monitorsRepository,
 		encryptionService,
 		checksRepository,
+		checkRollupsRepository,
 		geoChecksRepository,
 		dockerLogsRepository,
 		monitorStatsRepository,
@@ -151,6 +153,8 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	// Worker
 	// ***********************
 
+	const checkRollupService = new CheckRollupService(checkRollupsRepository, checksRepository, settingsService);
+
 	const workerHelper = new WorkerHelper(
 		logger,
 		checkService,
@@ -164,12 +168,15 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		geoChecksRepository,
 		dockerLogsRepository,
 		telemetryService,
-		connectHeartbeatService
+		connectHeartbeatService,
+		checkRollupsRepository,
+		checkRollupService
 	);
 
 	const handlers: JobHandlers = {
 		check: pipeline.handleCheck,
 		evaluate: pipeline.handleEvaluate,
+		"rollup-checks": workerHelper.getRollupChecksJob(),
 		"geo-check": geoCheckPipeline.handle,
 		"cleanup-orphaned": workerHelper.getCleanupOrphanedJob(),
 		"cleanup-retention": workerHelper.getCleanupRetentionJob(),
