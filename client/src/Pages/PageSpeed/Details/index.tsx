@@ -20,6 +20,7 @@ import { useTheme } from "@mui/material";
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import type { DateRange } from "@/Types/Query";
 import { LAYOUT } from "@/Utils/Theme/constants";
+import { logger } from "@/Utils/logger";
 
 const PageSpeedDetails = () => {
 	const { monitorId } = useParams();
@@ -116,8 +117,15 @@ const PageSpeedDetails = () => {
 					}));
 				}
 			}
-		} catch {
-			// Fail gracefully
+		} catch (err) {
+			logger.error(
+				"Failed to preload older pagespeed checks",
+				err instanceof Error ? err : undefined,
+				{
+					monitorId,
+					oldestDate: pagination.oldestDate,
+				}
+			);
 		} finally {
 			setIsLoadingBefore(false);
 			isFetchingRef.current = false;
@@ -170,8 +178,15 @@ const PageSpeedDetails = () => {
 					}));
 				}
 			}
-		} catch {
-			// Fail gracefully
+		} catch (err) {
+			logger.error(
+				"Failed to preload newer pagespeed checks",
+				err instanceof Error ? err : undefined,
+				{
+					monitorId,
+					newestDate: pagination.newestDate,
+				}
+			);
 		} finally {
 			setIsLoadingAfter(false);
 			isFetchingRef.current = false;
