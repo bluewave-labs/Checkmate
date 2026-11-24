@@ -215,13 +215,17 @@
 				"day": "Dia",
 				"month": "Mes",
 				"recent": "Recent",
-				"week": "Setmana"
+				"week": "Setmana",
+				"year": "Any",
+				"all": "Tot"
 			},
 			"description": {
 				"recent": "Mostrant estadístiques de les darreres 2 hores.",
 				"day": "Mostrant estadístiques de les darreres 24 hores.",
 				"week": "Mostrant estadístiques dels darrers 7 dies.",
-				"month": "Mostrant estadístiques dels darrers 30 dies."
+				"month": "Mostrant estadístiques dels darrers 30 dies.",
+				"year": "Mostrant estadístiques dels darrers 365 dies.",
+				"all": "Mostrant estadístiques de tot el període."
 			}
 		},
 		"offlineBanner": {

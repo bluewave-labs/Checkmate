@@ -188,13 +188,17 @@
 				"day": "Wyświetlanie statystyk z ostatnich 24 godzin.",
 				"month": "Wyświetlanie statystyk z ostatnich 30 dni.",
 				"recent": "Wyświetlanie statystyk z ostatnich 2 godzin.",
-				"week": "Wyświetlanie statystyk z ostatnich 7 dni."
+				"week": "Wyświetlanie statystyk z ostatnich 7 dni.",
+				"year": "Wyświetlanie statystyk z ostatnich 365 dni.",
+				"all": "Wyświetlanie statystyk z całego okresu."
 			},
 			"labels": {
 				"day": "Dzień",
 				"month": "Miesiąc",
 				"recent": "Najnowsze",
-				"week": "Tydzień"
+				"week": "Tydzień",
+				"year": "Rok",
+				"all": "Wszystkie"
 			}
 		},
 		"imageUpload": {

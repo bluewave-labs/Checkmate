@@ -202,13 +202,17 @@
 				"day": "Ngày",
 				"month": "Tháng",
 				"recent": "Gần đây",
-				"week": "Tuần"
+				"week": "Tuần",
+				"year": "Năm",
+				"all": "Tất cả"
 			},
 			"description": {
 				"recent": "Hiển thị thống kê trong 2 giờ qua.",
 				"day": "Hiển thị thống kê trong 24 giờ qua.",
 				"week": "Hiển thị thống kê trong 7 ngày qua.",
-				"month": "Hiển thị thống kê trong 30 ngày qua."
+				"month": "Hiển thị thống kê trong 30 ngày qua.",
+				"year": "Hiển thị thống kê trong 365 ngày qua.",
+				"all": "Hiển thị thống kê của toàn bộ thời gian."
 			}
 		},
 		"offlineBanner": {

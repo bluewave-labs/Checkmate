@@ -215,13 +215,17 @@
 				"day": "Day",
 				"month": "Month",
 				"recent": "Recent",
-				"week": "Week"
+				"week": "Week",
+				"year": "Year",
+				"all": "All"
 			},
 			"description": {
 				"recent": "Showing statistics for past 2 hours.",
 				"day": "Showing statistics for past 24 hours.",
 				"week": "Showing statistics for past 7 days.",
-				"month": "Showing statistics for past 30 days."
+				"month": "Showing statistics for past 30 days.",
+				"year": "Showing statistics for past 365 days.",
+				"all": "Showing statistics for all time."
 			}
 		},
 		"offlineBanner": {
