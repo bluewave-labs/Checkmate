@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { getDateForRange, getDateFormat } from "../../../src/utils/dataUtils.ts";
+import { getDateForRange, getDateFormat, usesRollups } from "../../../src/utils/dataUtils.ts";
 import { DateRanges, type DateRange } from "../../../src/types/query.ts";
 
 describe("getDateForRange", () => {
@@ -40,5 +40,15 @@ describe("getDateFormat", () => {
 		for (const range of DateRanges) {
 			expect(getDateFormat(range)).toMatch(/^%Y-%m-%d/);
 		}
+	});
+});
+
+describe("usesRollups", () => {
+	it.each(["recent", "hour"] as const)("is false for the %s range, which charts per-minute buckets", (range) => {
+		expect(usesRollups(range)).toBe(false);
+	});
+
+	it.each(["day", "week", "month", "all"] as const)("is true for the %s range", (range) => {
+		expect(usesRollups(range)).toBe(true);
 	});
 });
