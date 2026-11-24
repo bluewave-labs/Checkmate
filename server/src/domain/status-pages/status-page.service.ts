@@ -3,7 +3,7 @@ import type { Incident, PublicIncident } from "@/domain/incidents/incident.type.
 import { type IStatusPagesRepository } from "@/domain/status-pages/status-page-repository.interface.js";
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
-import { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
+import { ICheckRollupsRepository } from "@/domain/check-rollups/check-rollup.repository.interface.js";
 import type { DailyCheckBucket } from "@/domain/checks/check.type.js";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc.js";
@@ -45,7 +45,7 @@ export class StatusPageService implements IStatusPageService {
 		private statusPagesRepository: IStatusPagesRepository,
 		private settingsService: ISettingsService,
 		private monitorsRepository: IMonitorsRepository,
-		private checksRepository: IChecksRepository,
+		private checkRollupsRepository: ICheckRollupsRepository,
 		private incidentsRepository: IIncidentsRepository
 	) {}
 
@@ -176,7 +176,7 @@ export class StatusPageService implements IStatusPageService {
 
 		const days = STATUS_PAGE_RANGE_DAYS[range];
 		const bucketTimezone = statusPage.timezone;
-		const buckets = await this.checksRepository.getDailyStatusBuckets(statusPage.monitors, days, bucketTimezone);
+		const buckets = await this.checkRollupsRepository.getDailyStatusBuckets(statusPage.monitors, days, bucketTimezone);
 		const bucketsByMonitor = buckets.reduce((grouped, bucket) => {
 			const monitorBuckets = grouped.get(bucket.monitorId);
 			if (monitorBuckets) {

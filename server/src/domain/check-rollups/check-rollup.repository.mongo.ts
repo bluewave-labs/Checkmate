@@ -1,15 +1,21 @@
 import mongoose from "mongoose";
 import { CheckModel } from "@/domain/checks/check.model.js";
 import { CheckRollupModel } from "@/domain/check-rollups/check-rollup.model.js";
-import { buildCoreRollupStages, buildRollupMergeStage, buildUptimeReadStages } from "@/domain/check-rollups/check-rollup.pipeline.js";
+import {
+	buildCoreRollupStages,
+	buildDailyStatusReadStages,
+	buildRollupMergeStage,
+	buildUptimeReadStages,
+} from "@/domain/check-rollups/check-rollup.pipeline.js";
 import type { ICheckRollupsRepository } from "@/domain/check-rollups/check-rollup.repository.interface.js";
 import { ROLLUP_RAW_TAIL_HOURS, floorToRollupBucket, type UptimeRollupBucket } from "@/domain/check-rollups/check-rollup.type.js";
-import type { UptimeChecksResult } from "@/domain/checks/check.type.js";
+import type { DailyCheckBucket, UptimeChecksResult } from "@/domain/checks/check.type.js";
 import type { UptimeDetailsSupportedType } from "@/domain/monitors/monitor.type.js";
 import type { DateRange } from "@/types/query.js";
 import { getDateForRange, getDateFormat } from "@/utils/dataUtils.js";
 
 const SERVICE_NAME = "CheckRollupsRepository";
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const RAW_TAIL_MS = ROLLUP_RAW_TAIL_HOURS * 60 * 60 * 1000;
 const ratio = (sum: number, count: number): number => (count > 0 ? sum / count : 0);
 class MongoCheckRollupsRepository implements ICheckRollupsRepository {
@@ -39,6 +45,22 @@ class MongoCheckRollupsRepository implements ICheckRollupsRepository {
 			})
 		);
 		return this.toUptimeChecksResult(monitorType, buckets);
+	};
+
+	getDailyStatusBuckets = async (monitorIds: string[], days: number, timezone: string): Promise<DailyCheckBucket[]> => {
+		const now = new Date();
+		const from = floorToRollupBucket(now.getTime() - days * MS_PER_DAY);
+		const rawFrom = Math.max(from, floorToRollupBucket(now.getTime()) - RAW_TAIL_MS);
+		return CheckRollupModel.aggregate<DailyCheckBucket>(
+			buildDailyStatusReadStages({
+				monitorIds: monitorIds.map((id) => new mongoose.Types.ObjectId(id)),
+				from: new Date(from),
+				rawFrom: new Date(rawFrom),
+				now,
+				timezone,
+				checksCollectionName: CheckModel.collection.collectionName,
+			})
+		);
 	};
 
 	deleteByMonitorId = async (monitorId: string): Promise<number> => {
