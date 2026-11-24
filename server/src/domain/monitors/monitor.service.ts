@@ -38,6 +38,7 @@ import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.int
 import { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import { isCaptureDockerUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
 import { toHeartbeatSlug } from "@/utils/heartbeatSlug.js";
+import { usesRollups } from "@/utils/dataUtils.js";
 import { monitorErrors } from "@/domain/monitors/monitor.errors.js";
 
 const SERVICE_NAME = "MonitorService";
@@ -254,6 +255,13 @@ export class MonitorService implements IMonitorService {
 		return demoMonitors;
 	};
 
+	private findUptimeChecks = async (monitor: Monitor, dateRange: DateRange) => {
+		if (usesRollups(dateRange) && supportsUptimeDetails(monitor.type)) {
+			return this.checkRollupsRepository.findUptimeDateRange(monitor.id, monitor.type, dateRange);
+		}
+		return this.checksRepository.findByDateRangeAndMonitorId(monitor.id, dateRange, { type: monitor.type });
+	};
+
 	getUptimeDetailsById = async ({
 		teamId,
 		monitorId,
@@ -270,9 +278,7 @@ export class MonitorService implements IMonitorService {
 				service: SERVICE_NAME,
 			});
 		}
-		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, dateRange, {
-			type: monitor.type,
-		});
+		const checksData = await this.findUptimeChecks(monitor, dateRange);
 		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
 
 		if (!isUptimeChecksResult(checksData)) {

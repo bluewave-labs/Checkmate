@@ -43,6 +43,7 @@ const createChecksRepositoryMock = () =>
 const createCheckRollupsRepositoryMock = () =>
 	({
 		deleteByMonitorId: jest.fn().mockResolvedValue(0),
+		findUptimeDateRange: jest.fn(),
 	}) as unknown as ICheckRollupsRepository;
 
 const createMonitorStatsRepositoryMock = () =>
@@ -278,11 +279,11 @@ describe("MonitorService", () => {
 		it("supports all uptime monitor types: ping, port, game, grpc, websocket, dns, heartbeat", async () => {
 			for (const monitorType of ["ping", "port", "game", "grpc", "websocket", "dns", "heartbeat"] as const) {
 				const monitorsRepository = createMonitorsRepositoryMock();
-				const checksRepository = createChecksRepositoryMock();
+				const checkRollupsRepository = createCheckRollupsRepositoryMock();
 				const monitorStatsRepository = createMonitorStatsRepositoryMock();
 				const monitor = makeMonitor({ type: monitorType });
 				(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
-				(checksRepository.findByDateRangeAndMonitorId as jest.Mock).mockResolvedValue({
+				(checkRollupsRepository.findUptimeDateRange as jest.Mock).mockResolvedValue({
 					monitorType,
 					groupedChecks: [],
 					groupedUpChecks: [],
@@ -292,7 +293,7 @@ describe("MonitorService", () => {
 				});
 				(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(null);
 
-				const { service } = createService({ monitorsRepository, checksRepository, monitorStatsRepository });
+				const { service } = createService({ monitorsRepository, checkRollupsRepository, monitorStatsRepository });
 				const result = await service.getUptimeDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "day" });
 				expect(result.monitorData.monitor.type).toBe(monitorType);
 			}
@@ -396,27 +397,46 @@ describe("MonitorService", () => {
 			);
 		});
 
-		it("uses different date ranges correctly", async () => {
-			for (const dateRange of ["recent", "day", "week", "month", "all"] as const) {
-				const monitorsRepository = createMonitorsRepositoryMock();
-				const checksRepository = createChecksRepositoryMock();
-				const monitorStatsRepository = createMonitorStatsRepositoryMock();
-				const monitor = makeMonitor();
-				(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
-				(checksRepository.findByDateRangeAndMonitorId as jest.Mock).mockResolvedValue({
-					monitorType: "http",
-					groupedChecks: [],
-					groupedUpChecks: [],
-					groupedDownChecks: [],
-					uptimePercentage: 1,
-					avgResponseTime: 50,
-				});
-				(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(null);
+		const uptimeChecksResult = {
+			monitorType: "http",
+			groupedChecks: [],
+			groupedUpChecks: [],
+			groupedDownChecks: [],
+			uptimePercentage: 1,
+			avgResponseTime: 50,
+		};
 
-				const { service } = createService({ monitorsRepository, checksRepository, monitorStatsRepository });
-				await service.getUptimeDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange });
-				expect(checksRepository.findByDateRangeAndMonitorId).toHaveBeenCalled();
-			}
+		const setupRouting = () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			const checkRollupsRepository = createCheckRollupsRepositoryMock();
+			const monitorStatsRepository = createMonitorStatsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor());
+			(checksRepository.findByDateRangeAndMonitorId as jest.Mock).mockResolvedValue(uptimeChecksResult);
+			(checkRollupsRepository.findUptimeDateRange as jest.Mock).mockResolvedValue(uptimeChecksResult);
+			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(null);
+			const { service } = createService({ monitorsRepository, checksRepository, checkRollupsRepository, monitorStatsRepository });
+			return { service, checksRepository, checkRollupsRepository };
+		};
+
+		it.each(["recent", "hour"] as const)("reads raw checks for the %s range", async (dateRange) => {
+			const { service, checksRepository, checkRollupsRepository } = setupRouting();
+
+			await service.getUptimeDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange });
+
+			expect(checksRepository.findByDateRangeAndMonitorId).toHaveBeenCalledWith(MONITOR_ID, dateRange, { type: "http" });
+			expect(checkRollupsRepository.findUptimeDateRange).not.toHaveBeenCalled();
+		});
+
+		it.each(["day", "week", "month", "all"] as const)("reads rollups for the %s range", async (dateRange) => {
+			const { service, checksRepository, checkRollupsRepository } = setupRouting();
+
+			const result = await service.getUptimeDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange });
+
+			expect(checkRollupsRepository.findUptimeDateRange).toHaveBeenCalledWith(MONITOR_ID, "http", dateRange);
+			expect(checksRepository.findByDateRangeAndMonitorId).not.toHaveBeenCalled();
+			expect(result.monitorData.groupedUptimePercentage).toBe(1);
+			expect(result.monitorData.groupedAvgResponseTime).toBe(50);
 		});
 	});
 

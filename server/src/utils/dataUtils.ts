@@ -1,4 +1,6 @@
-import { type DateRange } from "@/types/query.js";
+import { RawOnlyDateRanges, type DateRange } from "@/types/query.js";
+
+export const usesRollups = (dateRange: DateRange): boolean => !RawOnlyDateRanges.some((range) => range === dateRange);
 
 export const getDateForRange = (dateRange: DateRange): Date => {
 	const now = Date.now();

@@ -3,23 +3,21 @@ import type { IChecksRepository } from "@/domain/checks/check.repository.interfa
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { CHECK_TTL_SENTINEL } from "@/domain/checks/check.type.js";
 import {
-	ROLLUP_BUCKET_MINUTES,
+	ROLLUP_BUCKET_MS,
 	ROLLUP_CHUNK_HOURS,
 	ROLLUP_REROLL_HOURS,
 	ROLLUP_RETENTION_MARGIN_HOURS,
+	floorToRollupBucket,
 } from "@/domain/check-rollups/check-rollup.type.js";
 
 const SERVICE_NAME = "CheckRollupService";
 const MS_PER_HOUR = 60 * 60 * 1000;
 const MS_PER_DAY = 24 * MS_PER_HOUR;
-const BUCKET_MS = ROLLUP_BUCKET_MINUTES * 60 * 1000;
 const CHUNK_MS = ROLLUP_CHUNK_HOURS * MS_PER_HOUR;
 const REROLL_MS = ROLLUP_REROLL_HOURS * MS_PER_HOUR; // Roll ups overlap by 2h to account for late checks
 const RETENTION_MARGIN_MS = ROLLUP_RETENTION_MARGIN_HOURS * MS_PER_HOUR;
 
-const floorToBucket = (ms: number): number => Math.floor(ms / BUCKET_MS) * BUCKET_MS;
-const ceilToBucket = (ms: number): number => Math.ceil(ms / BUCKET_MS) * BUCKET_MS;
-
+const ceilToBucket = (ms: number): number => Math.ceil(ms / ROLLUP_BUCKET_MS) * ROLLUP_BUCKET_MS;
 export interface ICheckRollupService {
 	rollUpClosedBuckets(): Promise<void>;
 }
@@ -43,7 +41,7 @@ export class CheckRollupService implements ICheckRollupService {
 		// If there aren't any checks at all, return null, nothing to do
 		const oldest = await this.checksRepository.findOldestCreatedAt();
 		if (!oldest) return null;
-		return floorToBucket(oldest.getTime());
+		return floorToRollupBucket(oldest.getTime());
 	};
 
 	private findWindowStart = async (now: number): Promise<number | null> => {
@@ -61,7 +59,7 @@ export class CheckRollupService implements ICheckRollupService {
 
 	rollUpClosedBuckets = async (): Promise<void> => {
 		const now = Date.now();
-		const to = floorToBucket(now);
+		const to = floorToRollupBucket(now);
 		const from = await this.findWindowStart(now);
 		if (from === null || from >= to) return;
 
