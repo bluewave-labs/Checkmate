@@ -428,7 +428,7 @@ describe("MonitorService", () => {
 			expect(checkRollupsRepository.findUptimeDateRange).not.toHaveBeenCalled();
 		});
 
-		it.each(["day", "week", "month", "all"] as const)("reads rollups for the %s range", async (dateRange) => {
+		it.each(["day", "week", "month", "year", "all"] as const)("reads rollups for the %s range", async (dateRange) => {
 			const { service, checksRepository, checkRollupsRepository } = setupRouting();
 
 			const result = await service.getUptimeDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange });

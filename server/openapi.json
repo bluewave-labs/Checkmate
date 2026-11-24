@@ -6607,7 +6607,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"]
+							"enum": ["recent", "hour", "day", "week", "month", "year", "all"]
 						},
 						"required": false,
 						"name": "dateRange",
@@ -6733,7 +6733,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"]
+							"enum": ["recent", "hour", "day", "week", "month", "year", "all"]
 						},
 						"required": true,
 						"name": "dateRange",
@@ -6983,7 +6983,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"]
+							"enum": ["recent", "hour", "day", "week", "month", "year", "all"]
 						},
 						"required": true,
 						"name": "dateRange",
@@ -7378,7 +7378,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"]
+							"enum": ["recent", "hour", "day", "week", "month", "year", "all"]
 						},
 						"required": true,
 						"name": "dateRange",
@@ -7559,7 +7559,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"],
+							"enum": ["recent", "hour", "day", "week", "month", "year", "all"],
 							"default": "all"
 						},
 						"required": false,
@@ -9552,7 +9552,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"]
+							"enum": ["recent", "hour", "day", "week", "month", "year", "all"]
 						},
 						"required": true,
 						"name": "dateRange",
@@ -9658,7 +9658,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"],
+							"enum": ["recent", "hour", "day", "week", "month", "year", "all"],
 							"default": "recent"
 						},
 						"required": false,
@@ -9765,7 +9765,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"],
+							"enum": ["recent", "hour", "day", "week", "month", "year", "all"],
 							"default": "recent"
 						},
 						"required": false,
@@ -9872,7 +9872,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"],
+							"enum": ["recent", "hour", "day", "week", "month", "year", "all"],
 							"default": "recent"
 						},
 						"required": false,
@@ -9988,7 +9988,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"],
+							"enum": ["recent", "hour", "day", "week", "month", "year", "all"],
 							"default": "recent"
 						},
 						"required": false,
@@ -10266,7 +10266,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["recent", "hour", "day", "week", "month", "all"],
+							"enum": ["recent", "hour", "day", "week", "month", "year", "all"],
 							"default": "recent"
 						},
 						"required": false,

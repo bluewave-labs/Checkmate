@@ -78,7 +78,7 @@ const seedHistory = async () => {
 };
 
 describe("MongoCheckRollupsRepository.findUptimeDateRange", () => {
-	it.each(["day", "week", "month", "all"] as const)("returns the same result as the raw query for the %s range", async (dateRange) => {
+	it.each(["day", "week", "month", "year", "all"] as const)("returns the same result as the raw query for the %s range", async (dateRange) => {
 		const { rollUpEverything, readRollups, readRaw } = setup();
 		await seedHistory();
 		await rollUpEverything();
