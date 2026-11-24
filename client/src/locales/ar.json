@@ -1504,6 +1504,10 @@
 				},
 				"pie": {
 					"title": "تقرير الأداء"
+				},
+				"scoreHistory": {
+					"title": "سجل النقاط",
+					"scrollToExplore": "مرر للاستكشاف"
 				}
 			},
 			"table": {

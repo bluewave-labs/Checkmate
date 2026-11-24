@@ -1494,6 +1494,10 @@
 				},
 				"pie": {
 					"title": "效能報告"
+				},
+				"scoreHistory": {
+					"title": "評分歷史",
+					"scrollToExplore": "滑動以查看更多"
 				}
 			},
 			"table": {
