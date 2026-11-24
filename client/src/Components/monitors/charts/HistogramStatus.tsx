@@ -58,7 +58,6 @@ interface HistogramStatusProps {
 	range: string;
 	metric?: HistogramStatusMetric;
 	countColor?: PaletteKey;
-	// Share of the range's checks shown by this chart (0-1); omitted when the range has no checks
 	percentage?: number;
 	percentageColor?: string;
 }
@@ -141,7 +140,7 @@ export const HistogramStatus = ({
 					</Stack>
 					{percentage !== undefined && (
 						<Typography color={percentageColor}>
-							{formatPercentage(percentage)}
+							{formatPercentage(percentage, { clampExtremes: true })}
 						</Typography>
 					)}
 				</Stack>

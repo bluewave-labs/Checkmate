@@ -196,7 +196,6 @@ const UptimeDetailsPage = () => {
 	const rangeChecks = upChecks + downChecks;
 	const upPercentage = rangeChecks > 0 ? upChecks / rangeChecks : undefined;
 	const downPercentage = rangeChecks > 0 ? downChecks / rangeChecks : undefined;
-	// Both charts share the uptime color: a low downtime is as good as a high uptime
 	const percentageColor =
 		upPercentage !== undefined
 			? theme.palette[getUptimePercentageColor(upPercentage)].main
