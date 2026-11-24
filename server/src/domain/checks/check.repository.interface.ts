@@ -2,7 +2,6 @@ import type {
 	Check,
 	ChecksQueryResult,
 	ChecksSummary,
-	DailyCheckBucket,
 	DockerChecksResult,
 	DockerContainerStats,
 	HardwareChecksResult,
@@ -46,7 +45,6 @@ export interface IChecksRepository {
 	findDockerContainerChecks(monitorId: string, containerName: string, dateRange: DateRange): Promise<Omit<DockerContainerStats, "restartsInRange">>;
 	findSummaryByTeamId(teamId: string, dateRange: DateRange, monitorId?: string): Promise<ChecksSummary>;
 	findUnevaluatedByMonitorId(monitorId: string, pending: PendingCheck[]): Promise<Check[]>;
-	getDailyStatusBuckets(monitorIds: string[], days: number, timezone: string): Promise<DailyCheckBucket[]>;
 
 	// update
 	//delete

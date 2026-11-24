@@ -57,8 +57,6 @@ const seedCheck = (overrides: Record<string, unknown> = {}) =>
 const seedDegradedFailure = (overrides: Record<string, unknown> = {}) =>
 	seedCheck({ status: false, responseTime: 300, egressStatus: "degraded", ...overrides });
 
-const utcDate = (date: Date) => date.toISOString().slice(0, 10);
-
 const makeCheck = (overrides: Partial<Check> = {}): Check =>
 	({
 		metadata: { monitorId: MONITOR_ID.toString(), teamId: TEAM_ID.toString(), type: "http" },
@@ -164,21 +162,6 @@ describe("MongoChecksRepository degraded-egress exclusion", () => {
 		const summary = await repo.findSummaryByTeamId(TEAM_ID.toString(), "day", otherMonitor.toString());
 
 		expect(summary).toEqual({ totalChecks: 0, downChecks: 0, degradedChecks: 1 });
-	});
-
-	it("excludes degraded checks from the daily status buckets, dropping a day that saw nothing else", async () => {
-		const otherMonitor = new mongoose.Types.ObjectId();
-		await seedCheck();
-		await seedCheck({ status: false });
-		await seedDegradedFailure();
-		await seedDegradedFailure({ metadata: { monitorId: otherMonitor, teamId: TEAM_ID, type: "http" } });
-
-		const buckets = await repo.getDailyStatusBuckets([MONITOR_ID.toString(), otherMonitor.toString()], 7, "UTC");
-
-		// The other monitor saw only degraded checks that day, so it gets no row rather than a 0/0 bucket.
-		expect(buckets).toEqual([
-			{ monitorId: MONITOR_ID.toString(), date: utcDate(BUCKET_TIME), totalChecks: 2, upChecks: 1, downChecks: 1, avgResponseTime: 100 },
-		]);
 	});
 
 	it("keeps degraded checks in the paginated listing so they can be shown as such", async () => {

@@ -3,7 +3,7 @@ import { StatusPageService } from "../../../src/domain/status-pages/status-page.
 import type { IStatusPagesRepository } from "../../../src/domain/status-pages/status-page-repository.interface.ts";
 import type { ISettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
-import type { IChecksRepository } from "../../../src/domain/checks/check.repository.interface.ts";
+import type { ICheckRollupsRepository } from "../../../src/domain/check-rollups/check-rollup.repository.interface.ts";
 import type { IIncidentsRepository } from "../../../src/domain/incidents/incident.repository.interface.ts";
 import type { CheckSnapshot } from "../../../src/domain/checks/check.type.ts";
 import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
@@ -81,10 +81,10 @@ const createMonitorsRepo = () =>
 		findByIds: jest.fn().mockResolvedValue([makeMonitor()]),
 	}) as unknown as jest.Mocked<IMonitorsRepository>;
 
-const createChecksRepo = () =>
+const createCheckRollupsRepo = () =>
 	({
 		getDailyStatusBuckets: jest.fn().mockResolvedValue([]),
-	}) as unknown as jest.Mocked<IChecksRepository>;
+	}) as unknown as jest.Mocked<ICheckRollupsRepository>;
 
 const createIncidentsRepo = () =>
 	({
@@ -95,10 +95,10 @@ const createService = (themesEnabled = true, clientHost = "http://localhost:5173
 	const repo = createRepo();
 	const settingsService = createSettingsService(themesEnabled, clientHost, showURL);
 	const monitorsRepo = createMonitorsRepo();
-	const checksRepo = createChecksRepo();
+	const checkRollupsRepo = createCheckRollupsRepo();
 	const incidentsRepo = createIncidentsRepo();
-	const service = new StatusPageService(repo, settingsService, monitorsRepo, checksRepo, incidentsRepo);
-	return { service, repo, settingsService, monitorsRepo, checksRepo, incidentsRepo };
+	const service = new StatusPageService(repo, settingsService, monitorsRepo, checkRollupsRepo, incidentsRepo);
+	return { service, repo, settingsService, monitorsRepo, checkRollupsRepo, incidentsRepo };
 };
 
 // ── Tests ────────────────────────────────────────────────────────────────────
@@ -355,7 +355,7 @@ describe("StatusPageService", () => {
 
 		describe("range", () => {
 			it("includes the page timezone but omits other range-mode fields and never queries buckets for the default (latest) range", async () => {
-				const { service, checksRepo, monitorsRepo } = createService();
+				const { service, checkRollupsRepo, monitorsRepo } = createService();
 
 				const implicitLatest = await service.getPublicStatusPagePayload(publishedPage());
 				const explicitLatest = await service.getPublicStatusPagePayload(publishedPage(), "latest");
@@ -366,7 +366,7 @@ describe("StatusPageService", () => {
 					expect(payload).not.toHaveProperty("checkTTLDays");
 					expect(payload.monitors[0]).not.toHaveProperty("dailyChecks");
 				}
-				expect(checksRepo.getDailyStatusBuckets).not.toHaveBeenCalled();
+				expect(checkRollupsRepo.getDailyStatusBuckets).not.toHaveBeenCalled();
 				expect(monitorsRepo.findByIds).toHaveBeenCalledWith(["mon-1"], { recentChecks: "all" });
 			});
 
@@ -380,10 +380,10 @@ describe("StatusPageService", () => {
 			});
 
 			it("attaches dailyChecks, passes the repo-trimmed recentChecks through, and echoes range metadata for a day range", async () => {
-				const { service, checksRepo, monitorsRepo } = createService();
+				const { service, checkRollupsRepo, monitorsRepo } = createService();
 				const bucket = { monitorId: "mon-1", date: "2026-08-01", totalChecks: 10, upChecks: 9, downChecks: 1, avgResponseTime: 120 };
 				const hardwareSnapshot = { id: "chk-1" } as CheckSnapshot;
-				(checksRepo.getDailyStatusBuckets as jest.Mock).mockResolvedValue([bucket]);
+				(checkRollupsRepo.getDailyStatusBuckets as jest.Mock).mockResolvedValue([bucket]);
 				(monitorsRepo.findByIds as jest.Mock).mockResolvedValue([
 					makeMonitor({ id: "mon-1", type: "hardware", recentChecks: [hardwareSnapshot] }),
 					makeMonitor({ id: "mon-2", recentChecks: [] }),
@@ -392,7 +392,7 @@ describe("StatusPageService", () => {
 
 				const payload = await service.getPublicStatusPagePayload(page, "30d");
 
-				expect(checksRepo.getDailyStatusBuckets).toHaveBeenCalledWith(["mon-1", "mon-2"], 30, "America/Toronto");
+				expect(checkRollupsRepo.getDailyStatusBuckets).toHaveBeenCalledWith(["mon-1", "mon-2"], 30, "America/Toronto");
 				expect(monitorsRepo.findByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], { recentChecks: "latestHardware" });
 				expect(payload).toMatchObject({ range: "30d", bucketTimezone: "America/Toronto", checkTTLDays: 30 });
 				expect(payload.monitors[0].recentChecks).toEqual([hardwareSnapshot]);
@@ -405,11 +405,11 @@ describe("StatusPageService", () => {
 			});
 
 			it("buckets in the page timezone and defaults dailyChecks to empty", async () => {
-				const { service, checksRepo } = createService();
+				const { service, checkRollupsRepo } = createService();
 
 				const payload = await service.getPublicStatusPagePayload(publishedPage(), "60d");
 
-				expect(checksRepo.getDailyStatusBuckets).toHaveBeenCalledWith(["mon-1"], 60, "UTC");
+				expect(checkRollupsRepo.getDailyStatusBuckets).toHaveBeenCalledWith(["mon-1"], 60, "UTC");
 				expect(payload.bucketTimezone).toBe("UTC");
 				expect(payload.monitors[0].dailyChecks).toEqual([]);
 			});
@@ -435,11 +435,11 @@ describe("StatusPageService", () => {
 		});
 
 		it("does not bypass the unpublished-page 403 for a range request", async () => {
-			const { service, repo, checksRepo } = createService();
+			const { service, repo, checkRollupsRepo } = createService();
 			(repo.findByUrl as jest.Mock).mockResolvedValue(makeStatusPage({ isPublished: false, teamId: "team-A" }));
 
 			await expect(service.getPublicStatusPageByUrl("my-status-page", undefined, "90d")).rejects.toMatchObject({ status: 403 });
-			expect(checksRepo.getDailyStatusBuckets).not.toHaveBeenCalled();
+			expect(checkRollupsRepo.getDailyStatusBuckets).not.toHaveBeenCalled();
 		});
 	});
 

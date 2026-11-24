@@ -15,8 +15,8 @@ const hasResponseTime = { $isNumber: "$responseTime" };
 const countWhen = (condition: object) => ({ $sum: { $cond: [condition, 1, 0] } });
 const sumWhen = (condition: object, value: object | string) => ({ $sum: { $cond: [condition, value, 0] } });
 
-export const buildCoreRollupStages = (from: Date, to: Date, monitorId?: Types.ObjectId): UnionWithStage[] => [
-	{ $match: { createdAt: { $gte: from, $lt: to }, ...(monitorId && { "metadata.monitorId": monitorId }) } },
+export const buildCoreRollupStages = (from: Date, to: Date, monitorIds?: Types.ObjectId[]): UnionWithStage[] => [
+	{ $match: { createdAt: { $gte: from, $lt: to }, ...(monitorIds && { "metadata.monitorId": { $in: monitorIds } }) } },
 	{
 		$group: {
 			_id: {
@@ -104,7 +104,7 @@ export const buildUptimeReadStages = ({
 	checksCollectionName: string;
 }): PipelineStage[] => [
 	{ $match: { monitorId, bucketStart: { $gte: from, $lt: rawFrom } } },
-	{ $unionWith: { coll: checksCollectionName, pipeline: buildCoreRollupStages(rawFrom, now, monitorId) } },
+	{ $unionWith: { coll: checksCollectionName, pipeline: buildCoreRollupStages(rawFrom, now, [monitorId]) } },
 	{
 		$group: {
 			_id: { $dateToString: { format: dateFormat, date: "$bucketStart" } },
@@ -113,4 +113,47 @@ export const buildUptimeReadStages = ({
 		},
 	},
 	{ $sort: { _id: 1 } },
+];
+
+export const buildDailyStatusReadStages = ({
+	monitorIds,
+	from,
+	rawFrom,
+	now,
+	timezone,
+	checksCollectionName,
+}: {
+	monitorIds: Types.ObjectId[];
+	from: Date;
+	rawFrom: Date;
+	now: Date;
+	timezone: string;
+	checksCollectionName: string;
+}): PipelineStage[] => [
+	{ $match: { monitorId: { $in: monitorIds }, bucketStart: { $gte: from, $lt: rawFrom } } },
+	{ $unionWith: { coll: checksCollectionName, pipeline: buildCoreRollupStages(rawFrom, now, monitorIds) } },
+	{
+		$group: {
+			_id: { monitorId: "$monitorId", day: { $dateTrunc: { date: "$bucketStart", unit: "day", timezone } } },
+			totalChecks: { $sum: "$totalChecks" },
+			upChecks: { $sum: "$upChecks" },
+			responseTimeSum: { $sum: "$responseTimeSum" },
+			responseTimeCount: { $sum: "$responseTimeCount" },
+		},
+	},
+	{ $match: { totalChecks: { $gt: 0 } } },
+	{ $sort: { "_id.day": 1 } },
+	{
+		$project: {
+			_id: 0,
+			monitorId: { $toString: "$_id.monitorId" },
+			date: { $dateToString: { date: "$_id.day", format: "%Y-%m-%d", timezone } },
+			totalChecks: 1,
+			upChecks: 1,
+			downChecks: { $subtract: ["$totalChecks", "$upChecks"] },
+			avgResponseTime: {
+				$cond: [{ $gt: ["$responseTimeCount", 0] }, { $round: [{ $divide: ["$responseTimeSum", "$responseTimeCount"] }, 0] }, null],
+			},
+		},
+	},
 ];

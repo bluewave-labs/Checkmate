@@ -116,7 +116,13 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		emailService,
 	});
 
-	const statusPageService = new StatusPageService(statusPagesRepository, settingsService, monitorsRepository, checksRepository, incidentsRepository);
+	const statusPageService = new StatusPageService(
+		statusPagesRepository,
+		settingsService,
+		monitorsRepository,
+		checkRollupsRepository,
+		incidentsRepository
+	);
 	const tagsService = new TagsService(tagsRepository, monitorsRepository);
 	const diagnosticService = new DiagnosticService(diagnosticsRepository, logger);
 	const proxiesService = new ProxiesService(proxiesRepository, monitorsRepository, settingsService);
