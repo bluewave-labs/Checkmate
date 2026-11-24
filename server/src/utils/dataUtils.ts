@@ -15,6 +15,8 @@ export const getDateForRange = (dateRange: DateRange): Date => {
 			return new Date(now - 7 * 24 * 60 * 60 * 1000); // 7 days
 		case "month":
 			return new Date(now - 30 * 24 * 60 * 60 * 1000); // 30 days
+		case "year":
+			return new Date(now - 365 * 24 * 60 * 60 * 1000); // 365 days
 		case "all":
 			return new Date(0);
 		default:
@@ -29,6 +31,7 @@ export const getDateFormat = (dateRange: DateRange): string => {
 		day: "%Y-%m-%dT%H:00:00Z",
 		week: "%Y-%m-%dT00:00:00Z",
 		month: "%Y-%m-%dT00:00:00Z",
+		year: "%Y-%m-%dT00:00:00Z",
 		all: "%Y-%m-%dT00:00:00Z",
 	};
 	return formatLookup[dateRange];
