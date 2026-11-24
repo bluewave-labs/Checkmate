@@ -1,7 +1,9 @@
-import type { PipelineStage } from "mongoose";
+import type { PipelineStage, Types } from "mongoose";
 import { ONLY_DEGRADED_EGRESS_MATCH } from "@/domain/checks/check.query.js";
 import { ROLLUP_BUCKET_MINUTES } from "@/domain/check-rollups/check-rollup.type.js";
 import { UptimeDetailsSupportedTypes } from "@/domain/monitors/monitor.type.js";
+
+type UnionWithStage = Exclude<PipelineStage, PipelineStage.Out | PipelineStage.Merge>;
 
 const UPTIME_PHASES = ["dns", "tcp", "tls", "request", "firstByte", "download"] as const;
 
@@ -13,8 +15,8 @@ const hasResponseTime = { $isNumber: "$responseTime" };
 const countWhen = (condition: object) => ({ $sum: { $cond: [condition, 1, 0] } });
 const sumWhen = (condition: object, value: object | string) => ({ $sum: { $cond: [condition, value, 0] } });
 
-export const buildCoreRollupStages = (from: Date, to: Date): PipelineStage[] => [
-	{ $match: { createdAt: { $gte: from, $lt: to } } },
+export const buildCoreRollupStages = (from: Date, to: Date, monitorId?: Types.ObjectId): UnionWithStage[] => [
+	{ $match: { createdAt: { $gte: from, $lt: to }, ...(monitorId && { "metadata.monitorId": monitorId }) } },
 	{
 		$group: {
 			_id: {
@@ -73,3 +75,42 @@ export const buildRollupMergeStage = (collectionName: string): PipelineStage.Mer
 		whenNotMatched: "insert",
 	},
 });
+
+const ROLLUP_SUM_FIELDS = [
+	"totalChecks",
+	"upChecks",
+	"downChecks",
+	"responseTimeSum",
+	"responseTimeCount",
+	"upResponseTimeSum",
+	"upResponseTimeCount",
+	"downResponseTimeSum",
+	"downResponseTimeCount",
+] as const;
+
+export const buildUptimeReadStages = ({
+	monitorId,
+	from,
+	rawFrom,
+	now,
+	dateFormat,
+	checksCollectionName,
+}: {
+	monitorId: Types.ObjectId;
+	from: Date;
+	rawFrom: Date;
+	now: Date;
+	dateFormat: string;
+	checksCollectionName: string;
+}): PipelineStage[] => [
+	{ $match: { monitorId, bucketStart: { $gte: from, $lt: rawFrom } } },
+	{ $unionWith: { coll: checksCollectionName, pipeline: buildCoreRollupStages(rawFrom, now, monitorId) } },
+	{
+		$group: {
+			_id: { $dateToString: { format: dateFormat, date: "$bucketStart" } },
+			...Object.fromEntries(ROLLUP_SUM_FIELDS.map((field) => [field, { $sum: `$${field}` }])),
+			...Object.fromEntries(UPTIME_PHASES.map((phase) => [`${phase}Sum`, { $sum: `$uptime.${phase}Sum` }])),
+		},
+	},
+	{ $sort: { _id: 1 } },
+];
