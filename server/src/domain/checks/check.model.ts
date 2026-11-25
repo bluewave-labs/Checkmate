@@ -288,32 +288,32 @@ const CheckSchema = new Schema<CheckDocument>(
 
 		cpu: {
 			type: cpuSchema,
-			default: () => ({}),
+			default: undefined,
 		},
 		memory: {
 			type: memorySchema,
-			default: () => ({}),
+			default: undefined,
 		},
 		disk: {
 			type: [diskSchema],
-			default: () => [],
+			default: undefined,
 		},
 		host: {
 			type: hostSchema,
-			default: () => ({}),
+			default: undefined,
 		},
 		errors: {
 			type: [errorSchema],
 			suppressReservedKeysWarning: true,
-			default: () => [],
+			default: undefined,
 		},
 		capture: {
 			type: captureSchema,
-			default: () => ({}),
+			default: undefined,
 		},
 		net: {
 			type: [networkInterfaceSchema],
-			default: () => [],
+			default: undefined,
 		},
 		accessibility: {
 			type: Number,
