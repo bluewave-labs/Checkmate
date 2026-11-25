@@ -118,7 +118,7 @@ export class CheckService implements ICheckService {
 
 		if (type === "hardware") {
 			const hardwarePayload = payload as HardwareStatusPayload | undefined;
-			const { cpu, memory, disk, host, net } = hardwarePayload?.data ?? {};
+			const { cpu, memory, disk, host, net, raid } = hardwarePayload?.data ?? {};
 			const errorsSource = Array.isArray(hardwarePayload?.errors)
 				? hardwarePayload.errors
 				: (hardwarePayload?.errors as { errors?: CheckErrorInfo[] } | undefined)?.errors;
@@ -129,6 +129,7 @@ export class CheckService implements ICheckService {
 			check.errors = errorsSource;
 			check.capture = hardwarePayload?.capture;
 			check.net = net;
+			check.raid = raid;
 		}
 
 		if (type === "docker") {

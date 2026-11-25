@@ -12,6 +12,8 @@ import type {
 	CheckMemoryInfo,
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
+	CheckRaidInfo,
+	CheckRaidMemberInfo,
 	CheckTimings,
 	ILighthouseAudit,
 } from "@/domain/checks/check.type.js";
@@ -155,6 +157,28 @@ const networkInterfaceSchema = new Schema<CheckNetworkInterfaceInfo>(
 		drop_out: { type: Number, default: 0 },
 		fifo_in: { type: Number, default: 0 },
 		fifo_out: { type: Number, default: 0 },
+	},
+	{ _id: false }
+);
+
+const raidMemberSchema = new Schema<CheckRaidMemberInfo>(
+	{
+		device: { type: String, default: "" },
+		state: { type: String, default: "" },
+	},
+	{ _id: false }
+);
+
+const raidSchema = new Schema<CheckRaidInfo>(
+	{
+		device: { type: String, default: "" },
+		level: { type: String, default: "" },
+		state: { type: String, default: "" },
+		raid_disks: { type: Number, default: null },
+		degraded_disks: { type: Number, default: null },
+		sync_action: { type: String, default: null },
+		sync_progress: { type: Number, default: null },
+		members: { type: [raidMemberSchema], default: () => [] },
 	},
 	{ _id: false }
 );
@@ -313,6 +337,10 @@ const CheckSchema = new Schema<CheckDocument>(
 		},
 		net: {
 			type: [networkInterfaceSchema],
+			default: undefined,
+		},
+		raid: {
+			type: [raidSchema],
 			default: undefined,
 		},
 		accessibility: {

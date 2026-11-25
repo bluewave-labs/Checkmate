@@ -10,6 +10,7 @@ import type {
 	CheckMemoryInfo,
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
+	CheckRaidInfo,
 	CheckTimings,
 	DockerContainerStats,
 	HardwareCheckStats,
@@ -152,6 +153,21 @@ class MongoChecksRepository implements IChecksRepository {
 				fifo_out: iface?.fifo_out ?? 0,
 			}));
 
+		const mapRaid = (raid?: CheckRaidInfo[]): CheckRaidInfo[] | undefined =>
+			raid?.map((array) => ({
+				device: array?.device ?? "",
+				level: array?.level ?? "",
+				state: array?.state ?? "",
+				raid_disks: array?.raid_disks ?? null,
+				degraded_disks: array?.degraded_disks ?? null,
+				sync_action: array?.sync_action ?? null,
+				sync_progress: array?.sync_progress ?? null,
+				members: (array?.members ?? []).map((member) => ({
+					device: member?.device ?? "",
+					state: member?.state ?? "",
+				})),
+			}));
+
 		const mapAudits = (audits?: CheckAudits): CheckAudits | undefined => {
 			if (!audits) {
 				return undefined;
@@ -186,6 +202,7 @@ class MongoChecksRepository implements IChecksRepository {
 			errors: mapErrors(doc.errors),
 			capture: mapCapture(doc.capture),
 			net: mapNet(doc.net),
+			raid: mapRaid(doc.raid),
 			accessibility: doc.accessibility,
 			bestPractices: doc.bestPractices,
 			seo: doc.seo,
