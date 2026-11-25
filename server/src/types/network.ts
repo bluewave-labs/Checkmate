@@ -6,6 +6,7 @@ import type {
 	CheckHostInfo,
 	CheckMemoryInfo,
 	CheckNetworkInterfaceInfo,
+	CheckRaidInfo,
 	CheckTimings,
 	ILighthouseAudit,
 } from "@/domain/checks/check.type.js";
@@ -94,6 +95,7 @@ export interface HardwareStatusMetrics {
 	disk?: CheckDiskInfo[];
 	host?: CheckHostInfo;
 	net?: CheckNetworkInterfaceInfo[];
+	raid?: CheckRaidInfo[];
 }
 
 export interface HardwareStatusPayload {

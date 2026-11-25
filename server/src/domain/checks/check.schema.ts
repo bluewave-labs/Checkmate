@@ -76,6 +76,22 @@ export const checkDiskInfoSchema = z.object({
 	write_time: z.number().optional(),
 });
 
+export const checkRaidMemberInfoSchema = z.object({
+	device: z.string(),
+	state: z.string(),
+});
+
+export const checkRaidInfoSchema = z.object({
+	device: z.string(),
+	level: z.string(),
+	state: z.string(),
+	raid_disks: z.number().nullable(),
+	degraded_disks: z.number().nullable(),
+	sync_action: z.string().nullable(),
+	sync_progress: z.number().nullable(),
+	members: z.array(checkRaidMemberInfoSchema),
+});
+
 export const checkErrorInfoSchema = z.object({
 	metric: z.array(z.string()),
 	err: z.string(),
@@ -130,6 +146,7 @@ export const checkSchema = z
 		containers: z.array(dockerContainerInfoSchema).optional(),
 		containerSummary: dockerContainerSummarySchema.optional(),
 		net: z.array(checkNetworkInterfaceInfoSchema).optional(),
+		raid: z.array(checkRaidInfoSchema).optional(),
 		accessibility: z.number().optional(),
 		bestPractices: z.number().optional(),
 		seo: z.number().optional(),

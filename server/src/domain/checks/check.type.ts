@@ -10,6 +10,8 @@ import type {
 	checkMemoryInfoSchema,
 	checkMetadataSchema,
 	checkNetworkInterfaceInfoSchema,
+	checkRaidInfoSchema,
+	checkRaidMemberInfoSchema,
 	checkSchema,
 	checkSnapshotSchema,
 	checksPageSchema,
@@ -40,6 +42,8 @@ export type CheckCaptureInfo = z.infer<typeof checkCaptureInfoSchema>;
 export type CheckDiskInfo = z.infer<typeof checkDiskInfoSchema>;
 export type CheckErrorInfo = z.infer<typeof checkErrorInfoSchema>;
 export type CheckNetworkInterfaceInfo = z.infer<typeof checkNetworkInterfaceInfoSchema>;
+export type CheckRaidMemberInfo = z.infer<typeof checkRaidMemberInfoSchema>;
+export type CheckRaidInfo = z.infer<typeof checkRaidInfoSchema>;
 export type CheckAudits = z.infer<typeof checkAuditsSchema>;
 export type ILighthouseAudit = z.infer<typeof lighthouseAuditSchema>;
 export type Check = z.infer<typeof checkSchema>;
