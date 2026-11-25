@@ -95,8 +95,12 @@ export class ConnectBackupService implements IConnectBackupService {
 			encryptToFile(dump.stdout, archive, recoveryKey, (bytes) => this.reportProgress(this.progress("backup", "dumping", { bytes }), false)),
 			dump.exited,
 		]);
+		// mongodump only fails after we stop reading its output, so a failed encryption is the cause.
+		if (sealed.status === "rejected") {
+			if (exited.status === "rejected") this.logger.warn({ err: exited.reason }, "mongodump stopped after the backup archive could not be written");
+			throw sealed.reason;
+		}
 		if (exited.status === "rejected") throw exited.reason;
-		if (sealed.status === "rejected") throw sealed.reason;
 		return sealed.value;
 	};
 

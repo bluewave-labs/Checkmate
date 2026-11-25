@@ -24,6 +24,7 @@ const setup = async (
 	opts: {
 		dumpChunks?: Buffer[];
 		dumpError?: Error;
+		streamError?: Error;
 		uploadError?: Error;
 		completeError?: Error;
 	} = {}
@@ -58,7 +59,8 @@ const setup = async (
 		dump: jest.fn(() => {
 			const stdout = new PassThrough();
 			for (const chunk of opts.dumpChunks ?? [crypto.randomBytes(1_000)]) stdout.write(chunk);
-			stdout.end();
+			if (opts.streamError) stdout.destroy(opts.streamError);
+			else stdout.end();
 			return {
 				stdout,
 				exited: opts.dumpError ? Promise.reject(opts.dumpError) : Promise.resolve(),
@@ -218,6 +220,24 @@ describe("ConnectBackupService.backup", () => {
 		});
 		expect(connectApiService.requestUpload).not.toHaveBeenCalled();
 		expect(logger.error).toHaveBeenCalledWith({ err: expect.any(Error) }, "Connect backup failed");
+	});
+
+	it("reports why the archive couldn't be written, not the mongodump crash that follows", async () => {
+		const { connectBackupService, connectApiService, logger } = await setup({
+			streamError: new Error("ENOSPC: no space left on device"),
+			dumpError: new Error("mongodump exited 2: panic: send on closed channel"),
+		});
+
+		const result = await connectBackupService.backup({
+			enrollment: ENROLLMENT,
+			recoveryKey: KEY,
+			kind: "full",
+		});
+
+		expect(result.ok).toBe(false);
+		expect(result.error).toBe("ENOSPC: no space left on device");
+		expect(connectApiService.requestUpload).not.toHaveBeenCalled();
+		expect(logger.warn).toHaveBeenCalledWith({ err: expect.any(Error) }, "mongodump stopped after the backup archive could not be written");
 	});
 
 	it("releases the slot and keeps the original error when the upload fails", async () => {
