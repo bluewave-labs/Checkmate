@@ -2329,6 +2329,207 @@
 				},
 				"required": ["monitor", "stats", "monitorStats"]
 			},
+			"HardwareMetrics": {
+				"type": "object",
+				"properties": {
+					"checks": {
+						"type": "object",
+						"properties": {
+							"total": {
+								"type": "number"
+							},
+							"up": {
+								"type": "number"
+							}
+						},
+						"required": ["total", "up"]
+					},
+					"latest": {
+						"type": "object",
+						"nullable": true,
+						"properties": {
+							"checkedAt": {
+								"type": "string"
+							},
+							"host": {
+								"type": "object",
+								"properties": {
+									"os": {
+										"type": "string",
+										"nullable": true
+									},
+									"platform": {
+										"type": "string",
+										"nullable": true
+									},
+									"kernelVersion": {
+										"type": "string",
+										"nullable": true
+									},
+									"prettyName": {
+										"type": "string",
+										"nullable": true
+									}
+								},
+								"required": ["os", "platform", "kernelVersion", "prettyName"]
+							},
+							"capture": {
+								"type": "object",
+								"properties": {
+									"version": {
+										"type": "string",
+										"nullable": true
+									},
+									"mode": {
+										"type": "string",
+										"nullable": true
+									}
+								},
+								"required": ["version", "mode"]
+							},
+							"cpu": {
+								"type": "object",
+								"properties": {
+									"physicalCore": {
+										"type": "number",
+										"nullable": true
+									},
+									"logicalCore": {
+										"type": "number",
+										"nullable": true
+									},
+									"frequency": {
+										"type": "number",
+										"nullable": true
+									},
+									"currentFrequency": {
+										"type": "number",
+										"nullable": true
+									},
+									"usage": {
+										"type": "number",
+										"nullable": true
+									},
+									"temperature": {
+										"type": "array",
+										"nullable": true,
+										"items": {
+											"type": "number"
+										}
+									}
+								},
+								"required": ["physicalCore", "logicalCore", "frequency", "currentFrequency", "usage", "temperature"]
+							},
+							"memory": {
+								"type": "object",
+								"properties": {
+									"totalBytes": {
+										"type": "number",
+										"nullable": true
+									},
+									"usedBytes": {
+										"type": "number",
+										"nullable": true
+									},
+									"availableBytes": {
+										"type": "number",
+										"nullable": true
+									},
+									"usage": {
+										"type": "number",
+										"nullable": true
+									}
+								},
+								"required": ["totalBytes", "usedBytes", "availableBytes", "usage"]
+							},
+							"errors": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"metric": {
+											"type": "array",
+											"items": {
+												"type": "string"
+											}
+										},
+										"err": {
+											"type": "string"
+										}
+									},
+									"required": ["metric", "err"]
+								}
+							}
+						},
+						"required": ["checkedAt", "host", "capture", "cpu", "memory", "errors"]
+					},
+					"buckets": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"bucketDate": {
+									"type": "string"
+								},
+								"cpu": {
+									"type": "object",
+									"properties": {
+										"usage": {
+											"type": "number",
+											"nullable": true
+										},
+										"currentFrequency": {
+											"type": "number",
+											"nullable": true
+										},
+										"temperature": {
+											"type": "array",
+											"items": {
+												"type": "number",
+												"nullable": true
+											}
+										}
+									},
+									"required": ["usage", "currentFrequency", "temperature"]
+								},
+								"memory": {
+									"type": "object",
+									"properties": {
+										"usedBytes": {
+											"type": "number",
+											"nullable": true
+										},
+										"availableBytes": {
+											"type": "number",
+											"nullable": true
+										},
+										"usage": {
+											"type": "number",
+											"nullable": true
+										}
+									},
+									"required": ["usedBytes", "availableBytes", "usage"]
+								}
+							},
+							"required": ["bucketDate", "cpu", "memory"]
+						}
+					},
+					"monitor": {
+						"$ref": "#/components/schemas/Monitor"
+					},
+					"monitorStats": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/MonitorStats"
+							},
+							{
+								"nullable": true
+							}
+						]
+					}
+				},
+				"required": ["checks", "latest", "buckets", "monitor", "monitorStats"]
+			},
 			"PageSpeedDetails": {
 				"type": "object",
 				"properties": {
@@ -9789,6 +9990,113 @@
 										},
 										"data": {
 											"$ref": "#/components/schemas/HardwareDetails"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request, or the monitor is not a hardware monitor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Monitor not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/monitors/hardware/metrics/{monitorId}": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Get hardware metrics for a monitor",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "monitorId",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["recent", "hour", "day", "week", "month", "year", "all"],
+							"default": "recent"
+						},
+						"required": false,
+						"name": "dateRange",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/HardwareMetrics"
 										}
 									},
 									"required": ["success", "msg", "data"]

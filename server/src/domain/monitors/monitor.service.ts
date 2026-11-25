@@ -5,6 +5,7 @@ import type {
 	DashboardByTeamIdResult,
 	UptimeDetailsResult,
 	HardwareDetailsResult,
+	HardwareMetricsResult,
 	PageSpeedDetailsResult,
 	GamesMap,
 	GroupedGeoCheckResult,
@@ -74,6 +75,7 @@ export interface IMonitorService {
 	// read
 	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<UptimeDetailsResult>;
 	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<HardwareDetailsResult>;
+	getHardwareMetricsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<HardwareMetricsResult>;
 	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<PageSpeedDetailsResult>;
 	getDockerDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<DockerDetailsResult>;
 	getDockerContainerByName(args: {
@@ -348,6 +350,37 @@ export class MonitorService implements IMonitorService {
 			stats,
 			monitorStats,
 		};
+	};
+
+	getHardwareMetricsById = async ({
+		teamId,
+		monitorId,
+		dateRange,
+	}: {
+		teamId: string;
+		monitorId: string;
+		dateRange: DateRange;
+	}): Promise<HardwareMetricsResult> => {
+		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
+		if (!monitor) {
+			throw new AppError(monitorErrors.notFound, {
+				message: `Monitor with ID ${monitorId} not found.`,
+				service: SERVICE_NAME,
+			});
+		}
+		if (monitor.type !== "hardware") {
+			throw new AppError(monitorErrors.notHardwareMonitor, {
+				message: `${monitor.type} monitors are not supported for hardware metrics`,
+				service: SERVICE_NAME,
+			});
+		}
+
+		const [metrics, monitorStats] = await Promise.all([
+			this.checksRepository.findHardwareMetrics(monitor.id, dateRange),
+			this.monitorStatsRepository.findByMonitorId(monitor.id),
+		]);
+
+		return { ...metrics, monitor, monitorStats };
 	};
 
 	getPageSpeedDetailsById = async ({

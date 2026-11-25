@@ -37,6 +37,7 @@ const createChecksRepositoryMock = () =>
 	({
 		findByDateRangeAndMonitorId: jest.fn(),
 		findDockerContainerChecks: jest.fn(),
+		findHardwareMetrics: jest.fn(),
 		deleteByMonitorId: jest.fn(),
 	}) as unknown as IChecksRepository;
 
@@ -748,6 +749,73 @@ describe("MonitorService", () => {
 			expect(dockerLogsRepository.findByContainerName).toHaveBeenCalledWith({ monitorId: MONITOR_ID, containerName: "web", after, limit: 2 });
 			expect(result.logs).toBe(logs);
 			expect(result.nextCursor).toBeNull();
+		});
+	});
+
+	describe("getHardwareMetricsById", () => {
+		const hardwareMetrics = {
+			checks: { total: 10, up: 9 },
+			latest: null,
+			buckets: [
+				{
+					bucketDate: "2026-01-01T00:00:00Z",
+					cpu: { usage: 0.5, currentFrequency: 4000, temperature: [40] },
+					memory: { usedBytes: 400, availableBytes: 600, usage: 0.4 },
+				},
+			],
+		};
+
+		it("returns the metrics with the monitor and its stats", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			const monitorStatsRepository = createMonitorStatsRepositoryMock();
+			const monitor = makeMonitor({ type: "hardware" });
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(checksRepository.findHardwareMetrics as jest.Mock).mockResolvedValue(hardwareMetrics);
+			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue({ monitorId: MONITOR_ID });
+			const { service } = createService({ monitorsRepository, checksRepository, monitorStatsRepository });
+
+			const result = await service.getHardwareMetricsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "week" });
+
+			expect(checksRepository.findHardwareMetrics).toHaveBeenCalledWith(MONITOR_ID, "week");
+			expect(result).toEqual({ ...hardwareMetrics, monitor, monitorStats: { monitorId: MONITOR_ID } });
+		});
+
+		it("returns null stats for a monitor with no evaluated checks yet", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			const monitorStatsRepository = createMonitorStatsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "hardware" }));
+			(checksRepository.findHardwareMetrics as jest.Mock).mockResolvedValue({ checks: { total: 0, up: 0 }, latest: null, buckets: [] });
+			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(null);
+			const { service } = createService({ monitorsRepository, checksRepository, monitorStatsRepository });
+
+			const result = await service.getHardwareMetricsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "recent" });
+
+			expect(result.monitorStats).toBeNull();
+			expect(result.buckets).toEqual([]);
+		});
+
+		it("throws 404 when monitor not found", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(null);
+			const { service } = createService({ monitorsRepository });
+
+			await expect(service.getHardwareMetricsById({ teamId: TEAM_ID, monitorId: "missing", dateRange: "recent" })).rejects.toThrow(
+				"Monitor with ID missing not found."
+			);
+		});
+
+		it("throws 400 when monitor type is not hardware", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "http" }));
+			const { service } = createService({ monitorsRepository, checksRepository });
+
+			await expect(service.getHardwareMetricsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "recent" })).rejects.toThrow(
+				"monitors are not supported for hardware metrics"
+			);
+			expect(checksRepository.findHardwareMetrics).not.toHaveBeenCalled();
 		});
 	});
 

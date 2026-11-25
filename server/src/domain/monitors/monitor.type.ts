@@ -13,6 +13,7 @@ import type {
 	gameSchema,
 	gamesMapSchema,
 	hardwareDetailsResultSchema,
+	hardwareMetricsResultSchema,
 	monitorSchema,
 	monitorTypeCountSchema,
 	monitorsSummarySchema,
@@ -160,6 +161,7 @@ export type DashboardMonitor = z.infer<typeof dashboardMonitorSchema>;
 export type DashboardByTeamIdResult = z.infer<typeof dashboardByTeamIdResultSchema>;
 export type UptimeDetailsResult = z.infer<typeof uptimeDetailsResultSchema>;
 export type HardwareDetailsResult = z.infer<typeof hardwareDetailsResultSchema>;
+export type HardwareMetricsResult = z.infer<typeof hardwareMetricsResultSchema>;
 export type DockerDetailsResult = z.infer<typeof dockerDetailsResultSchema>;
 export type DockerContainerDetailsResult = z.infer<typeof dockerContainerDetailsResultSchema>;
 export type PageSpeedDetailsResult = z.infer<typeof pageSpeedDetailsResultSchema>;
