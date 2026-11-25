@@ -59,8 +59,6 @@ export class ConnectBackupTools implements IConnectBackupTools {
 
 	private dumpArgs = (configFile: string, dbName: string, kind: ConnectBackupKind): string[] => {
 		const excluded = [...ConnectRuntimeCollections, ...(kind === "config" ? ConnectConfigExcludedCollections : [])];
-		// One collection at a time. With parallel collections, an error in one of them makes mongodump's
-		// archive writer panic ("send on closed channel") before it prints the error that caused it.
 		return [
 			`--config=${configFile}`,
 			"--archive",
