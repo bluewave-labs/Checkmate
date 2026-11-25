@@ -1,7 +1,13 @@
 import type { PipelineStage, Types } from "mongoose";
 import { EXCLUDE_DEGRADED_EGRESS_MATCH } from "@/domain/checks/check.query.js";
 import type { CheckDocument } from "@/domain/checks/check.model.js";
-import type { HardwareMetrics, HardwareMetricsBucket, HardwareMetricsLatest } from "@/domain/checks/check.type.js";
+import type {
+	HardwareMetrics,
+	HardwareMetricsBucket,
+	HardwareMetricsDisk,
+	HardwareMetricsDiskBucket,
+	HardwareMetricsLatest,
+} from "@/domain/checks/check.type.js";
 import { toDateString } from "@/utils/mongoMappers.js";
 
 export type HardwareMetricsWindow = {
@@ -155,4 +161,155 @@ export const toHardwareLatest = (doc: CheckDocument | null): HardwareMetricsLate
 			err: error?.err ?? "",
 		})),
 	};
+};
+
+const MS_PER_SECOND = 1000;
+
+const DISK_LEVELS = {
+	usedBytes: "used_bytes",
+	freeBytes: "free_bytes",
+	usage: "usage_percent",
+	usedInodes: "used_inodes",
+	freeInodes: "free_inodes",
+	inodesUsage: "inodes_usage_percent",
+} as const;
+
+const DISK_COUNTERS = {
+	readBytes: "read_bytes",
+	writeBytes: "write_bytes",
+	readTime: "read_time",
+	writeTime: "write_time",
+} as const;
+
+type DiskLevel = keyof typeof DISK_LEVELS;
+type DiskCounter = keyof typeof DISK_COUNTERS;
+
+export type HardwareDiskRow = {
+	_id: { bucket: string; device: string; mountpoint: string };
+} & Record<DiskLevel, number | null> &
+	Record<`${DiskCounter}Change` | `${DiskCounter}Seconds`, number>;
+
+const counterPairStages = (current: string, previous: string, name: string, maxGapSeconds: number) => {
+	const isPair = {
+		$and: [{ $isNumber: current }, { $isNumber: previous }, { $gt: ["$seconds", 0] }, { $lte: ["$seconds", maxGapSeconds] }],
+	};
+	const change = { $cond: [{ $gte: [current, previous] }, { $subtract: [current, previous] }, current] };
+	return {
+		[`${name}Change`]: { $cond: [isPair, change, null] },
+		[`${name}Seconds`]: { $cond: [isPair, "$seconds", null] },
+	};
+};
+
+export const buildHardwareDisksStages = ({
+	monitorId,
+	from,
+	to,
+	dateFormat,
+	maxGapMs,
+}: HardwareMetricsWindow & { maxGapMs: number }): PipelineStage[] => {
+	const maxGapSeconds = maxGapMs / MS_PER_SECOND;
+	const counters = Object.entries(DISK_COUNTERS);
+	return [
+		{ $match: { ...hardwareChecksFilter(monitorId), createdAt: { $gte: new Date(from.getTime() - maxGapMs), $lte: to } } },
+		{ $unwind: "$disk" },
+		{
+			$setWindowFields: {
+				partitionBy: { device: "$disk.device", mountpoint: "$disk.mountpoint" },
+				sortBy: { createdAt: 1 },
+				output: {
+					previous: {
+						$shift: {
+							by: -1,
+							output: {
+								at: "$createdAt",
+								...Object.fromEntries(counters.map(([name, field]) => [name, `$disk.${field}`])),
+							},
+						},
+					},
+				},
+			},
+		},
+		{ $match: { createdAt: { $gte: from } } },
+		{ $set: { seconds: { $divide: [{ $subtract: ["$createdAt", "$previous.at"] }, MS_PER_SECOND] } } },
+		{
+			$set: Object.assign({}, ...counters.map(([name, field]) => counterPairStages(`$disk.${field}`, `$previous.${name}`, name, maxGapSeconds))),
+		},
+		{
+			$group: {
+				_id: {
+					bucket: { $dateToString: { format: dateFormat, date: "$createdAt" } },
+					device: "$disk.device",
+					mountpoint: "$disk.mountpoint",
+				},
+				...Object.fromEntries(Object.entries(DISK_LEVELS).map(([name, field]) => [name, { $avg: `$disk.${field}` }])),
+				...Object.fromEntries(
+					counters.flatMap(([name]) => [
+						[`${name}Change`, { $sum: `$${name}Change` }],
+						[`${name}Seconds`, { $sum: `$${name}Seconds` }],
+					])
+				),
+			},
+		},
+		{ $sort: { "_id.device": 1, "_id.mountpoint": 1, "_id.bucket": 1 } },
+	];
+};
+
+const perSecond = (change: number, seconds: number): number | null => {
+	if (seconds <= 0) {
+		return null;
+	}
+	return change / seconds;
+};
+
+const timeFraction = (changeMs: number, seconds: number): number | null => {
+	if (seconds <= 0) {
+		return null;
+	}
+	return changeMs / (seconds * MS_PER_SECOND);
+};
+
+const diskKey = (device: string, mountpoint: string): string => `${device}\u0000${mountpoint}`;
+
+const toDiskBucket = (row: HardwareDiskRow): HardwareMetricsDiskBucket => ({
+	bucketDate: row._id.bucket,
+	usedBytes: row.usedBytes,
+	freeBytes: row.freeBytes,
+	usage: row.usage,
+	usedInodes: row.usedInodes,
+	freeInodes: row.freeInodes,
+	inodesUsage: row.inodesUsage,
+	readBytesPerSecond: perSecond(row.readBytesChange, row.readBytesSeconds),
+	writeBytesPerSecond: perSecond(row.writeBytesChange, row.writeBytesSeconds),
+	readTimeFraction: timeFraction(row.readTimeChange, row.readTimeSeconds),
+	writeTimeFraction: timeFraction(row.writeTimeChange, row.writeTimeSeconds),
+});
+
+export const toHardwareDisks = (rows: HardwareDiskRow[], latest: CheckDocument | null): HardwareMetricsDisk[] => {
+	const disks = new Map<string, HardwareMetricsDisk>();
+	for (const entry of latest?.disk ?? []) {
+		const device = entry.device ?? "";
+		const mountpoint = entry.mountpoint ?? "";
+		disks.set(diskKey(device, mountpoint), {
+			device,
+			mountpoint,
+			latest: {
+				totalBytes: entry.total_bytes ?? null,
+				usedBytes: entry.used_bytes ?? null,
+				freeBytes: entry.free_bytes ?? null,
+				usage: entry.usage_percent ?? null,
+				totalInodes: entry.total_inodes ?? null,
+				usedInodes: entry.used_inodes ?? null,
+				freeInodes: entry.free_inodes ?? null,
+				inodesUsage: entry.inodes_usage_percent ?? null,
+			},
+			buckets: [],
+		});
+	}
+	for (const row of rows) {
+		const key = diskKey(row._id.device, row._id.mountpoint);
+		const disk = disks.get(key) ?? { device: row._id.device, mountpoint: row._id.mountpoint, latest: null, buckets: [] };
+		disk.buckets.push(toDiskBucket(row));
+		disks.set(key, disk);
+	}
+	return [...disks.values()].sort((a, b) => diskKey(a.device, a.mountpoint).localeCompare(diskKey(b.device, b.mountpoint)));
 };

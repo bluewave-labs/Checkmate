@@ -28,6 +28,7 @@ const MONITOR_ID = new mongoose.Types.ObjectId();
 const OTHER_MONITOR_ID = new mongoose.Types.ObjectId();
 const TEAM_ID = new mongoose.Types.ObjectId();
 const MINUTE_MS = 60 * 1000;
+const INTERVAL_MS = MINUTE_MS;
 const DAY_MS = 24 * 60 * MINUTE_MS;
 
 const noonUtcDaysAgo = (days: number) => {
@@ -68,15 +69,36 @@ const reading = (cpuUsage: number, memoryUsage: number, temperature: number[] | 
 
 const failed = { status: false, statusCode: 5000, message: "connect ECONNREFUSED" };
 
+const disk = (device: string, mountpoint: string, values: Record<string, number | null> = {}) => ({
+	device,
+	mountpoint,
+	total_bytes: 1000,
+	free_bytes: 700,
+	used_bytes: 300,
+	usage_percent: 0.3,
+	total_inodes: 100,
+	free_inodes: 90,
+	used_inodes: 10,
+	inodes_usage_percent: 0.1,
+	read_bytes: 0,
+	write_bytes: 0,
+	read_time: 0,
+	write_time: 0,
+	...values,
+});
+
+const ROOT = ["/dev/sda1", "/"] as const;
+const DATA = ["/dev/sdb1", "/data"] as const;
+
 const setup = () => new MongoChecksRepository(createMockLogger() as unknown as ILogger);
 
 describe("MongoChecksRepository.findHardwareMetrics", () => {
 	it("returns an empty result for a monitor with no checks", async () => {
 		const repo = setup();
 
-		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "month");
+		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "month", INTERVAL_MS);
 
-		expect(result).toEqual({ checks: { total: 0, up: 0 }, latest: null, buckets: [] });
+		expect(result).toEqual({ checks: { total: 0, up: 0 }, latest: null, buckets: [], disks: [] });
 	});
 
 	it("averages each level per bucket, in bucket order", async () => {
@@ -87,7 +109,7 @@ describe("MongoChecksRepository.findHardwareMetrics", () => {
 			makeCheck(TWO_DAYS_AGO, reading(0.8, 0.1)),
 		]);
 
-		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "month");
+		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "month", INTERVAL_MS);
 
 		expect(result.buckets).toEqual([
 			{
@@ -107,7 +129,7 @@ describe("MongoChecksRepository.findHardwareMetrics", () => {
 		const repo = setup();
 		await repo.createChecks([makeCheck(YESTERDAY, reading(0.5, 0.4)), makeCheck(YESTERDAY + MINUTE_MS, failed)]);
 
-		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "month");
+		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "month", INTERVAL_MS);
 
 		expect(result.checks).toEqual({ total: 2, up: 1 });
 		expect(result.buckets).toHaveLength(1);
@@ -125,7 +147,7 @@ describe("MongoChecksRepository.findHardwareMetrics", () => {
 			}),
 		]);
 
-		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "month");
+		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "month", INTERVAL_MS);
 
 		expect(result.buckets).toEqual([
 			{
@@ -140,7 +162,7 @@ describe("MongoChecksRepository.findHardwareMetrics", () => {
 		const repo = setup();
 		await repo.createChecks([makeCheck(YESTERDAY, failed)]);
 
-		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "month");
+		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "month", INTERVAL_MS);
 
 		expect(result.buckets).toEqual([
 			{
@@ -159,7 +181,7 @@ describe("MongoChecksRepository.findHardwareMetrics", () => {
 			makeCheck(YESTERDAY + 2 * MINUTE_MS, reading(0.5, 0.4, null)),
 		]);
 
-		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "month");
+		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "month", INTERVAL_MS);
 
 		expect(result.buckets[0]?.cpu.temperature).toEqual([50, 50, 60]);
 	});
@@ -178,7 +200,7 @@ describe("MongoChecksRepository.findHardwareMetrics", () => {
 			makeCheck(takenAt + DAY_MS, failed),
 		]);
 
-		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "day");
+		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "day", INTERVAL_MS);
 
 		expect(result.buckets).toEqual([]);
 		expect(result.checks).toEqual({ total: 0, up: 0 });
@@ -200,7 +222,7 @@ describe("MongoChecksRepository.findHardwareMetrics", () => {
 			makeCheck(YESTERDAY, {}, MONITOR_ID, "http"),
 		]);
 
-		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "month");
+		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "month", INTERVAL_MS);
 
 		expect(result.checks).toEqual({ total: 1, up: 1 });
 		expect(result.buckets[0]?.cpu.usage).toBe(0.5);
@@ -210,8 +232,159 @@ describe("MongoChecksRepository.findHardwareMetrics", () => {
 		const repo = setup();
 		await repo.createChecks([makeCheck(YESTERDAY, reading(0.5, 0.4)), makeCheck(YESTERDAY + MINUTE_MS, { ...failed, egressStatus: "degraded" })]);
 
-		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "month");
+		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "month", INTERVAL_MS);
 
 		expect(result.checks).toEqual({ total: 1, up: 1 });
+	});
+
+	describe("disks", () => {
+		const findDisks = async (dateRange: "day" | "month" = "month") => {
+			const result = await setup().findHardwareMetrics(MONITOR_ID.toString(), dateRange, INTERVAL_MS);
+			return result.disks;
+		};
+
+		it("averages each disk's levels per bucket, matching disks by device and mountpoint", async () => {
+			await setup().createChecks([
+				makeCheck(YESTERDAY, { disk: [disk(...ROOT, { usage_percent: 0.2, used_bytes: 200 }), disk(...DATA, { usage_percent: 0.8 })] }),
+				makeCheck(YESTERDAY + MINUTE_MS, { disk: [disk(...DATA, { usage_percent: 0.6 }), disk(...ROOT, { usage_percent: 0.4, used_bytes: 400 })] }),
+			]);
+
+			const disks = await findDisks();
+
+			expect(disks.map((entry) => [entry.device, entry.mountpoint])).toEqual([ROOT, DATA].map((key) => [...key]));
+			expect(disks[0]?.buckets).toHaveLength(1);
+			expect(disks[0]?.buckets[0]).toMatchObject({
+				bucketDate: utcDay(YESTERDAY),
+				usage: expect.closeTo(0.3, 10),
+				usedBytes: 300,
+				freeBytes: 700,
+				usedInodes: 10,
+				freeInodes: 90,
+				inodesUsage: 0.1,
+			});
+			expect(disks[1]?.buckets[0]?.usage).toBeCloseTo(0.7, 10);
+		});
+
+		it("turns counters into rates from the change between consecutive checks", async () => {
+			await setup().createChecks([
+				makeCheck(YESTERDAY, { disk: [disk(...ROOT, { read_bytes: 1000, write_bytes: 5000, read_time: 100, write_time: 0 })] }),
+				makeCheck(YESTERDAY + MINUTE_MS, { disk: [disk(...ROOT, { read_bytes: 1600, write_bytes: 5000, read_time: 700, write_time: 60000 })] }),
+				makeCheck(YESTERDAY + 2 * MINUTE_MS, { disk: [disk(...ROOT, { read_bytes: 2800, write_bytes: 6200, read_time: 1300, write_time: 120000 })] }),
+			]);
+
+			const [root] = await findDisks();
+
+			expect(root?.buckets[0]).toMatchObject({
+				readBytesPerSecond: 15,
+				writeBytesPerSecond: 10,
+				readTimeFraction: 0.01,
+				writeTimeFraction: 1,
+			});
+		});
+
+		it("counts the new value, not a negative change, when a counter resets", async () => {
+			await setup().createChecks([
+				makeCheck(YESTERDAY, { disk: [disk(...ROOT, { read_bytes: 900000 })] }),
+				makeCheck(YESTERDAY + MINUTE_MS, { disk: [disk(...ROOT, { read_bytes: 300 })] }),
+			]);
+
+			const [root] = await findDisks();
+
+			expect(root?.buckets[0]?.readBytesPerSecond).toBe(5);
+		});
+
+		it("bridges one failed check between two readings", async () => {
+			await setup().createChecks([
+				makeCheck(YESTERDAY, { disk: [disk(...ROOT, { read_bytes: 0 })] }),
+				makeCheck(YESTERDAY + MINUTE_MS, failed),
+				makeCheck(YESTERDAY + 2 * MINUTE_MS, { disk: [disk(...ROOT, { read_bytes: 1200 })] }),
+			]);
+
+			const [root] = await findDisks();
+
+			expect(root?.buckets[0]?.readBytesPerSecond).toBe(10);
+		});
+
+		it("gives no rate across a gap of more than three intervals", async () => {
+			await setup().createChecks([
+				makeCheck(YESTERDAY, { disk: [disk(...ROOT, { read_bytes: 0 })] }),
+				makeCheck(YESTERDAY + 4 * MINUTE_MS, { disk: [disk(...ROOT, { read_bytes: 99999 })] }),
+			]);
+
+			const [root] = await findDisks();
+
+			expect(root?.buckets[0]?.readBytesPerSecond).toBeNull();
+			expect(root?.buckets[0]?.usage).toBe(0.3);
+		});
+
+		it("gives no rate when the agent reported no I/O values", async () => {
+			const noIo = { read_bytes: null, write_bytes: null, read_time: null, write_time: null };
+			await setup().createChecks([
+				makeCheck(YESTERDAY, { disk: [disk(...ROOT, noIo)] }),
+				makeCheck(YESTERDAY + MINUTE_MS, { disk: [disk(...ROOT, noIo)] }),
+			]);
+
+			const [root] = await findDisks();
+
+			expect(root?.buckets[0]).toMatchObject({
+				readBytesPerSecond: null,
+				writeBytesPerSecond: null,
+				readTimeFraction: null,
+				writeTimeFraction: null,
+				usage: 0.3,
+			});
+		});
+
+		it("pairs the first check in the range with the one just before it, without charting that earlier check", async () => {
+			const rangeStart = Date.now() - 24 * 60 * MINUTE_MS;
+			await setup().createChecks([
+				makeCheck(rangeStart - 30 * 1000, { disk: [disk(...ROOT, { read_bytes: 0, usage_percent: 0.9 })] }),
+				makeCheck(rangeStart + 30 * 1000, { disk: [disk(...ROOT, { read_bytes: 600, usage_percent: 0.1 })] }),
+			]);
+
+			const [root] = await findDisks("day");
+
+			expect(root?.buckets).toHaveLength(1);
+			expect(root?.buckets[0]?.readBytesPerSecond).toBe(10);
+			expect(root?.buckets[0]?.usage).toBe(0.1);
+		});
+
+		it("attaches the latest check's values, and lists a disk that only one of range or latest has", async () => {
+			await setup().createChecks([
+				makeCheck(TWO_DAYS_AGO, { disk: [disk(...ROOT), disk(...DATA)] }),
+				makeCheck(YESTERDAY, { disk: [disk(...ROOT, { total_bytes: 2000, used_bytes: 500, usage_percent: 0.25, total_inodes: null })] }),
+			]);
+
+			const disks = await findDisks();
+
+			expect(disks).toHaveLength(2);
+			expect(disks[0]).toMatchObject({
+				device: ROOT[0],
+				mountpoint: ROOT[1],
+				latest: {
+					totalBytes: 2000,
+					usedBytes: 500,
+					freeBytes: 700,
+					usage: 0.25,
+					totalInodes: null,
+					usedInodes: 10,
+					freeInodes: 90,
+					inodesUsage: 0.1,
+				},
+			});
+			expect(disks[0]?.buckets).toHaveLength(2);
+			expect(disks[1]).toMatchObject({ device: DATA[0], mountpoint: DATA[1], latest: null });
+			expect(disks[1]?.buckets).toHaveLength(1);
+		});
+
+		it("lists the latest check's disks with no buckets when the range has no checks", async () => {
+			await setup().createChecks([makeCheck(Date.now() - 40 * DAY_MS, { disk: [disk(...ROOT)] })]);
+
+			const disks = await findDisks("day");
+
+			expect(disks).toHaveLength(1);
+			expect(disks[0]).toMatchObject({ device: ROOT[0], mountpoint: ROOT[1], buckets: [] });
+			expect(disks[0]?.latest?.usage).toBe(0.3);
+		});
 	});
 });
