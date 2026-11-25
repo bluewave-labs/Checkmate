@@ -17,27 +17,27 @@ export interface CheckMetadata {
 }
 
 export interface CheckCpuInfo {
-	physical_core?: number;
-	logical_core?: number;
-	frequency?: number;
-	current_frequency?: number;
-	temperature?: number[];
-	free_percent?: number;
-	usage_percent?: number;
+	physical_core?: number | null;
+	logical_core?: number | null;
+	frequency?: number | null;
+	current_frequency?: number | null;
+	temperature?: number[] | null;
+	free_percent?: number | null;
+	usage_percent?: number | null;
 }
 
 export interface CheckMemoryInfo {
-	total_bytes?: number;
-	available_bytes?: number;
-	used_bytes?: number;
-	usage_percent?: number;
+	total_bytes?: number | null;
+	available_bytes?: number | null;
+	used_bytes?: number | null;
+	usage_percent?: number | null;
 }
 
 export interface CheckHostInfo {
-	os?: string;
-	platform?: string;
-	kernel_version?: string;
-	pretty_name?: string;
+	os?: string | null;
+	platform?: string | null;
+	kernel_version?: string | null;
+	pretty_name?: string | null;
 }
 
 export interface CheckCaptureInfo {
@@ -48,18 +48,18 @@ export interface CheckCaptureInfo {
 export interface CheckDiskInfo {
 	device?: string;
 	mountpoint?: string;
-	total_bytes?: number;
-	free_bytes?: number;
-	used_bytes?: number;
-	usage_percent?: number;
-	total_inodes?: number;
-	free_inodes?: number;
-	used_inodes?: number;
-	inodes_usage_percent?: number;
-	read_bytes?: number;
-	write_bytes?: number;
-	read_time?: number;
-	write_time?: number;
+	total_bytes?: number | null;
+	free_bytes?: number | null;
+	used_bytes?: number | null;
+	usage_percent?: number | null;
+	total_inodes?: number | null;
+	free_inodes?: number | null;
+	used_inodes?: number | null;
+	inodes_usage_percent?: number | null;
+	read_bytes?: number | null;
+	write_bytes?: number | null;
+	read_time?: number | null;
+	write_time?: number | null;
 }
 
 export interface CheckErrorInfo {

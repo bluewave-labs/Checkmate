@@ -77,23 +77,23 @@ const timingsSchema = new Schema<CheckTimings>(
 
 const cpuSchema = new Schema<CheckCpuInfo>(
 	{
-		physical_core: { type: Number, default: 0 },
-		logical_core: { type: Number, default: 0 },
-		frequency: { type: Number, default: 0 },
-		current_frequency: { type: Number, default: 0 },
-		temperature: { type: [Number], default: [] },
-		free_percent: { type: Number, default: 0 },
-		usage_percent: { type: Number, default: 0 },
+		physical_core: { type: Number },
+		logical_core: { type: Number },
+		frequency: { type: Number },
+		current_frequency: { type: Number },
+		temperature: { type: [Number], default: undefined },
+		free_percent: { type: Number },
+		usage_percent: { type: Number },
 	},
 	{ _id: false }
 );
 
 const memorySchema = new Schema<CheckMemoryInfo>(
 	{
-		total_bytes: { type: Number, default: 0 },
-		available_bytes: { type: Number, default: 0 },
-		used_bytes: { type: Number, default: 0 },
-		usage_percent: { type: Number, default: 0 },
+		total_bytes: { type: Number },
+		available_bytes: { type: Number },
+		used_bytes: { type: Number },
+		usage_percent: { type: Number },
 	},
 	{ _id: false }
 );
@@ -102,28 +102,28 @@ const diskSchema = new Schema<CheckDiskInfo>(
 	{
 		device: { type: String, default: "" },
 		mountpoint: { type: String, default: "" },
-		total_bytes: { type: Number, default: 0 },
-		free_bytes: { type: Number, default: 0 },
-		used_bytes: { type: Number, default: 0 },
-		usage_percent: { type: Number, default: 0 },
-		total_inodes: { type: Number, default: 0 },
-		free_inodes: { type: Number, default: 0 },
-		used_inodes: { type: Number, default: 0 },
-		inodes_usage_percent: { type: Number, default: 0 },
-		read_bytes: { type: Number, default: 0 },
-		write_bytes: { type: Number, default: 0 },
-		read_time: { type: Number, default: 0 },
-		write_time: { type: Number, default: 0 },
+		total_bytes: { type: Number },
+		free_bytes: { type: Number },
+		used_bytes: { type: Number },
+		usage_percent: { type: Number },
+		total_inodes: { type: Number },
+		free_inodes: { type: Number },
+		used_inodes: { type: Number },
+		inodes_usage_percent: { type: Number },
+		read_bytes: { type: Number },
+		write_bytes: { type: Number },
+		read_time: { type: Number },
+		write_time: { type: Number },
 	},
 	{ _id: false }
 );
 
 const hostSchema = new Schema<CheckHostInfo>(
 	{
-		os: { type: String, default: "" },
-		platform: { type: String, default: "" },
-		kernel_version: { type: String, default: "" },
-		pretty_name: { type: String, default: "" },
+		os: { type: String },
+		platform: { type: String },
+		kernel_version: { type: String },
+		pretty_name: { type: String },
 	},
 	{ _id: false }
 );

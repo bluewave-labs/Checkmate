@@ -315,28 +315,35 @@
 						"type": "object",
 						"properties": {
 							"physical_core": {
-								"type": "number"
+								"type": "number",
+								"nullable": true
 							},
 							"logical_core": {
-								"type": "number"
+								"type": "number",
+								"nullable": true
 							},
 							"frequency": {
-								"type": "number"
+								"type": "number",
+								"nullable": true
 							},
 							"current_frequency": {
-								"type": "number"
+								"type": "number",
+								"nullable": true
 							},
 							"temperature": {
 								"type": "array",
+								"nullable": true,
 								"items": {
 									"type": "number"
 								}
 							},
 							"free_percent": {
-								"type": "number"
+								"type": "number",
+								"nullable": true
 							},
 							"usage_percent": {
-								"type": "number"
+								"type": "number",
+								"nullable": true
 							}
 						}
 					},
@@ -344,16 +351,20 @@
 						"type": "object",
 						"properties": {
 							"total_bytes": {
-								"type": "number"
+								"type": "number",
+								"nullable": true
 							},
 							"available_bytes": {
-								"type": "number"
+								"type": "number",
+								"nullable": true
 							},
 							"used_bytes": {
-								"type": "number"
+								"type": "number",
+								"nullable": true
 							},
 							"usage_percent": {
-								"type": "number"
+								"type": "number",
+								"nullable": true
 							}
 						}
 					},
@@ -369,40 +380,52 @@
 									"type": "string"
 								},
 								"total_bytes": {
-									"type": "number"
+									"type": "number",
+									"nullable": true
 								},
 								"free_bytes": {
-									"type": "number"
+									"type": "number",
+									"nullable": true
 								},
 								"used_bytes": {
-									"type": "number"
+									"type": "number",
+									"nullable": true
 								},
 								"usage_percent": {
-									"type": "number"
+									"type": "number",
+									"nullable": true
 								},
 								"total_inodes": {
-									"type": "number"
+									"type": "number",
+									"nullable": true
 								},
 								"free_inodes": {
-									"type": "number"
+									"type": "number",
+									"nullable": true
 								},
 								"used_inodes": {
-									"type": "number"
+									"type": "number",
+									"nullable": true
 								},
 								"inodes_usage_percent": {
-									"type": "number"
+									"type": "number",
+									"nullable": true
 								},
 								"read_bytes": {
-									"type": "number"
+									"type": "number",
+									"nullable": true
 								},
 								"write_bytes": {
-									"type": "number"
+									"type": "number",
+									"nullable": true
 								},
 								"read_time": {
-									"type": "number"
+									"type": "number",
+									"nullable": true
 								},
 								"write_time": {
-									"type": "number"
+									"type": "number",
+									"nullable": true
 								}
 							}
 						}
@@ -411,16 +434,20 @@
 						"type": "object",
 						"properties": {
 							"os": {
-								"type": "string"
+								"type": "string",
+								"nullable": true
 							},
 							"platform": {
-								"type": "string"
+								"type": "string",
+								"nullable": true
 							},
 							"kernel_version": {
-								"type": "string"
+								"type": "string",
+								"nullable": true
 							},
 							"pretty_name": {
-								"type": "string"
+								"type": "string",
+								"nullable": true
 							}
 						}
 					},
@@ -1589,25 +1616,31 @@
 									"type": "object",
 									"properties": {
 										"physical_core": {
-											"type": "number"
+											"type": "number",
+											"nullable": true
 										},
 										"logical_core": {
-											"type": "number"
+											"type": "number",
+											"nullable": true
 										},
 										"frequency": {
-											"type": "number"
+											"type": "number",
+											"nullable": true
 										},
 										"current_frequency": {
-											"type": "number"
+											"type": "number",
+											"nullable": true
 										},
 										"temperature": {
 											"type": "array",
+											"nullable": true,
 											"items": {
 												"type": "number"
 											}
 										},
 										"usage_percent": {
-											"type": "number"
+											"type": "number",
+											"nullable": true
 										}
 									}
 								},
@@ -1615,13 +1648,16 @@
 									"type": "object",
 									"properties": {
 										"total_bytes": {
-											"type": "number"
+											"type": "number",
+											"nullable": true
 										},
 										"used_bytes": {
-											"type": "number"
+											"type": "number",
+											"nullable": true
 										},
 										"usage_percent": {
-											"type": "number"
+											"type": "number",
+											"nullable": true
 										}
 									}
 								},
@@ -1634,13 +1670,16 @@
 												"type": "string"
 											},
 											"total_bytes": {
-												"type": "number"
+												"type": "number",
+												"nullable": true
 											},
 											"used_bytes": {
-												"type": "number"
+												"type": "number",
+												"nullable": true
 											},
 											"usage_percent": {
-												"type": "number"
+												"type": "number",
+												"nullable": true
 											}
 										}
 									}
@@ -1649,13 +1688,16 @@
 									"type": "object",
 									"properties": {
 										"os": {
-											"type": "string"
+											"type": "string",
+											"nullable": true
 										},
 										"platform": {
-											"type": "string"
+											"type": "string",
+											"nullable": true
 										},
 										"pretty_name": {
-											"type": "string"
+											"type": "string",
+											"nullable": true
 										}
 									}
 								},
@@ -3987,25 +4029,31 @@
 												"type": "object",
 												"properties": {
 													"physical_core": {
-														"type": "number"
+														"type": "number",
+														"nullable": true
 													},
 													"logical_core": {
-														"type": "number"
+														"type": "number",
+														"nullable": true
 													},
 													"frequency": {
-														"type": "number"
+														"type": "number",
+														"nullable": true
 													},
 													"current_frequency": {
-														"type": "number"
+														"type": "number",
+														"nullable": true
 													},
 													"temperature": {
 														"type": "array",
+														"nullable": true,
 														"items": {
 															"type": "number"
 														}
 													},
 													"usage_percent": {
-														"type": "number"
+														"type": "number",
+														"nullable": true
 													}
 												}
 											},
@@ -4013,13 +4061,16 @@
 												"type": "object",
 												"properties": {
 													"total_bytes": {
-														"type": "number"
+														"type": "number",
+														"nullable": true
 													},
 													"used_bytes": {
-														"type": "number"
+														"type": "number",
+														"nullable": true
 													},
 													"usage_percent": {
-														"type": "number"
+														"type": "number",
+														"nullable": true
 													}
 												}
 											},
@@ -4032,13 +4083,16 @@
 															"type": "string"
 														},
 														"total_bytes": {
-															"type": "number"
+															"type": "number",
+															"nullable": true
 														},
 														"used_bytes": {
-															"type": "number"
+															"type": "number",
+															"nullable": true
 														},
 														"usage_percent": {
-															"type": "number"
+															"type": "number",
+															"nullable": true
 														}
 													}
 												}
@@ -4047,13 +4101,16 @@
 												"type": "object",
 												"properties": {
 													"os": {
-														"type": "string"
+														"type": "string",
+														"nullable": true
 													},
 													"platform": {
-														"type": "string"
+														"type": "string",
+														"nullable": true
 													},
 													"pretty_name": {
-														"type": "string"
+														"type": "string",
+														"nullable": true
 													}
 												}
 											},

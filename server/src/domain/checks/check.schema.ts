@@ -31,27 +31,27 @@ export const checkTimingsSchema = z.object({
 });
 
 export const checkCpuInfoSchema = z.object({
-	physical_core: z.number().optional(),
-	logical_core: z.number().optional(),
-	frequency: z.number().optional(),
-	current_frequency: z.number().optional(),
-	temperature: z.array(z.number()).optional(),
-	free_percent: z.number().optional(),
-	usage_percent: z.number().optional(),
+	physical_core: z.number().nullable().optional(),
+	logical_core: z.number().nullable().optional(),
+	frequency: z.number().nullable().optional(),
+	current_frequency: z.number().nullable().optional(),
+	temperature: z.array(z.number()).nullable().optional(),
+	free_percent: z.number().nullable().optional(),
+	usage_percent: z.number().nullable().optional(),
 });
 
 export const checkMemoryInfoSchema = z.object({
-	total_bytes: z.number().optional(),
-	available_bytes: z.number().optional(),
-	used_bytes: z.number().optional(),
-	usage_percent: z.number().optional(),
+	total_bytes: z.number().nullable().optional(),
+	available_bytes: z.number().nullable().optional(),
+	used_bytes: z.number().nullable().optional(),
+	usage_percent: z.number().nullable().optional(),
 });
 
 export const checkHostInfoSchema = z.object({
-	os: z.string().optional(),
-	platform: z.string().optional(),
-	kernel_version: z.string().optional(),
-	pretty_name: z.string().optional(),
+	os: z.string().nullable().optional(),
+	platform: z.string().nullable().optional(),
+	kernel_version: z.string().nullable().optional(),
+	pretty_name: z.string().nullable().optional(),
 });
 
 export const checkCaptureInfoSchema = z.object({
@@ -62,18 +62,18 @@ export const checkCaptureInfoSchema = z.object({
 export const checkDiskInfoSchema = z.object({
 	device: z.string().optional(),
 	mountpoint: z.string().optional(),
-	total_bytes: z.number().optional(),
-	free_bytes: z.number().optional(),
-	used_bytes: z.number().optional(),
-	usage_percent: z.number().optional(),
-	total_inodes: z.number().optional(),
-	free_inodes: z.number().optional(),
-	used_inodes: z.number().optional(),
-	inodes_usage_percent: z.number().optional(),
-	read_bytes: z.number().optional(),
-	write_bytes: z.number().optional(),
-	read_time: z.number().optional(),
-	write_time: z.number().optional(),
+	total_bytes: z.number().nullable().optional(),
+	free_bytes: z.number().nullable().optional(),
+	used_bytes: z.number().nullable().optional(),
+	usage_percent: z.number().nullable().optional(),
+	total_inodes: z.number().nullable().optional(),
+	free_inodes: z.number().nullable().optional(),
+	used_inodes: z.number().nullable().optional(),
+	inodes_usage_percent: z.number().nullable().optional(),
+	read_bytes: z.number().nullable().optional(),
+	write_bytes: z.number().nullable().optional(),
+	read_time: z.number().nullable().optional(),
+	write_time: z.number().nullable().optional(),
 });
 
 export const checkRaidMemberInfoSchema = z.object({

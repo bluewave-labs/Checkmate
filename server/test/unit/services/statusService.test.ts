@@ -895,6 +895,24 @@ describe("StatusService", () => {
 				expect(result.thresholdBreaches?.temp).toBe(false);
 			});
 
+			it("reports no breach for values the agent could not read", async () => {
+				const monitor = makeHardwareMonitor({ cpuAlertCounter: 1, memoryAlertCounter: 1, diskAlertCounter: 1, tempAlertCounter: 1 });
+				const { service, monitorsRepository } = createService();
+				(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+				(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
+
+				const check = makeHardwareCheck({
+					cpu: { usage_percent: null, temperature: null },
+					memory: { usage_percent: null },
+					disk: [{ device: "/dev/sda1", usage_percent: null }],
+					host: {},
+				});
+				const result = await service.updateMonitorStatus(check, monitor);
+
+				expect(result.thresholdBreaches).toEqual({ cpu: false, memory: false, disk: false, temp: false });
+				expect(result.monitor.status).toBe("up");
+			});
+
 			it("reports no breaches when the check carries no hardware metrics", async () => {
 				// A stored hardware check with no metrics (cpu/memory/disk/host all absent) must not
 				// throw and must not report any breach.
