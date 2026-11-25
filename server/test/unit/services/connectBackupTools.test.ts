@@ -54,6 +54,7 @@ describe("ConnectBackupTools.dump", () => {
 			"--config=/tmp/x/mongo.yaml",
 			"--archive",
 			"--gzip",
+			"--numParallelCollections=1",
 			"--db=uptime_db",
 			"--excludeCollection=connect_state",
 			"--excludeCollection=jobs",

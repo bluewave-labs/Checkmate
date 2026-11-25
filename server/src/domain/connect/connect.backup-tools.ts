@@ -59,7 +59,14 @@ export class ConnectBackupTools implements IConnectBackupTools {
 
 	private dumpArgs = (configFile: string, dbName: string, kind: ConnectBackupKind): string[] => {
 		const excluded = [...ConnectRuntimeCollections, ...(kind === "config" ? ConnectConfigExcludedCollections : [])];
-		return [`--config=${configFile}`, "--archive", "--gzip", `--db=${dbName}`, ...excluded.map((name) => `--excludeCollection=${name}`)];
+		return [
+			`--config=${configFile}`,
+			"--archive",
+			"--gzip",
+			"--numParallelCollections=1",
+			`--db=${dbName}`,
+			...excluded.map((name) => `--excludeCollection=${name}`),
+		];
 	};
 
 	private restoreArgs = (configFile: string, archive: string, dbName: string): string[] => {
