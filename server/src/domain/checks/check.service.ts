@@ -10,6 +10,31 @@ import { CheckFilter, DateRange } from "@/types/query.js";
 import { CHECK_TTL_SENTINEL } from "@/domain/checks/check.type.js";
 
 const SERVICE_NAME = "checkService";
+const CPU_USAGE_PATH = "cpu.usage_percent";
+const CPU_FREE_PATH = "cpu.free_percent";
+
+const unreadFieldPaths = (errors: CheckErrorInfo[] | undefined): Set<string> => {
+	const paths = new Set((errors ?? []).flatMap((error) => error?.metric ?? []));
+	if (paths.has(CPU_USAGE_PATH)) {
+		paths.add(CPU_FREE_PATH);
+	}
+	return paths;
+};
+
+const readValue = (path: string, value: unknown, unread: ReadonlySet<string>): unknown => {
+	if (unread.has(path)) {
+		return null;
+	}
+	return value;
+};
+
+const withUnreadAsNull = <T extends object>(section: string, values: T | null | undefined, unread: ReadonlySet<string>): T | undefined => {
+	if (!values) {
+		return undefined;
+	}
+	return Object.fromEntries(Object.entries(values).map(([field, value]) => [field, readValue(`${section}.${field}`, value, unread)])) as T;
+};
+
 const SECONDS_PER_DAY = 24 * 60 * 60;
 
 export interface ICheckService {
@@ -122,14 +147,16 @@ export class CheckService implements ICheckService {
 			const errorsSource = Array.isArray(hardwarePayload?.errors)
 				? hardwarePayload.errors
 				: (hardwarePayload?.errors as { errors?: CheckErrorInfo[] } | undefined)?.errors;
-			check.cpu = cpu;
-			check.memory = memory;
-			check.disk = disk;
+			const unread = unreadFieldPaths(errorsSource);
+			check.cpu = withUnreadAsNull("cpu", cpu, unread);
+			check.memory = withUnreadAsNull("memory", memory, unread);
+			check.disk = disk ?? undefined;
+			check.host = withUnreadAsNull("host", host, unread);
 			check.host = host;
 			check.errors = errorsSource;
 			check.capture = hardwarePayload?.capture;
-			check.net = net;
-			check.raid = raid;
+			check.net = net ?? undefined;
+			check.raid = raid ?? undefined;
 		}
 
 		if (type === "docker") {
