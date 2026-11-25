@@ -152,7 +152,6 @@ export class CheckService implements ICheckService {
 			check.memory = withUnreadAsNull("memory", memory, unread);
 			check.disk = disk ?? undefined;
 			check.host = withUnreadAsNull("host", host, unread);
-			check.host = host;
 			check.errors = errorsSource;
 			check.capture = hardwarePayload?.capture;
 			check.net = net ?? undefined;
