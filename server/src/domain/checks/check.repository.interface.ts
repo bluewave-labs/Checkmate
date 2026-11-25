@@ -5,6 +5,7 @@ import type {
 	DockerChecksResult,
 	DockerContainerStats,
 	HardwareChecksResult,
+	HardwareMetrics,
 	PageSpeedChecksResult,
 	UptimeChecksResult,
 } from "@/domain/checks/check.type.js";
@@ -43,6 +44,7 @@ export interface IChecksRepository {
 		options?: { type?: MonitorType }
 	): Promise<UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult | DockerChecksResult>;
 	findDockerContainerChecks(monitorId: string, containerName: string, dateRange: DateRange): Promise<Omit<DockerContainerStats, "restartsInRange">>;
+	findHardwareMetrics(monitorId: string, dateRange: DateRange): Promise<HardwareMetrics>;
 	findSummaryByTeamId(teamId: string, dateRange: DateRange, monitorId?: string): Promise<ChecksSummary>;
 	findUnevaluatedByMonitorId(monitorId: string, pending: PendingCheck[]): Promise<Check[]>;
 

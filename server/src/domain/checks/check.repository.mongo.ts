@@ -14,6 +14,7 @@ import type {
 	CheckTimings,
 	DockerContainerStats,
 	HardwareCheckStats,
+	HardwareMetrics,
 } from "@/domain/checks/check.type.js";
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
 import { CheckModel, type CheckDocument } from "@/domain/checks/check.model.js";
@@ -24,6 +25,14 @@ import { ILogger } from "@/utils/logger/logger.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
 import { getHardwareUpChecks, getHardwareStats, getHardwareTotalChecks } from "@/domain/checks/check.hardware.aggregations.js";
+import {
+	buildHardwareLevelsStages,
+	hardwareChecksFilter,
+	toHardwareBuckets,
+	toHardwareCheckCounts,
+	toHardwareLatest,
+	type HardwareLevelsFacet,
+} from "@/domain/checks/check.hardware.pipeline.js";
 import { CheckFilter, DateRange } from "@/types/query.js";
 import { AppError, internalError } from "@/utils/AppError.js";
 import { NETWORK_ERROR } from "@/types/network.js";
@@ -376,6 +385,29 @@ class MongoChecksRepository implements IChecksRepository {
 							checkedAt: toDateString(latestDoc.createdAt),
 						}
 					: null,
+		};
+	};
+
+	findHardwareMetrics = async (monitorId: string, dateRange: DateRange): Promise<HardwareMetrics> => {
+		const monitorObjectId = new mongoose.Types.ObjectId(monitorId);
+		const window = {
+			monitorId: monitorObjectId,
+			from: getDateForRange(dateRange),
+			to: new Date(),
+			dateFormat: getDateFormat(dateRange),
+		};
+		const [facets, latest] = await Promise.all([
+			CheckModel.aggregate<HardwareLevelsFacet>(buildHardwareLevelsStages(window)),
+			CheckModel.findOne({ ...hardwareChecksFilter(monitorObjectId), status: true })
+				.sort({ createdAt: -1 })
+				.lean<CheckDocument>(),
+		]);
+		const facet = facets[0];
+
+		return {
+			checks: toHardwareCheckCounts(facet),
+			latest: toHardwareLatest(latest),
+			buckets: toHardwareBuckets(facet),
 		};
 	};
 
