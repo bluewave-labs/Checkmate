@@ -90,12 +90,12 @@ export interface PageSpeedStatusPayload {
 }
 
 export interface HardwareStatusMetrics {
-	cpu?: CheckCpuInfo;
-	memory?: CheckMemoryInfo;
-	disk?: CheckDiskInfo[];
-	host?: CheckHostInfo;
-	net?: CheckNetworkInterfaceInfo[];
-	raid?: CheckRaidInfo[];
+	cpu?: CheckCpuInfo | null;
+	memory?: CheckMemoryInfo | null;
+	disk?: CheckDiskInfo[] | null;
+	host?: CheckHostInfo | null;
+	net?: CheckNetworkInterfaceInfo[] | null;
+	raid?: CheckRaidInfo[] | null;
 }
 
 export interface HardwareStatusPayload {

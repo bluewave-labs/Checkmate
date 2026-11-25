@@ -259,6 +259,99 @@ describe("CheckService", () => {
 				expect(check!.raid).toBeUndefined();
 			});
 
+			describe("values the agent could not read", () => {
+				const toHardwareCheck = (payload: unknown) => {
+					const { service } = createService();
+					return service.toCheck(makeStatusResponse({ type: "hardware", payload } as any))!;
+				};
+
+				it("stores null for a cpu value named in errors, and for free_percent with usage_percent", () => {
+					const check = toHardwareCheck({
+						data: {
+							cpu: { physical_core: 4, logical_core: 8, frequency: 4800, current_frequency: 0, temperature: [40], free_percent: 1, usage_percent: 0 },
+						},
+						errors: [
+							{ metric: ["cpu.usage_percent"], err: "sampling failed" },
+							{ metric: ["cpu.current_frequency"], err: "not supported" },
+						],
+					});
+
+					expect(check.cpu).toEqual({
+						physical_core: 4,
+						logical_core: 8,
+						frequency: 4800,
+						current_frequency: null,
+						temperature: [40],
+						free_percent: null,
+						usage_percent: null,
+					});
+				});
+
+				it("stores null for every memory value when one error names them all", () => {
+					const check = toHardwareCheck({
+						data: { memory: { total_bytes: 0, available_bytes: 0, used_bytes: 0, usage_percent: 0 } },
+						errors: [{ metric: ["memory.total_bytes", "memory.available_bytes", "memory.used_bytes", "memory.usage_percent"], err: "no meminfo" }],
+					});
+
+					expect(check.memory).toEqual({ total_bytes: null, available_bytes: null, used_bytes: null, usage_percent: null });
+				});
+
+				it("stores null for host values the agent reported as unknown", () => {
+					const check = toHardwareCheck({
+						data: { host: { os: "linux", platform: "ubuntu", kernel_version: "7.0.0", pretty_name: "unknown" } },
+						errors: [{ metric: ["host.pretty_name"], err: "no os-release" }],
+					});
+
+					expect(check.host).toEqual({ os: "linux", platform: "ubuntu", kernel_version: "7.0.0", pretty_name: null });
+				});
+
+				it("keeps a real zero when no error names the field", () => {
+					const check = toHardwareCheck({
+						data: { cpu: { usage_percent: 0, free_percent: 1 }, memory: { usage_percent: 0 } },
+						errors: null,
+					});
+
+					expect(check.cpu).toEqual({ usage_percent: 0, free_percent: 1 });
+					expect(check.memory).toEqual({ usage_percent: 0 });
+				});
+
+				it("keeps the errors list as received", () => {
+					const errors = [{ metric: ["cpu.usage_percent"], err: "sampling failed" }];
+					const check = toHardwareCheck({ data: { cpu: { usage_percent: 0 } }, errors });
+
+					expect(check.errors).toEqual(errors);
+				});
+
+				it("reads field paths from the nested errors format", () => {
+					const check = toHardwareCheck({
+						data: { cpu: { usage_percent: 0 } },
+						errors: { errors: [{ metric: ["cpu.usage_percent"], err: "sampling failed" }] },
+					});
+
+					expect(check.cpu).toEqual({ usage_percent: null });
+				});
+
+				it("ignores an error that names no field", () => {
+					const check = toHardwareCheck({
+						data: { cpu: { usage_percent: 0.5 } },
+						errors: [{ err: "something else" }],
+					});
+
+					expect(check.cpu).toEqual({ usage_percent: 0.5 });
+				});
+
+				it("leaves a list unset when the agent sends null for it", () => {
+					const check = toHardwareCheck({
+						data: { cpu: { usage_percent: 0.5 }, disk: null, net: null, raid: null },
+						errors: [{ metric: ["net"], err: "no counters" }],
+					});
+
+					expect(check.disk).toBeUndefined();
+					expect(check.net).toBeUndefined();
+					expect(check.raid).toBeUndefined();
+				});
+			});
+
 			it("extracts errors from array format", () => {
 				const payload = {
 					data: {},
