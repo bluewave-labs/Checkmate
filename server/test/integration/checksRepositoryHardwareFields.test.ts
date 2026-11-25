@@ -26,7 +26,7 @@ beforeEach(async () => {
 
 const MONITOR_ID = new mongoose.Types.ObjectId();
 const TEAM_ID = new mongoose.Types.ObjectId();
-const HARDWARE_FIELDS = ["cpu", "memory", "disk", "host", "errors", "capture", "net"];
+const HARDWARE_FIELDS = ["cpu", "memory", "disk", "host", "errors", "capture", "net", "raid"];
 const MINUTE_MS = 60 * 1000;
 
 const HARDWARE_PAYLOAD = {
@@ -149,6 +149,79 @@ describe("MongoChecksRepository hardware fields", () => {
 		expect(check?.net).toEqual(HARDWARE_PAYLOAD.net);
 		expect(check?.disk).toEqual([expect.objectContaining(HARDWARE_PAYLOAD.disk[0])]);
 		expect(check?.errors).toBeUndefined();
+	});
+
+	it("stores and returns raid arrays as the agent reports them", async () => {
+		const repo = setup();
+		const raid = [
+			{
+				device: "/dev/md0",
+				level: "raid1",
+				state: "clean",
+				raid_disks: 2,
+				degraded_disks: 0,
+				sync_action: "idle",
+				sync_progress: null,
+				members: [
+					{ device: "/dev/sda1", state: "in_sync" },
+					{ device: "/dev/sdb1", state: "in_sync" },
+				],
+			},
+			{
+				device: "/dev/md1",
+				level: "raid1",
+				state: "active",
+				raid_disks: 2,
+				degraded_disks: 1,
+				sync_action: "recover",
+				sync_progress: 0.25,
+				members: [
+					{ device: "/dev/sda2", state: "in_sync" },
+					{ device: "/dev/sdc2", state: "spare" },
+				],
+			},
+			{
+				device: "/dev/md2",
+				level: "raid0",
+				state: "clean",
+				raid_disks: 2,
+				degraded_disks: null,
+				sync_action: null,
+				sync_progress: null,
+				members: [
+					{ device: "/dev/sdd", state: "in_sync" },
+					{ device: "/dev/sde", state: "in_sync" },
+				],
+			},
+			{
+				device: "/dev/md127",
+				level: "",
+				state: "inactive",
+				raid_disks: 0,
+				degraded_disks: null,
+				sync_action: null,
+				sync_progress: null,
+				members: [{ device: "/dev/sdf", state: "faulty" }],
+			},
+		];
+		const check = makeCheck("hardware", { ...HARDWARE_PAYLOAD, raid });
+
+		const [returned] = await repo.createChecks([check]);
+		const stored = await findStored(check.id);
+
+		expect(stored.raid).toEqual(raid);
+		expect(returned?.raid).toEqual(raid);
+	});
+
+	it("stores an empty raid list when the host has no arrays", async () => {
+		const repo = setup();
+		const check = makeCheck("hardware", { ...HARDWARE_PAYLOAD, raid: [] });
+
+		const [returned] = await repo.createChecks([check]);
+		const stored = await findStored(check.id);
+
+		expect(stored.raid).toEqual([]);
+		expect(returned?.raid).toEqual([]);
 	});
 
 	it("leaves a failed hardware check out of the usage averages", async () => {

@@ -226,6 +226,39 @@ describe("CheckService", () => {
 				expect(check!.capture).toEqual({ screenshot: "base64data" });
 			});
 
+			it("copies raid arrays from the payload", () => {
+				const raid = [
+					{
+						device: "/dev/md0",
+						level: "raid1",
+						state: "clean",
+						raid_disks: 2,
+						degraded_disks: 0,
+						sync_action: "idle",
+						sync_progress: null,
+						members: [
+							{ device: "/dev/sda1", state: "in_sync" },
+							{ device: "/dev/sdb1", state: "in_sync" },
+						],
+					},
+				];
+				const payload = { data: { raid } } as HardwareStatusPayload;
+				const { service } = createService();
+
+				const check = service.toCheck(makeStatusResponse({ type: "hardware", payload } as any));
+
+				expect(check!.raid).toEqual(raid);
+			});
+
+			it("leaves raid unset when the payload has none", () => {
+				const payload = { data: { cpu: { usage_percent: 0.5 } } } as HardwareStatusPayload;
+				const { service } = createService();
+
+				const check = service.toCheck(makeStatusResponse({ type: "hardware", payload } as any));
+
+				expect(check!.raid).toBeUndefined();
+			});
+
 			it("extracts errors from array format", () => {
 				const payload = {
 					data: {},

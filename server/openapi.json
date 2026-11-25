@@ -531,6 +531,55 @@
 							]
 						}
 					},
+					"raid": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"device": {
+									"type": "string"
+								},
+								"level": {
+									"type": "string"
+								},
+								"state": {
+									"type": "string"
+								},
+								"raid_disks": {
+									"type": "number",
+									"nullable": true
+								},
+								"degraded_disks": {
+									"type": "number",
+									"nullable": true
+								},
+								"sync_action": {
+									"type": "string",
+									"nullable": true
+								},
+								"sync_progress": {
+									"type": "number",
+									"nullable": true
+								},
+								"members": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"device": {
+												"type": "string"
+											},
+											"state": {
+												"type": "string"
+											}
+										},
+										"required": ["device", "state"]
+									}
+								}
+							},
+							"required": ["device", "level", "state", "raid_disks", "degraded_disks", "sync_action", "sync_progress", "members"]
+						}
+					},
 					"accessibility": {
 						"type": "number"
 					},
