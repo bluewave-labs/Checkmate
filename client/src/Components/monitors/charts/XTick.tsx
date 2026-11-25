@@ -9,6 +9,8 @@ const TICK_FORMATS: Record<string, DateFormat> = {
 	day: "time",
 	week: "dateTimeShort",
 	month: "dateShort",
+	year: "date",
+	all: "date",
 };
 
 type XTickProps = {

@@ -12,6 +12,12 @@ export const MS_PER_HOUR = 60 * MS_PER_MINUTE;
 export const MS_PER_DAY = 24 * MS_PER_HOUR;
 export const MS_PER_WEEK = MS_PER_DAY * 7;
 
+const TOOLTIP_DATE_FORMATS: Record<string, DateFormat> = {
+	month: "date",
+	year: "date",
+	all: "date",
+};
+
 const resolveSystemTimezone = (): string => {
 	try {
 		return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
@@ -35,7 +41,15 @@ export const resolveTimezone = (preferred?: string | null): string =>
 	preferred?.trim() || SYSTEM_TIMEZONE;
 
 export const tooltipDateFormatLookup = (range: string): DateFormat =>
-	range === "month" ? "date" : "dateTime";
+	TOOLTIP_DATE_FORMATS[range] ?? "dateTime";
+
+export const tooltipBucketDate = (bucketDate: string, range: string): Date => {
+	const bucketStart = new Date(bucketDate);
+	if (tooltipDateFormatLookup(range) !== "date") {
+		return bucketStart;
+	}
+	return new Date(bucketStart.getTime() + MS_PER_DAY / 2);
+};
 
 const DISPLAY_UNITS = [MS_PER_DAY, MS_PER_HOUR, MS_PER_MINUTE, MS_PER_SECOND];
 

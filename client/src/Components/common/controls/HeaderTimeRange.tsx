@@ -6,7 +6,7 @@ import { useTheme } from "@mui/material/styles";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useTranslation } from "react-i18next";
 import { useMediaQuery } from "@mui/material";
-import type { DateRange } from "@/Types/Query";
+import { DefaultHeaderDateRanges, type DateRange } from "@/Types/Query";
 import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface MonitorTimeFrameHeaderProps {
@@ -14,6 +14,7 @@ interface MonitorTimeFrameHeaderProps {
 	hasDateRange?: boolean;
 	dateRange: DateRange;
 	setDateRange: (dateRange: DateRange) => void;
+	ranges?: readonly DateRange[];
 }
 
 export const HeaderTimeRange = ({
@@ -21,6 +22,7 @@ export const HeaderTimeRange = ({
 	hasDateRange = true,
 	dateRange,
 	setDateRange,
+	ranges = DefaultHeaderDateRanges,
 }: MonitorTimeFrameHeaderProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -46,18 +48,14 @@ export const HeaderTimeRange = ({
 				size="small"
 				fullWidth={isSmallScreen}
 			>
-				<ToggleButton value="recent">
-					{t("components.headerTimeRange.labels.recent")}
-				</ToggleButton>
-				<ToggleButton value="day">
-					{t("components.headerTimeRange.labels.day")}
-				</ToggleButton>
-				<ToggleButton value="week">
-					{t("components.headerTimeRange.labels.week")}
-				</ToggleButton>
-				<ToggleButton value="month">
-					{t("components.headerTimeRange.labels.month")}
-				</ToggleButton>
+				{ranges.map((range) => (
+					<ToggleButton
+						key={range}
+						value={range}
+					>
+						{t(`components.headerTimeRange.labels.${range}`)}
+					</ToggleButton>
+				))}
 			</ToggleButtonGroup>
 		);
 	}

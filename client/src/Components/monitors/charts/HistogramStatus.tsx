@@ -2,7 +2,12 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { BaseChart } from "@/Components/design-elements";
 import { useTheme } from "@mui/material/styles";
-import { formatMs, type DateFormat } from "@/Utils/TimeUtils";
+import {
+	formatMs,
+	tooltipBucketDate,
+	tooltipDateFormatLookup,
+	type DateFormat,
+} from "@/Utils/TimeUtils";
 import { useTranslation } from "react-i18next";
 import { ResponsiveContainer, BarChart, XAxis, Bar, Cell, Tooltip } from "recharts";
 import { getResponseTimeColor } from "@/Utils/MonitorUtils";
@@ -15,6 +20,12 @@ import { typographyLevels } from "@/Utils/Theme/Palette";
 
 type HistogramStatusMetric = "responseTime" | "checkCount";
 
+const BOUND_LABEL_FORMATS: Record<string, DateFormat> = {
+	day: "dateTimeShort",
+	year: "date",
+	all: "date",
+};
+
 interface XLabelProps {
 	p1: GroupedCheck;
 	p2: GroupedCheck;
@@ -24,7 +35,7 @@ interface XLabelProps {
 const XLabel = ({ p1, p2, range }: XLabelProps) => {
 	const theme = useTheme();
 	const formatDate = useFormatDate();
-	const dateFormat: DateFormat = range === "day" ? "dateTimeShort" : "dateShort";
+	const dateFormat = BOUND_LABEL_FORMATS[range] ?? "dateShort";
 	return (
 		<>
 			<text
@@ -88,13 +99,12 @@ export const HistogramStatus = ({
 		const titleText = isCheckCount
 			? t("common.charts.labels.checkCount")
 			: t("common.charts.labels.averageResponseTime");
-		const fmt: DateFormat = range === "30d" ? "date" : "dateTime";
 		let dateLabel = "";
 		if (d?.bucketDate) {
-			const base = new Date(d.bucketDate);
-			const midBucket =
-				range === "30d" ? new Date(base.getTime() + 12 * 60 * 60 * 1000) : base;
-			dateLabel = formatDate(midBucket, fmt);
+			dateLabel = formatDate(
+				tooltipBucketDate(d.bucketDate, range),
+				tooltipDateFormatLookup(range)
+			);
 		}
 		return (
 			<Stack

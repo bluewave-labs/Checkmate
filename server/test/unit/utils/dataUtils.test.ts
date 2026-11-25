@@ -9,6 +9,7 @@ describe("getDateForRange", () => {
 		["day", 24 * 60 * 60 * 1000],
 		["week", 7 * 24 * 60 * 60 * 1000],
 		["month", 30 * 24 * 60 * 60 * 1000],
+		["year", 365 * 24 * 60 * 60 * 1000],
 	])("returns now minus the %s window", (range, offsetMs) => {
 		const before = Date.now();
 		const result = getDateForRange(range as DateRange);
@@ -31,6 +32,7 @@ describe("getDateFormat", () => {
 		["day", "%Y-%m-%dT%H:00:00Z"],
 		["week", "%Y-%m-%dT00:00:00Z"],
 		["month", "%Y-%m-%dT00:00:00Z"],
+		["year", "%Y-%m-%dT00:00:00Z"],
 		["all", "%Y-%m-%dT00:00:00Z"],
 	])("returns the %s bucket format", (range, format) => {
 		expect(getDateFormat(range as DateRange)).toBe(format);
@@ -48,7 +50,7 @@ describe("usesRollups", () => {
 		expect(usesRollups(range)).toBe(false);
 	});
 
-	it.each(["day", "week", "month", "all"] as const)("is true for the %s range", (range) => {
+	it.each(["day", "week", "month", "year", "all"] as const)("is true for the %s range", (range) => {
 		expect(usesRollups(range)).toBe(true);
 	});
 });

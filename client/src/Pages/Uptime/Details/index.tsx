@@ -29,7 +29,7 @@ import type {
 } from "@/Types/GeoCheck";
 import { t } from "i18next";
 import { Typography } from "@mui/material";
-import type { DateRange } from "@/Types/Query";
+import { UptimeHeaderDateRanges, isLongDateRange, type DateRange } from "@/Types/Query";
 import { useFormatDate } from "@/Hooks/useFormatDate";
 import { LAYOUT } from "@/Utils/Theme/constants";
 
@@ -118,6 +118,7 @@ const UptimeDetailsPage = () => {
 		if (!monitorId || !monitor?.type) {
 			return null;
 		}
+
 		const params = new URLSearchParams();
 		params.append("type", monitor.type);
 		params.append("sortOrder", "desc");
@@ -137,6 +138,9 @@ const UptimeDetailsPage = () => {
 		if (!monitorId || !supportsGeoCheck(monitor?.type) || !monitor?.geoCheckEnabled) {
 			return null;
 		}
+		if (isLongDateRange(dateRange)) {
+			return null;
+		}
 		const params = new URLSearchParams();
 		params.append("dateRange", dateRange);
 		params.append("continent", selectedLocation);
@@ -154,6 +158,9 @@ const UptimeDetailsPage = () => {
 	// Fetch paginated geo checks for the table
 	const geoChecksTableUrl = useMemo(() => {
 		if (!monitorId || !supportsGeoCheck(monitor?.type) || !monitor?.geoCheckEnabled) {
+			return null;
+		}
+		if (isLongDateRange(dateRange)) {
 			return null;
 		}
 		const params = new URLSearchParams();
@@ -214,6 +221,7 @@ const UptimeDetailsPage = () => {
 				hasDateRange={true}
 				dateRange={dateRange}
 				setDateRange={setDateRange}
+				ranges={UptimeHeaderDateRanges}
 			/>
 
 			<Stack
@@ -272,7 +280,7 @@ const UptimeDetailsPage = () => {
 				setRowsPerPage={setRowsPerPage}
 			/>
 
-			{monitor?.geoCheckEnabled && (
+			{monitor?.geoCheckEnabled && !isLongDateRange(dateRange) && (
 				<>
 					<Typography variant="h1">Location breakdown</Typography>
 					<HeaderGeoTabs
