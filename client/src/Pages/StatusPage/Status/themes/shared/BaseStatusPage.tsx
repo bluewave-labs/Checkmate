@@ -37,9 +37,11 @@ import { LAYOUT } from "@/Utils/Theme/constants";
 import { Icon } from "@/Components/design-elements";
 
 import { useStatusPageTheme } from "@/Pages/StatusPage/Status/themes/StatusPageThemeProvider";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material";
+
+import { useDocumentTitle } from "@/Hooks/useDocumentTitle";
 
 type StatusPageMonitor = Monitor;
 
@@ -99,6 +101,8 @@ interface Props {
 	onRangeChange: (range: StatusPageRange) => void;
 	bucketTimezone: string;
 	checkTTLDays?: number;
+	isPublic: boolean;
+	hasError: boolean;
 }
 
 export const BaseStatusPage = ({
@@ -109,6 +113,8 @@ export const BaseStatusPage = ({
 	onRangeChange,
 	bucketTimezone,
 	checkTTLDays,
+	isPublic,
+	hasError,
 }: Props) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -123,14 +129,21 @@ export const BaseStatusPage = ({
 
 	const overall = resolveOverallStatus(monitors, t, config.overallStatusOptions);
 
-	useEffect(() => {
-		const previousTitle = document.title;
-		document.title = `${overall.message} · ${statusPage.companyName}`;
+	const titleHealthMessage = hasError
+		? t("pages.statusPages.statusBar.unknown")
+		: overall.message;
 
-		return () => {
-			document.title = previousTitle;
-		};
-	}, [overall.message, statusPage.companyName]);
+	const companyName = statusPage.companyName?.trim() ?? "";
+
+	useDocumentTitle(
+		companyName
+			? t("pages.statusPages.documentTitle", {
+					health: titleHealthMessage,
+					companyName: companyName,
+				})
+			: titleHealthMessage,
+		isPublic
+	);
 
 	const logoSrc = statusPage.logo?.data
 		? `data:${statusPage.logo.contentType};base64,${statusPage.logo.data}`

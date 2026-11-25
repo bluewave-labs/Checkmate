@@ -47,6 +47,8 @@ import { EditorialHeader } from "@/Pages/StatusPage/Status/themes/editorial/Edit
 import { EditorialHero } from "@/Pages/StatusPage/Status/themes/editorial/EditorialHero";
 import { minimalStyles } from "@/Pages/StatusPage/Status/themes/minimal/styles";
 
+const STATUS_PAGE_ERROR_RETRY_MS = 60_000;
+
 const THEME_CONFIGS: Record<StatusPageTheme, ThemeConfig<any>> = {
 	refined: {
 		createStyles: refinedStyles,
@@ -114,8 +116,15 @@ const StatusPageView = () => {
 		{},
 		{
 			keepPreviousData: true,
-			refreshInterval: range === "latest" ? 10000 : 60000,
+			refreshInterval: () =>
+				range === "latest" && document.visibilityState === "visible" ? 10000 : 60000,
 			refreshWhenHidden: isPublic,
+			shouldRetryOnError: isPublic,
+			onErrorRetry: (_error, _key, _config, revalidate, { retryCount }) => {
+				setTimeout(() => {
+					revalidate({ retryCount });
+				}, STATUS_PAGE_ERROR_RETRY_MS);
+			},
 		}
 	);
 
@@ -175,6 +184,8 @@ const StatusPageView = () => {
 					onRangeChange={onRangeChange}
 					bucketTimezone={data.bucketTimezone ?? "Etc/UTC"}
 					checkTTLDays={data.checkTTLDays}
+					isPublic={isPublic}
+					hasError={Boolean(error)}
 				/>
 			</StatusPageThemeProvider>
 		);
