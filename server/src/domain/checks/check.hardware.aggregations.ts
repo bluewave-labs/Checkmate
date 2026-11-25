@@ -107,7 +107,7 @@ export const getHardwareStats = async (monitorId: string, dates: DateRange, date
 				_id: { $dateToString: { format: dateString, date: "$createdAt" } },
 				avgCpuUsage: { $avg: "$cpu.usage_percent" },
 				avgMemoryUsage: { $avg: "$memory.usage_percent" },
-				avgTemperatures: { $push: { $ifNull: ["$cpu.temperature", [0]] } },
+				avgTemperatures: { $push: { $ifNull: ["$cpu.temperature", []] } },
 				disks: { $push: "$disk" },
 				net: { $push: "$net" },
 				createdAts: { $push: "$createdAt" },
