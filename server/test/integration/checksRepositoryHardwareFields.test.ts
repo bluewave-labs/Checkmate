@@ -123,6 +123,34 @@ describe("MongoChecksRepository hardware fields", () => {
 		expect(stored).not.toHaveProperty("errors");
 	});
 
+	it("returns no hardware fields for a check stored without them", async () => {
+		const repo = setup();
+
+		const [httpCheck, failedHardwareCheck] = await repo.createChecks([
+			makeCheck("http"),
+			makeCheck("hardware", { status: false, statusCode: 5000, message: "connect ECONNREFUSED" }),
+		]);
+
+		for (const field of HARDWARE_FIELDS) {
+			expect(httpCheck?.[field as keyof Check]).toBeUndefined();
+			expect(failedHardwareCheck?.[field as keyof Check]).toBeUndefined();
+		}
+	});
+
+	it("returns the hardware fields of a check that has them", async () => {
+		const repo = setup();
+
+		const [check] = await repo.createChecks([makeCheck("hardware", HARDWARE_PAYLOAD)]);
+
+		expect(check?.cpu).toEqual(HARDWARE_PAYLOAD.cpu);
+		expect(check?.memory).toEqual(HARDWARE_PAYLOAD.memory);
+		expect(check?.host).toEqual(HARDWARE_PAYLOAD.host);
+		expect(check?.capture).toEqual(HARDWARE_PAYLOAD.capture);
+		expect(check?.net).toEqual(HARDWARE_PAYLOAD.net);
+		expect(check?.disk).toEqual([expect.objectContaining(HARDWARE_PAYLOAD.disk[0])]);
+		expect(check?.errors).toBeUndefined();
+	});
+
 	it("leaves a failed hardware check out of the usage averages", async () => {
 		const repo = setup();
 		await repo.createChecks([
