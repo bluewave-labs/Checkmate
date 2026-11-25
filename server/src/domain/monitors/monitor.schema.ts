@@ -18,6 +18,7 @@ import {
 	hardwareStatsSchema,
 	pageSpeedGroupedCheckSchema,
 } from "@/domain/checks/check.schema.js";
+import { hardwareMetricsSchema } from "@/domain/checks/check.hardware.schema.js";
 import { monitorStatsSchema } from "@/domain/monitor-stats/monitor-stats.schema.js";
 
 export const monitorSchema = z.object({
@@ -181,6 +182,13 @@ export const hardwareDetailsResultSchema = z
 		monitorStats: monitorStatsSchema.or(z.null()),
 	})
 	.meta({ id: "HardwareDetails" });
+
+export const hardwareMetricsResultSchema = hardwareMetricsSchema
+	.extend({
+		monitor: monitorResponseSchema,
+		monitorStats: monitorStatsSchema.or(z.null()),
+	})
+	.meta({ id: "HardwareMetrics" });
 
 export const pageSpeedDetailsResultSchema = z
 	.object({
