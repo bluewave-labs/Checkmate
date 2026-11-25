@@ -2514,6 +2514,124 @@
 							"required": ["bucketDate", "cpu", "memory"]
 						}
 					},
+					"disks": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"device": {
+									"type": "string"
+								},
+								"mountpoint": {
+									"type": "string"
+								},
+								"latest": {
+									"type": "object",
+									"nullable": true,
+									"properties": {
+										"totalBytes": {
+											"type": "number",
+											"nullable": true
+										},
+										"usedBytes": {
+											"type": "number",
+											"nullable": true
+										},
+										"freeBytes": {
+											"type": "number",
+											"nullable": true
+										},
+										"usage": {
+											"type": "number",
+											"nullable": true
+										},
+										"totalInodes": {
+											"type": "number",
+											"nullable": true
+										},
+										"usedInodes": {
+											"type": "number",
+											"nullable": true
+										},
+										"freeInodes": {
+											"type": "number",
+											"nullable": true
+										},
+										"inodesUsage": {
+											"type": "number",
+											"nullable": true
+										}
+									},
+									"required": ["totalBytes", "usedBytes", "freeBytes", "usage", "totalInodes", "usedInodes", "freeInodes", "inodesUsage"]
+								},
+								"buckets": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"bucketDate": {
+												"type": "string"
+											},
+											"usedBytes": {
+												"type": "number",
+												"nullable": true
+											},
+											"freeBytes": {
+												"type": "number",
+												"nullable": true
+											},
+											"usage": {
+												"type": "number",
+												"nullable": true
+											},
+											"usedInodes": {
+												"type": "number",
+												"nullable": true
+											},
+											"freeInodes": {
+												"type": "number",
+												"nullable": true
+											},
+											"inodesUsage": {
+												"type": "number",
+												"nullable": true
+											},
+											"readBytesPerSecond": {
+												"type": "number",
+												"nullable": true
+											},
+											"writeBytesPerSecond": {
+												"type": "number",
+												"nullable": true
+											},
+											"readTimeFraction": {
+												"type": "number",
+												"nullable": true
+											},
+											"writeTimeFraction": {
+												"type": "number",
+												"nullable": true
+											}
+										},
+										"required": [
+											"bucketDate",
+											"usedBytes",
+											"freeBytes",
+											"usage",
+											"usedInodes",
+											"freeInodes",
+											"inodesUsage",
+											"readBytesPerSecond",
+											"writeBytesPerSecond",
+											"readTimeFraction",
+											"writeTimeFraction"
+										]
+									}
+								}
+							},
+							"required": ["device", "mountpoint", "latest", "buckets"]
+						}
+					},
 					"monitor": {
 						"$ref": "#/components/schemas/Monitor"
 					},
@@ -2528,7 +2646,7 @@
 						]
 					}
 				},
-				"required": ["checks", "latest", "buckets", "monitor", "monitorStats"]
+				"required": ["checks", "latest", "buckets", "disks", "monitor", "monitorStats"]
 			},
 			"PageSpeedDetails": {
 				"type": "object",

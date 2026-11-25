@@ -763,6 +763,7 @@ describe("MonitorService", () => {
 					memory: { usedBytes: 400, availableBytes: 600, usage: 0.4 },
 				},
 			],
+			disks: [],
 		};
 
 		it("returns the metrics with the monitor and its stats", async () => {
@@ -777,7 +778,7 @@ describe("MonitorService", () => {
 
 			const result = await service.getHardwareMetricsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "week" });
 
-			expect(checksRepository.findHardwareMetrics).toHaveBeenCalledWith(MONITOR_ID, "week");
+			expect(checksRepository.findHardwareMetrics).toHaveBeenCalledWith(MONITOR_ID, "week", monitor.interval);
 			expect(result).toEqual({ ...hardwareMetrics, monitor, monitorStats: { monitorId: MONITOR_ID } });
 		});
 
@@ -786,7 +787,7 @@ describe("MonitorService", () => {
 			const checksRepository = createChecksRepositoryMock();
 			const monitorStatsRepository = createMonitorStatsRepositoryMock();
 			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "hardware" }));
-			(checksRepository.findHardwareMetrics as jest.Mock).mockResolvedValue({ checks: { total: 0, up: 0 }, latest: null, buckets: [] });
+			(checksRepository.findHardwareMetrics as jest.Mock).mockResolvedValue({ checks: { total: 0, up: 0 }, latest: null, buckets: [], disks: [] });
 			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(null);
 			const { service } = createService({ monitorsRepository, checksRepository, monitorStatsRepository });
 
