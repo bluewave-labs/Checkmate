@@ -31,6 +31,7 @@ import type {
 	lighthouseAuditSchema,
 	pageSpeedGroupedCheckSchema,
 } from "@/domain/checks/check.schema.js";
+import type { hardwareMetricsBucketSchema, hardwareMetricsLatestSchema, hardwareMetricsSchema } from "@/domain/checks/check.hardware.schema.js";
 
 export const CHECK_TTL_SENTINEL = 366;
 export type CheckTimings = z.infer<typeof checkTimingsSchema>;
@@ -64,6 +65,9 @@ export type HardwareNetStats = z.infer<typeof hardwareNetStatsSchema>;
 export type HardwareCheckStats = z.infer<typeof hardwareCheckStatsSchema>;
 export type HardwareStats = z.infer<typeof hardwareStatsSchema>;
 export type DailyCheckBucket = z.infer<typeof dailyCheckBucketSchema>;
+export type HardwareMetricsLatest = z.infer<typeof hardwareMetricsLatestSchema>;
+export type HardwareMetricsBucket = z.infer<typeof hardwareMetricsBucketSchema>;
+export type HardwareMetrics = z.infer<typeof hardwareMetricsSchema>;
 export type DockerStatsBucket = z.infer<typeof dockerStatsBucketSchema>;
 export type DockerStats = z.infer<typeof dockerStatsSchema>;
 export type DockerContainerStatsBucket = z.infer<typeof dockerContainerStatsBucketSchema>;
