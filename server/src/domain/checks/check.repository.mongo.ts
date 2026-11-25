@@ -72,37 +72,49 @@ class MongoChecksRepository implements IChecksRepository {
 			};
 		};
 
-		const mapCpu = (cpu?: CheckCpuInfo): CheckCpuInfo => ({
-			physical_core: cpu?.physical_core ?? 0,
-			logical_core: cpu?.logical_core ?? 0,
-			frequency: cpu?.frequency ?? 0,
-			current_frequency: cpu?.current_frequency ?? 0,
-			temperature: cpu?.temperature ?? [],
-			free_percent: cpu?.free_percent ?? 0,
-			usage_percent: cpu?.usage_percent ?? 0,
-		});
+		const mapCpu = (cpu?: CheckCpuInfo): CheckCpuInfo | undefined => {
+			if (!cpu) return undefined;
+			return {
+				physical_core: cpu.physical_core ?? 0,
+				logical_core: cpu.logical_core ?? 0,
+				frequency: cpu.frequency ?? 0,
+				current_frequency: cpu.current_frequency ?? 0,
+				temperature: cpu.temperature ?? [],
+				free_percent: cpu.free_percent ?? 0,
+				usage_percent: cpu.usage_percent ?? 0,
+			};
+		};
 
-		const mapMemory = (memory?: CheckMemoryInfo): CheckMemoryInfo => ({
-			total_bytes: memory?.total_bytes ?? 0,
-			available_bytes: memory?.available_bytes ?? 0,
-			used_bytes: memory?.used_bytes ?? 0,
-			usage_percent: memory?.usage_percent ?? 0,
-		});
+		const mapMemory = (memory?: CheckMemoryInfo): CheckMemoryInfo | undefined => {
+			if (!memory) return undefined;
+			return {
+				total_bytes: memory.total_bytes ?? 0,
+				available_bytes: memory.available_bytes ?? 0,
+				used_bytes: memory.used_bytes ?? 0,
+				usage_percent: memory.usage_percent ?? 0,
+			};
+		};
 
-		const mapHost = (host?: CheckHostInfo): CheckHostInfo => ({
-			os: host?.os ?? "",
-			platform: host?.platform ?? "",
-			kernel_version: host?.kernel_version ?? "",
-			pretty_name: host?.pretty_name ?? "",
-		});
+		const mapHost = (host?: CheckHostInfo): CheckHostInfo | undefined => {
+			if (!host) return undefined;
+			return {
+				os: host.os ?? "",
+				platform: host.platform ?? "",
+				kernel_version: host.kernel_version ?? "",
+				pretty_name: host.pretty_name ?? "",
+			};
+		};
 
-		const mapCapture = (capture?: CheckCaptureInfo): CheckCaptureInfo => ({
-			version: capture?.version ?? "",
-			mode: capture?.mode ?? "",
-		});
+		const mapCapture = (capture?: CheckCaptureInfo): CheckCaptureInfo | undefined => {
+			if (!capture) return undefined;
+			return {
+				version: capture.version ?? "",
+				mode: capture.mode ?? "",
+			};
+		};
 
-		const mapDisks = (disks?: CheckDiskInfo[]): CheckDiskInfo[] =>
-			(disks ?? []).map((disk) => ({
+		const mapDisks = (disks?: CheckDiskInfo[]): CheckDiskInfo[] | undefined =>
+			disks?.map((disk) => ({
 				device: disk?.device ?? "",
 				mountpoint: disk?.mountpoint ?? "",
 				total_bytes: disk?.total_bytes ?? 0,
@@ -119,14 +131,14 @@ class MongoChecksRepository implements IChecksRepository {
 				write_time: disk?.write_time ?? 0,
 			}));
 
-		const mapErrors = (errors?: CheckErrorInfo[]): CheckErrorInfo[] =>
-			(errors ?? []).map((error) => ({
+		const mapErrors = (errors?: CheckErrorInfo[]): CheckErrorInfo[] | undefined =>
+			errors?.map((error) => ({
 				metric: error?.metric ?? [],
 				err: error?.err ?? "",
 			}));
 
-		const mapNet = (net?: CheckNetworkInterfaceInfo[]): CheckNetworkInterfaceInfo[] =>
-			(net ?? []).map((iface) => ({
+		const mapNet = (net?: CheckNetworkInterfaceInfo[]): CheckNetworkInterfaceInfo[] | undefined =>
+			net?.map((iface) => ({
 				name: iface?.name ?? "",
 				bytes_sent: iface?.bytes_sent ?? 0,
 				bytes_recv: iface?.bytes_recv ?? 0,
