@@ -26,13 +26,17 @@ import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
 import { getHardwareUpChecks, getHardwareStats, getHardwareTotalChecks } from "@/domain/checks/check.hardware.aggregations.js";
 import {
+	buildHardwareDisksStages,
 	buildHardwareLevelsStages,
 	hardwareChecksFilter,
 	toHardwareBuckets,
 	toHardwareCheckCounts,
+	toHardwareDisks,
 	toHardwareLatest,
+	type HardwareDiskRow,
 	type HardwareLevelsFacet,
 } from "@/domain/checks/check.hardware.pipeline.js";
+import { HARDWARE_COUNTER_MAX_GAP_INTERVALS } from "@/domain/checks/check.type.js";
 import { CheckFilter, DateRange } from "@/types/query.js";
 import { AppError, internalError } from "@/utils/AppError.js";
 import { NETWORK_ERROR } from "@/types/network.js";
@@ -388,7 +392,7 @@ class MongoChecksRepository implements IChecksRepository {
 		};
 	};
 
-	findHardwareMetrics = async (monitorId: string, dateRange: DateRange): Promise<HardwareMetrics> => {
+	findHardwareMetrics = async (monitorId: string, dateRange: DateRange, intervalMs: number): Promise<HardwareMetrics> => {
 		const monitorObjectId = new mongoose.Types.ObjectId(monitorId);
 		const window = {
 			monitorId: monitorObjectId,
@@ -396,8 +400,10 @@ class MongoChecksRepository implements IChecksRepository {
 			to: new Date(),
 			dateFormat: getDateFormat(dateRange),
 		};
-		const [facets, latest] = await Promise.all([
+		const maxGapMs = HARDWARE_COUNTER_MAX_GAP_INTERVALS * intervalMs;
+		const [facets, diskRows, latest] = await Promise.all([
 			CheckModel.aggregate<HardwareLevelsFacet>(buildHardwareLevelsStages(window)),
+			CheckModel.aggregate<HardwareDiskRow>(buildHardwareDisksStages({ ...window, maxGapMs })),
 			CheckModel.findOne({ ...hardwareChecksFilter(monitorObjectId), status: true })
 				.sort({ createdAt: -1 })
 				.lean<CheckDocument>(),
@@ -408,6 +414,7 @@ class MongoChecksRepository implements IChecksRepository {
 			checks: toHardwareCheckCounts(facet),
 			latest: toHardwareLatest(latest),
 			buckets: toHardwareBuckets(facet),
+			disks: toHardwareDisks(diskRows, latest),
 		};
 	};
 

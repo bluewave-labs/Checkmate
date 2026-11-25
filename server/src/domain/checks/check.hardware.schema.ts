@@ -47,6 +47,38 @@ export const hardwareMetricsBucketSchema = z.object({
 	}),
 });
 
+export const hardwareMetricsDiskBucketSchema = z.object({
+	bucketDate: z.string(),
+	usedBytes: nullableNumber,
+	freeBytes: nullableNumber,
+	usage: nullableNumber,
+	usedInodes: nullableNumber,
+	freeInodes: nullableNumber,
+	inodesUsage: nullableNumber,
+	readBytesPerSecond: nullableNumber,
+	writeBytesPerSecond: nullableNumber,
+	readTimeFraction: nullableNumber,
+	writeTimeFraction: nullableNumber,
+});
+
+export const hardwareMetricsDiskSchema = z.object({
+	device: z.string(),
+	mountpoint: z.string(),
+	latest: z
+		.object({
+			totalBytes: nullableNumber,
+			usedBytes: nullableNumber,
+			freeBytes: nullableNumber,
+			usage: nullableNumber,
+			totalInodes: nullableNumber,
+			usedInodes: nullableNumber,
+			freeInodes: nullableNumber,
+			inodesUsage: nullableNumber,
+		})
+		.nullable(),
+	buckets: z.array(hardwareMetricsDiskBucketSchema),
+});
+
 export const hardwareMetricsSchema = z.object({
 	checks: z.object({
 		total: z.number(),
@@ -54,4 +86,5 @@ export const hardwareMetricsSchema = z.object({
 	}),
 	latest: hardwareMetricsLatestSchema.nullable(),
 	buckets: z.array(hardwareMetricsBucketSchema),
+	disks: z.array(hardwareMetricsDiskSchema),
 });

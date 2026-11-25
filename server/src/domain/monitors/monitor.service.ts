@@ -376,7 +376,7 @@ export class MonitorService implements IMonitorService {
 		}
 
 		const [metrics, monitorStats] = await Promise.all([
-			this.checksRepository.findHardwareMetrics(monitor.id, dateRange),
+			this.checksRepository.findHardwareMetrics(monitor.id, dateRange, monitor.interval),
 			this.monitorStatsRepository.findByMonitorId(monitor.id),
 		]);
 
