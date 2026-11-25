@@ -224,6 +224,99 @@ describe("MongoChecksRepository hardware fields", () => {
 		expect(returned?.raid).toEqual([]);
 	});
 
+	it("keeps null for values the agent could not read", async () => {
+		const repo = setup();
+		const payload = {
+			cpu: {
+				physical_core: 4,
+				logical_core: 8,
+				frequency: 4800,
+				current_frequency: null,
+				temperature: null,
+				free_percent: null,
+				usage_percent: null,
+			},
+			memory: { total_bytes: 1000, available_bytes: null, used_bytes: null, usage_percent: null },
+			host: { os: "linux", platform: "ubuntu", kernel_version: null, pretty_name: null },
+			disk: [
+				{
+					device: "/dev/sda1",
+					mountpoint: "/",
+					total_bytes: null,
+					free_bytes: null,
+					used_bytes: null,
+					usage_percent: null,
+					total_inodes: null,
+					free_inodes: null,
+					used_inodes: null,
+					inodes_usage_percent: null,
+					read_bytes: 500,
+					write_bytes: 600,
+					read_time: 7,
+					write_time: 8,
+				},
+			],
+		};
+		const check = makeCheck("hardware", payload);
+
+		const [returned] = await repo.createChecks([check]);
+		const stored = await findStored(check.id);
+
+		expect(stored.cpu).toEqual(payload.cpu);
+		expect(stored.memory).toEqual(payload.memory);
+		expect(stored.host).toEqual(payload.host);
+		expect(stored.disk).toEqual(payload.disk);
+		expect(returned?.cpu).toEqual(payload.cpu);
+		expect(returned?.memory).toEqual(payload.memory);
+		expect(returned?.host).toEqual(payload.host);
+		expect(returned?.disk).toEqual(payload.disk);
+	});
+
+	it("does not invent a value for a field the payload leaves out", async () => {
+		const repo = setup();
+		const payload = {
+			cpu: { usage_percent: 0.5 },
+			memory: { usage_percent: 0.4 },
+			host: { os: "linux" },
+			disk: [{ device: "/dev/sda1", mountpoint: "/", usage_percent: 0.3 }],
+		};
+		const check = makeCheck("hardware", payload);
+
+		const [returned] = await repo.createChecks([check]);
+		const stored = await findStored(check.id);
+
+		expect(stored.cpu).toEqual(payload.cpu);
+		expect(stored.memory).toEqual(payload.memory);
+		expect(stored.host).toEqual(payload.host);
+		expect(stored.disk).toEqual(payload.disk);
+		expect(returned?.cpu).toEqual(payload.cpu);
+		expect(returned?.memory).toEqual(payload.memory);
+		expect(returned?.host).toEqual(payload.host);
+		expect(returned?.disk).toEqual(payload.disk);
+	});
+
+	it("leaves null readings out of the usage averages", async () => {
+		const repo = setup();
+		await repo.createChecks([
+			makeCheck("hardware", HARDWARE_PAYLOAD),
+			makeCheck(
+				"hardware",
+				{
+					cpu: { ...HARDWARE_PAYLOAD.cpu, usage_percent: null, temperature: null },
+					memory: { ...HARDWARE_PAYLOAD.memory, usage_percent: null },
+					disk: [{ ...HARDWARE_PAYLOAD.disk[0], usage_percent: null }],
+				},
+				1
+			),
+		]);
+
+		const result = (await repo.findByDateRangeAndMonitorId(MONITOR_ID.toString(), "all", { type: "hardware" })) as HardwareChecksResult;
+
+		expect(result.checks).toHaveLength(1);
+		expect(result.checks[0]).toMatchObject({ avgCpuUsage: 0.5, avgMemoryUsage: 0.4, avgTemperature: [40, 50] });
+		expect(result.checks[0]?.disks.map((disk) => disk.usagePercent)).toEqual([0.3]);
+	});
+
 	it("leaves a failed hardware check out of the usage averages", async () => {
 		const repo = setup();
 		await repo.createChecks([

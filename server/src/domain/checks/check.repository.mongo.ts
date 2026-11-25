@@ -76,33 +76,33 @@ class MongoChecksRepository implements IChecksRepository {
 		const mapCpu = (cpu?: CheckCpuInfo): CheckCpuInfo | undefined => {
 			if (!cpu) return undefined;
 			return {
-				physical_core: cpu.physical_core ?? 0,
-				logical_core: cpu.logical_core ?? 0,
-				frequency: cpu.frequency ?? 0,
-				current_frequency: cpu.current_frequency ?? 0,
-				temperature: cpu.temperature ?? [],
-				free_percent: cpu.free_percent ?? 0,
-				usage_percent: cpu.usage_percent ?? 0,
+				physical_core: cpu.physical_core,
+				logical_core: cpu.logical_core,
+				frequency: cpu.frequency,
+				current_frequency: cpu.current_frequency,
+				temperature: cpu.temperature,
+				free_percent: cpu.free_percent,
+				usage_percent: cpu.usage_percent,
 			};
 		};
 
 		const mapMemory = (memory?: CheckMemoryInfo): CheckMemoryInfo | undefined => {
 			if (!memory) return undefined;
 			return {
-				total_bytes: memory.total_bytes ?? 0,
-				available_bytes: memory.available_bytes ?? 0,
-				used_bytes: memory.used_bytes ?? 0,
-				usage_percent: memory.usage_percent ?? 0,
+				total_bytes: memory.total_bytes,
+				available_bytes: memory.available_bytes,
+				used_bytes: memory.used_bytes,
+				usage_percent: memory.usage_percent,
 			};
 		};
 
 		const mapHost = (host?: CheckHostInfo): CheckHostInfo | undefined => {
 			if (!host) return undefined;
 			return {
-				os: host.os ?? "",
-				platform: host.platform ?? "",
-				kernel_version: host.kernel_version ?? "",
-				pretty_name: host.pretty_name ?? "",
+				os: host.os,
+				platform: host.platform,
+				kernel_version: host.kernel_version,
+				pretty_name: host.pretty_name,
 			};
 		};
 
@@ -118,18 +118,18 @@ class MongoChecksRepository implements IChecksRepository {
 			disks?.map((disk) => ({
 				device: disk?.device ?? "",
 				mountpoint: disk?.mountpoint ?? "",
-				total_bytes: disk?.total_bytes ?? 0,
-				free_bytes: disk?.free_bytes ?? 0,
-				used_bytes: disk?.used_bytes ?? 0,
-				usage_percent: disk?.usage_percent ?? 0,
-				total_inodes: disk?.total_inodes ?? 0,
-				free_inodes: disk?.free_inodes ?? 0,
-				used_inodes: disk?.used_inodes ?? 0,
-				inodes_usage_percent: disk?.inodes_usage_percent ?? 0,
-				read_bytes: disk?.read_bytes ?? 0,
-				write_bytes: disk?.write_bytes ?? 0,
-				read_time: disk?.read_time ?? 0,
-				write_time: disk?.write_time ?? 0,
+				total_bytes: disk?.total_bytes,
+				free_bytes: disk?.free_bytes,
+				used_bytes: disk?.used_bytes,
+				usage_percent: disk?.usage_percent,
+				total_inodes: disk?.total_inodes,
+				free_inodes: disk?.free_inodes,
+				used_inodes: disk?.used_inodes,
+				inodes_usage_percent: disk?.inodes_usage_percent,
+				read_bytes: disk?.read_bytes,
+				write_bytes: disk?.write_bytes,
+				read_time: disk?.read_time,
+				write_time: disk?.write_time,
 			}));
 
 		const mapErrors = (errors?: CheckErrorInfo[]): CheckErrorInfo[] | undefined =>

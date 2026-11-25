@@ -1,12 +1,12 @@
 import type { CheckHostInfo } from "@/Types/Check";
 
-export const getFrequency = (frequency: number | undefined): string => {
+export const getFrequency = (frequency: number | null | undefined): string => {
 	if (!frequency) return "N/A";
 	const ghz = (frequency / 1000).toFixed(2);
 	return `${ghz} GHz`;
 };
 
-export const getCores = (cores: number | undefined) => {
+export const getCores = (cores: number | null | undefined) => {
 	if (!cores) return "N/A";
 	if (cores === 1) return `${cores} core`;
 	return `${cores} cores`;
