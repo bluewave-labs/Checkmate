@@ -1104,8 +1104,13 @@
 					"netBytesRecv": "{{name}} - tavua vastaanotettu",
 					"netBytesSent": "{{name}} - tavua lähetetty",
 					"loopbackOnlyNotice": "Capture näkee vain säiliön verkkoliitännät, eikä mikään niistä välitä todellista liikennettä. Tämä on normaalia, kun Capture toimii säiliön sisällä, joka näkee vain oman verkkonimiavaruutensa — isäntää muistuttavilla nimillä (eth0, ens3) olevat liitännät ovat säiliön virtuaaliliitäntöjä, eivät isännän. Suorita Capture suoraan isännässä nähdäksesi todellisen verkkoliikenteen.",
-					"temp": "Lämpö"
+					"temp": "Lämpö",
+					"sensor": "Anturi {{number}}",
+					"available": "Käytettävissä"
 				}
+			},
+			"agentErrors": {
+				"title": "Arvot, joita agentti ei voinut lukea"
 			},
 			"gauges": {
 				"cpu": {

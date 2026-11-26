@@ -1105,8 +1105,13 @@
 					"netBytesRecv": "{{name}} - Bytes rebuts",
 					"netBytesSent": "{{name}} - Bytes enviats",
 					"loopbackOnlyNotice": "Capture només veu interfícies de xarxa del contenidor i cap no transporta trànsit real. És normal quan Capture s'executa dins d'un contenidor que només pot observar el seu propi espai de noms de xarxa — les interfícies amb noms de tipus host (eth0, ens3) són les interfícies virtuals del contenidor, no les de l'amfitrió. Executa Capture directament a l'amfitrió per veure l'activitat de xarxa real.",
-					"temp": "Temperatura"
+					"temp": "Temperatura",
+					"sensor": "Sensor {{number}}",
+					"available": "Disponible"
 				}
+			},
+			"agentErrors": {
+				"title": "Valors que l'agent no ha pogut llegir"
 			},
 			"gauges": {
 				"cpu": {

@@ -1105,8 +1105,13 @@
 					"netBytesRecv": "{{name}} - Byte ricevuti",
 					"netBytesSent": "{{name}} - Byte inviati",
 					"loopbackOnlyNotice": "Capture sta segnalando solo interfacce loopback o bridge di container (lo, lo0, docker0). Questo è normale quando Capture viene eseguito all'interno di un container che può vedere solo il proprio namespace di rete — esegui Capture direttamente sull'host per vedere l'attività di rete reale.",
-					"temp": "Temp"
+					"temp": "Temp",
+					"sensor": "Sensore {{number}}",
+					"available": "Disponibile"
 				}
+			},
+			"agentErrors": {
+				"title": "Valori che l'agente non è riuscito a leggere"
 			},
 			"gauges": {
 				"cpu": {

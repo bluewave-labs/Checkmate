@@ -1108,8 +1108,13 @@
 					"netBytesRecv": "{{name}} - přijaté bajty",
 					"netBytesSent": "{{name}} - odeslané bajty",
 					"loopbackOnlyNotice": "Capture vidí pouze síťová rozhraní kontejneru a žádné z nich nepřenáší skutečný provoz. To je normální, když Capture běží uvnitř kontejneru, který vidí pouze svůj vlastní síťový jmenný prostor — rozhraní s názvy jako na hostiteli (eth0, ens3) jsou virtuální rozhraní kontejneru, ne hostitele. Chcete-li vidět skutečnou síťovou aktivitu, spusťte Capture přímo na hostiteli.",
-					"temp": "Teplota"
+					"temp": "Teplota",
+					"sensor": "Senzor {{number}}",
+					"available": "Dostupné"
 				}
+			},
+			"agentErrors": {
+				"title": "Hodnoty, které agent nedokázal načíst"
 			},
 			"gauges": {
 				"cpu": {

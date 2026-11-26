@@ -1104,8 +1104,13 @@
 					"loopbackOnlyNotice": "Przechwytywanie raportuje tylko interfejsy loopback lub container-bridge (lo, lo0, docker0). To normalne, gdy Capture działa wewnątrz kontenera, który widzi tylko własną przestrzeń nazw sieci — uruchom Capture bezpośrednio na hoście, aby zobaczyć rzeczywistą aktywność sieciową.",
 					"netBytesRecv": "{{name}} - Otrzymane bajty",
 					"netBytesSent": "{{name}} - Wysłane bajty",
-					"temp": "Temperatura"
+					"temp": "Temperatura",
+					"sensor": "Czujnik {{number}}",
+					"available": "Dostępne"
 				}
+			},
+			"agentErrors": {
+				"title": "Wartości, których agent nie mógł odczytać"
 			},
 			"fallback": {
 				"actionButton": "Utwórz monitor",

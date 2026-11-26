@@ -1173,8 +1173,13 @@
 					"netBytesRecv": "{{name}} - Bytes recebidos",
 					"netBytesSent": "{{name}} - Bytes enviados",
 					"loopbackOnlyNotice": "O Capture está vendo apenas as interfaces de rede do container, e nenhuma delas está transportando tráfego real. Isso é normal quando o Capture é executado dentro de um container que só consegue observar seu próprio namespace de rede — interfaces com nomes semelhantes aos do host (eth0, ens3) são interfaces virtuais do container, não do host. Execute o Capture diretamente no host para ver a atividade real da rede.",
-					"temp": "Temperatura da CPU"
+					"temp": "Temperatura da CPU",
+					"sensor": "Sensor {{number}}",
+					"available": "Disponível"
 				}
+			},
+			"agentErrors": {
+				"title": "Valores que o agente não conseguiu ler"
 			},
 			"gauges": {
 				"cpu": {
