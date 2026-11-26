@@ -13,7 +13,6 @@ import type {
 	CheckRaidInfo,
 	CheckTimings,
 	DockerContainerStats,
-	HardwareCheckStats,
 	HardwareMetrics,
 } from "@/domain/checks/check.type.js";
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
@@ -24,7 +23,6 @@ import { getDateFormat, getDateForRange } from "@/utils/dataUtils.js";
 import { ILogger } from "@/utils/logger/logger.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
-import { getHardwareUpChecks, getHardwareStats, getHardwareTotalChecks } from "@/domain/checks/check.hardware.aggregations.js";
 import {
 	buildHardwareDisksStages,
 	buildHardwareInterfacesStages,
@@ -356,15 +354,12 @@ class MongoChecksRepository implements IChecksRepository {
 		return { checksCount, checks: this.mapDocuments(checks) };
 	};
 
-	findByDateRangeAndMonitorId = async (monitorId: string, dateRange: DateRange, options?: { type?: MonitorType }) => {
+	findByDateRangeAndMonitorId = async (monitorId: string, dateRange: DateRange, options?: { type?: Exclude<MonitorType, "hardware"> }) => {
 		const monitorObjectId = new mongoose.Types.ObjectId(monitorId);
 		const start = getDateForRange(dateRange);
 		const dateString = getDateFormat(dateRange);
 
 		const end = new Date();
-		if (options?.type === "hardware") {
-			return this.findHardwareDateRangeChecks(monitorObjectId, start, end, dateString);
-		}
 		if (options?.type === "pagespeed") {
 			return this.findPageSpeedDateRangeChecks(monitorObjectId, start, end, dateString);
 		}
@@ -653,59 +648,6 @@ class MongoChecksRepository implements IChecksRepository {
 			groupedDownChecks: result?.groupedDownChecks ?? [],
 			uptimePercentage,
 			avgResponseTime,
-		};
-	};
-
-	private findHardwareDateRangeChecks = async (monitorObjectId: mongoose.Types.ObjectId, startDate: Date, endDate: Date, dateString: string) => {
-		const monitorId = monitorObjectId.toHexString();
-		const dates = { start: startDate, end: endDate };
-		const [aggregateDataDoc, upChecksDoc, hardwareMetrics] = await Promise.all([
-			getHardwareTotalChecks(monitorId, dates),
-			getHardwareUpChecks(monitorId, dates),
-			getHardwareStats(monitorId, dates, dateString),
-		]);
-
-		const aggregateData = {
-			totalChecks: aggregateDataDoc ?? 0,
-		};
-
-		const upChecks = {
-			totalChecks: upChecksDoc?.totalChecks ?? 0,
-		};
-
-		const checks = (hardwareMetrics ?? []).map((metric): HardwareCheckStats => ({
-			bucketDate: metric._id,
-			avgCpuUsage: metric.avgCpuUsage ?? 0,
-			avgMemoryUsage: metric.avgMemoryUsage ?? 0,
-			avgTemperature: metric.avgTemperature ?? [],
-			disks: (metric.disks ?? []).map((disk) => ({
-				name: disk?.name ?? "",
-				readSpeed: disk?.readSpeed ?? 0,
-				writeSpeed: disk?.writeSpeed ?? 0,
-				totalBytes: disk?.totalBytes ?? 0,
-				freeBytes: disk?.freeBytes ?? 0,
-				usagePercent: disk?.usagePercent ?? 0,
-			})),
-			net: (metric.net ?? []).map((iface) => ({
-				name: iface?.name ?? "",
-				bytesSentPerSecond: iface?.bytesSentPerSecond ?? 0,
-				deltaBytesRecv: iface?.deltaBytesRecv ?? 0,
-				deltaPacketsSent: iface?.deltaPacketsSent ?? 0,
-				deltaPacketsRecv: iface?.deltaPacketsRecv ?? 0,
-				deltaErrIn: iface?.deltaErrIn ?? 0,
-				deltaErrOut: iface?.deltaErrOut ?? 0,
-				deltaDropIn: iface?.deltaDropIn ?? 0,
-				deltaDropOut: iface?.deltaDropOut ?? 0,
-				deltaFifoIn: iface?.deltaFifoIn ?? 0,
-				deltaFifoOut: iface?.deltaFifoOut ?? 0,
-			})),
-		}));
-
-		return {
-			monitorType: "hardware" as const,
-			aggregateData,
-			upChecks,
-			checks,
 		};
 	};
 

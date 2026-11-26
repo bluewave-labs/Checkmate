@@ -15,7 +15,6 @@ import {
 	dockerStatsSchema,
 	groupedCheckSchema,
 	groupedUptimeCheckSchema,
-	hardwareStatsSchema,
 	pageSpeedGroupedCheckSchema,
 } from "@/domain/checks/check.schema.js";
 import { hardwareMetricsSchema } from "@/domain/checks/check.hardware.schema.js";
@@ -174,14 +173,6 @@ export const uptimeDetailsResultSchema = z
 		monitorStats: monitorStatsSchema.or(z.null()),
 	})
 	.meta({ id: "UptimeDetails" });
-
-export const hardwareDetailsResultSchema = z
-	.object({
-		monitor: monitorResponseSchema,
-		stats: hardwareStatsSchema,
-		monitorStats: monitorStatsSchema.or(z.null()),
-	})
-	.meta({ id: "HardwareDetails" });
 
 export const hardwareMetricsResultSchema = hardwareMetricsSchema
 	.extend({

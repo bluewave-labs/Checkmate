@@ -227,44 +227,6 @@ export const pageSpeedGroupedCheckSchema = z.object({
 	seo: z.number(),
 });
 
-export const hardwareDiskStatsSchema = z.object({
-	name: z.string(),
-	readSpeed: z.number(),
-	writeSpeed: z.number(),
-	totalBytes: z.number(),
-	freeBytes: z.number(),
-	usagePercent: z.number(),
-});
-
-export const hardwareNetStatsSchema = z.object({
-	name: z.string(),
-	bytesSentPerSecond: z.number(),
-	deltaBytesRecv: z.number(),
-	deltaPacketsSent: z.number(),
-	deltaPacketsRecv: z.number(),
-	deltaErrIn: z.number(),
-	deltaErrOut: z.number(),
-	deltaDropIn: z.number(),
-	deltaDropOut: z.number(),
-	deltaFifoIn: z.number(),
-	deltaFifoOut: z.number(),
-});
-
-export const hardwareCheckStatsSchema = z.object({
-	bucketDate: z.string(),
-	avgCpuUsage: z.number(),
-	avgMemoryUsage: z.number(),
-	avgTemperature: z.array(z.number()),
-	disks: z.array(hardwareDiskStatsSchema),
-	net: z.array(hardwareNetStatsSchema),
-});
-
-export const hardwareStatsSchema = z.object({
-	aggregateData: z.object({ totalChecks: z.number() }),
-	upChecks: z.object({ totalChecks: z.number() }),
-	checks: z.array(hardwareCheckStatsSchema),
-});
-
 export const dailyCheckBucketSchema = z.object({
 	monitorId: z.string(),
 	date: z.string(),

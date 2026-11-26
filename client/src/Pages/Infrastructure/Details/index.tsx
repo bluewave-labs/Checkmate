@@ -30,7 +30,7 @@ const InfrastructureDetails = () => {
 		}
 		const params = new URLSearchParams();
 		params.append("dateRange", dateRange);
-		return `/monitors/hardware/metrics/${monitorId}?${params.toString()}`;
+		return `/monitors/hardware/details/${monitorId}?${params.toString()}`;
 	}, [monitorId, dateRange]);
 
 	const {

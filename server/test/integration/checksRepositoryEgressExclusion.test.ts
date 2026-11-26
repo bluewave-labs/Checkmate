@@ -3,13 +3,7 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import MongoChecksRepository from "../../src/domain/checks/check.repository.mongo.ts";
 import { CheckModel } from "../../src/domain/checks/check.model.ts";
-import type {
-	Check,
-	DockerChecksResult,
-	HardwareChecksResult,
-	PageSpeedChecksResult,
-	UptimeChecksResult,
-} from "../../src/domain/checks/check.type.ts";
+import type { Check, DockerChecksResult, PageSpeedChecksResult, UptimeChecksResult } from "../../src/domain/checks/check.type.ts";
 import { NETWORK_ERROR } from "../../src/types/network.ts";
 import type { ILogger } from "../../src/utils/logger.ts";
 import { createMockLogger } from "../helpers/createMockLogger.ts";
@@ -41,6 +35,7 @@ beforeEach(async () => {
 
 const MONITOR_ID = new mongoose.Types.ObjectId();
 const TEAM_ID = new mongoose.Types.ObjectId();
+const INTERVAL_MS = 60 * 1000;
 
 // One shared createdAt keeps every seeded check in the same bucket of the "day" range.
 const BUCKET_TIME = new Date(Date.now() - 10 * 60 * 1000);
@@ -216,11 +211,10 @@ describe("MongoChecksRepository degraded-egress exclusion", () => {
 		await seedDegradedFailure({ metadata: hardwareMeta });
 
 		const docker = (await repo.findByDateRangeAndMonitorId(dockerMonitor.toString(), "day", { type: "docker" })) as DockerChecksResult;
-		const hardware = (await repo.findByDateRangeAndMonitorId(hardwareMonitor.toString(), "day", { type: "hardware" })) as HardwareChecksResult;
+		const hardware = await repo.findHardwareMetrics(hardwareMonitor.toString(), "day", INTERVAL_MS);
 
 		expect(docker.aggregateData.totalChecks).toBe(1);
 		expect(docker.aggregate[0]).toMatchObject({ upCount: 1, totalCount: 1 });
-		expect(hardware.aggregateData.totalChecks).toBe(1);
-		expect(hardware.upChecks.totalChecks).toBe(1);
+		expect(hardware.checks).toEqual({ total: 1, up: 1 });
 	});
 });

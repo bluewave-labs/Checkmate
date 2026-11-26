@@ -4,7 +4,7 @@ import type {
 	MonitorsWithChecksByTeamIdResult,
 	DashboardByTeamIdResult,
 	UptimeDetailsResult,
-	HardwareDetailsResult,
+	UptimeDetailsSupportedType,
 	HardwareMetricsResult,
 	PageSpeedDetailsResult,
 	GamesMap,
@@ -14,13 +14,7 @@ import type {
 	DockerContainerLogsResult,
 } from "@/domain/monitors/monitor.type.js";
 import { supportsGeoCheck, supportsUptimeDetails } from "@/domain/monitors/monitor.type.js";
-import type {
-	UptimeChecksResult,
-	HardwareChecksResult,
-	PageSpeedChecksResult,
-	DockerChecksResult,
-	DockerContainerStatsBucket,
-} from "@/domain/checks/check.type.js";
+import type { UptimeChecksResult, PageSpeedChecksResult, DockerChecksResult, DockerContainerStatsBucket } from "@/domain/checks/check.type.js";
 import type { GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
 import type { ICheckRollupsRepository } from "@/domain/check-rollups/check-rollup.repository.interface.js";
 import type { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
@@ -44,9 +38,8 @@ import { monitorErrors } from "@/domain/monitors/monitor.errors.js";
 
 const SERVICE_NAME = "MonitorService";
 
-const isUptimeChecksResult = (
-	result: UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult | DockerChecksResult
-): result is UptimeChecksResult => supportsUptimeDetails(result.monitorType);
+const isUptimeChecksResult = (result: UptimeChecksResult | PageSpeedChecksResult | DockerChecksResult): result is UptimeChecksResult =>
+	supportsUptimeDetails(result.monitorType);
 
 // Docker's RestartCount is cumulative and resets to 0 when a container is recreated, so restarts in the
 // date range are recovered from bucket min/max deltas; a drop between buckets means a recreate.
@@ -74,7 +67,6 @@ export interface IMonitorService {
 
 	// read
 	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<UptimeDetailsResult>;
-	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<HardwareDetailsResult>;
 	getHardwareMetricsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<HardwareMetricsResult>;
 	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<PageSpeedDetailsResult>;
 	getDockerDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<DockerDetailsResult>;
@@ -257,11 +249,11 @@ export class MonitorService implements IMonitorService {
 		return demoMonitors;
 	};
 
-	private findUptimeChecks = async (monitor: Monitor, dateRange: DateRange) => {
-		if (usesRollups(dateRange) && supportsUptimeDetails(monitor.type)) {
-			return this.checkRollupsRepository.findUptimeDateRange(monitor.id, monitor.type, dateRange);
+	private findUptimeChecks = async (monitorId: string, type: UptimeDetailsSupportedType, dateRange: DateRange) => {
+		if (usesRollups(dateRange)) {
+			return this.checkRollupsRepository.findUptimeDateRange(monitorId, type, dateRange);
 		}
-		return this.checksRepository.findByDateRangeAndMonitorId(monitor.id, dateRange, { type: monitor.type });
+		return this.checksRepository.findByDateRangeAndMonitorId(monitorId, dateRange, { type });
 	};
 
 	getUptimeDetailsById = async ({
@@ -280,7 +272,15 @@ export class MonitorService implements IMonitorService {
 				service: SERVICE_NAME,
 			});
 		}
-		const checksData = await this.findUptimeChecks(monitor, dateRange);
+
+		if (!supportsUptimeDetails(monitor.type)) {
+			throw new AppError(monitorErrors.notUptimeMonitor, {
+				message: `${monitor.type} monitors are not supported for uptime details`,
+				service: SERVICE_NAME,
+			});
+		}
+
+		const checksData = await this.findUptimeChecks(monitor.id, monitor.type, dateRange);
 		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
 
 		if (!isUptimeChecksResult(checksData)) {
@@ -299,55 +299,6 @@ export class MonitorService implements IMonitorService {
 				groupedAvgResponseTime: checksData.avgResponseTime,
 				groupedUptimePercentage: checksData.uptimePercentage,
 			},
-			monitorStats,
-		};
-	};
-
-	getHardwareDetailsById = async ({
-		teamId,
-		monitorId,
-		dateRange,
-	}: {
-		teamId: string;
-		monitorId: string;
-		dateRange: DateRange;
-	}): Promise<HardwareDetailsResult> => {
-		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
-		if (!monitor) {
-			throw new AppError(monitorErrors.notFound, {
-				message: `Monitor with ID ${monitorId} not found.`,
-				service: SERVICE_NAME,
-			});
-		}
-		if (monitor.type !== "hardware") {
-			throw new AppError(monitorErrors.notHardwareMonitor, {
-				message: `${monitor.type} monitors are not supported for hardware details`,
-				service: SERVICE_NAME,
-			});
-		}
-
-		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, dateRange, {
-			type: monitor.type,
-		});
-
-		if (checksData.monitorType !== "hardware") {
-			throw new AppError(internalError, {
-				message: "Unable to load hardware stats for this monitor",
-				service: SERVICE_NAME,
-			});
-		}
-
-		const stats = {
-			aggregateData: checksData.aggregateData,
-			upChecks: checksData.upChecks,
-			checks: checksData.checks,
-		};
-
-		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
-
-		return {
-			monitor,
-			stats,
 			monitorStats,
 		};
 	};

@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import MongoChecksRepository from "../../src/domain/checks/check.repository.mongo.ts";
 import { CheckModel } from "../../src/domain/checks/check.model.ts";
-import type { Check, HardwareChecksResult } from "../../src/domain/checks/check.type.ts";
+import type { Check } from "../../src/domain/checks/check.type.ts";
 import type { ILogger } from "../../src/utils/logger.ts";
 import { createMockLogger } from "../helpers/createMockLogger.ts";
 
@@ -28,6 +28,7 @@ const MONITOR_ID = new mongoose.Types.ObjectId();
 const TEAM_ID = new mongoose.Types.ObjectId();
 const HARDWARE_FIELDS = ["cpu", "memory", "disk", "host", "errors", "capture", "net", "raid"];
 const MINUTE_MS = 60 * 1000;
+const INTERVAL_MS = MINUTE_MS;
 
 const HARDWARE_PAYLOAD = {
 	cpu: { physical_core: 4, logical_core: 8, frequency: 4800, current_frequency: 4600, temperature: [40, 50], free_percent: 0.5, usage_percent: 0.5 },
@@ -310,11 +311,12 @@ describe("MongoChecksRepository hardware fields", () => {
 			),
 		]);
 
-		const result = (await repo.findByDateRangeAndMonitorId(MONITOR_ID.toString(), "all", { type: "hardware" })) as HardwareChecksResult;
+		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "all", INTERVAL_MS);
 
-		expect(result.checks).toHaveLength(1);
-		expect(result.checks[0]).toMatchObject({ avgCpuUsage: 0.5, avgMemoryUsage: 0.4, avgTemperature: [40, 50] });
-		expect(result.checks[0]?.disks.map((disk) => disk.usagePercent)).toEqual([0.3]);
+		expect(result.buckets).toHaveLength(1);
+		expect(result.buckets[0]?.cpu).toMatchObject({ usage: 0.5, temperature: [40, 50] });
+		expect(result.buckets[0]?.memory.usage).toBe(0.4);
+		expect(result.disks.map((disk) => disk.buckets[0]?.usage)).toEqual([0.3]);
 	});
 
 	it("leaves a failed hardware check out of the usage averages", async () => {
@@ -324,12 +326,12 @@ describe("MongoChecksRepository hardware fields", () => {
 			makeCheck("hardware", { status: false, statusCode: 5000, message: "connect ECONNREFUSED" }, 1),
 		]);
 
-		const result = (await repo.findByDateRangeAndMonitorId(MONITOR_ID.toString(), "all", { type: "hardware" })) as HardwareChecksResult;
+		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "all", INTERVAL_MS);
 
-		expect(result.aggregateData.totalChecks).toBe(2);
-		expect(result.upChecks.totalChecks).toBe(1);
-		expect(result.checks).toHaveLength(1);
-		expect(result.checks[0]).toMatchObject({ avgCpuUsage: 0.5, avgMemoryUsage: 0.4, avgTemperature: [40, 50] });
-		expect(result.checks[0]?.disks.map((disk) => disk.usagePercent)).toEqual([0.3]);
+		expect(result.checks).toEqual({ total: 2, up: 1 });
+		expect(result.buckets).toHaveLength(1);
+		expect(result.buckets[0]?.cpu).toMatchObject({ usage: 0.5, temperature: [40, 50] });
+		expect(result.buckets[0]?.memory.usage).toBe(0.4);
+		expect(result.disks.map((disk) => disk.buckets[0]?.usage)).toEqual([0.3]);
 	});
 });

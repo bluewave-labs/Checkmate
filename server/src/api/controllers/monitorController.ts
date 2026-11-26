@@ -37,7 +37,6 @@ export interface IMonitorController {
 	getMonitorCertificate: RequestHandler;
 	getMonitorDomain: RequestHandler;
 	getUptimeDetailsById: RequestHandler;
-	getHardwareDetailsById: RequestHandler;
 	getHardwareMetricsById: RequestHandler;
 	getPageSpeedDetailsById: RequestHandler;
 	getDockerDetailsById: RequestHandler;
@@ -95,19 +94,6 @@ class MonitorController implements IMonitorController {
 		const teamId = requireTeamId(req.user?.teamId);
 		const data = await this.monitorService.getUptimeDetailsById({ teamId, monitorId, dateRange });
 		res.json({ success: true, msg: "Uptime details retrieved successfully", data });
-	};
-
-	getHardwareDetailsById: Handler = async (req, res) => {
-		const { monitorId } = getHardwareDetailsByIdParamValidation.parse(req.params);
-		const { dateRange } = getHardwareDetailsByIdQueryValidation.parse(req.query);
-		const teamId = requireTeamId(req.user?.teamId);
-		const data = await this.monitorService.getHardwareDetailsById({
-			teamId,
-			monitorId,
-			dateRange,
-		});
-
-		res.json({ success: true, msg: "Hardware details retrieved successfully", data });
 	};
 
 	getHardwareMetricsById: Handler = async (req, res) => {
