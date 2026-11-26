@@ -45,6 +45,49 @@ describe("notification validation", () => {
 		}
 	);
 
+	it("accepts a Mattermost incoming webhook", () => {
+		const result = createNotificationBodyValidation.safeParse({
+			notificationName: "Mattermost alerts",
+			type: "mattermost",
+			address: "https://mattermost.example.com/hooks/xxx-generatedkey-xxx",
+		});
+
+		expect(result.success).toBe(true);
+	});
+
+	it("accepts a self-hosted Mattermost webhook over HTTP", () => {
+		const result = createNotificationBodyValidation.safeParse({
+			notificationName: "Local Mattermost alerts",
+			type: "mattermost",
+			address: "http://localhost:8065/hooks/xxx-generatedkey-xxx",
+		});
+
+		expect(result.success).toBe(true);
+	});
+
+	it("rejects an invalid Mattermost incoming webhook URL", () => {
+		const result = createNotificationBodyValidation.safeParse({
+			notificationName: "Mattermost alerts",
+			type: "mattermost",
+			address: "not-a-url",
+		});
+
+		expect(result.success).toBe(false);
+	});
+
+	it.each(["ftp://mattermost.example.com/hooks/xxx", "mailto:admin@example.com", "data:text/plain,hello", "javascript:alert(1)"])(
+		"rejects a Mattermost webhook using an unsupported protocol: %s",
+		(address) => {
+			const result = createNotificationBodyValidation.safeParse({
+				notificationName: "Mattermost alerts",
+				type: "mattermost",
+				address,
+			});
+
+			expect(result.success).toBe(false);
+		}
+	);
+
 	describe("ntfy authentication", () => {
 		const parseNtfy = (overrides: Record<string, unknown>) =>
 			createNotificationBodyValidation.safeParse({
