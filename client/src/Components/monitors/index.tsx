@@ -12,7 +12,6 @@ export * from "./charts/PiePageSpeed";
 export * from "./charts/PiePageSpeedLegend";
 export * from "./charts/HistogramPageSpeedDetails";
 export * from "./charts/HistogramPageSpeedDetailsTooltip";
-export * from "./charts/HistogramInfrastructure";
 export * from "./HeaderMonitorsSummary";
 export * from "./BulkActionsBar";
 export * from "./MonitorListPage";

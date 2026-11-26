@@ -21,8 +21,7 @@ import PageSpeedDetails from "@/Pages/PageSpeed/Details/";
 
 // Infrastructure
 import Infrastructure from "@/Pages/Infrastructure/Monitors";
-import InfrastructureDetails from "@/Pages/Infrastructure/Details";
-import InfrastructureMetrics from "@/Pages/Infrastructure/Metrics";
+import InfrastructureMetrics from "@/Pages/Infrastructure/Details";
 
 // Docker
 import Docker from "@/Pages/Docker/Monitors";
@@ -172,12 +171,9 @@ const Routes = () => {
 				/>
 				<Route
 					path="infrastructure/:monitorId"
-					element={<InfrastructureDetails />}
-				/>
-				<Route
-					path="infrastructure/metrics/:monitorId"
 					element={<InfrastructureMetrics />}
 				/>
+
 				<Route
 					path="docker"
 					element={<Docker />}
