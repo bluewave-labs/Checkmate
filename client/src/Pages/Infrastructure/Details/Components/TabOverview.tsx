@@ -1,36 +1,35 @@
 import Stack from "@mui/material/Stack";
-import { InfraDetailsGauges } from "@/Pages/Infrastructure/Details/Components/Gauges";
-import { StatusBoxes } from "@/Pages/Infrastructure/Details/Components/StatusBoxes";
-import { InfraDetailsCharts } from "@/Pages/Infrastructure/Details/Components/Charts";
+import { SummaryBoxes } from "@/Pages/Infrastructure/Details/Components/SummaryBoxes";
+import { CaptureErrors } from "@/Pages/Infrastructure/Details/Components/CaptureErrors";
+import { OverviewCharts } from "@/Pages/Infrastructure/Details/Components/OverviewCharts";
+import { OverviewGauges } from "@/Pages/Infrastructure/Details/Components/OverviewGauges";
 
 import { useTheme } from "@mui/material";
-import type { HardwareStats, Monitor } from "@/Types/Monitor";
+import type { HardwareMetricsResponse } from "@/Types/Monitor";
 import { LAYOUT } from "@/Utils/Theme/constants";
+import type { DateRange } from "@/Types/Query";
 
 export const TabOverview = ({
-	monitor,
-	stats,
+	metrics,
 	dateRange,
 }: {
-	monitor: Monitor | undefined;
-	stats: HardwareStats | undefined;
-	dateRange: string;
+	metrics: HardwareMetricsResponse | null;
+	dateRange: DateRange;
 }) => {
 	const theme = useTheme();
-	if (!monitor) {
+	if (!metrics?.latest) {
 		return null;
 	}
 
-	const checks = stats?.checks || [];
-	const recentChecks = monitor.recentChecks ?? [];
 	return (
 		<Stack gap={theme.spacing(LAYOUT.LG)}>
-			<StatusBoxes monitor={monitor} />
-			<InfraDetailsGauges snapshot={recentChecks[recentChecks.length - 1]} />
-			<InfraDetailsCharts
-				checks={checks}
+			<SummaryBoxes latest={metrics.latest} />
+			<OverviewGauges latest={metrics.latest} />
+			<OverviewCharts
+				buckets={metrics.buckets}
 				dateRange={dateRange}
 			/>
+			<CaptureErrors errors={metrics.latest.errors} />
 		</Stack>
 	);
 };

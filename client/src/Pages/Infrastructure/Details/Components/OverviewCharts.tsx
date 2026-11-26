@@ -11,7 +11,7 @@ import {
 import {
 	MetricsChartGrid,
 	type MetricsChartConfig,
-} from "@/Pages/Infrastructure/Metrics/Components/MetricsChartGrid";
+} from "@/Pages/Infrastructure/Details/Components/MetricsChartGrid";
 
 const USAGE_DOMAIN: [number, number] = [0, 1];
 

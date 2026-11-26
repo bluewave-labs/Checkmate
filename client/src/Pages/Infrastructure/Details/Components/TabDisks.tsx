@@ -4,7 +4,7 @@ import { DetailGauge, Tab, Tabs } from "@/Components/design-elements";
 import {
 	MetricsChartGrid,
 	type MetricsChartConfig,
-} from "@/Pages/Infrastructure/Metrics/Components/MetricsChartGrid";
+} from "@/Pages/Infrastructure/Details/Components/MetricsChartGrid";
 
 import { useState } from "react";
 import { useTheme } from "@mui/material";
@@ -24,7 +24,7 @@ import {
 	formatNumber,
 } from "@/Utils/FormatUtils";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { hasValues } from "@/Pages/Infrastructure/Metrics/utils";
+import { hasValues } from "@/Pages/Infrastructure/Details/utils";
 
 const GAUGE_MAX_WIDTH = 260;
 const PERCENT = 100;

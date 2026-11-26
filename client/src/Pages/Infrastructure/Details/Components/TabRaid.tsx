@@ -5,8 +5,8 @@ import type { Header } from "@/Components/design-elements";
 import {
 	MetricsChartGrid,
 	type MetricsChartConfig,
-} from "@/Pages/Infrastructure/Metrics/Components/MetricsChartGrid";
-import { hasValues } from "@/Pages/Infrastructure/Metrics/utils";
+} from "@/Pages/Infrastructure/Details/Components/MetricsChartGrid";
+import { hasValues } from "@/Pages/Infrastructure/Details/utils";
 
 import { useState } from "react";
 import { useTheme } from "@mui/material";
