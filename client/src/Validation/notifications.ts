@@ -38,6 +38,14 @@ const rocketChatSchema = baseSchema.extend({
 		.url({ protocol: /^https?$/, message: "Please enter a valid URL" }),
 });
 
+const mattermostSchema = baseSchema.extend({
+	type: z.literal("mattermost"),
+	address: z
+		.string()
+		.min(1, "Webhook URL is required")
+		.url({ protocol: /^https?$/, message: "Please enter a valid URL" }),
+});
+
 const pagerDutySchema = baseSchema.extend({
 	type: z.literal("pager_duty"),
 	address: z.string().min(1, "Integration key is required"),
@@ -96,6 +104,7 @@ export const notificationSchema = z.discriminatedUnion("type", [
 	discordSchema,
 	webhookSchema,
 	rocketChatSchema,
+	mattermostSchema,
 	pagerDutySchema,
 	matrixSchema,
 	teamsSchema,

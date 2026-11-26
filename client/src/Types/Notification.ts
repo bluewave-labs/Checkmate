@@ -4,6 +4,7 @@ export const NotificationChannels = [
 	"discord",
 	"webhook",
 	"rocket_chat",
+	"mattermost",
 	"pager_duty",
 	"matrix",
 	"teams",

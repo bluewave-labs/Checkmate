@@ -1,0 +1,159 @@
+const SERVICE_NAME = "MattermostProvider";
+import { getMonitorPath, MonitorTypes, type MonitorType } from "@/domain/monitors/monitor.type.js";
+import type { Notification, NotificationMessage } from "@/domain/notifications/notification.type.js";
+import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
+import { CLIENT_HOST_FALLBACK, getTestMessage } from "@/domain/notifications/providers/utils.js";
+import got from "got";
+
+type MattermostField = { title: string; value: string; short: boolean };
+type MattermostAttachment = {
+	fallback: string;
+	color: string;
+	title: string;
+	title_link?: string;
+	fields?: MattermostField[];
+	ts?: string;
+};
+type MattermostPayload = { text: string; attachments: [MattermostAttachment] };
+
+export class MattermostProvider extends NotificationProvider {
+	protected readonly serviceName = SERVICE_NAME;
+
+	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
+		if (!notification.address) {
+			return false;
+		}
+
+		try {
+			await got.post(notification.address, {
+				json: this.buildTestPayload(),
+				headers: {
+					"Content-Type": "application/json",
+				},
+				...this.gotRequestOptions(),
+			});
+			return true;
+		} catch (error) {
+			this.logger.warn({ err: error }, "Mattermost test alert failed");
+			return false;
+		}
+	}
+
+	private buildTestPayload(): MattermostPayload {
+		const text = getTestMessage();
+		return {
+			text,
+			attachments: [
+				{
+					fallback: text,
+					color: "#0000FF",
+					title: "Checkmate test notification",
+					fields: [
+						{ title: "Channel", value: "Mattermost", short: true },
+						{ title: "Status", value: "Test notification", short: true },
+					],
+				},
+			],
+		};
+	}
+
+	async sendMessage(notification: Notification, message: NotificationMessage): Promise<boolean> {
+		if (!notification.address) {
+			return false;
+		}
+
+		try {
+			await got.post(notification.address, {
+				json: this.buildPayload(message),
+				headers: {
+					"Content-Type": "application/json",
+				},
+				...this.gotRequestOptions(),
+			});
+			return true;
+		} catch (error) {
+			this.logger.warn({ err: error }, "Mattermost notification failed");
+			return false;
+		}
+	}
+
+	private buildPayload(message: NotificationMessage): MattermostPayload {
+		const monitorUrl = this.monitorUrl(message);
+		const fields: MattermostField[] = [
+			{ title: "Monitor", value: message.monitor.name, short: true },
+			{ title: "Type", value: message.monitor.type, short: true },
+			{ title: "Status", value: message.monitor.status, short: true },
+			{ title: "URL", value: message.monitor.url, short: false },
+		];
+
+		if (message.content.thresholds?.length) {
+			fields.push(
+				...message.content.thresholds.map((breach) => ({
+					title: breach.metric.toUpperCase(),
+					value: `${breach.formattedValue} (threshold: ${breach.threshold}${breach.unit})`,
+					short: true,
+				}))
+			);
+		}
+
+		if (message.content.details?.length) {
+			fields.push({
+				title: "Details",
+				value: message.content.details.map((detail) => `- ${detail}`).join("\n"),
+				short: false,
+			});
+		}
+
+		if (message.content.incident?.url.trim()) {
+			fields.push({
+				title: "Incident",
+				value: message.content.incident.url,
+				short: false,
+			});
+		}
+
+		return {
+			text: message.content.summary,
+			attachments: [
+				{
+					fallback: message.content.summary,
+					color: this.severityColor(message.severity),
+					title: message.content.title,
+					...(monitorUrl ? { title_link: monitorUrl } : {}),
+					fields,
+					ts: message.content.timestamp.toISOString(),
+				},
+			],
+		};
+	}
+
+	private monitorUrl(message: NotificationMessage): string | undefined {
+		const clientHost = message.clientHost?.trim();
+		if (!clientHost || clientHost === CLIENT_HOST_FALLBACK) {
+			return undefined;
+		}
+
+		// A message whose type has no details page gets no link.
+		const type = message.monitor.type;
+		if (!MonitorTypes.some((t) => t === type)) {
+			return undefined;
+		}
+
+		return `${clientHost}/${getMonitorPath(type as MonitorType)}/${message.monitor.id}`;
+	}
+
+	private severityColor(severity: NotificationMessage["severity"]): string {
+		switch (severity) {
+			case "critical":
+				return "#FF0000";
+			case "warning":
+				return "#FFA500";
+			case "success":
+				return "#00FF00";
+			case "info":
+				return "#0000FF";
+			default:
+				return "#808080";
+		}
+	}
+}

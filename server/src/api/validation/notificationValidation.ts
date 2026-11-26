@@ -67,6 +67,15 @@ const notificationChannelVariants = z.discriminatedUnion("type", [
 			message: "Please enter a valid Rocket.Chat webhook URL",
 		}),
 	}),
+	// Mattermost notification
+	z.object({
+		notificationName: z.string().min(1, "Notification name is required"),
+		type: z.literal("mattermost"),
+		address: z.url({
+			protocol: /^https?$/,
+			message: "Please enter a valid Mattermost webhook URL",
+		}),
+	}),
 	// Slack notification
 	z.object({
 		notificationName: z.string().min(1, "Notification name is required"),
@@ -169,6 +178,14 @@ const notificationVariantMeta: Record<NotificationChannel, { component: string; 
 			notificationName: "Rocket.Chat alerts",
 			type: "rocket_chat",
 			address: "https://chat.example.com/hooks/integration-id/token",
+		},
+	},
+	mattermost: {
+		component: "MattermostNotification",
+		example: {
+			notificationName: "Mattermost alerts",
+			type: "mattermost",
+			address: "https://mattermost.example.com/hooks/xxx-generatedkey-xxx",
 		},
 	},
 	slack: {

@@ -12,4 +12,14 @@ describe("NotificationChannels", () => {
 
 		expect(typePath.enumValues).toContain("rocket_chat");
 	});
+
+	it("includes Mattermost", () => {
+		expect(NotificationChannels).toContain("mattermost");
+	});
+
+	it("allows Mattermost to be persisted", () => {
+		const typePath = NotificationModel.schema.path("type") as unknown as { enumValues: string[] };
+
+		expect(typePath.enumValues).toContain("mattermost");
+	});
 });
