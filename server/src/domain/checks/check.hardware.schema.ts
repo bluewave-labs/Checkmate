@@ -57,8 +57,8 @@ export const hardwareMetricsDiskBucketSchema = z.object({
 	inodesUsage: nullableNumber,
 	readBytesPerSecond: nullableNumber,
 	writeBytesPerSecond: nullableNumber,
-	readTimeFraction: nullableNumber,
-	writeTimeFraction: nullableNumber,
+	readQueueDepth: nullableNumber,
+	writeQueueDepth: nullableNumber,
 });
 
 export const hardwareMetricsDiskSchema = z.object({

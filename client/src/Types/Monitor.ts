@@ -333,8 +333,8 @@ export interface HardwareMetricsDiskBucket {
 	inodesUsage: number | null;
 	readBytesPerSecond: number | null;
 	writeBytesPerSecond: number | null;
-	readTimeFraction: number | null;
-	writeTimeFraction: number | null;
+	readQueueDepth: number | null;
+	writeQueueDepth: number | null;
 }
 
 export interface HardwareMetricsDisk {

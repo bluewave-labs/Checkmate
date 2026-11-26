@@ -2604,11 +2604,11 @@
 												"type": "number",
 												"nullable": true
 											},
-											"readTimeFraction": {
+											"readQueueDepth": {
 												"type": "number",
 												"nullable": true
 											},
-											"writeTimeFraction": {
+											"writeQueueDepth": {
 												"type": "number",
 												"nullable": true
 											}
@@ -2623,8 +2623,8 @@
 											"inodesUsage",
 											"readBytesPerSecond",
 											"writeBytesPerSecond",
-											"readTimeFraction",
-											"writeTimeFraction"
+											"readQueueDepth",
+											"writeQueueDepth"
 										]
 									}
 								}

@@ -307,8 +307,8 @@ describe("MongoChecksRepository.findHardwareMetrics", () => {
 			expect(root?.buckets[0]).toMatchObject({
 				readBytesPerSecond: 15,
 				writeBytesPerSecond: 10,
-				readTimeFraction: 0.01,
-				writeTimeFraction: 1,
+				readQueueDepth: 0.01,
+				writeQueueDepth: 1,
 			});
 		});
 
@@ -359,8 +359,8 @@ describe("MongoChecksRepository.findHardwareMetrics", () => {
 			expect(root?.buckets[0]).toMatchObject({
 				readBytesPerSecond: null,
 				writeBytesPerSecond: null,
-				readTimeFraction: null,
-				writeTimeFraction: null,
+				readQueueDepth: null,
+				writeQueueDepth: null,
 				usage: 0.3,
 			});
 		});
