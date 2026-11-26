@@ -1109,6 +1109,15 @@
 					"available": "Verfügbar"
 				}
 			},
+			"disks": {
+				"inodeUsage": "Inode-Auslastung",
+				"space": "Speicherplatz",
+				"inodes": "Inodes",
+				"throughput": "Lese- und Schreibrate",
+				"queueDepth": "E/A-Warteschlangentiefe",
+				"read": "Lesen",
+				"write": "Schreiben"
+			},
 			"agentErrors": {
 				"title": "Werte, die der Agent nicht lesen konnte"
 			},
@@ -1152,7 +1161,8 @@
 			"tabs": {
 				"labels": {
 					"network": "Netzwerk",
-					"overview": "Übersicht"
+					"overview": "Übersicht",
+					"disks": "Datenträger"
 				}
 			},
 			"fallback": {

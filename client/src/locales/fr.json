@@ -1110,6 +1110,15 @@
 					"available": "Disponible"
 				}
 			},
+			"disks": {
+				"inodeUsage": "Utilisation des inodes",
+				"space": "Espace",
+				"inodes": "Inodes",
+				"throughput": "Débit de lecture et d'écriture",
+				"queueDepth": "Profondeur de la file d'E/S",
+				"read": "Lecture",
+				"write": "Écriture"
+			},
 			"agentErrors": {
 				"title": "Valeurs que l'agent n'a pas pu lire"
 			},
@@ -1153,7 +1162,8 @@
 			"tabs": {
 				"labels": {
 					"network": "Réseau",
-					"overview": "Aperçu"
+					"overview": "Aperçu",
+					"disks": "Disques"
 				}
 			},
 			"fallback": {

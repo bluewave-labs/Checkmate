@@ -1110,6 +1110,15 @@
 					"available": "Disponible"
 				}
 			},
+			"disks": {
+				"inodeUsage": "Ús d'inodes",
+				"space": "Espai",
+				"inodes": "Inodes",
+				"throughput": "Velocitat de lectura i escriptura",
+				"queueDepth": "Profunditat de la cua d'E/S",
+				"read": "Lectura",
+				"write": "Escriptura"
+			},
 			"agentErrors": {
 				"title": "Valors que l'agent no ha pogut llegir"
 			},
@@ -1153,7 +1162,8 @@
 			"tabs": {
 				"labels": {
 					"network": "Xarxa",
-					"overview": "Visió general"
+					"overview": "Visió general",
+					"disks": "Discs"
 				}
 			},
 			"fallback": {

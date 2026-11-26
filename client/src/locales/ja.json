@@ -1107,6 +1107,15 @@
 					"available": "利用可能"
 				}
 			},
+			"disks": {
+				"inodeUsage": "inode 使用率",
+				"space": "容量",
+				"inodes": "inode",
+				"throughput": "読み取り・書き込み速度",
+				"queueDepth": "I/O キューの深さ",
+				"read": "読み取り",
+				"write": "書き込み"
+			},
 			"agentErrors": {
 				"title": "エージェントが読み取れなかった値"
 			},
@@ -1150,7 +1159,8 @@
 			"tabs": {
 				"labels": {
 					"network": "ネットワーク",
-					"overview": "概要"
+					"overview": "概要",
+					"disks": "ディスク"
 				}
 			},
 			"fallback": {

@@ -1109,6 +1109,15 @@
 					"available": "Käytettävissä"
 				}
 			},
+			"disks": {
+				"inodeUsage": "Inodien käyttö",
+				"space": "Tila",
+				"inodes": "Inodit",
+				"throughput": "Luku- ja kirjoitusnopeus",
+				"queueDepth": "I/O-jonon syvyys",
+				"read": "Luku",
+				"write": "Kirjoitus"
+			},
 			"agentErrors": {
 				"title": "Arvot, joita agentti ei voinut lukea"
 			},
@@ -1152,7 +1161,8 @@
 			"tabs": {
 				"labels": {
 					"network": "Verkko",
-					"overview": "Yleiskatsaus"
+					"overview": "Yleiskatsaus",
+					"disks": "Levyt"
 				}
 			},
 			"fallback": {

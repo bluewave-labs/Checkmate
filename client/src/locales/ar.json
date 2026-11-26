@@ -1117,6 +1117,15 @@
 					"available": "المتاح"
 				}
 			},
+			"disks": {
+				"inodeUsage": "استخدام الـ inode",
+				"space": "المساحة",
+				"inodes": "Inodes",
+				"throughput": "معدل القراءة والكتابة",
+				"queueDepth": "عمق قائمة انتظار الإدخال/الإخراج",
+				"read": "قراءة",
+				"write": "كتابة"
+			},
 			"agentErrors": {
 				"title": "قيم تعذّر على الوكيل قراءتها"
 			},
@@ -1160,7 +1169,8 @@
 			"tabs": {
 				"labels": {
 					"network": "الشبكة",
-					"overview": "نظرة عامة"
+					"overview": "نظرة عامة",
+					"disks": "الأقراص"
 				}
 			},
 			"fallback": {

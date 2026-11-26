@@ -64,7 +64,7 @@ export const IntervalScene = ({ time }: { time: number }) => {
 		const count = DAY_MS / interval;
 		return t("components.whatsNew.scene.interval.checksPerDay", {
 			count,
-			formatted: formatNumber(count, i18n.language),
+			formatted: formatNumber(count, { locale: i18n.language }),
 		});
 	};
 

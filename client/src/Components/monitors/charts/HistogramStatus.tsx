@@ -94,7 +94,7 @@ export const HistogramStatus = ({
 		if (!active || !payload?.length) return null;
 		const d = payload[0]?.payload;
 		const valueText = isCheckCount
-			? formatNumber(d?.totalChecks ?? 0, i18n.resolvedLanguage ?? "en")
+			? formatNumber(d?.totalChecks ?? 0, { locale: i18n.resolvedLanguage })
 			: formatMs(d?.avgResponseTime ?? 0);
 		const titleText = isCheckCount
 			? t("common.charts.labels.checkCount")

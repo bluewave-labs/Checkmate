@@ -39,7 +39,7 @@ export const ThemedChartTooltip = ({
 
 export const ThemedDailyTooltip = ({ bucket }: { bucket: DailyCheckBucket }) => {
 	const { t, i18n } = useTranslation();
-	const locale = i18n.resolvedLanguage ?? "en";
+	const locale = i18n.resolvedLanguage;
 	return (
 		<Stack gap={0.25}>
 			<Typography
@@ -54,8 +54,8 @@ export const ThemedDailyTooltip = ({ bucket }: { bucket: DailyCheckBucket }) => 
 			>
 				{t("pages.statusPages.monitorsList.chart.dayUptime", {
 					uptime: formatPercentage(bucket.upChecks / bucket.totalChecks),
-					upChecks: formatNumber(bucket.upChecks, locale),
-					totalChecks: formatNumber(bucket.totalChecks, locale),
+					upChecks: formatNumber(bucket.upChecks, { locale }),
+					totalChecks: formatNumber(bucket.totalChecks, { locale }),
 				})}
 			</Typography>
 			{bucket.avgResponseTime !== null && (

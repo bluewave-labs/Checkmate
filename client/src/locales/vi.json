@@ -1107,6 +1107,15 @@
 					"available": "Khả dụng"
 				}
 			},
+			"disks": {
+				"inodeUsage": "Mức sử dụng inode",
+				"space": "Dung lượng",
+				"inodes": "Inode",
+				"throughput": "Tốc độ đọc và ghi",
+				"queueDepth": "Độ sâu hàng đợi I/O",
+				"read": "Đọc",
+				"write": "Ghi"
+			},
 			"agentErrors": {
 				"title": "Các giá trị tác nhân không đọc được"
 			},
@@ -1150,7 +1159,8 @@
 			"tabs": {
 				"labels": {
 					"network": "Mạng",
-					"overview": "Tổng quan"
+					"overview": "Tổng quan",
+					"disks": "Ổ đĩa"
 				}
 			},
 			"fallback": {

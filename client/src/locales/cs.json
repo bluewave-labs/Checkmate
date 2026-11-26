@@ -1113,6 +1113,15 @@
 					"available": "Dostupné"
 				}
 			},
+			"disks": {
+				"inodeUsage": "Využití inodů",
+				"space": "Místo",
+				"inodes": "Inody",
+				"throughput": "Rychlost čtení a zápisu",
+				"queueDepth": "Hloubka fronty I/O",
+				"read": "Čtení",
+				"write": "Zápis"
+			},
 			"agentErrors": {
 				"title": "Hodnoty, které agent nedokázal načíst"
 			},
@@ -1156,7 +1165,8 @@
 			"tabs": {
 				"labels": {
 					"network": "Síť",
-					"overview": "Přehled"
+					"overview": "Přehled",
+					"disks": "Disky"
 				}
 			},
 			"fallback": {

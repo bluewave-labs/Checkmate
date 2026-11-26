@@ -1177,6 +1177,15 @@
 					"available": "Available"
 				}
 			},
+			"disks": {
+				"inodeUsage": "Inode usage",
+				"space": "Space",
+				"inodes": "Inodes",
+				"throughput": "Read and write rate",
+				"queueDepth": "I/O queue depth",
+				"read": "Read",
+				"write": "Write"
+			},
 			"agentErrors": {
 				"title": "Values the agent could not read"
 			},
@@ -1220,7 +1229,8 @@
 			"tabs": {
 				"labels": {
 					"network": "Network",
-					"overview": "Overview"
+					"overview": "Overview",
+					"disks": "Disks"
 				}
 			},
 			"fallback": {
