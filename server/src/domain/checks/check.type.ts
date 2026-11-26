@@ -35,6 +35,8 @@ import type {
 	hardwareMetricsBucketSchema,
 	hardwareMetricsDiskBucketSchema,
 	hardwareMetricsDiskSchema,
+	hardwareMetricsInterfaceBucketSchema,
+	hardwareMetricsInterfaceSchema,
 	hardwareMetricsLatestSchema,
 	hardwareMetricsSchema,
 } from "@/domain/checks/check.hardware.schema.js";
@@ -76,6 +78,8 @@ export type HardwareMetricsLatest = z.infer<typeof hardwareMetricsLatestSchema>;
 export type HardwareMetricsBucket = z.infer<typeof hardwareMetricsBucketSchema>;
 export type HardwareMetricsDiskBucket = z.infer<typeof hardwareMetricsDiskBucketSchema>;
 export type HardwareMetricsDisk = z.infer<typeof hardwareMetricsDiskSchema>;
+export type HardwareMetricsInterfaceBucket = z.infer<typeof hardwareMetricsInterfaceBucketSchema>;
+export type HardwareMetricsInterface = z.infer<typeof hardwareMetricsInterfaceSchema>;
 export type HardwareMetrics = z.infer<typeof hardwareMetricsSchema>;
 export type DockerStatsBucket = z.infer<typeof dockerStatsBucketSchema>;
 export type DockerStats = z.infer<typeof dockerStatsSchema>;

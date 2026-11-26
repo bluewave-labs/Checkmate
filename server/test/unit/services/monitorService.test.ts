@@ -764,6 +764,7 @@ describe("MonitorService", () => {
 				},
 			],
 			disks: [],
+			interfaces: [],
 		};
 
 		it("returns the metrics with the monitor and its stats", async () => {
@@ -787,7 +788,13 @@ describe("MonitorService", () => {
 			const checksRepository = createChecksRepositoryMock();
 			const monitorStatsRepository = createMonitorStatsRepositoryMock();
 			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "hardware" }));
-			(checksRepository.findHardwareMetrics as jest.Mock).mockResolvedValue({ checks: { total: 0, up: 0 }, latest: null, buckets: [], disks: [] });
+			(checksRepository.findHardwareMetrics as jest.Mock).mockResolvedValue({
+				checks: { total: 0, up: 0 },
+				latest: null,
+				buckets: [],
+				disks: [],
+				interfaces: [],
+			});
 			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(null);
 			const { service } = createService({ monitorsRepository, checksRepository, monitorStatsRepository });
 
