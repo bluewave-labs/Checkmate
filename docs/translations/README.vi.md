@@ -48,6 +48,8 @@ Kho mã nguồn này chứa cả frontend và backend của Checkmate — một 
 
 Checkmate cũng có một agent tên là [Capture](https://github.com/bluewave-labs/capture) dùng để lấy dữ liệu từ các máy chủ từ xa. Capture không bắt buộc để chạy Checkmate, nhưng cung cấp thêm thông tin về CPU, RAM, ổ đĩa và nhiệt độ của máy chủ. Capture có thể chạy trên Linux, Windows, Mac, Raspberry Pi hoặc bất kỳ thiết bị nào có thể chạy Go.
 
+**Thiếu tính năng bạn cần?** Bình chọn ý tưởng hoặc đề xuất ý tưởng mới trên [bảng yêu cầu tính năng](https://checkmate.so/requests). Không cần tài khoản GitHub.
+
 Checkmate đã được kiểm thử với hơn 1000 monitor đang hoạt động mà không gặp bất kỳ vấn đề nào hay điểm nghẽn hiệu năng đáng kể.
 
 ## 📚 Mục lục
@@ -110,6 +112,7 @@ Bạn cũng có thể thấy dung lượng bộ nhớ của MongoDB và Redis tr
 Nếu bạn có câu hỏi, góp ý hoặc bình luận, có một vài tuỳ chọn:
 
 - [Kênh Discord](https://discord.gg/NAb6H3UTjK) (khuyến nghị)
+- [Bảng yêu cầu tính năng](https://checkmate.so/requests) để bình chọn và đề xuất tính năng
 - [GitHub Discussions](https://github.com/bluewave-labs/Checkmate/discussions) (chúng tôi sẽ ghé qua đều đặn)
 
 Đừng ngần ngại hỏi hoặc chia sẻ ý tưởng — chúng tôi rất mong nghe ý kiến của bạn!

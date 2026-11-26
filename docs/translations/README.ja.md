@@ -45,6 +45,8 @@
 
 Checkmate には、リモートサーバーからデータを取得するためのエージェントとして [Capture](https://github.com/bluewave-labs/capture) もあります。Capture は Checkmate の動作に必須ではありませんが、サーバーの CPU、RAM、ディスク、温度の状態について追加の情報を提供します。Capture は Linux、Windows、Mac、Raspberry Pi、その他 Go を実行できるあらゆるデバイスで動作します。
 
+**欲しい機能がありませんか？** [機能リクエストボード](https://checkmate.so/requests)でアイデアに投票したり、新しいアイデアを提案したりできます。GitHub アカウントは不要です。
+
 Checkmate は 1000 以上のアクティブなモニターでストレステストされており、目立った問題や性能のボトルネックは発生していません。
 
 ## 📚 目次
@@ -107,6 +109,7 @@ Checkmate は 1000 以上のアクティブなモニターでストレステス�
 質問・提案・コメントがあれば、いくつかの選択肢があります:
 
 - [Discord チャンネル](https://discord.gg/NAb6H3UTjK)（推奨）
+- [機能リクエストボード](https://checkmate.so/requests)（機能への投票と提案）
 - [GitHub Discussions](https://github.com/bluewave-labs/Checkmate/discussions)（時々確認しています）
 
 質問やアイデアの共有はお気軽にどうぞ — お声をお聞かせいただけると嬉しいです！

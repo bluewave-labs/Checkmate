@@ -48,6 +48,8 @@ Tämä repositorio sisältää Checkmaten frontendin ja backendin — avoimen l�
 
 Checkmatella on myös agentti nimeltä [Capture](https://github.com/bluewave-labs/capture), joka kerää tietoja etäpalvelimilta. Capture ei ole välttämätön Checkmaten ajamiseen, mutta se tarjoaa lisätietoja palvelimiesi CPU:n, RAM-muistin, levyn ja lämpötilan tilasta. Capture toimii Linuxissa, Windowsissa, Macissa, Raspberry Pissä ja kaikissa Go-yhteensopivissa laitteissa.
 
+**Puuttuuko jokin ominaisuus?** Äänestä ideoita tai ehdota uutta [ominaisuustoiveiden taululla](https://checkmate.so/requests). GitHub-tiliä ei tarvita.
+
 Checkmate on rasitustestattu yli 1000 aktiivisella valvomolla ilman merkittäviä ongelmia tai suorituskykypullonkauloja.
 
 ## 📚 Sisällysluettelo
@@ -110,6 +112,7 @@ Ja tässä MongoDB:n ja Redisin muistijälki samalla palvelimella (398 Mt ja 15 
 Jos sinulla on kysymyksiä, ehdotuksia tai kommentteja, vaihtoehtoja on useita:
 
 - [Discord-kanava](https://discord.gg/NAb6H3UTjK) (suositeltu)
+- [Ominaisuustoiveiden taulu](https://checkmate.so/requests) ominaisuuksien äänestämiseen ja ehdottamiseen
 - [GitHub Discussions](https://github.com/bluewave-labs/Checkmate/discussions) (katsomme aika ajoin)
 
 Kysy rohkeasti tai jaa ideoitasi — kuulemme sinusta mielellämme!
