@@ -79,6 +79,25 @@ export const hardwareMetricsDiskSchema = z.object({
 	buckets: z.array(hardwareMetricsDiskBucketSchema),
 });
 
+export const hardwareMetricsInterfaceBucketSchema = z.object({
+	bucketDate: z.string(),
+	bytesSentPerSecond: nullableNumber,
+	bytesRecvPerSecond: nullableNumber,
+	packetsSentPerSecond: nullableNumber,
+	packetsRecvPerSecond: nullableNumber,
+	errIn: nullableNumber,
+	errOut: nullableNumber,
+	dropIn: nullableNumber,
+	dropOut: nullableNumber,
+	fifoIn: nullableNumber,
+	fifoOut: nullableNumber,
+});
+
+export const hardwareMetricsInterfaceSchema = z.object({
+	name: z.string(),
+	buckets: z.array(hardwareMetricsInterfaceBucketSchema),
+});
+
 export const hardwareMetricsSchema = z.object({
 	checks: z.object({
 		total: z.number(),
@@ -87,4 +106,5 @@ export const hardwareMetricsSchema = z.object({
 	latest: hardwareMetricsLatestSchema.nullable(),
 	buckets: z.array(hardwareMetricsBucketSchema),
 	disks: z.array(hardwareMetricsDiskSchema),
+	interfaces: z.array(hardwareMetricsInterfaceSchema),
 });
