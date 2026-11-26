@@ -86,3 +86,10 @@ export const formatBytes = (bytes: number | null): string => {
 	}
 	return prettyBytes(bytes);
 };
+
+export const formatTemperature = (celsius: number | null): string => {
+	if (celsius === null) {
+		return PLACEHOLDER;
+	}
+	return `${celsius.toFixed(0)} °C`;
+};

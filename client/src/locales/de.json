@@ -1104,8 +1104,13 @@
 					"netBytesRecv": "{{name}} - Empfangene Bytes",
 					"netBytesSent": "{{name}} - Gesendete Bytes",
 					"loopbackOnlyNotice": "Capture sieht nur Container-Netzwerkschnittstellen, und keine davon überträgt echten Datenverkehr. Das ist normal, wenn Capture in einem Container läuft, der nur seinen eigenen Netzwerk-Namespace sehen kann — Schnittstellen mit hostähnlichen Namen (eth0, ens3) sind die virtuellen Schnittstellen des Containers, nicht die des Hosts. Führen Sie Capture direkt auf dem Host aus, um die echte Netzwerkaktivität zu sehen.",
-					"temp": "CPU-Temperatur"
+					"temp": "CPU-Temperatur",
+					"sensor": "Sensor {{number}}",
+					"available": "Verfügbar"
 				}
+			},
+			"agentErrors": {
+				"title": "Werte, die der Agent nicht lesen konnte"
 			},
 			"gauges": {
 				"cpu": {

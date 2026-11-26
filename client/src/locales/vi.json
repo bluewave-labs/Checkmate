@@ -1102,8 +1102,13 @@
 					"netBytesRecv": "{{name}} - Byte nhận",
 					"netBytesSent": "{{name}} - Byte gửi",
 					"loopbackOnlyNotice": "Capture chỉ thấy các giao diện mạng của container và không giao diện nào có lưu lượng thực. Điều này là bình thường khi Capture chạy bên trong container chỉ có thể quan sát không gian tên mạng của chính nó — các giao diện có tên giống máy chủ (eth0, ens3) là giao diện ảo của container, không phải của máy chủ. Hãy chạy Capture trực tiếp trên máy chủ để xem hoạt động mạng thực.",
-					"temp": "Nhiệt độ"
+					"temp": "Nhiệt độ",
+					"sensor": "Cảm biến {{number}}",
+					"available": "Khả dụng"
 				}
+			},
+			"agentErrors": {
+				"title": "Các giá trị tác nhân không đọc được"
 			},
 			"gauges": {
 				"cpu": {

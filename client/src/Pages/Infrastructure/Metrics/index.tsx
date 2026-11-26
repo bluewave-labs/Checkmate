@@ -72,7 +72,12 @@ const InfrastructureDetails = () => {
 					icon={<TabIcon icon={LayoutDashboard} />}
 				/>
 			</Tabs>
-			{selectedTab === 0 && <TabOverview metrics={metrics} />}
+			{selectedTab === 0 && (
+				<TabOverview
+					metrics={metrics}
+					dateRange={dateRange}
+				/>
+			)}
 		</BasePage>
 	);
 };

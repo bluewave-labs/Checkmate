@@ -1102,8 +1102,13 @@
 					"netBytesRecv": "{{name}} - 接收位元組",
 					"netBytesSent": "{{name}} - 發送位元組",
 					"loopbackOnlyNotice": "Capture 只看得到容器的網路介面，而且這些介面都沒有承載實際流量。當 Capture 在只能觀察自身網路命名空間的容器中執行時，這是正常現象——名稱類似主機的介面（eth0、ens3）是容器的虛擬介面，而非主機的介面。請直接在主機上執行 Capture 以查看實際的網路活動。",
-					"temp": "溫度"
+					"temp": "溫度",
+					"sensor": "感測器 {{number}}",
+					"available": "可用"
 				}
+			},
+			"agentErrors": {
+				"title": "代理程式無法讀取的值"
 			},
 			"gauges": {
 				"cpu": {

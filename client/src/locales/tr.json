@@ -1104,8 +1104,13 @@
 					"netBytesRecv": "{{name}} - Alınan bayt",
 					"netBytesSent": "{{name}} - Gönderilen bayt",
 					"loopbackOnlyNotice": "Capture yalnızca konteyner ağ arayüzlerini görüyor ve hiçbiri gerçek trafik taşımıyor. Bu, Capture yalnızca kendi ağ ad alanını görebilen bir konteyner içinde çalıştığında normaldir — ana makineye benzer adlara sahip arayüzler (eth0, ens3) ana makinenin değil, konteynerin sanal arayüzleridir. Gerçek ağ etkinliğini görmek için Capture'ı doğrudan ana makinede çalıştırın.",
-					"temp": "Sıcaklık"
+					"temp": "Sıcaklık",
+					"sensor": "Sensör {{number}}",
+					"available": "Kullanılabilir"
 				}
+			},
+			"agentErrors": {
+				"title": "Ajanın okuyamadığı değerler"
 			},
 			"gauges": {
 				"cpu": {
