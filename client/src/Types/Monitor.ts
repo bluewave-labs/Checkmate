@@ -7,7 +7,7 @@ import type {
 	DockerContainerSummary,
 	DockerLog,
 } from "@/Types/Check";
-import type { PageSpeedGroupedCheck } from "@/Types/Check";
+import type { CheckErrorInfo, PageSpeedGroupedCheck } from "@/Types/Check";
 import type { GeoContinent } from "@/Types/GeoCheck";
 export type { GeoContinent } from "@/Types/GeoCheck";
 
@@ -267,6 +267,142 @@ export interface PageSpeedDetailsResponse {
 		groupedChecks: PageSpeedGroupedCheck[];
 	};
 	monitorStats: MonitorStats | null;
+}
+
+export interface HardwareMetricsLatest {
+	checkedAt: string;
+	host: {
+		os: string | null;
+		platform: string | null;
+		kernelVersion: string | null;
+		prettyName: string | null;
+	};
+	capture: {
+		version: string | null;
+		mode: string | null;
+	};
+	cpu: {
+		physicalCore: number | null;
+		logicalCore: number | null;
+		frequency: number | null;
+		currentFrequency: number | null;
+		usage: number | null;
+		temperature: number[] | null;
+	};
+	memory: {
+		totalBytes: number | null;
+		usedBytes: number | null;
+		availableBytes: number | null;
+		usage: number | null;
+	};
+	errors: CheckErrorInfo[];
+}
+
+export interface HardwareMetricsBucket {
+	bucketDate: string;
+	cpu: {
+		usage: number | null;
+		currentFrequency: number | null;
+		temperature: (number | null)[];
+	};
+	memory: {
+		usedBytes: number | null;
+		availableBytes: number | null;
+		usage: number | null;
+	};
+}
+
+export interface HardwareMetricsDiskLatest {
+	totalBytes: number | null;
+	usedBytes: number | null;
+	freeBytes: number | null;
+	usage: number | null;
+	totalInodes: number | null;
+	usedInodes: number | null;
+	freeInodes: number | null;
+	inodesUsage: number | null;
+}
+
+export interface HardwareMetricsDiskBucket {
+	bucketDate: string;
+	usedBytes: number | null;
+	freeBytes: number | null;
+	usage: number | null;
+	usedInodes: number | null;
+	freeInodes: number | null;
+	inodesUsage: number | null;
+	readBytesPerSecond: number | null;
+	writeBytesPerSecond: number | null;
+	readTimeFraction: number | null;
+	writeTimeFraction: number | null;
+}
+
+export interface HardwareMetricsDisk {
+	device: string;
+	mountpoint: string;
+	latest: HardwareMetricsDiskLatest | null;
+	buckets: HardwareMetricsDiskBucket[];
+}
+
+export interface HardwareMetricsInterfaceBucket {
+	bucketDate: string;
+	bytesSentPerSecond: number | null;
+	bytesRecvPerSecond: number | null;
+	packetsSentPerSecond: number | null;
+	packetsRecvPerSecond: number | null;
+	errIn: number | null;
+	errOut: number | null;
+	dropIn: number | null;
+	dropOut: number | null;
+	fifoIn: number | null;
+	fifoOut: number | null;
+}
+
+export interface HardwareMetricsInterface {
+	name: string;
+	buckets: HardwareMetricsInterfaceBucket[];
+}
+
+export interface HardwareMetricsRaidMember {
+	device: string;
+	state: string;
+}
+
+export interface HardwareMetricsRaidLatest {
+	level: string | null;
+	state: string | null;
+	raidDisks: number | null;
+	degradedDisks: number | null;
+	syncAction: string | null;
+	syncProgress: number | null;
+	members: HardwareMetricsRaidMember[];
+}
+
+export interface HardwareMetricsRaidBucket {
+	bucketDate: string;
+	states: string[];
+	syncActions: string[];
+	maxDegradedDisks: number | null;
+}
+
+export interface HardwareMetricsRaid {
+	device: string;
+	latest: HardwareMetricsRaidLatest | null;
+	buckets: HardwareMetricsRaidBucket[];
+}
+
+export interface HardwareMetricsResponse {
+	monitor: Monitor;
+	monitorStats: MonitorStats | null;
+	checks: {
+		total: number;
+		up: number;
+	};
+	latest: HardwareMetricsLatest | null;
+	buckets: HardwareMetricsBucket[];
+	disks: HardwareMetricsDisk[];
+	interfaces: HardwareMetricsInterface[];
+	raid: HardwareMetricsRaid[];
 }
 
 export interface HardwareDiskStats {
