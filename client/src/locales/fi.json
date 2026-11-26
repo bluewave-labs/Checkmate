@@ -1131,7 +1131,11 @@
 				"cpuPhysical": "CPU (fyysinen)",
 				"disk": "Levy",
 				"memory": "Muisti",
-				"os": "Käyttöjärjestelmä"
+				"os": "Käyttöjärjestelmä",
+				"host": "Isäntä",
+				"kernel": "Ydin",
+				"agent": "Agentti",
+				"maxFrequency": "Enimmäistaajuus"
 			},
 			"table": {
 				"headers": {

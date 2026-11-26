@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import type { HardwareMetricsLatest } from "@/Types/Monitor";
 import { formatBytes, formatFrequency, PLACEHOLDER } from "@/Utils/FormatUtils";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { theme } from "@/Utils/Theme/Theme";
 
 const withDetail = (value: string | null, detail: string | null) => {
 	if (!value) {

@@ -1199,7 +1199,11 @@
 				"cpuPhysical": "CPU (Physical)",
 				"disk": "Disk",
 				"memory": "Memory",
-				"os": "OS"
+				"os": "OS",
+				"host": "Host",
+				"kernel": "Kernel",
+				"agent": "Agent",
+				"maxFrequency": "Max frequency"
 			},
 			"table": {
 				"headers": {

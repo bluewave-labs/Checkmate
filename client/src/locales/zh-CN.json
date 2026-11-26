@@ -1129,7 +1129,11 @@
 				"cpuPhysical": "CPU（物理核心）",
 				"disk": "磁盘",
 				"memory": "内存",
-				"os": "系统"
+				"os": "系统",
+				"host": "主机",
+				"kernel": "内核",
+				"agent": "代理",
+				"maxFrequency": "最大频率"
 			},
 			"table": {
 				"headers": {
