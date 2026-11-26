@@ -77,13 +77,13 @@ const getChartConfigs = (
 			},
 		},
 		{
-			keys: ["readTimeFraction", "writeTimeFraction"],
+			keys: ["readQueueDepth", "writeQueueDepth"],
 			config: {
 				key: "queueDepth",
 				title: t("pages.infrastructure.disks.queueDepth"),
 				series: [
-					{ dataKey: "readTimeFraction", label: read },
-					{ dataKey: "writeTimeFraction", label: write },
+					{ dataKey: "readQueueDepth", label: read },
+					{ dataKey: "writeQueueDepth", label: write },
 				],
 				formatter: (value) => formatNumber(value),
 			},

@@ -284,7 +284,7 @@ const perSecond = (change: number, seconds: number): number | null => {
 	return change / seconds;
 };
 
-const timeFraction = (changeMs: number, seconds: number): number | null => {
+const queueDepth = (changeMs: number, seconds: number): number | null => {
 	if (seconds <= 0) {
 		return null;
 	}
@@ -303,8 +303,8 @@ const toDiskBucket = (row: HardwareDiskRow): HardwareMetricsDiskBucket => ({
 	inodesUsage: row.inodesUsage,
 	readBytesPerSecond: perSecond(row.readBytesChange, row.readBytesSeconds),
 	writeBytesPerSecond: perSecond(row.writeBytesChange, row.writeBytesSeconds),
-	readTimeFraction: timeFraction(row.readTimeChange, row.readTimeSeconds),
-	writeTimeFraction: timeFraction(row.writeTimeChange, row.writeTimeSeconds),
+	readQueueDepth: queueDepth(row.readTimeChange, row.readTimeSeconds),
+	writeQueueDepth: queueDepth(row.writeTimeChange, row.writeTimeSeconds),
 });
 
 export const toHardwareDisks = (rows: HardwareDiskRow[], latest: CheckDocument | null): HardwareMetricsDisk[] => {
