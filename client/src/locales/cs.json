@@ -1135,6 +1135,16 @@
 				"fifoIn": "Chyby FIFO na vstupu",
 				"fifoOut": "Chyby FIFO na výstupu"
 			},
+			"raid": {
+				"state": "Stav",
+				"level": "Úroveň",
+				"disks": "Disky",
+				"degradedDisks": "Degradované disky",
+				"syncAction": "Akce synchronizace",
+				"syncProgress": "Průběh synchronizace",
+				"member": "Člen",
+				"time": "Čas"
+			},
 			"agentErrors": {
 				"title": "Hodnoty, které agent nedokázal načíst"
 			},
@@ -1179,7 +1189,8 @@
 				"labels": {
 					"network": "Síť",
 					"overview": "Přehled",
-					"disks": "Disky"
+					"disks": "Disky",
+					"raid": "RAID"
 				}
 			},
 			"fallback": {

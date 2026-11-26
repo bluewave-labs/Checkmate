@@ -1131,6 +1131,16 @@
 				"fifoIn": "Saapuvat FIFO-virheet",
 				"fifoOut": "Lähtevät FIFO-virheet"
 			},
+			"raid": {
+				"state": "Tila",
+				"level": "Taso",
+				"disks": "Levyt",
+				"degradedDisks": "Heikentyneet levyt",
+				"syncAction": "Synkronointitoiminto",
+				"syncProgress": "Synkronoinnin edistyminen",
+				"member": "Jäsen",
+				"time": "Aika"
+			},
 			"agentErrors": {
 				"title": "Arvot, joita agentti ei voinut lukea"
 			},
@@ -1175,7 +1185,8 @@
 				"labels": {
 					"network": "Verkko",
 					"overview": "Yleiskatsaus",
-					"disks": "Levyt"
+					"disks": "Levyt",
+					"raid": "RAID"
 				}
 			},
 			"fallback": {

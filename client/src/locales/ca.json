@@ -1132,6 +1132,16 @@
 				"fifoIn": "Errors FIFO d'entrada",
 				"fifoOut": "Errors FIFO de sortida"
 			},
+			"raid": {
+				"state": "Estat",
+				"level": "Nivell",
+				"disks": "Discs",
+				"degradedDisks": "Discs degradats",
+				"syncAction": "Acció de sincronització",
+				"syncProgress": "Progrés de la sincronització",
+				"member": "Membre",
+				"time": "Hora"
+			},
 			"agentErrors": {
 				"title": "Valors que l'agent no ha pogut llegir"
 			},
@@ -1176,7 +1186,8 @@
 				"labels": {
 					"network": "Xarxa",
 					"overview": "Visió general",
-					"disks": "Discs"
+					"disks": "Discs",
+					"raid": "RAID"
 				}
 			},
 			"fallback": {
