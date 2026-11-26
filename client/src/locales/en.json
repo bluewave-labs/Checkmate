@@ -2014,6 +2014,7 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "Status page deleted successfully",
+			"documentTitle": "{{health}} · {{companyName}}",
 			"rangeSelectorAria": "History range",
 			"rangeExceedsRetention": "Check history retention is set to {{days}} days. Increase retention for more data.",
 			"range": {
