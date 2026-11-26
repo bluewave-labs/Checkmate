@@ -45,6 +45,8 @@ Bu depo, sunucu donanımını, çalışma süresini, yanıt sürelerini ve olayl
 
 Checkmate'in ayrıca uzak sunuculardan veri çekmek için [Capture](https://github.com/bluewave-labs/capture) adında bir ajanı vardır. Capture, Checkmate'i çalıştırmak için zorunlu değildir; ancak sunucularınızın CPU, RAM, disk ve sıcaklık durumu hakkında ek bilgi sağlar. Capture; Linux, Windows, Mac, Raspberry Pi ve Go çalıştırabilen herhangi bir cihazda kullanılabilir.
 
+**Eksik bir özellik mi var?** [Özellik istekleri panosunda](https://checkmate.so/requests) fikirlere oy verin veya yeni bir fikir önerin. GitHub hesabı gerekmez.
+
 Checkmate, 1000'den fazla aktif monitör ile herhangi bir sorun ya da performans darboğazı yaşamadan stres testinden geçirilmiştir.
 
 ## 📚 İçindekiler
@@ -107,6 +109,7 @@ Aynı sayıda sunucu için aynı sunucudaki MongoDB ve Redis bellek ayak izini d
 Sorularınız, önerileriniz ya da yorumlarınız varsa birkaç seçeneğiniz var:
 
 - [Discord kanalı](https://discord.gg/NAb6H3UTjK) (tercih edilen)
+- [Özellik istekleri panosu](https://checkmate.so/requests): özelliklere oy verin ve yenilerini önerin
 - [GitHub Discussions](https://github.com/bluewave-labs/Checkmate/discussions) (zaman zaman buraya bakıyoruz)
 
 Soru sormaktan ya da fikirlerinizi paylaşmaktan çekinmeyin — sizi dinlemekten mutluluk duyarız!

@@ -47,6 +47,8 @@ This repository contains both the frontend and the backend of Checkmate, an open
 
 Checkmate also has an agent, called [Capture](https://github.com/bluewave-labs/capture), to retrieve data from remote servers. While Capture is not required to run Checkmate, it provides additional insights about your servers' CPU, RAM, disk, and temperature status. Capture can run on Linux, Windows, Mac, Raspberry Pi, or any device that can run Go.
 
+**Missing a feature?** Vote on ideas or suggest a new one on the [feature requests board](https://checkmate.so/requests). No GitHub account needed.
+
 
 <table>
 <tr>
@@ -409,6 +411,8 @@ You can see the memory footprint of MongoDB on the same server (398Mb) for the s
 ## Questions & Ideas
 
 If you have any questions, suggestions or comments, use [Discord channel](https://discord.gg/NAb6H3UTjK).
+
+To suggest a feature or vote on what we build next, use the [feature requests board](https://checkmate.so/requests).
 
 Feel free to ask questions or share your ideas - we'd love to hear from you!
 

@@ -45,6 +45,8 @@
 
 Checkmate 还提供了一个名为 [Capture](https://github.com/bluewave-labs/capture) 的代理，用于从远程服务器拉取数据。Capture 并不是运行 Checkmate 所必需的，但它能提供服务器 CPU、内存、磁盘和温度的额外信息。Capture 可在 Linux、Windows、Mac、Raspberry Pi 或任何能运行 Go 的设备上运行。
 
+**缺少某个功能？** 在[功能需求看板](https://checkmate.so/requests)上为想法投票或提出新想法，无需 GitHub 账号。
+
 Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未出现任何明显问题或性能瓶颈。
 
 ## 📚 目录
@@ -107,6 +109,7 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 如果你有任何问题、建议或意见，欢迎通过以下方式联系我们:
 
 - [Discord 频道](https://discord.gg/NAb6H3UTjK)（推荐）
+- [功能需求看板](https://checkmate.so/requests)：为功能投票并提出建议
 - [GitHub Discussions](https://github.com/bluewave-labs/Checkmate/discussions)（我们会不定期查看）
 
 欢迎提问或分享你的想法 — 期待听到你的声音！

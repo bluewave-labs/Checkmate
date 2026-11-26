@@ -48,6 +48,8 @@ Tento repozitář obsahuje jak frontend, tak backend Checkmate, open source, sam
 
 Checkmate má také agenta zvaného [Capture](https://github.com/bluewave-labs/capture), který získává data ze vzdálených serverů. Capture není pro běh Checkmate povinný, ale poskytuje další informace o stavu CPU, RAM, disku a teploty serverů. Capture lze provozovat na Linuxu, Windows, Macu, Raspberry Pi nebo jakémkoli zařízení, které dokáže spouštět Go.
 
+**Chybí vám nějaká funkce?** Hlasujte o nápadech nebo navrhněte nový na [nástěnce požadavků na funkce](https://checkmate.so/requests). Účet na GitHubu není potřeba.
+
 Checkmate byl zátěžově otestován s více než 1000 aktivními monitory bez jakýchkoli problémů nebo výkonnostních úzkých míst.
 
 ## 📚 Obsah
@@ -110,6 +112,7 @@ A zde paměťový otisk MongoDB a Redis na stejném serveru (398 MB, resp. 15 MB
 Pokud máte dotazy, návrhy nebo komentáře, máte několik možností:
 
 - [Discord kanál](https://discord.gg/NAb6H3UTjK) (preferováno)
+- [Nástěnka požadavků na funkce](https://checkmate.so/requests) pro hlasování a návrhy nových funkcí
 - [GitHub Discussions](https://github.com/bluewave-labs/Checkmate/discussions) (kontrolujeme čas od času)
 
 Neváhejte se ptát nebo sdílet své nápady — moc rádi vás slyšíme!

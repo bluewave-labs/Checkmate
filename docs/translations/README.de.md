@@ -45,6 +45,8 @@ Dieses Repository enthält Frontend und Backend von Checkmate — einem Open-Sou
 
 Checkmate hat außerdem einen Agenten namens [Capture](https://github.com/bluewave-labs/capture), der Daten von entfernten Servern abholt. Capture ist nicht zwingend erforderlich, liefert aber zusätzliche Informationen zu CPU, RAM, Festplatte und Temperatur deiner Server. Capture läuft auf Linux, Windows, macOS, Raspberry Pi oder jedem anderen Gerät, das Go ausführen kann.
 
+**Fehlt dir ein Feature?** Stimme über Ideen ab oder schlag eine neue vor – auf dem [Feature-Request-Board](https://checkmate.so/requests). Ein GitHub-Konto ist nicht nötig.
+
 Checkmate wurde mit über 1.000 aktiven Monitoren stresstestet — ohne erkennbare Probleme oder Performance-Engpässe.
 
 ## 📚 Inhaltsverzeichnis
@@ -107,6 +109,7 @@ Hier der Speicherverbrauch von MongoDB und Redis auf demselben Server (398 MB bz
 Falls du Fragen, Vorschläge oder Anmerkungen hast, gibt es mehrere Anlaufstellen:
 
 - [Discord](https://discord.gg/NAb6H3UTjK) (bevorzugt)
+- [Feature-Request-Board](https://checkmate.so/requests) zum Abstimmen und Vorschlagen neuer Features
 - [GitHub Discussions](https://github.com/bluewave-labs/Checkmate/discussions) (wir schauen regelmäßig vorbei)
 
 Frag einfach drauflos oder teile deine Ideen — wir freuen uns auf dein Feedback!
