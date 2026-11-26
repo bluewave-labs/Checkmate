@@ -26,6 +26,7 @@ import { IEncryptionService, EncryptionService } from "@/service/encryption/encr
 import type { NotificationProviderRegistry } from "@/domain/notifications/notification.service.js";
 import { WebhookProvider } from "@/domain/notifications/providers/webhook.js";
 import { RocketChatProvider } from "@/domain/notifications/providers/rocketChat.js";
+import { MattermostProvider } from "@/domain/notifications/providers/mattermost.js";
 import { SlackProvider } from "@/domain/notifications/providers/slack.js";
 import { EmailProvider } from "@/domain/notifications/providers/email.js";
 import { DiscordProvider } from "@/domain/notifications/providers/discord.js";
@@ -190,6 +191,7 @@ export const buildShared = async ({
 	const dockerLogsService = new DockerLogsService({ logger, dockerLogsRepository });
 	const webhookProvider = new WebhookProvider(logger);
 	const rocketChatProvider = new RocketChatProvider(logger);
+	const mattermostProvider = new MattermostProvider(logger);
 	const slackProvider = new SlackProvider(logger);
 	const emailProvider = new EmailProvider(emailService, logger);
 	const discordProvider = new DiscordProvider(logger);
@@ -205,6 +207,7 @@ export const buildShared = async ({
 	const notificationProviders: NotificationProviderRegistry = {
 		webhook: webhookProvider,
 		rocket_chat: rocketChatProvider,
+		mattermost: mattermostProvider,
 		email: emailProvider,
 		slack: slackProvider,
 		discord: discordProvider,
