@@ -1,3 +1,5 @@
+import prettyBytes from "pretty-bytes";
+
 /**
  * Intl.NumberFormat instance for percentage formatting.
  * Reused across all formatting calls for performance.
@@ -67,3 +69,20 @@ export const formatVersion = (version: string): string => version.replace(/^v?/,
 
 // Shown wherever a value is not available for the current data source.
 export const PLACEHOLDER = "—";
+
+const MHZ_PER_GHZ = 1000;
+const FREQUENCY_DECIMALS = 2;
+
+export const formatFrequency = (mhz: number | null): string => {
+	if (mhz === null) {
+		return PLACEHOLDER;
+	}
+	return `${(mhz / MHZ_PER_GHZ).toFixed(FREQUENCY_DECIMALS)} GHz`;
+};
+
+export const formatBytes = (bytes: number | null): string => {
+	if (bytes === null) {
+		return PLACEHOLDER;
+	}
+	return prettyBytes(bytes);
+};

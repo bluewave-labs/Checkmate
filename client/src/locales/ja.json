@@ -1129,7 +1129,11 @@
 				"cpuPhysical": "CPU（物理）",
 				"disk": "ディスク",
 				"memory": "メモリ",
-				"os": "OS"
+				"os": "OS",
+				"host": "ホスト",
+				"kernel": "カーネル",
+				"agent": "エージェント",
+				"maxFrequency": "最大周波数"
 			},
 			"table": {
 				"headers": {

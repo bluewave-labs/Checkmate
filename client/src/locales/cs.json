@@ -1135,7 +1135,11 @@
 				"cpuPhysical": "CPU (fyzický)",
 				"disk": "Disk",
 				"memory": "Paměť",
-				"os": "OS"
+				"os": "OS",
+				"host": "Hostitel",
+				"kernel": "Jádro",
+				"agent": "Agent",
+				"maxFrequency": "Maximální frekvence"
 			},
 			"table": {
 				"headers": {

@@ -1129,7 +1129,11 @@
 				"cpuPhysical": "CPU (實體核心)",
 				"disk": "磁碟",
 				"memory": "記憶體",
-				"os": "作業系統"
+				"os": "作業系統",
+				"host": "主機",
+				"kernel": "核心",
+				"agent": "代理程式",
+				"maxFrequency": "最大頻率"
 			},
 			"table": {
 				"headers": {

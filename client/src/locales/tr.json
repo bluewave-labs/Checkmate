@@ -1131,7 +1131,11 @@
 				"cpuPhysical": "CPU (fiziksel)",
 				"disk": "Disk",
 				"memory": "Bellek",
-				"os": "İşletim sistemi"
+				"os": "İşletim sistemi",
+				"host": "Ana makine",
+				"kernel": "Çekirdek",
+				"agent": "Ajan",
+				"maxFrequency": "Maks frekans"
 			},
 			"table": {
 				"headers": {

@@ -1135,7 +1135,11 @@
 				"cpuPhysical": "CPU (физический)",
 				"disk": "Диск",
 				"memory": "Память",
-				"os": "ОС"
+				"os": "ОС",
+				"host": "Хост",
+				"kernel": "Ядро",
+				"agent": "Агент",
+				"maxFrequency": "Макс. частота"
 			},
 			"table": {
 				"headers": {
