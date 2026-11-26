@@ -98,6 +98,29 @@ export const hardwareMetricsInterfaceSchema = z.object({
 	buckets: z.array(hardwareMetricsInterfaceBucketSchema),
 });
 
+export const hardwareMetricsRaidBucketSchema = z.object({
+	bucketDate: z.string(),
+	states: z.array(z.string()),
+	syncActions: z.array(z.string()),
+	maxDegradedDisks: nullableNumber,
+});
+
+export const hardwareMetricsRaidSchema = z.object({
+	device: z.string(),
+	latest: z
+		.object({
+			level: nullableString,
+			state: nullableString,
+			raidDisks: nullableNumber,
+			degradedDisks: nullableNumber,
+			syncAction: nullableString,
+			syncProgress: nullableNumber,
+			members: z.array(z.object({ device: z.string(), state: z.string() })),
+		})
+		.nullable(),
+	buckets: z.array(hardwareMetricsRaidBucketSchema),
+});
+
 export const hardwareMetricsSchema = z.object({
 	checks: z.object({
 		total: z.number(),
@@ -107,4 +130,5 @@ export const hardwareMetricsSchema = z.object({
 	buckets: z.array(hardwareMetricsBucketSchema),
 	disks: z.array(hardwareMetricsDiskSchema),
 	interfaces: z.array(hardwareMetricsInterfaceSchema),
+	raid: z.array(hardwareMetricsRaidSchema),
 });
