@@ -8,6 +8,8 @@ import type {
 	HardwareMetricsDiskBucket,
 	HardwareMetricsInterface,
 	HardwareMetricsInterfaceBucket,
+	HardwareMetricsRaid,
+	HardwareMetricsRaidBucket,
 	HardwareMetricsLatest,
 } from "@/domain/checks/check.type.js";
 import { toDateString } from "@/utils/mongoMappers.js";
@@ -420,4 +422,63 @@ export const toHardwareInterfaces = (rows: HardwareInterfaceRow[], latest: Check
 		interfaces.set(row._id.name, entry);
 	}
 	return [...interfaces.values()].sort((a, b) => a.name.localeCompare(b.name));
+};
+
+export type HardwareRaidRow = {
+	_id: { bucket: string; device: string };
+	states: (string | null)[];
+	syncActions: (string | null)[];
+	maxDegradedDisks: number | null;
+};
+
+export const buildHardwareRaidStages = ({ monitorId, from, to, dateFormat }: HardwareMetricsWindow): PipelineStage[] => [
+	{ $match: { ...hardwareChecksFilter(monitorId), createdAt: { $gte: from, $lte: to } } },
+	{ $unwind: "$raid" },
+	{
+		$group: {
+			_id: {
+				bucket: { $dateToString: { format: dateFormat, date: "$createdAt" } },
+				device: "$raid.device",
+			},
+			states: { $addToSet: "$raid.state" },
+			syncActions: { $addToSet: "$raid.sync_action" },
+			maxDegradedDisks: { $max: "$raid.degraded_disks" },
+		},
+	},
+	{ $sort: { "_id.device": 1, "_id.bucket": 1 } },
+];
+
+const toSortedNames = (values: (string | null)[]): string[] => values.filter((value): value is string => typeof value === "string").sort();
+
+const toRaidBucket = (row: HardwareRaidRow): HardwareMetricsRaidBucket => ({
+	bucketDate: row._id.bucket,
+	states: toSortedNames(row.states),
+	syncActions: toSortedNames(row.syncActions),
+	maxDegradedDisks: row.maxDegradedDisks ?? null,
+});
+
+export const toHardwareRaid = (rows: HardwareRaidRow[], latest: CheckDocument | null): HardwareMetricsRaid[] => {
+	const arrays = new Map<string, HardwareMetricsRaid>();
+	for (const entry of latest?.raid ?? []) {
+		const device = entry.device ?? "";
+		arrays.set(device, {
+			device,
+			latest: {
+				level: entry.level ?? null,
+				state: entry.state ?? null,
+				raidDisks: entry.raid_disks ?? null,
+				degradedDisks: entry.degraded_disks ?? null,
+				syncAction: entry.sync_action ?? null,
+				syncProgress: entry.sync_progress ?? null,
+				members: (entry.members ?? []).map((member) => ({ device: member.device ?? "", state: member.state ?? "" })),
+			},
+			buckets: [],
+		});
+	}
+	for (const row of rows) {
+		const array = arrays.get(row._id.device) ?? { device: row._id.device, latest: null, buckets: [] };
+		array.buckets.push(toRaidBucket(row));
+		arrays.set(row._id.device, array);
+	}
+	return [...arrays.values()].sort((a, b) => a.device.localeCompare(b.device));
 };

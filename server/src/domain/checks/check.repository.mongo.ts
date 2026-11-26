@@ -28,15 +28,18 @@ import { getHardwareUpChecks, getHardwareStats, getHardwareTotalChecks } from "@
 import {
 	buildHardwareDisksStages,
 	buildHardwareInterfacesStages,
+	buildHardwareRaidStages,
 	buildHardwareLevelsStages,
 	hardwareChecksFilter,
 	toHardwareBuckets,
 	toHardwareCheckCounts,
 	toHardwareDisks,
 	toHardwareInterfaces,
+	toHardwareRaid,
 	toHardwareLatest,
 	type HardwareDiskRow,
 	type HardwareInterfaceRow,
+	type HardwareRaidRow,
 	type HardwareLevelsFacet,
 } from "@/domain/checks/check.hardware.pipeline.js";
 import { HARDWARE_COUNTER_MAX_GAP_INTERVALS } from "@/domain/checks/check.type.js";
@@ -404,10 +407,11 @@ class MongoChecksRepository implements IChecksRepository {
 			dateFormat: getDateFormat(dateRange),
 		};
 		const maxGapMs = HARDWARE_COUNTER_MAX_GAP_INTERVALS * intervalMs;
-		const [facets, diskRows, interfaceRows, latest] = await Promise.all([
+		const [facets, diskRows, interfaceRows, raidRows, latest] = await Promise.all([
 			CheckModel.aggregate<HardwareLevelsFacet>(buildHardwareLevelsStages(window)),
 			CheckModel.aggregate<HardwareDiskRow>(buildHardwareDisksStages({ ...window, maxGapMs })),
 			CheckModel.aggregate<HardwareInterfaceRow>(buildHardwareInterfacesStages({ ...window, maxGapMs })),
+			CheckModel.aggregate<HardwareRaidRow>(buildHardwareRaidStages(window)),
 			CheckModel.findOne({ ...hardwareChecksFilter(monitorObjectId), status: true })
 				.sort({ createdAt: -1 })
 				.lean<CheckDocument>(),
@@ -420,6 +424,7 @@ class MongoChecksRepository implements IChecksRepository {
 			buckets: toHardwareBuckets(facet),
 			disks: toHardwareDisks(diskRows, latest),
 			interfaces: toHardwareInterfaces(interfaceRows, latest),
+			raid: toHardwareRaid(raidRows, latest),
 		};
 	};
 

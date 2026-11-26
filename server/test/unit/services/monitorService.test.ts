@@ -765,6 +765,7 @@ describe("MonitorService", () => {
 			],
 			disks: [],
 			interfaces: [],
+			raid: [],
 		};
 
 		it("returns the metrics with the monitor and its stats", async () => {
@@ -794,6 +795,7 @@ describe("MonitorService", () => {
 				buckets: [],
 				disks: [],
 				interfaces: [],
+				raid: [],
 			});
 			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(null);
 			const { service } = createService({ monitorsRepository, checksRepository, monitorStatsRepository });

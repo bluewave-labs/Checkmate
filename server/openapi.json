@@ -2708,6 +2708,92 @@
 							"required": ["name", "buckets"]
 						}
 					},
+					"raid": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"device": {
+									"type": "string"
+								},
+								"latest": {
+									"type": "object",
+									"nullable": true,
+									"properties": {
+										"level": {
+											"type": "string",
+											"nullable": true
+										},
+										"state": {
+											"type": "string",
+											"nullable": true
+										},
+										"raidDisks": {
+											"type": "number",
+											"nullable": true
+										},
+										"degradedDisks": {
+											"type": "number",
+											"nullable": true
+										},
+										"syncAction": {
+											"type": "string",
+											"nullable": true
+										},
+										"syncProgress": {
+											"type": "number",
+											"nullable": true
+										},
+										"members": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"device": {
+														"type": "string"
+													},
+													"state": {
+														"type": "string"
+													}
+												},
+												"required": ["device", "state"]
+											}
+										}
+									},
+									"required": ["level", "state", "raidDisks", "degradedDisks", "syncAction", "syncProgress", "members"]
+								},
+								"buckets": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"bucketDate": {
+												"type": "string"
+											},
+											"states": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"syncActions": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"maxDegradedDisks": {
+												"type": "number",
+												"nullable": true
+											}
+										},
+										"required": ["bucketDate", "states", "syncActions", "maxDegradedDisks"]
+									}
+								}
+							},
+							"required": ["device", "latest", "buckets"]
+						}
+					},
 					"monitor": {
 						"$ref": "#/components/schemas/Monitor"
 					},
@@ -2722,7 +2808,7 @@
 						]
 					}
 				},
-				"required": ["checks", "latest", "buckets", "disks", "interfaces", "monitor", "monitorStats"]
+				"required": ["checks", "latest", "buckets", "disks", "interfaces", "raid", "monitor", "monitorStats"]
 			},
 			"PageSpeedDetails": {
 				"type": "object",

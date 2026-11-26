@@ -102,6 +102,21 @@ const iface = (name: string, values: Record<string, number> = {}) => ({
 	...values,
 });
 
+const raidArray = (device: string, values: Record<string, unknown> = {}) => ({
+	device,
+	level: "raid1",
+	state: "clean",
+	raid_disks: 2,
+	degraded_disks: 0,
+	sync_action: "idle",
+	sync_progress: null,
+	members: [
+		{ device: "/dev/sda1", state: "in_sync" },
+		{ device: "/dev/sdb1", state: "in_sync" },
+	],
+	...values,
+});
+
 const ROOT = ["/dev/sda1", "/"] as const;
 const DATA = ["/dev/sdb1", "/data"] as const;
 
@@ -113,7 +128,7 @@ describe("MongoChecksRepository.findHardwareMetrics", () => {
 
 		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "month", INTERVAL_MS);
 
-		expect(result).toEqual({ checks: { total: 0, up: 0 }, latest: null, buckets: [], disks: [], interfaces: [] });
+		expect(result).toEqual({ checks: { total: 0, up: 0 }, latest: null, buckets: [], disks: [], interfaces: [], raid: [] });
 	});
 
 	it("averages each level per bucket, in bucket order", async () => {
@@ -508,6 +523,111 @@ describe("MongoChecksRepository.findHardwareMetrics", () => {
 				{ name: "eth0", buckets: [] },
 				{ name: "lo", buckets: [] },
 			]);
+		});
+	});
+
+	describe("raid", () => {
+		const findRaid = async (dateRange: "day" | "month" = "month") => {
+			const result = await setup().findHardwareMetrics(MONITOR_ID.toString(), dateRange, INTERVAL_MS);
+			return result.raid;
+		};
+
+		it("returns no arrays for a host that reports none", async () => {
+			await setup().createChecks([makeCheck(YESTERDAY, { ...reading(0.5, 0.4), raid: [] })]);
+
+			await expect(findRaid()).resolves.toEqual([]);
+		});
+
+		it("collects the states and sync actions seen in a bucket and the highest degraded count", async () => {
+			await setup().createChecks([
+				makeCheck(YESTERDAY, { raid: [raidArray("/dev/md0")] }),
+				makeCheck(YESTERDAY + MINUTE_MS, {
+					raid: [raidArray("/dev/md0", { state: "active", degraded_disks: 1, sync_action: "recover", sync_progress: 0.25 })],
+				}),
+				makeCheck(YESTERDAY + 2 * MINUTE_MS, {
+					raid: [raidArray("/dev/md0", { state: "active", degraded_disks: 1, sync_action: "recover", sync_progress: 0.5 })],
+				}),
+				makeCheck(TWO_DAYS_AGO, { raid: [raidArray("/dev/md0")] }),
+			]);
+
+			const [md0] = await findRaid();
+
+			expect(md0?.buckets).toEqual([
+				{ bucketDate: utcDay(TWO_DAYS_AGO), states: ["clean"], syncActions: ["idle"], maxDegradedDisks: 0 },
+				{ bucketDate: utcDay(YESTERDAY), states: ["active", "clean"], syncActions: ["idle", "recover"], maxDegradedDisks: 1 },
+			]);
+		});
+
+		it("keeps arrays apart by device", async () => {
+			await setup().createChecks([
+				makeCheck(YESTERDAY, { raid: [raidArray("/dev/md1", { state: "inactive" }), raidArray("/dev/md0")] }),
+				makeCheck(YESTERDAY + MINUTE_MS, { raid: [raidArray("/dev/md0"), raidArray("/dev/md1", { state: "inactive" })] }),
+			]);
+
+			const arrays = await findRaid();
+
+			expect(arrays.map((array) => [array.device, array.buckets[0]?.states])).toEqual([
+				["/dev/md0", ["clean"]],
+				["/dev/md1", ["inactive"]],
+			]);
+		});
+
+		it("leaves null sync actions and degraded counts out, as for a level without redundancy", async () => {
+			await setup().createChecks([
+				makeCheck(YESTERDAY, { raid: [raidArray("/dev/md2", { level: "raid0", degraded_disks: null, sync_action: null })] }),
+			]);
+
+			const [md2] = await findRaid();
+
+			expect(md2?.buckets).toEqual([{ bucketDate: utcDay(YESTERDAY), states: ["clean"], syncActions: [], maxDegradedDisks: null }]);
+		});
+
+		it("attaches the latest check's values and members", async () => {
+			await setup().createChecks([
+				makeCheck(TWO_DAYS_AGO, { raid: [raidArray("/dev/md0"), raidArray("/dev/md9")] }),
+				makeCheck(YESTERDAY, {
+					raid: [
+						raidArray("/dev/md0", {
+							state: "active",
+							degraded_disks: 1,
+							sync_action: "recover",
+							sync_progress: 0.25,
+							members: [
+								{ device: "/dev/sda1", state: "in_sync" },
+								{ device: "/dev/sdc1", state: "spare" },
+							],
+						}),
+					],
+				}),
+			]);
+
+			const arrays = await findRaid();
+
+			expect(arrays).toHaveLength(2);
+			expect(arrays[0]?.latest).toEqual({
+				level: "raid1",
+				state: "active",
+				raidDisks: 2,
+				degradedDisks: 1,
+				syncAction: "recover",
+				syncProgress: 0.25,
+				members: [
+					{ device: "/dev/sda1", state: "in_sync" },
+					{ device: "/dev/sdc1", state: "spare" },
+				],
+			});
+			expect(arrays[1]).toMatchObject({ device: "/dev/md9", latest: null });
+			expect(arrays[1]?.buckets).toHaveLength(1);
+		});
+
+		it("lists the latest check's arrays with no buckets when the range has no checks", async () => {
+			await setup().createChecks([makeCheck(Date.now() - 40 * DAY_MS, { raid: [raidArray("/dev/md0")] })]);
+
+			const arrays = await findRaid("day");
+
+			expect(arrays).toHaveLength(1);
+			expect(arrays[0]).toMatchObject({ device: "/dev/md0", buckets: [] });
+			expect(arrays[0]?.latest?.state).toBe("clean");
 		});
 	});
 });
