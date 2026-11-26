@@ -1,8 +1,9 @@
 import { BasePage, Tab, TabIcon, Tabs } from "@/Components/design-elements";
-import { LayoutDashboard } from "lucide-react";
+import { HardDrive, LayoutDashboard } from "lucide-react";
 import { HeaderTimeRange } from "@/Components/common";
 import { MonitorStatBoxes, HeaderMonitorControls } from "@/Components/monitors";
 import { TabOverview } from "@/Pages/Infrastructure/Metrics/Components/TabOverview";
+import { TabDisks } from "@/Pages/Infrastructure/Metrics/Components/TabDisks";
 
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -71,9 +72,19 @@ const InfrastructureDetails = () => {
 					label={t("pages.infrastructure.tabs.labels.overview")}
 					icon={<TabIcon icon={LayoutDashboard} />}
 				/>
+				<Tab
+					label={t("pages.infrastructure.tabs.labels.disks")}
+					icon={<TabIcon icon={HardDrive} />}
+				/>
 			</Tabs>
 			{selectedTab === 0 && (
 				<TabOverview
+					metrics={metrics}
+					dateRange={dateRange}
+				/>
+			)}
+			{selectedTab === 1 && (
+				<TabDisks
 					metrics={metrics}
 					dateRange={dateRange}
 				/>

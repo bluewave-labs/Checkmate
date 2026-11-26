@@ -1,11 +1,3 @@
-import Grid from "@mui/material/Grid";
-import {
-	HistogramMetrics,
-	type MetricsSeries,
-} from "@/Components/monitors/charts/HistogramMetrics";
-
-import { useTheme } from "@mui/material";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import type { HardwareMetricsBucket } from "@/Types/Monitor";
@@ -16,15 +8,10 @@ import {
 	formatPercentage,
 	formatTemperature,
 } from "@/Utils/FormatUtils";
-import { LAYOUT } from "@/Utils/Theme/constants";
-
-interface ChartConfig {
-	key: string;
-	title: string;
-	series: MetricsSeries[];
-	formatter: (value: number) => string;
-	yDomain?: [number, number];
-}
+import {
+	MetricsChartGrid,
+	type MetricsChartConfig,
+} from "@/Pages/Infrastructure/Metrics/Components/MetricsChartGrid";
 
 const USAGE_DOMAIN: [number, number] = [0, 1];
 
@@ -34,9 +21,9 @@ const getSensorCount = (buckets: HardwareMetricsBucket[]) =>
 const getChartConfigs = (
 	buckets: HardwareMetricsBucket[],
 	t: TFunction
-): ChartConfig[] => {
+): MetricsChartConfig[] => {
 	const sensorCount = getSensorCount(buckets);
-	const configs: ChartConfig[] = [
+	const configs: MetricsChartConfig[] = [
 		{
 			key: "cpuUsage",
 			title: t("common.charts.labels.cpuUsage"),
@@ -100,8 +87,6 @@ export const OverviewCharts = ({
 	buckets: HardwareMetricsBucket[];
 	dateRange: DateRange;
 }) => {
-	const theme = useTheme();
-	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const { t } = useTranslation();
 
 	if (buckets.length === 0) {
@@ -109,25 +94,10 @@ export const OverviewCharts = ({
 	}
 
 	return (
-		<Grid
-			container
-			spacing={theme.spacing(LAYOUT.MD)}
-		>
-			{getChartConfigs(buckets, t).map((config) => (
-				<Grid
-					size={isSmall ? 12 : 6}
-					key={config.key}
-				>
-					<HistogramMetrics
-						title={config.title}
-						data={buckets}
-						series={config.series}
-						range={dateRange}
-						formatter={config.formatter}
-						yDomain={config.yDomain}
-					/>
-				</Grid>
-			))}
-		</Grid>
+		<MetricsChartGrid
+			configs={getChartConfigs(buckets, t)}
+			data={buckets}
+			dateRange={dateRange}
+		/>
 	);
 };

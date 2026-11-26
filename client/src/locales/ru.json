@@ -1113,6 +1113,15 @@
 					"available": "Доступно"
 				}
 			},
+			"disks": {
+				"inodeUsage": "Использование inode",
+				"space": "Место",
+				"inodes": "Inode",
+				"throughput": "Скорость чтения и записи",
+				"queueDepth": "Глубина очереди ввода-вывода",
+				"read": "Чтение",
+				"write": "Запись"
+			},
 			"agentErrors": {
 				"title": "Значения, которые агент не смог прочитать"
 			},
@@ -1156,7 +1165,8 @@
 			"tabs": {
 				"labels": {
 					"network": "Сеть",
-					"overview": "Обзор"
+					"overview": "Обзор",
+					"disks": "Диски"
 				}
 			},
 			"fallback": {

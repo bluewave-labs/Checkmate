@@ -1107,6 +1107,15 @@
 					"available": "พร้อมใช้งาน"
 				}
 			},
+			"disks": {
+				"inodeUsage": "การใช้งาน inode",
+				"space": "พื้นที่",
+				"inodes": "Inode",
+				"throughput": "อัตราการอ่านและเขียน",
+				"queueDepth": "ความลึกของคิว I/O",
+				"read": "อ่าน",
+				"write": "เขียน"
+			},
 			"agentErrors": {
 				"title": "ค่าที่เอเจนต์ไม่สามารถอ่านได้"
 			},
@@ -1150,7 +1159,8 @@
 			"tabs": {
 				"labels": {
 					"network": "เน็ตเวอร์",
-					"overview": "ภาพรวม"
+					"overview": "ภาพรวม",
+					"disks": "ดิสก์"
 				}
 			},
 			"fallback": {

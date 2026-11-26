@@ -1109,6 +1109,15 @@
 					"available": "Dostępne"
 				}
 			},
+			"disks": {
+				"inodeUsage": "Użycie i-węzłów",
+				"space": "Miejsce",
+				"inodes": "I-węzły",
+				"throughput": "Szybkość odczytu i zapisu",
+				"queueDepth": "Głębokość kolejki I/O",
+				"read": "Odczyt",
+				"write": "Zapis"
+			},
 			"agentErrors": {
 				"title": "Wartości, których agent nie mógł odczytać"
 			},
@@ -1161,7 +1170,8 @@
 			"tabs": {
 				"labels": {
 					"network": "Sieć",
-					"overview": "Przegląd"
+					"overview": "Przegląd",
+					"disks": "Dyski"
 				}
 			}
 		},

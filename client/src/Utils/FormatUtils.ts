@@ -40,17 +40,45 @@ export const formatPercentage = (
 	return percentageFormatter.format(value);
 };
 
+const DEFAULT_LOCALE = "en-US";
+const DEFAULT_MAX_FRACTION_DIGITS = 2;
+
+interface FormatNumberOptions {
+	locale?: string;
+	minimumFractionDigits?: number;
+	maximumFractionDigits?: number;
+}
+
 /**
- * Formats a number with locale-specific grouping.
- * @param value - Number to format
- * @param locale - App language (e.g., "en", "de")
- * @returns Formatted number string
+ * Formats a number with grouping and a bounded number of decimals.
+ * @param value - Number to format, or null when the value is not available
+ * @param options.locale - App language (e.g., "en", "de"). Defaults to "en-US"
+ * @param options.minimumFractionDigits - Decimals always shown. Defaults to 0
+ * @param options.maximumFractionDigits - Decimals shown at most. Defaults to 2
+ * @returns Formatted number string, or the placeholder for null
  * @example
- * formatNumber(1234, "en") // "1,234"
- * formatNumber(1234, "de") // "1.234"
+ * formatNumber(1234, { locale: "en" })                 // "1,234"
+ * formatNumber(1234, { locale: "de" })                 // "1.234"
+ * formatNumber(3.6123)                                 // "3.61"
+ * formatNumber(3.6, { minimumFractionDigits: 2 })      // "3.60"
+ * formatNumber(3.6123, { maximumFractionDigits: 0 })   // "4"
+ * formatNumber(null)                                   // "—"
  */
-export const formatNumber = (value: number, locale: string): string => {
-	return new Intl.NumberFormat(locale).format(value);
+export const formatNumber = (
+	value: number | null,
+	{
+		locale = DEFAULT_LOCALE,
+		minimumFractionDigits = 0,
+		maximumFractionDigits = DEFAULT_MAX_FRACTION_DIGITS,
+	}: FormatNumberOptions = {}
+): string => {
+	if (value === null) {
+		return PLACEHOLDER;
+	}
+	return new Intl.NumberFormat(locale, {
+		minimumFractionDigits,
+		maximumFractionDigits: Math.max(minimumFractionDigits, maximumFractionDigits),
+	}).format(value);
 };
 
 export const getPercentage = (value: number, total: number) => {
@@ -92,4 +120,22 @@ export const formatTemperature = (celsius: number | null): string => {
 		return PLACEHOLDER;
 	}
 	return `${celsius.toFixed(0)} °C`;
+};
+export const formatBytesPerSecond = (bytesPerSecond: number | null): string => {
+	if (bytesPerSecond === null) {
+		return PLACEHOLDER;
+	}
+	return `${prettyBytes(bytesPerSecond)}/s`;
+};
+
+const compactNumberFormatter = new Intl.NumberFormat("en-US", {
+	notation: "compact",
+	maximumFractionDigits: 1,
+});
+
+export const formatCompactNumber = (value: number | null): string => {
+	if (value === null) {
+		return PLACEHOLDER;
+	}
+	return compactNumberFormatter.format(value);
 };

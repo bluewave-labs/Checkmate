@@ -1107,6 +1107,15 @@
 					"available": "可用"
 				}
 			},
+			"disks": {
+				"inodeUsage": "inode 使用率",
+				"space": "空间",
+				"inodes": "inode",
+				"throughput": "读写速率",
+				"queueDepth": "I/O 队列深度",
+				"read": "读取",
+				"write": "写入"
+			},
 			"agentErrors": {
 				"title": "代理无法读取的值"
 			},
@@ -1150,7 +1159,8 @@
 			"tabs": {
 				"labels": {
 					"network": "网络",
-					"overview": "概览"
+					"overview": "概览",
+					"disks": "磁盘"
 				}
 			},
 			"fallback": {

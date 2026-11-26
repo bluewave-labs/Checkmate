@@ -1109,6 +1109,15 @@
 					"available": "Kullanılabilir"
 				}
 			},
+			"disks": {
+				"inodeUsage": "Inode kullanımı",
+				"space": "Alan",
+				"inodes": "Inode'lar",
+				"throughput": "Okuma ve yazma hızı",
+				"queueDepth": "G/Ç kuyruk derinliği",
+				"read": "Okuma",
+				"write": "Yazma"
+			},
 			"agentErrors": {
 				"title": "Ajanın okuyamadığı değerler"
 			},
@@ -1152,7 +1161,8 @@
 			"tabs": {
 				"labels": {
 					"network": "Ağ",
-					"overview": "Genel bakış"
+					"overview": "Genel bakış",
+					"disks": "Diskler"
 				}
 			},
 			"fallback": {
