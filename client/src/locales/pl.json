@@ -1437,6 +1437,7 @@
 						"discord": "Discord",
 						"webhook": "Webhook",
 						"rocket_chat": "Rocket.Chat",
+						"mattermost": "Mattermost",
 						"pager_duty": "PagerDuty",
 						"matrix": "Matrix",
 						"teams": "Teams",
