@@ -1200,6 +1200,16 @@
 				"fifoIn": "Erros FIFO de entrada",
 				"fifoOut": "Erros FIFO de saída"
 			},
+			"raid": {
+				"state": "Estado",
+				"level": "Nível",
+				"disks": "Discos",
+				"degradedDisks": "Discos degradados",
+				"syncAction": "Ação de sincronização",
+				"syncProgress": "Progresso da sincronização",
+				"member": "Membro",
+				"time": "Hora"
+			},
 			"agentErrors": {
 				"title": "Valores que o agente não conseguiu ler"
 			},
@@ -1244,7 +1254,8 @@
 				"labels": {
 					"network": "Rede",
 					"overview": "Visão geral",
-					"disks": "Discos"
+					"disks": "Discos",
+					"raid": "RAID"
 				}
 			},
 			"fallback": {

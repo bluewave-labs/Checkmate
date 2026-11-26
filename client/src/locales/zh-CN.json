@@ -1129,6 +1129,16 @@
 				"fifoIn": "入站 FIFO 错误",
 				"fifoOut": "出站 FIFO 错误"
 			},
+			"raid": {
+				"state": "状态",
+				"level": "级别",
+				"disks": "磁盘",
+				"degradedDisks": "降级磁盘",
+				"syncAction": "同步操作",
+				"syncProgress": "同步进度",
+				"member": "成员",
+				"time": "时间"
+			},
 			"agentErrors": {
 				"title": "代理无法读取的值"
 			},
@@ -1173,7 +1183,8 @@
 				"labels": {
 					"network": "网络",
 					"overview": "概览",
-					"disks": "磁盘"
+					"disks": "磁盘",
+					"raid": "RAID"
 				}
 			},
 			"fallback": {

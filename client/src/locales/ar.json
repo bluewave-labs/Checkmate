@@ -1139,6 +1139,16 @@
 				"fifoIn": "أخطاء FIFO الواردة",
 				"fifoOut": "أخطاء FIFO الصادرة"
 			},
+			"raid": {
+				"state": "الحالة",
+				"level": "المستوى",
+				"disks": "الأقراص",
+				"degradedDisks": "الأقراص المتدهورة",
+				"syncAction": "إجراء المزامنة",
+				"syncProgress": "تقدم المزامنة",
+				"member": "العضو",
+				"time": "الوقت"
+			},
 			"agentErrors": {
 				"title": "قيم تعذّر على الوكيل قراءتها"
 			},
@@ -1183,7 +1193,8 @@
 				"labels": {
 					"network": "الشبكة",
 					"overview": "نظرة عامة",
-					"disks": "الأقراص"
+					"disks": "الأقراص",
+					"raid": "RAID"
 				}
 			},
 			"fallback": {

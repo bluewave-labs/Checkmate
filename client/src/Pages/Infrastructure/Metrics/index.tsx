@@ -1,10 +1,11 @@
 import { BasePage, Tab, TabIcon, Tabs } from "@/Components/design-elements";
-import { HardDrive, LayoutDashboard, Network } from "lucide-react";
+import { HardDrive, Layers, LayoutDashboard, Network } from "lucide-react";
 import { HeaderTimeRange } from "@/Components/common";
 import { MonitorStatBoxes, HeaderMonitorControls } from "@/Components/monitors";
 import { TabOverview } from "@/Pages/Infrastructure/Metrics/Components/TabOverview";
 import { TabDisks } from "@/Pages/Infrastructure/Metrics/Components/TabDisks";
 import { TabNetwork } from "@/Pages/Infrastructure/Metrics/Components/TabNetwork";
+import { TabRaid } from "@/Pages/Infrastructure/Metrics/Components/TabRaid";
 
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -44,6 +45,7 @@ const InfrastructureDetails = () => {
 
 	const monitor = metrics?.monitor;
 	const monitorStats = metrics?.monitorStats ?? null;
+	const hasRaid = (metrics?.raid.length ?? 0) > 0;
 
 	return (
 		<BasePage>
@@ -83,6 +85,12 @@ const InfrastructureDetails = () => {
 					label={t("pages.infrastructure.tabs.labels.network")}
 					icon={<TabIcon icon={Network} />}
 				/>
+				{hasRaid && (
+					<Tab
+						label={t("pages.infrastructure.tabs.labels.raid")}
+						icon={<TabIcon icon={Layers} />}
+					/>
+				)}
 			</Tabs>
 			{selectedTab === 0 && (
 				<TabOverview
@@ -98,6 +106,12 @@ const InfrastructureDetails = () => {
 			)}
 			{selectedTab === 2 && (
 				<TabNetwork
+					metrics={metrics}
+					dateRange={dateRange}
+				/>
+			)}
+			{selectedTab === 3 && (
+				<TabRaid
 					metrics={metrics}
 					dateRange={dateRange}
 				/>

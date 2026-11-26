@@ -1129,6 +1129,16 @@
 				"fifoIn": "ข้อผิดพลาด FIFO ขาเข้า",
 				"fifoOut": "ข้อผิดพลาด FIFO ขาออก"
 			},
+			"raid": {
+				"state": "สถานะ",
+				"level": "ระดับ",
+				"disks": "ดิสก์",
+				"degradedDisks": "ดิสก์ที่เสื่อมสภาพ",
+				"syncAction": "การดำเนินการซิงค์",
+				"syncProgress": "ความคืบหน้าการซิงค์",
+				"member": "สมาชิก",
+				"time": "เวลา"
+			},
 			"agentErrors": {
 				"title": "ค่าที่เอเจนต์ไม่สามารถอ่านได้"
 			},
@@ -1173,7 +1183,8 @@
 				"labels": {
 					"network": "เน็ตเวอร์",
 					"overview": "ภาพรวม",
-					"disks": "ดิสก์"
+					"disks": "ดิสก์",
+					"raid": "RAID"
 				}
 			},
 			"fallback": {

@@ -1129,6 +1129,16 @@
 				"fifoIn": "Lỗi FIFO chiều vào",
 				"fifoOut": "Lỗi FIFO chiều ra"
 			},
+			"raid": {
+				"state": "Trạng thái",
+				"level": "Cấp",
+				"disks": "Ổ đĩa",
+				"degradedDisks": "Ổ đĩa suy giảm",
+				"syncAction": "Hành động đồng bộ",
+				"syncProgress": "Tiến trình đồng bộ",
+				"member": "Thành viên",
+				"time": "Thời gian"
+			},
 			"agentErrors": {
 				"title": "Các giá trị tác nhân không đọc được"
 			},
@@ -1173,7 +1183,8 @@
 				"labels": {
 					"network": "Mạng",
 					"overview": "Tổng quan",
-					"disks": "Ổ đĩa"
+					"disks": "Ổ đĩa",
+					"raid": "RAID"
 				}
 			},
 			"fallback": {

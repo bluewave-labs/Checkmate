@@ -1135,6 +1135,16 @@
 				"fifoIn": "Ошибки FIFO на входе",
 				"fifoOut": "Ошибки FIFO на выходе"
 			},
+			"raid": {
+				"state": "Состояние",
+				"level": "Уровень",
+				"disks": "Диски",
+				"degradedDisks": "Деградировавшие диски",
+				"syncAction": "Действие синхронизации",
+				"syncProgress": "Ход синхронизации",
+				"member": "Участник",
+				"time": "Время"
+			},
 			"agentErrors": {
 				"title": "Значения, которые агент не смог прочитать"
 			},
@@ -1179,7 +1189,8 @@
 				"labels": {
 					"network": "Сеть",
 					"overview": "Обзор",
-					"disks": "Диски"
+					"disks": "Диски",
+					"raid": "RAID"
 				}
 			},
 			"fallback": {

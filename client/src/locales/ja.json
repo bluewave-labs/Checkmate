@@ -1129,6 +1129,16 @@
 				"fifoIn": "受信 FIFO エラー",
 				"fifoOut": "送信 FIFO エラー"
 			},
+			"raid": {
+				"state": "状態",
+				"level": "レベル",
+				"disks": "ディスク",
+				"degradedDisks": "劣化ディスク",
+				"syncAction": "同期アクション",
+				"syncProgress": "同期の進行状況",
+				"member": "メンバー",
+				"time": "時刻"
+			},
 			"agentErrors": {
 				"title": "エージェントが読み取れなかった値"
 			},
@@ -1173,7 +1183,8 @@
 				"labels": {
 					"network": "ネットワーク",
 					"overview": "概要",
-					"disks": "ディスク"
+					"disks": "ディスク",
+					"raid": "RAID"
 				}
 			},
 			"fallback": {

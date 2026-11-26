@@ -1131,6 +1131,16 @@
 				"fifoIn": "Gelen FIFO hataları",
 				"fifoOut": "Giden FIFO hataları"
 			},
+			"raid": {
+				"state": "Durum",
+				"level": "Seviye",
+				"disks": "Diskler",
+				"degradedDisks": "Bozulmuş diskler",
+				"syncAction": "Eşitleme eylemi",
+				"syncProgress": "Eşitleme ilerlemesi",
+				"member": "Üye",
+				"time": "Zaman"
+			},
 			"agentErrors": {
 				"title": "Ajanın okuyamadığı değerler"
 			},
@@ -1175,7 +1185,8 @@
 				"labels": {
 					"network": "Ağ",
 					"overview": "Genel bakış",
-					"disks": "Diskler"
+					"disks": "Diskler",
+					"raid": "RAID"
 				}
 			},
 			"fallback": {

@@ -1129,6 +1129,16 @@
 				"fifoIn": "輸入 FIFO 錯誤",
 				"fifoOut": "輸出 FIFO 錯誤"
 			},
+			"raid": {
+				"state": "狀態",
+				"level": "層級",
+				"disks": "磁碟",
+				"degradedDisks": "降級磁碟",
+				"syncAction": "同步動作",
+				"syncProgress": "同步進度",
+				"member": "成員",
+				"time": "時間"
+			},
 			"agentErrors": {
 				"title": "代理程式無法讀取的值"
 			},
@@ -1173,7 +1183,8 @@
 				"labels": {
 					"network": "網路",
 					"overview": "概覽",
-					"disks": "磁碟"
+					"disks": "磁碟",
+					"raid": "RAID"
 				}
 			},
 			"fallback": {
