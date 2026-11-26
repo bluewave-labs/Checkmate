@@ -4,7 +4,6 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import MongoChecksRepository from "../../src/domain/checks/check.repository.mongo.ts";
 import { CheckModel } from "../../src/domain/checks/check.model.ts";
 import { CheckService } from "../../src/domain/checks/check.service.ts";
-import type { HardwareChecksResult } from "../../src/domain/checks/check.type.ts";
 import type { ICheckRollupsRepository } from "../../src/domain/check-rollups/check-rollup.repository.interface.ts";
 import type { IMonitorsRepository } from "../../src/domain/monitors/monitor.repository.interface.ts";
 import type { HardwareStatusPayload, MonitorStatusResponse } from "../../src/types/network.ts";
@@ -30,6 +29,7 @@ beforeEach(async () => {
 
 const MONITOR_ID = new mongoose.Types.ObjectId().toString();
 const TEAM_ID = new mongoose.Types.ObjectId().toString();
+const INTERVAL_MS = 60 * 1000;
 
 const setup = () => {
 	const logger = createMockLogger() as unknown as ILogger;
@@ -77,12 +77,12 @@ describe("hardware check ingest", () => {
 
 		await repo.createChecks([read, unread]);
 		const stored = await CheckModel.collection.findOne({ _id: new mongoose.Types.ObjectId(unread.id) });
-		const result = (await repo.findByDateRangeAndMonitorId(MONITOR_ID, "all", { type: "hardware" })) as HardwareChecksResult;
+		const result = await repo.findHardwareMetrics(MONITOR_ID, "all", INTERVAL_MS);
 
 		expect(stored?.cpu).toEqual({ usage_percent: null, free_percent: null });
 		expect(stored?.memory).toEqual({ total_bytes: null, available_bytes: null, used_bytes: null, usage_percent: null });
-		expect(result.aggregateData.totalChecks).toBe(2);
-		expect(result.checks.map((bucket) => bucket.avgCpuUsage)).toEqual([0.5]);
-		expect(result.checks.map((bucket) => bucket.avgMemoryUsage)).toEqual([0.4]);
+		expect(result.checks.total).toBe(2);
+		expect(result.buckets.map((bucket) => bucket.cpu.usage)).toEqual([0.5]);
+		expect(result.buckets.map((bucket) => bucket.memory.usage)).toEqual([0.4]);
 	});
 });

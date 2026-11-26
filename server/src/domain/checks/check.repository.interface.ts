@@ -4,7 +4,6 @@ import type {
 	ChecksSummary,
 	DockerChecksResult,
 	DockerContainerStats,
-	HardwareChecksResult,
 	HardwareMetrics,
 	PageSpeedChecksResult,
 	UptimeChecksResult,
@@ -41,8 +40,8 @@ export interface IChecksRepository {
 	findByDateRangeAndMonitorId(
 		monitorId: string,
 		dateRange: DateRange,
-		options?: { type?: MonitorType }
-	): Promise<UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult | DockerChecksResult>;
+		options?: { type?: Exclude<MonitorType, "hardware"> }
+	): Promise<UptimeChecksResult | PageSpeedChecksResult | DockerChecksResult>;
 	findDockerContainerChecks(monitorId: string, containerName: string, dateRange: DateRange): Promise<Omit<DockerContainerStats, "restartsInRange">>;
 	findHardwareMetrics(monitorId: string, dateRange: DateRange, intervalMs: number): Promise<HardwareMetrics>;
 	findSummaryByTeamId(teamId: string, dateRange: DateRange, monitorId?: string): Promise<ChecksSummary>;

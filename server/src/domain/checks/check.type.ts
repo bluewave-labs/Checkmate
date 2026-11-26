@@ -24,10 +24,6 @@ import type {
 	dockerStatsSchema,
 	groupedCheckSchema,
 	groupedUptimeCheckSchema,
-	hardwareCheckStatsSchema,
-	hardwareDiskStatsSchema,
-	hardwareNetStatsSchema,
-	hardwareStatsSchema,
 	lighthouseAuditSchema,
 	pageSpeedGroupedCheckSchema,
 } from "@/domain/checks/check.schema.js";
@@ -71,10 +67,6 @@ export type SnapshotHostInfo = NonNullable<CheckSnapshot["host"]>;
 export type GroupedCheck = z.infer<typeof groupedCheckSchema>;
 export type GroupedUptimeCheck = z.infer<typeof groupedUptimeCheckSchema>;
 export type PageSpeedGroupedCheck = z.infer<typeof pageSpeedGroupedCheckSchema>;
-export type HardwareDiskStats = z.infer<typeof hardwareDiskStatsSchema>;
-export type HardwareNetStats = z.infer<typeof hardwareNetStatsSchema>;
-export type HardwareCheckStats = z.infer<typeof hardwareCheckStatsSchema>;
-export type HardwareStats = z.infer<typeof hardwareStatsSchema>;
 export type DailyCheckBucket = z.infer<typeof dailyCheckBucketSchema>;
 export type HardwareMetricsLatest = z.infer<typeof hardwareMetricsLatestSchema>;
 export type HardwareMetricsBucket = z.infer<typeof hardwareMetricsBucketSchema>;
@@ -104,10 +96,6 @@ export interface UptimeChecksResult {
 export interface PageSpeedChecksResult {
 	monitorType: "pagespeed";
 	groupedChecks: PageSpeedGroupedCheck[];
-}
-
-export interface HardwareChecksResult extends HardwareStats {
-	monitorType: "hardware";
 }
 
 export interface DockerChecksResult extends DockerStats {
