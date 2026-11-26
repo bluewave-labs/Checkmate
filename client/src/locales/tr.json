@@ -1118,6 +1118,19 @@
 				"read": "Okuma",
 				"write": "Yazma"
 			},
+			"network": {
+				"throughput": "Aktarım hızı",
+				"packets": "Saniyedeki paket sayısı",
+				"errors": "Hatalar ve düşürülen paketler",
+				"sent": "Gönderilen",
+				"received": "Alınan",
+				"errIn": "Gelen hatalar",
+				"errOut": "Giden hatalar",
+				"dropIn": "Gelen düşürülenler",
+				"dropOut": "Giden düşürülenler",
+				"fifoIn": "Gelen FIFO hataları",
+				"fifoOut": "Giden FIFO hataları"
+			},
 			"agentErrors": {
 				"title": "Ajanın okuyamadığı değerler"
 			},

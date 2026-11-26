@@ -1186,6 +1186,19 @@
 				"read": "Read",
 				"write": "Write"
 			},
+			"network": {
+				"throughput": "Throughput",
+				"packets": "Packets per second",
+				"errors": "Errors and drops",
+				"sent": "Sent",
+				"received": "Received",
+				"errIn": "Errors in",
+				"errOut": "Errors out",
+				"dropIn": "Drops in",
+				"dropOut": "Drops out",
+				"fifoIn": "FIFO errors in",
+				"fifoOut": "FIFO errors out"
+			},
 			"agentErrors": {
 				"title": "Values the agent could not read"
 			},

@@ -1116,6 +1116,19 @@
 				"read": "読み取り",
 				"write": "書き込み"
 			},
+			"network": {
+				"throughput": "スループット",
+				"packets": "1 秒あたりのパケット数",
+				"errors": "エラーとドロップ",
+				"sent": "送信",
+				"received": "受信",
+				"errIn": "受信エラー",
+				"errOut": "送信エラー",
+				"dropIn": "受信ドロップ",
+				"dropOut": "送信ドロップ",
+				"fifoIn": "受信 FIFO エラー",
+				"fifoOut": "送信 FIFO エラー"
+			},
 			"agentErrors": {
 				"title": "エージェントが読み取れなかった値"
 			},

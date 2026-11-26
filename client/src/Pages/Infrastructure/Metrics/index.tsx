@@ -1,9 +1,10 @@
 import { BasePage, Tab, TabIcon, Tabs } from "@/Components/design-elements";
-import { HardDrive, LayoutDashboard } from "lucide-react";
+import { HardDrive, LayoutDashboard, Network } from "lucide-react";
 import { HeaderTimeRange } from "@/Components/common";
 import { MonitorStatBoxes, HeaderMonitorControls } from "@/Components/monitors";
 import { TabOverview } from "@/Pages/Infrastructure/Metrics/Components/TabOverview";
 import { TabDisks } from "@/Pages/Infrastructure/Metrics/Components/TabDisks";
+import { TabNetwork } from "@/Pages/Infrastructure/Metrics/Components/TabNetwork";
 
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -64,6 +65,8 @@ const InfrastructureDetails = () => {
 			/>
 			<Tabs
 				value={selectedTab}
+				variant="scrollable"
+				scrollButtons={false}
 				onChange={(_e, value) => {
 					setSelectedTab(value);
 				}}
@@ -76,6 +79,10 @@ const InfrastructureDetails = () => {
 					label={t("pages.infrastructure.tabs.labels.disks")}
 					icon={<TabIcon icon={HardDrive} />}
 				/>
+				<Tab
+					label={t("pages.infrastructure.tabs.labels.network")}
+					icon={<TabIcon icon={Network} />}
+				/>
 			</Tabs>
 			{selectedTab === 0 && (
 				<TabOverview
@@ -85,6 +92,12 @@ const InfrastructureDetails = () => {
 			)}
 			{selectedTab === 1 && (
 				<TabDisks
+					metrics={metrics}
+					dateRange={dateRange}
+				/>
+			)}
+			{selectedTab === 2 && (
+				<TabNetwork
 					metrics={metrics}
 					dateRange={dateRange}
 				/>

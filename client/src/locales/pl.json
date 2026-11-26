@@ -1118,6 +1118,19 @@
 				"read": "Odczyt",
 				"write": "Zapis"
 			},
+			"network": {
+				"throughput": "Przepustowość",
+				"packets": "Pakiety na sekundę",
+				"errors": "Błędy i odrzucone pakiety",
+				"sent": "Wysłane",
+				"received": "Odebrane",
+				"errIn": "Błędy przychodzące",
+				"errOut": "Błędy wychodzące",
+				"dropIn": "Odrzucone przychodzące",
+				"dropOut": "Odrzucone wychodzące",
+				"fifoIn": "Błędy FIFO przychodzące",
+				"fifoOut": "Błędy FIFO wychodzące"
+			},
 			"agentErrors": {
 				"title": "Wartości, których agent nie mógł odczytać"
 			},

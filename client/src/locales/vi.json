@@ -1116,6 +1116,19 @@
 				"read": "Đọc",
 				"write": "Ghi"
 			},
+			"network": {
+				"throughput": "Thông lượng",
+				"packets": "Gói tin mỗi giây",
+				"errors": "Lỗi và gói tin bị loại bỏ",
+				"sent": "Đã gửi",
+				"received": "Đã nhận",
+				"errIn": "Lỗi chiều vào",
+				"errOut": "Lỗi chiều ra",
+				"dropIn": "Loại bỏ chiều vào",
+				"dropOut": "Loại bỏ chiều ra",
+				"fifoIn": "Lỗi FIFO chiều vào",
+				"fifoOut": "Lỗi FIFO chiều ra"
+			},
 			"agentErrors": {
 				"title": "Các giá trị tác nhân không đọc được"
 			},
