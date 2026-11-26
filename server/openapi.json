@@ -2632,6 +2632,82 @@
 							"required": ["device", "mountpoint", "latest", "buckets"]
 						}
 					},
+					"interfaces": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"name": {
+									"type": "string"
+								},
+								"buckets": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"bucketDate": {
+												"type": "string"
+											},
+											"bytesSentPerSecond": {
+												"type": "number",
+												"nullable": true
+											},
+											"bytesRecvPerSecond": {
+												"type": "number",
+												"nullable": true
+											},
+											"packetsSentPerSecond": {
+												"type": "number",
+												"nullable": true
+											},
+											"packetsRecvPerSecond": {
+												"type": "number",
+												"nullable": true
+											},
+											"errIn": {
+												"type": "number",
+												"nullable": true
+											},
+											"errOut": {
+												"type": "number",
+												"nullable": true
+											},
+											"dropIn": {
+												"type": "number",
+												"nullable": true
+											},
+											"dropOut": {
+												"type": "number",
+												"nullable": true
+											},
+											"fifoIn": {
+												"type": "number",
+												"nullable": true
+											},
+											"fifoOut": {
+												"type": "number",
+												"nullable": true
+											}
+										},
+										"required": [
+											"bucketDate",
+											"bytesSentPerSecond",
+											"bytesRecvPerSecond",
+											"packetsSentPerSecond",
+											"packetsRecvPerSecond",
+											"errIn",
+											"errOut",
+											"dropIn",
+											"dropOut",
+											"fifoIn",
+											"fifoOut"
+										]
+									}
+								}
+							},
+							"required": ["name", "buckets"]
+						}
+					},
 					"monitor": {
 						"$ref": "#/components/schemas/Monitor"
 					},
@@ -2646,7 +2722,7 @@
 						]
 					}
 				},
-				"required": ["checks", "latest", "buckets", "disks", "monitor", "monitorStats"]
+				"required": ["checks", "latest", "buckets", "disks", "interfaces", "monitor", "monitorStats"]
 			},
 			"PageSpeedDetails": {
 				"type": "object",

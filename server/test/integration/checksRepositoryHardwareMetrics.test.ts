@@ -87,6 +87,21 @@ const disk = (device: string, mountpoint: string, values: Record<string, number 
 	...values,
 });
 
+const iface = (name: string, values: Record<string, number> = {}) => ({
+	name,
+	bytes_sent: 0,
+	bytes_recv: 0,
+	packets_sent: 0,
+	packets_recv: 0,
+	err_in: 0,
+	err_out: 0,
+	drop_in: 0,
+	drop_out: 0,
+	fifo_in: 0,
+	fifo_out: 0,
+	...values,
+});
+
 const ROOT = ["/dev/sda1", "/"] as const;
 const DATA = ["/dev/sdb1", "/data"] as const;
 
@@ -98,7 +113,7 @@ describe("MongoChecksRepository.findHardwareMetrics", () => {
 
 		const result = await repo.findHardwareMetrics(MONITOR_ID.toString(), "month", INTERVAL_MS);
 
-		expect(result).toEqual({ checks: { total: 0, up: 0 }, latest: null, buckets: [], disks: [] });
+		expect(result).toEqual({ checks: { total: 0, up: 0 }, latest: null, buckets: [], disks: [], interfaces: [] });
 	});
 
 	it("averages each level per bucket, in bucket order", async () => {
@@ -385,6 +400,114 @@ describe("MongoChecksRepository.findHardwareMetrics", () => {
 			expect(disks).toHaveLength(1);
 			expect(disks[0]).toMatchObject({ device: ROOT[0], mountpoint: ROOT[1], buckets: [] });
 			expect(disks[0]?.latest?.usage).toBe(0.3);
+		});
+	});
+
+	describe("interfaces", () => {
+		const findInterfaces = async (dateRange: "day" | "month" = "month") => {
+			const result = await setup().findHardwareMetrics(MONITOR_ID.toString(), dateRange, INTERVAL_MS);
+			return result.interfaces;
+		};
+
+		it("turns byte and packet counters into rates, matching interfaces by name", async () => {
+			await setup().createChecks([
+				makeCheck(YESTERDAY, { net: [iface("eth0", { bytes_sent: 1000, bytes_recv: 0, packets_sent: 10, packets_recv: 0 }), iface("lo")] }),
+				makeCheck(YESTERDAY + MINUTE_MS, {
+					net: [iface("lo", { bytes_sent: 60 }), iface("eth0", { bytes_sent: 1600, bytes_recv: 1200, packets_sent: 70, packets_recv: 120 })],
+				}),
+			]);
+
+			const interfaces = await findInterfaces();
+
+			expect(interfaces.map((entry) => entry.name)).toEqual(["eth0", "lo"]);
+			expect(interfaces[0]?.buckets).toEqual([
+				{
+					bucketDate: utcDay(YESTERDAY),
+					bytesSentPerSecond: 10,
+					bytesRecvPerSecond: 20,
+					packetsSentPerSecond: 1,
+					packetsRecvPerSecond: 2,
+					errIn: 0,
+					errOut: 0,
+					dropIn: 0,
+					dropOut: 0,
+					fifoIn: 0,
+					fifoOut: 0,
+				},
+			]);
+			expect(interfaces[1]?.buckets[0]?.bytesSentPerSecond).toBe(1);
+		});
+
+		it("counts errors and drops per bucket, not per second", async () => {
+			await setup().createChecks([
+				makeCheck(YESTERDAY, { net: [iface("eth0", { err_in: 5, err_out: 1, drop_in: 0, drop_out: 2, fifo_in: 7, fifo_out: 0 })] }),
+				makeCheck(YESTERDAY + MINUTE_MS, { net: [iface("eth0", { err_in: 8, err_out: 1, drop_in: 4, drop_out: 2, fifo_in: 9, fifo_out: 6 })] }),
+				makeCheck(YESTERDAY + 2 * MINUTE_MS, { net: [iface("eth0", { err_in: 9, err_out: 1, drop_in: 4, drop_out: 3, fifo_in: 9, fifo_out: 6 })] }),
+			]);
+
+			const [eth0] = await findInterfaces();
+
+			expect(eth0?.buckets[0]).toMatchObject({ errIn: 4, errOut: 0, dropIn: 4, dropOut: 1, fifoIn: 2, fifoOut: 6 });
+		});
+
+		it("counts the new value when a counter resets", async () => {
+			await setup().createChecks([
+				makeCheck(YESTERDAY, { net: [iface("eth0", { bytes_sent: 900000, err_in: 50 })] }),
+				makeCheck(YESTERDAY + MINUTE_MS, { net: [iface("eth0", { bytes_sent: 600, err_in: 2 })] }),
+			]);
+
+			const [eth0] = await findInterfaces();
+
+			expect(eth0?.buckets[0]?.bytesSentPerSecond).toBe(10);
+			expect(eth0?.buckets[0]?.errIn).toBe(2);
+		});
+
+		it("gives null, not zero, across a gap of more than three intervals", async () => {
+			await setup().createChecks([
+				makeCheck(YESTERDAY, { net: [iface("eth0", { bytes_sent: 0, err_in: 0 })] }),
+				makeCheck(YESTERDAY + 4 * MINUTE_MS, { net: [iface("eth0", { bytes_sent: 99999, err_in: 9 })] }),
+			]);
+
+			const [eth0] = await findInterfaces();
+
+			expect(eth0?.buckets[0]?.bytesSentPerSecond).toBeNull();
+			expect(eth0?.buckets[0]?.errIn).toBeNull();
+		});
+
+		it("bridges a check that has no interface list", async () => {
+			await setup().createChecks([
+				makeCheck(YESTERDAY, { net: [iface("eth0", { bytes_sent: 0 })] }),
+				makeCheck(YESTERDAY + MINUTE_MS, reading(0.5, 0.4)),
+				makeCheck(YESTERDAY + 2 * MINUTE_MS, { net: [iface("eth0", { bytes_sent: 1200 })] }),
+			]);
+
+			const [eth0] = await findInterfaces();
+
+			expect(eth0?.buckets[0]?.bytesSentPerSecond).toBe(10);
+		});
+
+		it("pairs the first check in the range with the one just before it", async () => {
+			const rangeStart = Date.now() - 24 * 60 * MINUTE_MS;
+			await setup().createChecks([
+				makeCheck(rangeStart - 30 * 1000, { net: [iface("eth0", { bytes_sent: 0 })] }),
+				makeCheck(rangeStart + 30 * 1000, { net: [iface("eth0", { bytes_sent: 600 })] }),
+			]);
+
+			const [eth0] = await findInterfaces("day");
+
+			expect(eth0?.buckets).toHaveLength(1);
+			expect(eth0?.buckets[0]?.bytesSentPerSecond).toBe(10);
+		});
+
+		it("lists the latest check's interfaces with no buckets when the range has no checks", async () => {
+			await setup().createChecks([makeCheck(Date.now() - 40 * DAY_MS, { net: [iface("lo"), iface("eth0")] })]);
+
+			const interfaces = await findInterfaces("day");
+
+			expect(interfaces).toEqual([
+				{ name: "eth0", buckets: [] },
+				{ name: "lo", buckets: [] },
+			]);
 		});
 	});
 });
