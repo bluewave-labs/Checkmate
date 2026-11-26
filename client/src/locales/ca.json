@@ -1119,6 +1119,19 @@
 				"read": "Lectura",
 				"write": "Escriptura"
 			},
+			"network": {
+				"throughput": "Rendiment",
+				"packets": "Paquets per segon",
+				"errors": "Errors i descarts",
+				"sent": "Enviat",
+				"received": "Rebut",
+				"errIn": "Errors d'entrada",
+				"errOut": "Errors de sortida",
+				"dropIn": "Descarts d'entrada",
+				"dropOut": "Descarts de sortida",
+				"fifoIn": "Errors FIFO d'entrada",
+				"fifoOut": "Errors FIFO de sortida"
+			},
 			"agentErrors": {
 				"title": "Valors que l'agent no ha pogut llegir"
 			},

@@ -1122,6 +1122,19 @@
 				"read": "Čtení",
 				"write": "Zápis"
 			},
+			"network": {
+				"throughput": "Propustnost",
+				"packets": "Pakety za sekundu",
+				"errors": "Chyby a zahozené pakety",
+				"sent": "Odesláno",
+				"received": "Přijato",
+				"errIn": "Chyby na vstupu",
+				"errOut": "Chyby na výstupu",
+				"dropIn": "Zahozeno na vstupu",
+				"dropOut": "Zahozeno na výstupu",
+				"fifoIn": "Chyby FIFO na vstupu",
+				"fifoOut": "Chyby FIFO na výstupu"
+			},
 			"agentErrors": {
 				"title": "Hodnoty, které agent nedokázal načíst"
 			},

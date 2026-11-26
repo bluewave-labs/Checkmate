@@ -1,11 +1,12 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { DetailGauge } from "@/Components/design-elements";
+import { DetailGauge, Tab, Tabs } from "@/Components/design-elements";
 import {
 	MetricsChartGrid,
 	type MetricsChartConfig,
 } from "@/Pages/Infrastructure/Metrics/Components/MetricsChartGrid";
 
+import { useState } from "react";
 import { useTheme } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTranslation } from "react-i18next";
@@ -23,15 +24,12 @@ import {
 	formatNumber,
 } from "@/Utils/FormatUtils";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
+import { hasValues } from "@/Pages/Infrastructure/Metrics/utils";
 
 const GAUGE_MAX_WIDTH = 260;
 const PERCENT = 100;
 
 type DiskBucketKey = Exclude<keyof HardwareMetricsDiskBucket, "bucketDate">;
-
-const hasValues = (buckets: HardwareMetricsDiskBucket[], keys: DiskBucketKey[]) =>
-	buckets.some((bucket) => keys.some((key) => bucket[key] !== null));
 
 const getChartConfigs = (
 	buckets: HardwareMetricsDiskBucket[],
@@ -142,6 +140,8 @@ const DiskGauges = ({ disk }: { disk: HardwareMetricsDisk }) => {
 	);
 };
 
+const getDiskKey = (disk: HardwareMetricsDisk) => `${disk.device}-${disk.mountpoint}`;
+
 const DiskBlock = ({
 	disk,
 	dateRange,
@@ -154,14 +154,12 @@ const DiskBlock = ({
 
 	return (
 		<Stack gap={theme.spacing(LAYOUT.MD)}>
-			<Stack
-				direction="row"
-				alignItems="baseline"
-				gap={theme.spacing(LAYOUT.XS)}
+			<Typography
+				color={theme.palette.text.secondary}
+				sx={{ overflowWrap: "anywhere" }}
 			>
-				<Typography fontSize={typographyLevels.l}>{disk.device}</Typography>
-				<Typography color={theme.palette.text.secondary}>{disk.mountpoint}</Typography>
-			</Stack>
+				{disk.device}
+			</Typography>
 			<DiskGauges disk={disk} />
 			<MetricsChartGrid
 				configs={getChartConfigs(disk.buckets, t)}
@@ -180,17 +178,35 @@ export const TabDisks = ({
 	dateRange: DateRange;
 }) => {
 	const theme = useTheme();
+	const [selectedKey, setSelectedKey] = useState<string | null>(null);
 	if (!metrics) return null;
 
+	const disks = metrics.disks;
+	const selected = disks.find((disk) => getDiskKey(disk) === selectedKey) ?? disks[0];
+	if (!selected) return null;
+
 	return (
-		<Stack gap={theme.spacing(LAYOUT.XL)}>
-			{metrics.disks.map((disk) => (
-				<DiskBlock
-					key={`${disk.device}-${disk.mountpoint}`}
-					disk={disk}
-					dateRange={dateRange}
-				/>
-			))}
+		<Stack gap={theme.spacing(LAYOUT.LG)}>
+			<Tabs
+				value={getDiskKey(selected)}
+				variant="scrollable"
+				scrollButtons={false}
+				onChange={(_e, value) => {
+					setSelectedKey(value);
+				}}
+			>
+				{disks.map((disk) => (
+					<Tab
+						key={getDiskKey(disk)}
+						value={getDiskKey(disk)}
+						label={disk.mountpoint}
+					/>
+				))}
+			</Tabs>
+			<DiskBlock
+				disk={selected}
+				dateRange={dateRange}
+			/>
 		</Stack>
 	);
 };

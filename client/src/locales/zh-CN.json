@@ -1116,6 +1116,19 @@
 				"read": "读取",
 				"write": "写入"
 			},
+			"network": {
+				"throughput": "吞吐量",
+				"packets": "每秒数据包数",
+				"errors": "错误和丢包",
+				"sent": "发送",
+				"received": "接收",
+				"errIn": "入站错误",
+				"errOut": "出站错误",
+				"dropIn": "入站丢包",
+				"dropOut": "出站丢包",
+				"fifoIn": "入站 FIFO 错误",
+				"fifoOut": "出站 FIFO 错误"
+			},
 			"agentErrors": {
 				"title": "代理无法读取的值"
 			},

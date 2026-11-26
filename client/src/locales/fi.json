@@ -1118,6 +1118,19 @@
 				"read": "Luku",
 				"write": "Kirjoitus"
 			},
+			"network": {
+				"throughput": "Siirtonopeus",
+				"packets": "Paketteja sekunnissa",
+				"errors": "Virheet ja pudotetut paketit",
+				"sent": "Lähetetty",
+				"received": "Vastaanotettu",
+				"errIn": "Saapuvat virheet",
+				"errOut": "Lähtevät virheet",
+				"dropIn": "Saapuvat pudotetut",
+				"dropOut": "Lähtevät pudotetut",
+				"fifoIn": "Saapuvat FIFO-virheet",
+				"fifoOut": "Lähtevät FIFO-virheet"
+			},
 			"agentErrors": {
 				"title": "Arvot, joita agentti ei voinut lukea"
 			},

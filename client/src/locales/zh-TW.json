@@ -1116,6 +1116,19 @@
 				"read": "讀取",
 				"write": "寫入"
 			},
+			"network": {
+				"throughput": "輸送量",
+				"packets": "每秒封包數",
+				"errors": "錯誤和丟棄封包",
+				"sent": "傳送",
+				"received": "接收",
+				"errIn": "輸入錯誤",
+				"errOut": "輸出錯誤",
+				"dropIn": "輸入丟棄",
+				"dropOut": "輸出丟棄",
+				"fifoIn": "輸入 FIFO 錯誤",
+				"fifoOut": "輸出 FIFO 錯誤"
+			},
 			"agentErrors": {
 				"title": "代理程式無法讀取的值"
 			},

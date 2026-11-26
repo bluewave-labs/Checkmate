@@ -1119,6 +1119,19 @@
 				"read": "Lecture",
 				"write": "Écriture"
 			},
+			"network": {
+				"throughput": "Débit",
+				"packets": "Paquets par seconde",
+				"errors": "Erreurs et paquets rejetés",
+				"sent": "Envoyé",
+				"received": "Reçu",
+				"errIn": "Erreurs en entrée",
+				"errOut": "Erreurs en sortie",
+				"dropIn": "Rejets en entrée",
+				"dropOut": "Rejets en sortie",
+				"fifoIn": "Erreurs FIFO en entrée",
+				"fifoOut": "Erreurs FIFO en sortie"
+			},
 			"agentErrors": {
 				"title": "Valeurs que l'agent n'a pas pu lire"
 			},
