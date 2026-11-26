@@ -6,6 +6,8 @@ import type {
 	HardwareMetricsBucket,
 	HardwareMetricsDisk,
 	HardwareMetricsDiskBucket,
+	HardwareMetricsInterface,
+	HardwareMetricsInterfaceBucket,
 	HardwareMetricsLatest,
 } from "@/domain/checks/check.type.js";
 import { toDateString } from "@/utils/mongoMappers.js";
@@ -36,6 +38,25 @@ export type HardwareLevelsFacet = {
 	levels: HardwareLevelsRow[];
 	temperatures: HardwareTemperatureRow[];
 };
+
+const INTERFACE_COUNTERS = {
+	bytesSent: "bytes_sent",
+	bytesRecv: "bytes_recv",
+	packetsSent: "packets_sent",
+	packetsRecv: "packets_recv",
+	errIn: "err_in",
+	errOut: "err_out",
+	dropIn: "drop_in",
+	dropOut: "drop_out",
+	fifoIn: "fifo_in",
+	fifoOut: "fifo_out",
+} as const;
+
+type InterfaceCounter = keyof typeof INTERFACE_COUNTERS;
+
+export type HardwareInterfaceRow = {
+	_id: { bucket: string; name: string };
+} & Record<`${InterfaceCounter}Change` | `${InterfaceCounter}Seconds`, number>;
 
 export const hardwareChecksFilter = (monitorId: Types.ObjectId) => ({
 	"metadata.monitorId": monitorId,
@@ -312,4 +333,91 @@ export const toHardwareDisks = (rows: HardwareDiskRow[], latest: CheckDocument |
 		disks.set(key, disk);
 	}
 	return [...disks.values()].sort((a, b) => diskKey(a.device, a.mountpoint).localeCompare(diskKey(b.device, b.mountpoint)));
+};
+
+export const buildHardwareInterfacesStages = ({
+	monitorId,
+	from,
+	to,
+	dateFormat,
+	maxGapMs,
+}: HardwareMetricsWindow & { maxGapMs: number }): PipelineStage[] => {
+	const maxGapSeconds = maxGapMs / MS_PER_SECOND;
+	const counters = Object.entries(INTERFACE_COUNTERS);
+	return [
+		{ $match: { ...hardwareChecksFilter(monitorId), createdAt: { $gte: new Date(from.getTime() - maxGapMs), $lte: to } } },
+		{ $unwind: "$net" },
+		{
+			$setWindowFields: {
+				partitionBy: "$net.name",
+				sortBy: { createdAt: 1 },
+				output: {
+					previous: {
+						$shift: {
+							by: -1,
+							output: {
+								at: "$createdAt",
+								...Object.fromEntries(counters.map(([name, field]) => [name, `$net.${field}`])),
+							},
+						},
+					},
+				},
+			},
+		},
+		{ $match: { createdAt: { $gte: from } } },
+		{ $set: { seconds: { $divide: [{ $subtract: ["$createdAt", "$previous.at"] }, MS_PER_SECOND] } } },
+		{
+			$set: Object.assign({}, ...counters.map(([name, field]) => counterPairStages(`$net.${field}`, `$previous.${name}`, name, maxGapSeconds))),
+		},
+		{
+			$group: {
+				_id: {
+					bucket: { $dateToString: { format: dateFormat, date: "$createdAt" } },
+					name: "$net.name",
+				},
+				...Object.fromEntries(
+					counters.flatMap(([name]) => [
+						[`${name}Change`, { $sum: `$${name}Change` }],
+						[`${name}Seconds`, { $sum: `$${name}Seconds` }],
+					])
+				),
+			},
+		},
+		{ $sort: { "_id.name": 1, "_id.bucket": 1 } },
+	];
+};
+
+const countInBucket = (change: number, seconds: number): number | null => {
+	if (seconds <= 0) {
+		return null;
+	}
+	return change;
+};
+
+const toInterfaceBucket = (row: HardwareInterfaceRow): HardwareMetricsInterfaceBucket => ({
+	bucketDate: row._id.bucket,
+	bytesSentPerSecond: perSecond(row.bytesSentChange, row.bytesSentSeconds),
+	bytesRecvPerSecond: perSecond(row.bytesRecvChange, row.bytesRecvSeconds),
+	packetsSentPerSecond: perSecond(row.packetsSentChange, row.packetsSentSeconds),
+	packetsRecvPerSecond: perSecond(row.packetsRecvChange, row.packetsRecvSeconds),
+	errIn: countInBucket(row.errInChange, row.errInSeconds),
+	errOut: countInBucket(row.errOutChange, row.errOutSeconds),
+	dropIn: countInBucket(row.dropInChange, row.dropInSeconds),
+	dropOut: countInBucket(row.dropOutChange, row.dropOutSeconds),
+	fifoIn: countInBucket(row.fifoInChange, row.fifoInSeconds),
+	fifoOut: countInBucket(row.fifoOutChange, row.fifoOutSeconds),
+});
+
+export const toHardwareInterfaces = (rows: HardwareInterfaceRow[], latest: CheckDocument | null): HardwareMetricsInterface[] => {
+	const interfaces = new Map<string, HardwareMetricsInterface>();
+	for (const entry of latest?.net ?? []) {
+		const name = entry.name ?? "";
+		interfaces.set(name, { name, buckets: [] });
+	}
+	for (const row of rows) {
+		const entry = interfaces.get(row._id.name) ?? { name: row._id.name, buckets: [] };
+		entry.buckets.push(toInterfaceBucket(row));
+		interfaces.set(row._id.name, entry);
+	}
+	return [...interfaces.values()].sort((a, b) => a.name.localeCompare(b.name));
 };
