@@ -6,6 +6,7 @@ import { CheckRollupModel } from "../../src/domain/check-rollups/check-rollup.mo
 import MongoCheckRollupsRepository from "../../src/domain/check-rollups/check-rollup.repository.mongo.ts";
 import MongoChecksRepository from "../../src/domain/checks/check.repository.mongo.ts";
 import { CheckRollupService } from "../../src/domain/check-rollups/check-rollup.service.ts";
+import type { IMonitorsRepository } from "../../src/domain/monitors/monitor.repository.interface.ts";
 import type { ISettingsService } from "../../src/domain/app-settings/app-settings.service.ts";
 import type { ILogger } from "../../src/utils/logger.ts";
 import { createMockLogger } from "../helpers/createMockLogger.ts";
@@ -40,7 +41,8 @@ const seedCheckAt = (createdAt: Date) =>
 const setup = () => {
 	const settingsService = { getDBSettings: async () => ({ checkTTL: 366 }) } as unknown as ISettingsService;
 	const checksRepository = new MongoChecksRepository(createMockLogger() as unknown as ILogger);
-	return new CheckRollupService(new MongoCheckRollupsRepository(), checksRepository, settingsService);
+	const monitorsRepository = { findAllForScheduling: async () => [] } as unknown as IMonitorsRepository;
+	return new CheckRollupService(new MongoCheckRollupsRepository(), checksRepository, settingsService, monitorsRepository);
 };
 
 const totalRolledChecks = async () => {
