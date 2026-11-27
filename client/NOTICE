@@ -3,16 +3,31 @@ Copyright (c) BlueWave Labs
 
 This product includes assets developed by third parties.
 
-----------------------------------------------------------------------
+---
 
 King chess-piece silhouette used in the Checkmate logo
 (client/src/assets/icons/checkmate-icon.svg and
- client/public/checkmate_favicon.svg)
+client/public/checkmate_favicon.svg)
 is adapted from "Chess klt45.svg" by Cburnett, available at:
-  https://commons.wikimedia.org/wiki/File:Chess_klt45.svg
+https://commons.wikimedia.org/wiki/File:Chess_klt45.svg
 Licensed under Creative Commons Attribution-ShareAlike 3.0 Unported
 (CC BY-SA 3.0): https://creativecommons.org/licenses/by-sa/3.0/
 
 The original artwork has been recolored from the white-with-black-stroke
 chess piece to the Checkmate brand green (#13715B) for use as a logo.
 Modifications: stroke color change only; geometry unchanged.
+
+---
+
+Lucide status favicon icons:
+
+- client/src/assets/icons/status_up.svg
+- client/src/assets/icons/status_warn.svg
+- client/src/assets/icons/status_down.svg
+
+Source: https://lucide.dev/
+Modifications: recolored and resized for status-aware favicons.
+
+Lucide uses the ISC license, with MIT notices for Feather-derived portions.
+Full copyright and license notices are preserved in:
+src/assets/icons/LICENSE.lucide
