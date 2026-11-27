@@ -1,7 +1,13 @@
 import { Schema, model, type Types } from "mongoose";
 import { MonitorTypes } from "@/domain/monitors/monitor.type.js";
-import type { CheckRollup, CheckRollupHardware, CheckRollupSumCount, CheckRollupUptime } from "@/domain/check-rollups/check-rollup.type.js";
-
+import type {
+	CheckRollup,
+	CheckRollupChangeSeconds,
+	CheckRollupHardware,
+	CheckRollupHardwareDisk,
+	CheckRollupSumCount,
+	CheckRollupUptime,
+} from "@/domain/check-rollups/check-rollup.type.js";
 type CheckRollupDocumentBase = Omit<CheckRollup, "id" | "monitorId" | "teamId" | "bucketStart" | "updatedAt"> & {
 	monitorId: Types.ObjectId;
 	teamId: Types.ObjectId;
@@ -33,6 +39,32 @@ const sumCountSchema = new Schema<CheckRollupSumCount>(
 	{ _id: false }
 );
 
+const changeSecondsSchema = new Schema<CheckRollupChangeSeconds>(
+	{
+		change: { type: Number, default: 0 },
+		seconds: { type: Number, default: 0 },
+	},
+	{ _id: false }
+);
+
+const hardwareDiskSchema = new Schema<CheckRollupHardwareDisk>(
+	{
+		device: { type: String, required: true },
+		mountpoint: { type: String, required: true },
+		usedBytes: { type: sumCountSchema, required: true },
+		freeBytes: { type: sumCountSchema, required: true },
+		usage: { type: sumCountSchema, required: true },
+		usedInodes: { type: sumCountSchema, required: true },
+		freeInodes: { type: sumCountSchema, required: true },
+		inodesUsage: { type: sumCountSchema, required: true },
+		readBytes: { type: changeSecondsSchema, required: true },
+		writeBytes: { type: changeSecondsSchema, required: true },
+		readTime: { type: changeSecondsSchema, required: true },
+		writeTime: { type: changeSecondsSchema, required: true },
+	},
+	{ _id: false }
+);
+
 const hardwareSchema = new Schema<CheckRollupHardware>(
 	{
 		cpuUsage: { type: sumCountSchema, required: true },
@@ -41,6 +73,7 @@ const hardwareSchema = new Schema<CheckRollupHardware>(
 		memoryAvailableBytes: { type: sumCountSchema, required: true },
 		memoryUsage: { type: sumCountSchema, required: true },
 		temperature: { type: [sumCountSchema], default: [] },
+		disks: { type: [hardwareDiskSchema], default: undefined },
 	},
 	{ _id: false }
 );

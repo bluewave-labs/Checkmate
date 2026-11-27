@@ -1,5 +1,7 @@
 import type { z } from "zod";
 import type {
+	checkRollupChangeSecondsSchema,
+	checkRollupHardwareDiskSchema,
 	checkRollupHardwareSchema,
 	checkRollupSchema,
 	checkRollupSumCountSchema,
@@ -16,8 +18,15 @@ export const ROLLUP_RAW_TAIL_HOURS = 2;
 
 export type CheckRollupUptime = z.infer<typeof checkRollupUptimeSchema>;
 export type CheckRollupSumCount = z.infer<typeof checkRollupSumCountSchema>;
+export type CheckRollupChangeSeconds = z.infer<typeof checkRollupChangeSecondsSchema>;
+export type CheckRollupHardwareDisk = z.infer<typeof checkRollupHardwareDiskSchema>;
 export type CheckRollupHardware = z.infer<typeof checkRollupHardwareSchema>;
 export type CheckRollup = z.infer<typeof checkRollupSchema>;
+
+export type HardwareMonitorInterval = {
+	monitorId: string;
+	intervalMs: number;
+};
 
 export type UptimeRollupBucket = {
 	_id: string;
