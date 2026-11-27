@@ -10,6 +10,20 @@ export const checkRollupUptimeSchema = z.object({
 	downloadSum: z.number(),
 });
 
+export const checkRollupSumCountSchema = z.object({
+	sum: z.number(),
+	count: z.number(),
+});
+
+export const checkRollupHardwareSchema = z.object({
+	cpuUsage: checkRollupSumCountSchema,
+	cpuCurrentFrequency: checkRollupSumCountSchema,
+	memoryUsedBytes: checkRollupSumCountSchema,
+	memoryAvailableBytes: checkRollupSumCountSchema,
+	memoryUsage: checkRollupSumCountSchema,
+	temperature: z.array(checkRollupSumCountSchema),
+});
+
 export const checkRollupSchema = z.object({
 	id: z.string(),
 	monitorId: z.string(),
@@ -27,5 +41,6 @@ export const checkRollupSchema = z.object({
 	downResponseTimeSum: z.number(),
 	downResponseTimeCount: z.number(),
 	uptime: checkRollupUptimeSchema.optional(),
+	hardware: checkRollupHardwareSchema.optional(),
 	updatedAt: z.string(),
 });
