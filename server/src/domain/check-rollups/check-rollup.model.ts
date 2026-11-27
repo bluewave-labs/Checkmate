@@ -1,6 +1,6 @@
 import { Schema, model, type Types } from "mongoose";
 import { MonitorTypes } from "@/domain/monitors/monitor.type.js";
-import type { CheckRollup, CheckRollupUptime } from "@/domain/check-rollups/check-rollup.type.js";
+import type { CheckRollup, CheckRollupHardware, CheckRollupSumCount, CheckRollupUptime } from "@/domain/check-rollups/check-rollup.type.js";
 
 type CheckRollupDocumentBase = Omit<CheckRollup, "id" | "monitorId" | "teamId" | "bucketStart" | "updatedAt"> & {
 	monitorId: Types.ObjectId;
@@ -25,6 +25,26 @@ const uptimeSchema = new Schema<CheckRollupUptime>(
 	{ _id: false }
 );
 
+const sumCountSchema = new Schema<CheckRollupSumCount>(
+	{
+		sum: { type: Number, default: 0 },
+		count: { type: Number, default: 0 },
+	},
+	{ _id: false }
+);
+
+const hardwareSchema = new Schema<CheckRollupHardware>(
+	{
+		cpuUsage: { type: sumCountSchema, required: true },
+		cpuCurrentFrequency: { type: sumCountSchema, required: true },
+		memoryUsedBytes: { type: sumCountSchema, required: true },
+		memoryAvailableBytes: { type: sumCountSchema, required: true },
+		memoryUsage: { type: sumCountSchema, required: true },
+		temperature: { type: [sumCountSchema], default: [] },
+	},
+	{ _id: false }
+);
+
 const CheckRollupSchema = new Schema<CheckRollupDocument>({
 	monitorId: { type: Schema.Types.ObjectId, ref: "Monitor", required: true, immutable: true },
 	teamId: { type: Schema.Types.ObjectId, ref: "Team", required: true, immutable: true },
@@ -41,6 +61,7 @@ const CheckRollupSchema = new Schema<CheckRollupDocument>({
 	downResponseTimeSum: { type: Number, default: 0 },
 	downResponseTimeCount: { type: Number, default: 0 },
 	uptime: { type: uptimeSchema, default: undefined },
+	hardware: { type: hardwareSchema, default: undefined },
 	updatedAt: { type: Date, required: true },
 });
 

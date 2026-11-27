@@ -172,16 +172,16 @@ describe("MongoCheckRollupsRepository.rollUp", () => {
 
 	it("keeps fields it does not write when it re-rolls a row", async () => {
 		const repo = new MongoCheckRollupsRepository();
-		await seedCheck({}, { type: "hardware" });
+		await seedCheck();
 		await repo.rollUp(at(0), at(15));
-		await CheckRollupModel.collection.updateOne({ monitorId: MONITOR_ID }, { $set: { hardware: { cpuUsageSum: 5 } } });
+		await CheckRollupModel.collection.updateOne({ monitorId: MONITOR_ID }, { $set: { unwritten: { value: 5 } } });
 
-		await seedCheck({ createdAt: at(2) }, { type: "hardware" });
+		await seedCheck({ createdAt: at(2) });
 		await repo.rollUp(at(0), at(15));
 
 		const row = await CheckRollupModel.collection.findOne({ monitorId: MONITOR_ID });
 		expect(row?.totalChecks).toBe(2);
-		expect(row?.hardware).toEqual({ cpuUsageSum: 5 });
+		expect(row?.unwritten).toEqual({ value: 5 });
 	});
 });
 

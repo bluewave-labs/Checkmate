@@ -7,6 +7,7 @@ import {
 	buildRollupMergeStage,
 	buildUptimeReadStages,
 } from "@/domain/check-rollups/check-rollup.pipeline.js";
+import { buildHardwareLevelsRollupStages, buildHardwareRollupMergeStage } from "@/domain/check-rollups/check-rollup.hardware.pipeline.js";
 import type { ICheckRollupsRepository } from "@/domain/check-rollups/check-rollup.repository.interface.js";
 import { ROLLUP_RAW_TAIL_HOURS, floorToRollupBucket, type UptimeRollupBucket } from "@/domain/check-rollups/check-rollup.type.js";
 import type { DailyCheckBucket, UptimeChecksResult } from "@/domain/checks/check.type.js";
@@ -22,7 +23,9 @@ class MongoCheckRollupsRepository implements ICheckRollupsRepository {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	rollUp = async (from: Date, to: Date): Promise<void> => {
-		await CheckModel.aggregate([...buildCoreRollupStages(from, to), buildRollupMergeStage(CheckRollupModel.collection.collectionName)]);
+		const collectionName = CheckRollupModel.collection.collectionName;
+		await CheckModel.aggregate([...buildCoreRollupStages(from, to), buildRollupMergeStage(collectionName)]);
+		await CheckModel.aggregate([...buildHardwareLevelsRollupStages(from, to), buildHardwareRollupMergeStage(collectionName)]);
 	};
 
 	findLatestBucketStart = async (): Promise<Date | null> => {
