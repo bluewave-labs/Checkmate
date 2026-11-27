@@ -15,6 +15,26 @@ export const checkRollupSumCountSchema = z.object({
 	count: z.number(),
 });
 
+export const checkRollupChangeSecondsSchema = z.object({
+	change: z.number(),
+	seconds: z.number(),
+});
+
+export const checkRollupHardwareDiskSchema = z.object({
+	device: z.string(),
+	mountpoint: z.string(),
+	usedBytes: checkRollupSumCountSchema,
+	freeBytes: checkRollupSumCountSchema,
+	usage: checkRollupSumCountSchema,
+	usedInodes: checkRollupSumCountSchema,
+	freeInodes: checkRollupSumCountSchema,
+	inodesUsage: checkRollupSumCountSchema,
+	readBytes: checkRollupChangeSecondsSchema,
+	writeBytes: checkRollupChangeSecondsSchema,
+	readTime: checkRollupChangeSecondsSchema,
+	writeTime: checkRollupChangeSecondsSchema,
+});
+
 export const checkRollupHardwareSchema = z.object({
 	cpuUsage: checkRollupSumCountSchema,
 	cpuCurrentFrequency: checkRollupSumCountSchema,
@@ -22,6 +42,7 @@ export const checkRollupHardwareSchema = z.object({
 	memoryAvailableBytes: checkRollupSumCountSchema,
 	memoryUsage: checkRollupSumCountSchema,
 	temperature: z.array(checkRollupSumCountSchema),
+	disks: z.array(checkRollupHardwareDiskSchema).optional(),
 });
 
 export const checkRollupSchema = z.object({

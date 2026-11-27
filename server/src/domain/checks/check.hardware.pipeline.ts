@@ -186,9 +186,9 @@ export const toHardwareLatest = (doc: CheckDocument | null): HardwareMetricsLate
 	};
 };
 
-const MS_PER_SECOND = 1000;
+export const MS_PER_SECOND = 1000;
 
-const DISK_LEVELS = {
+export const DISK_LEVELS = {
 	usedBytes: "used_bytes",
 	freeBytes: "free_bytes",
 	usage: "usage_percent",
@@ -197,7 +197,7 @@ const DISK_LEVELS = {
 	inodesUsage: "inodes_usage_percent",
 } as const;
 
-const DISK_COUNTERS = {
+export const DISK_COUNTERS = {
 	readBytes: "read_bytes",
 	writeBytes: "write_bytes",
 	readTime: "read_time",
@@ -212,7 +212,7 @@ export type HardwareDiskRow = {
 } & Record<DiskLevel, number | null> &
 	Record<`${DiskCounter}Change` | `${DiskCounter}Seconds`, number>;
 
-const counterPairStages = (current: string, previous: string, name: string, maxGapSeconds: number) => {
+export const counterPairStages = (current: string, previous: string, name: string, maxGapSeconds: number | string) => {
 	const isPair = {
 		$and: [{ $isNumber: current }, { $isNumber: previous }, { $gt: ["$seconds", 0] }, { $lte: ["$seconds", maxGapSeconds] }],
 	};

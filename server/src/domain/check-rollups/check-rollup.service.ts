@@ -1,4 +1,5 @@
 import type { ICheckRollupsRepository } from "@/domain/check-rollups/check-rollup.repository.interface.js";
+import type { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import type { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { CHECK_TTL_SENTINEL } from "@/domain/checks/check.type.js";
@@ -8,6 +9,7 @@ import {
 	ROLLUP_REROLL_HOURS,
 	ROLLUP_RETENTION_MARGIN_HOURS,
 	floorToRollupBucket,
+	type HardwareMonitorInterval,
 } from "@/domain/check-rollups/check-rollup.type.js";
 
 const SERVICE_NAME = "CheckRollupService";
@@ -28,7 +30,8 @@ export class CheckRollupService implements ICheckRollupService {
 	constructor(
 		private checkRollupsRepository: ICheckRollupsRepository,
 		private checksRepository: IChecksRepository,
-		private settingsService: ISettingsService
+		private settingsService: ISettingsService,
+		private monitorsRepository: IMonitorsRepository
 	) {}
 
 	private findUnclampedStart = async (): Promise<number | null> => {
@@ -57,15 +60,21 @@ export class CheckRollupService implements ICheckRollupService {
 		return Math.max(start, retentionFloor);
 	};
 
+	private findHardwareIntervals = async (): Promise<HardwareMonitorInterval[]> => {
+		const monitors = await this.monitorsRepository.findAllForScheduling();
+		return monitors.filter((monitor) => monitor.type === "hardware").map((monitor) => ({ monitorId: monitor.id, intervalMs: monitor.interval }));
+	};
+
 	rollUpClosedBuckets = async (): Promise<void> => {
 		const now = Date.now();
 		const to = floorToRollupBucket(now);
 		const from = await this.findWindowStart(now);
 		if (from === null || from >= to) return;
 
+		const hardwareIntervals = await this.findHardwareIntervals();
 		for (let chunkStart = from; chunkStart < to; chunkStart += CHUNK_MS) {
 			const chunkEnd = Math.min(chunkStart + CHUNK_MS, to);
-			await this.checkRollupsRepository.rollUp(new Date(chunkStart), new Date(chunkEnd));
+			await this.checkRollupsRepository.rollUp(new Date(chunkStart), new Date(chunkEnd), hardwareIntervals);
 		}
 	};
 }

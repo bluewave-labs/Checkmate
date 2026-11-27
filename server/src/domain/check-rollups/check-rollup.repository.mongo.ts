@@ -7,9 +7,18 @@ import {
 	buildRollupMergeStage,
 	buildUptimeReadStages,
 } from "@/domain/check-rollups/check-rollup.pipeline.js";
-import { buildHardwareLevelsRollupStages, buildHardwareRollupMergeStage } from "@/domain/check-rollups/check-rollup.hardware.pipeline.js";
+import {
+	buildHardwareDisksRollupStages,
+	buildHardwareLevelsRollupStages,
+	buildHardwareRollupMergeStage,
+} from "@/domain/check-rollups/check-rollup.hardware.pipeline.js";
 import type { ICheckRollupsRepository } from "@/domain/check-rollups/check-rollup.repository.interface.js";
-import { ROLLUP_RAW_TAIL_HOURS, floorToRollupBucket, type UptimeRollupBucket } from "@/domain/check-rollups/check-rollup.type.js";
+import {
+	ROLLUP_RAW_TAIL_HOURS,
+	floorToRollupBucket,
+	type HardwareMonitorInterval,
+	type UptimeRollupBucket,
+} from "@/domain/check-rollups/check-rollup.type.js";
 import type { DailyCheckBucket, UptimeChecksResult } from "@/domain/checks/check.type.js";
 import type { UptimeDetailsSupportedType } from "@/domain/monitors/monitor.type.js";
 import type { DateRange } from "@/types/query.js";
@@ -22,10 +31,14 @@ const ratio = (sum: number, count: number): number => (count > 0 ? sum / count :
 class MongoCheckRollupsRepository implements ICheckRollupsRepository {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	rollUp = async (from: Date, to: Date): Promise<void> => {
+	rollUp = async (from: Date, to: Date, hardwareIntervals: HardwareMonitorInterval[] = []): Promise<void> => {
 		const collectionName = CheckRollupModel.collection.collectionName;
 		await CheckModel.aggregate([...buildCoreRollupStages(from, to), buildRollupMergeStage(collectionName)]);
 		await CheckModel.aggregate([...buildHardwareLevelsRollupStages(from, to), buildHardwareRollupMergeStage(collectionName)]);
+		if (hardwareIntervals.length === 0) {
+			return;
+		}
+		await CheckModel.aggregate([...buildHardwareDisksRollupStages(from, to, hardwareIntervals), buildHardwareRollupMergeStage(collectionName)]);
 	};
 
 	findLatestBucketStart = async (): Promise<Date | null> => {

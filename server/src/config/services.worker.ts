@@ -153,7 +153,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	// Worker
 	// ***********************
 
-	const checkRollupService = new CheckRollupService(checkRollupsRepository, checksRepository, settingsService);
+	const checkRollupService = new CheckRollupService(checkRollupsRepository, checksRepository, settingsService, monitorsRepository);
 
 	const workerHelper = new WorkerHelper(
 		logger,
