@@ -12,7 +12,7 @@ export const connectSsoConfigSchema = z.object({
 	label: z.string().nullable(),
 	enforce: z.boolean(),
 	graceUntil: z.string().nullable(),
-	startUrl: z.string().nullable(),
+	startUrl: z.url({ protocol: /^https?$/ }).nullable(),
 });
 
 // The identity Connect verified at the IdP

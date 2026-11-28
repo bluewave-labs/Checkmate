@@ -83,7 +83,7 @@ export const authRoutes: RouteTable<IAuthController> = {
 			path: "/recovery/reset",
 			handler: "resetPassword",
 			summary: "Reset password using a recovery token",
-			errors: [userErrors.passwordUnchanged, userErrors.ssoAccount, recoveryTokenErrors.notFound, userErrors.notFound],
+			errors: [userErrors.passwordUnchanged, userErrors.ssoAccount, userErrors.accountInactive, recoveryTokenErrors.notFound, userErrors.notFound],
 			auth: "none",
 			body: newPasswordValidation,
 			response: authPayloadResponseSchema,

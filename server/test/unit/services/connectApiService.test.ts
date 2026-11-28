@@ -503,6 +503,16 @@ describe("ConnectApiService SSO routes", () => {
 		expect(options.followRedirect).toBe(false);
 	});
 
+	it.each(["javascript:alert(1)", "not a url", "ftp://connect.checkmate.so/start"])("ssoConfig rejects the startUrl %p", async (startUrl) => {
+		const get = jest.fn<any>().mockResolvedValue(json(200, { ...config, startUrl }));
+		const { connectApiService } = setup({ get });
+
+		const error = await connectApiService.ssoConfig(enrollment()).catch((e: unknown) => e);
+
+		expect(error).toBeInstanceOf(Error);
+		expect(error).not.toBeInstanceOf(ConnectApiRejectedError);
+	});
+
 	it("ssoRedeem posts code and state", async () => {
 		const identity = { ...subject, email: "jane@acme.com", firstName: "Jane", lastName: "Doe", role: "admin", roleManaged: true };
 		const post = jest.fn<any>().mockResolvedValue(json(200, { identity }));

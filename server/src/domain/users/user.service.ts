@@ -299,6 +299,12 @@ export class UserService implements IUserService {
 		const existingUser = await this.usersRepository.findByEmail(existingToken.email);
 		await this.assertPasswordAllowed(existingUser);
 
+		// The reset signs the user in, so a deactivated account can't use it to get a token
+		const authState = await this.usersRepository.findAuthState(existingUser.id);
+		if (authState?.isActive === false) {
+			throw new AppError(userErrors.accountInactive, { service: SERVICE_NAME });
+		}
+
 		const match = existingUser.password ? await bcrypt.compare(password, existingUser.password) : false;
 		if (match === true) {
 			throw new AppError(userErrors.passwordUnchanged, { service: SERVICE_NAME });

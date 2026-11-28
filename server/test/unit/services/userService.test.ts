@@ -557,6 +557,16 @@ describe("UserService", () => {
 			await expect(service.resetPassword("same-password", "recovery-token-123")).rejects.toMatchObject({ definition: userErrors.passwordUnchanged });
 		});
 
+		it("throws accountInactive before changing the password of a deactivated user", async () => {
+			const { service, usersRepository, recoveryTokensRepository } = createService();
+			(usersRepository.findByEmail as jest.Mock).mockResolvedValue(makeUser({ password: "$2a$10$differenthash" }));
+			(usersRepository.findAuthState as jest.Mock).mockResolvedValue({ isActive: false, tokensValidAfter: null });
+
+			await expect(service.resetPassword("new-password", "recovery-token-123")).rejects.toMatchObject({ definition: userErrors.accountInactive });
+			expect(usersRepository.updateById).not.toHaveBeenCalled();
+			expect(recoveryTokensRepository.deleteManyByEmail).not.toHaveBeenCalled();
+		});
+
 		it("sets a password for a user without one", async () => {
 			const { service, usersRepository } = createService();
 			(usersRepository.findByEmail as jest.Mock).mockResolvedValue(makeUser({ password: undefined }));

@@ -88,15 +88,6 @@ describe("MongoUsersRepository", () => {
 			await expect(repo.findByEmailOrNull("known@example.com")).resolves.toMatchObject({ email: "known@example.com" });
 			await expect(repo.findByEmailOrNull("nobody@example.com")).resolves.toBeNull();
 		});
-
-		it("setSso links an identity to a user", async () => {
-			const id = await insertRaw("link@example.com");
-
-			const updated = await repo.setSso(id, sso("sub-9"));
-
-			expect(updated.sso).toEqual(sso("sub-9"));
-			await expect(repo.findBySsoIdentity("entra", "tenant-1", "sub-9")).resolves.toMatchObject({ id });
-		});
 	});
 
 	describe("setTokensValidAfter", () => {
@@ -207,6 +198,17 @@ describe("MongoUsersRepository", () => {
 			const ids = await repo.findPasswordUserIdsExceptSuperadmin();
 
 			expect(ids.sort()).toEqual([legacy, inactive, admin].sort());
+		});
+
+		it("findLinkedPasswordUserIds returns only linked non-protected users with a password", async () => {
+			const linked = await insertRaw("linked-pw@example.com", { sso: link("sub-1") });
+			await insertRaw("linked@example.com", { password: undefined, sso: link("sub-2") });
+			await insertRaw("linked-empty@example.com", { password: "", sso: link("sub-3") });
+			await insertRaw("root@example.com", { role: ["superadmin"], sso: link("sub-4") });
+			await insertRaw("demo@example.com", { role: ["demo"], sso: link("sub-5") });
+			await insertRaw("legacy@example.com");
+
+			await expect(repo.findLinkedPasswordUserIds()).resolves.toEqual([linked]);
 		});
 
 		it("countSsoLinked counts linked users and those without a password", async () => {

@@ -10,6 +10,7 @@ import { useLoginForm } from "@/Hooks/useLoginForm";
 import type { LoginFormData } from "@/Validation/login";
 import { useDispatch } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -110,11 +111,15 @@ const LoginPage = () => {
 						alignItems="center"
 						gap={theme.spacing(LAYOUT.XS)}
 					>
-						<Divider sx={{ flex: 1 }} />
+						<Box flex={1}>
+							<Divider />
+						</Box>
 						<Typography color={theme.palette.text.secondary}>
 							{t("pages.auth.sso.or")}
 						</Typography>
-						<Divider sx={{ flex: 1 }} />
+						<Box flex={1}>
+							<Divider />
+						</Box>
 					</Stack>
 				)}
 				{ssoProvider && !showPasswordForm && (

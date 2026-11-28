@@ -6131,7 +6131,7 @@
 						}
 					},
 					"403": {
-						"description": "This account signs in with single sign-on",
+						"description": "This account signs in with single sign-on, or this account is deactivated",
 						"content": {
 							"application/json": {
 								"schema": {
