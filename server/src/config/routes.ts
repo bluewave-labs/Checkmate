@@ -28,7 +28,7 @@ import { teamRoutes } from "@/api/routes/teamRoutes.js";
 import { connectRoutes } from "@/api/routes/connectRoutes.js";
 
 export const setupRoutes = (app: Application, controllers: InitializedControllers, apiServices: ApiServices) => {
-	const verifyJWT = createVerifyJWT(apiServices.settingsService);
+	const verifyJWT = createVerifyJWT(apiServices.settingsService, apiServices.authStateService);
 	const verifyStatusPageAccess = createVerifyStatusPageAccess(apiServices.statusPagesRepository, verifyJWT);
 	const middleware: AuthMiddleware = {
 		jwt: verifyJWT,

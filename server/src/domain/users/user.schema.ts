@@ -19,6 +19,8 @@ export const userSchema = z.object({
 	role: z.array(z.enum(UserRoles)),
 	teamId: z.string(),
 	checkTTL: z.number().optional(),
+	// Epoch seconds; tokens issued before this are rejected
+	tokensValidAfter: z.number().optional(),
 	// Id of the last "What's new" popup this user has seen
 	whatsNewSeen: z.string().optional(),
 	createdAt: z.string(),
@@ -38,4 +40,6 @@ export const userExample = {
 	updatedAt: "2026-04-15T14:30:00.000Z",
 };
 
-export const userResponseSchema = userSchema.omit({ password: true, profileImage: true }).meta({ id: "User", example: userExample });
+export const userResponseSchema = userSchema
+	.omit({ password: true, profileImage: true, tokensValidAfter: true })
+	.meta({ id: "User", example: userExample });

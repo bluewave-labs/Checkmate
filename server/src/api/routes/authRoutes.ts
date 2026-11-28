@@ -46,7 +46,7 @@ export const authRoutes: RouteTable<IAuthController> = {
 			path: "/login",
 			handler: "loginUser",
 			summary: "Log in",
-			errors: [userErrors.invalidCredentials, userErrors.notFound],
+			errors: [userErrors.invalidCredentials, userErrors.notFound, userErrors.accountInactive],
 			auth: "none",
 			body: loginValidation,
 			response: authPayloadResponseSchema,

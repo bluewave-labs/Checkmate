@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { AppError, internalError } from "@/utils/AppError.js";
 import { middlewareErrors } from "@/api/middleware/middleware.errors.js";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
+import type { IAuthStateService } from "@/domain/users/auth-state.service.js";
 import type { User } from "@/domain/users/user.type.js";
 
 const SERVICE_NAME = "verifyJWT";
@@ -13,7 +14,7 @@ const isUser = (payload: unknown): payload is User => {
 	return typeof payload === "object" && payload !== null && "id" in payload && "teamId" in payload && "role" in payload;
 };
 
-export const createVerifyJWT = (settingsService: ISettingsService) => {
+export const createVerifyJWT = (settingsService: ISettingsService, authStateService: IAuthStateService) => {
 	return (req: Request, res: Response, next: NextFunction) => {
 		const token = req.headers["authorization"];
 		// Make sure a token is provided
@@ -47,8 +48,18 @@ export const createVerifyJWT = (settingsService: ISettingsService) => {
 				next(error);
 				return;
 			} else if (isUser(decoded)) {
-				req.user = decoded;
-				next();
+				const iat = "iat" in decoded && typeof decoded.iat === "number" ? decoded.iat : undefined;
+				authStateService
+					.isTokenCurrent(decoded.id, iat)
+					.then((current) => {
+						if (!current) {
+							next(new AppError(middlewareErrors.unauthenticated, { message: "Session is no longer valid", service: SERVICE_NAME }));
+							return;
+						}
+						req.user = decoded;
+						next();
+					})
+					.catch(next);
 			} else {
 				next(new AppError(middlewareErrors.unauthenticated, { message: "Invalid token payload", service: SERVICE_NAME }));
 			}

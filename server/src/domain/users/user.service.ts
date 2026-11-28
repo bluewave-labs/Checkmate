@@ -197,6 +197,12 @@ export class UserService implements IUserService {
 			throw new AppError(userErrors.invalidCredentials, { service: SERVICE_NAME });
 		}
 
+		// Report deactivation only after the password is right, so it cannot be used to probe accounts
+		const authState = await this.usersRepository.findAuthState(user.id);
+		if (authState?.isActive === false) {
+			throw new AppError(userErrors.accountInactive, { service: SERVICE_NAME });
+		}
+
 		const userResponse = toUserResponse(user);
 
 		// Happy path, return token

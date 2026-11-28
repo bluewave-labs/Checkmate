@@ -34,6 +34,7 @@ class MongoUsersRepository implements IUsersRepository {
 			role: doc.role ?? [],
 			teamId: toStringId(doc.teamId),
 			checkTTL: doc.checkTTL ?? undefined,
+			tokensValidAfter: doc.tokensValidAfter ?? undefined,
 			whatsNewSeen: doc.whatsNewSeen ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
@@ -138,6 +139,19 @@ class MongoUsersRepository implements IUsersRepository {
 	findSuperAdminIdByTeamId = async (teamId: string): Promise<string | null> => {
 		const user = await UserModel.findOne({ teamId, role: "superadmin" }, { _id: 1 }).lean();
 		return user ? toStringId(user._id) : null;
+	};
+
+	// A missing isActive means active: documents created before the field existed lack it
+	findAuthState = async (id: string) => {
+		const user = await UserModel.findById(id, { isActive: 1, tokensValidAfter: 1 }).lean();
+		if (!user) {
+			return null;
+		}
+		return { isActive: user.isActive !== false, tokensValidAfter: user.tokensValidAfter ?? null };
+	};
+
+	setTokensValidAfter = async (ids: string[], seconds: number) => {
+		await UserModel.updateMany({ _id: { $in: ids } }, { $set: { tokensValidAfter: seconds } });
 	};
 
 	findSuperAdmin = async () => {

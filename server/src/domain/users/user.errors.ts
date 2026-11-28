@@ -9,5 +9,6 @@ export const userErrors = {
 	demoUserProtected: { status: 400, description: "Demo user cannot be deleted" },
 	cannotDeleteSelf: { status: 400, description: "Cannot delete your own account from here" },
 	notOnTeam: { status: 403, description: "The user is not on the caller's team" },
+	accountInactive: { status: 403, description: "This account is deactivated" },
 	roleAboveCaller: { status: 403, description: "The target role is above the caller's" },
 } satisfies Record<string, ErrorDefinition>;

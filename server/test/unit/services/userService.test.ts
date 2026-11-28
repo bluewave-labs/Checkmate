@@ -43,6 +43,7 @@ const createService = (overrides?: Record<string, unknown>) => {
 		updateById: jest.fn().mockResolvedValue(makeUserResponse()),
 		deleteById: jest.fn().mockResolvedValue(makeUser()),
 		findSuperAdmin: jest.fn().mockResolvedValue(true),
+		findAuthState: jest.fn().mockResolvedValue({ isActive: true, tokensValidAfter: null }),
 	};
 	const invitesRepository = {
 		findByTokenAndDelete: jest.fn().mockResolvedValue({ role: ["user"], teamId: "team-1", email: "invited@example.com" }),
@@ -341,6 +342,16 @@ describe("UserService", () => {
 			(usersRepository.findByEmail as jest.Mock).mockResolvedValue(makeUser({ password: hashed }));
 
 			await expect(service.loginUser("test@example.com", "wrong-password")).rejects.toMatchObject({ definition: userErrors.invalidCredentials });
+		});
+
+		it("throws accountInactive for a deactivated user with the right password", async () => {
+			const { service, usersRepository } = createService();
+			const bcrypt = await import("bcryptjs");
+			const hashed = bcrypt.hashSync("correct-password", 10);
+			(usersRepository.findByEmail as jest.Mock).mockResolvedValue(makeUser({ password: hashed }));
+			(usersRepository.findAuthState as jest.Mock).mockResolvedValue({ isActive: false, tokensValidAfter: null });
+
+			await expect(service.loginUser("test@example.com", "correct-password")).rejects.toMatchObject({ definition: userErrors.accountInactive });
 		});
 	});
 

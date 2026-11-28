@@ -13,6 +13,9 @@ export interface IUsersRepository {
 	updateById(id: string, patch: Partial<User>, file?: Express.Multer.File | null): Promise<UserResponse>;
 	// delete
 	deleteById(id: string): Promise<User>;
+	// Auth state read on every authenticated request; null when the user does not exist
+	findAuthState(id: string): Promise<{ isActive: boolean; tokensValidAfter: number | null } | null>;
+	setTokensValidAfter(ids: string[], seconds: number): Promise<void>;
 	// other
 	findSuperAdmin(): Promise<boolean>;
 }
