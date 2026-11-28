@@ -1,7 +1,6 @@
 import express from "express";
 import path from "path";
 import cors, { type CorsOptions } from "cors";
-import helmet from "helmet";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import swaggerUi, { type JsonObject } from "swagger-ui-express";
@@ -14,6 +13,7 @@ import { EnvConfig } from "@/domain/app-settings/app-settings.service.js";
 import { createStatusPageCorsOrigin } from "@/api/middleware/statusPageCorsOrigin.js";
 import { isPublicStatusPageApiPath } from "@/api/middleware/statusPagePublicApiPath.js";
 import { createStatusPageDocumentCsp } from "@/api/middleware/statusPageDocumentCsp.js";
+import { createSecurityHeaders } from "@/api/middleware/securityHeaders.js";
 import { createClientConfigScript } from "@/api/middleware/clientConfigScript.js";
 import { ApiServices } from "@/config/services.api.js";
 import { logContext } from "./utils/logger/logContext.js";
@@ -70,21 +70,7 @@ export const createApp = ({
 	app.use(sanitizeQuery());
 	app.use((req, _res, next) => logContext.run({ reqId: String(req.id) }, next));
 
-	app.use(
-		helmet({
-			hsts: false,
-			contentSecurityPolicy: {
-				useDefaults: true,
-				directives: {
-					upgradeInsecureRequests: null,
-					"script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-					"img-src": ["'self'", "data:", "blob:", "https://img.shields.io"],
-					"object-src": ["'none'"],
-					"base-uri": ["'self'"],
-				},
-			},
-		})
-	);
+	app.use(createSecurityHeaders());
 	app.use(
 		compression({
 			level: 6,
