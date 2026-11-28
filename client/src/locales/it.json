@@ -586,6 +586,31 @@
 			"setNewPassword": {
 				"title": "Reimposta la tua password",
 				"subtitle": "La tua nuova password deve essere diversa dalle password usate in precedenza."
+			},
+			"sso": {
+				"button": {
+					"entra": "Accedi con Microsoft",
+					"google": "Accedi con Google"
+				},
+				"or": "oppure",
+				"passwordLink": "Accedi con una password",
+				"callback": {
+					"title": "Accesso in corso",
+					"subtitle": "Attendi mentre completiamo l'accesso."
+				},
+				"errors": {
+					"sso_disabled": "Il single sign-on non è abilitato per questa installazione.",
+					"invalid_request": "La richiesta di accesso non era valida. Riprova.",
+					"return_not_allowed": "Questo indirizzo non è autorizzato a usare il single sign-on.",
+					"access_denied": "L'accesso è stato annullato.",
+					"idp_error": "Il tuo provider di identità ha restituito un errore. Riprova.",
+					"denied_tenant": "La tua organizzazione non è autorizzata ad accedere a questa installazione.",
+					"denied_domain": "Il dominio della tua email non è autorizzato ad accedere a questa installazione.",
+					"denied_unverified_email": "Il tuo provider di identità non ha verificato il tuo indirizzo email.",
+					"denied_no_group": "Il tuo account non appartiene a un gruppo autorizzato ad accedere.",
+					"stateInvalid": "La sessione di accesso non è valida o è scaduta. Riprova.",
+					"generic": "Si è verificato un problema durante l'accesso. Riprova."
+				}
 			}
 		},
 		"checks": {

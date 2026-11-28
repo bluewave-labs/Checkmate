@@ -585,6 +585,31 @@
 			"setNewPassword": {
 				"title": "Reset your password",
 				"subtitle": "Your new password must be different from previously used passwords."
+			},
+			"sso": {
+				"button": {
+					"entra": "Sign in with Microsoft",
+					"google": "Sign in with Google"
+				},
+				"or": "or",
+				"passwordLink": "Sign in with a password",
+				"callback": {
+					"title": "Signing you in",
+					"subtitle": "Please wait while we complete your sign-in."
+				},
+				"errors": {
+					"sso_disabled": "Single sign-on is not enabled for this installation.",
+					"invalid_request": "The sign-in request was invalid. Please try again.",
+					"return_not_allowed": "This address is not allowed to use single sign-on.",
+					"access_denied": "Sign-in was cancelled.",
+					"idp_error": "Your identity provider returned an error. Please try again.",
+					"denied_tenant": "Your organization is not allowed to sign in to this installation.",
+					"denied_domain": "Your email domain is not allowed to sign in to this installation.",
+					"denied_unverified_email": "Your identity provider has not verified your email address.",
+					"denied_no_group": "Your account is not in a group that is allowed to sign in.",
+					"stateInvalid": "The sign-in session is invalid or has expired. Please try again.",
+					"generic": "Something went wrong while signing you in. Please try again."
+				}
 			}
 		},
 		"checks": {

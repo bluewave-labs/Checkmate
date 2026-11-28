@@ -586,6 +586,31 @@
 			"setNewPassword": {
 				"title": "Redefinir sua senha",
 				"subtitle": "Sua nova senha deve ser diferente das senhas usadas anteriormente."
+			},
+			"sso": {
+				"button": {
+					"entra": "Entrar com Microsoft",
+					"google": "Entrar com Google"
+				},
+				"or": "ou",
+				"passwordLink": "Entrar com uma senha",
+				"callback": {
+					"title": "Entrando",
+					"subtitle": "Aguarde enquanto concluímos o seu login."
+				},
+				"errors": {
+					"sso_disabled": "O login único não está ativado nesta instalação.",
+					"invalid_request": "A solicitação de login era inválida. Tente novamente.",
+					"return_not_allowed": "Este endereço não tem permissão para usar o login único.",
+					"access_denied": "O login foi cancelado.",
+					"idp_error": "Seu provedor de identidade retornou um erro. Tente novamente.",
+					"denied_tenant": "Sua organização não tem permissão para entrar nesta instalação.",
+					"denied_domain": "O domínio do seu e-mail não tem permissão para entrar nesta instalação.",
+					"denied_unverified_email": "Seu provedor de identidade não verificou o seu endereço de e-mail.",
+					"denied_no_group": "Sua conta não está em um grupo com permissão para entrar.",
+					"stateInvalid": "A sessão de login é inválida ou expirou. Tente novamente.",
+					"generic": "Algo deu errado ao fazer o login. Tente novamente."
+				}
 			}
 		},
 		"checks": {

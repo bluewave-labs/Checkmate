@@ -583,6 +583,31 @@
 			"setNewPassword": {
 				"title": "重設您的密碼",
 				"subtitle": "您的新密碼必須與先前使用過的密碼不同。"
+			},
+			"sso": {
+				"button": {
+					"entra": "使用 Microsoft 登入",
+					"google": "使用 Google 登入"
+				},
+				"or": "或",
+				"passwordLink": "使用密碼登入",
+				"callback": {
+					"title": "正在登入",
+					"subtitle": "請稍候，我們正在完成登入。"
+				},
+				"errors": {
+					"sso_disabled": "此安裝未啟用單一登入。",
+					"invalid_request": "登入要求無效。請再試一次。",
+					"return_not_allowed": "此位址不允許使用單一登入。",
+					"access_denied": "登入已取消。",
+					"idp_error": "你的身分識別提供者傳回錯誤。請再試一次。",
+					"denied_tenant": "你的組織不允許登入此安裝。",
+					"denied_domain": "你的電子郵件網域不允許登入此安裝。",
+					"denied_unverified_email": "你的身分識別提供者尚未驗證你的電子郵件地址。",
+					"denied_no_group": "你的帳戶不在允許登入的群組中。",
+					"stateInvalid": "登入工作階段無效或已過期。請再試一次。",
+					"generic": "登入時發生問題。請再試一次。"
+				}
 			}
 		},
 		"checks": {

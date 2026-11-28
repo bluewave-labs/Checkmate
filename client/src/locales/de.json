@@ -585,6 +585,31 @@
 			"setNewPassword": {
 				"title": "Passwort zurücksetzen",
 				"subtitle": "Ihr neues Passwort muss sich von zuvor verwendeten Passwörtern unterscheiden."
+			},
+			"sso": {
+				"button": {
+					"entra": "Mit Microsoft anmelden",
+					"google": "Mit Google anmelden"
+				},
+				"or": "oder",
+				"passwordLink": "Mit einem Passwort anmelden",
+				"callback": {
+					"title": "Anmeldung läuft",
+					"subtitle": "Bitte warte, während wir deine Anmeldung abschließen."
+				},
+				"errors": {
+					"sso_disabled": "Single Sign-on ist für diese Installation nicht aktiviert.",
+					"invalid_request": "Die Anmeldeanfrage war ungültig. Bitte versuche es erneut.",
+					"return_not_allowed": "Diese Adresse darf Single Sign-on nicht verwenden.",
+					"access_denied": "Die Anmeldung wurde abgebrochen.",
+					"idp_error": "Dein Identitätsanbieter hat einen Fehler zurückgegeben. Bitte versuche es erneut.",
+					"denied_tenant": "Deine Organisation darf sich nicht bei dieser Installation anmelden.",
+					"denied_domain": "Deine E-Mail-Domain darf sich nicht bei dieser Installation anmelden.",
+					"denied_unverified_email": "Dein Identitätsanbieter hat deine E-Mail-Adresse nicht verifiziert.",
+					"denied_no_group": "Dein Konto gehört keiner Gruppe an, die sich anmelden darf.",
+					"stateInvalid": "Die Anmeldesitzung ist ungültig oder abgelaufen. Bitte versuche es erneut.",
+					"generic": "Bei der Anmeldung ist etwas schiefgelaufen. Bitte versuche es erneut."
+				}
 			}
 		},
 		"checks": {

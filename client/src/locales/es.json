@@ -586,6 +586,31 @@
 			"setNewPassword": {
 				"title": "Restablezca su contraseña",
 				"subtitle": "Su nueva contraseña debe ser diferente a las contraseñas utilizadas anteriormente."
+			},
+			"sso": {
+				"button": {
+					"entra": "Iniciar sesión con Microsoft",
+					"google": "Iniciar sesión con Google"
+				},
+				"or": "o",
+				"passwordLink": "Iniciar sesión con una contraseña",
+				"callback": {
+					"title": "Iniciando sesión",
+					"subtitle": "Espera mientras completamos tu inicio de sesión."
+				},
+				"errors": {
+					"sso_disabled": "El inicio de sesión único no está habilitado en esta instalación.",
+					"invalid_request": "La solicitud de inicio de sesión no es válida. Inténtalo de nuevo.",
+					"return_not_allowed": "Esta dirección no tiene permitido usar el inicio de sesión único.",
+					"access_denied": "Se canceló el inicio de sesión.",
+					"idp_error": "Tu proveedor de identidad devolvió un error. Inténtalo de nuevo.",
+					"denied_tenant": "Tu organización no tiene permitido iniciar sesión en esta instalación.",
+					"denied_domain": "El dominio de tu correo no tiene permitido iniciar sesión en esta instalación.",
+					"denied_unverified_email": "Tu proveedor de identidad no ha verificado tu dirección de correo.",
+					"denied_no_group": "Tu cuenta no pertenece a un grupo con permiso para iniciar sesión.",
+					"stateInvalid": "La sesión de inicio no es válida o ha caducado. Inténtalo de nuevo.",
+					"generic": "Algo salió mal al iniciar sesión. Inténtalo de nuevo."
+				}
 			}
 		},
 		"checks": {

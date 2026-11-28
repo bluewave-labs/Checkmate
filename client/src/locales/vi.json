@@ -583,6 +583,31 @@
 			"setNewPassword": {
 				"title": "Đặt lại mật khẩu",
 				"subtitle": "Mật khẩu mới phải khác với các mật khẩu đã sử dụng trước đó."
+			},
+			"sso": {
+				"button": {
+					"entra": "Đăng nhập bằng Microsoft",
+					"google": "Đăng nhập bằng Google"
+				},
+				"or": "hoặc",
+				"passwordLink": "Đăng nhập bằng mật khẩu",
+				"callback": {
+					"title": "Đang đăng nhập",
+					"subtitle": "Vui lòng chờ trong khi chúng tôi hoàn tất đăng nhập."
+				},
+				"errors": {
+					"sso_disabled": "Đăng nhập một lần chưa được bật cho bản cài đặt này.",
+					"invalid_request": "Yêu cầu đăng nhập không hợp lệ. Vui lòng thử lại.",
+					"return_not_allowed": "Địa chỉ này không được phép dùng đăng nhập một lần.",
+					"access_denied": "Đăng nhập đã bị hủy.",
+					"idp_error": "Nhà cung cấp danh tính của bạn trả về lỗi. Vui lòng thử lại.",
+					"denied_tenant": "Tổ chức của bạn không được phép đăng nhập vào bản cài đặt này.",
+					"denied_domain": "Miền email của bạn không được phép đăng nhập vào bản cài đặt này.",
+					"denied_unverified_email": "Nhà cung cấp danh tính chưa xác minh địa chỉ email của bạn.",
+					"denied_no_group": "Tài khoản của bạn không thuộc nhóm được phép đăng nhập.",
+					"stateInvalid": "Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng thử lại.",
+					"generic": "Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại."
+				}
 			}
 		},
 		"checks": {

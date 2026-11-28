@@ -585,6 +585,31 @@
 			"setNewPassword": {
 				"subtitle": "Twoje nowe hasło musi różnić się od wcześniej używanych haseł.",
 				"title": "Zresetuj hasło"
+			},
+			"sso": {
+				"button": {
+					"entra": "Zaloguj się przez Microsoft",
+					"google": "Zaloguj się przez Google"
+				},
+				"or": "lub",
+				"passwordLink": "Zaloguj się hasłem",
+				"callback": {
+					"title": "Trwa logowanie",
+					"subtitle": "Poczekaj, aż dokończymy logowanie."
+				},
+				"errors": {
+					"sso_disabled": "Jednokrotne logowanie nie jest włączone w tej instalacji.",
+					"invalid_request": "Żądanie logowania było nieprawidłowe. Spróbuj ponownie.",
+					"return_not_allowed": "Ten adres nie może korzystać z jednokrotnego logowania.",
+					"access_denied": "Logowanie zostało anulowane.",
+					"idp_error": "Twój dostawca tożsamości zwrócił błąd. Spróbuj ponownie.",
+					"denied_tenant": "Twoja organizacja nie może logować się do tej instalacji.",
+					"denied_domain": "Domena Twojego adresu e-mail nie może logować się do tej instalacji.",
+					"denied_unverified_email": "Twój dostawca tożsamości nie zweryfikował Twojego adresu e-mail.",
+					"denied_no_group": "Twoje konto nie należy do grupy uprawnionej do logowania.",
+					"stateInvalid": "Sesja logowania jest nieprawidłowa lub wygasła. Spróbuj ponownie.",
+					"generic": "Podczas logowania coś poszło nie tak. Spróbuj ponownie."
+				}
 			}
 		},
 		"checks": {

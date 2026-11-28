@@ -589,6 +589,31 @@
 			"setNewPassword": {
 				"title": "Obnovte své heslo",
 				"subtitle": "Vaše nové heslo musí být odlišné od dříve použitých hesel."
+			},
+			"sso": {
+				"button": {
+					"entra": "Přihlásit se přes Microsoft",
+					"google": "Přihlásit se přes Google"
+				},
+				"or": "nebo",
+				"passwordLink": "Přihlásit se heslem",
+				"callback": {
+					"title": "Probíhá přihlašování",
+					"subtitle": "Počkejte, než dokončíme vaše přihlášení."
+				},
+				"errors": {
+					"sso_disabled": "Jednotné přihlášení není pro tuto instalaci povoleno.",
+					"invalid_request": "Žádost o přihlášení byla neplatná. Zkuste to znovu.",
+					"return_not_allowed": "Tato adresa nemá povoleno používat jednotné přihlášení.",
+					"access_denied": "Přihlášení bylo zrušeno.",
+					"idp_error": "Váš poskytovatel identity vrátil chybu. Zkuste to znovu.",
+					"denied_tenant": "Vaše organizace se nemůže přihlásit k této instalaci.",
+					"denied_domain": "Doména vašeho e-mailu se nemůže přihlásit k této instalaci.",
+					"denied_unverified_email": "Váš poskytovatel identity neověřil vaši e-mailovou adresu.",
+					"denied_no_group": "Váš účet není ve skupině, která se smí přihlásit.",
+					"stateInvalid": "Přihlašovací relace je neplatná nebo vypršela. Zkuste to znovu.",
+					"generic": "Při přihlašování se něco pokazilo. Zkuste to znovu."
+				}
 			}
 		},
 		"checks": {

@@ -583,6 +583,31 @@
 			"setNewPassword": {
 				"title": "重置您的密码",
 				"subtitle": "您的新密码必须与之前使用过的密码不同。"
+			},
+			"sso": {
+				"button": {
+					"entra": "使用 Microsoft 登录",
+					"google": "使用 Google 登录"
+				},
+				"or": "或",
+				"passwordLink": "使用密码登录",
+				"callback": {
+					"title": "正在登录",
+					"subtitle": "请稍候，我们正在完成登录。"
+				},
+				"errors": {
+					"sso_disabled": "此安装未启用单点登录。",
+					"invalid_request": "登录请求无效。请重试。",
+					"return_not_allowed": "此地址不允许使用单点登录。",
+					"access_denied": "登录已取消。",
+					"idp_error": "你的身份提供商返回了错误。请重试。",
+					"denied_tenant": "你的组织不允许登录此安装。",
+					"denied_domain": "你的邮箱域名不允许登录此安装。",
+					"denied_unverified_email": "你的身份提供商尚未验证你的邮箱地址。",
+					"denied_no_group": "你的账户不在允许登录的组中。",
+					"stateInvalid": "登录会话无效或已过期。请重试。",
+					"generic": "登录时出了点问题。请重试。"
+				}
 			}
 		},
 		"checks": {

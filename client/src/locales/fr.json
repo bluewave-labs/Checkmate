@@ -586,6 +586,31 @@
 			"setNewPassword": {
 				"title": "Réinitialisez votre mot de passe",
 				"subtitle": "Votre nouveau mot de passe doit être différent des mots de passe utilisés précédemment."
+			},
+			"sso": {
+				"button": {
+					"entra": "Se connecter avec Microsoft",
+					"google": "Se connecter avec Google"
+				},
+				"or": "ou",
+				"passwordLink": "Se connecter avec un mot de passe",
+				"callback": {
+					"title": "Connexion en cours",
+					"subtitle": "Veuillez patienter pendant que nous finalisons votre connexion."
+				},
+				"errors": {
+					"sso_disabled": "L'authentification unique n'est pas activée pour cette installation.",
+					"invalid_request": "La demande de connexion n'est pas valide. Veuillez réessayer.",
+					"return_not_allowed": "Cette adresse n'est pas autorisée à utiliser l'authentification unique.",
+					"access_denied": "La connexion a été annulée.",
+					"idp_error": "Votre fournisseur d'identité a renvoyé une erreur. Veuillez réessayer.",
+					"denied_tenant": "Votre organisation n'est pas autorisée à se connecter à cette installation.",
+					"denied_domain": "Le domaine de votre adresse e-mail n'est pas autorisé à se connecter à cette installation.",
+					"denied_unverified_email": "Votre fournisseur d'identité n'a pas vérifié votre adresse e-mail.",
+					"denied_no_group": "Votre compte n'appartient à aucun groupe autorisé à se connecter.",
+					"stateInvalid": "La session de connexion n'est pas valide ou a expiré. Veuillez réessayer.",
+					"generic": "Une erreur s'est produite lors de la connexion. Veuillez réessayer."
+				}
 			}
 		},
 		"checks": {

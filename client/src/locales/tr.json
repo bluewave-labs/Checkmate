@@ -585,6 +585,31 @@
 			"setNewPassword": {
 				"title": "Parolanızı sıfırlayın",
 				"subtitle": "Yeni parolanız daha önce kullandığınız parolalardan farklı olmalıdır."
+			},
+			"sso": {
+				"button": {
+					"entra": "Microsoft ile giriş yap",
+					"google": "Google ile giriş yap"
+				},
+				"or": "veya",
+				"passwordLink": "Parola ile giriş yap",
+				"callback": {
+					"title": "Giriş yapılıyor",
+					"subtitle": "Girişinizi tamamlarken lütfen bekleyin."
+				},
+				"errors": {
+					"sso_disabled": "Tek oturum açma bu kurulumda etkin değil.",
+					"invalid_request": "Giriş isteği geçersizdi. Lütfen tekrar deneyin.",
+					"return_not_allowed": "Bu adresin tek oturum açmayı kullanmasına izin verilmiyor.",
+					"access_denied": "Giriş iptal edildi.",
+					"idp_error": "Kimlik sağlayıcınız bir hata döndürdü. Lütfen tekrar deneyin.",
+					"denied_tenant": "Kuruluşunuzun bu kuruluma giriş yapmasına izin verilmiyor.",
+					"denied_domain": "E-posta alan adınızın bu kuruluma giriş yapmasına izin verilmiyor.",
+					"denied_unverified_email": "Kimlik sağlayıcınız e-posta adresinizi doğrulamadı.",
+					"denied_no_group": "Hesabınız giriş yapmasına izin verilen bir grupta değil.",
+					"stateInvalid": "Giriş oturumu geçersiz veya süresi dolmuş. Lütfen tekrar deneyin.",
+					"generic": "Giriş yapılırken bir sorun oluştu. Lütfen tekrar deneyin."
+				}
 			}
 		},
 		"checks": {

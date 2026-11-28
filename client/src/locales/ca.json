@@ -586,6 +586,31 @@
 			"setNewPassword": {
 				"title": "Restableix la teva contrasenya",
 				"subtitle": "La teva nova contrasenya ha de ser diferent de les contrasenyes usades anteriorment."
+			},
+			"sso": {
+				"button": {
+					"entra": "Inicia la sessió amb Microsoft",
+					"google": "Inicia la sessió amb Google"
+				},
+				"or": "o",
+				"passwordLink": "Inicia la sessió amb una contrasenya",
+				"callback": {
+					"title": "Iniciant la sessió",
+					"subtitle": "Espera mentre completem l'inici de sessió."
+				},
+				"errors": {
+					"sso_disabled": "L'inici de sessió únic no està habilitat en aquesta instal·lació.",
+					"invalid_request": "La sol·licitud d'inici de sessió no era vàlida. Torna-ho a provar.",
+					"return_not_allowed": "Aquesta adreça no té permís per utilitzar l'inici de sessió únic.",
+					"access_denied": "S'ha cancel·lat l'inici de sessió.",
+					"idp_error": "El teu proveïdor d'identitat ha retornat un error. Torna-ho a provar.",
+					"denied_tenant": "La teva organització no té permís per iniciar la sessió en aquesta instal·lació.",
+					"denied_domain": "El domini del teu correu no té permís per iniciar la sessió en aquesta instal·lació.",
+					"denied_unverified_email": "El teu proveïdor d'identitat no ha verificat la teva adreça de correu.",
+					"denied_no_group": "El teu compte no pertany a cap grup amb permís per iniciar la sessió.",
+					"stateInvalid": "La sessió d'inici no és vàlida o ha caducat. Torna-ho a provar.",
+					"generic": "Alguna cosa ha anat malament en iniciar la sessió. Torna-ho a provar."
+				}
 			}
 		},
 		"checks": {

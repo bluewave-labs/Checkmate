@@ -585,6 +585,31 @@
 			"setNewPassword": {
 				"title": "Nollaa salasanasi",
 				"subtitle": "Uuden salasanasi on oltava eri kuin aiemmin käytetyt salasanat."
+			},
+			"sso": {
+				"button": {
+					"entra": "Kirjaudu sisään Microsoftilla",
+					"google": "Kirjaudu sisään Googlella"
+				},
+				"or": "tai",
+				"passwordLink": "Kirjaudu sisään salasanalla",
+				"callback": {
+					"title": "Kirjaudutaan sisään",
+					"subtitle": "Odota, kun viimeistelemme kirjautumisesi."
+				},
+				"errors": {
+					"sso_disabled": "Kertakirjautuminen ei ole käytössä tässä asennuksessa.",
+					"invalid_request": "Kirjautumispyyntö oli virheellinen. Yritä uudelleen.",
+					"return_not_allowed": "Tämä osoite ei saa käyttää kertakirjautumista.",
+					"access_denied": "Kirjautuminen peruutettiin.",
+					"idp_error": "Identiteettipalveluntarjoajasi palautti virheen. Yritä uudelleen.",
+					"denied_tenant": "Organisaatiollasi ei ole lupaa kirjautua tähän asennukseen.",
+					"denied_domain": "Sähköpostisi verkkotunnuksella ei ole lupaa kirjautua tähän asennukseen.",
+					"denied_unverified_email": "Identiteettipalveluntarjoajasi ei ole vahvistanut sähköpostiosoitettasi.",
+					"denied_no_group": "Tilisi ei kuulu ryhmään, jolla on lupa kirjautua sisään.",
+					"stateInvalid": "Kirjautumisistunto on virheellinen tai vanhentunut. Yritä uudelleen.",
+					"generic": "Kirjautumisessa tapahtui virhe. Yritä uudelleen."
+				}
 			}
 		},
 		"checks": {
