@@ -61,6 +61,7 @@ describe("ConnectBackupTools.dump", () => {
 			"--excludeCollection=queueworkers",
 			"--excludeCollection=recoverytokens",
 			"--excludeCollection=dlqitems",
+			"--excludeCollection=ssosessions",
 		]);
 		expect(args.join(" ")).not.toContain("mongodb://");
 		expect(options.stdio).toEqual(["ignore", "pipe", "pipe"]);
@@ -81,6 +82,7 @@ describe("ConnectBackupTools.dump", () => {
 			"--excludeCollection=queueworkers",
 			"--excludeCollection=recoverytokens",
 			"--excludeCollection=dlqitems",
+			"--excludeCollection=ssosessions",
 		];
 		expect(fullArgs).toEqual(expect.arrayContaining(runtime));
 		expect(fullArgs).not.toContain("--excludeCollection=checks");
@@ -307,7 +309,7 @@ describe("ConnectBackupTools.restore", () => {
 		const args = (spawnProcess.mock.calls[0] as unknown as [string, string[]])[1];
 		expect(args).toContain("--nsInclude=*.monitors");
 		expect(args).toContain("--nsInclude=*.migrations");
-		for (const runtime of ["connect_state", "jobs", "queueworkers", "recoverytokens", "dlqitems"]) {
+		for (const runtime of ["connect_state", "jobs", "queueworkers", "recoverytokens", "dlqitems", "ssosessions"]) {
 			expect(args).not.toContain(`--nsInclude=*.${runtime}`);
 		}
 	});

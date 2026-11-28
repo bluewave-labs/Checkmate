@@ -15,6 +15,7 @@ import { ConnectService, IConnectService } from "@/domain/connect/connect.servic
 import { ConnectTunnel } from "@/domain/connect/connect-tunnel.js";
 import { ConnectApiService } from "@/domain/connect/connect-api.service.js";
 import { AuthStateService, IAuthStateService } from "@/domain/users/auth-state.service.js";
+import { SsoSessionService, ISsoSessionService } from "@/domain/sso/sso-session.service.js";
 import { SharedServices } from "@/config/services.shared.js";
 
 // Third-party
@@ -28,6 +29,7 @@ export interface ApiServices extends SharedServices {
 	worker: IJobScheduler; // control-plane handle only (DBQueueWorker in all-in-one, bare JobScheduler in API-only)
 	userService: IUserService;
 	authStateService: IAuthStateService;
+	ssoSessionService: ISsoSessionService;
 	monitorService: IMonitorService;
 	maintenanceWindowService: IMaintenanceWindowService;
 	inviteService: IInviteService;
@@ -67,6 +69,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		proxiesRepository,
 		queueWorkersRepository,
 		connectRepository,
+		ssoSessionsRepository,
 		diagnosticsRepository,
 		encryptionService,
 	} = shared;
@@ -87,6 +90,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 	});
 
 	const authStateService = new AuthStateService(usersRepository);
+	const ssoSessionService = new SsoSessionService(ssoSessionsRepository, usersRepository, settingsService);
 
 	// ***********************
 	//  Business services
@@ -162,6 +166,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		worker: jobScheduler,
 		userService,
 		authStateService,
+		ssoSessionService,
 		monitorService,
 		maintenanceWindowService,
 		inviteService,

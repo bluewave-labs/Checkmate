@@ -23,6 +23,7 @@ import { egressRoutes } from "@/api/routes/egressRoutes.js";
 import { heartbeatRoutes } from "@/api/routes/heartbeatRoutes.js";
 import { teamRoutes } from "@/api/routes/teamRoutes.js";
 import { connectRoutes } from "@/api/routes/connectRoutes.js";
+import { ssoRoutes } from "@/api/routes/ssoRoutes.js";
 let cached: JsonObject | null = null;
 
 registerRoutes(registry, tagRoutes);
@@ -44,6 +45,7 @@ registerRoutes(registry, egressRoutes);
 registerRoutes(registry, heartbeatRoutes);
 registerRoutes(registry, teamRoutes);
 registerRoutes(registry, connectRoutes);
+registerRoutes(registry, ssoRoutes);
 export function getOpenApiSpec(): JsonObject {
 	if (cached) return cached;
 

@@ -1,7 +1,7 @@
 import type { Application } from "express";
 import { createVerifyJWT } from "../api/middleware/verifyJWT.js";
 import { createVerifyStatusPageAccess } from "../api/middleware/verifyStatusPageAccess.js";
-import { authApiLimiter, heartbeatApiLimiter, heartbeatCreateLimiter } from "../api/middleware/rateLimiter.js";
+import { authApiLimiter, ssoApiLimiter, heartbeatApiLimiter, heartbeatCreateLimiter } from "../api/middleware/rateLimiter.js";
 import type { InitializedControllers } from "./controllers.js";
 import type { ApiServices } from "@/config/services.api.js";
 
@@ -26,6 +26,7 @@ import { egressRoutes } from "@/api/routes/egressRoutes.js";
 import { heartbeatRoutes } from "@/api/routes/heartbeatRoutes.js";
 import { teamRoutes } from "@/api/routes/teamRoutes.js";
 import { connectRoutes } from "@/api/routes/connectRoutes.js";
+import { ssoRoutes } from "@/api/routes/ssoRoutes.js";
 
 export const setupRoutes = (app: Application, controllers: InitializedControllers, apiServices: ApiServices) => {
 	const verifyJWT = createVerifyJWT(apiServices.settingsService, apiServices.authStateService);
@@ -59,4 +60,5 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 	);
 	app.use("/api/v1/teams", buildRouter(teamRoutes, controllers.teamController, middleware));
 	app.use("/api/v1/connect", buildRouter(connectRoutes, controllers.connectController, middleware));
+	app.use("/api/v1/sso", ssoApiLimiter, buildRouter(ssoRoutes, controllers.ssoController, middleware));
 };

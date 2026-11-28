@@ -4974,6 +4974,37 @@
 					}
 				},
 				"required": ["queued"]
+			},
+			"SsoSession": {
+				"type": "object",
+				"properties": {
+					"user": {
+						"$ref": "#/components/schemas/User"
+					},
+					"token": {
+						"type": "string"
+					},
+					"refreshToken": {
+						"type": "string"
+					}
+				},
+				"required": ["user", "token", "refreshToken"],
+				"example": {
+					"user": {
+						"id": "65f1c2a4d8b9e0123456789a",
+						"firstName": "Ada",
+						"lastName": "Lovelace",
+						"email": "ada@example.com",
+						"isActive": true,
+						"isVerified": true,
+						"role": ["admin"],
+						"teamId": "65f1c2a4d8b9e01234567890",
+						"createdAt": "2026-04-01T10:00:00.000Z",
+						"updatedAt": "2026-04-15T14:30:00.000Z"
+					},
+					"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+					"refreshToken": "p3kQ0v1m4m7oYxq2G9n8mJ0b2kq5r0Zx5uN3c8l1HfA"
+				}
 			}
 		},
 		"parameters": {}
@@ -18803,6 +18834,171 @@
 					},
 					"409": {
 						"description": "This installation is not enrolled with Checkmate Connect, or no recovery key set",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sso/refresh": {
+			"post": {
+				"tags": ["sso"],
+				"summary": "Exchange a single sign-on refresh token for a new access token and refresh token",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"refreshToken": {
+										"type": "string",
+										"minLength": 1
+									}
+								},
+								"required": ["refreshToken"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/SsoSession"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Your single sign-on session has ended. Sign in again.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sso/logout": {
+			"post": {
+				"tags": ["sso"],
+				"summary": "End a single sign-on session",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"refreshToken": {
+										"type": "string",
+										"minLength": 1
+									}
+								},
+								"required": ["refreshToken"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										}
+									},
+									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
 						"content": {
 							"application/json": {
 								"schema": {

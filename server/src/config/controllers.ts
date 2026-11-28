@@ -17,6 +17,7 @@ import EgressController from "@/api/controllers/egressController.js";
 import HeartbeatController from "@/api/controllers/heartbeatController.js";
 import TeamController from "@/api/controllers/teamController.js";
 import ConnectController from "@/api/controllers/connectController.js";
+import SsoController from "@/api/controllers/ssoController.js";
 import { ApiServices } from "@/config/services.api.js";
 
 export interface InitializedControllers {
@@ -39,6 +40,7 @@ export interface InitializedControllers {
 	heartbeatController: HeartbeatController;
 	teamController: TeamController;
 	connectController: ConnectController;
+	ssoController: SsoController;
 }
 export const initializeControllers = (apiServices: ApiServices): InitializedControllers => {
 	return {
@@ -67,5 +69,6 @@ export const initializeControllers = (apiServices: ApiServices): InitializedCont
 		heartbeatController: new HeartbeatController(apiServices.heartbeatService),
 		teamController: new TeamController(apiServices.teamService),
 		connectController: new ConnectController(apiServices.connectService),
+		ssoController: new SsoController(apiServices.ssoSessionService),
 	};
 };

@@ -35,6 +35,15 @@ export const authApiLimiter = rateLimit({
 	handler: tooManyRequests,
 });
 
+export const ssoApiLimiter = rateLimit({
+	windowMs: 60 * 1000,
+	limit: 60,
+	standardHeaders: true,
+	legacyHeaders: false,
+	ipv6Subnet: 64,
+	handler: tooManyRequests,
+});
+
 export const heartbeatApiLimiter = rateLimit({
 	windowMs: 60 * 1000,
 	limit: 60,

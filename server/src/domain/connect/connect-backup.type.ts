@@ -61,7 +61,7 @@ export const ConnectConfigExcludedCollections = [
 	"dockerlogs",
 ] as const satisfies readonly ConnectBackupCollection[];
 
-export const ConnectRuntimeCollections = [CONNECT_STATE_COLLECTION, "jobs", "queueworkers", "recoverytokens", "dlqitems"] as const;
+export const ConnectRuntimeCollections = [CONNECT_STATE_COLLECTION, "jobs", "queueworkers", "recoverytokens", "dlqitems", "ssosessions"] as const;
 
 export type ConnectBackupCollection = (typeof ConnectBackupCollections)[number];
 
