@@ -7,6 +7,10 @@ export interface IUsersRepository {
 	findByEmail(email: string): Promise<User>;
 	findByEmailOrNull(email: string): Promise<User | null>;
 	findBySsoIdentity(provider: SsoProvider, tenant: string, subject: string): Promise<User | null>;
+	// Linked users other than superadmin and demo accounts; a missing isActive reads as active
+	findSsoLinked(): Promise<User[]>;
+	// Emails of users who can still sign in with a password: no link, not superadmin or demo
+	findUnlinkedPasswordUserEmails(limit: number): Promise<string[]>;
 	findById(id: string): Promise<UserResponse>;
 	findAll(): Promise<UserResponse[]>;
 	// Returns the id only if the user exists and belongs to the team
@@ -23,6 +27,7 @@ export interface IUsersRepository {
 		userId: string,
 		patch: { firstName: string; lastName: string; email?: string; role?: SsoRole; sso: SsoLink; isActive?: boolean }
 	): Promise<UserResponse>;
+	applySsoCheck(userId: string, patch: { lastCheckedAt?: string; role?: SsoRole; isActive?: boolean; deactivatedBySso?: boolean }): Promise<void>;
 	// delete
 	deleteById(id: string): Promise<User>;
 	// Auth state read on every authenticated request; null when the user does not exist

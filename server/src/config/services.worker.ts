@@ -18,6 +18,7 @@ import { IBufferService, BufferService } from "@/service/bufferService.js";
 import { IStatusService, StatusService } from "@/service/statusService.js";
 import { SecretsRotationService } from "@/service/encryption/secretsRotationService.js";
 import { TelemetryService } from "@/domain/telemetry/telemetry.service.js";
+import { AuthStateService } from "@/domain/users/auth-state.service.js";
 import { SsoSyncService } from "@/domain/sso/sso-sync.service.js";
 import { ConnectHeartbeatService } from "@/domain/connect/connect-heartbeat.service.js";
 import { ConnectBackupTools } from "@/domain/connect/connect.backup-tools.js";
@@ -84,6 +85,8 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		proxiesRepository,
 		connectRepository,
 		settingsRepository,
+		usersRepository,
+		ssoSessionsRepository,
 	} = shared;
 
 	// ***********************
@@ -126,7 +129,16 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	const connectBackupTools = new ConnectBackupTools(spawn, execFile, settingsService, logger);
 	const connectToolsService = new ConnectToolsService(connectBackupTools, queueWorkersRepository, workerId, logger);
 	const connectApiService = new ConnectApiService(got, settingsService, logger);
-	const ssoSyncService = new SsoSyncService({ connectRepository, connectApiService, encryptionService, logger });
+	const authStateService = new AuthStateService(usersRepository);
+	const ssoSyncService = new SsoSyncService({
+		connectRepository,
+		connectApiService,
+		encryptionService,
+		usersRepository,
+		ssoSessionRepository: ssoSessionsRepository,
+		authStateService,
+		logger,
+	});
 	const connectBackupService = new ConnectBackupService(connectBackupTools, connectApiService, connectRepository, db, logger);
 
 	const notificationReactor = new NotificationReactor(notificationsService);

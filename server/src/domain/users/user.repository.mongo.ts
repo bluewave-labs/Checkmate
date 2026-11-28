@@ -7,6 +7,8 @@ import { AppError, internalError } from "@/utils/AppError.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 import { userErrors } from "@/domain/users/user.errors.js";
 const SERVICE_NAME = "MongoUsersRepository";
+// Accounts that never sign in through single sign-on and are never offboarded by it
+const PROTECTED_ROLES = ["superadmin", "demo"];
 
 class MongoUsersRepository implements IUsersRepository {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -92,6 +94,34 @@ class MongoUsersRepository implements IUsersRepository {
 	findBySsoIdentity = async (provider: SsoProvider, tenant: string, subject: string) => {
 		const user = await UserModel.findOne({ "sso.provider": provider, "sso.tenant": tenant, "sso.subject": subject }).select("-profileImage");
 		return user ? this.toEntity(user) : null;
+	};
+
+	findSsoLinked = async () => {
+		const users = await UserModel.find({ "sso.subject": { $exists: true }, role: { $nin: PROTECTED_ROLES } })
+			.select("-password")
+			.select("-profileImage");
+		return users.map((doc) => ({ ...this.toEntity(doc), isActive: doc.isActive !== false }));
+	};
+
+	findUnlinkedPasswordUserEmails = async (limit: number) => {
+		const users = await UserModel.find(
+			{ sso: { $exists: false }, role: { $nin: PROTECTED_ROLES }, password: { $exists: true, $nin: [null, ""] } },
+			{ email: 1 }
+		)
+			.limit(limit)
+			.lean();
+		return users.map((user) => user.email);
+	};
+
+	applySsoCheck = async (userId: string, patch: { lastCheckedAt?: string; role?: SsoRole; isActive?: boolean; deactivatedBySso?: boolean }) => {
+		const { lastCheckedAt, role, isActive, deactivatedBySso } = patch;
+		const set = {
+			...(lastCheckedAt !== undefined ? { "sso.lastCheckedAt": lastCheckedAt } : {}),
+			...(deactivatedBySso !== undefined ? { "sso.deactivatedBySso": deactivatedBySso } : {}),
+			...(role ? { role: [role] } : {}),
+			...(isActive !== undefined ? { isActive } : {}),
+		};
+		await UserModel.updateOne({ _id: userId, "sso.subject": { $exists: true } }, { $set: set });
 	};
 
 	setSso = async (userId: string, sso: SsoLink) => {

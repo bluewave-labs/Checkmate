@@ -1,8 +1,9 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import * as nodeCrypto from "node:crypto";
 import { ConnectApiRejectedError } from "../../../src/domain/connect/connect-api.service.ts";
-import type { ConnectEnrollment, ConnectSsoConfig, ConnectSsoState } from "../../../src/domain/connect/connect.type.ts";
+import type { ConnectEnrollment, ConnectSsoCheckResult, ConnectSsoConfig, ConnectSsoState } from "../../../src/domain/connect/connect.type.ts";
 import { SsoSyncService } from "../../../src/domain/sso/sso-sync.service.ts";
+import type { User } from "../../../src/domain/users/user.type.ts";
 import { EncryptionService } from "../../../src/service/encryption/encryptionService.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import { InMemoryConnectRepository } from "../../helpers/InMemoryConnectRepository.ts";
@@ -21,7 +22,43 @@ const config: ConnectSsoConfig = {
 
 const cached: ConnectSsoState = { ...config, fetchedAt: "2026-11-27T09:00:00.000Z", lastCheckRunAt: "2026-11-27T09:30:00.000Z" };
 
-const setup = async (opts: { enrolled?: boolean; sso?: ConnectSsoState; ssoConfig?: jest.Mock<any> } = {}) => {
+const makeUser = (n: number, overrides: Partial<User> = {}): User => ({
+	id: `user-${n}`,
+	firstName: "Ada",
+	lastName: "Lovelace",
+	email: `user${n}@acme.com`,
+	isActive: true,
+	isVerified: true,
+	role: ["user"],
+	teamId: "team-1",
+	sso: { provider: "entra", tenant: "tenant-1", subject: `sub-${n}`, roleManaged: true, lastCheckedAt: null, deactivatedBySso: false },
+	createdAt: "2026-01-01T00:00:00.000Z",
+	updatedAt: "2026-01-01T00:00:00.000Z",
+	...overrides,
+});
+
+const allowedFor = (user: User, overrides: Partial<ConnectSsoCheckResult> = {}): ConnectSsoCheckResult => ({
+	provider: user.sso!.provider,
+	tenant: user.sso!.tenant,
+	subject: user.sso!.subject,
+	status: "allowed",
+	role: "user",
+	roleManaged: true,
+	...overrides,
+});
+
+const dueState: ConnectSsoState = { ...cached, lastCheckRunAt: "2026-11-27T08:30:00.000Z" };
+
+const setup = async (
+	opts: {
+		enrolled?: boolean;
+		sso?: ConnectSsoState;
+		ssoConfig?: jest.Mock<any>;
+		ssoCheck?: jest.Mock<any>;
+		linked?: User[];
+		unlinkedEmails?: string[];
+	} = {}
+) => {
 	const logger = createMockLogger();
 	const encryptionService = new EncryptionService([nodeCrypto.randomBytes(32)], createMockLogger(), nodeCrypto);
 	const connectRepository = new InMemoryConnectRepository();
@@ -35,15 +72,28 @@ const setup = async (opts: { enrolled?: boolean; sso?: ConnectSsoState; ssoConfi
 		await connectRepository.setEnrollment(enrollment);
 	}
 	if (opts.sso) await connectRepository.setSsoState(opts.sso);
-	const connectApiService = { ssoConfig: opts.ssoConfig ?? jest.fn<any>().mockResolvedValue(config) };
+	const connectApiService = {
+		ssoConfig: opts.ssoConfig ?? jest.fn<any>().mockResolvedValue(config),
+		ssoCheck: opts.ssoCheck ?? jest.fn<any>().mockResolvedValue([]),
+	};
+	const usersRepository = {
+		findSsoLinked: jest.fn<any>().mockResolvedValue(opts.linked ?? []),
+		findUnlinkedPasswordUserEmails: jest.fn<any>().mockResolvedValue(opts.unlinkedEmails ?? []),
+		applySsoCheck: jest.fn<any>().mockResolvedValue(undefined),
+	};
+	const ssoSessionRepository = { revokeAllForUser: jest.fn<any>().mockResolvedValue(undefined) };
+	const authStateService = { revokeTokens: jest.fn<any>().mockResolvedValue(undefined) };
 	const service = new SsoSyncService({
 		connectRepository,
 		connectApiService: connectApiService as any,
 		encryptionService,
+		usersRepository: usersRepository as any,
+		ssoSessionRepository: ssoSessionRepository as any,
+		authStateService: authStateService as any,
 		logger: logger as any,
 		now: () => NOW,
 	});
-	return { service, connectRepository, connectApiService, logger };
+	return { service, connectRepository, connectApiService, usersRepository, ssoSessionRepository, authStateService, logger };
 };
 
 describe("SsoSyncService.handleJob", () => {
@@ -57,7 +107,7 @@ describe("SsoSyncService.handleJob", () => {
 	});
 
 	it("stores a null lastCheckRunAt on the first sync", async () => {
-		const { service, connectRepository } = await setup();
+		const { service, connectRepository } = await setup({ ssoCheck: jest.fn<any>().mockRejectedValue(new Error("down")) });
 
 		await service.handleJob();
 
@@ -125,5 +175,191 @@ describe("SsoSyncService.handleJob", () => {
 		await service.handleJob();
 		expect(logger.warn).toHaveBeenCalledTimes(1);
 		expect(logger.info).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe("SsoSyncService offboarding check", () => {
+	it("runs the check only when an hour has passed since the last run", async () => {
+		const recent = await setup({ sso: cached });
+		await recent.service.handleJob();
+		expect(recent.connectApiService.ssoCheck).not.toHaveBeenCalled();
+
+		const never = await setup();
+		await never.service.handleJob();
+		expect(never.connectApiService.ssoCheck).toHaveBeenCalledTimes(1);
+
+		const due = await setup({ sso: dueState });
+		await due.service.handleJob();
+		expect(due.connectApiService.ssoCheck).toHaveBeenCalledTimes(1);
+		expect((await due.connectRepository.get()).sso?.lastCheckRunAt).toBe(NOW.toISOString());
+	});
+
+	it("does not run the check when SSO is disabled", async () => {
+		const { service, connectApiService } = await setup({
+			sso: dueState,
+			ssoConfig: jest.fn<any>().mockResolvedValue({ ...config, enabled: false }),
+		});
+
+		await service.handleJob();
+
+		expect(connectApiService.ssoCheck).not.toHaveBeenCalled();
+	});
+
+	it("sends unlinked password users once even with no linked users", async () => {
+		const { service, connectApiService, usersRepository } = await setup({ unlinkedEmails: ["contractor@acme.com"] });
+
+		await service.handleJob();
+
+		expect(usersRepository.findUnlinkedPasswordUserEmails).toHaveBeenCalledWith(500);
+		expect(connectApiService.ssoCheck).toHaveBeenCalledTimes(1);
+		expect(connectApiService.ssoCheck).toHaveBeenCalledWith(expect.objectContaining({ agentId: "agent-1", token: TOKEN }), {
+			subjects: [],
+			unlinkedPasswordUsers: ["contractor@acme.com"],
+		});
+	});
+
+	it("deactivates and revokes a denied user", async () => {
+		const user = makeUser(1);
+		const calls: string[] = [];
+		const ssoCheck = jest.fn<any>().mockResolvedValue([{ ...allowedFor(user), status: "denied", role: null }]);
+		const { service, usersRepository, ssoSessionRepository, authStateService } = await setup({ linked: [user], ssoCheck });
+		authStateService.revokeTokens.mockImplementation(async () => void calls.push("tokens"));
+		ssoSessionRepository.revokeAllForUser.mockImplementation(async () => void calls.push("sessions"));
+		usersRepository.applySsoCheck.mockImplementation(async () => void calls.push("deactivate"));
+
+		await service.handleJob();
+
+		expect(authStateService.revokeTokens).toHaveBeenCalledWith(["user-1"]);
+		expect(ssoSessionRepository.revokeAllForUser).toHaveBeenCalledWith("user-1");
+		expect(usersRepository.applySsoCheck).toHaveBeenCalledWith("user-1", { isActive: false, deactivatedBySso: true });
+		expect(calls).toEqual(["tokens", "sessions", "deactivate"]);
+	});
+
+	it("leaves an already inactive user alone when denied", async () => {
+		const user = makeUser(1, { isActive: false });
+		const ssoCheck = jest.fn<any>().mockResolvedValue([{ ...allowedFor(user), status: "denied", role: null }]);
+		const { service, usersRepository, authStateService } = await setup({ linked: [user], ssoCheck });
+
+		await service.handleJob();
+
+		expect(usersRepository.applySsoCheck).not.toHaveBeenCalled();
+		expect(authStateService.revokeTokens).not.toHaveBeenCalled();
+	});
+
+	it("marks an allowed user as checked", async () => {
+		const user = makeUser(1);
+		const ssoCheck = jest.fn<any>().mockResolvedValue([allowedFor(user)]);
+		const { service, usersRepository, authStateService } = await setup({ linked: [user], ssoCheck });
+
+		await service.handleJob();
+
+		expect(usersRepository.applySsoCheck).toHaveBeenCalledWith("user-1", { lastCheckedAt: NOW.toISOString() });
+		expect(authStateService.revokeTokens).not.toHaveBeenCalled();
+	});
+
+	it("updates a managed role", async () => {
+		const user = makeUser(1);
+		const ssoCheck = jest.fn<any>().mockResolvedValue([allowedFor(user, { role: "admin" })]);
+		const { service, usersRepository } = await setup({ linked: [user], ssoCheck });
+
+		await service.handleJob();
+
+		expect(usersRepository.applySsoCheck).toHaveBeenCalledWith("user-1", { lastCheckedAt: NOW.toISOString(), role: "admin" });
+	});
+
+	it("keeps the role when Connect does not manage it", async () => {
+		const user = makeUser(1);
+		const ssoCheck = jest.fn<any>().mockResolvedValue([allowedFor(user, { role: "admin", roleManaged: false })]);
+		const { service, usersRepository } = await setup({ linked: [user], ssoCheck });
+
+		await service.handleJob();
+
+		expect(usersRepository.applySsoCheck).toHaveBeenCalledWith("user-1", { lastCheckedAt: NOW.toISOString() });
+	});
+
+	it("leaves users untouched when Connect answers unknown", async () => {
+		const user = makeUser(1);
+		const ssoCheck = jest.fn<any>().mockResolvedValue([{ ...allowedFor(user), status: "unknown", role: null }]);
+		const { service, usersRepository, authStateService, ssoSessionRepository } = await setup({ linked: [user], ssoCheck });
+
+		await service.handleJob();
+
+		expect(usersRepository.applySsoCheck).not.toHaveBeenCalled();
+		expect(authStateService.revokeTokens).not.toHaveBeenCalled();
+		expect(ssoSessionRepository.revokeAllForUser).not.toHaveBeenCalled();
+	});
+
+	it("ignores results that match no linked user", async () => {
+		const user = makeUser(1);
+		const stranger = makeUser(2);
+		const ssoCheck = jest.fn<any>().mockResolvedValue([{ ...allowedFor(stranger), status: "denied", role: null }]);
+		const { service, usersRepository } = await setup({ linked: [user], ssoCheck });
+
+		await service.handleJob();
+
+		expect(usersRepository.applySsoCheck).not.toHaveBeenCalled();
+	});
+
+	it("changes nobody and keeps lastCheckRunAt unset when Connect is unreachable", async () => {
+		const user = makeUser(1);
+		for (const failure of [
+			new Error("ECONNREFUSED"),
+			new ConnectApiRejectedError(503, "unavailable"),
+			new ConnectApiRejectedError(401, "unauthorized"),
+		]) {
+			const { service, connectRepository, usersRepository, authStateService } = await setup({
+				linked: [user],
+				ssoCheck: jest.fn<any>().mockRejectedValue(failure),
+			});
+
+			await service.handleJob();
+
+			expect(usersRepository.applySsoCheck).not.toHaveBeenCalled();
+			expect(authStateService.revokeTokens).not.toHaveBeenCalled();
+			expect((await connectRepository.get()).sso?.lastCheckRunAt).toBeNull();
+		}
+	});
+
+	it("stops without changing users when Connect answers sso_disabled", async () => {
+		const user = makeUser(1);
+		const { service, connectRepository, usersRepository } = await setup({
+			linked: [user],
+			ssoCheck: jest.fn<any>().mockRejectedValue(new ConnectApiRejectedError(403, "sso_disabled")),
+		});
+
+		await service.handleJob();
+
+		expect(usersRepository.applySsoCheck).not.toHaveBeenCalled();
+		expect((await connectRepository.get()).sso?.lastCheckRunAt).toBeNull();
+	});
+
+	it("splits 120 linked users into batches of 50, 50 and 20", async () => {
+		const linked = Array.from({ length: 120 }, (_, i) => makeUser(i));
+		const ssoCheck = jest
+			.fn<any>()
+			.mockImplementation(async (_enrollment: unknown, input: { subjects: { subject: string }[] }) =>
+				input.subjects.map((s) => ({ ...allowedFor(linked.find((u) => u.sso!.subject === s.subject)!) }))
+			);
+		const { service, connectRepository, usersRepository } = await setup({ linked, ssoCheck, unlinkedEmails: ["a@acme.com"] });
+
+		await service.handleJob();
+
+		expect(ssoCheck.mock.calls.map((c: any) => c[1].subjects.length)).toEqual([50, 50, 20]);
+		expect(ssoCheck.mock.calls.map((c: any) => "unlinkedPasswordUsers" in c[1])).toEqual([true, false, false]);
+		expect(usersRepository.applySsoCheck).toHaveBeenCalledTimes(120);
+		expect((await connectRepository.get()).sso?.lastCheckRunAt).toBe(NOW.toISOString());
+	});
+
+	it("keeps lastCheckRunAt unset when a later batch fails", async () => {
+		const linked = Array.from({ length: 60 }, (_, i) => makeUser(i));
+		const ssoCheck = jest
+			.fn<any>()
+			.mockResolvedValueOnce(linked.slice(0, 50).map((u) => allowedFor(u)))
+			.mockRejectedValueOnce(new Error("down"));
+		const { service, connectRepository } = await setup({ linked, ssoCheck });
+
+		await service.handleJob();
+
+		expect((await connectRepository.get()).sso?.lastCheckRunAt).toBeNull();
 	});
 });
