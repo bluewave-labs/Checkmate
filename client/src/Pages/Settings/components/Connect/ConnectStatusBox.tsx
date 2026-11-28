@@ -7,7 +7,7 @@ import { ConfigBox, ValueLabel } from "@/Components/design-elements";
 import { useFormatDate } from "@/Hooks/useFormatDate";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import type { ConnectStatus } from "@/Types/Connect";
-import { CONNECT_SITE_HOST, CONNECT_SITE_URL } from "./constants";
+import { CONNECT_DASHBOARD_HOST, CONNECT_DASHBOARD_URL } from "./constants";
 
 export const ConnectStatusBox = ({ status }: { status: ConnectStatus }) => {
 	const theme = useTheme();
@@ -67,12 +67,12 @@ export const ConnectStatusBox = ({ status }: { status: ConnectStatus }) => {
 						</Typography>
 					)}
 					<Link
-						href={CONNECT_SITE_URL}
+						href={CONNECT_DASHBOARD_URL}
 						target="_blank"
 						rel="noopener noreferrer"
 					>
 						{t("pages.settings.form.connect.status.siteLink", {
-							site: CONNECT_SITE_HOST,
+							site: CONNECT_DASHBOARD_HOST,
 						})}
 					</Link>
 				</Stack>

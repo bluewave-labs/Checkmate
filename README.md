@@ -349,7 +349,7 @@ curl -fsS "https://<checkmate-host>/api/v1/heartbeat/<pingKey>/nightly-backup?cr
 <a id="checkmate-connect"></a>
 ### Checkmate Connect
 
-[Checkmate Connect](https://checkmateconnect.io) is an optional cloud service for self-hosted Checkmate, available from v4.0.0. It adds remote access to your installation without opening inbound ports, encrypted cloud backups with restore, and a watchdog that emails you when your server stops reporting. Checkmate runs fully without it. Connect is free during its beta.
+[Checkmate Connect](https://checkmate.so/connect) is an optional cloud service for self-hosted Checkmate, available from v4.0.0. It adds remote access to your installation without opening inbound ports, encrypted cloud backups with restore, and a watchdog that emails you when your server stops reporting. Checkmate runs fully without it. Connect is free during its beta.
 
 To enroll a server:
 
