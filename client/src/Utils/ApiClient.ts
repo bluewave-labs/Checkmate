@@ -23,7 +23,14 @@ type StoreType = {
 	dispatch: (action: unknown) => unknown;
 };
 
-type RetryableConfig = InternalAxiosRequestConfig & { _ssoRetried?: boolean };
+type RetryableConfig = InternalAxiosRequestConfig & {
+	// Retried after a real refresh: a second 401 is final
+	_ssoRetried?: boolean;
+	// Retried with tokens another tab refreshed: a second 401 still gets one refresh
+	_ssoAdopted?: boolean;
+};
+
+const LOGOUT_REFRESH_WAIT_MS = 3000;
 
 const REFRESH_URL = "/sso/refresh";
 const PERSIST_KEY = "persist:root";
@@ -60,6 +67,20 @@ const readPersistedAuth = (): TokenPayload | null => {
 const sentToken = (config: AxiosRequestConfig): string =>
 	String(config.headers?.Authorization ?? "").replace("Bearer ", "");
 
+// Revoke the server session on sign-out. If a refresh is in flight the server has
+// already rotated the token we hold, so wait for it (bounded) and revoke the new one.
+export const revokeSession = async (refreshToken: string): Promise<void> => {
+	let token = refreshToken;
+	if (refreshPromise) {
+		const timeout = new Promise<null>((resolve) =>
+			setTimeout(resolve, LOGOUT_REFRESH_WAIT_MS, null)
+		);
+		const rotated = await Promise.race([refreshPromise.catch(() => null), timeout]);
+		token = rotated?.refreshToken ?? token;
+	}
+	await api.post("/sso/logout", { refreshToken: token }).catch(() => undefined);
+};
+
 export const initApiClient = (store: StoreType): void => {
 	storeInstance = store;
 
@@ -89,9 +110,18 @@ export const initApiClient = (store: StoreType): void => {
 		serverUnreachableCallback?.(false);
 		return response;
 	};
-	const adopt = (config: RetryableConfig, tokens: TokenPayload) => {
-		storeInstance?.dispatch(setTokens(tokens));
-		config._ssoRetried = true;
+	const adopt = (
+		config: RetryableConfig,
+		tokens: TokenPayload,
+		error: AxiosError,
+		flag: "_ssoRetried" | "_ssoAdopted"
+	) => {
+		// Signed out while the refresh was pending: don't bring the session back
+		if (!storeInstance?.getState()?.auth?.refreshToken) {
+			return Promise.reject(error);
+		}
+		storeInstance.dispatch(setTokens(tokens));
+		config[flag] = true;
 		config.headers.set("Authorization", `Bearer ${tokens.token}`);
 		return api.request(config);
 	};
@@ -119,8 +149,8 @@ export const initApiClient = (store: StoreType): void => {
 		}
 
 		const persisted = readPersistedAuth();
-		if (persisted && persisted.token !== sentToken(config)) {
-			return adopt(config, persisted);
+		if (persisted && !config._ssoAdopted && persisted.token !== sentToken(config)) {
+			return adopt(config, persisted, error, "_ssoAdopted");
 		}
 
 		refreshPromise ??= api
@@ -133,13 +163,17 @@ export const initApiClient = (store: StoreType): void => {
 		try {
 			tokens = await refreshPromise;
 		} catch (refreshError) {
-			const latest = readPersistedAuth();
-			if (latest && latest.token !== sentToken(config)) {
-				return adopt(config, latest);
+			// Only a rejected session ends the login; outages and rate limits keep it
+			if ((refreshError as AxiosError).response?.status !== 401) {
+				return Promise.reject(error);
 			}
-			return giveUp(refreshError as AxiosError);
+			const latest = readPersistedAuth();
+			if (latest && !config._ssoAdopted && latest.token !== sentToken(config)) {
+				return adopt(config, latest, error, "_ssoAdopted");
+			}
+			return giveUp(error);
 		}
-		return adopt(config, tokens);
+		return adopt(config, tokens, error, "_ssoRetried");
 	};
 
 	const onError = (error: AxiosError) => {

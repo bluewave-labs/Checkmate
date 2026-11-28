@@ -10,7 +10,7 @@ import { useNavigate } from "react-router";
 import { MoreVertical, LogOut, Moon, Sun } from "lucide-react";
 import { Icon } from "@/Components/design-elements";
 import { clearAuthState } from "@/Features/Auth/authSlice.js";
-import { post } from "@/Utils/ApiClient";
+import { revokeSession } from "@/Utils/ApiClient";
 import type { RootState } from "@/Types/state.js";
 import { setMode } from "@/Features/UI/uiSlice.js";
 import useSidebar from "@/Hooks/useSidebar";
@@ -46,7 +46,7 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 
 	const handleLogout = () => {
 		if (refreshToken) {
-			post("/sso/logout", { refreshToken }).catch(() => undefined);
+			void revokeSession(refreshToken);
 		}
 		dispatch(clearAuthState());
 		navigate("/login");
