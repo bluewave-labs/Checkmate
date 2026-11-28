@@ -17,6 +17,7 @@ import {
 	getUptimeDetailsByIdQueryValidation,
 	importMonitorsBodyValidation,
 	bulkPauseMonitorBodyValidation,
+	bulkDeleteMonitorBodyValidation,
 	getDockerDetailsByIdParamValidation,
 	getDockerDetailsByIdQueryValidation,
 	getDockerContainerNameParamValidation,
@@ -47,6 +48,7 @@ export interface IMonitorController {
 	createMonitor: RequestHandler;
 	importMonitorsFromJSON: RequestHandler;
 	deleteMonitor: RequestHandler;
+	bulkDeleteMonitors: RequestHandler;
 	deleteAllMonitors: RequestHandler;
 	editMonitor: RequestHandler;
 	pauseMonitor: RequestHandler;
@@ -179,6 +181,18 @@ class MonitorController implements IMonitorController {
 		const teamId = requireTeamId(req.user?.teamId);
 		const data = await this.monitorService.deleteMonitor({ teamId, monitorId });
 		res.json({ success: true, msg: "Monitor deleted successfully", data });
+	};
+
+	bulkDeleteMonitors: Handler = async (req, res) => {
+		const { monitorIds } = bulkDeleteMonitorBodyValidation.parse(req.body);
+		const teamId = requireTeamId(req.user?.teamId);
+		const data = await this.monitorService.bulkDeleteMonitors({ teamId, monitorIds });
+		const monitorStr = data.deletedCount === 1 ? "monitor" : "monitors";
+		let msg = `${data.deletedCount} ${monitorStr} deleted successfully`;
+		if (data.failedCount > 0) {
+			msg = `${data.deletedCount} ${monitorStr} deleted, but cleanup failed for ${data.failedCount}. Please check logs.`;
+		}
+		res.json({ success: true, msg, data });
 	};
 
 	deleteAllMonitors: Handler = async (req, res) => {

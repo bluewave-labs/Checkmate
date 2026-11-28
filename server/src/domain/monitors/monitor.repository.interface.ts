@@ -63,6 +63,7 @@ export interface IMonitorsRepository {
 	bulkTogglePause(monitorIds: string[], teamId: string, pause: boolean): Promise<Monitor[]>;
 	// delete
 	deleteById(monitorId: string, teamId: string): Promise<Monitor>;
+	deleteByIds(monitorIds: string[], teamId: string): Promise<Monitor[]>;
 	deleteByTeamId(teamId: string): Promise<{ monitors: Monitor[]; deletedCount: number }>;
 
 	// counts

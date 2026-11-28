@@ -210,7 +210,7 @@ export const useMonitorListController = (config: MonitorListConfig) => {
 		{ refreshInterval: config.refreshInterval, keepPreviousData: true }
 	);
 
-	const bulk = useBulkMonitorActions(refetch, page);
+	const bulk = useBulkMonitorActions(refetch, page, monitorsWithChecksData?.monitors);
 
 	// Delete ops
 	const { deleteFn, loading: isDeleting } = useDelete();
