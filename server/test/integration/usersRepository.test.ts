@@ -112,4 +112,75 @@ describe("MongoUsersRepository", () => {
 			await expect(repo.findAuthState(untouched)).resolves.toEqual({ isActive: true, tokensValidAfter: null });
 		});
 	});
+
+	describe("sso offboarding queries", () => {
+		const link = (subject: string) => ({
+			provider: "entra",
+			tenant: "tenant-1",
+			subject,
+			roleManaged: true,
+			lastCheckedAt: null,
+			deactivatedBySso: false,
+		});
+
+		it("findSsoLinked returns linked users, reading a missing isActive as active, and skips superadmin and demo", async () => {
+			const legacy = await insertRaw("legacy@example.com", { sso: link("sub-1") });
+			const inactive = await insertRaw("off@example.com", { sso: link("sub-2"), isActive: false });
+			await insertRaw("root@example.com", { sso: link("sub-3"), role: ["admin", "superadmin"] });
+			await insertRaw("demo@example.com", { sso: link("sub-4"), role: ["demo"] });
+			await insertRaw("plain@example.com");
+
+			const users = await repo.findSsoLinked();
+
+			expect(users.map((u) => u.id).sort()).toEqual([legacy, inactive].sort());
+			expect(users.find((u) => u.id === legacy)?.isActive).toBe(true);
+			expect(users.find((u) => u.id === inactive)?.isActive).toBe(false);
+		});
+
+		it("findUnlinkedPasswordUserEmails returns only password users without a link, outside superadmin and demo", async () => {
+			await insertRaw("keep@example.com");
+			await insertRaw("root@example.com", { role: ["superadmin"] });
+			await insertRaw("demo@example.com", { role: ["demo"] });
+			await insertRaw("nopass@example.com", { password: undefined });
+			await insertRaw("empty@example.com", { password: "" });
+			await insertRaw("linked@example.com", { sso: link("sub-1") });
+
+			await expect(repo.findUnlinkedPasswordUserEmails(500)).resolves.toEqual(["keep@example.com"]);
+		});
+
+		it("findUnlinkedPasswordUserEmails respects the limit", async () => {
+			for (let i = 0; i < 5; i++) await insertRaw(`u${i}@example.com`);
+
+			await expect(repo.findUnlinkedPasswordUserEmails(3)).resolves.toHaveLength(3);
+		});
+
+		it("applySsoCheck updates the check fields and keeps the link identity", async () => {
+			const id = await insertRaw("linked@example.com", { sso: link("sub-1") });
+
+			await repo.applySsoCheck(id, { lastCheckedAt: "2026-11-27T10:00:00.000Z", role: "admin", isActive: false, deactivatedBySso: true });
+
+			const doc = await UserModel.collection.findOne({ _id: new mongoose.Types.ObjectId(id) });
+			expect(doc?.role).toEqual(["admin"]);
+			expect(doc?.isActive).toBe(false);
+			expect(doc?.sso).toEqual({
+				provider: "entra",
+				tenant: "tenant-1",
+				subject: "sub-1",
+				roleManaged: true,
+				lastCheckedAt: "2026-11-27T10:00:00.000Z",
+				deactivatedBySso: true,
+			});
+		});
+
+		it("applySsoCheck does nothing to a user without a link", async () => {
+			const id = await insertRaw("plain@example.com");
+
+			await repo.applySsoCheck(id, { lastCheckedAt: "2026-11-27T10:00:00.000Z", role: "admin", isActive: false, deactivatedBySso: true });
+
+			const doc = await UserModel.collection.findOne({ _id: new mongoose.Types.ObjectId(id) });
+			expect(doc?.role).toEqual(["user"]);
+			expect(doc?.isActive).toBeUndefined();
+			expect(doc?.sso).toBeUndefined();
+		});
+	});
 });

@@ -113,7 +113,8 @@ export class SsoSyncService implements ISsoSyncService {
 	private isCheckDue = (lastCheckRunAt: string | null) => {
 		if (lastCheckRunAt === null) return true;
 		const elapsed = this.now().getTime() - Date.parse(lastCheckRunAt);
-		return Number.isNaN(elapsed) || elapsed >= CHECK_INTERVAL_MS;
+		// A timestamp in the future (clock corrected backwards) also counts as due
+		return Number.isNaN(elapsed) || elapsed < 0 || elapsed >= CHECK_INTERVAL_MS;
 	};
 
 	// Asks Connect whether each linked user may still sign in. Any failure ends the run without touching the
@@ -160,6 +161,8 @@ export class SsoSyncService implements ISsoSyncService {
 			const managedRole =
 				result.roleManaged && result.role !== null && !(user.role.length === 1 && user.role[0] === result.role) ? result.role : undefined;
 			await this.usersRepository.applySsoCheck(user.id, { lastCheckedAt: this.now().toISOString(), ...(managedRole ? { role: managedRole } : {}) });
+			// The role is inside the access token, so a demotion has to kill tokens issued with the old one
+			if (managedRole === "user" && user.role.includes("admin")) await this.authStateService.revokeTokens([user.id]);
 			return;
 		}
 		// A user an admin already deactivated stays as is, so a later login can't mistake it for an SSO deactivation

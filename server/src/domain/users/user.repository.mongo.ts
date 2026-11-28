@@ -105,7 +105,7 @@ class MongoUsersRepository implements IUsersRepository {
 
 	findUnlinkedPasswordUserEmails = async (limit: number) => {
 		const users = await UserModel.find(
-			{ sso: { $exists: false }, role: { $nin: PROTECTED_ROLES }, password: { $exists: true, $nin: [null, ""] } },
+			{ "sso.subject": { $exists: false }, role: { $nin: PROTECTED_ROLES }, password: { $exists: true, $nin: [null, ""] } },
 			{ email: 1 }
 		)
 			.limit(limit)

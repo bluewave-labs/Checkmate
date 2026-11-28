@@ -194,6 +194,14 @@ describe("SsoSyncService offboarding check", () => {
 		expect((await due.connectRepository.get()).sso?.lastCheckRunAt).toBe(NOW.toISOString());
 	});
 
+	it("runs the check when lastCheckRunAt is in the future", async () => {
+		const { service, connectApiService } = await setup({ sso: { ...cached, lastCheckRunAt: "2026-11-27T12:00:00.000Z" } });
+
+		await service.handleJob();
+
+		expect(connectApiService.ssoCheck).toHaveBeenCalledTimes(1);
+	});
+
 	it("does not run the check when SSO is disabled", async () => {
 		const { service, connectApiService } = await setup({
 			sso: dueState,
@@ -265,6 +273,19 @@ describe("SsoSyncService offboarding check", () => {
 		await service.handleJob();
 
 		expect(usersRepository.applySsoCheck).toHaveBeenCalledWith("user-1", { lastCheckedAt: NOW.toISOString(), role: "admin" });
+	});
+
+	it("revokes tokens on a managed demotion but not on a promotion", async () => {
+		const admin = makeUser(1, { role: ["admin"] });
+		const demote = await setup({ linked: [admin], ssoCheck: jest.fn<any>().mockResolvedValue([allowedFor(admin, { role: "user" })]) });
+		await demote.service.handleJob();
+		expect(demote.usersRepository.applySsoCheck).toHaveBeenCalledWith("user-1", { lastCheckedAt: NOW.toISOString(), role: "user" });
+		expect(demote.authStateService.revokeTokens).toHaveBeenCalledWith(["user-1"]);
+
+		const user = makeUser(2);
+		const promote = await setup({ linked: [user], ssoCheck: jest.fn<any>().mockResolvedValue([allowedFor(user, { role: "admin" })]) });
+		await promote.service.handleJob();
+		expect(promote.authStateService.revokeTokens).not.toHaveBeenCalled();
 	});
 
 	it("keeps the role when Connect does not manage it", async () => {
