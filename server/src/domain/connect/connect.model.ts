@@ -1,5 +1,5 @@
 import { Schema, model, type Types } from "mongoose";
-import { CONNECT_STATE_COLLECTION, type ConnectEnrollment, type ConnectState } from "@/domain/connect/connect.type.js";
+import { CONNECT_STATE_COLLECTION, type ConnectEnrollment, type ConnectSsoState, type ConnectState } from "@/domain/connect/connect.type.js";
 import {
 	type ConnectBackupKind,
 	ConnectBackupKinds,
@@ -13,6 +13,7 @@ import {
 	ConnectVerifyOutcomes,
 	type ConnectVerifyResult,
 } from "@/domain/connect/connect-backup.type.js";
+import { SsoProviders } from "@/domain/sso/sso.type.js";
 
 interface ConnectOperationDocument {
 	type: ConnectOperation;
@@ -99,6 +100,20 @@ const scheduleSchema = new Schema<ConnectSchedule>(
 	{ _id: false }
 );
 
+const ssoSchema = new Schema<ConnectSsoState>(
+	{
+		enabled: { type: Boolean, required: true },
+		provider: { type: String, enum: SsoProviders, default: null },
+		label: { type: String, default: null },
+		enforce: { type: Boolean, required: true },
+		graceUntil: { type: String, default: null },
+		startUrl: { type: String, default: null },
+		fetchedAt: { type: String, required: true },
+		lastCheckRunAt: { type: String, default: null },
+	},
+	{ _id: false }
+);
+
 const ConnectStateSchema = new Schema<ConnectStateDocument>(
 	{
 		singleton: { type: Boolean, required: true, unique: true, default: true },
@@ -111,6 +126,7 @@ const ConnectStateSchema = new Schema<ConnectStateDocument>(
 		lastRestore: { type: backupResultSchema, default: null },
 		lastVerify: { type: verifyResultSchema, default: null },
 		schedule: { type: scheduleSchema, default: null },
+		sso: { type: ssoSchema, default: null },
 	},
 	{ timestamps: true, collection: CONNECT_STATE_COLLECTION }
 );

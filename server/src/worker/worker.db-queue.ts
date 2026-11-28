@@ -26,6 +26,7 @@ const CONCURRENCY: Record<JobType, number> = {
 	"cleanup-retention": 1,
 	telemetry: 1,
 	"connect-heartbeat": 1,
+	"connect-sso": 1,
 	"connect-operation": 1,
 	"connect-backup": 1,
 };
@@ -60,6 +61,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		"cleanup-retention": 0,
 		telemetry: 0,
 		"connect-heartbeat": 0,
+		"connect-sso": 0,
 		"connect-operation": 0,
 		"connect-backup": 0,
 	};

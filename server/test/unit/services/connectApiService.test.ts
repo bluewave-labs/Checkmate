@@ -4,7 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { PassThrough } from "node:stream";
-import { ConnectApiService } from "../../../src/domain/connect/connect-api.service.ts";
+import { ConnectApiRejectedError, ConnectApiService } from "../../../src/domain/connect/connect-api.service.ts";
 import type { ISettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
 import type { ConnectEnrollment } from "../../../src/domain/connect/connect.type.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
@@ -476,5 +476,74 @@ describe("ConnectApiService.download", () => {
 				"transfer stalled: no data moved for 300 s"
 			);
 		});
+	});
+});
+
+describe("ConnectApiService SSO routes", () => {
+	const config = {
+		enabled: true,
+		provider: "entra",
+		label: "Sign in with Microsoft",
+		enforce: false,
+		graceUntil: null,
+		startUrl: "https://connect.checkmate.so/sso/start",
+	};
+	const subject = { provider: "entra" as const, tenant: "t-1", subject: "s-1" };
+
+	it("ssoConfig gets the config with the agent id and bearer token", async () => {
+		const get = jest.fn<any>().mockResolvedValue(json(200, config));
+		const { connectApiService } = setup({ get });
+
+		await expect(connectApiService.ssoConfig(enrollment())).resolves.toEqual(config);
+
+		const [url, options] = get.mock.calls[0] as [string, any];
+		expect(url).toBe(`${API}/api/agent/sso/config`);
+		expect(options.searchParams).toEqual({ agentId: "inst-1" });
+		expect(options.headers.authorization).toBe(`Bearer ${TOKEN}`);
+		expect(options.followRedirect).toBe(false);
+	});
+
+	it("ssoRedeem posts code and state", async () => {
+		const identity = { ...subject, email: "jane@acme.com", firstName: "Jane", lastName: "Doe", role: "admin", roleManaged: true };
+		const post = jest.fn<any>().mockResolvedValue(json(200, { identity }));
+		const { connectApiService } = setup({ post });
+
+		await expect(connectApiService.ssoRedeem(enrollment(), { code: "c", state: "s" })).resolves.toEqual(identity);
+
+		const [url, options] = post.mock.calls[0] as [string, any];
+		expect(url).toBe(`${API}/api/agent/sso/redeem`);
+		expect(options.json).toEqual({ agentId: "inst-1", code: "c", state: "s" });
+		expect(options.headers.authorization).toBe(`Bearer ${TOKEN}`);
+	});
+
+	it("ssoCheck omits unlinkedPasswordUsers when not given", async () => {
+		const results = [{ ...subject, status: "allowed", role: "admin", roleManaged: true }];
+		const post = jest.fn<any>().mockResolvedValue(json(200, { results }));
+		const { connectApiService } = setup({ post });
+
+		await expect(connectApiService.ssoCheck(enrollment(), { subjects: [subject] })).resolves.toEqual(results);
+		expect((post.mock.calls[0] as [string, any])[1].json).toEqual({ agentId: "inst-1", subjects: [subject] });
+
+		await connectApiService.ssoCheck(enrollment(), { subjects: [], unlinkedPasswordUsers: [] }).catch(() => undefined);
+		expect((post.mock.calls[1] as [string, any])[1].json).toEqual({ agentId: "inst-1", subjects: [], unlinkedPasswordUsers: [] });
+	});
+
+	it("throws ConnectApiRejectedError with status and code on 403 sso_disabled", async () => {
+		const post = jest.fn<any>().mockResolvedValue(json(403, { error: "sso_disabled" }));
+		const { connectApiService } = setup({ post });
+
+		const error = await connectApiService.ssoRedeem(enrollment(), { code: "c", state: "s" }).catch((e: unknown) => e);
+
+		expect(error).toBeInstanceOf(ConnectApiRejectedError);
+		expect(error).toMatchObject({ status: 403, code: "sso_disabled", message: "sso_disabled" });
+	});
+
+	it("throws ConnectApiRejectedError with an empty code when the body has no error", async () => {
+		const get = jest.fn<any>().mockResolvedValue(json(503, {}));
+		const { connectApiService } = setup({ get });
+
+		const error = await connectApiService.ssoConfig(enrollment()).catch((e: unknown) => e);
+
+		expect(error).toMatchObject({ status: 503, code: "", message: "Checkmate Connect responded 503" });
 	});
 });

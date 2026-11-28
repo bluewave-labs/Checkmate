@@ -1,5 +1,5 @@
 import type { IConnectRepository } from "../../src/domain/connect/connect.repository.interface.ts";
-import type { ConnectEnrollment, ConnectState } from "../../src/domain/connect/connect.type.ts";
+import type { ConnectEnrollment, ConnectSsoState, ConnectState } from "../../src/domain/connect/connect.type.ts";
 import type {
 	ConnectBackupResult,
 	ConnectOperationRequest,
@@ -19,6 +19,7 @@ export class InMemoryConnectRepository implements IConnectRepository {
 		lastRestore: null,
 		lastVerify: null,
 		schedule: null,
+		sso: null,
 	};
 	private stored = false;
 
@@ -36,6 +37,7 @@ export class InMemoryConnectRepository implements IConnectRepository {
 			lastBackup: this.state.lastBackup ? { ...this.state.lastBackup } : null,
 			lastRestore: this.state.lastRestore ? { ...this.state.lastRestore } : null,
 			lastVerify: this.state.lastVerify ? { ...this.state.lastVerify } : null,
+			sso: this.state.sso ? { ...this.state.sso } : null,
 		};
 	}
 
@@ -54,7 +56,7 @@ export class InMemoryConnectRepository implements IConnectRepository {
 	}
 
 	async clearEnrollment(): Promise<void> {
-		this.state = { ...this.state, enrollment: null, remoteAccessEnabled: false };
+		this.state = { ...this.state, enrollment: null, remoteAccessEnabled: false, sso: null };
 	}
 
 	async setRecoveryKeyIfUnset(recoveryKey: string): Promise<boolean> {
@@ -102,6 +104,10 @@ export class InMemoryConnectRepository implements IConnectRepository {
 	async setSchedule(schedule: ConnectSchedule): Promise<void> {
 		if (!this.stored) return;
 		this.state = { ...this.state, schedule: { ...schedule } };
+	}
+
+	async setSsoState(sso: ConnectSsoState | null): Promise<void> {
+		this.state = { ...this.state, sso: sso ? { ...sso } : null };
 	}
 
 	async clearOperation(): Promise<void> {

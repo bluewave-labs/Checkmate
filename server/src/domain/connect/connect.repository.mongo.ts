@@ -7,7 +7,7 @@ import type {
 } from "@/domain/connect/connect-backup.type.js";
 import ConnectStateModel, { type ConnectOperationDocument, type ConnectStateDocument } from "@/domain/connect/connect.model.js";
 import { IConnectRepository } from "@/domain/connect/connect.repository.interface.js";
-import type { ConnectEnrollment, ConnectState } from "@/domain/connect/connect.type.js";
+import type { ConnectEnrollment, ConnectSsoState, ConnectState } from "@/domain/connect/connect.type.js";
 
 class MongoConnectRepository implements IConnectRepository {
 	private toOperation = (operation: ConnectOperationDocument): ConnectOperationRequest | null => {
@@ -61,6 +61,18 @@ class MongoConnectRepository implements IConnectRepository {
 			lastRestore: doc?.lastRestore ? this.toResult(doc.lastRestore) : null,
 			lastVerify: doc?.lastVerify ? { outcome: doc.lastVerify.outcome, at: doc.lastVerify.at, error: doc.lastVerify.error ?? null } : null,
 			schedule: doc?.schedule ? { enabled: doc.schedule.enabled, intervalHours: doc.schedule.intervalHours, kind: doc.schedule.kind } : null,
+			sso: doc?.sso
+				? {
+						enabled: doc.sso.enabled,
+						provider: doc.sso.provider ?? null,
+						label: doc.sso.label ?? null,
+						enforce: doc.sso.enforce,
+						graceUntil: doc.sso.graceUntil ?? null,
+						startUrl: doc.sso.startUrl ?? null,
+						fetchedAt: doc.sso.fetchedAt,
+						lastCheckRunAt: doc.sso.lastCheckRunAt ?? null,
+					}
+				: null,
 		};
 	};
 
@@ -87,7 +99,7 @@ class MongoConnectRepository implements IConnectRepository {
 	};
 
 	clearEnrollment = async (): Promise<void> => {
-		await ConnectStateModel.updateOne({ singleton: true }, { $set: { enrollment: null, remoteAccessEnabled: false } });
+		await ConnectStateModel.updateOne({ singleton: true }, { $set: { enrollment: null, remoteAccessEnabled: false, sso: null } });
 	};
 
 	setRecoveryKeyIfUnset = async (recoveryKey: string): Promise<boolean> => {
@@ -130,6 +142,10 @@ class MongoConnectRepository implements IConnectRepository {
 
 	setSchedule = async (schedule: ConnectSchedule): Promise<void> => {
 		await ConnectStateModel.updateOne({ singleton: true }, { $set: { schedule } }, { runValidators: true });
+	};
+
+	setSsoState = async (sso: ConnectSsoState | null): Promise<void> => {
+		await ConnectStateModel.updateOne({ singleton: true }, { $set: { sso } }, { runValidators: true });
 	};
 
 	clearOperation = async (): Promise<void> => {

@@ -17,6 +17,7 @@ const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const TELEMETRY_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const TELEMETRY_FIRST_RUN_JITTER_MS = 60 * 60 * 1000;
 const CONNECT_HEARTBEAT_INTERVAL_MS = 60 * 1000;
+const SSO_SYNC_INTERVAL_MS = 5 * 60 * 1000;
 const ROLLUP_INTERVAL_MS = ROLLUP_BUCKET_MINUTES * 60 * 1000;
 
 export class JobScheduler implements IJobScheduler {
@@ -54,6 +55,7 @@ export class JobScheduler implements IJobScheduler {
 		"cleanup-retention": POLL_MS,
 		telemetry: POLL_MS,
 		"connect-heartbeat": POLL_MS,
+		"connect-sso": POLL_MS,
 		"connect-operation": POLL_MS,
 		"connect-backup": POLL_MS,
 	};
@@ -307,6 +309,7 @@ export class JobScheduler implements IJobScheduler {
 			await this.jobsRepository.deleteGlobalJob("telemetry");
 		}
 		await this.jobsRepository.upsertJob(this.toConnectHeartbeatJob(now));
+		await this.jobsRepository.upsertJobAndSchedule(this.toGlobalRecurringJob("connect-sso", SSO_SYNC_INTERVAL_MS, now));
 	};
 
 	// Register worker

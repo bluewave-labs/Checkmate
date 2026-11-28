@@ -5,7 +5,7 @@ import type {
 	ConnectSchedule,
 	ConnectVerifyResult,
 } from "@/domain/connect/connect-backup.type.js";
-import type { ConnectEnrollment, ConnectState } from "@/domain/connect/connect.type.js";
+import type { ConnectEnrollment, ConnectSsoState, ConnectState } from "@/domain/connect/connect.type.js";
 
 export interface IConnectRepository {
 	// create
@@ -25,6 +25,7 @@ export interface IConnectRepository {
 	setLastVerify(result: ConnectVerifyResult): Promise<void>;
 	replaceRecoveryKey(recoveryKey: string): Promise<void>;
 	setSchedule(schedule: ConnectSchedule): Promise<void>;
+	setSsoState(sso: ConnectSsoState | null): Promise<void>;
 	clearOperation(): Promise<void>;
 	// delete
 }

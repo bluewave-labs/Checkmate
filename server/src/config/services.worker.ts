@@ -18,6 +18,7 @@ import { IBufferService, BufferService } from "@/service/bufferService.js";
 import { IStatusService, StatusService } from "@/service/statusService.js";
 import { SecretsRotationService } from "@/service/encryption/secretsRotationService.js";
 import { TelemetryService } from "@/domain/telemetry/telemetry.service.js";
+import { SsoSyncService } from "@/domain/sso/sso-sync.service.js";
 import { ConnectHeartbeatService } from "@/domain/connect/connect-heartbeat.service.js";
 import { ConnectBackupTools } from "@/domain/connect/connect.backup-tools.js";
 import { ConnectToolsService } from "@/domain/connect/connect-tools.service.js";
@@ -125,6 +126,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	const connectBackupTools = new ConnectBackupTools(spawn, execFile, settingsService, logger);
 	const connectToolsService = new ConnectToolsService(connectBackupTools, queueWorkersRepository, workerId, logger);
 	const connectApiService = new ConnectApiService(got, settingsService, logger);
+	const ssoSyncService = new SsoSyncService({ connectRepository, connectApiService, encryptionService, logger });
 	const connectBackupService = new ConnectBackupService(connectBackupTools, connectApiService, connectRepository, db, logger);
 
 	const notificationReactor = new NotificationReactor(notificationsService);
@@ -182,6 +184,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		"cleanup-retention": workerHelper.getCleanupRetentionJob(),
 		telemetry: workerHelper.getTelemetryJob(),
 		"connect-heartbeat": workerHelper.getConnectHeartbeatJob(),
+		"connect-sso": () => ssoSyncService.handleJob(),
 		"connect-operation": () => connectOperationService.handleJob(),
 		"connect-backup": () => connectScheduleService.handleJob(),
 	};

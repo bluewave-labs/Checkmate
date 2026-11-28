@@ -10,7 +10,8 @@ import {
 	connectApiUploadTicketSchema,
 } from "@/domain/connect/connect-backup.schema.js";
 import type { ConnectBackupUpload, ConnectApiBackup, ConnectApiUploadTicket } from "@/domain/connect/connect-backup.type.js";
-import type { ConnectEnrollment } from "@/domain/connect/connect.type.js";
+import { connectSsoCheckSchema, connectSsoConfigSchema, connectSsoRedeemSchema } from "@/domain/connect/connect-sso.schema.js";
+import type { ConnectEnrollment, ConnectSsoCheckResult, ConnectSsoConfig, ConnectSsoIdentity, SsoSubjectRef } from "@/domain/connect/connect.type.js";
 import type { ILogger } from "@/utils/logger/logger.js";
 import { createHash } from "node:crypto";
 import { pipeline as pipeStreams } from "node:stream/promises";
@@ -23,6 +24,16 @@ const BLOB_HOST_SUFFIX = ".blob.vercel-storage.com";
 const BLOB_API_HOST = "vercel.com";
 const BLOB_API_PATH = "/api/blob";
 
+export class ConnectApiRejectedError extends Error {
+	constructor(
+		public status: number,
+		public code: string
+	) {
+		super(code || `Checkmate Connect responded ${status}`);
+		this.name = "ConnectApiRejectedError";
+	}
+}
+
 export interface IConnectApiService {
 	requestUpload(enrollment: ConnectEnrollment, upload: ConnectBackupUpload): Promise<ConnectApiUploadTicket>;
 	upload(uploadUrl: string, file: string, sizeBytes: number, onPercent: (percent: number) => void): Promise<void>;
@@ -30,6 +41,9 @@ export interface IConnectApiService {
 	complete(enrollment: ConnectEnrollment, backupId: string): Promise<void>;
 	abandon(enrollment: ConnectEnrollment, backupId: string): Promise<void>;
 	list(enrollment: ConnectEnrollment): Promise<ConnectApiBackup[]>;
+	ssoConfig(enrollment: ConnectEnrollment): Promise<ConnectSsoConfig>;
+	ssoRedeem(enrollment: ConnectEnrollment, input: { code: string; state: string }): Promise<ConnectSsoIdentity>;
+	ssoCheck(enrollment: ConnectEnrollment, input: { subjects: SsoSubjectRef[]; unlinkedPasswordUsers?: string[] }): Promise<ConnectSsoCheckResult[]>;
 }
 
 export class ConnectApiService implements IConnectApiService {
@@ -76,7 +90,7 @@ export class ConnectApiService implements IConnectApiService {
 		const data = this.parseJson(body);
 		if (statusCode >= 200 && statusCode < 300) return data;
 		const failure = connectApiErrorSchema.safeParse(data);
-		throw new Error(failure.success ? failure.data.error : `Checkmate Connect responded ${statusCode}`);
+		throw new ConnectApiRejectedError(statusCode, failure.success ? failure.data.error : "");
 	};
 
 	private parse = <T>(schema: z.ZodType<T>, data: unknown): T => {
@@ -215,5 +229,30 @@ export class ConnectApiService implements IConnectApiService {
 			timeout: { request: TIMEOUT_MS },
 		});
 		return this.parse(connectApiBackupListSchema, this.readBody(response.statusCode, response.body)).backups;
+	};
+	ssoConfig = async (enrollment: ConnectEnrollment): Promise<ConnectSsoConfig> => {
+		const response = await this.got.get(`${this.apiBase(enrollment)}/api/agent/sso/config`, {
+			searchParams: { agentId: enrollment.agentId },
+			headers: { authorization: `Bearer ${enrollment.token}` },
+			responseType: "text",
+			followRedirect: false,
+			throwHttpErrors: false,
+			retry: { limit: 0 },
+			timeout: { request: TIMEOUT_MS },
+		});
+		return this.parse(connectSsoConfigSchema, this.readBody(response.statusCode, response.body));
+	};
+
+	ssoRedeem = async (enrollment: ConnectEnrollment, input: { code: string; state: string }): Promise<ConnectSsoIdentity> => {
+		const data = await this.post(`${this.apiBase(enrollment)}/api/agent/sso/redeem`, { agentId: enrollment.agentId, ...input }, enrollment.token);
+		return this.parse(connectSsoRedeemSchema, data).identity;
+	};
+
+	ssoCheck = async (
+		enrollment: ConnectEnrollment,
+		input: { subjects: SsoSubjectRef[]; unlinkedPasswordUsers?: string[] }
+	): Promise<ConnectSsoCheckResult[]> => {
+		const data = await this.post(`${this.apiBase(enrollment)}/api/agent/sso/check`, { agentId: enrollment.agentId, ...input }, enrollment.token);
+		return this.parse(connectSsoCheckSchema, data).results;
 	};
 }

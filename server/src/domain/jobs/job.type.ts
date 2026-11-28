@@ -7,6 +7,7 @@ export const JOB_TYPES = [
 	"cleanup-retention",
 	"telemetry",
 	"connect-heartbeat",
+	"connect-sso",
 	"connect-operation",
 	"connect-backup",
 ] as const;

@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import MongoConnectRepository from "../../src/domain/connect/connect.repository.mongo.ts";
 import { ConnectStateModel } from "../../src/domain/connect/connect.model.ts";
-import { CONNECT_STATE_COLLECTION, type ConnectEnrollment } from "../../src/domain/connect/connect.type.ts";
+import { CONNECT_STATE_COLLECTION, type ConnectEnrollment, type ConnectSsoState } from "../../src/domain/connect/connect.type.ts";
 import type { ConnectBackupResult, ConnectOperationRequest, ConnectVerifyResult } from "../../src/domain/connect/connect-backup.type.ts";
 
 let mongod: MongoMemoryServer;
@@ -39,6 +39,18 @@ const emptyBackupState = {
 	lastRestore: null,
 	lastVerify: null,
 	schedule: null,
+	sso: null,
+};
+
+const sso: ConnectSsoState = {
+	enabled: true,
+	provider: "google",
+	label: "Sign in with Google",
+	enforce: false,
+	graceUntil: null,
+	startUrl: "https://connect.checkmate.so/sso/start",
+	fetchedAt: "2026-11-27T10:00:00.000Z",
+	lastCheckRunAt: null,
 };
 
 describe("MongoConnectRepository", () => {
@@ -173,6 +185,15 @@ describe("MongoConnectRepository", () => {
 
 			await expect(repo.get()).resolves.toEqual({ enrollment: null, remoteAccessEnabled: false, ...emptyBackupState });
 			expect(await ConnectStateModel.countDocuments({})).toBe(1);
+		});
+
+		it("clears the SSO state with the enrollment", async () => {
+			await repo.setEnrollment(enrollment());
+			await repo.setSsoState(sso);
+
+			await repo.clearEnrollment();
+
+			expect((await repo.get()).sso).toBeNull();
 		});
 
 		it("does not create a document when never enrolled", async () => {
@@ -597,6 +618,34 @@ describe("MongoConnectRepository", () => {
 
 			await expect(repo.setSchedule({ enabled: true, intervalHours: 24, kind: "logs" as never })).rejects.toThrow();
 			expect((await repo.get()).schedule).toBeNull();
+		});
+	});
+
+	describe("setSsoState", () => {
+		it("stores and reads the SSO state", async () => {
+			await repo.setEnrollment(enrollment());
+
+			await repo.setSsoState(sso);
+
+			expect((await repo.get()).sso).toEqual(sso);
+		});
+
+		it("stores a disabled config with null fields", async () => {
+			await repo.setEnrollment(enrollment());
+			const disabled = { ...sso, enabled: false, provider: null, label: null, startUrl: null };
+
+			await repo.setSsoState(disabled);
+
+			expect((await repo.get()).sso).toEqual(disabled);
+		});
+
+		it("clears the SSO state", async () => {
+			await repo.setEnrollment(enrollment());
+			await repo.setSsoState(sso);
+
+			await repo.setSsoState(null);
+
+			expect((await repo.get()).sso).toBeNull();
 		});
 	});
 });

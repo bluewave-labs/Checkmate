@@ -5,6 +5,12 @@ import type {
 	ConnectSchedule,
 	ConnectVerifyResult,
 } from "@/domain/connect/connect-backup.type.js";
+import type {
+	connectSsoCheckResultSchema,
+	connectSsoConfigSchema,
+	connectSsoIdentitySchema,
+	connectSsoSubjectSchema,
+} from "@/domain/connect/connect-sso.schema.js";
 import type { connectStatusSchema, connectTunnelStatusSchema } from "@/domain/connect/connect.schema.js";
 import type { z } from "zod";
 
@@ -32,7 +38,18 @@ export type ConnectState = {
 	lastRestore: ConnectBackupResult | null;
 	lastVerify: ConnectVerifyResult | null;
 	schedule: ConnectSchedule | null;
+	sso: ConnectSsoState | null;
 };
+
+// **********************
+// Connect SSO
+// **********************
+
+export type ConnectSsoConfig = z.infer<typeof connectSsoConfigSchema>;
+export type ConnectSsoIdentity = z.infer<typeof connectSsoIdentitySchema>;
+export type SsoSubjectRef = z.infer<typeof connectSsoSubjectSchema>;
+export type ConnectSsoCheckResult = z.infer<typeof connectSsoCheckResultSchema>;
+export type ConnectSsoState = ConnectSsoConfig & { fetchedAt: string; lastCheckRunAt: string | null };
 
 export type ConnectStatus = z.infer<typeof connectStatusSchema>;
 

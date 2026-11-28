@@ -169,6 +169,19 @@ describe("JobScheduler", () => {
 			expect(seed.nextScheduledAt).toBeLessThanOrEqual(Date.now());
 		});
 
+		it("seeds the connect-sso job every five minutes", async () => {
+			const before = Date.now();
+			const { scheduler, mocks } = createScheduler({ queueMode: "primary" });
+			await scheduler.init();
+
+			const call = mocks.jobsRepository.upsertJobAndSchedule.mock.calls.find((c: any[]) => c[0].type === "connect-sso");
+			expect(call).toBeDefined();
+			const seed = call![0] as any;
+			expect(seed).toMatchObject({ id: "connect-sso", refId: null, isActive: true, intervalMs: 5 * 60 * 1000 });
+			expect(seed.nextScheduledAt).toBeGreaterThanOrEqual(before);
+			expect(seed.nextScheduledAt).toBeLessThanOrEqual(Date.now());
+		});
+
 		it("worker mode never touches the telemetry row", async () => {
 			const { scheduler, mocks } = createScheduler({ queueMode: "worker", telemetryEnabled: true });
 			await scheduler.init();
