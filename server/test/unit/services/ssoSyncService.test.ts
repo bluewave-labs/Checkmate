@@ -59,6 +59,7 @@ const setup = async (
 		linked?: User[];
 		unlinkedEmails?: string[];
 		passwordUserIds?: string[];
+		linkedPasswordUserIds?: string[];
 	} = {}
 ) => {
 	const logger = createMockLogger();
@@ -83,6 +84,7 @@ const setup = async (
 		findUnlinkedPasswordUserEmails: jest.fn<any>().mockResolvedValue(opts.unlinkedEmails ?? []),
 		applySsoCheck: jest.fn<any>().mockResolvedValue(undefined),
 		findPasswordUserIdsExceptSuperadmin: jest.fn<any>().mockResolvedValue(opts.passwordUserIds ?? []),
+		findLinkedPasswordUserIds: jest.fn<any>().mockResolvedValue(opts.linkedPasswordUserIds ?? []),
 	};
 	const ssoSessionRepository = {
 		revokeAllForUser: jest.fn<any>().mockResolvedValue(undefined),
@@ -410,6 +412,42 @@ describe("SsoSyncService enforcement", () => {
 		// Two passes in the transition (the second closes the same-second window), none on the later sync
 		expect(authStateService.revokeTokens).toHaveBeenCalledTimes(2);
 		expect(authStateService.revokeTokens).toHaveBeenNthCalledWith(1, ["user-1", "user-2"]);
+	});
+
+	it("re-enabling SSO revokes linked users' password tokens once", async () => {
+		const { service, authStateService, usersRepository } = await setup({
+			sso: { ...cached, ...disabled },
+			linkedPasswordUserIds: ["linked-1"],
+		});
+
+		await service.handleJob();
+		await service.handleJob();
+
+		expect(usersRepository.findLinkedPasswordUserIds).toHaveBeenCalledTimes(1);
+		expect(authStateService.revokeTokens).toHaveBeenCalledTimes(2);
+		expect(authStateService.revokeTokens).toHaveBeenNthCalledWith(1, ["linked-1"]);
+		expect(authStateService.revokeTokens).toHaveBeenNthCalledWith(2, ["linked-1"], Math.floor(NOW.getTime() / 1000) + 1);
+	});
+
+	it("the first ever enable counts as re-enabling", async () => {
+		const { service, authStateService } = await setup({ linkedPasswordUserIds: ["linked-1"] });
+
+		await service.handleJob();
+
+		expect(authStateService.revokeTokens).toHaveBeenCalledTimes(2);
+	});
+
+	it("enabling and enforcing in one sync revokes both groups", async () => {
+		const { service, authStateService } = await setup({
+			sso: { ...cached, ...disabled },
+			ssoConfig: jest.fn<any>().mockResolvedValue(enforced),
+			linkedPasswordUserIds: ["linked-1"],
+			passwordUserIds: ["user-1"],
+		});
+
+		await service.handleJob();
+
+		expect(authStateService.revokeTokens).toHaveBeenNthCalledWith(1, ["linked-1", "user-1"]);
 	});
 
 	it("the second enforce revocation uses a cutoff one second ahead, after the config is stored", async () => {

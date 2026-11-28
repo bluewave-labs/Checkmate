@@ -98,15 +98,19 @@ export class SsoSyncService implements ISsoSyncService {
 			if (!config.enabled) {
 				await this.lapse(sso, sso?.lastCheckRunAt ?? null);
 			} else {
-				// Only the transition revokes, so the sessions issued after it survive the following syncs. Revoking before
+				// Only the transitions revoke, so the sessions issued after them survive the following syncs. Revoking before
 				// storing means a failed revocation leaves the old cache and the next sync tries again.
+				const enabling = sso?.enabled !== true;
 				const enforcing = sso?.enforce !== true && config.enforce === true;
-				const passwordUserIds = enforcing ? await this.usersRepository.findPasswordUserIdsExceptSuperadmin() : [];
-				if (enforcing) await this.authStateService.revokeTokens(passwordUserIds);
+				// Linked users kept their password while SSO was off, so those sessions end when it comes back
+				const linkedIds = enabling ? await this.usersRepository.findLinkedPasswordUserIds() : [];
+				const passwordIds = enforcing ? await this.usersRepository.findPasswordUserIdsExceptSuperadmin() : [];
+				const revokeIds = [...new Set([...linkedIds, ...passwordIds])];
+				if (revokeIds.length > 0) await this.authStateService.revokeTokens(revokeIds);
 				await this.connectRepository.setSsoState({ ...config, fetchedAt: this.now().toISOString(), lastCheckRunAt: sso?.lastCheckRunAt ?? null });
 				// A password login between the first revocation and the stored config was still allowed and shares the cutoff
 				// second, so a second pass with a cutoff one second ahead closes that window.
-				if (enforcing) await this.authStateService.revokeTokens(passwordUserIds, Math.floor(this.now().getTime() / 1000) + 1);
+				if (revokeIds.length > 0) await this.authStateService.revokeTokens(revokeIds, Math.floor(this.now().getTime() / 1000) + 1);
 			}
 			this.report("synced", () => this.logger.info({ enabled: config.enabled }, "SSO config synced from Connect"));
 

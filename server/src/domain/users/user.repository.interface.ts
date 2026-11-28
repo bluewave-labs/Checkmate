@@ -13,6 +13,7 @@ export interface IUsersRepository {
 	findUnlinkedPasswordUserEmails(limit: number): Promise<string[]>;
 	// Ids of users with a password who are not superadmin and not SSO-linked: the sessions enforce SSO has to end
 	findPasswordUserIdsExceptSuperadmin(): Promise<string[]>;
+	findLinkedPasswordUserIds(): Promise<string[]>;
 	countSsoLinked(): Promise<{ linked: number; withoutPassword: number }>;
 	findById(id: string): Promise<UserResponse>;
 	findAll(): Promise<UserResponse[]>;
@@ -22,7 +23,6 @@ export interface IUsersRepository {
 	findSuperadminTeamId(): Promise<string | null>;
 	// update
 	updateById(id: string, patch: Partial<User>, file?: Express.Multer.File | null): Promise<UserResponse>;
-	setSso(userId: string, sso: SsoLink): Promise<UserResponse>;
 	// Links an unlinked user in one conditional write; null when the user already has a link (or is gone), so a link is never overwritten
 	linkSso(userId: string, patch: { firstName: string; lastName: string; role?: SsoRole; sso: SsoLink }): Promise<UserResponse | null>;
 	// One write for a single sign-on login: profile, link, and optionally email, role and reactivation

@@ -121,6 +121,14 @@ class MongoUsersRepository implements IUsersRepository {
 		return users.map((user) => user._id.toString());
 	};
 
+	findLinkedPasswordUserIds = async () => {
+		const users = await UserModel.find(
+			{ "sso.subject": { $exists: true }, role: { $nin: PROTECTED_ROLES }, password: { $exists: true, $nin: [null, ""] } },
+			{ _id: 1 }
+		).lean();
+		return users.map((user) => user._id.toString());
+	};
+
 	countSsoLinked = async () => {
 		const linkedFilter = { "sso.subject": { $exists: true } };
 		const [linked, withoutPassword] = await Promise.all([
@@ -139,16 +147,6 @@ class MongoUsersRepository implements IUsersRepository {
 			...(isActive !== undefined ? { isActive } : {}),
 		};
 		await UserModel.updateOne({ _id: userId, "sso.subject": { $exists: true } }, { $set: set });
-	};
-
-	setSso = async (userId: string, sso: SsoLink) => {
-		const updatedUser = await UserModel.findOneAndUpdate({ _id: userId }, { $set: { sso } }, { new: true })
-			.select("-password")
-			.select("-profileImage");
-		if (!updatedUser) {
-			throw new AppError(userErrors.notFound, { service: SERVICE_NAME });
-		}
-		return this.toResponse(updatedUser);
 	};
 
 	linkSso = async (userId: string, patch: { firstName: string; lastName: string; role?: SsoRole; sso: SsoLink }) => {
