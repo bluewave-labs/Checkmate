@@ -5,6 +5,7 @@ import type { TimeFormat } from "@/Utils/TimeUtils";
 export interface AuthState {
 	isLoading: boolean;
 	authToken: string;
+	refreshToken: string;
 	user: User | null;
 	success: boolean | null;
 	msg: string | null;

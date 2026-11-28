@@ -6,6 +6,18 @@ export interface UserProfileImage {
 	contentType?: string;
 }
 
+export const SsoProviders = ["entra", "google"] as const;
+export type SsoProvider = (typeof SsoProviders)[number];
+
+export interface SsoLink {
+	provider: SsoProvider;
+	tenant: string;
+	subject: string;
+	roleManaged: boolean;
+	lastCheckedAt: string | null;
+	deactivatedBySso: boolean;
+}
+
 export interface User {
 	id: string;
 	firstName: string;
@@ -21,6 +33,7 @@ export interface User {
 	whatsNewSeen?: string;
 	createdAt: string;
 	updatedAt: string;
+	sso?: SsoLink;
 }
 
 export interface AuthResponse {
