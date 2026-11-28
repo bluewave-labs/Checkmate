@@ -11,6 +11,7 @@ import {
 } from "@/domain/connect/connect-backup.schema.js";
 import type { ConnectBackupUpload, ConnectApiBackup, ConnectApiUploadTicket } from "@/domain/connect/connect-backup.type.js";
 import { connectSsoCheckSchema, connectSsoConfigSchema, connectSsoRedeemSchema } from "@/domain/connect/connect-sso.schema.js";
+import { CONNECT_SSO_ORIGIN, LOOPBACK_HOSTS } from "@/domain/connect/connect.type.js";
 import type { ConnectEnrollment, ConnectSsoCheckResult, ConnectSsoConfig, ConnectSsoIdentity, SsoSubjectRef } from "@/domain/connect/connect.type.js";
 import type { ILogger } from "@/utils/logger/logger.js";
 import { createHash } from "node:crypto";
@@ -63,6 +64,15 @@ export class ConnectApiService implements IConnectApiService {
 		if (connectApiUrl) return connectApiUrl;
 		if (enrollment.apiUrl) return enrollment.apiUrl;
 		return `https://${new URL(enrollment.connectUrl.replace(/^wss:/, "https:")).host}`;
+	};
+
+	// SSO never follows CONNECT_API_URL or the enrollment's hosts to another server: only the official Connect,
+	// or a Connect running on this machine for development.
+	private ssoApiBase = (): string => {
+		const { connectApiUrl } = this.settingsService.getSettings();
+		if (!connectApiUrl) return CONNECT_SSO_ORIGIN;
+		const url = new URL(connectApiUrl);
+		return (LOOPBACK_HOSTS as readonly string[]).includes(url.hostname) ? url.origin : CONNECT_SSO_ORIGIN;
 	};
 
 	private isAllowedTransferUrl = (raw: string): boolean => {
@@ -231,7 +241,7 @@ export class ConnectApiService implements IConnectApiService {
 		return this.parse(connectApiBackupListSchema, this.readBody(response.statusCode, response.body)).backups;
 	};
 	ssoConfig = async (enrollment: ConnectEnrollment): Promise<ConnectSsoConfig> => {
-		const response = await this.got.get(`${this.apiBase(enrollment)}/api/agent/sso/config`, {
+		const response = await this.got.get(`${this.ssoApiBase()}/api/agent/sso/config`, {
 			searchParams: { agentId: enrollment.agentId },
 			headers: { authorization: `Bearer ${enrollment.token}` },
 			responseType: "text",
@@ -240,11 +250,15 @@ export class ConnectApiService implements IConnectApiService {
 			retry: { limit: 0 },
 			timeout: { request: TIMEOUT_MS },
 		});
-		return this.parse(connectSsoConfigSchema, this.readBody(response.statusCode, response.body));
+		const config = this.parse(connectSsoConfigSchema, this.readBody(response.statusCode, response.body));
+		if (config.startUrl !== null && new URL(config.startUrl).origin !== this.ssoApiBase()) {
+			throw new Error("Checkmate Connect returned a sign-in address outside Checkmate Connect");
+		}
+		return config;
 	};
 
 	ssoRedeem = async (enrollment: ConnectEnrollment, input: { code: string; state: string }): Promise<ConnectSsoIdentity> => {
-		const data = await this.post(`${this.apiBase(enrollment)}/api/agent/sso/redeem`, { agentId: enrollment.agentId, ...input }, enrollment.token);
+		const data = await this.post(`${this.ssoApiBase()}/api/agent/sso/redeem`, { agentId: enrollment.agentId, ...input }, enrollment.token);
 		return this.parse(connectSsoRedeemSchema, data).identity;
 	};
 
@@ -252,7 +266,7 @@ export class ConnectApiService implements IConnectApiService {
 		enrollment: ConnectEnrollment,
 		input: { subjects: SsoSubjectRef[]; unlinkedPasswordUsers?: string[] }
 	): Promise<ConnectSsoCheckResult[]> => {
-		const data = await this.post(`${this.apiBase(enrollment)}/api/agent/sso/check`, { agentId: enrollment.agentId, ...input }, enrollment.token);
+		const data = await this.post(`${this.ssoApiBase()}/api/agent/sso/check`, { agentId: enrollment.agentId, ...input }, enrollment.token);
 		return this.parse(connectSsoCheckSchema, data).results;
 	};
 }

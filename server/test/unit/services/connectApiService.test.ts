@@ -513,6 +513,40 @@ describe("ConnectApiService SSO routes", () => {
 		expect(error).not.toBeInstanceOf(ConnectApiRejectedError);
 	});
 
+	it("sends every SSO call to the official Connect even when CONNECT_API_URL or the enrollment point elsewhere", async () => {
+		const get = jest.fn<any>().mockResolvedValue(json(200, config));
+		const post = jest.fn<any>().mockResolvedValue(json(200, { results: [] }));
+		const { connectApiService } = setup({ connectApiUrl: "https://self.example", get, post });
+		const elsewhere = enrollment({ apiUrl: "https://self.example" });
+
+		await connectApiService.ssoConfig(elsewhere);
+		await connectApiService.ssoCheck(elsewhere, { subjects: [] });
+		await connectApiService.ssoRedeem(elsewhere, { code: "c", state: "s" }).catch(() => undefined);
+
+		expect((get.mock.calls[0] as [string])[0]).toBe(`${API}/api/agent/sso/config`);
+		expect((post.mock.calls[0] as [string])[0]).toBe(`${API}/api/agent/sso/check`);
+		expect((post.mock.calls[1] as [string])[0]).toBe(`${API}/api/agent/sso/redeem`);
+	});
+
+	it("uses a Connect on this machine for development", async () => {
+		const local = { ...config, startUrl: "http://localhost:3000/sso/start" };
+		const get = jest.fn<any>().mockResolvedValue(json(200, local));
+		const { connectApiService } = setup({ connectApiUrl: "http://localhost:3000", get });
+
+		await expect(connectApiService.ssoConfig(enrollment())).resolves.toEqual(local);
+		expect((get.mock.calls[0] as [string])[0]).toBe("http://localhost:3000/api/agent/sso/config");
+	});
+
+	it("rejects a sign-in address outside Checkmate Connect", async () => {
+		const get = jest.fn<any>().mockResolvedValue(json(200, { ...config, startUrl: "https://self.example/sso/start" }));
+		const { connectApiService } = setup({ get });
+
+		const error = await connectApiService.ssoConfig(enrollment()).catch((e: unknown) => e);
+
+		expect(error).toBeInstanceOf(Error);
+		expect(error).not.toBeInstanceOf(ConnectApiRejectedError);
+	});
+
 	it("ssoRedeem posts code and state", async () => {
 		const identity = { ...subject, email: "jane@acme.com", firstName: "Jane", lastName: "Doe", role: "admin", roleManaged: true };
 		const post = jest.fn<any>().mockResolvedValue(json(200, { identity }));

@@ -16,6 +16,9 @@ import type { z } from "zod";
 
 export const CONNECT_STATE_COLLECTION = "connect_state";
 export const DEFAULT_CONNECT_HOSTS = ["connect.checkmate.so", "relay.checkmate.so"] as const;
+// Single sign-on is a Checkmate Connect feature: it only talks to the official service (or a local Connect in development).
+export const CONNECT_SSO_ORIGIN = "https://connect.checkmate.so";
+export const LOOPBACK_HOSTS = ["localhost", "127.0.0.1", "[::1]"] as const;
 export const CONNECT_TUNNEL_HEADER = "x-checkmate-connect-tunnel";
 
 // **********************
