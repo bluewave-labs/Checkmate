@@ -458,6 +458,15 @@
 				"deleteAccount": {
 					"title": "Hesabı sil",
 					"description": "Bu işlem kalıcıdır ve geri alınamaz"
+				},
+				"setPassword": {
+					"title": "Parola belirle",
+					"description": "Bu kullanıcı için yeni bir parola belirleyin. E-posta kullanılamadığında veya tek oturum açma onun için çalışmayı bırakmadan önce kullanın.",
+					"option": {
+						"label": "Yeni parola",
+						"placeholder": "Yeni parolayı girin"
+					},
+					"button": "Parola belirle"
 				}
 			},
 			"team": {
@@ -499,6 +508,12 @@
 			"header": {
 				"title": "Hesap",
 				"description": "Profilinizi, parolanızı, ekibinizi ve çalışma alanı tercihlerinizi yönetin."
+			},
+			"sso": {
+				"managedBy": {
+					"entra": "Microsoft tarafından yönetiliyor",
+					"google": "Google tarafından yönetiliyor"
+				}
 			}
 		},
 		"auth": {
@@ -1984,7 +1999,11 @@
 					"unenroll": {
 						"title": "Kaydı kaldır",
 						"description": "Bu kurulumun Checkmate Connect bağlantısını keser ve yerel kimlik bilgisini siler. Yerel izleme etkilenmez.",
-						"button": "Kaydı kaldır"
+						"button": "Kaydı kaldır",
+						"ssoWarning": "{{linked}} kullanıcı tek oturum açma ile giriş yapıyor ve bunların {{withoutPassword}} tanesinin parolası yok. Kaydı kaldırmak tek oturum açmayı kapatır ve siz parola belirleyene kadar bu kullanıcılar giriş yapamaz."
+					},
+					"sso": {
+						"graceBanner": "Checkmate Connect planı artık tek oturum açmayı içermediği için tek oturum açma {{date}} tarihinde sona erecek. Yalnızca SSO ile giriş yapan kullanıcıların parolaya ihtiyacı olacak."
 					}
 				},
 				"about": {

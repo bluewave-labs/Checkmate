@@ -25,6 +25,7 @@ export interface SidebarMenuItem extends NavData {
 	path: string;
 	roles?: UserRole[];
 	activePaths?: string[];
+	hiddenForSso?: boolean;
 }
 
 export interface SidebarMenuGroup {
@@ -33,8 +34,9 @@ export interface SidebarMenuGroup {
 	items: SidebarMenuItem[];
 }
 
-const isVisible = (item: SidebarMenuItem, userRoles: UserRole[]) =>
-	!item.roles || item.roles.some((role) => userRoles.includes(role));
+const isVisible = (item: SidebarMenuItem, userRoles: UserRole[], isSso = false) =>
+	(!item.roles || item.roles.some((role) => userRoles.includes(role))) &&
+	!(isSso && item.hiddenForSso);
 
 export const getMenu = (t: TFunction, userRoles: UserRole[]): SidebarMenuGroup[] => {
 	const menu: SidebarMenuGroup[] = [
@@ -132,7 +134,8 @@ export const getMenu = (t: TFunction, userRoles: UserRole[]): SidebarMenuGroup[]
 
 export const getAccountMenu = (
 	t: TFunction,
-	userRoles: UserRole[]
+	userRoles: UserRole[],
+	isSso: boolean
 ): SidebarMenuItem[] => {
 	const menu: SidebarMenuItem[] = [
 		{
@@ -145,6 +148,7 @@ export const getAccountMenu = (
 			path: "account/password",
 			icon: <Icon icon={Lock} />,
 			roles: ["user", "admin", "superadmin"],
+			hiddenForSso: true,
 		},
 		{
 			name: t("components.sidebar.accountMenu.team"),
@@ -153,5 +157,5 @@ export const getAccountMenu = (
 			roles: ["admin", "superadmin"],
 		},
 	];
-	return menu.filter((item) => isVisible(item, userRoles));
+	return menu.filter((item) => isVisible(item, userRoles, isSso));
 };

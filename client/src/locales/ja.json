@@ -456,6 +456,15 @@
 				"deleteAccount": {
 					"title": "アカウントを削除",
 					"description": "この操作は永久的で元に戻せません"
+				},
+				"setPassword": {
+					"title": "パスワードを設定",
+					"description": "このユーザーの新しいパスワードを設定します。メールが使えない場合や、シングルサインオンが使えなくなる前にご利用ください。",
+					"option": {
+						"label": "新しいパスワード",
+						"placeholder": "新しいパスワードを入力"
+					},
+					"button": "パスワードを設定"
 				}
 			},
 			"team": {
@@ -497,6 +506,12 @@
 			"header": {
 				"title": "アカウント",
 				"description": "プロファイル、パスワード、チーム、ワークスペースの設定を管理します。"
+			},
+			"sso": {
+				"managedBy": {
+					"entra": "Microsoft が管理",
+					"google": "Google が管理"
+				}
 			}
 		},
 		"auth": {
@@ -1982,7 +1997,11 @@
 					"unenroll": {
 						"title": "登録を解除",
 						"description": "このインストールをCheckmate Connectから切断し、ローカルの認証情報を削除します。ローカルの監視には影響しません。",
-						"button": "登録を解除"
+						"button": "登録を解除",
+						"ssoWarning": "{{linked}} 人のユーザーがシングルサインオンでサインインしており、そのうち {{withoutPassword}} 人はパスワードがありません。登録を解除するとシングルサインオンが無効になり、パスワードを設定するまでこれらのユーザーはサインインできなくなります。"
+					},
+					"sso": {
+						"graceBanner": "Checkmate Connect プランにシングルサインオンが含まれなくなるため、{{date}} にシングルサインオンが停止します。SSO のみでサインインしているユーザーにはパスワードが必要になります。"
 					}
 				},
 				"about": {

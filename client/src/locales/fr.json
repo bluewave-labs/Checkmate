@@ -459,6 +459,15 @@
 				"deleteAccount": {
 					"title": "Supprimer le compte",
 					"description": "Cette action est permanente et irréversible"
+				},
+				"setPassword": {
+					"title": "Définir le mot de passe",
+					"description": "Définissez un nouveau mot de passe pour cet utilisateur. Utilisez-le lorsque l'e-mail n'est pas disponible, ou avant que l'authentification unique ne cesse de fonctionner pour lui.",
+					"option": {
+						"label": "Nouveau mot de passe",
+						"placeholder": "Saisissez le nouveau mot de passe"
+					},
+					"button": "Définir le mot de passe"
 				}
 			},
 			"team": {
@@ -500,6 +509,12 @@
 			"header": {
 				"title": "Compte",
 				"description": "Gérez votre profil, mot de passe, équipe et préférences d'espace de travail."
+			},
+			"sso": {
+				"managedBy": {
+					"entra": "Géré par Microsoft",
+					"google": "Géré par Google"
+				}
 			}
 		},
 		"auth": {
@@ -1985,7 +2000,11 @@
 					"unenroll": {
 						"title": "Supprimer l'inscription",
 						"description": "Déconnecte cette installation de Checkmate Connect et supprime les identifiants locaux. La surveillance locale n'est pas affectée.",
-						"button": "Supprimer l'inscription"
+						"button": "Supprimer l'inscription",
+						"ssoWarning": "{{linked}} utilisateurs se connectent avec l'authentification unique, et {{withoutPassword}} d'entre eux n'ont pas de mot de passe. Supprimer l'inscription désactive l'authentification unique, et ces utilisateurs seront bloqués tant que vous ne leur aurez pas défini un mot de passe."
+					},
+					"sso": {
+						"graceBanner": "L'authentification unique prend fin le {{date}}, car l'offre Checkmate Connect ne l'inclut plus. Les utilisateurs qui se connectent uniquement avec le SSO auront besoin d'un mot de passe."
 					}
 				},
 				"about": {

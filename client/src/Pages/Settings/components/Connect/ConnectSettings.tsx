@@ -4,6 +4,8 @@ import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { useGet } from "@/Hooks/UseApi";
 import { useIsSuperAdmin } from "@/Hooks/useIsAdmin";
+import { useFormatDate } from "@/Hooks/useFormatDate";
+import { NoticeBanner } from "@/Components/design-elements";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import type {
 	ConnectBackupList,
@@ -28,6 +30,7 @@ export const ConnectSettings = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const isSuperAdmin = useIsSuperAdmin();
+	const formatDate = useFormatDate();
 	const { data: status, refetch } = useGet<ConnectStatus>("/connect/status", undefined, {
 		refreshInterval: 5000,
 	});
@@ -57,6 +60,13 @@ export const ConnectSettings = () => {
 				<Typography color={theme.palette.text.secondary}>
 					{t("pages.settings.form.connect.superadminOnly")}
 				</Typography>
+			)}
+			{isSuperAdmin && status.sso.graceUntil && (
+				<NoticeBanner severity="warning">
+					{t("pages.settings.form.connect.sso.graceBanner", {
+						date: formatDate(status.sso.graceUntil, "date"),
+					})}
+				</NoticeBanner>
 			)}
 			{isSuperAdmin && !status.enrolled && <ConnectGetStartedBox />}
 			<ConnectStatusBox status={status} />
@@ -100,7 +110,12 @@ export const ConnectSettings = () => {
 					onChanged={refetch}
 				/>
 			)}
-			{isSuperAdmin && status.enrolled && <ConnectUnenrollBox onUnenrolled={refetch} />}
+			{isSuperAdmin && status.enrolled && (
+				<ConnectUnenrollBox
+					sso={status.sso}
+					onUnenrolled={refetch}
+				/>
+			)}
 		</Stack>
 	);
 };

@@ -453,6 +453,15 @@
 				"photo": {
 					"description": "Prześlij zdjęcie profilowe",
 					"title": "Zdjęcie profilowe"
+				},
+				"setPassword": {
+					"title": "Ustaw hasło",
+					"description": "Ustaw nowe hasło dla tego użytkownika. Użyj tego, gdy poczta e-mail jest niedostępna lub zanim jednokrotne logowanie przestanie dla niego działać.",
+					"option": {
+						"label": "Nowe hasło",
+						"placeholder": "Wpisz nowe hasło"
+					},
+					"button": "Ustaw hasło"
 				}
 			},
 			"header": {
@@ -498,6 +507,12 @@
 						"email": "E-mail",
 						"role": "Rola"
 					}
+				}
+			},
+			"sso": {
+				"managedBy": {
+					"entra": "Zarządzane przez Microsoft",
+					"google": "Zarządzane przez Google"
 				}
 			}
 		},
@@ -1837,7 +1852,11 @@
 					"unenroll": {
 						"title": "Usuń rejestrację",
 						"description": "Odłącza tę instalację od Checkmate Connect i usuwa lokalne dane uwierzytelniające. Nie wpływa na lokalne monitorowanie.",
-						"button": "Usuń rejestrację"
+						"button": "Usuń rejestrację",
+						"ssoWarning": "{{linked}} użytkowników loguje się przez jednokrotne logowanie, a {{withoutPassword}} z nich nie ma hasła. Usunięcie rejestracji wyłącza jednokrotne logowanie, a ci użytkownicy zostaną zablokowani, dopóki nie ustawisz im hasła."
+					},
+					"sso": {
+						"graceBanner": "Jednokrotne logowanie przestanie działać {{date}}, ponieważ plan Checkmate Connect już go nie obejmuje. Użytkownicy, którzy logują się tylko przez SSO, będą potrzebować hasła."
 					}
 				},
 				"pagespeed": {

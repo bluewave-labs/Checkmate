@@ -462,6 +462,15 @@
 				"deleteAccount": {
 					"title": "Smazat účet",
 					"description": "Tato akce je trvalá a nelze ji vrátit zpět"
+				},
+				"setPassword": {
+					"title": "Nastavit heslo",
+					"description": "Nastavte tomuto uživateli nové heslo. Použijte to, když není dostupný e-mail, nebo než se mu přestane dařit jednotné přihlášení.",
+					"option": {
+						"label": "Nové heslo",
+						"placeholder": "Zadejte nové heslo"
+					},
+					"button": "Nastavit heslo"
 				}
 			},
 			"team": {
@@ -503,6 +512,12 @@
 			"header": {
 				"title": "Účet",
 				"description": "Spravujte profil, heslo, tým a předvolby pracovního prostoru."
+			},
+			"sso": {
+				"managedBy": {
+					"entra": "Spravuje Microsoft",
+					"google": "Spravuje Google"
+				}
 			}
 		},
 		"auth": {
@@ -1988,7 +2003,11 @@
 					"unenroll": {
 						"title": "Zrušit registraci",
 						"description": "Odpojí tuto instalaci od Checkmate Connect a smaže místní přihlašovací údaje. Místní monitorování není ovlivněno.",
-						"button": "Zrušit registraci"
+						"button": "Zrušit registraci",
+						"ssoWarning": "{{linked}} uživatelů se přihlašuje jednotným přihlášením a {{withoutPassword}} z nich nemá heslo. Odebráním registrace se jednotné přihlášení vypne a tito uživatelé se nebudou moci přihlásit, dokud jim nenastavíte heslo."
+					},
+					"sso": {
+						"graceBanner": "Jednotné přihlášení skončí {{date}}, protože tarif Checkmate Connect jej již neobsahuje. Uživatelé, kteří se přihlašují pouze přes SSO, budou potřebovat heslo."
 					}
 				},
 				"about": {

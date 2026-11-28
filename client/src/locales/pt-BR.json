@@ -459,6 +459,15 @@
 				"deleteAccount": {
 					"title": "Excluir conta",
 					"description": "Esta ação é permanente e não pode ser desfeita"
+				},
+				"setPassword": {
+					"title": "Definir senha",
+					"description": "Defina uma nova senha para este usuário. Use quando o e-mail não estiver disponível, ou antes que o login único deixe de funcionar para ele.",
+					"option": {
+						"label": "Nova senha",
+						"placeholder": "Digite a nova senha"
+					},
+					"button": "Definir senha"
 				}
 			},
 			"team": {
@@ -500,6 +509,12 @@
 			"header": {
 				"title": "Conta",
 				"description": "Gerencie seu perfil, senha, equipe e preferências do espaço de trabalho."
+			},
+			"sso": {
+				"managedBy": {
+					"entra": "Gerenciado pela Microsoft",
+					"google": "Gerenciado pelo Google"
+				}
 			}
 		},
 		"auth": {
@@ -2053,7 +2068,11 @@
 					"unenroll": {
 						"title": "Remover registro",
 						"description": "Desconecta esta instalação do Checkmate Connect e exclui a credencial local. O monitoramento local não é afetado.",
-						"button": "Remover registro"
+						"button": "Remover registro",
+						"ssoWarning": "{{linked}} usuários entram com login único, e {{withoutPassword}} deles não têm senha. Remover a inscrição desativa o login único, e esses usuários ficarão sem acesso até que você defina uma senha para eles."
+					},
+					"sso": {
+						"graceBanner": "O login único será encerrado em {{date}} porque o plano do Checkmate Connect não o inclui mais. Usuários que entram apenas com SSO precisarão de uma senha."
 					}
 				},
 				"about": {

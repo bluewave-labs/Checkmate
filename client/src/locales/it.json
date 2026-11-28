@@ -459,6 +459,15 @@
 				"deleteAccount": {
 					"title": "Elimina account",
 					"description": "Questa azione è permanente e non può essere annullata"
+				},
+				"setPassword": {
+					"title": "Imposta password",
+					"description": "Imposta una nuova password per questo utente. Usala quando l'e-mail non è disponibile, o prima che l'accesso Single Sign-On smetta di funzionare per lui.",
+					"option": {
+						"label": "Nuova password",
+						"placeholder": "Inserisci la nuova password"
+					},
+					"button": "Imposta password"
 				}
 			},
 			"team": {
@@ -500,6 +509,12 @@
 			"header": {
 				"title": "Account",
 				"description": "Gestisci il tuo profilo, la password, il team e le preferenze dell'area di lavoro."
+			},
+			"sso": {
+				"managedBy": {
+					"entra": "Gestito da Microsoft",
+					"google": "Gestito da Google"
+				}
 			}
 		},
 		"auth": {
@@ -1985,7 +2000,11 @@
 					"unenroll": {
 						"title": "Rimuovi registrazione",
 						"description": "Scollega questa installazione da Checkmate Connect ed elimina la credenziale locale. Il monitoraggio locale non viene influenzato.",
-						"button": "Rimuovi registrazione"
+						"button": "Rimuovi registrazione",
+						"ssoWarning": "{{linked}} utenti accedono con il Single Sign-On e {{withoutPassword}} di loro non hanno una password. Rimuovere l'iscrizione disattiva il Single Sign-On e questi utenti resteranno bloccati finché non imposti una password per loro."
+					},
+					"sso": {
+						"graceBanner": "Il Single Sign-On termina il {{date}} perché il piano Checkmate Connect non lo include più. Gli utenti che accedono solo con SSO avranno bisogno di una password."
 					}
 				},
 				"about": {

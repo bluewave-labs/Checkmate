@@ -18,6 +18,7 @@ import type { RootState } from "@/Types/state";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { useIsAdmin, useIsSuperAdmin } from "@/Hooks/useIsAdmin";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
+import { SetPasswordBox } from "./SetPasswordBox";
 import { FormMultiSelectField } from "@/Components/inputs/forms/FormMultiSelectField";
 
 interface RoleOption {
@@ -61,6 +62,9 @@ const EditUserPage = () => {
 		id: role,
 		name: t(`common.auth.roles.${role}`),
 	}));
+
+	const roleManagedBy = user?.sso?.roleManaged ? user.sso.provider : null;
+	const canSetPassword = isSuperAdmin && !!userId && !user?.role?.includes("superadmin");
 
 	const canDeleteUser =
 		isAdmin &&
@@ -119,14 +123,26 @@ const EditUserPage = () => {
 						title={t("pages.editUser.form.roles.title")}
 						subtitle={t("pages.editUser.form.roles.description")}
 						rightContent={
-							<FormMultiSelectField
-								name="role"
-								fieldLabel={t("common.form.role.option.role.label")}
-								display="chips"
-								options={roleOptions}
-							/>
+							roleManagedBy ? (
+								<TextField
+									fieldLabel={t("common.form.role.option.role.label")}
+									value={(user?.role ?? [])
+										.map((role) => t(`common.auth.roles.${role}`))
+										.join(", ")}
+									helperText={t(`pages.account.sso.managedBy.${roleManagedBy}`)}
+									disabled
+								/>
+							) : (
+								<FormMultiSelectField
+									name="role"
+									fieldLabel={t("common.form.role.option.role.label")}
+									display="chips"
+									options={roleOptions}
+								/>
+							)
 						}
 					/>
+					{canSetPassword && <SetPasswordBox userId={userId} />}
 					<Stack
 						gap={LAYOUT.XS}
 						direction="row"

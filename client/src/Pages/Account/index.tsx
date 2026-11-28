@@ -14,6 +14,7 @@ const ACCOUNT_TABS: {
 	labelKey: string;
 	icon: LucideIcon;
 	roles?: UserRole[];
+	hiddenForSso?: boolean;
 }[] = [
 	{ key: "profile", labelKey: "pages.account.tabs.profile", icon: User },
 	{
@@ -21,6 +22,7 @@ const ACCOUNT_TABS: {
 		labelKey: "pages.account.tabs.password",
 		icon: Lock,
 		roles: ["user", "admin", "superadmin"],
+		hiddenForSso: true,
 	},
 	{
 		key: "team",
@@ -39,8 +41,11 @@ interface AccountProps {
 const Account = ({ open = "profile" }: AccountProps) => {
 	const { t } = useTranslation();
 	const userRoles = useSelector((state: RootState) => state.auth.user?.role) ?? [];
+	const isSso = useSelector((state: RootState) => Boolean(state.auth.user?.sso));
 	const visibleTabs = ACCOUNT_TABS.filter(
-		(tab) => !tab.roles || tab.roles.some((role) => userRoles.includes(role))
+		(tab) =>
+			(!tab.roles || tab.roles.some((role) => userRoles.includes(role))) &&
+			!(isSso && tab.hiddenForSso)
 	);
 	const [requestedTab, setRequestedTab] = useState<AccountTabKey>(open);
 	const activeTab: AccountTabKey = visibleTabs.some((tab) => tab.key === requestedTab)

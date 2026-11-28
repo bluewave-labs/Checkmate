@@ -37,6 +37,8 @@ export const TeamTable = ({ users }: TeamTableProps) => {
 			render: (row) => (
 				<Typography>
 					{row.role.map((r) => t(`common.auth.roles.${r}`)).join(", ")}
+					{row.sso?.roleManaged &&
+						` (${t(`pages.account.sso.managedBy.${row.sso.provider}`)})`}
 				</Typography>
 			),
 		},

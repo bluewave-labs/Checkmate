@@ -38,7 +38,8 @@ export const Sidebar = () => {
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const userRoles = useSelector((state: RootState) => state.auth.user?.role) ?? [];
 	const menu = getMenu(t, userRoles);
-	const accountMenu = getAccountMenu(t, userRoles);
+	const isSso = useSelector((state: RootState) => Boolean(state.auth.user?.sso));
+	const accountMenu = getAccountMenu(t, userRoles, isSso);
 
 	useEffect(() => {
 		dispatch(setCollapsed({ collapsed: isSmall }));

@@ -459,6 +459,15 @@
 				"deleteAccount": {
 					"title": "Eliminar compte",
 					"description": "Aquesta acció és permanent i no es pot desfer"
+				},
+				"setPassword": {
+					"title": "Defineix la contrasenya",
+					"description": "Defineix una contrasenya nova per a aquest usuari. Fes-la servir quan no hi ha correu electrònic disponible, o abans que l'inici de sessió únic deixi de funcionar per a ell.",
+					"option": {
+						"label": "Contrasenya nova",
+						"placeholder": "Introdueix la contrasenya nova"
+					},
+					"button": "Defineix la contrasenya"
 				}
 			},
 			"team": {
@@ -500,6 +509,12 @@
 			"header": {
 				"title": "Compte",
 				"description": "Gestiona el teu perfil, contrasenya, equip i preferències de l'espai de treball."
+			},
+			"sso": {
+				"managedBy": {
+					"entra": "Gestionat per Microsoft",
+					"google": "Gestionat per Google"
+				}
 			}
 		},
 		"auth": {
@@ -1985,7 +2000,11 @@
 					"unenroll": {
 						"title": "Elimina el registre",
 						"description": "Desconnecta aquesta instal·lació de Checkmate Connect i elimina la credencial local. El monitoratge local no es veu afectat.",
-						"button": "Elimina el registre"
+						"button": "Elimina el registre",
+						"ssoWarning": "{{linked}} usuaris inicien sessió amb l'inici de sessió únic i {{withoutPassword}} d'ells no tenen contrasenya. Eliminar la inscripció desactiva l'inici de sessió únic, i aquests usuaris no podran entrar fins que els defineixis una contrasenya."
+					},
+					"sso": {
+						"graceBanner": "L'inici de sessió únic s'atura el {{date}} perquè el pla de Checkmate Connect ja no l'inclou. Els usuaris que inicien sessió només amb SSO necessitaran una contrasenya."
 					}
 				},
 				"about": {

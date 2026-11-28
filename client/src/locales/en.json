@@ -458,6 +458,15 @@
 				"deleteAccount": {
 					"title": "Delete account",
 					"description": "This action is permanent and cannot be undone"
+				},
+				"setPassword": {
+					"title": "Set password",
+					"description": "Set a new password for this user. Use it when email isn't available, or before single sign-on stops working for them.",
+					"option": {
+						"label": "New password",
+						"placeholder": "Enter new password"
+					},
+					"button": "Set password"
 				}
 			},
 			"team": {
@@ -499,6 +508,12 @@
 			"header": {
 				"title": "Account",
 				"description": "Manage your profile, password, team, and workspace preferences."
+			},
+			"sso": {
+				"managedBy": {
+					"entra": "Managed by Microsoft",
+					"google": "Managed by Google"
+				}
 			}
 		},
 		"auth": {
@@ -2052,7 +2067,11 @@
 					"unenroll": {
 						"title": "Remove enrollment",
 						"description": "Disconnects this installation from Checkmate Connect and deletes the local credential. Local monitoring is not affected.",
-						"button": "Remove enrollment"
+						"button": "Remove enrollment",
+						"ssoWarning": "{{linked}} users sign in with single sign-on, and {{withoutPassword}} of them have no password. Removing the enrollment turns single sign-on off, and those users will be locked out until you set a password for them."
+					},
+					"sso": {
+						"graceBanner": "Single sign-on stops on {{date}} because the Checkmate Connect plan no longer includes it. Users who sign in only with SSO will need a password."
 					}
 				},
 				"about": {

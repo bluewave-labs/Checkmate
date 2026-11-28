@@ -458,6 +458,15 @@
 				"deleteAccount": {
 					"title": "Konto löschen",
 					"description": "Diese Aktion ist dauerhaft und kann nicht rückgängig gemacht werden"
+				},
+				"setPassword": {
+					"title": "Passwort festlegen",
+					"description": "Lege ein neues Passwort für diesen Benutzer fest. Nutze es, wenn keine E-Mail verfügbar ist oder bevor die Single-Sign-on-Anmeldung für ihn endet.",
+					"option": {
+						"label": "Neues Passwort",
+						"placeholder": "Neues Passwort eingeben"
+					},
+					"button": "Passwort festlegen"
 				}
 			},
 			"team": {
@@ -499,6 +508,12 @@
 			"header": {
 				"title": "Konto",
 				"description": "Verwalten Sie Profil, Passwort, Team und Workspace-Einstellungen."
+			},
+			"sso": {
+				"managedBy": {
+					"entra": "Verwaltet von Microsoft",
+					"google": "Verwaltet von Google"
+				}
 			}
 		},
 		"auth": {
@@ -1984,7 +1999,11 @@
 					"unenroll": {
 						"title": "Registrierung entfernen",
 						"description": "Trennt diese Installation von Checkmate Connect und löscht die lokalen Zugangsdaten. Die lokale Überwachung ist nicht betroffen.",
-						"button": "Registrierung entfernen"
+						"button": "Registrierung entfernen",
+						"ssoWarning": "{{linked}} Benutzer melden sich per Single Sign-on an, und {{withoutPassword}} davon haben kein Passwort. Wenn du die Registrierung entfernst, wird Single Sign-on deaktiviert, und diese Benutzer sind ausgesperrt, bis du ihnen ein Passwort festlegst."
+					},
+					"sso": {
+						"graceBanner": "Single Sign-on endet am {{date}}, weil der Checkmate-Connect-Tarif es nicht mehr enthält. Benutzer, die sich nur per SSO anmelden, benötigen ein Passwort."
 					}
 				},
 				"about": {

@@ -1,16 +1,21 @@
 import { useState } from "react";
-import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import { ConfigBox } from "@/Components/design-elements";
+import { ConfigBox, NoticeBanner } from "@/Components/design-elements";
 import { usePost } from "@/Hooks/UseApi";
-import type { ConnectStatus } from "@/Types/Connect";
+import { LAYOUT } from "@/Utils/Theme/constants";
+import type { ConnectSsoStatus, ConnectStatus } from "@/Types/Connect";
 import { TipButton } from "./TipButton";
 
 export const ConnectUnenrollBox = ({
+	sso,
 	onUnenrolled,
 }: {
+	sso: ConnectSsoStatus;
 	onUnenrolled: () => Promise<unknown>;
 }) => {
+	const theme = useTheme();
 	const { t } = useTranslation();
 	const [confirming, setConfirming] = useState(false);
 	const { post, loading } = usePost<Record<string, never>, ConnectStatus>();
@@ -30,7 +35,18 @@ export const ConnectUnenrollBox = ({
 			title={t("pages.settings.form.connect.unenroll.title")}
 			subtitle={t("pages.settings.form.connect.unenroll.description")}
 			rightContent={
-				<Box>
+				<Stack
+					gap={theme.spacing(LAYOUT.MD)}
+					alignItems="flex-start"
+				>
+					{sso.linkedUsers > 0 && (
+						<NoticeBanner severity="warning">
+							{t("pages.settings.form.connect.unenroll.ssoWarning", {
+								linked: sso.linkedUsers,
+								withoutPassword: sso.linkedWithoutPassword,
+							})}
+						</NoticeBanner>
+					)}
 					<TipButton
 						tip={t("pages.settings.form.connect.tooltips.unenroll")}
 						variant="contained"
@@ -44,7 +60,7 @@ export const ConnectUnenrollBox = ({
 								: "pages.settings.form.connect.unenroll.button"
 						)}
 					</TipButton>
-				</Box>
+				</Stack>
 			}
 		/>
 	);

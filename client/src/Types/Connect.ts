@@ -30,6 +30,14 @@ export interface ConnectStatus {
 	remoteAccess: { enabled: boolean };
 	tunnel: ConnectTunnelStatus;
 	backup: { recoveryKeySet: boolean; schedule: ConnectSchedule };
+	sso: ConnectSsoStatus;
+}
+
+export interface ConnectSsoStatus {
+	enabled: boolean;
+	graceUntil: string | null;
+	linkedUsers: number;
+	linkedWithoutPassword: number;
 }
 
 export interface ConnectSchedule {

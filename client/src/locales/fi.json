@@ -458,6 +458,15 @@
 				"deleteAccount": {
 					"title": "Poista tili",
 					"description": "Tämä toiminto on pysyvä eikä sitä voi kumota"
+				},
+				"setPassword": {
+					"title": "Aseta salasana",
+					"description": "Aseta tälle käyttäjälle uusi salasana. Käytä sitä, kun sähköposti ei ole käytettävissä tai ennen kuin kertakirjautuminen lakkaa toimimasta häneltä.",
+					"option": {
+						"label": "Uusi salasana",
+						"placeholder": "Anna uusi salasana"
+					},
+					"button": "Aseta salasana"
 				}
 			},
 			"team": {
@@ -499,6 +508,12 @@
 			"header": {
 				"title": "Tili",
 				"description": "Hallitse profiilia, salasanaa, tiimiä ja työtilan asetuksia."
+			},
+			"sso": {
+				"managedBy": {
+					"entra": "Hallinnoija: Microsoft",
+					"google": "Hallinnoija: Google"
+				}
 			}
 		},
 		"auth": {
@@ -1984,7 +1999,11 @@
 					"unenroll": {
 						"title": "Poista rekisteröinti",
 						"description": "Irrottaa tämän asennuksen Checkmate Connect -palvelusta ja poistaa paikallisen tunnistetiedon. Paikallinen valvonta ei muutu.",
-						"button": "Poista rekisteröinti"
+						"button": "Poista rekisteröinti",
+						"ssoWarning": "{{linked}} käyttäjää kirjautuu kertakirjautumisella, ja {{withoutPassword}} heistä ei ole salasanaa. Rekisteröinnin poistaminen poistaa kertakirjautumisen käytöstä, ja nämä käyttäjät ovat lukittuina ulos, kunnes asetat heille salasanan."
+					},
+					"sso": {
+						"graceBanner": "Kertakirjautuminen päättyy {{date}}, koska Checkmate Connect -paketti ei enää sisällä sitä. Käyttäjät, jotka kirjautuvat vain SSO:lla, tarvitsevat salasanan."
 					}
 				},
 				"about": {

@@ -456,6 +456,15 @@
 				"deleteAccount": {
 					"title": "刪除帳號",
 					"description": "此操作為永久性，無法復原"
+				},
+				"setPassword": {
+					"title": "設定密碼",
+					"description": "為此使用者設定新密碼。在無法使用電子郵件時，或在單一登入對其失效之前使用。",
+					"option": {
+						"label": "新密碼",
+						"placeholder": "輸入新密碼"
+					},
+					"button": "設定密碼"
 				}
 			},
 			"team": {
@@ -497,6 +506,12 @@
 			"header": {
 				"title": "帳號",
 				"description": "管理個人資料、密碼、團隊和工作區設定。"
+			},
+			"sso": {
+				"managedBy": {
+					"entra": "由 Microsoft 管理",
+					"google": "由 Google 管理"
+				}
 			}
 		},
 		"auth": {
@@ -1982,7 +1997,11 @@
 					"unenroll": {
 						"title": "移除註冊",
 						"description": "中斷此安裝與 Checkmate Connect 的連結，並刪除本機憑證。本機監控不受影響。",
-						"button": "移除註冊"
+						"button": "移除註冊",
+						"ssoWarning": "{{linked}} 位使用者使用單一登入，其中 {{withoutPassword}} 位沒有密碼。移除註冊會關閉單一登入，在你為這些使用者設定密碼之前，他們將無法登入。"
+					},
+					"sso": {
+						"graceBanner": "單一登入將於 {{date}} 停止，因為 Checkmate Connect 方案不再包含該功能。僅透過 SSO 登入的使用者將需要密碼。"
 					}
 				},
 				"about": {
