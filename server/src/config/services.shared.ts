@@ -58,6 +58,7 @@ import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
 import { IUsersRepository } from "@/domain/users/user.repository.interface.js";
 import { IProxiesRepository } from "@/domain/proxies/proxy.repository.interface.js";
 import { IConnectRepository } from "@/domain/connect/connect.repository.interface.js";
+import { ISsoLoginStateRepository } from "@/domain/sso/sso-login-state.repository.interface.js";
 import { ISsoSessionRepository } from "@/domain/sso/sso-session.repository.interface.js";
 import { IDiagnosticsRepository } from "@/domain/diagnostics/diagnostic.repository.interface.js";
 
@@ -81,6 +82,7 @@ import MongoTeamsRepository from "@/domain/teams/team.repository.model.js";
 import MongoUsersRepository from "@/domain/users/user.repository.mongo.js";
 import MongoProxiesRepository from "@/domain/proxies/proxy.repository.mongo.js";
 import MongoConnectRepository from "@/domain/connect/connect.repository.mongo.js";
+import MongoSsoLoginStateRepository from "@/domain/sso/sso-login-state.repository.mongo.js";
 import MongoSsoSessionRepository from "@/domain/sso/sso-session.repository.mongo.js";
 import MongoDiagnosticsRepository from "@/domain/diagnostics/diagnostic.repository.mongo.js";
 import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
@@ -125,6 +127,7 @@ export interface SharedServices {
 	proxiesRepository: IProxiesRepository;
 	connectRepository: IConnectRepository;
 	ssoSessionsRepository: ISsoSessionRepository;
+	ssoLoginStatesRepository: ISsoLoginStateRepository;
 	diagnosticsRepository: IDiagnosticsRepository;
 }
 
@@ -172,6 +175,7 @@ export const buildShared = async ({
 	const proxiesRepository = new MongoProxiesRepository();
 	const connectRepository = new MongoConnectRepository();
 	const ssoSessionsRepository = new MongoSsoSessionRepository();
+	const ssoLoginStatesRepository = new MongoSsoLoginStateRepository();
 	const diagnosticsRepository = new MongoDiagnosticsRepository(db);
 
 	// Inject settings repository into settings service (now that DB is connected)
@@ -265,6 +269,7 @@ export const buildShared = async ({
 		proxiesRepository,
 		connectRepository,
 		ssoSessionsRepository,
+		ssoLoginStatesRepository,
 		diagnosticsRepository,
 	};
 	return sharedServices;

@@ -1,4 +1,4 @@
-import type { SsoProvider } from "@/domain/sso/sso.type.js";
+import type { SsoProvider, SsoRole } from "@/domain/sso/sso.type.js";
 import { IUsersRepository } from "@/domain/users/user.repository.interface.js";
 import { UserModel, type UserDocument } from "@/domain/users/user.model.js";
 import { toUserResponse, type SsoLink, type User, type UserProfileImage, type UserResponse } from "@/domain/users/user.type.js";
@@ -104,6 +104,20 @@ class MongoUsersRepository implements IUsersRepository {
 		return this.toResponse(updatedUser);
 	};
 
+	updateFromSso = async (
+		userId: string,
+		patch: { firstName: string; lastName: string; email?: string; role?: SsoRole; sso: SsoLink; isActive?: boolean }
+	) => {
+		const { role, ...rest } = patch;
+		const updatedUser = await UserModel.findOneAndUpdate({ _id: userId }, { $set: { ...rest, ...(role ? { role: [role] } : {}) } }, { new: true })
+			.select("-password")
+			.select("-profileImage");
+		if (!updatedUser) {
+			throw new AppError(userErrors.notFound, { service: SERVICE_NAME });
+		}
+		return this.toResponse(updatedUser);
+	};
+
 	findById = async (id: string) => {
 		const user = await UserModel.findById(id).select("-password").select("-profileImage");
 		if (!user) {
@@ -170,6 +184,11 @@ class MongoUsersRepository implements IUsersRepository {
 	findSuperAdminIdByTeamId = async (teamId: string): Promise<string | null> => {
 		const user = await UserModel.findOne({ teamId, role: "superadmin" }, { _id: 1 }).lean();
 		return user ? toStringId(user._id) : null;
+	};
+
+	findSuperadminTeamId = async () => {
+		const user = await UserModel.findOne({ role: "superadmin" }, { teamId: 1 }).lean();
+		return user?.teamId ? toStringId(user.teamId) : null;
 	};
 
 	// A missing isActive means active: documents created before the field existed lack it

@@ -4975,6 +4975,49 @@
 				},
 				"required": ["queued"]
 			},
+			"SsoStatus": {
+				"type": "object",
+				"properties": {
+					"enabled": {
+						"type": "boolean"
+					},
+					"provider": {
+						"type": "string",
+						"nullable": true,
+						"enum": ["entra", "google", null]
+					},
+					"label": {
+						"type": "string",
+						"nullable": true
+					},
+					"enforce": {
+						"type": "boolean"
+					}
+				},
+				"required": ["enabled", "provider", "label", "enforce"],
+				"example": {
+					"enabled": true,
+					"provider": "entra",
+					"label": "Sign in with Microsoft",
+					"enforce": false
+				}
+			},
+			"SsoStart": {
+				"type": "object",
+				"properties": {
+					"redirectUrl": {
+						"type": "string"
+					},
+					"state": {
+						"type": "string"
+					}
+				},
+				"required": ["redirectUrl", "state"],
+				"example": {
+					"redirectUrl": "https://connect.checkmate.so/sso/start?agentId=a1b2&state=Zk3...&return=https%3A%2F%2Fcheckmate.example.com",
+					"state": "Zk3q0v1m4m7oYxq2G9n8mJ0b2kq5r0Zx5uN3c8l1HfA"
+				}
+			},
 			"SsoSession": {
 				"type": "object",
 				"properties": {
@@ -18854,6 +18897,265 @@
 					},
 					"500": {
 						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sso/status": {
+			"get": {
+				"tags": ["sso"],
+				"summary": "Report whether single sign-on is available and how to label the button",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/SsoStatus"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sso/start": {
+			"post": {
+				"tags": ["sso"],
+				"summary": "Begin a single sign-on login and get the Connect address to send the browser to",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"returnOrigin": {
+										"type": "string",
+										"minLength": 1
+									}
+								},
+								"required": ["returnOrigin"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/SsoStart"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request, or the return address must be an http or https origin with no path",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Single sign-on isn't available on this server",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sso/redeem": {
+			"post": {
+				"tags": ["sso"],
+				"summary": "Exchange the single-use code from Connect for a Checkmate session",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"code": {
+										"type": "string",
+										"minLength": 1
+									},
+									"state": {
+										"type": "string",
+										"minLength": 1
+									}
+								},
+								"required": ["code", "state"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/SsoSession"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request, or this sign-in link has expired. Start again., or this sign-in link has expired. Start again.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "The superadmin account signs in with a password, or this account is deactivated",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "User not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Single sign-on isn't available on this server, or an account with this email exists but can't be linked. Ask your administrator., or finish setting up Checkmate before using single sign-on",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too many requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"502": {
+						"description": "Checkmate Connect could not be reached",
 						"content": {
 							"application/json": {
 								"schema": {

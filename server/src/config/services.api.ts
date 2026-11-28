@@ -15,6 +15,7 @@ import { ConnectService, IConnectService } from "@/domain/connect/connect.servic
 import { ConnectTunnel } from "@/domain/connect/connect-tunnel.js";
 import { ConnectApiService } from "@/domain/connect/connect-api.service.js";
 import { AuthStateService, IAuthStateService } from "@/domain/users/auth-state.service.js";
+import { SsoLoginService, ISsoLoginService } from "@/domain/sso/sso-login.service.js";
 import { SsoSessionService, ISsoSessionService } from "@/domain/sso/sso-session.service.js";
 import { SharedServices } from "@/config/services.shared.js";
 
@@ -30,6 +31,7 @@ export interface ApiServices extends SharedServices {
 	userService: IUserService;
 	authStateService: IAuthStateService;
 	ssoSessionService: ISsoSessionService;
+	ssoLoginService: ISsoLoginService;
 	monitorService: IMonitorService;
 	maintenanceWindowService: IMaintenanceWindowService;
 	inviteService: IInviteService;
@@ -70,6 +72,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		queueWorkersRepository,
 		connectRepository,
 		ssoSessionsRepository,
+		ssoLoginStatesRepository,
 		diagnosticsRepository,
 		encryptionService,
 	} = shared;
@@ -161,12 +164,22 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		jobScheduler,
 		logger
 	);
+	const ssoLoginService = new SsoLoginService(
+		ssoLoginStatesRepository,
+		usersRepository,
+		connectRepository,
+		connectApiService,
+		encryptionService,
+		authStateService,
+		ssoSessionService
+	);
 	return {
 		...shared,
 		worker: jobScheduler,
 		userService,
 		authStateService,
 		ssoSessionService,
+		ssoLoginService,
 		monitorService,
 		maintenanceWindowService,
 		inviteService,

@@ -1,4 +1,4 @@
-import type { SsoProvider } from "@/domain/sso/sso.type.js";
+import type { SsoProvider, SsoRole } from "@/domain/sso/sso.type.js";
 import type { SsoLink, User, UserResponse } from "@/domain/users/user.type.js";
 export interface IUsersRepository {
 	// create
@@ -12,9 +12,15 @@ export interface IUsersRepository {
 	// Returns the id only if the user exists and belongs to the team
 	findIdInTeam(userId: string, teamId: string): Promise<string | null>;
 	findSuperAdminIdByTeamId(teamId: string): Promise<string | null>;
+	findSuperadminTeamId(): Promise<string | null>;
 	// update
 	updateById(id: string, patch: Partial<User>, file?: Express.Multer.File | null): Promise<UserResponse>;
 	setSso(userId: string, sso: SsoLink): Promise<UserResponse>;
+	// One write for a single sign-on login: profile, link, and optionally email, role and reactivation
+	updateFromSso(
+		userId: string,
+		patch: { firstName: string; lastName: string; email?: string; role?: SsoRole; sso: SsoLink; isActive?: boolean }
+	): Promise<UserResponse>;
 	// delete
 	deleteById(id: string): Promise<User>;
 	// Auth state read on every authenticated request; null when the user does not exist

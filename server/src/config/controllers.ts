@@ -69,6 +69,6 @@ export const initializeControllers = (apiServices: ApiServices): InitializedCont
 		heartbeatController: new HeartbeatController(apiServices.heartbeatService),
 		teamController: new TeamController(apiServices.teamService),
 		connectController: new ConnectController(apiServices.connectService),
-		ssoController: new SsoController(apiServices.ssoSessionService),
+		ssoController: new SsoController(apiServices.ssoSessionService, apiServices.ssoLoginService),
 	};
 };
