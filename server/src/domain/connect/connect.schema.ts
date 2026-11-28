@@ -19,6 +19,12 @@ export const connectStatusSchema = z
 		agentVersion: z.string(),
 		remoteAccess: z.object({ enabled: z.boolean() }),
 		tunnel: connectTunnelStatusSchema,
+		sso: z.object({
+			enabled: z.boolean(),
+			graceUntil: z.string().nullable(),
+			linkedUsers: z.number(),
+			linkedWithoutPassword: z.number(),
+		}),
 		backup: z.object({
 			recoveryKeySet: z.boolean(),
 			schedule: z.object({

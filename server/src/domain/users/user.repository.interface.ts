@@ -11,6 +11,9 @@ export interface IUsersRepository {
 	findSsoLinked(): Promise<User[]>;
 	// Emails of users who can still sign in with a password: no link, not superadmin or demo
 	findUnlinkedPasswordUserEmails(limit: number): Promise<string[]>;
+	// Ids of users with a password who are not superadmin and not SSO-linked: the sessions enforce SSO has to end
+	findPasswordUserIdsExceptSuperadmin(): Promise<string[]>;
+	countSsoLinked(): Promise<{ linked: number; withoutPassword: number }>;
 	findById(id: string): Promise<UserResponse>;
 	findAll(): Promise<UserResponse[]>;
 	// Returns the id only if the user exists and belongs to the team

@@ -15,6 +15,8 @@ import type { IConnectApiService } from "../../../src/domain/connect/connect-api
 import type { IQueueWorkersRepository } from "../../../src/domain/queue-workers/queue-worker.repository.interface.ts";
 import type { QueueWorker } from "../../../src/domain/queue-workers/queue-worker.type.ts";
 import type { ConnectApiBackup } from "../../../src/domain/connect/connect-backup.type.ts";
+import type { IUsersRepository } from "../../../src/domain/users/user.repository.interface.ts";
+import type { ISsoSessionRepository } from "../../../src/domain/sso/sso-session.repository.interface.ts";
 import { recoveryKeyId } from "../../../src/domain/connect/connect.backup-format.ts";
 
 const enrollment = (overrides: Partial<ConnectEnrollment> = {}): ConnectEnrollment => ({
@@ -25,6 +27,7 @@ const enrollment = (overrides: Partial<ConnectEnrollment> = {}): ConnectEnrollme
 	...overrides,
 });
 
+const NO_SSO = { enabled: false, graceUntil: null, linkedUsers: 0, linkedWithoutPassword: 0 };
 const TUNNEL_STATUS = { connected: false, lastConnectedAt: null, lastError: null, closeCode: null };
 
 const setup = (
@@ -36,6 +39,7 @@ const setup = (
 		running?: boolean;
 		workers?: QueueWorker[];
 		scheduleError?: Error;
+		linkedCounts?: { linked: number; withoutPassword: number };
 	} = {}
 ) => {
 	const logger = createMockLogger();
@@ -64,6 +68,8 @@ const setup = (
 			if (opts.scheduleError) throw opts.scheduleError;
 		}),
 	};
+	const usersRepository = { countSsoLinked: jest.fn(async () => opts.linkedCounts ?? { linked: 0, withoutPassword: 0 }) };
+	const ssoSessionRepository = { revokeAll: jest.fn(async () => undefined) };
 	const service = new ConnectService(
 		repository,
 		encryptionService,
@@ -72,9 +78,22 @@ const setup = (
 		connectApiService as unknown as IConnectApiService,
 		queueWorkersRepository as unknown as IQueueWorkersRepository,
 		scheduler,
+		usersRepository as unknown as IUsersRepository,
+		ssoSessionRepository as unknown as ISsoSessionRepository,
 		logger as unknown as ILogger
 	);
-	return { service, repository, encryptionService, tunnel, logger, connectApiService, queueWorkersRepository, scheduler };
+	return {
+		service,
+		usersRepository,
+		ssoSessionRepository,
+		repository,
+		encryptionService,
+		tunnel,
+		logger,
+		connectApiService,
+		queueWorkersRepository,
+		scheduler,
+	};
 };
 
 const expectAppError = async (promise: Promise<unknown>, definition: { status: number; description: string }) => {
@@ -147,6 +166,7 @@ describe("ConnectService.getStatus", () => {
 			remoteAccess: { enabled: false },
 			tunnel: TUNNEL_STATUS,
 			backup: { recoveryKeySet: false, schedule: { enabled: false, intervalHours: 24, kind: "full" } },
+			sso: NO_SSO,
 		});
 	});
 
@@ -156,6 +176,36 @@ describe("ConnectService.getStatus", () => {
 		tunnel.status.mockReturnValue(live);
 
 		await expect(service.getStatus()).resolves.toMatchObject({ tunnel: live });
+	});
+});
+
+describe("ConnectService SSO status", () => {
+	const ssoState = {
+		enabled: true,
+		provider: "entra" as const,
+		label: "Sign in with Microsoft",
+		enforce: true,
+		graceUntil: "2026-12-01T00:00:00.000Z",
+		startUrl: "https://connect.checkmate.so/sso/start",
+		fetchedAt: "2026-11-27T09:00:00.000Z",
+		lastCheckRunAt: null,
+	};
+
+	it("status reports linked users without a password", async () => {
+		const ctx = setup({ linkedCounts: { linked: 5, withoutPassword: 3 } });
+		await enrollStored(ctx);
+		await ctx.repository.setSsoState(ssoState);
+
+		await expect(ctx.service.getStatus()).resolves.toMatchObject({
+			sso: { enabled: true, graceUntil: "2026-12-01T00:00:00.000Z", linkedUsers: 5, linkedWithoutPassword: 3 },
+		});
+	});
+
+	it("status reports SSO off when no config is cached", async () => {
+		const ctx = setup();
+		await enrollStored(ctx);
+
+		await expect(ctx.service.getStatus()).resolves.toMatchObject({ sso: NO_SSO });
 	});
 });
 
@@ -175,6 +225,7 @@ describe("ConnectService.enroll", () => {
 			remoteAccess: { enabled: false },
 			tunnel: TUNNEL_STATUS,
 			backup: { recoveryKeySet: false, schedule: { enabled: false, intervalHours: 24, kind: "full" } },
+			sso: NO_SSO,
 		});
 		expect(JSON.stringify(status)).not.toContain(input.token);
 		const stored = (await repository.get()).enrollment;
@@ -253,6 +304,15 @@ describe("ConnectService.enroll", () => {
 });
 
 describe("ConnectService.unenroll", () => {
+	it("unenroll revokes all SSO sessions", async () => {
+		const { service, ssoSessionRepository } = setup();
+		await service.enroll(enrollment());
+
+		await service.unenroll();
+
+		expect(ssoSessionRepository.revokeAll).toHaveBeenCalledTimes(1);
+	});
+
 	it("clears the enrollment", async () => {
 		const { service, repository } = setup();
 		await service.enroll(enrollment());
@@ -1109,6 +1169,7 @@ describe("ConnectService.setBackupSchedule", () => {
 			enrolled: true,
 			agentId: "agent-1",
 			backup: { recoveryKeySet: true, schedule: { enabled: true, intervalHours: 168, kind: "config" } },
+			sso: NO_SSO,
 		});
 	});
 

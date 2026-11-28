@@ -3,6 +3,7 @@ import { IInvitesRepository } from "@/domain/invites/invite.repository.interface
 import { IRecoveryTokensRepository } from "@/domain/recovery-tokens/recovery-token.repository.interface.js";
 import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
 import { IUsersRepository } from "@/domain/users/user.repository.interface.js";
+import type { ISsoPolicyService } from "@/domain/sso/sso-policy.service.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import type { User, UserResponse } from "@/domain/users/user.type.js";
 import { canManageRole, toUserResponse, type UserRole } from "@/domain/users/user.type.js";
@@ -62,6 +63,7 @@ export class UserService implements IUserService {
 	private recoveryTokensRepository: IRecoveryTokensRepository;
 	private settingsRepository: ISettingsRepository;
 	private teamsRepository: ITeamsRepository;
+	private ssoPolicyService: ISsoPolicyService;
 
 	constructor({
 		crypto,
@@ -76,6 +78,7 @@ export class UserService implements IUserService {
 		recoveryTokensRepository,
 		settingsRepository,
 		teamsRepository,
+		ssoPolicyService,
 	}: {
 		crypto: CryptoType;
 		emailService: IEmailService;
@@ -89,6 +92,7 @@ export class UserService implements IUserService {
 		recoveryTokensRepository: IRecoveryTokensRepository;
 		settingsRepository: ISettingsRepository;
 		teamsRepository: ITeamsRepository;
+		ssoPolicyService: ISsoPolicyService;
 	}) {
 		this.emailService = emailService;
 		this.settingsService = settingsService;
@@ -102,7 +106,14 @@ export class UserService implements IUserService {
 		this.recoveryTokensRepository = recoveryTokensRepository;
 		this.settingsRepository = settingsRepository;
 		this.teamsRepository = teamsRepository;
+		this.ssoPolicyService = ssoPolicyService;
 	}
+
+	private assertPasswordAllowed = async (user: User) => {
+		if (!(await this.ssoPolicyService.passwordLoginAllowed(user))) {
+			throw new AppError(userErrors.ssoAccount, { service: SERVICE_NAME });
+		}
+	};
 
 	issueToken = (payload: Partial<User>, appSettings: EnvConfig) => {
 		return this.jwt.sign(payload, appSettings.jwtSecret, { expiresIn: appSettings.jwtTTL });
@@ -190,6 +201,7 @@ export class UserService implements IUserService {
 	loginUser = async (email: string, password: string) => {
 		// Check if user exists
 		const user = await this.usersRepository.findByEmail(email);
+		await this.assertPasswordAllowed(user);
 		// An SSO-only account has no password to compare
 		if (!user.password) {
 			throw new AppError(userErrors.ssoAccount, { service: SERVICE_NAME });
@@ -225,6 +237,7 @@ export class UserService implements IUserService {
 		if (updates.password && updates.newPassword) {
 			updates.email = currentUserEmail;
 			const user = await this.usersRepository.findByEmail(currentUserEmail);
+			await this.assertPasswordAllowed(user);
 			if (!user.password) {
 				throw new AppError(userErrors.ssoAccount, { service: SERVICE_NAME });
 			}
@@ -248,6 +261,7 @@ export class UserService implements IUserService {
 
 	requestRecovery = async (email: string) => {
 		const user = await this.usersRepository.findByEmail(email);
+		await this.assertPasswordAllowed(user);
 
 		// Delete existing tokens
 		await this.recoveryTokensRepository.deleteManyByEmail(email);
@@ -279,6 +293,7 @@ export class UserService implements IUserService {
 	resetPassword = async (password: string, recoveryToken: string) => {
 		const existingToken = await this.recoveryTokensRepository.findByToken(recoveryToken);
 		const existingUser = await this.usersRepository.findByEmail(existingToken.email);
+		await this.assertPasswordAllowed(existingUser);
 
 		const match = existingUser.password ? await bcrypt.compare(password, existingUser.password) : false;
 		if (match === true) {

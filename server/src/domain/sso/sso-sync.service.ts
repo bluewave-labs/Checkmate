@@ -1,6 +1,6 @@
 import { ConnectApiRejectedError, type IConnectApiService } from "@/domain/connect/connect-api.service.js";
 import type { IConnectRepository } from "@/domain/connect/connect.repository.interface.js";
-import type { ConnectEnrollment, ConnectSsoCheckResult, ConnectSsoConfig } from "@/domain/connect/connect.type.js";
+import type { ConnectEnrollment, ConnectSsoCheckResult, ConnectSsoConfig, ConnectSsoState } from "@/domain/connect/connect.type.js";
 import type { ISsoSessionRepository } from "@/domain/sso/sso-session.repository.interface.js";
 import type { IAuthStateService } from "@/domain/users/auth-state.service.js";
 import type { IUsersRepository } from "@/domain/users/user.repository.interface.js";
@@ -86,11 +86,7 @@ export class SsoSyncService implements ISsoSyncService {
 				config = await this.connectApiService.ssoConfig({ ...enrollment, token });
 			} catch (error: unknown) {
 				if (error instanceof ConnectApiRejectedError && error.status === 401) {
-					await this.connectRepository.setSsoState({
-						...DISABLED_CONFIG,
-						fetchedAt: this.now().toISOString(),
-						lastCheckRunAt: sso?.lastCheckRunAt ?? null,
-					});
+					await this.lapse(sso, sso?.lastCheckRunAt ?? null);
 					this.report("disabled", () => this.logger.warn("SSO disabled: Connect rejected this installation's credentials"));
 					return;
 				}
@@ -99,7 +95,16 @@ export class SsoSyncService implements ISsoSyncService {
 				return;
 			}
 
-			await this.connectRepository.setSsoState({ ...config, fetchedAt: this.now().toISOString(), lastCheckRunAt: sso?.lastCheckRunAt ?? null });
+			if (!config.enabled) {
+				await this.lapse(sso, sso?.lastCheckRunAt ?? null);
+			} else {
+				// Only the transition revokes, so the sessions issued after it survive the following syncs. Revoking before
+				// storing means a failed revocation leaves the old cache and the next sync tries again.
+				if (sso?.enforce !== true && config.enforce === true) {
+					await this.authStateService.revokeTokens(await this.usersRepository.findPasswordUserIdsExceptSuperadmin());
+				}
+				await this.connectRepository.setSsoState({ ...config, fetchedAt: this.now().toISOString(), lastCheckRunAt: sso?.lastCheckRunAt ?? null });
+			}
 			this.report("synced", () => this.logger.info({ enabled: config.enabled }, "SSO config synced from Connect"));
 
 			if (config.enabled && this.isCheckDue(sso?.lastCheckRunAt ?? null)) {
@@ -153,8 +158,18 @@ export class SsoSyncService implements ISsoSyncService {
 		}
 	};
 
-	// Seam for the lapse handler: Connect says SSO is off for this installation. For now the run just stops.
-	private handleSsoDisabled = async (): Promise<void> => {};
+	// Connect says SSO is off for this installation. The throttle on lastCheckRunAt keeps a config that still reads enabled
+	// from triggering the lapse on every sync.
+	private handleSsoDisabled = async (): Promise<void> => {
+		const { sso } = await this.connectRepository.get();
+		await this.lapse(sso, this.now().toISOString());
+	};
+
+	// Stores the disabled config. When SSO was on, the sessions it vouched for end first, so a failure retries on the next sync.
+	private lapse = async (previous: ConnectSsoState | null, lastCheckRunAt: string | null): Promise<void> => {
+		if (previous?.enabled === true) await this.ssoSessionRepository.revokeAll();
+		await this.connectRepository.setSsoState({ ...DISABLED_CONFIG, fetchedAt: this.now().toISOString(), lastCheckRunAt });
+	};
 
 	private applyResult = async (user: User, result: ConnectSsoCheckResult): Promise<void> => {
 		if (result.status === "allowed") {

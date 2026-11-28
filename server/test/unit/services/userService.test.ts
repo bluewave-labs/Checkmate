@@ -79,8 +79,11 @@ const createService = (overrides?: Record<string, unknown>) => {
 		randomBytes: jest.fn().mockReturnValue({ toString: () => "random-hex-secret" }),
 	};
 
+	const ssoPolicyService = { passwordLoginAllowed: jest.fn<(user: User) => Promise<boolean>>().mockResolvedValue(true) };
+
 	const defaults = {
 		logger,
+		ssoPolicyService,
 		usersRepository,
 		invitesRepository,
 		recoveryTokensRepository,
@@ -681,6 +684,86 @@ describe("UserService", () => {
 			const call = (usersRepository.updateById as jest.Mock).mock.calls[0] as any[];
 			expect(call[1].password).not.toBe("new-password");
 			expect(result).toEqual(makeUserResponse());
+		});
+	});
+	// ── SSO password rules ──────────────────────────────────────────────────
+
+	describe("password sign-in rules under SSO", () => {
+		const linkedUser = (overrides: Partial<User> = {}) =>
+			makeUser({
+				password: "$2a$10$hashedpassword",
+				sso: { provider: "entra", tenant: "tenant-1", subject: "sub-1", roleManaged: false, lastCheckedAt: null, deactivatedBySso: false },
+				...overrides,
+			});
+
+		it("loginUser throws ssoAccount for a linked user while SSO is enabled", async () => {
+			const { service, usersRepository, ssoPolicyService } = createService();
+			(usersRepository.findByEmail as jest.Mock).mockResolvedValue(linkedUser());
+			ssoPolicyService.passwordLoginAllowed.mockResolvedValue(false);
+
+			await expect(service.loginUser("test@example.com", "whatever")).rejects.toMatchObject({ definition: userErrors.ssoAccount });
+			expect(ssoPolicyService.passwordLoginAllowed).toHaveBeenCalledWith(expect.objectContaining({ id: "user-1" }));
+		});
+
+		it("loginUser allows a linked user with a password once SSO is disabled", async () => {
+			const { service, usersRepository, ssoPolicyService } = createService();
+			const bcrypt = await import("bcryptjs");
+			(usersRepository.findByEmail as jest.Mock).mockResolvedValue(linkedUser({ password: bcrypt.hashSync("correct-password", 10) }));
+			ssoPolicyService.passwordLoginAllowed.mockResolvedValue(true);
+
+			const result = await service.loginUser("test@example.com", "correct-password");
+
+			expect(result.token).toBe("jwt-token-123");
+		});
+
+		it("the superadmin can always log in with a password", async () => {
+			const { service, usersRepository, ssoPolicyService } = createService();
+			const bcrypt = await import("bcryptjs");
+			(usersRepository.findByEmail as jest.Mock).mockResolvedValue(
+				makeUser({ role: ["superadmin"], password: bcrypt.hashSync("correct-password", 10) })
+			);
+			ssoPolicyService.passwordLoginAllowed.mockImplementation(async (user) => user.role.includes("superadmin"));
+
+			const result = await service.loginUser("test@example.com", "correct-password");
+
+			expect(result.token).toBe("jwt-token-123");
+		});
+
+		it("requestRecovery throws ssoAccount under enforce for a normal user", async () => {
+			const { service, ssoPolicyService, recoveryTokensRepository, emailService } = createService();
+			ssoPolicyService.passwordLoginAllowed.mockResolvedValue(false);
+
+			await expect(service.requestRecovery("test@example.com")).rejects.toMatchObject({ definition: userErrors.ssoAccount });
+			expect(recoveryTokensRepository.create).not.toHaveBeenCalled();
+			expect(emailService.sendEmail).not.toHaveBeenCalled();
+		});
+
+		it("resetPassword throws ssoAccount when the policy refuses the user", async () => {
+			const { service, ssoPolicyService, usersRepository } = createService();
+			ssoPolicyService.passwordLoginAllowed.mockResolvedValue(false);
+
+			await expect(service.resetPassword("new-password", "recovery-token-123")).rejects.toMatchObject({ definition: userErrors.ssoAccount });
+			expect(usersRepository.updateById).not.toHaveBeenCalled();
+		});
+
+		it("editUser refuses a password change when the policy refuses the user", async () => {
+			const { service, ssoPolicyService, usersRepository } = createService();
+			ssoPolicyService.passwordLoginAllowed.mockResolvedValue(false);
+
+			await expect(service.editUser({ password: "old", newPassword: "new" } as any, null, "user-1", "test@example.com")).rejects.toMatchObject({
+				definition: userErrors.ssoAccount,
+			});
+			expect(usersRepository.updateById).not.toHaveBeenCalled();
+		});
+
+		it("setPasswordByUserId is not gated by the policy", async () => {
+			const { service, ssoPolicyService, usersRepository } = createService();
+			ssoPolicyService.passwordLoginAllowed.mockResolvedValue(false);
+
+			await service.setPasswordByUserId("user-1", "new-password");
+
+			expect(ssoPolicyService.passwordLoginAllowed).not.toHaveBeenCalled();
+			expect(usersRepository.updateById).toHaveBeenCalled();
 		});
 	});
 });

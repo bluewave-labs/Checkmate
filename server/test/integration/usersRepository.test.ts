@@ -183,4 +183,46 @@ describe("MongoUsersRepository", () => {
 			expect(doc?.sso).toBeUndefined();
 		});
 	});
+	describe("sso enforcement queries", () => {
+		const link = (subject: string) => ({
+			provider: "entra",
+			tenant: "tenant-1",
+			subject,
+			roleManaged: false,
+			lastCheckedAt: null,
+			deactivatedBySso: false,
+		});
+
+		it("findPasswordUserIdsExceptSuperadmin returns only unlinked non-superadmin users with a password", async () => {
+			const legacy = await insertRaw("legacy@example.com");
+			const inactive = await insertRaw("inactive@example.com", { isActive: false });
+			const admin = await insertRaw("admin@example.com", { role: ["admin"] });
+			await insertRaw("root@example.com", { role: ["superadmin"] });
+			await insertRaw("both@example.com", { role: ["user", "superadmin"] });
+			await insertRaw("linked-pw@example.com", { sso: link("sub-1") });
+			await insertRaw("linked@example.com", { password: undefined, sso: link("sub-2") });
+			await insertRaw("nopw@example.com", { password: undefined });
+			await insertRaw("emptypw@example.com", { password: "" });
+
+			const ids = await repo.findPasswordUserIdsExceptSuperadmin();
+
+			expect(ids.sort()).toEqual([legacy, inactive, admin].sort());
+		});
+
+		it("countSsoLinked counts linked users and those without a password", async () => {
+			await insertRaw("legacy@example.com");
+			await insertRaw("root@example.com", { role: ["superadmin"], sso: link("sub-0") });
+			await insertRaw("linked-pw@example.com", { sso: link("sub-1") });
+			await insertRaw("linked@example.com", { password: undefined, sso: link("sub-2") });
+			await insertRaw("linked-empty@example.com", { password: "", sso: link("sub-3") });
+			await insertRaw("nopw@example.com", { password: undefined });
+
+			await expect(repo.countSsoLinked()).resolves.toEqual({ linked: 4, withoutPassword: 2 });
+		});
+
+		it("countSsoLinked returns zeros with no linked users", async () => {
+			await insertRaw("legacy@example.com");
+			await expect(repo.countSsoLinked()).resolves.toEqual({ linked: 0, withoutPassword: 0 });
+		});
+	});
 });

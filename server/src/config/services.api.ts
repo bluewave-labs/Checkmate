@@ -16,6 +16,7 @@ import { ConnectTunnel } from "@/domain/connect/connect-tunnel.js";
 import { ConnectApiService } from "@/domain/connect/connect-api.service.js";
 import { AuthStateService, IAuthStateService } from "@/domain/users/auth-state.service.js";
 import { SsoLoginService, ISsoLoginService } from "@/domain/sso/sso-login.service.js";
+import { SsoPolicyService } from "@/domain/sso/sso-policy.service.js";
 import { SsoSessionService, ISsoSessionService } from "@/domain/sso/sso-session.service.js";
 import { SharedServices } from "@/config/services.shared.js";
 
@@ -77,6 +78,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		encryptionService,
 	} = shared;
 
+	const ssoPolicyService = new SsoPolicyService(connectRepository);
 	const userService = new UserService({
 		crypto,
 		emailService,
@@ -90,6 +92,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		recoveryTokensRepository,
 		settingsRepository,
 		teamsRepository,
+		ssoPolicyService,
 	});
 
 	const authStateService = new AuthStateService(usersRepository);
@@ -162,6 +165,8 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		connectApiService,
 		queueWorkersRepository,
 		jobScheduler,
+		usersRepository,
+		ssoSessionsRepository,
 		logger
 	);
 	const ssoLoginService = new SsoLoginService(

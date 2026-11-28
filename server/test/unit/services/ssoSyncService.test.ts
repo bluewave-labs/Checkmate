@@ -57,6 +57,7 @@ const setup = async (
 		ssoCheck?: jest.Mock<any>;
 		linked?: User[];
 		unlinkedEmails?: string[];
+		passwordUserIds?: string[];
 	} = {}
 ) => {
 	const logger = createMockLogger();
@@ -80,8 +81,12 @@ const setup = async (
 		findSsoLinked: jest.fn<any>().mockResolvedValue(opts.linked ?? []),
 		findUnlinkedPasswordUserEmails: jest.fn<any>().mockResolvedValue(opts.unlinkedEmails ?? []),
 		applySsoCheck: jest.fn<any>().mockResolvedValue(undefined),
+		findPasswordUserIdsExceptSuperadmin: jest.fn<any>().mockResolvedValue(opts.passwordUserIds ?? []),
 	};
-	const ssoSessionRepository = { revokeAllForUser: jest.fn<any>().mockResolvedValue(undefined) };
+	const ssoSessionRepository = {
+		revokeAllForUser: jest.fn<any>().mockResolvedValue(undefined),
+		revokeAll: jest.fn<any>().mockResolvedValue(undefined),
+	};
 	const authStateService = { revokeTokens: jest.fn<any>().mockResolvedValue(undefined) };
 	const service = new SsoSyncService({
 		connectRepository,
@@ -351,7 +356,8 @@ describe("SsoSyncService offboarding check", () => {
 		await service.handleJob();
 
 		expect(usersRepository.applySsoCheck).not.toHaveBeenCalled();
-		expect((await connectRepository.get()).sso?.lastCheckRunAt).toBeNull();
+		// The disabled config carries the run time, so a config that still reads enabled can't repeat the lapse every sync
+		expect((await connectRepository.get()).sso).toMatchObject({ enabled: false, lastCheckRunAt: NOW.toISOString() });
 	});
 
 	it("splits 120 linked users into batches of 50, 50 and 20", async () => {
@@ -382,5 +388,107 @@ describe("SsoSyncService offboarding check", () => {
 		await service.handleJob();
 
 		expect((await connectRepository.get()).sso?.lastCheckRunAt).toBeNull();
+	});
+});
+
+describe("SsoSyncService enforcement", () => {
+	const enforced: ConnectSsoConfig = { ...config, enforce: true };
+	const disabled = { enabled: false, provider: null, label: null, enforce: false, graceUntil: null, startUrl: null };
+
+	it("turning enforce on revokes password users once", async () => {
+		const { service, authStateService, usersRepository } = await setup({
+			sso: cached,
+			ssoConfig: jest.fn<any>().mockResolvedValue(enforced),
+			passwordUserIds: ["user-1", "user-2"],
+		});
+
+		await service.handleJob();
+		await service.handleJob();
+
+		expect(usersRepository.findPasswordUserIdsExceptSuperadmin).toHaveBeenCalledTimes(1);
+		expect(authStateService.revokeTokens).toHaveBeenCalledTimes(1);
+		expect(authStateService.revokeTokens).toHaveBeenCalledWith(["user-1", "user-2"]);
+	});
+
+	it("revokes again when enforce goes off and on again", async () => {
+		const ssoConfig = jest.fn<any>().mockResolvedValueOnce(enforced).mockResolvedValueOnce(config).mockResolvedValueOnce(enforced);
+		const { service, authStateService } = await setup({ sso: cached, ssoConfig, passwordUserIds: ["user-1"] });
+
+		await service.handleJob();
+		await service.handleJob();
+		await service.handleJob();
+
+		expect(authStateService.revokeTokens).toHaveBeenCalledTimes(2);
+	});
+
+	it("does not revoke anyone when enforce stays off", async () => {
+		const { service, authStateService } = await setup({ sso: cached });
+
+		await service.handleJob();
+
+		expect(authStateService.revokeTokens).not.toHaveBeenCalled();
+	});
+
+	it("retries the enforce revocation on the next sync when it fails", async () => {
+		const { service, authStateService, connectRepository } = await setup({
+			sso: cached,
+			ssoConfig: jest.fn<any>().mockResolvedValue(enforced),
+			passwordUserIds: ["user-1"],
+		});
+		authStateService.revokeTokens.mockRejectedValueOnce(new Error("db down"));
+
+		await service.handleJob();
+		expect((await connectRepository.get()).sso?.enforce).toBe(false);
+		await service.handleJob();
+
+		expect(authStateService.revokeTokens).toHaveBeenCalledTimes(2);
+	});
+
+	it("a lapse revokes all SSO sessions", async () => {
+		const { service, ssoSessionRepository, connectRepository } = await setup({
+			sso: cached,
+			ssoConfig: jest.fn<any>().mockResolvedValue(disabled),
+		});
+
+		await service.handleJob();
+		await service.handleJob();
+
+		expect(ssoSessionRepository.revokeAll).toHaveBeenCalledTimes(1);
+		expect((await connectRepository.get()).sso).toMatchObject({ enabled: false });
+	});
+
+	it("a lapse reported by the check revokes all SSO sessions and stores the disabled config", async () => {
+		const { service, ssoSessionRepository, connectRepository } = await setup({
+			sso: dueState,
+			ssoCheck: jest.fn<any>().mockRejectedValue(new ConnectApiRejectedError(403, "sso_disabled")),
+		});
+
+		await service.handleJob();
+
+		expect(ssoSessionRepository.revokeAll).toHaveBeenCalledTimes(1);
+		expect((await connectRepository.get()).sso).toEqual({ ...disabled, fetchedAt: NOW.toISOString(), lastCheckRunAt: NOW.toISOString() });
+	});
+
+	it("does not revoke sessions for a config that was never enabled", async () => {
+		const { service, ssoSessionRepository } = await setup({
+			sso: { ...cached, ...disabled },
+			ssoConfig: jest.fn<any>().mockResolvedValue(disabled),
+		});
+
+		await service.handleJob();
+
+		expect(ssoSessionRepository.revokeAll).not.toHaveBeenCalled();
+	});
+
+	it("revokes all SSO sessions once when Connect rejects the credentials", async () => {
+		const { service, ssoSessionRepository } = await setup({
+			sso: cached,
+			ssoConfig: jest.fn<any>().mockRejectedValue(new ConnectApiRejectedError(401, "unauthorized")),
+		});
+
+		await service.handleJob();
+		await service.handleJob();
+
+		expect(ssoSessionRepository.revokeAll).toHaveBeenCalledTimes(1);
 	});
 });

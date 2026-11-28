@@ -4705,6 +4705,25 @@
 					"tunnel": {
 						"$ref": "#/components/schemas/ConnectTunnelStatus"
 					},
+					"sso": {
+						"type": "object",
+						"properties": {
+							"enabled": {
+								"type": "boolean"
+							},
+							"graceUntil": {
+								"type": "string",
+								"nullable": true
+							},
+							"linkedUsers": {
+								"type": "number"
+							},
+							"linkedWithoutPassword": {
+								"type": "number"
+							}
+						},
+						"required": ["enabled", "graceUntil", "linkedUsers", "linkedWithoutPassword"]
+					},
 					"backup": {
 						"type": "object",
 						"properties": {
@@ -4732,7 +4751,7 @@
 						"required": ["recoveryKeySet", "schedule"]
 					}
 				},
-				"required": ["enrolled", "agentId", "connectUrl", "apiUrl", "agentVersion", "remoteAccess", "tunnel", "backup"]
+				"required": ["enrolled", "agentId", "connectUrl", "apiUrl", "agentVersion", "remoteAccess", "tunnel", "sso", "backup"]
 			},
 			"ConnectTunnelStatus": {
 				"type": "object",
@@ -5898,6 +5917,16 @@
 							}
 						}
 					},
+					"403": {
+						"description": "This account signs in with single sign-on",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "User not found",
 						"content": {
@@ -6083,6 +6112,16 @@
 					},
 					"400": {
 						"description": "Invalid request, or new password cannot be the same as the old one",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "This account signs in with single sign-on",
 						"content": {
 							"application/json": {
 								"schema": {

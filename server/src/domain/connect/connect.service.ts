@@ -6,6 +6,8 @@ import type { ConnectEnrollment, ConnectState, ConnectStatus } from "@/domain/co
 import type { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import { AppError } from "@/utils/AppError.js";
 import { APP_VERSION } from "@/utils/appVersion.js";
+import type { ISsoSessionRepository } from "@/domain/sso/sso-session.repository.interface.js";
+import type { IUsersRepository } from "@/domain/users/user.repository.interface.js";
 import type { ILogger } from "@/utils/logger/logger.js";
 import type { IConnectTunnel } from "@/domain/connect/connect-tunnel.js";
 import {
@@ -71,12 +73,15 @@ export class ConnectService implements IConnectService {
 		private connectApiService: IConnectApiService,
 		private queueWorkersRepository: IQueueWorkersRepository,
 		private scheduler: IJobScheduler,
+		private usersRepository: IUsersRepository,
+		private ssoSessionRepository: ISsoSessionRepository,
 		logger: ILogger
 	) {
 		this.logger = logger.child({ service: SERVICE_NAME });
 	}
 
-	private toStatus = (state: ConnectState): ConnectStatus => {
+	private toStatus = async (state: ConnectState): Promise<ConnectStatus> => {
+		const { linked, withoutPassword } = await this.usersRepository.countSsoLinked();
 		return {
 			enrolled: state.enrollment !== null,
 			agentId: state.enrollment?.agentId ?? null,
@@ -85,6 +90,12 @@ export class ConnectService implements IConnectService {
 			agentVersion: APP_VERSION,
 			remoteAccess: { enabled: state.remoteAccessEnabled },
 			tunnel: this.tunnel.status(),
+			sso: {
+				enabled: state.sso?.enabled === true,
+				graceUntil: state.sso?.graceUntil ?? null,
+				linkedUsers: linked,
+				linkedWithoutPassword: withoutPassword,
+			},
 			backup: {
 				recoveryKeySet: state.recoveryKey !== null,
 				schedule: state.schedule ?? { enabled: false, intervalHours: DEFAULT_SCHEDULE_INTERVAL_HOURS, kind: DEFAULT_SCHEDULE_KIND },
@@ -208,6 +219,8 @@ export class ConnectService implements IConnectService {
 
 	unenroll = async (): Promise<ConnectStatus> => {
 		await this.connectRepository.clearEnrollment();
+		// Without Connect nothing can vouch for these sessions any more
+		await this.ssoSessionRepository.revokeAll();
 		const state = await this.connectRepository.get();
 		this.tunnel.stop();
 		return this.toStatus(state);
@@ -342,7 +355,7 @@ export class ConnectService implements IConnectService {
 		this.requireEnrollment(state);
 		if (schedule.enabled && !state.recoveryKey) throw new AppError(connectErrors.noRecoveryKey, { service: SERVICE_NAME });
 		await this.connectRepository.setSchedule(schedule);
-		const status = this.toStatus({ ...state, schedule });
+		const status = await this.toStatus({ ...state, schedule });
 
 		if (!schedule.enabled) {
 			await this.scheduler.deleteRecurringGlobalJob("connect-backup");

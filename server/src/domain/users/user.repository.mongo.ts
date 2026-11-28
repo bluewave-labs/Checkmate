@@ -113,6 +113,23 @@ class MongoUsersRepository implements IUsersRepository {
 		return users.map((user) => user.email);
 	};
 
+	findPasswordUserIdsExceptSuperadmin = async () => {
+		const users = await UserModel.find(
+			{ "sso.subject": { $exists: false }, role: { $ne: "superadmin" }, password: { $exists: true, $nin: [null, ""] } },
+			{ _id: 1 }
+		).lean();
+		return users.map((user) => user._id.toString());
+	};
+
+	countSsoLinked = async () => {
+		const linkedFilter = { "sso.subject": { $exists: true } };
+		const [linked, withoutPassword] = await Promise.all([
+			UserModel.countDocuments(linkedFilter),
+			UserModel.countDocuments({ ...linkedFilter, password: { $in: [null, ""] } }),
+		]);
+		return { linked, withoutPassword };
+	};
+
 	applySsoCheck = async (userId: string, patch: { lastCheckedAt?: string; role?: SsoRole; isActive?: boolean; deactivatedBySso?: boolean }) => {
 		const { lastCheckedAt, role, isActive, deactivatedBySso } = patch;
 		const set = {
