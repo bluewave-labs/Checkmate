@@ -104,6 +104,18 @@ class MongoUsersRepository implements IUsersRepository {
 		return this.toResponse(updatedUser);
 	};
 
+	linkSso = async (userId: string, patch: { firstName: string; lastName: string; role?: SsoRole; sso: SsoLink }) => {
+		const { role, ...rest } = patch;
+		const updatedUser = await UserModel.findOneAndUpdate(
+			{ _id: userId, "sso.subject": { $exists: false } },
+			{ $set: { ...rest, ...(role ? { role: [role] } : {}) } },
+			{ new: true }
+		)
+			.select("-password")
+			.select("-profileImage");
+		return updatedUser ? this.toResponse(updatedUser) : null;
+	};
+
 	updateFromSso = async (
 		userId: string,
 		patch: { firstName: string; lastName: string; email?: string; role?: SsoRole; sso: SsoLink; isActive?: boolean }

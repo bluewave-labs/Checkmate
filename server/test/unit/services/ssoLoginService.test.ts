@@ -1,4 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
+import jwt from "jsonwebtoken";
+import { AuthStateService } from "../../../src/domain/users/auth-state.service.ts";
+import { SsoSessionService } from "../../../src/domain/sso/sso-session.service.ts";
 import { SsoLoginService } from "../../../src/domain/sso/sso-login.service.ts";
 import type { ISsoLoginStateRepository } from "../../../src/domain/sso/sso-login-state.repository.interface.ts";
 import type { ISsoSessionService } from "../../../src/domain/sso/sso-session.service.ts";
@@ -79,6 +82,7 @@ type SetupOptions = {
 	byEmail?: User | null;
 	isActive?: boolean;
 	teamId?: string | null;
+	linkResult?: null;
 };
 
 const setup = ({
@@ -90,6 +94,7 @@ const setup = ({
 	byEmail = null,
 	isActive = true,
 	teamId = "team-1",
+	linkResult,
 }: SetupOptions = {}) => {
 	const calls: string[] = [];
 	const stateRepository = {
@@ -101,6 +106,11 @@ const setup = ({
 		findByEmailOrNull: jest.fn<IUsersRepository["findByEmailOrNull"]>().mockResolvedValue(byEmail),
 		findAuthState: jest.fn<IUsersRepository["findAuthState"]>().mockResolvedValue({ isActive, tokensValidAfter: null }),
 		findSuperadminTeamId: jest.fn<IUsersRepository["findSuperadminTeamId"]>().mockResolvedValue(teamId),
+		linkSso: jest.fn<IUsersRepository["linkSso"]>().mockImplementation(async (id, patch) => {
+			calls.push("linkSso");
+			if (linkResult === null) return null;
+			return { ...makeUser({ id }), ...patch } as never;
+		}),
 		updateFromSso: jest.fn<IUsersRepository["updateFromSso"]>().mockImplementation(async (id, patch) => {
 			calls.push("updateFromSso");
 			return { ...makeUser({ id }), ...patch } as never;
@@ -281,14 +291,14 @@ describe("SsoLoginService", () => {
 			await service.redeem("code", STATE);
 
 			expect(usersRepository.findByEmailOrNull).toHaveBeenCalledWith("jane@acme.com");
-			expect(usersRepository.updateFromSso).toHaveBeenCalledWith("user-1", {
+			expect(usersRepository.linkSso).toHaveBeenCalledWith("user-1", {
 				firstName: "Old",
 				lastName: "Name",
 				role: "admin",
 				sso: makeLink({ lastCheckedAt: NOW_ISO }),
 			});
 			expect(authStateService.revokeTokens).toHaveBeenCalledWith(["user-1"]);
-			expect(calls).toEqual(["ssoRedeem", "updateFromSso", "revokeTokens", "startSession"]);
+			expect(calls).toEqual(["ssoRedeem", "linkSso", "revokeTokens", "startSession"]);
 		});
 
 		it("redeem refuses the superadmin's email", async () => {
@@ -302,6 +312,47 @@ describe("SsoLoginService", () => {
 			const { service, usersRepository } = setup({ byEmail: makeUser({ sso: makeLink({ subject: "someone-else" }) }) });
 			await expect(service.redeem("code", STATE)).rejects.toMatchObject({ definition: ssoErrors.accountConflict });
 			expect(usersRepository.updateFromSso).not.toHaveBeenCalled();
+		});
+
+		it("redeem maps a lost linking race to accountConflict and starts no session", async () => {
+			const { service, authStateService, ssoSessionService } = setup({ byEmail: makeUser(), linkResult: null });
+			await expect(service.redeem("code", STATE)).rejects.toMatchObject({ definition: ssoErrors.accountConflict });
+			expect(authStateService.revokeTokens).not.toHaveBeenCalled();
+			expect(ssoSessionService.startSession).not.toHaveBeenCalled();
+		});
+
+		it("redeem accepts a session token issued in the same second as the revocation", async () => {
+			let tokensValidAfter: number | null = null;
+			const fakeUsers = {
+				findAuthState: async () => ({ isActive: true, tokensValidAfter }),
+				setTokensValidAfter: async (_ids: string[], seconds: number) => {
+					tokensValidAfter = seconds;
+				},
+			} as unknown as IUsersRepository;
+			const real = new AuthStateService(fakeUsers, () => NOW_MS);
+			const { service, authStateService, ssoSessionService } = setup({ byEmail: makeUser() });
+			authStateService.revokeTokens.mockImplementation(real.revokeTokens);
+			ssoSessionService.startSession.mockImplementation(async (user) => {
+				const { token } = await new SsoSessionService(
+					{ create: async (input: object) => input } as never,
+					fakeUsers,
+					{ getSettings: () => ({ jwtSecret: "secret" }) } as never,
+					() => NOW_MS
+				).startSession(user);
+				return { token, refreshToken: "refresh" };
+			});
+
+			// jsonwebtoken stamps iat from Date.now, so pin it to the same second as the revocation
+			jest.useFakeTimers({ now: NOW_MS });
+			try {
+				const { token } = await service.redeem("code", STATE);
+				const iat = (jwt.decode(token) as jwt.JwtPayload).iat;
+				expect(iat).toBe(Math.floor(NOW_MS / 1000));
+				expect(await real.isTokenCurrent("user-1", iat)).toBe(true);
+				expect(await real.isTokenCurrent("user-1", iat! - 1)).toBe(false);
+			} finally {
+				jest.useRealTimers();
+			}
 		});
 
 		it("redeem refuses an email match that an admin deactivated", async () => {

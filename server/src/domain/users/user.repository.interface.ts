@@ -16,6 +16,8 @@ export interface IUsersRepository {
 	// update
 	updateById(id: string, patch: Partial<User>, file?: Express.Multer.File | null): Promise<UserResponse>;
 	setSso(userId: string, sso: SsoLink): Promise<UserResponse>;
+	// Links an unlinked user in one conditional write; null when the user already has a link (or is gone), so a link is never overwritten
+	linkSso(userId: string, patch: { firstName: string; lastName: string; role?: SsoRole; sso: SsoLink }): Promise<UserResponse | null>;
 	// One write for a single sign-on login: profile, link, and optionally email, role and reactivation
 	updateFromSso(
 		userId: string,

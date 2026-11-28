@@ -516,6 +516,17 @@ describe("ConnectApiService SSO routes", () => {
 		expect(options.headers.authorization).toBe(`Bearer ${TOKEN}`);
 	});
 
+	it.each(["", "not-an-email"])("ssoRedeem rejects an identity with the invalid email %p", async (email) => {
+		const identity = { ...subject, email, firstName: "Jane", lastName: "Doe", role: "admin", roleManaged: true };
+		const post = jest.fn<any>().mockResolvedValue(json(200, { identity }));
+		const { connectApiService } = setup({ post });
+
+		const error = await connectApiService.ssoRedeem(enrollment(), { code: "c", state: "s" }).catch((e: unknown) => e);
+
+		expect(error).toBeInstanceOf(Error);
+		expect(error).not.toBeInstanceOf(ConnectApiRejectedError);
+	});
+
 	it("ssoCheck omits unlinkedPasswordUsers when not given", async () => {
 		const results = [{ ...subject, status: "allowed", role: "admin", roleManaged: true }];
 		const post = jest.fn<any>().mockResolvedValue(json(200, { results }));

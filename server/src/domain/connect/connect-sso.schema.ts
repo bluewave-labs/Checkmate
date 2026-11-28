@@ -20,7 +20,7 @@ export const connectSsoIdentitySchema = z.object({
 	provider: z.enum(SsoProviders),
 	tenant: z.string(),
 	subject: z.string(),
-	email: z.string(),
+	email: z.email(),
 	firstName: z.string(),
 	lastName: z.string(),
 	role: z.enum(SsoRoles),

@@ -150,12 +150,16 @@ export class SsoLoginService implements ISsoLoginService {
 		if (!(await this.isActive(user.id))) {
 			throw new AppError(userErrors.accountInactive, { service: SERVICE_NAME });
 		}
-		const linked = await this.usersRepository.updateFromSso(user.id, {
+		// The write only matches an unlinked user, so a concurrent login can't overwrite a link made since the read above
+		const linked = await this.usersRepository.linkSso(user.id, {
 			firstName: user.firstName,
 			lastName: user.lastName,
 			...(identity.roleManaged ? { role: identity.role } : {}),
 			sso: this.linkFor(identity),
 		});
+		if (!linked) {
+			throw new AppError(ssoErrors.accountConflict, { service: SERVICE_NAME });
+		}
 		// Sessions from before the link must not outlive it
 		await this.authStateService.revokeTokens([user.id]);
 		return linked;
