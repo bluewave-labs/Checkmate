@@ -2001,7 +2001,9 @@
 						"title": "Supprimer l'inscription",
 						"description": "Déconnecte cette installation de Checkmate Connect et supprime les identifiants locaux. La surveillance locale n'est pas affectée.",
 						"button": "Supprimer l'inscription",
-						"ssoWarning": "{{linked}} utilisateurs se connectent avec l'authentification unique, et {{withoutPassword}} d'entre eux n'ont pas de mot de passe. Supprimer l'inscription désactive l'authentification unique, et ces utilisateurs seront bloqués tant que vous ne leur aurez pas défini un mot de passe."
+						"ssoWarning_one": "{{count}} utilisateur est lié à l'authentification unique (sans mot de passe : {{withoutPassword}}). Supprimer l'inscription désactive l'authentification unique, et les utilisateurs sans mot de passe seront bloqués tant que vous ne leur en aurez pas défini un.",
+						"ssoWarning_many": "{{count}} d'utilisateurs sont liés à l'authentification unique (sans mot de passe : {{withoutPassword}}). Supprimer l'inscription désactive l'authentification unique, et les utilisateurs sans mot de passe seront bloqués tant que vous ne leur en aurez pas défini un.",
+						"ssoWarning_other": "{{count}} utilisateurs sont liés à l'authentification unique (sans mot de passe : {{withoutPassword}}). Supprimer l'inscription désactive l'authentification unique, et les utilisateurs sans mot de passe seront bloqués tant que vous ne leur en aurez pas défini un."
 					},
 					"sso": {
 						"graceBanner": "L'authentification unique prend fin le {{date}}, car l'offre Checkmate Connect ne l'inclut plus. Les utilisateurs qui se connectent uniquement avec le SSO auront besoin d'un mot de passe."

@@ -2000,7 +2000,8 @@
 						"title": "Kaydı kaldır",
 						"description": "Bu kurulumun Checkmate Connect bağlantısını keser ve yerel kimlik bilgisini siler. Yerel izleme etkilenmez.",
 						"button": "Kaydı kaldır",
-						"ssoWarning": "{{linked}} kullanıcı tek oturum açma ile giriş yapıyor ve bunların {{withoutPassword}} tanesinin parolası yok. Kaydı kaldırmak tek oturum açmayı kapatır ve siz parola belirleyene kadar bu kullanıcılar giriş yapamaz."
+						"ssoWarning_one": "{{count}} kullanıcı tek oturum açmaya bağlı (parolasız: {{withoutPassword}}). Kaydı kaldırmak tek oturum açmayı kapatır ve parolası olmayan kullanıcılar siz parola belirleyene kadar giriş yapamaz.",
+						"ssoWarning_other": "{{count}} kullanıcı tek oturum açmaya bağlı (parolasız: {{withoutPassword}}). Kaydı kaldırmak tek oturum açmayı kapatır ve parolası olmayan kullanıcılar siz parola belirleyene kadar giriş yapamaz."
 					},
 					"sso": {
 						"graceBanner": "Checkmate Connect planı artık tek oturum açmayı içermediği için tek oturum açma {{date}} tarihinde sona erecek. Yalnızca SSO ile giriş yapan kullanıcıların parolaya ihtiyacı olacak."

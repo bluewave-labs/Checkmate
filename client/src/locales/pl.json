@@ -1853,7 +1853,10 @@
 						"title": "Usuń rejestrację",
 						"description": "Odłącza tę instalację od Checkmate Connect i usuwa lokalne dane uwierzytelniające. Nie wpływa na lokalne monitorowanie.",
 						"button": "Usuń rejestrację",
-						"ssoWarning": "{{linked}} użytkowników loguje się przez jednokrotne logowanie, a {{withoutPassword}} z nich nie ma hasła. Usunięcie rejestracji wyłącza jednokrotne logowanie, a ci użytkownicy zostaną zablokowani, dopóki nie ustawisz im hasła."
+						"ssoWarning_one": "{{count}} użytkownik jest połączony z jednokrotnym logowaniem (bez hasła: {{withoutPassword}}). Usunięcie rejestracji wyłącza jednokrotne logowanie, a użytkownicy bez hasła zostaną zablokowani, dopóki nie ustawisz im hasła.",
+						"ssoWarning_few": "{{count}} użytkownicy są połączeni z jednokrotnym logowaniem (bez hasła: {{withoutPassword}}). Usunięcie rejestracji wyłącza jednokrotne logowanie, a użytkownicy bez hasła zostaną zablokowani, dopóki nie ustawisz im hasła.",
+						"ssoWarning_many": "{{count}} użytkowników jest połączonych z jednokrotnym logowaniem (bez hasła: {{withoutPassword}}). Usunięcie rejestracji wyłącza jednokrotne logowanie, a użytkownicy bez hasła zostaną zablokowani, dopóki nie ustawisz im hasła.",
+						"ssoWarning_other": "{{count}} użytkownika jest połączonych z jednokrotnym logowaniem (bez hasła: {{withoutPassword}}). Usunięcie rejestracji wyłącza jednokrotne logowanie, a użytkownicy bez hasła zostaną zablokowani, dopóki nie ustawisz im hasła."
 					},
 					"sso": {
 						"graceBanner": "Jednokrotne logowanie przestanie działać {{date}}, ponieważ plan Checkmate Connect już go nie obejmuje. Użytkownicy, którzy logują się tylko przez SSO, będą potrzebować hasła."

@@ -2068,7 +2068,8 @@
 						"title": "Remove enrollment",
 						"description": "Disconnects this installation from Checkmate Connect and deletes the local credential. Local monitoring is not affected.",
 						"button": "Remove enrollment",
-						"ssoWarning": "{{linked}} users sign in with single sign-on, and {{withoutPassword}} of them have no password. Removing the enrollment turns single sign-on off, and those users will be locked out until you set a password for them."
+						"ssoWarning_one": "{{count}} user is linked to single sign-on (without a password: {{withoutPassword}}). Removing the enrollment turns single sign-on off, and users without a password will be locked out until you set one for them.",
+						"ssoWarning_other": "{{count}} users are linked to single sign-on (without a password: {{withoutPassword}}). Removing the enrollment turns single sign-on off, and users without a password will be locked out until you set one for them."
 					},
 					"sso": {
 						"graceBanner": "Single sign-on stops on {{date}} because the Checkmate Connect plan no longer includes it. Users who sign in only with SSO will need a password."

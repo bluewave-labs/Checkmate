@@ -2001,7 +2001,9 @@
 						"title": "Rimuovi registrazione",
 						"description": "Scollega questa installazione da Checkmate Connect ed elimina la credenziale locale. Il monitoraggio locale non viene influenzato.",
 						"button": "Rimuovi registrazione",
-						"ssoWarning": "{{linked}} utenti accedono con il Single Sign-On e {{withoutPassword}} di loro non hanno una password. Rimuovere l'iscrizione disattiva il Single Sign-On e questi utenti resteranno bloccati finché non imposti una password per loro."
+						"ssoWarning_one": "{{count}} utente è collegato al Single Sign-On (senza password: {{withoutPassword}}). Rimuovere l'iscrizione disattiva il Single Sign-On e gli utenti senza password resteranno bloccati finché non ne imposti una.",
+						"ssoWarning_many": "{{count}} di utenti sono collegati al Single Sign-On (senza password: {{withoutPassword}}). Rimuovere l'iscrizione disattiva il Single Sign-On e gli utenti senza password resteranno bloccati finché non ne imposti una.",
+						"ssoWarning_other": "{{count}} utenti sono collegati al Single Sign-On (senza password: {{withoutPassword}}). Rimuovere l'iscrizione disattiva il Single Sign-On e gli utenti senza password resteranno bloccati finché non ne imposti una."
 					},
 					"sso": {
 						"graceBanner": "Il Single Sign-On termina il {{date}} perché il piano Checkmate Connect non lo include più. Gli utenti che accedono solo con SSO avranno bisogno di una password."

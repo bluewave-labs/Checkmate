@@ -2004,7 +2004,10 @@
 						"title": "Zrušit registraci",
 						"description": "Odpojí tuto instalaci od Checkmate Connect a smaže místní přihlašovací údaje. Místní monitorování není ovlivněno.",
 						"button": "Zrušit registraci",
-						"ssoWarning": "{{linked}} uživatelů se přihlašuje jednotným přihlášením a {{withoutPassword}} z nich nemá heslo. Odebráním registrace se jednotné přihlášení vypne a tito uživatelé se nebudou moci přihlásit, dokud jim nenastavíte heslo."
+						"ssoWarning_one": "{{count}} uživatel je propojen s jednotným přihlášením (bez hesla: {{withoutPassword}}). Odebráním registrace se jednotné přihlášení vypne a uživatelé bez hesla se nebudou moci přihlásit, dokud jim nenastavíte heslo.",
+						"ssoWarning_few": "{{count}} uživatelé jsou propojeni s jednotným přihlášením (bez hesla: {{withoutPassword}}). Odebráním registrace se jednotné přihlášení vypne a uživatelé bez hesla se nebudou moci přihlásit, dokud jim nenastavíte heslo.",
+						"ssoWarning_many": "{{count}} uživatele je propojeno s jednotným přihlášením (bez hesla: {{withoutPassword}}). Odebráním registrace se jednotné přihlášení vypne a uživatelé bez hesla se nebudou moci přihlásit, dokud jim nenastavíte heslo.",
+						"ssoWarning_other": "{{count}} uživatelů je propojeno s jednotným přihlášením (bez hesla: {{withoutPassword}}). Odebráním registrace se jednotné přihlášení vypne a uživatelé bez hesla se nebudou moci přihlásit, dokud jim nenastavíte heslo."
 					},
 					"sso": {
 						"graceBanner": "Jednotné přihlášení skončí {{date}}, protože tarif Checkmate Connect jej již neobsahuje. Uživatelé, kteří se přihlašují pouze přes SSO, budou potřebovat heslo."

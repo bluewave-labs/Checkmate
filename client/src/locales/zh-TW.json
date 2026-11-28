@@ -1998,7 +1998,7 @@
 						"title": "移除註冊",
 						"description": "中斷此安裝與 Checkmate Connect 的連結，並刪除本機憑證。本機監控不受影響。",
 						"button": "移除註冊",
-						"ssoWarning": "{{linked}} 位使用者使用單一登入，其中 {{withoutPassword}} 位沒有密碼。移除註冊會關閉單一登入，在你為這些使用者設定密碼之前，他們將無法登入。"
+						"ssoWarning_other": "{{count}} 位使用者已連結單一登入（無密碼：{{withoutPassword}} 位）。移除註冊會關閉單一登入，在你為無密碼的使用者設定密碼之前，他們將無法登入。"
 					},
 					"sso": {
 						"graceBanner": "單一登入將於 {{date}} 停止，因為 Checkmate Connect 方案不再包含該功能。僅透過 SSO 登入的使用者將需要密碼。"

@@ -2000,7 +2000,8 @@
 						"title": "Registrierung entfernen",
 						"description": "Trennt diese Installation von Checkmate Connect und löscht die lokalen Zugangsdaten. Die lokale Überwachung ist nicht betroffen.",
 						"button": "Registrierung entfernen",
-						"ssoWarning": "{{linked}} Benutzer melden sich per Single Sign-on an, und {{withoutPassword}} davon haben kein Passwort. Wenn du die Registrierung entfernst, wird Single Sign-on deaktiviert, und diese Benutzer sind ausgesperrt, bis du ihnen ein Passwort festlegst."
+						"ssoWarning_one": "{{count}} Benutzer ist mit Single Sign-on verknüpft (ohne Passwort: {{withoutPassword}}). Wenn du die Registrierung entfernst, wird Single Sign-on deaktiviert, und Benutzer ohne Passwort sind ausgesperrt, bis du ihnen eines festlegst.",
+						"ssoWarning_other": "{{count}} Benutzer sind mit Single Sign-on verknüpft (ohne Passwort: {{withoutPassword}}). Wenn du die Registrierung entfernst, wird Single Sign-on deaktiviert, und Benutzer ohne Passwort sind ausgesperrt, bis du ihnen eines festlegst."
 					},
 					"sso": {
 						"graceBanner": "Single Sign-on endet am {{date}}, weil der Checkmate-Connect-Tarif es nicht mehr enthält. Benutzer, die sich nur per SSO anmelden, benötigen ein Passwort."

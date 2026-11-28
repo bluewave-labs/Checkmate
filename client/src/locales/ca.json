@@ -2001,7 +2001,9 @@
 						"title": "Elimina el registre",
 						"description": "Desconnecta aquesta instal·lació de Checkmate Connect i elimina la credencial local. El monitoratge local no es veu afectat.",
 						"button": "Elimina el registre",
-						"ssoWarning": "{{linked}} usuaris inicien sessió amb l'inici de sessió únic i {{withoutPassword}} d'ells no tenen contrasenya. Eliminar la inscripció desactiva l'inici de sessió únic, i aquests usuaris no podran entrar fins que els defineixis una contrasenya."
+						"ssoWarning_one": "{{count}} usuari està vinculat a l'inici de sessió únic (sense contrasenya: {{withoutPassword}}). Eliminar la inscripció desactiva l'inici de sessió únic, i els usuaris sense contrasenya no podran entrar fins que els en defineixis una.",
+						"ssoWarning_many": "{{count}} d'usuaris estan vinculats a l'inici de sessió únic (sense contrasenya: {{withoutPassword}}). Eliminar la inscripció desactiva l'inici de sessió únic, i els usuaris sense contrasenya no podran entrar fins que els en defineixis una.",
+						"ssoWarning_other": "{{count}} usuaris estan vinculats a l'inici de sessió únic (sense contrasenya: {{withoutPassword}}). Eliminar la inscripció desactiva l'inici de sessió únic, i els usuaris sense contrasenya no podran entrar fins que els en defineixis una."
 					},
 					"sso": {
 						"graceBanner": "L'inici de sessió únic s'atura el {{date}} perquè el pla de Checkmate Connect ja no l'inclou. Els usuaris que inicien sessió només amb SSO necessitaran una contrasenya."

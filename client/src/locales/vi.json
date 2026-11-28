@@ -1998,7 +1998,7 @@
 						"title": "Gỡ đăng ký",
 						"description": "Ngắt kết nối bản cài đặt này khỏi Checkmate Connect và xóa thông tin xác thực cục bộ. Việc giám sát cục bộ không bị ảnh hưởng.",
 						"button": "Gỡ đăng ký",
-						"ssoWarning": "{{linked}} người dùng đăng nhập bằng đăng nhập một lần, và {{withoutPassword}} trong số đó không có mật khẩu. Gỡ đăng ký sẽ tắt đăng nhập một lần, và những người dùng này sẽ không đăng nhập được cho đến khi bạn đặt mật khẩu cho họ."
+						"ssoWarning_other": "{{count}} người dùng được liên kết với đăng nhập một lần (chưa có mật khẩu: {{withoutPassword}}). Gỡ đăng ký sẽ tắt đăng nhập một lần, và người dùng không có mật khẩu sẽ không đăng nhập được cho đến khi bạn đặt mật khẩu cho họ."
 					},
 					"sso": {
 						"graceBanner": "Đăng nhập một lần sẽ dừng vào {{date}} vì gói Checkmate Connect không còn bao gồm tính năng này. Người dùng chỉ đăng nhập bằng SSO sẽ cần một mật khẩu."

@@ -2069,7 +2069,9 @@
 						"title": "Remover registro",
 						"description": "Desconecta esta instalação do Checkmate Connect e exclui a credencial local. O monitoramento local não é afetado.",
 						"button": "Remover registro",
-						"ssoWarning": "{{linked}} usuários entram com login único, e {{withoutPassword}} deles não têm senha. Remover a inscrição desativa o login único, e esses usuários ficarão sem acesso até que você defina uma senha para eles."
+						"ssoWarning_one": "{{count}} usuário está vinculado ao login único (sem senha: {{withoutPassword}}). Remover a inscrição desativa o login único, e usuários sem senha ficarão sem acesso até que você defina uma para eles.",
+						"ssoWarning_many": "{{count}} de usuários estão vinculados ao login único (sem senha: {{withoutPassword}}). Remover a inscrição desativa o login único, e usuários sem senha ficarão sem acesso até que você defina uma para eles.",
+						"ssoWarning_other": "{{count}} usuários estão vinculados ao login único (sem senha: {{withoutPassword}}). Remover a inscrição desativa o login único, e usuários sem senha ficarão sem acesso até que você defina uma para eles."
 					},
 					"sso": {
 						"graceBanner": "O login único será encerrado em {{date}} porque o plano do Checkmate Connect não o inclui mais. Usuários que entram apenas com SSO precisarão de uma senha."

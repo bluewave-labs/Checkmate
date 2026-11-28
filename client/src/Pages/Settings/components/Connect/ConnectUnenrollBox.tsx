@@ -42,7 +42,7 @@ export const ConnectUnenrollBox = ({
 					{sso.linkedUsers > 0 && (
 						<NoticeBanner severity="warning">
 							{t("pages.settings.form.connect.unenroll.ssoWarning", {
-								linked: sso.linkedUsers,
+								count: sso.linkedUsers,
 								withoutPassword: sso.linkedWithoutPassword,
 							})}
 						</NoticeBanner>

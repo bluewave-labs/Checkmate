@@ -2000,7 +2000,8 @@
 						"title": "Poista rekisteröinti",
 						"description": "Irrottaa tämän asennuksen Checkmate Connect -palvelusta ja poistaa paikallisen tunnistetiedon. Paikallinen valvonta ei muutu.",
 						"button": "Poista rekisteröinti",
-						"ssoWarning": "{{linked}} käyttäjää kirjautuu kertakirjautumisella, ja {{withoutPassword}} heistä ei ole salasanaa. Rekisteröinnin poistaminen poistaa kertakirjautumisen käytöstä, ja nämä käyttäjät ovat lukittuina ulos, kunnes asetat heille salasanan."
+						"ssoWarning_one": "{{count}} käyttäjä on yhdistetty kertakirjautumiseen (ilman salasanaa: {{withoutPassword}}). Rekisteröinnin poistaminen poistaa kertakirjautumisen käytöstä, ja käyttäjät ilman salasanaa ovat lukittuina ulos, kunnes asetat heille salasanan.",
+						"ssoWarning_other": "{{count}} käyttäjää on yhdistetty kertakirjautumiseen (ilman salasanaa: {{withoutPassword}}). Rekisteröinnin poistaminen poistaa kertakirjautumisen käytöstä, ja käyttäjät ilman salasanaa ovat lukittuina ulos, kunnes asetat heille salasanan."
 					},
 					"sso": {
 						"graceBanner": "Kertakirjautuminen päättyy {{date}}, koska Checkmate Connect -paketti ei enää sisällä sitä. Käyttäjät, jotka kirjautuvat vain SSO:lla, tarvitsevat salasanan."
