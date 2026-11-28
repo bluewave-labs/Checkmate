@@ -378,6 +378,13 @@ export class UserService implements IUserService {
 	};
 
 	editUserById = async (userId: string, patch: Partial<User>) => {
+		const target = await this.usersRepository.findById(userId);
+		// The identity provider owns the role of an SSO-managed user, so an edit can't change it.
+		if (target.sso?.roleManaged) {
+			const { role: _role, ...rest } = patch;
+			await this.usersRepository.updateById(userId, rest, null);
+			return;
+		}
 		await this.usersRepository.updateById(userId, patch, null);
 	};
 

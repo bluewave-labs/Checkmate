@@ -700,6 +700,33 @@ describe("UserService", () => {
 
 			expect(usersRepository.updateById).toHaveBeenCalledWith("user-1", { firstName: "New" }, null);
 		});
+
+		it("keeps the stored role of an SSO-managed user and applies the other fields", async () => {
+			const { service, usersRepository } = createService();
+			(usersRepository.findById as jest.Mock).mockResolvedValue(
+				makeUserResponse({
+					role: ["user"],
+					sso: { provider: "entra", tenant: "tenant-1", subject: "sub-1", roleManaged: true, lastCheckedAt: null, deactivatedBySso: false },
+				})
+			);
+
+			await service.editUserById("user-1", { firstName: "New", role: ["admin"] });
+
+			expect(usersRepository.updateById).toHaveBeenCalledWith("user-1", { firstName: "New" }, null);
+		});
+
+		it("changes the role of an SSO user whose role is not managed", async () => {
+			const { service, usersRepository } = createService();
+			(usersRepository.findById as jest.Mock).mockResolvedValue(
+				makeUserResponse({
+					sso: { provider: "entra", tenant: "tenant-1", subject: "sub-1", roleManaged: false, lastCheckedAt: null, deactivatedBySso: false },
+				})
+			);
+
+			await service.editUserById("user-1", { firstName: "New", role: ["admin"] });
+
+			expect(usersRepository.updateById).toHaveBeenCalledWith("user-1", { firstName: "New", role: ["admin"] }, null);
+		});
 	});
 
 	// ── setPasswordByUserId ─────────────────────────────────────────────────
