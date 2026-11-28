@@ -34,8 +34,6 @@
 
 <p align="center"><strong>Une application open source de surveillance de la disponibilité et de l'infrastructure</strong></p>
 
-[![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
-
 <img alt="Checkmate dashboard" src="https://checkmate.so/img/readme/dashboard.webp" />
 
 <br>
@@ -84,7 +82,7 @@ Les instructions d'utilisation sont disponibles [ici](https://checkmate.so/docs)
 
 Consultez les instructions d'installation dans le [portail de documentation Checkmate](https://checkmate.so/docs).
 
-Vous pouvez également utiliser [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Afrique du Sud), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate), [ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate) (nécessite votre propre MongoDB), [Caliber Node](https://calibernode.com/cloud-apps/checkmate) ou [Pikapods](https://www.pikapods.com/) pour démarrer rapidement une instance Checkmate. Pour surveiller votre infrastructure serveur, vous aurez besoin de l'[agent Capture](https://checkmate.so/docs/infrastructure/installing-capture). Le dépôt Capture contient également les instructions d'installation.
+Vous pouvez également utiliser [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Afrique du Sud), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate), [ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate) (nécessite votre propre MongoDB), [Caliber Node](https://calibernode.com/cloud-apps/checkmate), [Dokploy](https://dokploy.com/templates/checkmate), [Railway](https://railway.com/deploy/checkmate-production), [Zeabur](https://zeabur.com/templates/RX55P3), [Levelrail](https://levelrail.glinr.com/templates/checkmate/) ou [Pikapods](https://www.pikapods.com/) pour démarrer rapidement une instance Checkmate. Pour surveiller votre infrastructure serveur, vous aurez besoin de l'[agent Capture](https://checkmate.so/docs/infrastructure/installing-capture). Le dépôt Capture contient également les instructions d'installation.
 
 ### Utiliser une autorité de certification personnalisée
 

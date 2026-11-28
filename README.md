@@ -34,10 +34,6 @@
 <p align="center"><strong>An open source uptime and infrastructure monitoring application</strong></p>
 
 <p align="center">
-  <a href="https://www.pikapods.com/pods?run=checkmate"><img src="https://www.pikapods.com/static/run-button.svg" alt="Run on PikaPods"></a>
-</p>
-
-<p align="center">
 <img alt="Checkmate dashboard" src="https://checkmate.so/img/readme/dashboard.webp" />
 </p>
 <br>
@@ -117,27 +113,31 @@ You can also run Checkmate on any of these platforms:
 
 <table>
   <tr>
-    <td align="center" width="120"><a href="https://repocloud.io/details/Checkmate"><img src="https://checkmate.so/img/brands/hosts/repocloud.png" height="28" alt="RepoCloud"><br><sub><b>RepoCloud</b></sub></a></td>
-    <td align="center" width="120"><a href="https://www.pikapods.com/pods?run=checkmate"><img src="https://checkmate.so/img/brands/hosts/pikapods.png" height="28" alt="PikaPods"><br><sub><b>PikaPods</b></sub></a></td>
-    <td align="center" width="120"><a href="https://coolify.io/"><img src="https://checkmate.so/img/brands/hosts/coolify.png" height="28" alt="Coolify"><br><sub><b>Coolify</b></sub></a></td>
-    <td align="center" width="120"><a href="https://elest.io/open-source/checkmate"><img src="https://checkmate.so/img/brands/hosts/elestio.png" height="28" alt="Elestio"><br><sub><b>Elestio</b></sub></a></td>
-    <td align="center" width="120"><a href="https://easypanel.io/templates/checkmate"><img src="https://checkmate.so/img/brands/hosts/easypanel.svg" height="28" alt="Easypanel"><br><sub><b>Easypanel</b></sub></a></td>
-    <td align="center" width="120"><a href="https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm"><img src="https://checkmate.so/img/brands/hosts/kubernetes.svg" height="28" alt="Kubernetes"><br><sub><b>Kubernetes</b></sub></a></td>
-    <td align="center" width="120"><a href="https://railyard.run/templates/checkmate"><img src="https://checkmate.so/img/brands/hosts/railyard.svg" height="28" alt="Railyard"><br><sub><b>Railyard</b></sub></a></td>
+    <td align="center" width="120"><a href="https://repocloud.io/details/Checkmate"><img src="https://checkmate.so/img/brands/hosts/repocloud.png" height="28" alt="RepoCloud"></a><br><sub><b>RepoCloud</b></sub></td>
+    <td align="center" width="120"><a href="https://www.pikapods.com/pods?run=checkmate"><img src="https://checkmate.so/img/brands/hosts/pikapods.png" height="28" alt="PikaPods"></a><br><sub><b>PikaPods</b></sub></td>
+    <td align="center" width="120"><a href="https://coolify.io/"><img src="https://checkmate.so/img/brands/hosts/coolify.png" height="28" alt="Coolify"></a><br><sub><b>Coolify</b></sub></td>
+    <td align="center" width="120"><a href="https://elest.io/open-source/checkmate"><img src="https://checkmate.so/img/brands/hosts/elestio.png" height="28" alt="Elestio"></a><br><sub><b>Elestio</b></sub></td>
+    <td align="center" width="120"><a href="https://easypanel.io/templates/checkmate"><img src="https://checkmate.so/img/brands/hosts/easypanel.svg" height="28" alt="Easypanel"></a><br><sub><b>Easypanel</b></sub></td>
+    <td align="center" width="120"><a href="https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm"><img src="https://checkmate.so/img/brands/hosts/kubernetes.svg" height="28" alt="Kubernetes"></a><br><sub><b>Kubernetes</b></sub></td>
+    <td align="center" width="120"><a href="https://railyard.run/templates/checkmate"><img src="https://checkmate.so/img/brands/hosts/railyard.svg" height="28" alt="Railyard"></a><br><sub><b>Railyard</b></sub></td>
   </tr>
   <tr>
-    <td align="center" width="120"><a href="https://sive.host"><img src="https://checkmate.so/img/brands/hosts/sivehost.png" height="28" alt="Sive Host"><br><sub><b>Sive Host</b></sub></a></td>
-    <td align="center" width="120"><a href="https://cloudzy.com/marketplace/checkmate"><img src="https://checkmate.so/img/brands/hosts/cloudzy.svg" height="28" alt="Cloudzy"><br><sub><b>Cloudzy</b></sub></a></td>
-    <td align="center" width="120"><a href="https://pethost.dev/templates/checkmate/"><img src="https://checkmate.so/img/brands/hosts/pethost.svg" height="28" alt="Pethost"><br><sub><b>Pethost</b></sub></a></td>
-    <td align="center" width="120"><a href="https://xcloud.host/checkmate-hosting/"><img src="https://checkmate.so/img/brands/hosts/xcloud.png" height="28" alt="xCloud"><br><sub><b>xCloud</b></sub></a></td>
-    <td align="center" width="120"><a href="https://ryvord.com/run/checkmate"><img src="https://checkmate.so/img/brands/hosts/ryvord.svg" height="28" alt="Ryvord"><br><sub><b>Ryvord</b></sub></a></td>
-    <td align="center" width="120"><a href="https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate"><img src="https://checkmate.so/img/brands/hosts/zopday.svg" height="28" alt="ZopDay"><br><sub><b>ZopDay</b></sub></a></td>
-    <td align="center" width="120"><a href="https://calibernode.com/cloud-apps/checkmate"><img src="https://checkmate.so/img/brands/hosts/calibernode.png" height="28" alt="Caliber Node"><br><sub><b>Caliber Node</b></sub></a></td>
+    <td align="center" width="120"><a href="https://sive.host"><img src="https://checkmate.so/img/brands/hosts/sivehost.png" height="28" alt="Sive Host"></a><br><sub><b>Sive Host</b></sub></td>
+    <td align="center" width="120"><a href="https://cloudzy.com/marketplace/checkmate"><img src="https://checkmate.so/img/brands/hosts/cloudzy.svg" height="28" alt="Cloudzy"></a><br><sub><b>Cloudzy</b></sub></td>
+    <td align="center" width="120"><a href="https://pethost.dev/templates/checkmate/"><img src="https://checkmate.so/img/brands/hosts/pethost.svg" height="28" alt="Pethost"></a><br><sub><b>Pethost</b></sub></td>
+    <td align="center" width="120"><a href="https://xcloud.host/checkmate-hosting/"><img src="https://checkmate.so/img/brands/hosts/xcloud.png" height="28" alt="xCloud"></a><br><sub><b>xCloud</b></sub></td>
+    <td align="center" width="120"><a href="https://ryvord.com/run/checkmate"><img src="https://checkmate.so/img/brands/hosts/ryvord.svg" height="28" alt="Ryvord"></a><br><sub><b>Ryvord</b></sub></td>
+    <td align="center" width="120"><a href="https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate"><img src="https://checkmate.so/img/brands/hosts/zopday.svg" height="28" alt="ZopDay"></a><br><sub><b>ZopDay</b></sub></td>
+    <td align="center" width="120"><a href="https://calibernode.com/cloud-apps/checkmate"><img src="https://checkmate.so/img/brands/hosts/calibernode.png" height="28" alt="Caliber Node"></a><br><sub><b>Caliber Node</b></sub></td>
   </tr>
   <tr>
-    <td align="center" width="120"><a href="https://www.simafri.com/en/guides/self-host-checkmate/"><img src="https://checkmate.so/img/brands/hosts/simafri.png" height="28" alt="Simafri"><br><sub><b>Simafri</b></sub></a></td>
-    <td align="center" width="120"><a href="https://podway.io/start?app=checkmate&ref=docs-checkmate"><img src="https://podway.io/icon.svg" height="28" alt="Podway"><br><sub><b>Podway</b></sub></a></td>
-    <td align="center" width="120"><a href="https://cottage.host/deploy/checkmate"><img src="https://cottage.host/static/brand/logos/cottage-favicon.svg" height="28" alt="Cottage"><br><sub><b>Cottage</b></sub></a></td>
+    <td align="center" width="120"><a href="https://www.simafri.com/en/guides/self-host-checkmate/"><img src="https://checkmate.so/img/brands/hosts/simafri.png" height="28" alt="Simafri"></a><br><sub><b>Simafri</b></sub></td>
+    <td align="center" width="120"><a href="https://podway.io/start?app=checkmate&ref=docs-checkmate"><img src="https://podway.io/icon.svg" height="28" alt="Podway"></a><br><sub><b>Podway</b></sub></td>
+    <td align="center" width="120"><a href="https://cottage.host/deploy/checkmate"><img src="https://cottage.host/static/brand/logos/cottage-favicon.svg" height="28" alt="Cottage"></a><br><sub><b>Cottage</b></sub></td>
+    <td align="center" width="120"><a href="https://dokploy.com/templates/checkmate"><img src="https://dokploy.com/apple-touch-icon.png" height="28" alt="Dokploy"></a><br><sub><b>Dokploy</b></sub></td>
+    <td align="center" width="120"><a href="https://railway.com/deploy/checkmate-production"><img src="https://railway.com/apple-touch-icon.png" height="28" alt="Railway"></a><br><sub><b>Railway</b></sub></td>
+    <td align="center" width="120"><a href="https://zeabur.com/templates/RX55P3"><img src="https://zeabur.com/apple-touch-icon.png" height="28" alt="Zeabur"></a><br><sub><b>Zeabur</b></sub></td>
+    <td align="center" width="120"><a href="https://levelrail.glinr.com/templates/checkmate/"><img src="https://levelrail.glinr.com/apple-touch-icon.png" height="28" alt="Levelrail"></a><br><sub><b>Levelrail</b></sub></td>
   </tr>
 </table>
 

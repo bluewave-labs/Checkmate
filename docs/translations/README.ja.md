@@ -34,8 +34,6 @@
 
 <p align="center"><strong>オープンソースの稼働状況とインフラ監視アプリケーション</strong></p>
 
-[![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
-
 <img alt="Checkmate dashboard" src="https://checkmate.so/img/readme/dashboard.webp" />
 
 <br>
@@ -84,7 +82,7 @@ Checkmate は 1000 以上のアクティブなモニターでストレステス�
 
 インストール手順は [Checkmate ドキュメントポータル](https://checkmate.so/docs) を参照してください。
 
-代わりに、[Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm)、[Sive Host](https://sive.host)（南アフリカ）、[Cloudzy](https://cloudzy.com/marketplace/checkmate)、[Ryvord](https://ryvord.com/run/checkmate)、[ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate)（MongoDB は別途必要）、[Caliber Node](https://calibernode.com/cloud-apps/checkmate)、[Pikapods](https://www.pikapods.com/) を使って Checkmate インスタンスをすばやく立ち上げることもできます。サーバーインフラを監視したい場合は、[Capture エージェント](https://checkmate.so/docs/infrastructure/installing-capture) が必要です。Capture リポジトリにもインストール手順が記載されています。
+代わりに、[Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm)、[Sive Host](https://sive.host)（南アフリカ）、[Cloudzy](https://cloudzy.com/marketplace/checkmate)、[Ryvord](https://ryvord.com/run/checkmate)、[ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate)（MongoDB は別途必要）、[Caliber Node](https://calibernode.com/cloud-apps/checkmate), [Dokploy](https://dokploy.com/templates/checkmate), [Railway](https://railway.com/deploy/checkmate-production), [Zeabur](https://zeabur.com/templates/RX55P3), [Levelrail](https://levelrail.glinr.com/templates/checkmate/)、[Pikapods](https://www.pikapods.com/) を使って Checkmate インスタンスをすばやく立ち上げることもできます。サーバーインフラを監視したい場合は、[Capture エージェント](https://checkmate.so/docs/infrastructure/installing-capture) が必要です。Capture リポジトリにもインストール手順が記載されています。
 
 ### カスタム CA の利用
 

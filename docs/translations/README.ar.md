@@ -39,8 +39,6 @@
 
 <p align="center"><strong>تطبيق مفتوح المصدر لمراقبة الجاهزية والبنية التحتية</strong></p>
 
-[![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
-
 <img alt="Checkmate dashboard" src="https://checkmate.so/img/readme/dashboard.webp" />
 
 <br>
@@ -89,7 +87,7 @@
 
 اطّلع على تعليمات التثبيت في [بوابة وثائق Checkmate](https://checkmate.so/docs).
 
-بدلاً من ذلك، يمكنك استخدام [Coolify](https://coolify.io/)، أو [Elestio](https://elest.io/open-source/checkmate)، أو [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm)، أو [Sive Host](https://sive.host) (جنوب أفريقيا)، أو [Cloudzy](https://cloudzy.com/marketplace/checkmate)، أو [Ryvord](https://ryvord.com/run/checkmate)، أو [ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate) (يتطلب MongoDB خاصًا بك)، أو [Caliber Node](https://calibernode.com/cloud-apps/checkmate)، أو [Pikapods](https://www.pikapods.com/) لتشغيل نسخة من Checkmate بسرعة. إن أردت مراقبة البنية التحتية لخوادمك، ستحتاج إلى [وكيل Capture](https://checkmate.so/docs/infrastructure/installing-capture). يحتوي مستودع Capture أيضًا على تعليمات التثبيت.
+بدلاً من ذلك، يمكنك استخدام [Coolify](https://coolify.io/)، أو [Elestio](https://elest.io/open-source/checkmate)، أو [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm)، أو [Sive Host](https://sive.host) (جنوب أفريقيا)، أو [Cloudzy](https://cloudzy.com/marketplace/checkmate)، أو [Ryvord](https://ryvord.com/run/checkmate)، أو [ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate) (يتطلب MongoDB خاصًا بك)، أو [Caliber Node](https://calibernode.com/cloud-apps/checkmate), [Dokploy](https://dokploy.com/templates/checkmate), [Railway](https://railway.com/deploy/checkmate-production), [Zeabur](https://zeabur.com/templates/RX55P3), [Levelrail](https://levelrail.glinr.com/templates/checkmate/)، أو [Pikapods](https://www.pikapods.com/) لتشغيل نسخة من Checkmate بسرعة. إن أردت مراقبة البنية التحتية لخوادمك، ستحتاج إلى [وكيل Capture](https://checkmate.so/docs/infrastructure/installing-capture). يحتوي مستودع Capture أيضًا على تعليمات التثبيت.
 
 ### استخدام شهادة CA مخصصة
 

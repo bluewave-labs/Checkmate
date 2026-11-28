@@ -37,8 +37,6 @@
 
 <p align="center"><strong>Una aplicació de codi obert per a la monitorització de disponibilitat i infraestructura</strong></p>
 
-[![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
-
 <img alt="Checkmate dashboard" src="https://checkmate.so/img/readme/dashboard.webp" />
 
 <br>
@@ -87,7 +85,7 @@ Pots trobar les instruccions d'ús [aquí](https://checkmate.so/docs).
 
 Consulta les instruccions d'instal·lació al [portal de documentació de Checkmate](https://checkmate.so/docs).
 
-Alternativament, també pots utilitzar [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Sud-àfrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate), [ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate) (cal la teva pròpia MongoDB), [Caliber Node](https://calibernode.com/cloud-apps/checkmate) o [Pikapods](https://www.pikapods.com/) per posar en marxa ràpidament una instància de Checkmate. Si vols monitoritzar la infraestructura de servidors, necessitaràs l'[agent Capture](https://checkmate.so/docs/infrastructure/installing-capture). El repositori de Capture també conté les instruccions d'instal·lació.
+Alternativament, també pots utilitzar [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (Sud-àfrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate), [ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate) (cal la teva pròpia MongoDB), [Caliber Node](https://calibernode.com/cloud-apps/checkmate), [Dokploy](https://dokploy.com/templates/checkmate), [Railway](https://railway.com/deploy/checkmate-production), [Zeabur](https://zeabur.com/templates/RX55P3), [Levelrail](https://levelrail.glinr.com/templates/checkmate/) o [Pikapods](https://www.pikapods.com/) per posar en marxa ràpidament una instància de Checkmate. Si vols monitoritzar la infraestructura de servidors, necessitaràs l'[agent Capture](https://checkmate.so/docs/infrastructure/installing-capture). El repositori de Capture també conté les instruccions d'instal·lació.
 
 ### Utilitzar una CA personalitzada
 
