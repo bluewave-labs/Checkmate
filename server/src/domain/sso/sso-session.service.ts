@@ -4,6 +4,7 @@ import type { ISsoSessionRepository } from "@/domain/sso/sso-session.repository.
 import type { IUsersRepository } from "@/domain/users/user.repository.interface.js";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import type { UserResponse } from "@/domain/users/user.type.js";
+import { userErrors } from "@/domain/users/user.errors.js";
 import { ssoErrors } from "@/domain/sso/sso.errors.js";
 import { AppError } from "@/utils/AppError.js";
 
@@ -58,7 +59,11 @@ export class SsoSessionService implements ISsoSessionService {
 
 		const [authState, user] = await Promise.all([
 			this.usersRepository.findAuthState(session.userId),
-			this.usersRepository.findById(session.userId).catch(() => null),
+			this.usersRepository.findById(session.userId).catch((error: unknown) => {
+				// Only a missing user ends the session; any other failure must not revoke a valid one
+				if (error instanceof AppError && error.definition === userErrors.notFound) return null;
+				throw error;
+			}),
 		]);
 		const lastCheckedAt = user?.sso?.lastCheckedAt ? Date.parse(user.sso.lastCheckedAt) : null;
 		const valid =
@@ -73,7 +78,17 @@ export class SsoSessionService implements ISsoSessionService {
 		}
 
 		const rotated = newRefreshToken();
-		await this.ssoSessionsRepository.rotate(session.id, hashToken(rotated), Math.floor(this.now() / 1000));
+		const swapped = await this.ssoSessionsRepository.rotate(
+			session.id,
+			session.tokenHash,
+			hashToken(rotated),
+			Math.floor(this.now() / 1000),
+			new Date(this.now())
+		);
+		// A parallel refresh already rotated this token. Reject without revoking: that session is legitimately alive
+		if (!swapped) {
+			throw new AppError(ssoErrors.sessionInvalid, { service: SERVICE_NAME });
+		}
 		return { user, token: this.issueAccessToken(user), refreshToken: rotated };
 	};
 

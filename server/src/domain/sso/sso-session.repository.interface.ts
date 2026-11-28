@@ -6,7 +6,8 @@ export interface ISsoSessionRepository {
 	// fetch
 	findActiveByHash(hash: string, now: Date): Promise<SsoSession | null>;
 	// update
-	rotate(id: string, newHash: string, issuedAt: number): Promise<void>;
+	// Compare-and-swap: true only if the session still held oldHash and was active
+	rotate(id: string, oldHash: string, newHash: string, issuedAt: number, now: Date): Promise<boolean>;
 	revoke(id: string): Promise<void>;
 	revokeByHash(hash: string): Promise<void>;
 	revokeAllForUser(userId: string): Promise<void>;

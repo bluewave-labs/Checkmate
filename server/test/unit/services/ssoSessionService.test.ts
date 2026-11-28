@@ -6,6 +6,8 @@ import type { ISsoSessionRepository } from "../../../src/domain/sso/sso-session.
 import type { SsoSession } from "../../../src/domain/sso/sso-session.type.ts";
 import type { IUsersRepository } from "../../../src/domain/users/user.repository.interface.ts";
 import type { ISettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
+import { AppError } from "../../../src/utils/AppError.ts";
+import { userErrors } from "../../../src/domain/users/user.errors.ts";
 import type { UserResponse } from "../../../src/domain/users/user.type.ts";
 
 const NOW_MS = 1_800_000_000_000;
@@ -60,7 +62,7 @@ const setup = ({ session = {}, user = makeUser(), authState = { isActive: true, 
 	const ssoSessionsRepository = {
 		create: jest.fn<ISsoSessionRepository["create"]>().mockImplementation(async (input) => ({ id: "session-new", revokedAt: null, ...input })),
 		findActiveByHash: jest.fn<ISsoSessionRepository["findActiveByHash"]>().mockResolvedValue(stored),
-		rotate: jest.fn<ISsoSessionRepository["rotate"]>().mockResolvedValue(undefined),
+		rotate: jest.fn<ISsoSessionRepository["rotate"]>().mockResolvedValue(true),
 		revoke: jest.fn<ISsoSessionRepository["revoke"]>().mockResolvedValue(undefined),
 		revokeByHash: jest.fn<ISsoSessionRepository["revokeByHash"]>().mockResolvedValue(undefined),
 		revokeAllForUser: jest.fn<ISsoSessionRepository["revokeAllForUser"]>().mockResolvedValue(undefined),
@@ -102,7 +104,7 @@ describe("SsoSessionService", () => {
 		expect(ssoSessionsRepository.findActiveByHash).toHaveBeenCalledWith(sha256("old-token"), new Date(NOW_MS));
 		expect(result.user.role).toEqual(["admin"]);
 		expect(result.refreshToken).not.toBe("old-token");
-		expect(ssoSessionsRepository.rotate).toHaveBeenCalledWith("session-1", sha256(result.refreshToken), NOW_S);
+		expect(ssoSessionsRepository.rotate).toHaveBeenCalledWith("session-1", "old-hash", sha256(result.refreshToken), NOW_S, new Date(NOW_MS));
 		expect((jwt.verify(result.token, JWT_SECRET) as jwt.JwtPayload).role).toEqual(["admin"]);
 	});
 
@@ -143,8 +145,31 @@ describe("SsoSessionService", () => {
 	it("refresh rejects when the link was never checked", async () => {
 		const unchecked = makeUser();
 		unchecked.sso!.lastCheckedAt = null;
-		const { service } = setup({ user: unchecked });
+		const { service, ssoSessionsRepository } = setup({ user: unchecked });
 		await expect(service.refresh("old-token")).rejects.toMatchObject({ status: 401 });
+		expect(ssoSessionsRepository.revoke).toHaveBeenCalledWith("session-1");
+	});
+
+	it("refresh rejects a user that no longer exists and revokes the session", async () => {
+		const { service, ssoSessionsRepository, usersRepository } = setup();
+		usersRepository.findById.mockRejectedValueOnce(new AppError(userErrors.notFound));
+		await expect(service.refresh("old-token")).rejects.toMatchObject({ status: 401 });
+		expect(ssoSessionsRepository.revoke).toHaveBeenCalledWith("session-1");
+	});
+
+	it("refresh keeps the session when loading the user fails unexpectedly", async () => {
+		const { service, ssoSessionsRepository, usersRepository } = setup();
+		usersRepository.findById.mockRejectedValueOnce(new Error("db down"));
+		await expect(service.refresh("old-token")).rejects.toThrow("db down");
+		expect(ssoSessionsRepository.revoke).not.toHaveBeenCalled();
+		expect(ssoSessionsRepository.rotate).not.toHaveBeenCalled();
+	});
+
+	it("refresh rejects when the token was rotated concurrently", async () => {
+		const { service, ssoSessionsRepository } = setup();
+		ssoSessionsRepository.rotate.mockResolvedValueOnce(false);
+		await expect(service.refresh("old-token")).rejects.toMatchObject({ status: 401 });
+		expect(ssoSessionsRepository.revoke).not.toHaveBeenCalled();
 	});
 
 	it("refresh rejects an inactive user", async () => {

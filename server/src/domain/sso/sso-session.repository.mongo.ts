@@ -29,8 +29,12 @@ class MongoSsoSessionRepository implements ISsoSessionRepository {
 		return doc ? this.toEntity(doc) : null;
 	};
 
-	rotate = async (id: string, newHash: string, issuedAt: number) => {
-		await SsoSessionModel.updateOne({ _id: id }, { $set: { tokenHash: newHash, issuedAt } });
+	rotate = async (id: string, oldHash: string, newHash: string, issuedAt: number, now: Date) => {
+		const result = await SsoSessionModel.updateOne(
+			{ _id: id, tokenHash: oldHash, revokedAt: null, absoluteExpiresAt: { $gt: now } },
+			{ $set: { tokenHash: newHash, issuedAt } }
+		);
+		return result.modifiedCount === 1;
 	};
 
 	revoke = async (id: string) => {
