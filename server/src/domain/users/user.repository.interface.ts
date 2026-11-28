@@ -1,9 +1,12 @@
-import type { User, UserResponse } from "@/domain/users/user.type.js";
+import type { SsoProvider } from "@/domain/sso/sso.type.js";
+import type { SsoLink, User, UserResponse } from "@/domain/users/user.type.js";
 export interface IUsersRepository {
 	// create
 	create(user: Partial<User>, imageFile?: Express.Multer.File | null): Promise<UserResponse>;
 	// fetch
 	findByEmail(email: string): Promise<User>;
+	findByEmailOrNull(email: string): Promise<User | null>;
+	findBySsoIdentity(provider: SsoProvider, tenant: string, subject: string): Promise<User | null>;
 	findById(id: string): Promise<UserResponse>;
 	findAll(): Promise<UserResponse[]>;
 	// Returns the id only if the user exists and belongs to the team
@@ -11,6 +14,7 @@ export interface IUsersRepository {
 	findSuperAdminIdByTeamId(teamId: string): Promise<string | null>;
 	// update
 	updateById(id: string, patch: Partial<User>, file?: Express.Multer.File | null): Promise<UserResponse>;
+	setSso(userId: string, sso: SsoLink): Promise<UserResponse>;
 	// delete
 	deleteById(id: string): Promise<User>;
 	// Auth state read on every authenticated request; null when the user does not exist

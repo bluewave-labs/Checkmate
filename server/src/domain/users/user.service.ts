@@ -190,6 +190,10 @@ export class UserService implements IUserService {
 	loginUser = async (email: string, password: string) => {
 		// Check if user exists
 		const user = await this.usersRepository.findByEmail(email);
+		// An SSO-only account has no password to compare
+		if (!user.password) {
+			throw new AppError(userErrors.ssoAccount, { service: SERVICE_NAME });
+		}
 		// Compare password
 		const match = await bcrypt.compare(password, user.password);
 
@@ -221,6 +225,9 @@ export class UserService implements IUserService {
 		if (updates.password && updates.newPassword) {
 			updates.email = currentUserEmail;
 			const user = await this.usersRepository.findByEmail(currentUserEmail);
+			if (!user.password) {
+				throw new AppError(userErrors.ssoAccount, { service: SERVICE_NAME });
+			}
 			const match = await bcrypt.compare(updates.password, user.password);
 			// If not a match, throw a 403
 			// 403 instead of 401 to avoid triggering axios interceptor
@@ -273,7 +280,7 @@ export class UserService implements IUserService {
 		const existingToken = await this.recoveryTokensRepository.findByToken(recoveryToken);
 		const existingUser = await this.usersRepository.findByEmail(existingToken.email);
 
-		const match = await bcrypt.compare(password, existingUser.password);
+		const match = existingUser.password ? await bcrypt.compare(password, existingUser.password) : false;
 		if (match === true) {
 			throw new AppError(userErrors.passwordUnchanged, { service: SERVICE_NAME });
 		}

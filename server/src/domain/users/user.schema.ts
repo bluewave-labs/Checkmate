@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SsoProviders } from "@/domain/sso/sso.type.js";
 import { UserRoles } from "./user.type.js";
 
 export const userProfileImageSchema = z.object({
@@ -6,12 +7,22 @@ export const userProfileImageSchema = z.object({
 	contentType: z.string().optional(),
 });
 
+export const ssoLinkSchema = z.object({
+	provider: z.enum(SsoProviders),
+	tenant: z.string(),
+	subject: z.string(),
+	roleManaged: z.boolean(),
+	lastCheckedAt: z.string().nullable(),
+	deactivatedBySso: z.boolean(),
+});
+
 export const userSchema = z.object({
 	id: z.string(),
 	firstName: z.string(),
 	lastName: z.string(),
 	email: z.string(),
-	password: z.string(),
+	// Absent for accounts that sign in with single sign-on only
+	password: z.string().optional(),
 	avatarImage: z.string().optional(),
 	profileImage: userProfileImageSchema.optional(),
 	isActive: z.boolean(),
@@ -19,6 +30,7 @@ export const userSchema = z.object({
 	role: z.array(z.enum(UserRoles)),
 	teamId: z.string(),
 	checkTTL: z.number().optional(),
+	sso: ssoLinkSchema.optional(),
 	// Epoch seconds; tokens issued before this are rejected
 	tokensValidAfter: z.number().optional(),
 	// Id of the last "What's new" popup this user has seen

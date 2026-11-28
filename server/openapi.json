@@ -194,6 +194,32 @@
 					"checkTTL": {
 						"type": "number"
 					},
+					"sso": {
+						"type": "object",
+						"properties": {
+							"provider": {
+								"type": "string",
+								"enum": ["entra", "google"]
+							},
+							"tenant": {
+								"type": "string"
+							},
+							"subject": {
+								"type": "string"
+							},
+							"roleManaged": {
+								"type": "boolean"
+							},
+							"lastCheckedAt": {
+								"type": "string",
+								"nullable": true
+							},
+							"deactivatedBySso": {
+								"type": "boolean"
+							}
+						},
+						"required": ["provider", "tenant", "subject", "roleManaged", "lastCheckedAt", "deactivatedBySso"]
+					},
 					"whatsNewSeen": {
 						"type": "string"
 					},
@@ -5698,7 +5724,7 @@
 						}
 					},
 					"403": {
-						"description": "This account is deactivated",
+						"description": "This account is deactivated, or this account signs in with single sign-on",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -6886,7 +6912,7 @@
 						}
 					},
 					"403": {
-						"description": "Forbidden, or incorrect current password",
+						"description": "Forbidden, or incorrect current password, or this account signs in with single sign-on",
 						"content": {
 							"application/json": {
 								"schema": {

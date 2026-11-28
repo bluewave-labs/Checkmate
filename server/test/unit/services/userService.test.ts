@@ -353,6 +353,13 @@ describe("UserService", () => {
 
 			await expect(service.loginUser("test@example.com", "correct-password")).rejects.toMatchObject({ definition: userErrors.accountInactive });
 		});
+
+		it("throws ssoAccount for a user without a password", async () => {
+			const { service, usersRepository } = createService();
+			(usersRepository.findByEmail as jest.Mock).mockResolvedValue(makeUser({ password: undefined }));
+
+			await expect(service.loginUser("test@example.com", "anything")).rejects.toMatchObject({ definition: userErrors.ssoAccount });
+		});
 	});
 
 	// ── editUser ────────────────────────────────────────────────────────────
@@ -406,6 +413,16 @@ describe("UserService", () => {
 			await expect(service.editUser({ password: "wrong-password", newPassword: "new-pass" }, null, "user-1", "test@example.com")).rejects.toThrow(
 				"Incorrect current password"
 			);
+		});
+
+		it("throws ssoAccount when changing the password of a user without one", async () => {
+			const { service, usersRepository } = createService();
+			(usersRepository.findByEmail as jest.Mock).mockResolvedValue(makeUser({ password: undefined }));
+
+			await expect(service.editUser({ password: "old-pass", newPassword: "new-pass" }, null, "user-1", "test@example.com")).rejects.toMatchObject({
+				definition: userErrors.ssoAccount,
+			});
+			expect(usersRepository.updateById).not.toHaveBeenCalled();
 		});
 	});
 
@@ -504,6 +521,16 @@ describe("UserService", () => {
 			(usersRepository.findByEmail as jest.Mock).mockResolvedValue(makeUser({ password: hashed }));
 
 			await expect(service.resetPassword("same-password", "recovery-token-123")).rejects.toMatchObject({ definition: userErrors.passwordUnchanged });
+		});
+
+		it("sets a password for a user without one", async () => {
+			const { service, usersRepository } = createService();
+			(usersRepository.findByEmail as jest.Mock).mockResolvedValue(makeUser({ password: undefined }));
+
+			const result = await service.resetPassword("new-password", "recovery-token-123");
+
+			expect(usersRepository.updateById).toHaveBeenCalledWith("user-1", expect.objectContaining({ password: expect.any(String) }), null);
+			expect(result.token).toBe("jwt-token-123");
 		});
 	});
 

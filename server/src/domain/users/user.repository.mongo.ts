@@ -1,6 +1,7 @@
+import type { SsoProvider } from "@/domain/sso/sso.type.js";
 import { IUsersRepository } from "@/domain/users/user.repository.interface.js";
 import { UserModel, type UserDocument } from "@/domain/users/user.model.js";
-import { toUserResponse, type User, type UserProfileImage, type UserResponse } from "@/domain/users/user.type.js";
+import { toUserResponse, type SsoLink, type User, type UserProfileImage, type UserResponse } from "@/domain/users/user.type.js";
 import { GenerateAvatarImage } from "@/utils/imageProcessing.js";
 import { AppError, internalError } from "@/utils/AppError.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
@@ -34,6 +35,16 @@ class MongoUsersRepository implements IUsersRepository {
 			role: doc.role ?? [],
 			teamId: toStringId(doc.teamId),
 			checkTTL: doc.checkTTL ?? undefined,
+			sso: doc.sso
+				? {
+						provider: doc.sso.provider,
+						tenant: doc.sso.tenant,
+						subject: doc.sso.subject,
+						roleManaged: doc.sso.roleManaged ?? false,
+						lastCheckedAt: doc.sso.lastCheckedAt ?? null,
+						deactivatedBySso: doc.sso.deactivatedBySso ?? false,
+					}
+				: undefined,
 			tokensValidAfter: doc.tokensValidAfter ?? undefined,
 			whatsNewSeen: doc.whatsNewSeen ?? undefined,
 			createdAt: toDateString(doc.createdAt),
@@ -71,6 +82,26 @@ class MongoUsersRepository implements IUsersRepository {
 			throw new AppError(userErrors.notFound, { service: SERVICE_NAME });
 		}
 		return this.toEntity(user);
+	};
+
+	findByEmailOrNull = async (email: string) => {
+		const user = await UserModel.findOne({ email }).select("-profileImage");
+		return user ? this.toEntity(user) : null;
+	};
+
+	findBySsoIdentity = async (provider: SsoProvider, tenant: string, subject: string) => {
+		const user = await UserModel.findOne({ "sso.provider": provider, "sso.tenant": tenant, "sso.subject": subject }).select("-profileImage");
+		return user ? this.toEntity(user) : null;
+	};
+
+	setSso = async (userId: string, sso: SsoLink) => {
+		const updatedUser = await UserModel.findOneAndUpdate({ _id: userId }, { $set: { sso } }, { new: true })
+			.select("-password")
+			.select("-profileImage");
+		if (!updatedUser) {
+			throw new AppError(userErrors.notFound, { service: SERVICE_NAME });
+		}
+		return this.toResponse(updatedUser);
 	};
 
 	findById = async (id: string) => {

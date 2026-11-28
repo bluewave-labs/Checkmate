@@ -1,5 +1,6 @@
 import { Schema, model, type Types } from "mongoose";
 import bcrypt from "bcryptjs";
+import { SsoProviders } from "@/domain/sso/sso.type.js";
 import { UserRoles, type User, type UserProfileImage } from "@/domain/users/user.type.js";
 import { MonitorModel } from "@/domain/monitors/monitor.model.js";
 import Team from "../teams/team.model.js";
@@ -25,12 +26,24 @@ const profileImageSchema = new Schema<Required<UserProfileImage>>(
 	{ _id: false }
 );
 
+const ssoLinkSchema = new Schema<NonNullable<User["sso"]>>(
+	{
+		provider: { type: String, enum: SsoProviders, required: true },
+		tenant: { type: String, required: true },
+		subject: { type: String, required: true },
+		roleManaged: { type: Boolean, default: false },
+		lastCheckedAt: { type: String, default: null },
+		deactivatedBySso: { type: Boolean, default: false },
+	},
+	{ _id: false }
+);
+
 const UserSchema = new Schema<UserDocument>(
 	{
 		firstName: { type: String, required: true },
 		lastName: { type: String, required: true },
 		email: { type: String, required: true, unique: true },
-		password: { type: String, required: true },
+		password: { type: String },
 		avatarImage: { type: String },
 		profileImage: { type: profileImageSchema },
 		isActive: { type: Boolean, default: true },
@@ -46,10 +59,16 @@ const UserSchema = new Schema<UserDocument>(
 			immutable: true,
 		},
 		checkTTL: { type: Number },
+		sso: { type: ssoLinkSchema },
 		tokensValidAfter: { type: Number },
 		whatsNewSeen: { type: String },
 	},
 	{ timestamps: true }
+);
+
+UserSchema.index(
+	{ "sso.provider": 1, "sso.tenant": 1, "sso.subject": 1 },
+	{ unique: true, partialFilterExpression: { "sso.subject": { $exists: true } } }
 );
 
 UserSchema.pre("findOneAndDelete", async function (next) {
@@ -69,6 +88,7 @@ UserSchema.pre("findOneAndDelete", async function (next) {
 });
 
 UserSchema.methods.comparePassword = async function (submittedPassword: string) {
+	if (!this.password) return false;
 	return bcrypt.compare(submittedPassword, this.password);
 };
 
