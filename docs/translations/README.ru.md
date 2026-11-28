@@ -34,8 +34,6 @@
 
 <p align="center"><strong>Open source приложение для мониторинга доступности и инфраструктуры</strong></p>
 
-[![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
-
 <img alt="Checkmate dashboard" src="https://checkmate.so/img/readme/dashboard.webp" />
 
 <br>
@@ -84,7 +82,7 @@ Checkmate прошёл нагрузочное тестирование с 1000+ 
 
 Инструкции по установке смотрите на [портале документации Checkmate](https://checkmate.so/docs).
 
-В качестве альтернативы вы можете использовать [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (ЮАР), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate), [ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate) (нужна собственная MongoDB), [Caliber Node](https://calibernode.com/cloud-apps/checkmate) или [Pikapods](https://www.pikapods.com/), чтобы быстро поднять инстанс Checkmate. Если вы хотите мониторить серверную инфраструктуру, потребуется агент [Capture](https://checkmate.so/docs/infrastructure/installing-capture). В репозитории Capture также есть инструкции по установке.
+В качестве альтернативы вы можете использовать [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (ЮАР), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate), [ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate) (нужна собственная MongoDB), [Caliber Node](https://calibernode.com/cloud-apps/checkmate), [Dokploy](https://dokploy.com/templates/checkmate), [Railway](https://railway.com/deploy/checkmate-production), [Zeabur](https://zeabur.com/templates/RX55P3), [Levelrail](https://levelrail.glinr.com/templates/checkmate/) или [Pikapods](https://www.pikapods.com/), чтобы быстро поднять инстанс Checkmate. Если вы хотите мониторить серверную инфраструктуру, потребуется агент [Capture](https://checkmate.so/docs/infrastructure/installing-capture). В репозитории Capture также есть инструкции по установке.
 
 ### Использование собственного УЦ
 

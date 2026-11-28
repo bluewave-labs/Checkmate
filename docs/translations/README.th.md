@@ -37,8 +37,6 @@
 
 <p align="center"><strong>แอปพลิเคชันโอเพนซอร์สสำหรับตรวจสอบสถานะการทำงานและโครงสร้างพื้นฐาน</strong></p>
 
-[![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
-
 <img alt="Checkmate dashboard" src="https://checkmate.so/img/readme/dashboard.webp" />
 
 <br>
@@ -87,7 +85,7 @@ Checkmate ผ่านการทดสอบโหลดสำหรับม�
 
 ดูวิธีการติดตั้งใน [พอร์ทัลเอกสารของ Checkmate](https://checkmate.so/docs)
 
-อีกทางเลือกหนึ่ง คุณสามารถใช้ [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (แอฟริกาใต้), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate), [ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate) (ต้องใช้ MongoDB ของคุณเอง), [Caliber Node](https://calibernode.com/cloud-apps/checkmate) หรือ [Pikapods](https://www.pikapods.com/) เพื่อเปิดอินสแตนซ์ Checkmate ได้อย่างรวดเร็ว หากต้องการมอนิเตอร์โครงสร้างพื้นฐานเซิร์ฟเวอร์ คุณจะต้องใช้ [เอเจนต์ Capture](https://checkmate.so/docs/infrastructure/installing-capture) รีโพ Capture ยังมีวิธีการติดตั้งด้วย
+อีกทางเลือกหนึ่ง คุณสามารถใช้ [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Host](https://sive.host) (แอฟริกาใต้), [Cloudzy](https://cloudzy.com/marketplace/checkmate), [Ryvord](https://ryvord.com/run/checkmate), [ZopDay](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate) (ต้องใช้ MongoDB ของคุณเอง), [Caliber Node](https://calibernode.com/cloud-apps/checkmate), [Dokploy](https://dokploy.com/templates/checkmate), [Railway](https://railway.com/deploy/checkmate-production), [Zeabur](https://zeabur.com/templates/RX55P3), [Levelrail](https://levelrail.glinr.com/templates/checkmate/) หรือ [Pikapods](https://www.pikapods.com/) เพื่อเปิดอินสแตนซ์ Checkmate ได้อย่างรวดเร็ว หากต้องการมอนิเตอร์โครงสร้างพื้นฐานเซิร์ฟเวอร์ คุณจะต้องใช้ [เอเจนต์ Capture](https://checkmate.so/docs/infrastructure/installing-capture) รีโพ Capture ยังมีวิธีการติดตั้งด้วย
 
 ### การใช้ Custom CA
 

@@ -37,8 +37,6 @@
 
 <p align="center"><strong>Avoimen lähdekoodin sovellus saatavuuden ja infrastruktuurin valvontaan</strong></p>
 
-[![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
-
 <img alt="Checkmate dashboard" src="https://checkmate.so/img/readme/dashboard.webp" />
 
 <br>
@@ -87,7 +85,7 @@ Käyttöohjeet löytyvät [täältä](https://checkmate.so/docs).
 
 Asennusohjeet löytyvät [Checkmaten dokumentaatioportaalista](https://checkmate.so/docs).
 
-Vaihtoehtoisesti voit käyttää [Coolifya](https://coolify.io/), [Elestiota](https://elest.io/open-source/checkmate), [K8s:ää](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Hostia](https://sive.host) (Etelä-Afrikka), [Cloudzya](https://cloudzy.com/marketplace/checkmate), [Ryvordia](https://ryvord.com/run/checkmate), [ZopDayta](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate) (vaatii oman MongoDB:n), [Caliber Nodea](https://calibernode.com/cloud-apps/checkmate) tai [Pikapodsia](https://www.pikapods.com/) Checkmate-instanssin nopeaan käynnistämiseen. Jos haluat valvoa palvelininfrastruktuuriasi, tarvitset [Capture-agentin](https://checkmate.so/docs/infrastructure/installing-capture). Capturen repositorio sisältää myös sen asennusohjeet.
+Vaihtoehtoisesti voit käyttää [Coolifya](https://coolify.io/), [Elestiota](https://elest.io/open-source/checkmate), [K8s:ää](https://checkmate.so/docs/getting-started/installation#option-3-kubernetes-with-helm), [Sive Hostia](https://sive.host) (Etelä-Afrikka), [Cloudzya](https://cloudzy.com/marketplace/checkmate), [Ryvordia](https://ryvord.com/run/checkmate), [ZopDayta](https://zop.dev/zopday/app/deploy?image=ghcr.io/bluewave-labs/checkmate:latest&port=52345&name=checkmate&utm_source=github&utm_medium=one_click&utm_content=checkmate) (vaatii oman MongoDB:n), [Caliber Nodea](https://calibernode.com/cloud-apps/checkmate), [Dokployta](https://dokploy.com/templates/checkmate), [Railwayta](https://railway.com/deploy/checkmate-production), [Zeaburia](https://zeabur.com/templates/RX55P3), [Levelrailia](https://levelrail.glinr.com/templates/checkmate/) tai [Pikapodsia](https://www.pikapods.com/) Checkmate-instanssin nopeaan käynnistämiseen. Jos haluat valvoa palvelininfrastruktuuriasi, tarvitset [Capture-agentin](https://checkmate.so/docs/infrastructure/installing-capture). Capturen repositorio sisältää myös sen asennusohjeet.
 
 ### Mukautetun CA:n käyttö
 
