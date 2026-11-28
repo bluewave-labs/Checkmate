@@ -21,6 +21,8 @@ const percentageFormatter = new Intl.NumberFormat("en-US", {
  *   or a percentage (75 for 75%) when `isFraction` is false
  * @param options.isFraction - Whether `value` is a fraction (0–1) rather than
  *   a percentage (0–100). Defaults to true.
+ * @param options.clampExtremes - Whether values that would round to "0.00%" or
+ *   "100.00%" without being exactly 0 or 1 show as "0.01%" / "99.99%". Defaults to false.
  * @returns Formatted percentage string (e.g., "75.00%"), or "0.00%" for NaN
  * @example
  * formatPercentage(0.75)                         // "75.00%"
@@ -28,15 +30,23 @@ const percentageFormatter = new Intl.NumberFormat("en-US", {
  * formatPercentage(0.9999)                       // "99.99%"
  * formatPercentage(75, { isFraction: false })    // "75.00%"
  * formatPercentage(54.32, { isFraction: false }) // "54.32%"
+ * formatPercentage(0.99999, { clampExtremes: true }) // "99.99%"
  */
 export const formatPercentage = (
 	value: number,
-	{ isFraction = true }: { isFraction?: boolean } = {}
+	{
+		isFraction = true,
+		clampExtremes = false,
+	}: { isFraction?: boolean; clampExtremes?: boolean } = {}
 ): string => {
 	if (typeof value !== "number" || Number.isNaN(value)) {
 		return "0.00%";
 	}
 	if (!isFraction) value /= 100;
+	if (clampExtremes) {
+		if (value > 0 && value < 0.00005) return "0.01%";
+		if (value < 1 && value >= 0.99995) return "99.99%";
+	}
 	return percentageFormatter.format(value);
 };
 

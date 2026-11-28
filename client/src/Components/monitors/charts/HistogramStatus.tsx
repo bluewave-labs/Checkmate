@@ -14,7 +14,7 @@ import { getResponseTimeColor } from "@/Utils/MonitorUtils";
 import type { GroupedCheck } from "@/Types/Check";
 import type { PaletteKey } from "@/Utils/Theme/Theme";
 import { useFormatDate } from "@/Hooks/useFormatDate";
-import { formatNumber } from "@/Utils/FormatUtils";
+import { formatNumber, formatPercentage } from "@/Utils/FormatUtils";
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 
@@ -69,6 +69,8 @@ interface HistogramStatusProps {
 	range: string;
 	metric?: HistogramStatusMetric;
 	countColor?: PaletteKey;
+	percentage?: number;
+	percentageColor?: string;
 }
 
 export const HistogramStatus = ({
@@ -78,6 +80,8 @@ export const HistogramStatus = ({
 	range,
 	metric = "responseTime",
 	countColor = "success",
+	percentage,
+	percentageColor,
 }: HistogramStatusProps) => {
 	const isCheckCount = metric === "checkCount";
 	const { t, i18n } = useTranslation();
@@ -144,6 +148,11 @@ export const HistogramStatus = ({
 					<Stack>
 						<Typography>Total checks: {totalChecks}</Typography>
 					</Stack>
+					{percentage !== undefined && (
+						<Typography color={percentageColor}>
+							{formatPercentage(percentage, { clampExtremes: true })}
+						</Typography>
+					)}
 				</Stack>
 				<ResponsiveContainer
 					width="100%"

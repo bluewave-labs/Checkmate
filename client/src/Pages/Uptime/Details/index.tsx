@@ -21,7 +21,7 @@ import { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useGet } from "@/Hooks/UseApi";
 import { type MonitorDetailsResponse, supportsGeoCheck } from "@/Types/Monitor";
-import type { ChecksResponse } from "@/Types/Check";
+import type { ChecksResponse, GroupedCheck } from "@/Types/Check";
 import type {
 	GeoChecksResult,
 	FlatGeoChecksResponse,
@@ -31,7 +31,11 @@ import { t } from "i18next";
 import { Typography } from "@mui/material";
 import { UptimeHeaderDateRanges, isLongDateRange, type DateRange } from "@/Types/Query";
 import { useFormatDate } from "@/Hooks/useFormatDate";
+import { getUptimePercentageColor } from "@/Utils/MonitorUtils";
 import { LAYOUT } from "@/Utils/Theme/constants";
+
+const sumTotalChecks = (checks: GroupedCheck[] = []) =>
+	checks.reduce((acc, check) => acc + (check.totalChecks || 0), 0);
 
 interface CertificateResponse {
 	certificateDate: string;
@@ -194,6 +198,16 @@ const UptimeDetailsPage = () => {
 	const isHeartbeat = monitor.type === "heartbeat";
 	const histogramMetric = isHeartbeat ? "checkCount" : "responseTime";
 
+	const upChecks = sumTotalChecks(monitorData.groupedUpChecks);
+	const downChecks = sumTotalChecks(monitorData.groupedDownChecks);
+	const rangeChecks = upChecks + downChecks;
+	const upPercentage = rangeChecks > 0 ? upChecks / rangeChecks : undefined;
+	const downPercentage = rangeChecks > 0 ? downChecks / rangeChecks : undefined;
+	const percentageColor =
+		upPercentage !== undefined
+			? theme.palette[getUptimePercentageColor(upPercentage)].main
+			: undefined;
+
 	const geoChecksForTable = geoChecksTableData?.geoChecks ?? [];
 	const geoChecksCount = geoChecksTableData?.geoChecksCount ?? 0;
 
@@ -240,6 +254,8 @@ const UptimeDetailsPage = () => {
 					range={dateRange}
 					metric={histogramMetric}
 					countColor="success"
+					percentage={upPercentage}
+					percentageColor={percentageColor}
 				/>
 				<HistogramStatus
 					title={t("common.charts.labels.downtime")}
@@ -253,6 +269,8 @@ const UptimeDetailsPage = () => {
 					range={dateRange}
 					metric={histogramMetric}
 					countColor="error"
+					percentage={downPercentage}
+					percentageColor={percentageColor}
 				/>
 				{!isHeartbeat && (
 					<RadialAvgResponse
