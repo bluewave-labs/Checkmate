@@ -218,9 +218,10 @@ export class ConnectService implements IConnectService {
 	};
 
 	unenroll = async (): Promise<ConnectStatus> => {
-		await this.connectRepository.clearEnrollment();
-		// Without Connect nothing can vouch for these sessions any more
+		// Without Connect nothing can vouch for these sessions any more. Revoking first keeps the enrollment in place if it
+		// fails, so the admin can retry.
 		await this.ssoSessionRepository.revokeAll();
+		await this.connectRepository.clearEnrollment();
 		const state = await this.connectRepository.get();
 		this.tunnel.stop();
 		return this.toStatus(state);

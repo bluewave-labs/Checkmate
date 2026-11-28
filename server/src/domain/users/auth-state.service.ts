@@ -2,7 +2,8 @@ import type { IUsersRepository } from "@/domain/users/user.repository.interface.
 
 export interface IAuthStateService {
 	isTokenCurrent(userId: string, iat: number | undefined): Promise<boolean>;
-	revokeTokens(userIds: string[]): Promise<void>;
+	// cutoffSeconds defaults to the current second; a later one also kills tokens issued in the current second
+	revokeTokens(userIds: string[], cutoffSeconds?: number): Promise<void>;
 }
 
 const SERVICE_NAME = "AuthStateService";
@@ -44,8 +45,8 @@ export class AuthStateService implements IAuthStateService {
 		return true;
 	};
 
-	revokeTokens = async (userIds: string[]) => {
-		await this.usersRepository.setTokensValidAfter(userIds, Math.floor(this.now() / 1000));
+	revokeTokens = async (userIds: string[], cutoffSeconds: number = Math.floor(this.now() / 1000)) => {
+		await this.usersRepository.setTokensValidAfter(userIds, cutoffSeconds);
 		for (const id of userIds) {
 			this.cache.delete(id);
 		}

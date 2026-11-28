@@ -2,6 +2,7 @@ import { describe, expect, it, jest } from "@jest/globals";
 import * as nodeCrypto from "node:crypto";
 import { ConnectApiRejectedError } from "../../../src/domain/connect/connect-api.service.ts";
 import type { ConnectEnrollment, ConnectSsoCheckResult, ConnectSsoConfig, ConnectSsoState } from "../../../src/domain/connect/connect.type.ts";
+import { AuthStateService } from "../../../src/domain/users/auth-state.service.ts";
 import { SsoSyncService } from "../../../src/domain/sso/sso-sync.service.ts";
 import type { User } from "../../../src/domain/users/user.type.ts";
 import { EncryptionService } from "../../../src/service/encryption/encryptionService.ts";
@@ -406,8 +407,47 @@ describe("SsoSyncService enforcement", () => {
 		await service.handleJob();
 
 		expect(usersRepository.findPasswordUserIdsExceptSuperadmin).toHaveBeenCalledTimes(1);
-		expect(authStateService.revokeTokens).toHaveBeenCalledTimes(1);
-		expect(authStateService.revokeTokens).toHaveBeenCalledWith(["user-1", "user-2"]);
+		// Two passes in the transition (the second closes the same-second window), none on the later sync
+		expect(authStateService.revokeTokens).toHaveBeenCalledTimes(2);
+		expect(authStateService.revokeTokens).toHaveBeenNthCalledWith(1, ["user-1", "user-2"]);
+	});
+
+	it("the second enforce revocation uses a cutoff one second ahead, after the config is stored", async () => {
+		const { service, authStateService, connectRepository } = await setup({
+			sso: cached,
+			ssoConfig: jest.fn<any>().mockResolvedValue(enforced),
+			passwordUserIds: ["user-1"],
+		});
+		const enforceWhenCalled: unknown[] = [];
+		authStateService.revokeTokens.mockImplementation(async () => void enforceWhenCalled.push((await connectRepository.get()).sso?.enforce));
+
+		await service.handleJob();
+
+		expect(authStateService.revokeTokens).toHaveBeenNthCalledWith(2, ["user-1"], Math.floor(NOW.getTime() / 1000) + 1);
+		expect(enforceWhenCalled).toEqual([false, true]);
+	});
+
+	it("rejects a token issued in the transition second once the second revocation is in place", async () => {
+		const nowSeconds = Math.floor(NOW.getTime() / 1000);
+		let validAfter: number | null = null;
+		const real = new AuthStateService(
+			{
+				findAuthState: async () => ({ isActive: true, tokensValidAfter: validAfter }),
+				setTokensValidAfter: async (_ids: string[], seconds: number) => void (validAfter = seconds),
+			} as any,
+			() => NOW.getTime()
+		);
+		const { service, authStateService } = await setup({
+			sso: cached,
+			ssoConfig: jest.fn<any>().mockResolvedValue(enforced),
+			passwordUserIds: ["user-1"],
+		});
+		authStateService.revokeTokens.mockImplementation((ids: string[], cutoff?: number) => real.revokeTokens(ids, cutoff));
+
+		await service.handleJob();
+
+		await expect(real.isTokenCurrent("user-1", nowSeconds)).resolves.toBe(false);
+		await expect(real.isTokenCurrent("user-1", nowSeconds + 1)).resolves.toBe(true);
 	});
 
 	it("revokes again when enforce goes off and on again", async () => {
@@ -418,7 +458,7 @@ describe("SsoSyncService enforcement", () => {
 		await service.handleJob();
 		await service.handleJob();
 
-		expect(authStateService.revokeTokens).toHaveBeenCalledTimes(2);
+		expect(authStateService.revokeTokens).toHaveBeenCalledTimes(4);
 	});
 
 	it("does not revoke anyone when enforce stays off", async () => {
@@ -441,7 +481,7 @@ describe("SsoSyncService enforcement", () => {
 		expect((await connectRepository.get()).sso?.enforce).toBe(false);
 		await service.handleJob();
 
-		expect(authStateService.revokeTokens).toHaveBeenCalledTimes(2);
+		expect(authStateService.revokeTokens).toHaveBeenCalledTimes(3);
 	});
 
 	it("a lapse revokes all SSO sessions", async () => {

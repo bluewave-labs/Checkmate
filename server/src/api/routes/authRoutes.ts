@@ -35,7 +35,7 @@ export const authRoutes: RouteTable<IAuthController> = {
 			path: "/register",
 			handler: "registerUser",
 			summary: "Register a new user (first user becomes superadmin)",
-			errors: [userErrors.firstUserEmailRequired, inviteErrors.notFound],
+			errors: [userErrors.firstUserEmailRequired, userErrors.ssoAccount, inviteErrors.notFound],
 			auth: "none",
 			upload: "profileImage",
 			body: registrationBodyValidation,

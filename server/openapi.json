@@ -5672,6 +5672,16 @@
 							}
 						}
 					},
+					"403": {
+						"description": "This account signs in with single sign-on",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Invite not found",
 						"content": {

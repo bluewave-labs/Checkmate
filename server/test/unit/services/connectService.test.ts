@@ -304,6 +304,16 @@ describe("ConnectService.enroll", () => {
 });
 
 describe("ConnectService.unenroll", () => {
+	it("keeps the enrollment when revoking the SSO sessions fails", async () => {
+		const { service, repository, ssoSessionRepository } = setup();
+		await service.enroll(enrollment());
+		ssoSessionRepository.revokeAll.mockRejectedValueOnce(new Error("db down"));
+
+		await expect(service.unenroll()).rejects.toThrow("db down");
+
+		expect((await repository.get()).enrollment).not.toBeNull();
+	});
+
 	it("unenroll revokes all SSO sessions", async () => {
 		const { service, ssoSessionRepository } = setup();
 		await service.enroll(enrollment());

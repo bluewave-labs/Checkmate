@@ -72,4 +72,15 @@ describe("AuthStateService", () => {
 		await service.isTokenCurrent("user-1", 100);
 		expect(usersRepository.findAuthState).toHaveBeenCalledTimes(2);
 	});
+
+	it("revokeTokens takes an explicit cutoff and clears the cache", async () => {
+		const { service, usersRepository } = setup();
+		await service.isTokenCurrent("user-1", 100);
+
+		await service.revokeTokens(["user-1"], 1_000_000_001);
+
+		expect(usersRepository.setTokensValidAfter).toHaveBeenCalledWith(["user-1"], 1_000_000_001);
+		await service.isTokenCurrent("user-1", 100);
+		expect(usersRepository.findAuthState).toHaveBeenCalledTimes(2);
+	});
 });

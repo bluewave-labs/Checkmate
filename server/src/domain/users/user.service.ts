@@ -124,6 +124,10 @@ export class UserService implements IUserService {
 		// If superAdmin exists, a token should be attached to all further register requests
 		const superAdminExists = await this.usersRepository.findSuperAdmin();
 		if (superAdminExists) {
+			// An invited user is unlinked and not superadmin, so this refuses exactly when enforce is on
+			if (!(await this.ssoPolicyService.passwordLoginAllowed({ role: ["user"] } as User))) {
+				throw new AppError(userErrors.ssoAccount, { service: SERVICE_NAME });
+			}
 			const invite = await this.invitesRepository.findByTokenAndDelete(inviteToken);
 			user.role = invite.role ?? ["user"];
 			user.teamId = invite.teamId;

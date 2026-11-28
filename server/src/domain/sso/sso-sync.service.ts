@@ -100,10 +100,13 @@ export class SsoSyncService implements ISsoSyncService {
 			} else {
 				// Only the transition revokes, so the sessions issued after it survive the following syncs. Revoking before
 				// storing means a failed revocation leaves the old cache and the next sync tries again.
-				if (sso?.enforce !== true && config.enforce === true) {
-					await this.authStateService.revokeTokens(await this.usersRepository.findPasswordUserIdsExceptSuperadmin());
-				}
+				const enforcing = sso?.enforce !== true && config.enforce === true;
+				const passwordUserIds = enforcing ? await this.usersRepository.findPasswordUserIdsExceptSuperadmin() : [];
+				if (enforcing) await this.authStateService.revokeTokens(passwordUserIds);
 				await this.connectRepository.setSsoState({ ...config, fetchedAt: this.now().toISOString(), lastCheckRunAt: sso?.lastCheckRunAt ?? null });
+				// A password login between the first revocation and the stored config was still allowed and shares the cutoff
+				// second, so a second pass with a cutoff one second ahead closes that window.
+				if (enforcing) await this.authStateService.revokeTokens(passwordUserIds, Math.floor(this.now().getTime() / 1000) + 1);
 			}
 			this.report("synced", () => this.logger.info({ enabled: config.enabled }, "SSO config synced from Connect"));
 

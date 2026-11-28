@@ -123,6 +123,37 @@ describe("UserService", () => {
 	// ── registerUser ────────────────────────────────────────────────────────
 
 	describe("registerUser", () => {
+		it("refuses an invited user under enforce without creating the user", async () => {
+			const { service, usersRepository, invitesRepository, ssoPolicyService } = createService();
+			ssoPolicyService.passwordLoginAllowed.mockResolvedValue(false);
+
+			await expect(service.registerUser({ password: "password123" }, "invite-token", null)).rejects.toMatchObject({
+				definition: userErrors.ssoAccount,
+			});
+			expect(usersRepository.create).not.toHaveBeenCalled();
+			expect(invitesRepository.findByTokenAndDelete).not.toHaveBeenCalled();
+		});
+
+		it("registers an invited user when enforce is off", async () => {
+			const { service, usersRepository, ssoPolicyService } = createService();
+			ssoPolicyService.passwordLoginAllowed.mockResolvedValue(true);
+
+			await service.registerUser({ password: "password123" }, "invite-token", null);
+
+			expect(usersRepository.create).toHaveBeenCalled();
+		});
+
+		it("always allows the first superadmin to register", async () => {
+			const { service, usersRepository, ssoPolicyService } = createService();
+			(usersRepository.findSuperAdmin as jest.Mock).mockResolvedValue(false);
+			ssoPolicyService.passwordLoginAllowed.mockResolvedValue(false);
+
+			await service.registerUser({ email: "first@example.com", password: "password123" }, "", null);
+
+			expect(ssoPolicyService.passwordLoginAllowed).not.toHaveBeenCalled();
+			expect(usersRepository.create).toHaveBeenCalled();
+		});
+
 		it("registers an invited user when superadmin exists", async () => {
 			const { service, usersRepository, invitesRepository } = createService();
 
